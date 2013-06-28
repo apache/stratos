@@ -1,0 +1,160 @@
+body { font-family: "Calibri","Lucida Grande","Lucida Sans","Microsoft Sans Serif","Lucida Sans Unicode","Verdana","Sans-serif","trebuchet ms"; font-size: .85em; line-height: 135%; color: #434343; margin: 0px; padding: 0px; background-color: #94C8EC;}
+
+p { }
+
+td { }
+
+a:link { text-decoration: none; }
+
+a:visited { text-decoration: none; }
+
+a:hover { text-decoration: none; }
+
+a:active { text-decoration: none; }
+
+a img { border: 0px; }
+div.clear { clear: both; }
+
+div#main-content { width: 960px; margin: auto; background-image: url(images/top.gif); background-repeat: no-repeat; background-position: left 15px; }
+
+div#header { height: 140px; }
+div.top-nav {
+	float: right;
+}
+div.top-nav ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+div.top-nav ul li {
+	position: relative;
+	float: left;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+	padding-bottom: 0px;
+	border-right: solid 1px #005577;
+}
+div.top-nav ul li.right {
+	border-right: 0px;
+}
+div.top-nav ul li a {
+	color: #005577;
+	font-weight: bold;
+	font-size: 16px;
+}
+div.top-nav ul li a:hover {
+	color: #ffffff;
+}
+div.logo { float: left; margin-top: 25px; }
+div#content { background-color: #ffffff; background-image: url(images/content-bg.gif); background-repeat: repeat-y; background-position: left top; }
+div#left {
+	float: left;
+	width: 400px;
+	background-image: url(images/left-bg.gif);
+	background-position: right top;
+	background-repeat: no-repeat;
+}
+div#left div.stratos-products div.title {
+	margin-left: 30px;
+	margin-top: 5px;
+	font-size: 24px;
+	font-weight: normal;
+	line-height: 32px;
+}
+div#left div.stratos-products div.products {
+	margin-left: 30px;
+	margin-top: 25px;
+	padding-bottom: 40px;
+}
+div#left div.stratos-products div.products a {
+	display: block;
+	height: 24px;
+	margin-bottom: 7px;
+	background-image: url(images/stratos-products.gif);
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+div#left div.stratos-products div.products a {
+	background: url(images/stratos-products-new.jpg) no-repeat top left;
+}
+div#left div.stratos-products div.products a.as-new{ background-position: 0 0; width: 170px; height: 24px; } 
+div#left div.stratos-products div.products a.bam-new{ background-position: 0 -74px; width: 204px; height: 23px; } 
+div#left div.stratos-products div.products a.bps-new{ background-position: 0 -147px; width: 198px; height: 23px; } 
+div#left div.stratos-products div.products a.brs-new{ background-position: 0 -220px; width: 183px; height: 23px; } 
+div#left div.stratos-products div.products a.cep-new{ background-position: 0 -293px; width: 231px; height: 22px; } 
+div#left div.stratos-products div.products a.cg-new{ background-position: 0 -365px; width: 148px; height: 24px; } 
+div#left div.stratos-products div.products a.dss-new{ background-position: 0 -439px; width: 181px; height: 24px; } 
+div#left div.stratos-products div.products a.esb-new{ background-position: 0 -513px; width: 192px; height: 24px; }
+div#left div.stratos-products div.products a.greg-new{ background-position: 0 -587px; width: 180px; height: 23px; } 
+div#left div.stratos-products div.products a.is-new{ background-position: 0 -660px; width: 147px; height: 23px; } 
+div#left div.stratos-products div.products a.mb-new{ background-position: 0 -733px; width: 157px; height: 23px; } 
+div#left div.stratos-products div.products a.ss-new{ background-position: 0 -806px; width: 142px; height: 23px; } 
+div#left div.stratos-products div.products a.ts-new{ background-position: 0 -879px; width: 130px; height: 23px; } 
+div#left div.stratos-products div.products a:hover { opacity:0.7;filter:alpha(opacity=70) }
+div#right {
+	float: left;
+	width: 560px;
+}
+
+div#right div.register { width: 555px; margin-top: 15px; margin-right: 0px; padding-bottom: 10px; text-align: center;
+background-image: url(images/intro-bg.gif);background-position: center bottom; background-repeat: no-repeat;
+}
+div#right div.register a { display: block; height: 62px; margin-bottom: 10px; }
+div#right div.register a img { margin-bottom: 7px; }
+div#right div.register a:hover img { opacity:0.7;filter:alpha(opacity=70) }
+
+div#right div.banner{
+	width: 500px;
+	margin: auto;
+	height: 297px;
+	margin-top: 30px;
+}
+div#right div.banner div#featured {
+	width: 500px;
+	height: 297px;
+}
+div#right div.banner div#featured div.screencast {
+	width: 500px;
+	height: 297px;
+	text-align: center;
+}
+div#right div.banner div#featured div.screencast h2 {
+	font-size: 16px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-bottom: 8px;
+	padding-top: 8px;
+	line-height: 16px;
+	background-color: #000000;
+	color: #ffffff;
+	margin-left: 30px;
+	margin-right: 30px;
+}
+div#right div.banner div#featured div.whitepaper, div#right div.banner div#featured div.webinar {
+	width: 500px;
+	height: 297px;
+	text-align: center;
+	margin-top: 23px;
+}
+div#bottom { 
+	background-image: url(images/feature-middle-bg.gif);
+	background-position: center top;
+	background-repeat: no-repeat; 
+	}
+div#bottom div.feature {
+	float: left; 
+	width: 240px;
+	padding-left: 40px;
+	padding-right: 40px;
+	font-size: 20px;
+	line-height: 25px;
+	font-weight: bold;
+	text-align: center;
+	padding-bottom: 20px;
+}
+div#footer { height: 80px; background-image: url(images/bottom.gif); background-position: left top; background-repeat: no-repeat; padding-top: 25px;}
+div#footer div.powered { color: #333333; float: right; font-size: 85%; margin-right: 10px; }
+div#footer div.powered span { float: left; line-height: 23px; margin-right: 5px; }
+div.footer-links { padding-bottom: 5px; padding-left: 10px; border-bottom: solid 1px #4E84C4; margin-bottom: 10px; color: #4E84C4; }
+div#footer span.copyright { font-size: 90%; padding-left: 10px; }

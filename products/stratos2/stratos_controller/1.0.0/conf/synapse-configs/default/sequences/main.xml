@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<!-- Default main sequence shipped with the WSO2 ESB -->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="main" onError="fault">
+    <description>The main sequence for the message mediation</description>
+
+    <in>
+        <property name="REQUEST_HOST_HEADER" expression="$trp:host" scope="axis2"/>
+        <property name="SERVICE_PREFIX" expression="$axis2:SERVICE_PREFIX"/>
+        <send>
+            <!--endpoint name="sdlbEndpoint">
+                <session type="http">-->
+                    <!-- Session timout is 15mins-->
+                    <!--sessionTimeout>900000</sessionTimeout>
+                </session>
+                <serviceDynamicLoadbalance failover="true"
+                                           algorithm="org.apache.synapse.endpoints.algorithms.RoundRobin"
+                                           configuration="$system:loadbalancer.xml"/>
+            </endpoint>
+            -->
+	          <!--endpoint name="tenantAwareLBEndpoint">
+                <class name ="org.wso2.carbon.lb.endpoint.endpoint.TenantAwareLoadBalanceEndpoint">
+                     <parameter name="algorithm"> org.apache.synapse.endpoints.algorithms.RoundRobin</parameter>
+                     <parameter name="configuration">$system:loadbalancer.conf</parameter>
+                     <parameter name="failover">true</parameter>          
+                     <parameter name="sessionTimeout">900000</parameter>
+  	            </class>
+ 	          </endpoint-->
+        </send>
+        <drop/>
+    </in>
+
+    <out>
+        <!-- Handling status codes: 301, 302 Redirection -->
+        <filter source="$trp:Location" regex=".+">
+            <property name="LB_SP_Host" expression="$ctx:SERVICE_PREFIX"
+                      pattern="(^http.?://\b)(.*):(\d*)(.*)" group="2"/>
+
+            <property name="LB_Location_Protocol" expression="$trp:Location"
+                      pattern="(^http.?://\b)(.*):(\d*)(.*)" group="1"/>
+            <property name="LB_Location_Host" expression="$trp:Location"
+                      pattern="(^http.?://\b)(.*):(\d*)(.*)" group="2"/>
+            <property name="LB_Location_Path" expression="$trp:Location"
+                      pattern="(^http.?://\b)(.*):(\d*)(.*)" group="4"/>
+
+            <!--<log level="custom">
+               <property name="ameera-ocation" expression="$trp:Location"/>
+               <property name="ameera-sprefix" expression="$ctx:SERVICE_PREFIX"/>
+           </log>-->
+
+            <filter xpath="fn:lower-case($ctx:LB_SP_Host)=fn:lower-case($ctx:LB_Location_Host)">
+                <then>
+                    <switch source="fn:lower-case($ctx:LB_Location_Protocol)">
+                        <case regex="https://">
+                            <property name="Location"
+                                      expression="fn:concat($ctx:LB_Location_Protocol,$ctx:LB_REQUEST_HOST,$ctx:LB_Location_Path)"
+                                      scope="transport"/>
+                        </case>
+                        <case regex="http://">
+                            <property name="Location"
+                                      expression="fn:concat($ctx:LB_Location_Protocol,$ctx:LB_REQUEST_HOST,$ctx:LB_Location_Path)"
+                                      scope="transport"/>
+                        </case>
+                    </switch>
+                </then>
+
+                <else>
+                    <filter xpath="$ctx:LB_REQUEST_HOST=fn:lower-case($ctx:LB_Location_Host)">
+                        <switch source="fn:lower-case($ctx:LB_Location_Protocol)">
+                            <case regex="https://">
+                                <property name="Location"
+                                          expression="fn:concat($ctx:LB_Location_Protocol,$ctx:LB_REQUEST_HOST,$ctx:LB_Location_Path)"
+                                          scope="transport"/>
+                            </case>
+                            <case regex="http://">
+                                <property name="Location"
+                                          expression="fn:concat($ctx:LB_Location_Protocol,$ctx:LB_REQUEST_HOST,$ctx:LB_Location_Path)"
+                                          scope="transport"/>
+                            </case>
+                        </switch>
+                    </filter>
+                </else>
+            </filter>
+        </filter>
+
+        <!-- Send the messages where they have been sent (i.e. implicit To EPR) -->
+        <property name="messageType" value="text/html" scope="axis2"/>
+        <send/>
+        <drop/>
+    </out>
+
+</sequence>

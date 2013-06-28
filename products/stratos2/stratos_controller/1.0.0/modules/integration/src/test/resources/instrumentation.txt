@@ -1,0 +1,2 @@
+org.wso2.carbon.tenant.mgt_
+org.wso2.carbon.tenant.mgt.core_

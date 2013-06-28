@@ -1,0 +1,31 @@
+div#validation-introduction {
+    margin: 5px;
+}
+
+div#with-text {
+    margin: 5px;
+}
+
+div#with-dns {
+    margin: 5px;
+}
+p {
+    padding:5px !important;
+}
+
+p.validate-button {
+    padding: 15px 5px 15px 5px !important;
+}
+
+li.catagory {
+    padding: 5px 0px 5px 25px  !important;
+}
+
+
+
+div.conf-info {
+    background: #cccccc !important;
+    border: 1px solid #111 !important;
+    margin: 5px !important;
+    padding: 2px !important;
+}

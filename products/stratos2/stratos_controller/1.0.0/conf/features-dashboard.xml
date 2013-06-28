@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+	<service name="Cloud Services" link="https://cloud.wso2.com"
+		key="manager">
+		<story title="Billing">
+			<story-content>Billing is the process where the cloud computing
+				service subscribers are charged
+				based on the metered data. Billing
+				usually happens on a monthly basis.
+				Billing uses
+				pricing rates defined
+				against usage plans and compute the invoice against
+				the usage
+				data.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tenant-billing/past_invoice.jsp"> Billing...</link>
+				<link url="/carbon/tenant-billing/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Metering">
+			<story-content>Metering measures levels of resource utilization, such
+				as network bandwidth usage and
+				data storage volume, consumed by the
+				cloud services subscribers, aka
+				tenants.
+				Resource utilization's
+				(bandwidth and storage usage) are measured on the fly
+				and the
+				measured data is stored for summarizing and analyzing.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tenant-usage/tenant_usage.jsp">Go to Metering....</link>
+				<link url="/carbon/tenant-usage/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Account Management">
+			<story-content>Account management allows a tenant to update and
+				validate contact information,
+				update the usage plan, validate the
+				account and even de-activate the
+				account .</story-content>
+			<story-links>
+				<link url="/carbon/tracer/index.jsp">Manage account...</link>
+				<link url="/carbon/tracer/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Users and Roles">
+			<story-content>You can add users and define your own roles for a
+				tenant. The permission model is
+				role based. So a tenant admin can
+				define what actions a role can perform
+				by
+				configuring permissions for
+				that role.</story-content>
+			<story-links>
+				<link url="/carbon/account-mgt/account_mgt.jsp">Manage
+					users/roles...</link>
+				<link url="/carbon/account-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="MT-Logging">
+			<story-content>Flexible logging support with integration to
+				enterprise logging systems. This facilitate to monitor your system
+				and application logs through a log viewer.</story-content>
+			<story-links>
+				<link url="/carbon/log-view/index.jsp">Go to Log Viewer....</link>
+				<link url="/carbon/log-view/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Usage Metering and Throttling">
+			<story-content>&lt;a
+				href="http://wso2.org/library/articles/2011/09/usage-metering-throttling-cloud-computing"&gt;&lt;img
+				src="../../../../features-dashboard/dashboards/images/usage_metering_and_throttling.jpg"
+				alt=""/&gt;</story-content>
+				<story-links>
+					<link url=""></link>
+					<link url=""></link>
+				</story-links>
+		</story>
+		<story title="How WSO2 StratosLive meets Security Challenges in Cloud">
+			<story-content> &lt;a
+				href="http://wso2.org/library/articles/2011/08/wso2-stratoslive-meets-security-challenges-cloud"&gt;&lt;img
+				src="../../../../features-dashboard/dashboards/images/tenant_isolation.png"
+				alt=""/&gt;&lt;/a&gt; </story-content>
+		</story>
+	</service>
+	<service name="Enterprise Service Bus" link="https://esb.cloud.wso2.com"
+		key="esb">
+		<story title="Proxy Service">
+			<story-content> Proxy services facilitate location transparency and
+				provides the means for the
+				integration between various other
+				services, on different formats
+			</story-content>
+			<story-links>
+				<link url="/carbon/proxyservices/templates.jsp">Got to services...</link>
+				<link url="/carbon/proxyservices/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Sequence">
+			<story-content>Sequence is a collection of mediators attached to
+				perform a given mediation flow in an
+				integration.
+			</story-content>
+			<story-links>
+				<link url="/carbon/sequences/list_sequences.jsp">Go to Web Applications...</link>
+				<link url="/carbon/sequences/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Endpoint">
+			<story-content>Endpoints represent the third party services or other
+				endpoints the ESB is talking to,
+				this configuration allows you to
+				record a set of meta data about the
+				external endpoint
+				apart from it's
+				EPR
+			</story-content>
+			<story-links>
+				<link url="/carbon/endpoints/index.jsp">Go to Message Tracing...</link>
+				<link url="/carbon/endpoints/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Scheduled Tasks">
+			<story-content>Job scheduling facility in the ESB with quartz
+				scheduler, helping several tasks to be
+				initiated and scheduled by the
+				ESB.</story-content>
+			<story-links>
+				<link url="/carbon/task/index.jsp">Go to WSDL2Java Tool..</link>
+				<link url="/carbon/task/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Store &amp; Forward">
+			<story-content>Message Stores and Processors can be used to persist
+				messages to queues and then process
+				preserving SLAs.</story-content>
+			<story-links>
+				<link url="/carbon/message_processor/index.jsp">Go to Java2WSDL Tool...</link>
+				<link url="/carbon/message_processor/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Priority Execution">
+			<story-content>Ability to categorize mediation flows with a priority
+				allowing certain messages or
+				mediation paths to get a high priority
+				with compared to other messages or
+				paths.</story-content>
+			<story-links>
+				<link url="/carbon/executors/list_executors.jsp">Go to Java2WSDL Tool...</link>
+				<link url="/carbon/executors/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Application Services" link="https://appserver.cloud.wso2.com"
+		key="as">
+		<story title="Service Hosting">
+			<story-content>Different types of Web Services such as Axis2
+				Services, JAXWS Services, Jar Services
+				or Spring Services can be
+				deployed in Application Server. All
+				configurations such as
+				QoS can be
+				easily configured here.</story-content>
+			<story-links>
+				<link url="/carbon/service-mgt/index.jsp">Got to services...</link>
+				<link url="/carbon/service-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Web Applications">
+			<story-content>Web Application hosting features in AppServer
+				supports
+				deployment of Tomcat
+				compliant Webapps. Deployed Webapps can be
+				easily managed using the Webapp
+				management facilities available in
+				the management console.
+			</story-content>
+			<story-links>
+				<link url="/carbon/webapp-mgt/upload.jsp">Go to Web Applications...</link>
+				<link url="/carbon/webapp-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Message Tracing">
+			<story-content>Trace the request and responses to your service.
+				Message Tracing is a vital
+				debugging tool when you have clients from
+				heterogeneous platforms.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tracer/index.jsp">Go to Message Tracing...</link>
+				<link url="/carbon/tracer/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="WSDL2Java Tool">
+			<story-content>Use WSDL2Java tool in Web Application Server to
+				convert Web Service WSDL to a set of
+				Java objects.</story-content>
+			<story-links>
+				<link url="/carbon/wsdl2code/index.jsp">Go to WSDL2Java Tool..</link>
+				<link url="/carbon/wsdl2code/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Java2WSDL Tool">
+			<story-content>Use Java2WSDL tool in Web Application Server make it
+				easy to develop a new web service.</story-content>
+			<story-links>
+				<link url="/carbon/java2wsdl/index.jsp">Go to Java2WSDL Tool...</link>
+				<link url="/carbon/java2wsdl/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Data Services" link="https://dss.cloud.wso2.com"
+		key="dss">
+		<story title="Data Service Hosting">
+			<story-content>Data Web Services can be deployed in Data Services
+				Server. All configurations such as
+				QoS can be easily configured here.
+			</story-content>
+			<story-links>
+				<link url="/carbon/service-mgt/index.jsp">Got to services...</link>
+				<link url="/carbon/service-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Data as a Service">
+			<story-content>Create your databases on the cloud, and acess those as
+				you would do with regular
+				databases.</story-content>
+			<story-links>
+				<link url="/carbon/ds/scriptAddSource.jsp">Go to data sources...</link>
+				<link url="/carbon/ds/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Service Testing">
+			<story-content>Tryit tool can be used as a simple Web Service client
+				which can be used to try your
+				services within AppServer itself.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tryit/index.jsp">Go
+					to Service Testing...</link>
+				<link url="/carbon/tryit/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Message Tracing">
+			<story-content>Trace the request and responses to your service.
+				Message Tracing is a vital
+				debugging tool when you have clients from
+				heterogeneous platforms.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tracer/index.jsp">Go to Message
+					Tracing...</link>
+				<link url="/carbon/tracer/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="DB Explorer">
+			<story-content>Explore your databases using the explorer tool on
+				the cloud.</story-content>
+			<story-links>
+				<link url="/carbon/adminconsole/databases.jsp">Go to DB
+					Explorer Tool...</link>
+				<link url="/carbon/adminconsole/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Relational Storage Solutions on Cloud">
+			<story-content>&lt;a
+				href="http://wso2.org/library/articles/2011/09/wso2-unveils-its-relational-storage-solutions-wso2-stratoslive"&gt;&lt;img
+				src="../../../../features-dashboard/dashboards/images/configure_db.png"
+				alt=""/&gt;</story-content>
+			<story-links>
+				<link
+					url="http://wso2.org/library/articles/2011/09/wso2-unveils-its-relational-storage-solutions-wso2-stratoslive">Read
+					online...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Governance Services" link="https://governance.cloud.wso2.com"
+		key="greg">
+		<story title="Service">
+			<story-content>Service is the basic entity of your SOA platform. You
+				can manage service metadata and
+				the service lifecycle as well as
+				maintain multiple versions of a given
+				service, and much
+				more.
+			</story-content>
+			<story-links>
+				<link url="/carbon/services/services.jsp">Got to services...</link>
+				<link url="/carbon/services/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="WSDL">
+			<story-content>WSDL defines the interface of a web service. You can
+				store, validate and manage WSDLs
+				with ease, keeping track of
+				dependencies and associations such as
+				services, schema and
+				policies.
+			</story-content>
+			<story-links>
+				<link url="/carbon/wsdl/wsdl.jsp">Go to WSDL</link>
+				<link url="/carbon/wsdl/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Schema">
+			<story-content>XML Schema defines data types in a WSDL. As in the
+				case of WSDLs, you can keep
+				associations of schema which helps in the
+				impact analysis process, when
+				maintaining the
+				data models associated
+				with your SOA.</story-content>
+			<story-links>
+				<link url="/carbon/schema/schema.jsp">Go to Schema...</link>
+				<link url="/carbon/schema/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Policy">
+			<story-content>Policies help standardize SOA behaviour. You can keep
+				track of the policies bound to a
+				service. It also supports policy
+				enforcement to control how SOA behaves as
+				desired by
+				both IT and
+				business personnel.</story-content>
+			<story-links>
+				<link url="/carbon/policy/policy.jsp">Go to Policy..</link>
+				<link url="/carbon/policy/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Search">
+			<story-content>The repository can store any arbitrary type of
+				resource. You can search for resources by
+				name, author, time created
+				or updated. You also can search for resources
+				by media type.
+			</story-content>
+			<story-links>
+				<link url="/carbon/search/advancedSearch.jsp">Go to Search...</link>
+				<link url="/carbon/search/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Activities">
+			<story-content>An activity log provide an invaluable insight to what
+				operations took place on the
+				repository. You can browse activities
+				while filtering them by date range, user
+				name, or
+				activity type.
+			</story-content>
+			<story-links>
+				<link url="/carbon/activities/activity.jsp">Go to Activities...</link>
+				<link url="/carbon/activities/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Notifications">
+			<story-content>The registry generates events when changes are made to
+				a particular resource or
+				collection. You can subscribe to these
+				events via e-mail, or forward them to a
+				web
+				service via SOAP or REST.
+			</story-content>
+			<story-links>
+				<link url="/carbon/notifications/notifications.jsp">Go to Notifications...</link>
+				<link url="/carbon/notifications/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Extensions">
+			<story-content>While we address most governance and registry related
+				scenarios out-of-the-box, you also
+				can upload your own extensions
+				that is capable of extending the basic
+				functionality of
+				the product
+			</story-content>
+			<story-links>
+				<link url="/carbon/extensions/add_extensions.jsp">Go to Activities...</link>
+				<link url="/carbon/extensions/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Identity Services" link="https://governance.cloud.wso2.com"
+		key="is">
+		<story title="User Profile">
+			<story-content>Update your user profile or add multiple user
+				profiles.The value from your profile will
+				be used to populate your
+				Information card and OpenID profiles.
+			</story-content>
+			<story-links>
+				<link url="/carbon/userprofile/index.jsp">Got to User Profile...</link>
+				<link url="/carbon/userprofile/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="OpenID">
+			<story-content>This OpenID can be used with any OpenID relying party
+				which trusts your domain for
+				login.</story-content>
+			<story-links>
+				<link url="/carbon/identity-provider/index.jsp">Go to OpenID...</link>
+				<link url="/carbon/identity-provider/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Information Card">
+			<story-content>This card can be used with any identity selector that
+				supports Microsoft CardSpace
+				specifications and will allow you to
+				login to web applications that support
+				information
+				card logins.
+			</story-content>
+			<story-links>
+				<link url="/carbon/identity-provider/index.jsp">Go to Information Card...</link>
+				<link url="/carbon/identity-provider/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="SAML 2.0 Single Sign-On">
+			<story-content>Use WSO2 Identity Server for Single Sign-on
+				configuration. Service Providers can be
+				added and removed.
+			</story-content>
+			<story-links>
+				<link url="/carbon/sso-saml/manage_service_providers.jsp">Go to SAML 2.0 Single Sign-On..</link>
+				<link url="/carbon/sso-saml/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Multifactor Authentication">
+			<story-content>Use WSO2 Identity Server to Enable XMPP based
+				multi-factor authentication.</story-content>
+			<story-links>
+				<link url="/carbon/multi-factor/xmpp-config.jsp">Go to Multifactor Authentication...</link>
+				<link url="/carbon/multi-factor/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Users and Roles">
+			<story-content>WSO2 Identity Server enables you to manage users and
+				roles in your system.</story-content>
+			<story-links>
+				<link url="/carbon/userstore/index.jsp">Go to Users and Roles...</link>
+				<link url="/carbon/userstore/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Relying Parties">
+			<story-content>Manage your Relying Parties with WSO2 Identity Server.
+			</story-content>
+			<story-links>
+				<link url="/carbon/identity-trusted-relying-parties/add-trusted-rp.jsp">Go to Relying Parties...</link>
+				<link url="/carbon/identity-trusted-relying-parties/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Key Stores">
+			<story-content>Manage your Key Stores with WSO2 Identity Server
+			</story-content>
+			<story-links>
+				<link url="/carbon/keystoremgt/keystore-mgt.jsp">Go to Activities...</link>
+				<link url="/carbon/keystoremgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Business Activity Monitor" link="https://bam.cloud.wso2.com"
+		key="bam">
+		<story title="Real Time Mediation Monitoring">
+			<story-content>Monitor proxy services, endpoints and sequences and
+				their operations in real time. The
+				results gathered from the
+				real-time monitoring are presented in a clear and
+				easy-to-view
+				format.</story-content>
+			<story-links>
+				<link url="/carbon/service-mgt/index.jsp">Got to services...</link>
+				<link url="/carbon/service-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Mediation Analysis">
+			<story-content>Analyze the historical mediation trends over time with
+				the help of visualization
+				framework.</story-content>
+			<story-links>
+				<link url="/carbon/webapp-mgt/upload.jsp">Go to Web Applications...</link>
+				<link url="/carbon/webapp-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Summary Generation">
+			<story-content>Generate a summarised view of collected statistics and
+				write gadgets to display these
+				summarised data.</story-content>
+			<story-links>
+				<link url="/carbon/tracer/index.jsp">Go to Message Tracing...</link>
+				<link url="/carbon/tracer/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Service Invocation Analysis">
+			<story-content>rite gadgets to consume service statistics and present
+				to end user. Dashboard
+				support
+				Google Gadget specification.
+			</story-content>
+			<story-links>
+				<link url="/carbon/wsdl2code/index.jsp">Go to WSDL2Java Tool..</link>
+				<link url="/carbon/wsdl2code/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Dashboard">
+			<story-content>Monitor and correlate related business activities
+				across multiple server instances.
+				These activities can be used to
+				track and verify the smooth execution of
+				business.</story-content>
+			<story-links>
+				<link url="/carbon/java2wsdl/index.jsp">Go to Java2WSDL Tool...</link>
+				<link url="/carbon/java2wsdl/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Activity Correlation &amp; Monitoring">
+			<story-content>Monitor and correlate related business activities
+				across multiple server instances.
+				These activities can be used to
+				track and verify the smooth execution of
+				business.</story-content>
+			<story-links>
+				<link url="/carbon/java2wsdl/index.jsp">Go to Java2WSDL Tool...</link>
+				<link url="/carbon/java2wsdl/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Message Collection &amp; Archival">
+			<story-content>Collect messages coming into your SOA, analyze and
+				archive for future retrieval.</story-content>
+			<story-links>
+				<link url="/carbon/java2wsdl/index.jsp">Go to Java2WSDL Tool...</link>
+				<link url="/carbon/java2wsdl/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Business Process Services" link="https://bps.cloud.wso2.com"
+		key="bps">
+		<story title="WS-BPEL 2.0 &amp; BPELWS 1.1">
+			<story-content>WSO2 BPS supports both WS-BPEL 2.0 and BPEL4WS 1.1
+				standards. It also includes WSO2 BPS
+				specific extensions to enhance
+				the features provide by WS-BPEL.
+			</story-content>
+			<story-links>
+				<link url="">Got to Business Process Services...</link>
+				<link url="/carbon/admin/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Instance Data Cleanup">
+			<story-content>Allows multiple levels of instance data cleanup which
+				are accumulated during process
+				instance lifetime. XPath extensions,
+				Iteratable ForEach, Flexible Assigns,
+				XQuery 1.0 support and various
+				other extensions to BPEL language.</story-content>
+			<story-links>
+				<link url="">Go to OpenID...</link>
+				<link url="/carbon/admin/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="BPEL Extensions">
+			<story-content>Hot update BPEL processes and allows you to maintain
+				multiple versions of processes.</story-content>
+			<story-links>
+				<link url="">Go to Information Card...</link>
+				<link url="/carbon/admin/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Business Rule Server" link="https://brs.cloud.wso2.com"
+		key="brs">
+		<story title="Service Hosting Support">
+			<story-content>Service Hosting feature in Business Rules Server
+				enables deployment of Rule Services.</story-content>
+			<story-links>
+				<link url="/carbon/service-mgt/index.jsp">Got to Business Process Services...</link>
+				<link url="/carbon/service-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Rule service creation support">
+			<story-content>Support for creating rule services with drools or
+				using rule services created with other
+				IDEs.</story-content>
+			<story-links>
+				<link url="/carbon/ruleservices/rule_service_wizard_step1.jsp">Go to Rule service creation...</link>
+				<link url="/carbon/ruleservices/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Registry as a Rule Repository">
+			<story-content>Registry as a Rule Repository.</story-content>
+			<story-links>
+				<link url="/carbon/resources/resource.jsp">Go to Registry Rule Repository..</link>
+				<link url="/carbon/resources/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Service testing">
+			<story-content>Tryit tool can be used as a simple Web Service client
+				which can be used to try your
+				services within AppServer itself.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tryit/index.jsp">Go
+					to Service Testing...</link>
+				<link url="/carbon/tryit/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Cloud Gateway" link="https://cg.stratoslive.wso2.com"
+		key="cg">
+		<story title="Cloud Service">
+			<story-content>Publish a service or data residing behind a firewall
+				in a secure and controlled manner as a Cloud Service.
+			</story-content>
+			<story-links>
+				<link url="/carbon/service-mgt/index.jsp">Go to Cloud Services...</link>
+				<link url="/carbon/service-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Complex Event Processing Services" link="https://cep.cloud.wso2.com"
+		key="cep">
+		<story title="Bring CEP to SOA">
+			<story-content>Bring CEP to SOA by processing XML events and produce
+				results as XML events.</story-content>
+			<story-links>
+				<link url="/carbon/CEP/cep_queries.jsp">Go to CEP buckets list...</link>
+				<link url="/carbon/CEP/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Registry Storage">
+			<story-content>Ability to define different event streams, queries and
+				out put streams and store them in
+				the registry as a bucket.
+			</story-content>
+			<story-links>
+				<link url="/carbon/resources/resource.jsp">Go to Registry Storage...</link>
+				<link url="/carbon/messagebox/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Esper and Fusion">
+			<story-content>Support Esper and fusion back end runtimes..
+			</story-content>
+			<story-links>
+				<link url="">Go to Esper and Fusion..</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Filter data from the XML event">
+			<story-content>Ability to filter data from the XML event using xpath
+				and format the result as an XML
+				event.
+			</story-content>
+			<story-links>
+				<link url="">Go
+					to Filter data...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Support different types of brokers">
+			<story-content>Support different types of brokers WS-Event, JMS to
+				receive publish events.
+			</story-content>
+			<story-links>
+				<link url="">Go
+					to brokers...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Storing broker configurations">
+			<story-content>Define and store such different broker configurations.
+			</story-content>
+			<story-links>
+				<link url="">Go
+					to brokers...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Administrative Console support">
+			<story-content>Administrative Console to create buckets, add
+				subscriptions etc..
+			</story-content>
+			<story-links>
+				<link url="">Go
+					to Administrative Console ...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Specify CEP queries">
+			<story-content>Ability to specify CEP queries inline or pick from the
+				registry.
+			</story-content>
+			<story-links>
+				<link url="">Go
+					to CEP queries ...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Message Broker Services" link="https://mb.cloud.wso2.com"
+		key="mb">
+		<story title="Publish/Subscribe to Topics">
+			<story-content>WS-Eventing to publish/subscribe to topics using web
+				service standards.</story-content>
+			<story-links>
+				<link url="">Go to topics...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="AMQP">
+			<story-content>MS support thorough AMQP to publish/subscribe to
+				topics and Queues.</story-content>
+			<story-links>
+				<link url="">Go to AMQP...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Topic Authorization">
+			<story-content>MS support thorough AMQP to publish/subscribe to
+				topics and Queues.</story-content>
+			<story-links>
+				<link url="">Go to Topic Authorization...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Manage topics and queues permissions">
+			<story-content>Administrative console support to manage topics and
+				queues permissions.</story-content>
+			<story-links>
+				<link url="">Go to Manage topics and queues permissions...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="SQS support">
+			<story-content>SQS support to store retrieve messages using a web
+				service API.</story-content>
+			<story-links>
+				<link url="">Go to SQS ...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="User based authorization for queues">
+			<story-content>User based authorization for queues.</story-content>
+			<story-links>
+				<link url="">Go to User based authorization ...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Manage message boxes">
+			<story-content>Administrative console support to manage message boxes
+				and store/retrieve messages.</story-content>
+			<story-links>
+				<link url="">Go to message boxes...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Message box as event sink">
+			<story-content>Ability to use a message box as the event sink for a
+				subscription.</story-content>
+			<story-links>
+				<link url="">Go to event sink support...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+        <service name="Storage Server Services" link="https://ss.cloud.wso2.com" key="ss">
+		<story title="Storage Server Data">
+			<story-content>Storage Server</story-content>
+			<story-links>
+				<link url="">Go to topics...</link>
+				<link url="">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+</data>
+

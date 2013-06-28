@@ -1,0 +1,82 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.manager.throttling.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.manager.throttling.carbon.wso2.org">
+    <wsdl:documentation>MultitenancyThrottlingService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.manager.throttling.carbon.wso2.org">
+            <xs:element name="executeThrottlingRulesException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="executeThrottlingRulesException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="executeThrottlingRules">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="executeThrottlingRulesRequest">
+        <wsdl:part name="parameters" element="ns:executeThrottlingRules" />
+    </wsdl:message>
+    <wsdl:message name="executeThrottlingRulesException">
+        <wsdl:part name="parameters" element="ns:executeThrottlingRulesException" />
+    </wsdl:message>
+    <wsdl:portType name="MultitenancyThrottlingServicePortType">
+        <wsdl:operation name="executeThrottlingRules">
+            <wsdl:input message="ns:executeThrottlingRulesRequest" wsaw:Action="urn:executeThrottlingRules" />
+            <wsdl:fault message="ns:executeThrottlingRulesException" name="executeThrottlingRulesException" wsaw:Action="urn:executeThrottlingRulesexecuteThrottlingRulesException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="MultitenancyThrottlingServiceSoap11Binding" type="ns:MultitenancyThrottlingServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="executeThrottlingRules">
+            <soap:operation soapAction="urn:executeThrottlingRules" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="executeThrottlingRulesException">
+                <soap:fault use="literal" name="executeThrottlingRulesException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="MultitenancyThrottlingServiceSoap12Binding" type="ns:MultitenancyThrottlingServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="executeThrottlingRules">
+            <soap12:operation soapAction="urn:executeThrottlingRules" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="executeThrottlingRulesException">
+                <soap12:fault use="literal" name="executeThrottlingRulesException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="MultitenancyThrottlingServiceHttpBinding" type="ns:MultitenancyThrottlingServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="executeThrottlingRules">
+            <http:operation location="executeThrottlingRules" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="MultitenancyThrottlingService">
+        <wsdl:port name="MultitenancyThrottlingServiceHttpsSoap11Endpoint" binding="ns:MultitenancyThrottlingServiceSoap11Binding">
+            <soap:address location="https://192.168.1.100:9443/services/MultitenancyThrottlingService.MultitenancyThrottlingServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="MultitenancyThrottlingServiceHttpsSoap12Endpoint" binding="ns:MultitenancyThrottlingServiceSoap12Binding">
+            <soap12:address location="https://192.168.1.100:9443/services/MultitenancyThrottlingService.MultitenancyThrottlingServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="MultitenancyThrottlingServiceHttpsEndpoint" binding="ns:MultitenancyThrottlingServiceHttpBinding">
+            <http:address location="https://192.168.1.100:9443/services/MultitenancyThrottlingService.MultitenancyThrottlingServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

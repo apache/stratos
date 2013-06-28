@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<assembly>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/wso2carbon-core-${carbon.version}</directory>
+            <outputDirectory>wso2s2agent-${pom.version}</outputDirectory>
+            <excludes>
+                <exclude>**/*.sh</exclude>
+                <exclude>**/native/*</exclude>
+                <exclude>**/services/sample01.aar</exclude>
+                <exclude>**/repository/services/version/**</exclude>
+                <exclude>**/version.txt</exclude>
+                <exclude>**/wso2server.bat</exclude>
+                <exclude>**/README.txt</exclude>
+                <exclude>**/LICENSE.txt</exclude>
+                <exclude>**/INSTALL.txt</exclude>
+                <exclude>**/release-notes.html</exclude>
+                <exclude>**/carbon.xml</exclude>
+                <exclude>**/wsdl2java.*</exclude>
+                <exclude>**/java2wsdl.*</exclude>
+                <exclude>**/java2wsdl.*</exclude>
+                <exclude>**/tcpmon.*</exclude>
+                <exclude>**/build.xml</exclude>
+                <exclude>**/repository/components/plugins/*.ui*</exclude>
+		<exclude>**/log4j.properties</exclude>
+		<!--exclude>**/samples/*</exclude-->
+            </excludes>
+        </fileSet>
+
+	<!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
+        <fileSet>
+           <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.1.0-0002/</directory>
+           <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+           <includes>
+              <include>**/patch0002/axis2_1.6.1.wso2v9.jar</include>
+           </includes>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <!-- use the new tool to create a bundles -->
+        <dependencySet>
+            <outputDirectory>wso2s2agent-${pom.version}/lib/core/WEB-INF/lib</outputDirectory>
+            <includes>
+                <include>org.wso2.carbon:org.wso2.carbon.mediator.bridge:jar</include>
+            </includes>
+        </dependencySet>
+        <!--dependencySet>
+            <outputDirectory>wso2s2agent-${pom.version}/samples/axis2Client/client_repo/modules
+            </outputDirectory>
+            <includes>
+                <include>org.apache.axis2:addressing:mar</include>
+                <include>org.apache.rampart:rampart:mar</include>
+                <include>org.apache.sandesha2:sandesha2:mar</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
+            </outputFileNameMapping>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>wso2s2agent-${pom.version}/samples/axis2Server/repository/modules
+            </outputDirectory>
+            <includes>
+                <include>org.apache.axis2:addressing:mar</include>
+                <include>org.apache.rampart:rampart:mar</include>
+                <include>org.apache.sandesha2:sandesha2:mar</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
+            </outputFileNameMapping>
+        </dependencySet-->
+        <dependencySet>
+            <outputDirectory>wso2s2agent-${pom.version}/repository/axis2/client/lib</outputDirectory>
+            <includes>
+                <include>bouncycastle:bcprov-jdk15:jar</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
+            </outputFileNameMapping>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>wso2s2agent-${pom.version}/repository/deployment/client/modules
+            </outputDirectory>
+            <includes>
+                <include>org.apache.rampart:rampart:mar</include>
+            </includes>
+        </dependencySet>
+        <!-- MB Client libs -->
+        <dependencySet>
+            <outputDirectory>wso2s2agent-${pom.version}/repository/components/dropins</outputDirectory>
+            <includes>
+                <include>org.wso2.andes.wso2:andes-client:jar</include>
+                <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
+                <!--include>org.wso2.carbon:org.wso2.carbon.event.client.stub:jar</include>
+                <include>org.wso2.carbon:org.wso2.carbon.event.client:jar</include-->
+            </includes>
+        </dependencySet>
+    </dependencySets>
+
+    <files>
+        <file>
+            <source>src/main/bin/wso2server.sh</source>
+            <outputDirectory>wso2s2agent-${pom.version}/bin</outputDirectory>
+            <destName>wso2server.sh</destName>
+            <fileMode>755</fileMode>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/bin/wso2server.bat</source>
+            <outputDirectory>wso2s2agent-${pom.version}/bin</outputDirectory>
+            <destName>wso2server.bat</destName>
+            <fileMode>755</fileMode>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/conf/log4j.properties</source>
+            <outputDirectory>wso2s2agent-${pom.version}/repository/conf</outputDirectory>
+            <destName>log4j.properties</destName>
+            <filtered>true</filtered>
+        </file>
+
+                                                                
+        <file>
+            <source>../../LICENSE.txt</source>
+            <outputDirectory>wso2s2agent-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>../../README.txt</source>
+            <outputDirectory>wso2s2agent-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>../../INSTALL.txt</source>
+            <outputDirectory>wso2s2agent-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>../../docs/xdoc/release-notes.xml</source>
+            <outputDirectory>wso2s2agent-${pom.version}</outputDirectory>
+            <destName>release-notes.html</destName>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>target/wso2carbon-core-${carbon.version}/bin/version.txt</source>
+            <outputDirectory>wso2s2agent-${pom.version}/bin/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>
+                target/wso2carbon-core-${carbon.version}/repository/conf/carbon.xml
+            </source>
+            <outputDirectory>wso2s2agent-${pom.version}/repository/conf/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+	<file>
+            <source>../p2-profile/target/wso2carbon-core-${carbon.version}/repository/conf/agent.properties</source>
+            <outputDirectory>wso2s2agent-${pom.version}/repository/conf</outputDirectory>
+        </file>
+    </files>
+</assembly>

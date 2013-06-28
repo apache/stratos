@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="policies">
+		<xs:annotation>
+			<xs:documentation>Use below section to specify auto-scaling policies
+				for cartridges.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="policy" maxOccurs="unbounded"
+					minOccurs="1">
+					<xs:annotation>
+						<xs:documentation>You can have 1..n policy elements.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element type="xs:string" name="description" />
+							<xs:element type="xs:integer" name="min_app_instances" />
+							<xs:element type="xs:integer" name="max_app_instances" />
+							<xs:element type="xs:integer" name="max_requests_per_second" />
+							<xs:element type="xs:decimal" name="alarming_upper_rate" />
+							<xs:element type="xs:decimal" name="alarming_lower_rate" />
+							<xs:element type="xs:decimal" name="scale_down_factor" />
+							<xs:element type="xs:integer" name="rounds_to_average" />
+						</xs:sequence>
+						<xs:attribute type="xs:string" name="name" use="required" />
+						<xs:attribute type="xs:boolean" name="isDefault" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

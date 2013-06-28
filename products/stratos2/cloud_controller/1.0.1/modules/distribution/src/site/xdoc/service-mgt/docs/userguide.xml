@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"></meta>
+  <title>Service List - User Guide</title>
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<body>
+<h1>Deployed Services</h1>
+<a href="#Services">Services</a>
+<a href="#L2875">Service Groups</a>
+<a href="#Policies">Policies</a>
+<a href="#Parameters">Parameters</a>
+<a href="#WSDL">WSDL files</a>
+<a href="#It">Try It</a>
+
+The <em><strong>Service List</strong></em> page allows you to 
+manage different kinds of services and service groups. If your service is
+successful, it will appear on this page. If not, it will be indicated by
+the Faulty Service Groups link (which appears in red.)
+
+<p><img alt="" src="images/deployedservices.JPG" height="339"
+width="954"/></p>
+<p>Figure 1: Deployed Services</p>
+
+<h2><a name="Services" id="Services">Services</a></h2>
+
+<p>The WSO2 Carbon provides many tools to manage the services that have been
+deployed successfully with WSO2Server. When you deploy a single service in a
+service archive, the archive file name will always be used as the service
+file name, unless you have a name attributed to the service file. If the name
+of the service archive file is Test.aar, then the name of the service will be
+Test.</p>
+
+<p></p>
+
+The Service Details page provides detailed information about a particular service.
+
+<p><img alt="" src="images/service.JPG" height="552" width="959"/></p>
+
+<p>Figure 2: Service Dashboard</p>
+
+<h3>Service Details</h3>
+
+<p>The Service Details panel provides the details of the service.</p>
+<ol>
+  <li>Service Name</li>
+  <li>Service Description</li>
+  <li>Service Group Name</li>
+  <li>Deployment Scope</li>
+  <li>Service Type</li>
+</ol>
+
+<p><img alt="" src="images/service%20details.JPG" height="191" width="413"/></p>
+
+<p>Figure 3: Service Details</p>
+
+<h3>Service Statistics</h3>
+
+<p>The Statistics panel provides statistics of the service. </p>
+<ol>
+  <li>Request Count</li>
+  <li>Response Count</li>
+  <li>Fault Count</li>
+  <li>Max,Min,Average Response Times</li>
+</ol>
+
+<p><img alt="" src="images/statistics.JPG" height="215" width="525"/></p>
+<p>Figure 4: Service Statistics</p>
+
+<h3>Response Time</h3>
+
+<p>The WSO2 Carbon provides a graphical view of the system response time. </p>
+
+<p><img alt="" src="images/response%20time%20graph.JPG" height="339" width="524"/></p>
+
+<p>Figure 5: Response Time vs Time</p>
+
+<h3>Endpoints</h3>
+
+<p>The WSO2 server is set to two endpoints by default.</p>
+<ol>
+  <li>https://10.100.1.147:9443/services/HelloService/ </li>
+  <li>http://10.100.1.147:9763/services/HelloService/ </li>
+</ol>
+
+<p></p>
+
+<h3>Quality of Service Configuration</h3>
+
+<p>The WSO2 Carbon provides a number of tools to manage the service quality.
+You can activate the tools individually as required.The tools incorporated
+into Carbon are: </p>
+<ol>
+  <li><a
+    href="../../securityconfig/docs/userguide.html">Security</a>
+  </li>
+  <li><a href="../../rm/docs/userguide.html">Reliable
+    Messaging</a><a></a></li>
+  <li><a
+    href="../../caching/docs/userguide.html">Response
+    Caching</a><a></a></li>
+  <li><a
+    href="../../throttling/docs/userguide.html">Access
+    Throttling</a>
+  </li>
+  <li><a
+    href="../../policyeditor/docs/userguide.html">Policies</a><a></a></li>
+  <li><a
+    href="../../transport-mgt/docs/userguide.html">Transports</a><a></a></li>
+  <li><a
+    href="../../modulemgt/docs/userguide.html">Modules</a><a></a></li>
+  <li><a
+    href="../../operation/docs/userguide.html">Operations</a><a></a></li>
+  <li>Parameters
+  </li>
+  <li>MTOM
+    SOAP Message Transmission Optimization Mechanism (MTOM) is a widely used
+    mechanism for sending attachments with SOAP. By default, MTOM is set to
+    optional. You can set it to True or False. </li>
+</ol>
+
+<p><img alt="" src="images/QoS.JPG" height="221" width="411"/></p>
+
+<p>Figure 6: Quality of Service Configuration</p>
+
+<p><strong>Note</strong>: Help files for each tool are available from their
+respective pages.</p>
+
+<h3>Client Operation</h3>
+
+<p>WSO2 Carbon provides two client operations. They are, Try this service and
+Generate the Client.</p>
+
+<h4>Try this service</h4>
+
+<p><img alt="" src="images/client%20operations.JPG" height="118" width="522"/></p>
+
+<p>Figure 7: Client Operations</p>
+
+<p></p>
+
+<p>You can check whether your service provides the desired output using the TryIt option.
+    When you click <strong>Try this service</strong>, you will be directed to
+the page where the operations available for your service will be displayed.
+When you give the parameters for the operation, a button corresponding to
+your service appears. You can find further details <a
+href="../../tryit/docs/userguide.html">here</a>. </p>
+
+<p><img alt="" src="images/try%20the%20service.JPG" height="242" width="570"/></p>
+
+<p>Figure 8: Check the Service</p>
+
+<h4>Generate the client for your service</h4>
+
+<p>You can easily generate the client for your service using the WSO2 Carbon.
+The WSDL2 code options are available on the <em><strong>WSDL2</strong></em>
+page. </p>
+
+<p>You will see the links to the WSDL 1.1 and the WSDL 2.0 files in the
+browser.</p>
+
+<h2><a name="Policies" id="Policies">Policies</a></h2>
+
+<p>WS-Policy Attachment specification defines a set of policy subjects that
+can be used when we want to attach or apply security policies. For example,
+we can attach security policies either at service-level, operation-level or
+even at message-level.</p>
+
+<p>WSO2 Carbon has the power of Axis2 to apply WS-Policy for your services at
+different levels such as service, service operation, service operation
+message, binding, binding operation, binding operation message, etc..</p>
+
+<h3>Defining Policies at Bindings</h3>
+
+<p>The WSO2 Carbon has the ability to apply policies at the binding hierarchy.
+You can apply policies at three different policy subjects in the binding
+hierarchy. They are;</p>
+<ol>
+  <li>Binding level</li>
+  <li>Binding operation level</li>
+  <li>Binding message level</li>
+</ol>
+
+<p>If you want to add a policy to SOAP 1.1 and SOAP 1.2 bindings at Binding
+level, you can define it in the services.xml by adding the following
+code. </p>
+
+<p><strong>&lt;wsp:PolicyAttachment
+xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"&gt;</strong></p>
+
+<p><strong>&lt;wsp:AppliesTo&gt;</strong></p>
+
+<p><strong>&lt;policy-subject identifier="binding:soap11" /&gt;</strong></p>
+
+<p><strong>&lt;policy-subject identifier="binding:soap12" /&gt;</strong></p>
+
+<p><strong>&lt;/wsp:AppliesTo&gt;</strong></p>
+
+<p><strong>&lt;wsp:Policy wsu:Id="binding_level_policy"
+xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"&gt;</strong></p>
+
+<p><strong>&lt;/wsp:Policy&gt;</strong></p>
+
+<p><strong>&lt;/wsp:PolicyAttachment&gt;</strong></p>
+
+<p>For the Binding Operation level, the &lt;wsp:AppliesTo&gt; element is used
+to define the scope of the policy.</p>
+
+<p>The XML snippet is as follws.</p>
+
+<p><strong>&lt;wsp:PolicyAttachment
+xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"&gt;</strong></p>
+
+<p><strong>&lt;wsp:AppliesTo&gt;</strong></p>
+
+<p><strong>&lt;policy-subject identifier="binding:soap11/operation:Echo"
+/&gt;</strong></p>
+
+<p><strong>&lt;policy-subject identifier="binding:soap12/operation:Echo"
+/&gt;</strong></p>
+
+<p><strong>&lt;/wsp:AppliesTo&gt;</strong></p>
+
+<p><strong>&lt;wsp:Policy wsu:Id="binding_level_policy"</strong></p>
+
+<p><strong>xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"&gt;</strong></p>
+
+<p><strong>&lt;/wsp:Policy&gt;</strong></p>
+
+<p><strong>&lt;/wsp:PolicyAttachment&gt;</strong></p>
+
+<p>For the Binding Message level for the out message, the configuration
+is similar. The identifier attribute of the &lt;policy-subject/&gt; element
+in &lt;wsp:AppliesTo&gt; changes to "binding:soap11/operation:echo/out". </p>
+
+<p>The XML snippet is as follws.</p>
+
+<p><strong>&lt;wsp:PolicyAttachment
+xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"&gt;&lt;wsp:AppliesTo&gt;</strong></p>
+
+<p></p>
+
+<p><strong>&lt;policy-subject
+identifier="binding:soap11/operation:secureEcho/in" /&gt;</strong></p>
+
+<p><strong>&lt;policy-subject
+identifier="binding:soap12/operation:secureEcho/in" /&gt;</strong></p>
+
+<p><strong>&lt;/wsp:AppliesTo&gt;</strong></p>
+
+<p><strong>&lt;wsp:Policy wsu:Id="binding_level_policy"</strong></p>
+
+<p><strong>xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"&gt;</strong></p>
+
+<p><strong>&lt;/wsp:Policy&gt;</strong></p>
+
+<p><strong>&lt;/wsp:PolicyAttachment&gt;</strong></p>
+
+<p><strong>Note</strong>: Further details can be found at,</p>
+<ul>
+  <li><a href="https://wso2.org/library/3786">https://wso2.org/library/3786</a></li>
+  <li><a href="https://wso2.org/library/23">https://wso2.org/library/23</a></li>
+  <li><a href="https://wso2.org/library/3132">https://wso2.org/library/3132</a></li>
+  <li><a href="http://msdn.microsoft.com/en-us/library/ms996497.aspx">http://msdn.microsoft.com/en-us/library/ms996497.aspx</a></li>
+</ul>
+
+
+<h2><a name="L2875" id="L2875">Service Groups</a></h2>
+
+<p>A service group is a convenient way of deploying multiple services in one
+service archive file. There is a logical relationship between the services at
+runtime. The only difference in the services.xml for a service group and a
+single service is its root element. For a service group, the root element is
+serviceGroup, and we have multiple service elements inside the serviceGroup
+element. </p>
+
+<p>For example:</p>
+
+<p><strong>&lt;serviceGroup&gt;</strong></p>
+
+<p><strong>&lt;service name=Test1&gt;</strong></p>
+
+<p><strong>-----------------------------</strong></p>
+
+<p><strong>&lt;service&gt;</strong></p>
+
+<p><strong>&lt;service name=Test2&gt;</strong></p>
+
+<p><strong>-------------------------------</strong></p>
+
+<p><strong>&lt;/service&gt;</strong></p>
+
+<p><strong>&lt;/serviceGroup&gt;</strong></p>
+
+<p></p>
+
+<p>The WSO2 Carbon provides the following functions to manage the service
+groups.</p>
+<ol>
+  <li>Managing the parameters of the service group</li>
+  <li>Managing the module engagements</li>
+  <li>Creating the archive file </li>
+</ol>
+
+<p><img alt="" src="images/Servicegroup%20Dashboard.JPG" height="319" width="951"/></p>
+
+<p>Figure 9: Service group dashboard</p>
+
+<h3>Manage Service Group Parameters</h3>
+
+<p>We can define parameters inside the services.xml as an immediate child
+element of the service element. These parameters can be accessed using the
+message context (at the runtime) or AxisService or AxisOperation. A parameter
+has one mandatory attribute and one optional attribute. The mandatory
+attribute is the name of the parameter while the optional attribute is the
+locked attribute. The idea of a locked attribute is to express whether we
+allow the parameter value to be overridden by a child node in the hierarchy.
+</p>
+
+<p>For example, if we add a parameter in the axis2.xml file setting the
+locked attribute to True, then if a service tries to add another parameter
+with the same name, it will give an exception .</p>
+
+<p>The WSO2 Carbon provides an easy method to generate the Service Group
+parameters.</p>
+
+<p><img alt="" src="images/service%20group%20parameters.JPG" height="239" width="390"/></p>
+
+<p>Figure 10: Adding service group parameters</p>
+
+<p></p>
+
+<h3>Manage Module Engagements</h3>
+
+<p>There may be some instances where we cannot run our service without
+engaging the WS-Security module into the service. Engaging a module is just a
+matter of adding a module tag into the services.xml. If the module is
+available then the engaging will take place, else it will be a faulty
+service.</p>
+
+<p>The WSO2 Carbon provides the following modules which you can engage into
+your service.</p>
+<ol>
+  <li>WSO2xfer-2.2</li>
+  <li>Rampart-1.00</li>
+  <li>Rahas-1.00</li>
+  <li>Savan-1.00</li>
+  <li>Sandesha2-1.00</li>
+  <li>WSO2mex-2.2</li>
+  <li>Addressing-1.41</li>
+</ol>
+
+<p><img alt="" src="images/Engaging%20module.JPG" height="186" width="728"/></p>
+
+<p>Figure 11: Engaging a module</p>
+
+<p>You can see further details <a
+href="../../modulemgt/docs/userguide.html">here.</a></p>
+
+<h3>Create Service Archive </h3>
+
+<p>When you click <strong>Create Service Archive</strong> on the
+<em><strong>Service Group Dashboard </strong></em>page for your service, it
+will create the service archive file. You will be prompted to save the file
+somewhere else in your machine.</p>
+
+<p></p>
+
+
+
+<p>You can find further details <a
+href="../../statistics/docs/userguide.html">here</a>.</p>
+
+<p></p>
+
+
+<h2><a name="Parameters" id="Parameters">Parameters</a></h2>
+
+<p>The <em><strong>Service Parameters</strong></em> page is used to add
+service parameters to your service.xml. Click <strong>Add New</strong> and
+enter the parameter name. In the TODO section of the parameter that was
+added, enter the value for your parameter.Click <strong>Update</strong> to
+add your newly created parameter into your service.xml file.</p>
+
+<p><img alt="" src="images/service%20parameters.JPG" height="279" width="1013"/></p>
+
+<p>Figure 12: Service Parameters</p>
+
+<h2><a name="WSDL" id="WSDL">WSDL Files</a></h2>
+
+<p>You will be able to get the WSDL 1.1 and WSDL 2.0 files from the
+<strong>Deployed Services</strong> panel. When you click the particular WSDL
+link, the WSDL file of your service in the browser.</p>
+
+<p></p>
+
+</body>
+</html>

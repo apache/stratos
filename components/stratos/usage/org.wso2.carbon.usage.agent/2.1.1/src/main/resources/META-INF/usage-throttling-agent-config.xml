@@ -1,0 +1,15 @@
+<UsageAndThrottlingAgentConfiguration xmlns="http://wso2.com/carbon/multitenancy/usage-throttling-agent/config">
+    <UsageAgent>
+        <UsageDataPersistenceTask>
+            <StartupDelayInMilliSeconds>60000</StartupDelayInMilliSeconds>
+            <NumberOfRecordsPerExecution>100</NumberOfRecordsPerExecution>
+            <ExecutionIntervalInMilliSeconds>100</ExecutionIntervalInMilliSeconds>
+        </UsageDataPersistenceTask>
+    </UsageAgent>
+    <ThrottlingAgent>
+        <ThrottlingInfoCacheUpdaterTask>
+            <StartupDelayInSeconds></StartupDelayInSeconds>
+            <ExecutionIntervalInSeconds></ExecutionIntervalInSeconds>
+        </ThrottlingInfoCacheUpdaterTask>
+    </ThrottlingAgent>
+</UsageAndThrottlingAgentConfiguration>

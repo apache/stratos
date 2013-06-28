@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+~ Copyright (c) 2009, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+~
+~ WSO2 Inc. licenses this file to you under the Apache License,
+~ Version 2.0 (the "License"); you may not use this file except
+~ in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing,
+~ software distributed under the License is distributed on an
+~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~ KIND, either express or implied. See the License for the
+~ specific language governing permissions and limitations
+~ under the License.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
+        <title>WSO2 MB Samples - Web Service Client Sample</title>
+        <link href="../css/mb-docs.css" rel="stylesheet"/>
+        <link href="../styles/dist-docs.css" rel="stylesheet" type="text/css"
+              media="all"/>
+    </head>
+    <body>
+        <p>[<a href="../docs_index.html">Documentation Index</a>]  </p>
+        <h1>Web Service Client Sample</h1>
+        <p> <a href="http://www.w3.org/Submission/WS-Eventing/">Web Service Eventing Specification </a>  defines how Web
+            Services Eventing supports the simplest levels of Web
+            services interfaces for notification producers and consumers for a distributed event management system. It
+            is a baseline set of operations that allow Web services to provide asynchronous notifications to interested
+            parties. WS-Eventing defines the simplest level of Web services interfaces for notification producers and
+            notification consumers including standard message exchanges to be implemented by service providers that wish
+            to act in these roles, along with operational requirements expected of them. It has a set of functions
+            supporting publish/subscribe required by robust, scalable enterprise applications including message brokering
+            and topic based subscription management.</p>
+        <p>WSO2 MB 2.0.1 supports WS-eventing. This sample shows you how to register a Web Service as an event receiver
+            and subscribe it to the message brokering server, together with how to publish messages to that subscription
+            you have made.</p>
+        <h2>Defining Web Service</h2>
+        <pre xml:space="preserve">
+
+            /*
+            *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+            *
+            *  WSO2 Inc. licenses this file to you under the Apache License,
+            *  Version 2.0 (the "License"); you may not use this file except
+            *  in compliance with the License.
+            *  You may obtain a copy of the License at
+            *
+            *    http://www.apache.org/licenses/LICENSE-2.0
+            *
+            * Unless required by applicable law or agreed to in writing,
+            * software distributed under the License is distributed on an
+            * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+            * KIND, either express or implied.  See the License for the
+            * specific language governing permissions and limitations
+            * under the License.
+            */
+
+
+            public class EventSinkService {
+                public void receive(String message){
+                    System.out.println("Got  the message ==> " + message);
+                }
+            }
+        </pre>
+        <h2>Host The Service And Start A Broker Client With Service URL</h2>
+        <p>Then this service has to be hosted in a server, and a broker client should be defined with that service url.</p>
+        <pre xml:space="preserve">
+
+            private AxisServer axisServer;
+            private BrokerClient brokerClient;
+            public void start() {
+                try {
+                    System.setProperty("javax.net.ssl.trustStore", "../../repository/resources/security/wso2carbon.jks");
+                    System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+                    this.axisServer = new AxisServer();
+                    this.axisServer.deployService(EventSinkService.class.getName());
+                    this.brokerClient = new BrokerClient("https://localhost:9443/services/EventBrokerService", "admin", "admin");
+                    // give time to start the simple http server
+                    try {
+                    Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                    }
+                } catch (AxisFault axisFault) {
+                    System.out.println("Can not start the server");
+                } catch (AuthenticationExceptionException e) {
+                    e.printStackTrace();
+                }
+            }
+        </pre>
+        <h2>Subscribe The Service To Receive Events</h2>
+        <p>Now we have to subscribe the above service to the broker to receive events. For that we use a "topic". Broker
+            client implementation allows you to subscribe a service to a topic in Message Broker. Here a topic named
+            "foo/bar" is used.</p>
+        <pre xml:space="preserve">
+
+            public String subscribe() {
+                // set the properties for ssl
+                try {
+                    return this.brokerClient.subscribe("foo/bar" , "http://localhost:6060/axis2/services/EventSinkService/receive");
+                } catch (BrokerClientException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        </pre>
+        <h2>Publish Messages </h2>
+        <p>When messages or events are published to the topic in message broker, it will be received by the web service.</p>
+        <pre xml:space="preserve">
+
+            public void publish(){
+                try {
+                    this.brokerClient.publish("foo/bar", getOMElementToSend());
+                } catch (AxisFault axisFault) {
+                    axisFault.printStackTrace();
+                }
+            }
+        </pre>
+        <p>As the service only doing flusing the message to the console, you should see the message getting printed in the console.</p>
+        <p>The full sample code will be like following.</p>
+        <pre xml:space="preserve">
+
+/*
+*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.engine.AxisServer;
+import org.wso2.carbon.event.client.broker.BrokerClient;
+import org.wso2.carbon.event.client.broker.BrokerClientException;
+import org.wso2.carbon.event.client.stub.generated.authentication.AuthenticationExceptionException;
+import java.rmi.RemoteException;
+            public class PubSubClient {
+                private AxisServer axisServer;
+                private BrokerClient brokerClient;
+                public void start() {
+                    try {
+                        System.setProperty("javax.net.ssl.trustStore", "../../repository/resources/security/wso2carbon.jks");
+                        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+                        this.axisServer = new AxisServer();
+                        this.axisServer.deployService(EventSinkService.class.getName());
+                        this.brokerClient = new BrokerClient("https://localhost:9443/services/EventBrokerService", "admin", "admin");
+                        // give time to start the simple http server
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                        }
+                    } catch (AxisFault axisFault) {
+                        System.out.println("Can not start the server");
+                    } catch (AuthenticationExceptionException e) {
+                        e.printStackTrace();
+                    }
+                }
+                public String subscribe() {
+                    // set the properties for ssl
+                    try {
+                        return this.brokerClient.subscribe("foo/bar" , "http://localhost:6060/axis2/services/EventSinkService/receive");
+                    } catch (BrokerClientException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+                public void publish(){
+                    try {
+                        this.brokerClient.publish("foo/bar", getOMElementToSend());
+                    } catch (AxisFault axisFault) {
+                        axisFault.printStackTrace();
+                    }
+                }
+                public void unsubscribe(String subscriptionID){
+                    try {
+                        this.brokerClient.unsubscribe(subscriptionID);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+                public void stop(){
+                    try {
+                        this.axisServer.stop();
+                    } catch (AxisFault axisFault) {
+                        axisFault.printStackTrace();
+                    }
+                }
+                public static void main(String[] args) {
+                    PubSubClient pubSubClient = new PubSubClient();
+                    pubSubClient.start();
+                    String subscriptionId = pubSubClient.subscribe();
+                    pubSubClient.publish();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {}
+                    pubSubClient.unsubscribe(subscriptionId);
+                    pubSubClient.stop();
+                }
+                private OMElement getOMElementToSend() {
+                    OMFactory omFactory = OMAbstractFactory.getOMFactory();
+                    OMNamespace omNamespace = omFactory.createOMNamespace("http://ws.sample.org", "ns1");
+                    OMElement receiveElement = omFactory.createOMElement("receive", omNamespace);
+                    OMElement messageElement = omFactory.createOMElement("message", omNamespace);
+                    messageElement.setText("Test publish message");
+                    receiveElement.addChild(messageElement);
+                    return receiveElement;
+                }
+}
+        </pre>
+        <p>Note: As you might have already comprehended WSO2 MB should be running when running the sample.</p>
+    </body>
+</html>

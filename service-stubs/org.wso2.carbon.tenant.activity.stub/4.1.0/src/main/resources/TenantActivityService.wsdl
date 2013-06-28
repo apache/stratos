@@ -1,0 +1,259 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.activity.tenant.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2322="http://beans.activity.tenant.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.activity.tenant.carbon.wso2.org">
+    <wsdl:documentation>TenantActivityService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.activity.tenant.carbon.wso2.org/xsd">
+            <xs:complexType name="PaginatedTenantDataBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="numberOfPages" type="xs:int" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tenantInfoBeans" nillable="true" type="ax2322:TenantDataBean" />
+                </xs:sequence>
+
+            </xs:complexType>
+            <xs:complexType name="TenantDataBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="active" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="adminName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="email" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="id" type="xs:int" />
+                </xs:sequence>
+
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2323="http://beans.activity.tenant.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.activity.tenant.carbon.wso2.org">
+            <xs:import namespace="http://beans.activity.tenant.carbon.wso2.org/xsd" />
+            <xs:element name="TenantActivityServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="TenantActivityServiceException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="retrievePaginatedActiveTenants">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="pageNumber" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrievePaginatedActiveTenantsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2322:PaginatedTenantDataBean" />
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isActiveTenantOnService">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="isActiveTenantOnServiceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getActiveTenantCount">
+
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getActiveTenantCountResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="isActiveTenantOnServiceRequest">
+        <wsdl:part name="parameters" element="ns:isActiveTenantOnService" />
+    </wsdl:message>
+    <wsdl:message name="isActiveTenantOnServiceResponse">
+        <wsdl:part name="parameters" element="ns:isActiveTenantOnServiceResponse" />
+
+    </wsdl:message>
+    <wsdl:message name="TenantActivityServiceException">
+        <wsdl:part name="parameters" element="ns:TenantActivityServiceException" />
+    </wsdl:message>
+    <wsdl:message name="retrievePaginatedActiveTenantsRequest">
+        <wsdl:part name="parameters" element="ns:retrievePaginatedActiveTenants" />
+    </wsdl:message>
+    <wsdl:message name="retrievePaginatedActiveTenantsResponse">
+        <wsdl:part name="parameters" element="ns:retrievePaginatedActiveTenantsResponse" />
+
+    </wsdl:message>
+    <wsdl:message name="getActiveTenantCountRequest">
+        <wsdl:part name="parameters" element="ns:getActiveTenantCount" />
+    </wsdl:message>
+    <wsdl:message name="getActiveTenantCountResponse">
+        <wsdl:part name="parameters" element="ns:getActiveTenantCountResponse" />
+    </wsdl:message>
+    <wsdl:portType name="TenantActivityServicePortType">
+        <wsdl:operation name="isActiveTenantOnService">
+
+            <wsdl:input message="ns:isActiveTenantOnServiceRequest" wsaw:Action="urn:isActiveTenantOnService" />
+            <wsdl:output message="ns:isActiveTenantOnServiceResponse" wsaw:Action="urn:isActiveTenantOnServiceResponse" />
+            <wsdl:fault message="ns:TenantActivityServiceException" name="TenantActivityServiceException" wsaw:Action="urn:isActiveTenantOnServiceTenantActivityServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedActiveTenants">
+            <wsdl:input message="ns:retrievePaginatedActiveTenantsRequest" wsaw:Action="urn:retrievePaginatedActiveTenants" />
+            <wsdl:output message="ns:retrievePaginatedActiveTenantsResponse" wsaw:Action="urn:retrievePaginatedActiveTenantsResponse" />
+            <wsdl:fault message="ns:TenantActivityServiceException" name="TenantActivityServiceException" wsaw:Action="urn:retrievePaginatedActiveTenantsTenantActivityServiceException" />
+        </wsdl:operation>
+
+        <wsdl:operation name="getActiveTenantCount">
+            <wsdl:input message="ns:getActiveTenantCountRequest" wsaw:Action="urn:getActiveTenantCount" />
+            <wsdl:output message="ns:getActiveTenantCountResponse" wsaw:Action="urn:getActiveTenantCountResponse" />
+            <wsdl:fault message="ns:TenantActivityServiceException" name="TenantActivityServiceException" wsaw:Action="urn:getActiveTenantCountTenantActivityServiceException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="TenantActivityServiceSoap11Binding" type="ns:TenantActivityServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="isActiveTenantOnService">
+
+            <soap:operation soapAction="urn:isActiveTenantOnService" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="TenantActivityServiceException">
+                <soap:fault use="literal" name="TenantActivityServiceException" />
+
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedActiveTenants">
+            <soap:operation soapAction="urn:retrievePaginatedActiveTenants" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+
+            </wsdl:output>
+            <wsdl:fault name="TenantActivityServiceException">
+                <soap:fault use="literal" name="TenantActivityServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveTenantCount">
+            <soap:operation soapAction="urn:getActiveTenantCount" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="TenantActivityServiceException">
+                <soap:fault use="literal" name="TenantActivityServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="TenantActivityServiceSoap12Binding" type="ns:TenantActivityServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="isActiveTenantOnService">
+            <soap12:operation soapAction="urn:isActiveTenantOnService" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+
+            </wsdl:output>
+            <wsdl:fault name="TenantActivityServiceException">
+                <soap12:fault use="literal" name="TenantActivityServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedActiveTenants">
+            <soap12:operation soapAction="urn:retrievePaginatedActiveTenants" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="TenantActivityServiceException">
+                <soap12:fault use="literal" name="TenantActivityServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveTenantCount">
+
+            <soap12:operation soapAction="urn:getActiveTenantCount" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="TenantActivityServiceException">
+                <soap12:fault use="literal" name="TenantActivityServiceException" />
+
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="TenantActivityServiceHttpBinding" type="ns:TenantActivityServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="isActiveTenantOnService">
+            <http:operation location="isActiveTenantOnService" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedActiveTenants">
+            <http:operation location="retrievePaginatedActiveTenants" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveTenantCount">
+            <http:operation location="getActiveTenantCount" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="TenantActivityService">
+        <wsdl:port name="TenantActivityServiceHttpsSoap11Endpoint" binding="ns:TenantActivityServiceSoap11Binding">
+            <soap:address location="https://cloud-test.wso2.com:9443/services/TenantActivityService.TenantActivityServiceHttpsSoap11Endpoint/" />
+
+        </wsdl:port>
+        <wsdl:port name="TenantActivityServiceHttpsSoap12Endpoint" binding="ns:TenantActivityServiceSoap12Binding">
+            <soap12:address location="https://cloud-test.wso2.com:9443/services/TenantActivityService.TenantActivityServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="TenantActivityServiceHttpsEndpoint" binding="ns:TenantActivityServiceHttpBinding">
+            <http:address location="https://cloud-test.wso2.com:9443/services/TenantActivityService.TenantActivityServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

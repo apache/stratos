@@ -1,0 +1,1 @@
+CARBON_HOME/repository/logs contains all log files created during execution

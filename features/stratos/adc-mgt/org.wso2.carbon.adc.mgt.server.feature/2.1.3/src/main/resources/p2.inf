@@ -1,0 +1,5 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.adc.mgt.server_${feature.version}/conf/cartridge-config.properties,target:${installFolder}/../conf/cartridge-config.properties,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.adc.mgt.server_${feature.version}/conf/policies.xml,target:${installFolder}/../conf/policies.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.adc.mgt.server_${feature.version}/conf/etc/policies.xsd,target:${installFolder}/../conf/etc/policies.xsd,overwrite:true);\
+

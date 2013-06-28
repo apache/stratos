@@ -1,0 +1,60 @@
+import org.wso2.stratos.throttling.manager.dataobjects.*;
+import org.wso2.stratos.billing.mgt.dataobjects.*;
+import org.wso2.stratos.common.constants.*;
+
+
+rule clearRestrictions
+when
+$dataContext : ThrottlingDataContext();
+eval($dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY) < 8)
+
+then
+
+ThrottlingAccessValidation validation = $dataContext.getAccessValidation();
+validation.setTenantBlocked(StratosConstants.THROTTLING_IN_DATA_ACTION,
+            false, null);
+
+end
+
+
+rule restrictFileSize
+when
+$dataContext : ThrottlingDataContext();
+eval($dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY) > 8 &&
+                            $dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY)  < 10)
+
+then
+
+ThrottlingAccessValidation validation = $dataContext.getAccessValidation();
+validation.setTenantBlocked(StratosConstants.THROTTLING_IN_DATA_ACTION,
+            true, "Your data is big. Bigger than 8");
+
+end
+
+rule stranageTest1Rule
+when
+$package: MultitenancyPackage(name == "test1")
+$dataContext : ThrottlingDataContext()
+eval($dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY)  > 15 &&
+            $dataContext.getDataObject(ThrottlingDataEntryConstants.PACKAGE) == $package)
+
+then
+
+ThrottlingAccessValidation validation = $dataContext.getAccessValidation();
+validation.setTenantBlocked(StratosConstants.THROTTLING_IN_DATA_ACTION,
+            true, "the strange condition for test1 is met");
+
+end
+
+rule strangeTest2Rule
+when
+$package: MultitenancyPackage(name == "test2")
+$dataContext : ThrottlingDataContext()
+eval($dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY)  > 15 &&
+            $dataContext.getDataObject(ThrottlingDataEntryConstants.PACKAGE) == $package)
+then
+ThrottlingAccessValidation validation = $dataContext.getAccessValidation();
+validation.setTenantBlocked(StratosConstants.THROTTLING_IN_DATA_ACTION,
+            true, "the strange condition for test2 is met");
+
+end

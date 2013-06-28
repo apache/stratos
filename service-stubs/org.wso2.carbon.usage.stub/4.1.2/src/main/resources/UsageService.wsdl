@@ -1,0 +1,533 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.usage.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2343="http://beans.usage.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.usage.carbon.wso2.org">
+    <wsdl:documentation>UsageService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.usage.carbon.wso2.org/xsd">
+            <xs:complexType name="TenantUsage">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="apiManagerUsageStats" nillable="true" type="ax2343:APIManagerUsageStats"/>
+                    <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="numberOfUsers" type="xs:int"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="registryBandwidthStatistics" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="registryCapacity" nillable="true" type="ax2343:TenantDataCapacity"/>
+                    <xs:element minOccurs="0" name="registryContentCapacity" type="xs:long"/>
+                    <xs:element minOccurs="0" name="registryContentHistoryCapacity" type="xs:long"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="requestStatistics" nillable="true" type="ax2343:RequestStatistics"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="serviceBandwidthStatistics" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="totalIncomingBandwidth" type="xs:long"/>
+                    <xs:element minOccurs="0" name="totalOutgoingBandwidth" type="xs:long"/>
+                    <xs:element minOccurs="0" name="totalRegistryBandwidth" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="totalRequestStatistics" nillable="true" type="ax2343:RequestStatistics"/>
+                    <xs:element minOccurs="0" name="totalServiceBandwidth" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="totalWebappBandwidth" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="usageEntries" nillable="true" type="ax2343:UsageEntry"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="webappBandwidthStatistics" nillable="true" type="ax2343:BandwidthStatistics"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="APIManagerUsageStats">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="incomingBandwidth" type="xs:long"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="outgoingBandwidth" type="xs:long"/>
+                    <xs:element minOccurs="0" name="requestCount" type="xs:long"/>
+                    <xs:element minOccurs="0" name="serverUrl" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="BandwidthStatistics">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="incomingBandwidth" type="xs:long"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="outgoingBandwidth" type="xs:long"/>
+                    <xs:element minOccurs="0" name="serverUrl" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TenantDataCapacity">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="registryContentCapacity" type="xs:long"/>
+                    <xs:element minOccurs="0" name="registryContentHistoryCapacity" type="xs:long"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RequestStatistics">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="faultCount" type="xs:long"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="requestCount" type="xs:long"/>
+                    <xs:element minOccurs="0" name="responseCount" type="xs:long"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="UsageEntry">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PaginatedTenantUsageInfo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="numberOfPages" type="xs:int"/>
+                    <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tenantUsages" nillable="true" type="ax2343:TenantUsage"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PaginatedInstanceUsage">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceUsages" nillable="true" type="ax2343:InstanceUsageStatics"/>
+                    <xs:element minOccurs="0" name="numberOfPages" type="xs:int"/>
+                    <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InstanceUsageStatics">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="instanceID" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="instanceURL" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="running" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="startTime" nillable="true" type="xs:dateTime"/>
+                    <xs:element minOccurs="0" name="stopTime" nillable="true" type="xs:dateTime"/>
+                    <xs:element minOccurs="0" name="usedTimeInSeconds" type="xs:long"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2344="http://beans.usage.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.usage.carbon.wso2.org">
+            <xs:import namespace="http://beans.usage.carbon.wso2.org/xsd"/>
+            <xs:element name="UsageServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UsageServiceException" nillable="true" type="ns:Exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="retrieveTenantUsages">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveTenantUsagesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2344:TenantUsage"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveTenantUsage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveTenantUsageResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:TenantUsage"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrievePaginatedTenantUsages">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
+                        <xs:element minOccurs="0" name="entriesPerPage" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrievePaginatedTenantUsagesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:PaginatedTenantUsageInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrievePaginatedInstanceUsage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
+                        <xs:element minOccurs="0" name="entriesPerPage" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrievePaginatedInstanceUsageResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:PaginatedInstanceUsage"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveInstanceUsage">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveInstanceUsageResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2344:InstanceUsageStatics"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveCurrentTenantUsage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveCurrentTenantUsageResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:TenantUsage"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getValidUsageEntry">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="usage" nillable="true" type="ax2344:InstanceUsageStatics"/>
+                        <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getValidUsageEntryResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:InstanceUsageStatics"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="retrievePaginatedTenantUsagesRequest">
+        <wsdl:part name="parameters" element="ns:retrievePaginatedTenantUsages"/>
+    </wsdl:message>
+    <wsdl:message name="retrievePaginatedTenantUsagesResponse">
+        <wsdl:part name="parameters" element="ns:retrievePaginatedTenantUsagesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UsageServiceException">
+        <wsdl:part name="parameters" element="ns:UsageServiceException"/>
+    </wsdl:message>
+    <wsdl:message name="getValidUsageEntryRequest">
+        <wsdl:part name="parameters" element="ns:getValidUsageEntry"/>
+    </wsdl:message>
+    <wsdl:message name="getValidUsageEntryResponse">
+        <wsdl:part name="parameters" element="ns:getValidUsageEntryResponse"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveCurrentTenantUsageRequest">
+        <wsdl:part name="parameters" element="ns:retrieveCurrentTenantUsage"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveCurrentTenantUsageResponse">
+        <wsdl:part name="parameters" element="ns:retrieveCurrentTenantUsageResponse"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveTenantUsagesRequest">
+        <wsdl:part name="parameters" element="ns:retrieveTenantUsages"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveTenantUsagesResponse">
+        <wsdl:part name="parameters" element="ns:retrieveTenantUsagesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveTenantUsageRequest">
+        <wsdl:part name="parameters" element="ns:retrieveTenantUsage"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveTenantUsageResponse">
+        <wsdl:part name="parameters" element="ns:retrieveTenantUsageResponse"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveInstanceUsageRequest">
+        <wsdl:part name="parameters" element="ns:retrieveInstanceUsage"/>
+    </wsdl:message>
+    <wsdl:message name="retrieveInstanceUsageResponse">
+        <wsdl:part name="parameters" element="ns:retrieveInstanceUsageResponse"/>
+    </wsdl:message>
+    <wsdl:message name="retrievePaginatedInstanceUsageRequest">
+        <wsdl:part name="parameters" element="ns:retrievePaginatedInstanceUsage"/>
+    </wsdl:message>
+    <wsdl:message name="retrievePaginatedInstanceUsageResponse">
+        <wsdl:part name="parameters" element="ns:retrievePaginatedInstanceUsageResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="UsageServicePortType">
+        <wsdl:operation name="retrievePaginatedTenantUsages">
+            <wsdl:input message="ns:retrievePaginatedTenantUsagesRequest" wsaw:Action="urn:retrievePaginatedTenantUsages"/>
+            <wsdl:output message="ns:retrievePaginatedTenantUsagesResponse" wsaw:Action="urn:retrievePaginatedTenantUsagesResponse"/>
+            <wsdl:fault message="ns:UsageServiceException" name="UsageServiceException" wsaw:Action="urn:retrievePaginatedTenantUsagesUsageServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getValidUsageEntry">
+            <wsdl:input message="ns:getValidUsageEntryRequest" wsaw:Action="urn:getValidUsageEntry"/>
+            <wsdl:output message="ns:getValidUsageEntryResponse" wsaw:Action="urn:getValidUsageEntryResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveCurrentTenantUsage">
+            <wsdl:input message="ns:retrieveCurrentTenantUsageRequest" wsaw:Action="urn:retrieveCurrentTenantUsage"/>
+            <wsdl:output message="ns:retrieveCurrentTenantUsageResponse" wsaw:Action="urn:retrieveCurrentTenantUsageResponse"/>
+            <wsdl:fault message="ns:UsageServiceException" name="UsageServiceException" wsaw:Action="urn:retrieveCurrentTenantUsageUsageServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsages">
+            <wsdl:input message="ns:retrieveTenantUsagesRequest" wsaw:Action="urn:retrieveTenantUsages"/>
+            <wsdl:output message="ns:retrieveTenantUsagesResponse" wsaw:Action="urn:retrieveTenantUsagesResponse"/>
+            <wsdl:fault message="ns:UsageServiceException" name="UsageServiceException" wsaw:Action="urn:retrieveTenantUsagesUsageServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsage">
+            <wsdl:input message="ns:retrieveTenantUsageRequest" wsaw:Action="urn:retrieveTenantUsage"/>
+            <wsdl:output message="ns:retrieveTenantUsageResponse" wsaw:Action="urn:retrieveTenantUsageResponse"/>
+            <wsdl:fault message="ns:UsageServiceException" name="UsageServiceException" wsaw:Action="urn:retrieveTenantUsageUsageServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveInstanceUsage">
+            <wsdl:input message="ns:retrieveInstanceUsageRequest" wsaw:Action="urn:retrieveInstanceUsage"/>
+            <wsdl:output message="ns:retrieveInstanceUsageResponse" wsaw:Action="urn:retrieveInstanceUsageResponse"/>
+            <wsdl:fault message="ns:UsageServiceException" name="UsageServiceException" wsaw:Action="urn:retrieveInstanceUsageUsageServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedInstanceUsage">
+            <wsdl:input message="ns:retrievePaginatedInstanceUsageRequest" wsaw:Action="urn:retrievePaginatedInstanceUsage"/>
+            <wsdl:output message="ns:retrievePaginatedInstanceUsageResponse" wsaw:Action="urn:retrievePaginatedInstanceUsageResponse"/>
+            <wsdl:fault message="ns:UsageServiceException" name="UsageServiceException" wsaw:Action="urn:retrievePaginatedInstanceUsageUsageServiceException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="UsageServiceSoap11Binding" type="ns:UsageServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="retrievePaginatedTenantUsages">
+            <soap:operation soapAction="urn:retrievePaginatedTenantUsages" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getValidUsageEntry">
+            <soap:operation soapAction="urn:getValidUsageEntry" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveCurrentTenantUsage">
+            <soap:operation soapAction="urn:retrieveCurrentTenantUsage" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsages">
+            <soap:operation soapAction="urn:retrieveTenantUsages" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsage">
+            <soap:operation soapAction="urn:retrieveTenantUsage" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveInstanceUsage">
+            <soap:operation soapAction="urn:retrieveInstanceUsage" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedInstanceUsage">
+            <soap:operation soapAction="urn:retrievePaginatedInstanceUsage" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="UsageServiceSoap12Binding" type="ns:UsageServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="retrievePaginatedTenantUsages">
+            <soap12:operation soapAction="urn:retrievePaginatedTenantUsages" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap12:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getValidUsageEntry">
+            <soap12:operation soapAction="urn:getValidUsageEntry" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveCurrentTenantUsage">
+            <soap12:operation soapAction="urn:retrieveCurrentTenantUsage" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap12:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsages">
+            <soap12:operation soapAction="urn:retrieveTenantUsages" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap12:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsage">
+            <soap12:operation soapAction="urn:retrieveTenantUsage" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap12:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveInstanceUsage">
+            <soap12:operation soapAction="urn:retrieveInstanceUsage" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap12:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedInstanceUsage">
+            <soap12:operation soapAction="urn:retrievePaginatedInstanceUsage" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="UsageServiceException">
+                <soap12:fault use="literal" name="UsageServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="UsageServiceHttpBinding" type="ns:UsageServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="retrievePaginatedTenantUsages">
+            <http:operation location="retrievePaginatedTenantUsages"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getValidUsageEntry">
+            <http:operation location="getValidUsageEntry"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveCurrentTenantUsage">
+            <http:operation location="retrieveCurrentTenantUsage"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsages">
+            <http:operation location="retrieveTenantUsages"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveTenantUsage">
+            <http:operation location="retrieveTenantUsage"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveInstanceUsage">
+            <http:operation location="retrieveInstanceUsage"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="retrievePaginatedInstanceUsage">
+            <http:operation location="retrievePaginatedInstanceUsage"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="UsageService">
+        <wsdl:port name="UsageServiceHttpsSoap11Endpoint" binding="ns:UsageServiceSoap11Binding">
+            <soap:address location="https://10.200.3.127:9443/services/UsageService.UsageServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="UsageServiceHttpsSoap12Endpoint" binding="ns:UsageServiceSoap12Binding">
+            <soap12:address location="https://10.200.3.127:9443/services/UsageService.UsageServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="UsageServiceHttpsEndpoint" binding="ns:UsageServiceHttpBinding">
+            <http:address location="https://10.200.3.127:9443/services/UsageService.UsageServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

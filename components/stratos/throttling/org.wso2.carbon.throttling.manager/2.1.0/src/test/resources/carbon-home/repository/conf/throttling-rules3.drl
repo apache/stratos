@@ -1,0 +1,17 @@
+import org.wso2.stratos.throttling.manager.dataobjects.*;
+import org.wso2.stratos.common.constants.*;
+
+rule restrictCapacity
+when
+
+$dataContext : ThrottlingDataContext()
+eval($dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY) > 12)
+
+then
+
+ThrottlingAccessValidation validation = $dataContext.getAccessValidation();
+long tenantCapacity = $dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_CAPACITY);
+validation.setTenantBlocked(StratosConstants.THROTTLING_IN_DATA_ACTION, true,
+            "Your resource volume is big. Bigger than 12. your value: " + tenantCapacity);
+
+end

@@ -1,0 +1,39 @@
+CARBON_HOME/repository/conf directory contains all the Carbon configuration files
+
+1. axis2.xml
+   The Apache Axis2 configuration file. Apache Axis2 is used at the core
+   of WSO2 Carbon.
+
+2. carbon.xml
+   The Carbon server configuration file
+
+3. mime.types
+   Defines MIME types to file extension mappings.
+
+4. README
+   This file
+
+5. registry.xml
+   The Carbon registry configuration file. This will be used when the WSO2
+   Embedded Registry is used.
+
+6. synapse.xml
+   The Apache Synapse configuration file. This will be used if Apache Synapse
+   or WSO2 ESB related Carbon components are deployed.
+
+7. mgt-transports.xml
+   Used in standalone mode to configure HTTP/S transports for the Carbon management console
+
+8. user-mgt.xml
+   The User Manager configuration file used for configuring user management
+   details.
+
+9. wrapper.conf
+   The Java Service Wrapper (JSW) configuration file. JSW is used for running
+   Carbon as a Unix daemon or Windows NT service.
+
+10. secret-conf.properties
+   The Secret Manager Configuration that is used by secret vault component
+
+11  cipher-text.properties
+   File based secret repository 

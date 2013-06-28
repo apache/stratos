@@ -1,0 +1,90 @@
+CARBON_HOME/repository/conf directory contains all the Stratos configuration files. 
+carbon/products/manager/conf contains all the Stratos specific configuration files,
+ in the source tree structure.
+
+1. announcement.xml
+   Originally added to customize the announcement using the announcement module. Not used as of now.
+
+2. bam.xml
+   The configuration for billing and metering.
+
+3. billing-config.xml
+   Defines the database and the Task for billing. Multi-tenancy billing rules (by default, uses 
+   multitenancy-billing-rules.drl) and email for billing notifications (by default, uses 
+   email-billing-notifications.xml) are specified here.
+
+4. cloud-services-desc.xml
+   This has the configurations for the cloud services. 
+   Label, link, icon, description, and the other similar information for each of the services are
+   given here.
+
+5. email-admin-config.xml
+   Contains the body of the mail that to be sent upon the tenant configuration request by the admin
+   of the tenant. This includes the password reset link, for the forgotten passwords.
+
+6. email-billing-notifications.xml
+   Contains the body of the mail that to be sent as the invoice of the tenant for the period.
+
+7. email-new-tenant-activation.xml
+   Contains the body of the mail that to be sent to the super admin or a given admin email address,
+    when a new tenant activates their unactivated account.
+
+8. email-new-tenant-registration.xml
+   Contains the body of the mail that to be sent to the super admin or a given admin email address,
+    when a new tenant registers for an account.
+
+9. email-password-reset.xml
+   Contains the body of the mail that to be sent when the tenant admin's password is reset, mostly
+   by a service administrator, known as the super-tenant in Stratos-world.
+
+10. email-registration.xml
+   Contains the body of the mail to be sent for the tenant registration validation. 
+   This mail has the registration validation link to validate the email too.
+
+11. email-registration-complete.xml
+    Contains the mail that to be sent upon successful registration and the successful validation 
+    of the email.
+
+12.  email-update.xml
+    Contains the body of the mail that to be sent upon receiving an email change request from the 
+    account management. The new email address will be notified of this change.
+
+13. eula.xml
+    Contains the End User License Agreement for Stratos. Will be displayed during the self-registration
+    of the tenant.
+
+14. identity.xml
+    Security, SSO store, Personal certificate stores of the user, authentication, and the other 
+    identity related parameters can be configured from here.
+
+15. metering-config-non-manager.xml
+    This file contains configuration related to the metering.
+
+16. multitenancy-billing-rules
+    This file defines the rules for the billing for multiple tenants.
+
+17. multitenancy-packages.xml
+    This contains the subscription types and the respective limits of parameters for each of the 
+    packages.
+
+18. README-STRATOS
+    This file. This has the information about the stratos specific configurations files.
+
+19. samples-desc.xml
+    This has the description of the platform sample (currently included, shopping cart sample).
+
+20. stratos.xml
+    This is the configuration file for Stratos specific constants. 
+    Feel free to add your custom parameters and constants here.
+
+21. tenant-reg-agent.xml
+    tenantRegListenerServers configuration
+
+22. throttling-config.xml
+    Configuration file for throttling.
+
+23. throttling-rules.drl
+    Defines the throttling rules.
+
+24. user-mgt.xml
+   The User Manager configuration file used for configuring user management details.

@@ -1,0 +1,65 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://service.mgt.hosting.carbon.wso2.org" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.mgt.hosting.carbon.wso2.org">
+    <wsdl:documentation>InstanceInformationManagementService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ns="http://org.apache.axis2/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://org.apache.axis2/xsd">
+            <xs:element name="updateInstanceState">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="instanceIp" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="clusterDomain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterSubDomain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridge" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="state" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="updateInstanceStateRequest">
+        <wsdl:part name="parameters" element="ns1:updateInstanceState"/>
+    </wsdl:message>
+    <wsdl:portType name="InstanceInformationManagementServicePortType">
+        <wsdl:operation name="updateInstanceState">
+            <wsdl:input message="tns:updateInstanceStateRequest" wsaw:Action="urn:updateInstanceState"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="InstanceInformationManagementServiceSoap11Binding" type="tns:InstanceInformationManagementServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="updateInstanceState">
+            <soap:operation soapAction="urn:updateInstanceState" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="InstanceInformationManagementServiceSoap12Binding" type="tns:InstanceInformationManagementServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="updateInstanceState">
+            <soap12:operation soapAction="urn:updateInstanceState" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="InstanceInformationManagementServiceHttpBinding" type="tns:InstanceInformationManagementServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="updateInstanceState">
+            <http:operation location="updateInstanceState"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="InstanceInformationManagementService">
+        <wsdl:port name="InstanceInformationManagementServiceHttpsSoap11Endpoint" binding="tns:InstanceInformationManagementServiceSoap11Binding">
+            <soap:address location="https://203.143.18.246:9445/services/InstanceInformationManagementService.InstanceInformationManagementServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="InstanceInformationManagementServiceHttpsSoap12Endpoint" binding="tns:InstanceInformationManagementServiceSoap12Binding">
+            <soap12:address location="https://203.143.18.246:9445/services/InstanceInformationManagementService.InstanceInformationManagementServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="InstanceInformationManagementServiceHttpsEndpoint" binding="tns:InstanceInformationManagementServiceHttpBinding">
+            <http:address location="https://203.143.18.246:9445/services/InstanceInformationManagementService.InstanceInformationManagementServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

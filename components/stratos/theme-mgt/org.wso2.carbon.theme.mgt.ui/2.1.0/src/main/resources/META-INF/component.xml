@@ -1,0 +1,68 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<component xmlns="http://products.wso2.org/carbon">
+    <!-- sample menu configuration -->
+    <menus>
+        <menu>
+            <id>mt_theme_mgt_menu</id>
+            <i18n-key>theme.management</i18n-key>
+            <i18n-bundle>org.wso2.carbon.theme.mgt.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>configure_menu</parent-menu>
+            <link>../tenant-theme/theme_mgt.jsp</link>
+            <region>region1</region>
+            <icon>../tenant-theme/images/thememgt.gif</icon>
+            <order>41</order>
+            <style-class>home</style-class>
+            <require-permission>/permission/admin/configure/theme</require-permission>
+            <require-not-super-tenant>true</require-not-super-tenant>
+        </menu>
+        <menu>
+            <id>mt_logo_mgt_menu</id>
+            <i18n-key>logo.management</i18n-key>
+            <i18n-bundle>org.wso2.carbon.theme.mgt.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>configure_menu</parent-menu>
+            <link>../tenant-theme/logo_mgt.jsp</link>
+            <region>region1</region>
+            <icon>../tenant-theme/images/logomgt.gif</icon>
+            <order>42</order>
+            <style-class>home</style-class>
+            <require-permission>/permission/admin/configure/theme</require-permission>
+            <require-not-super-tenant>true</require-not-super-tenant>
+        </menu>
+    </menus>
+
+
+    <FileUploadConfig>
+        <Mapping>
+            <Actions>
+                <Action>themeResource</Action>
+            </Actions>
+            <Class>org.wso2.carbon.theme.mgt.ui.processors.AddThemeResourceProcessor</Class>
+        </Mapping>
+    </FileUploadConfig>
+
+    <servlets>
+        <servlet id="testthemeservlet">
+            <servlet-name>ThemeResourceContentServlet</servlet-name>
+            <url-pattern>/registry/themeResourceContent</url-pattern>
+            <display-name>Theme Resource Content Servlet</display-name>
+
+            <servlet-class>org.wso2.carbon.theme.mgt.ui.servlets.ThemeResourceSevelet</servlet-class>
+        </servlet>
+    </servlets>
+</component>

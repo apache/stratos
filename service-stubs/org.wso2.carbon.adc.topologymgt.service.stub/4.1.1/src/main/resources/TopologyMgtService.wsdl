@@ -1,0 +1,201 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.service.mgt.topology.stratos.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.service.mgt.topology.stratos.carbon.wso2.org">
+    <wsdl:documentation>TopologyMgtService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.service.mgt.topology.stratos.carbon.wso2.org">
+            <xs:element name="getSubDomains">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSubDomainsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDomains">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDomainsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getActiveIPs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="subDomain" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getActiveIPsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getSubDomainsRequest">
+        <wsdl:part name="parameters" element="ns:getSubDomains"/>
+    </wsdl:message>
+    <wsdl:message name="getSubDomainsResponse">
+        <wsdl:part name="parameters" element="ns:getSubDomainsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getActiveIPsRequest">
+        <wsdl:part name="parameters" element="ns:getActiveIPs"/>
+    </wsdl:message>
+    <wsdl:message name="getActiveIPsResponse">
+        <wsdl:part name="parameters" element="ns:getActiveIPsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getDomainsRequest">
+        <wsdl:part name="parameters" element="ns:getDomains"/>
+    </wsdl:message>
+    <wsdl:message name="getDomainsResponse">
+        <wsdl:part name="parameters" element="ns:getDomainsResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="TopologyMgtServicePortType">
+        <wsdl:operation name="getSubDomains">
+            <wsdl:input message="ns:getSubDomainsRequest" wsaw:Action="urn:getSubDomains"/>
+            <wsdl:output message="ns:getSubDomainsResponse" wsaw:Action="urn:getSubDomainsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveIPs">
+            <wsdl:input message="ns:getActiveIPsRequest" wsaw:Action="urn:getActiveIPs"/>
+            <wsdl:output message="ns:getActiveIPsResponse" wsaw:Action="urn:getActiveIPsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDomains">
+            <wsdl:input message="ns:getDomainsRequest" wsaw:Action="urn:getDomains"/>
+            <wsdl:output message="ns:getDomainsResponse" wsaw:Action="urn:getDomainsResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="TopologyMgtServiceSoap11Binding" type="ns:TopologyMgtServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getSubDomains">
+            <soap:operation soapAction="urn:getSubDomains" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveIPs">
+            <soap:operation soapAction="urn:getActiveIPs" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDomains">
+            <soap:operation soapAction="urn:getDomains" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="TopologyMgtServiceSoap12Binding" type="ns:TopologyMgtServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getSubDomains">
+            <soap12:operation soapAction="urn:getSubDomains" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveIPs">
+            <soap12:operation soapAction="urn:getActiveIPs" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDomains">
+            <soap12:operation soapAction="urn:getDomains" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="TopologyMgtServiceHttpBinding" type="ns:TopologyMgtServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getSubDomains">
+            <http:operation location="getSubDomains"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getActiveIPs">
+            <http:operation location="getActiveIPs"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDomains">
+            <http:operation location="getDomains"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="TopologyMgtService">
+        <wsdl:port name="TopologyMgtServiceHttpSoap11Endpoint" binding="ns:TopologyMgtServiceSoap11Binding">
+            <soap:address location="http://192.168.16.22:9765/services/TopologyMgtService.TopologyMgtServiceHttpSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceHttpsSoap11Endpoint" binding="ns:TopologyMgtServiceSoap11Binding">
+            <soap:address location="https://192.168.16.22:9445/services/TopologyMgtService.TopologyMgtServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceLocalSoap11Endpoint" binding="ns:TopologyMgtServiceSoap11Binding">
+            <soap:address location="local:///services/TopologyMgtService.TopologyMgtServiceLocalSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceHttpsSoap12Endpoint" binding="ns:TopologyMgtServiceSoap12Binding">
+            <soap12:address location="https://192.168.16.22:9445/services/TopologyMgtService.TopologyMgtServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceHttpSoap12Endpoint" binding="ns:TopologyMgtServiceSoap12Binding">
+            <soap12:address location="http://192.168.16.22:9765/services/TopologyMgtService.TopologyMgtServiceHttpSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceLocalSoap12Endpoint" binding="ns:TopologyMgtServiceSoap12Binding">
+            <soap12:address location="local:///services/TopologyMgtService.TopologyMgtServiceLocalSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceHttpsEndpoint" binding="ns:TopologyMgtServiceHttpBinding">
+            <http:address location="https://192.168.16.22:9445/services/TopologyMgtService.TopologyMgtServiceHttpsEndpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TopologyMgtServiceHttpEndpoint" binding="ns:TopologyMgtServiceHttpBinding">
+            <http:address location="http://192.168.16.22:9765/services/TopologyMgtService.TopologyMgtServiceHttpEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

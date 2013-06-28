@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="cartridges" >
+    <xs:annotation>
+      <xs:documentation>Use below section to specify properties that are needed in order to start Cartridges.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="cartridge" maxOccurs="unbounded" minOccurs="1">
+          <xs:annotation>
+            <xs:documentation>You can have 1..n cartridge elements.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+            	<xs:element name="property" maxOccurs="unbounded"
+            		minOccurs="0">
+            		<xs:annotation>
+            			<xs:documentation>
+            				cartridge element can have 0..n properties,
+            				and they'll be overwritten by the properties
+            				specified under iaasProvider child elements
+            				of cartridge element.
+            			</xs:documentation>
+            		</xs:annotation>
+            		<xs:complexType>
+            			<xs:simpleContent>
+            				<xs:extension base="xs:string">
+            					<xs:attribute type="xs:string"
+            						name="name" />
+            					<xs:attribute type="xs:string"
+            						name="value" />
+            				</xs:extension>
+            			</xs:simpleContent>
+            		</xs:complexType>
+            	</xs:element>
+            	<xs:element name="displayName" maxOccurs="1"
+            		minOccurs="0" />
+            	<xs:element name="description" maxOccurs="1"
+            		minOccurs="0" />
+            	<xs:element name="iaasProvider" maxOccurs="unbounded"
+            		minOccurs="1">
+            		<xs:annotation>
+            			<xs:documentation>
+            				A cartridge element should add a reference
+            				to an existing IaaS provider (specified in
+            				the above &amp;lt;iaasProviders&amp;gt;
+            				section) or it can create a completely new
+            				IaaS Provider (which should have a unique
+            				"type" attribute.
+            			</xs:documentation>
+            		</xs:annotation>
+            		<xs:complexType>
+            			<xs:choice maxOccurs="unbounded">
+                            <xs:element type="xs:string" name="scaleUpOrder"
+                                        minOccurs="0" maxOccurs="1" />
+                            <xs:element type="xs:string" name="scaleDownOrder"
+                                        minOccurs="0" maxOccurs="1" />
+                            <xs:element type="xs:string" name="maxInstanceLimit"
+                                        minOccurs="0" maxOccurs="1" />
+            				<xs:element type="xs:string" name="imageId"
+            					minOccurs="0" maxOccurs="1" />
+            				<xs:element name="property"
+            					maxOccurs="unbounded" minOccurs="0">
+            					<xs:complexType>
+            						<xs:simpleContent>
+            							<xs:extension
+            								base="xs:string">
+            								<xs:attribute
+            									type="xs:string" name="name" />
+            								<xs:attribute
+            									type="xs:string" name="value" />
+            							</xs:extension>
+            						</xs:simpleContent>
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:choice>
+            			<xs:attribute type="xs:string" name="type" />
+            		</xs:complexType>
+            	</xs:element>
+            	<xs:element name="deployment" maxOccurs="1">
+            		<xs:complexType>
+            			<xs:choice maxOccurs="unbounded">
+            				<xs:element name="dir" maxOccurs="unbounded"
+            					minOccurs="0" type="xs:string">
+            				</xs:element>
+            			</xs:choice>
+            			<xs:attribute name="baseDir" type="xs:string">
+            			</xs:attribute>
+            		</xs:complexType>
+            	</xs:element>
+            	<xs:element name="portMapping" maxOccurs="1"
+            		minOccurs="1">
+            		<xs:complexType>
+            			<xs:choice maxOccurs="unbounded">
+            				<xs:element name="http" maxOccurs="1"
+            					minOccurs="1">
+            					<xs:complexType>
+            						<xs:attribute name="port"
+            							type="xs:string" />
+            						<xs:attribute name="proxyPort"
+            							type="xs:string" />
+            					</xs:complexType>
+            				</xs:element>
+            				<xs:element name="https" maxOccurs="1"
+            					minOccurs="0">
+            					<xs:complexType>
+            						<xs:attribute name="port"
+            							type="xs:string" />
+            						<xs:attribute name="proxyPort"
+            							type="xs:string" />
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:choice>
+            		</xs:complexType>
+            	</xs:element>
+            	<xs:element name="appTypes" maxOccurs="1"
+    			minOccurs="1">
+    			<xs:complexType>
+    				<xs:choice maxOccurs="unbounded">
+    					<xs:element name="appType" maxOccurs="unbounded"
+    						minOccurs="1">
+    						<xs:complexType>
+                                    <xs:attribute name="name" type="xs:string" use="required" />
+                                    <xs:attribute name="appSpecificMapping"
+    								type="xs:string" />
+    						</xs:complexType>
+    					</xs:element>
+    				</xs:choice>
+    			</xs:complexType>
+    		</xs:element>
+            </xs:choice>
+            <xs:attribute type="xs:string" name="type"/>
+            <xs:attribute type="xs:string" name="host" />
+            <xs:attribute type="xs:string" name="provider" />
+            <xs:attribute type="xs:string" name="version" />
+            <xs:attribute type="xs:boolean" name="multiTenant" />
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

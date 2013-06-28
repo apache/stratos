@@ -1,0 +1,66 @@
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+	<cartridges>
+	
+		<!-- You can have 1..n cartridge elements. -->
+		<cartridge type="as" host="abc.com" provider="carbon" version="5.1.0" multiTenant="true">
+			<!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
+				 specified under iaasProvider child elements of cartridge element. -->
+			<property name="ss" value="slsls"/>
+			<property name="ss" value="slsls"/>
+			<description>This is a WSO2 AS cartridge.</description>
+			<deployment baseDir="xyz">
+				<dir>abc</dir>
+			</deployment>
+			<!-- A cartridge element should add a reference to an existing IaaS provider (specified
+				 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+				 Provider (which should have a unique "type" attribute. -->
+			<iaasProvider type="openstack" >
+				<imageId>nova/xxxxxxxxxx</imageId>
+				<property name="keyPair" value="aa"/>
+				<property name="instanceType" value="1"/>
+				<property name="payload" value="resources/as.txt"/>
+			</iaasProvider>
+			<iaasProvider type="ec2" >
+				<imageId>xxxxxxxxxx</imageId>
+				<property name="keyPair" value="aa"/>
+				<property name="securityGroups" value="manager,cep,mb,default"/>
+				<property name="instanceType" value="m1.large"/>
+				<property name="payload" value="resources/as-ec2.txt"/>
+			</iaasProvider>
+			
+		</cartridge>
+	
+	</cartridges>
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+	<cartridges>
+	
+		<!-- You can have 1..n cartridge elements. -->
+		<cartridge type="as" host="abc.com" provider="carbon" version="5.1.0" multiTenant="true">
+			<!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
+				 specified under iaasProvider child elements of cartridge element. -->
+			<property name="ss" value="slsls"/>
+			<property name="ss" value="slsls"/>
+			<description>This is a WSO2 AS cartridge.</description>
+			<deployment baseDir="xyz">
+				<dir>abc</dir>
+			</deployment>
+			<!-- A cartridge element should add a reference to an existing IaaS provider (specified
+				 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+				 Provider (which should have a unique "type" attribute. -->
+			<iaasProvider type="openstack" >
+				<imageId>nova/xxxxxxxxxx</imageId>
+				<property name="keyPair" value="aa"/>
+				<property name="instanceType" value="1"/>
+				<property name="payload" value="resources/as.txt"/>
+			</iaasProvider>
+			<iaasProvider type="ec2" >
+				<imageId>xxxxxxxxxx</imageId>
+				<property name="keyPair" value="aa"/>
+				<property name="securityGroups" value="manager,cep,mb,default"/>
+				<property name="instanceType" value="m1.large"/>
+				<property name="payload" value="resources/as-ec2.txt"/>
+			</iaasProvider>
+			
+		</cartridge>
+	
+	</cartridges>

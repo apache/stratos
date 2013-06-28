@@ -1,0 +1,135 @@
+<!--
+  ~ Copyright 2008 WSO2, Inc. (http://wso2.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"></meta>
+    <title>Topics and Subscriptions - User Guide</title>
+    <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all"/>
+</head>
+
+<body style="font-family: Times New Roman,Times,serif; font-size: 12pt;">
+<h1>Topics and Subscriptions</h1>
+
+<h2>Topic Browser</h2>
+
+<p><img alt="" src="../images/Topic_Browser.png"/></p>
+
+<p>Figure 1: Topic Browser</p>
+
+<p>WSO2 Eventing provides this topic browser feature to view all the topics available in the server in a tree view. User can
+    perform all the operations with regarding a topic via this view. Initially this tree view does not display any of the
+    operations available for the topic. When user clicks on the topic , it will display all the operations available for
+    that particular topic.
+</p>
+
+<p>Operations available for a particular topic are :</p>
+
+<ul>
+    <li>Add Subtopic</li>
+    <li>Subscribe</li>
+    <li>Details</li>
+    <li>Delete</li>
+</ul>
+
+<h2>Add Subtopic</h2>
+
+<p><img alt="" src="../images/Add_subtopic.png"/></p>
+
+<p>Figure 2: Add Subtopic</p>
+
+<p>Add subtopic feature provided user the ability to add a topic under the existing topic. When
+    adding a new topic under an existing topic, user can provide the name of the new topic and set
+    the permissions for publishing and subscribing for that topic. </p>
+
+<p>Once a subtopic is added , it will direct to the Topic Browsing tree.</p>
+
+<p>If user wants to add a topic directly to the root, user can click on the 'Add' sub menu item
+    under topics menu in the left panel. </p>
+
+
+<h2>Subscribe</h2>
+
+<p><img alt="" src="../images/Subscribe.png"/></p>
+
+<p>Figure 3: Subscribe</p>
+
+<p>All the subscriptions for a particular topic is done in this page. Once a user click on the
+    subscribe link in topic browser, it will directed to this page. To do a subscription to that
+    topic , user has to give some details as bellow;</p>
+
+<ul>
+    <li>Topic</li>
+        <p> User does not need to specify the topic here , since its automatically sets up.</p>
+
+    <li>Subscription Mode</li>
+
+    <p> This is the mode of the subscription and there are tree modes.</p>
+
+    <p>The default mode for the subscription is "Topic Only".  With this mode , user creates the
+        subscription only to the topic. In that mode subscribers only receive events which
+        are published only to the that topic.</p>
+
+    <p> Next mode of subscription is "Topic and Immediate child". In this mode subscribers of the topic
+        receives events published not only the specified topic but also to the immediate child of that topic. </p>
+
+    <p> Last mode of subscription is "Topic and Children". In this mode subscribers of the specified
+        topic will receive events published to the specified topic and all its children </p>
+
+    <li>Event Sink URL</li>
+       <p>This is the URL which the subscriber should provide to receive events published. When events are
+        published to the topic, they are sent to the specified URL here.</p>
+
+    <li>Expiration Time</li>
+       <p> Here user can specify the expiration time of the subscription. This is not a required parameter and
+       if user leave it alone, subscription will never be expired. </p>
+</ul>
+
+<h2>Topic Details</h2>
+
+<p><img alt="" src="../images/Topic_details.png"/></p>
+
+<p>Figure 4: Topic Details</p>
+
+<p>All the details related with a topic can be viewed in this page.</p>
+<ul>
+    <li>Permission Details</li>
+    <p>Permissions related with the topic can be viewed here and if the user wants to change the
+        permissions with regarding that topic, user can change the ticks on the provided check
+        boxes and click on update permissions button. </p>
+
+    <li>WS Subscription Details</li>
+    <p>All the ws subscriptions for the topic and its all children is listed here. If the user wants to
+        unsubscribe from the topic, he can simply click on the unsubscribe link on the last column of each row.</p>
+
+    <li>JMS Subscription Details</li>
+    <P>All the durable and non durable JMS subscriptions are listed here.</P>
+
+    <li>Publish</li>
+    <p> This publish option provide the user the ability publish a sample XML message to a topic.
+     Once there is a subscription for the topic, event sink URL will receive that published XML
+     message once its click on the publish button after placing a xml message in the provided space.</p>
+</ul>
+
+<h2>Delete</h2>
+
+<p>This will delete the topic from the server. To delete a topic , subscription count for that topic
+    and its children should be zero. Otherwise it will prompt an error message specifying that there
+    are subscriptions for the topic or its children.</p>
+
+</body>
+</html>

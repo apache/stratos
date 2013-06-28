@@ -1,0 +1,148 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.manager.throttling.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.manager.throttling.carbon.wso2.org">
+    <wsdl:documentation>ThrottlingRuleEditorService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.manager.throttling.carbon.wso2.org">
+            <xs:element name="updateThrottlingRulesException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="updateThrottlingRulesException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="updateThrottlingRules">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ruleContent" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveThrottlingRulesException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="retrieveThrottlingRulesException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveThrottlingRules">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="retrieveThrottlingRulesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="updateThrottlingRulesRequest">
+        <wsdl:part name="parameters" element="ns:updateThrottlingRules" />
+    </wsdl:message>
+    <wsdl:message name="updateThrottlingRulesException">
+        <wsdl:part name="parameters" element="ns:updateThrottlingRulesException" />
+    </wsdl:message>
+    <wsdl:message name="retrieveThrottlingRulesRequest">
+        <wsdl:part name="parameters" element="ns:retrieveThrottlingRules" />
+    </wsdl:message>
+    <wsdl:message name="retrieveThrottlingRulesResponse">
+        <wsdl:part name="parameters" element="ns:retrieveThrottlingRulesResponse" />
+    </wsdl:message>
+    <wsdl:message name="retrieveThrottlingRulesException">
+        <wsdl:part name="parameters" element="ns:retrieveThrottlingRulesException" />
+    </wsdl:message>
+    <wsdl:portType name="ThrottlingRuleEditorServicePortType">
+        <wsdl:operation name="updateThrottlingRules">
+            <wsdl:input message="ns:updateThrottlingRulesRequest" wsaw:Action="urn:updateThrottlingRules" />
+            <wsdl:fault message="ns:updateThrottlingRulesException" name="updateThrottlingRulesException" wsaw:Action="urn:updateThrottlingRulesupdateThrottlingRulesException" />
+        </wsdl:operation>
+        <wsdl:operation name="retrieveThrottlingRules">
+            <wsdl:input message="ns:retrieveThrottlingRulesRequest" wsaw:Action="urn:retrieveThrottlingRules" />
+            <wsdl:output message="ns:retrieveThrottlingRulesResponse" wsaw:Action="urn:retrieveThrottlingRulesResponse" />
+            <wsdl:fault message="ns:retrieveThrottlingRulesException" name="retrieveThrottlingRulesException" wsaw:Action="urn:retrieveThrottlingRulesretrieveThrottlingRulesException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ThrottlingRuleEditorServiceSoap11Binding" type="ns:ThrottlingRuleEditorServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="updateThrottlingRules">
+            <soap:operation soapAction="urn:updateThrottlingRules" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="updateThrottlingRulesException">
+                <soap:fault use="literal" name="updateThrottlingRulesException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveThrottlingRules">
+            <soap:operation soapAction="urn:retrieveThrottlingRules" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="retrieveThrottlingRulesException">
+                <soap:fault use="literal" name="retrieveThrottlingRulesException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ThrottlingRuleEditorServiceSoap12Binding" type="ns:ThrottlingRuleEditorServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="updateThrottlingRules">
+            <soap12:operation soapAction="urn:updateThrottlingRules" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="updateThrottlingRulesException">
+                <soap12:fault use="literal" name="updateThrottlingRulesException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveThrottlingRules">
+            <soap12:operation soapAction="urn:retrieveThrottlingRules" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="retrieveThrottlingRulesException">
+                <soap12:fault use="literal" name="retrieveThrottlingRulesException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ThrottlingRuleEditorServiceHttpBinding" type="ns:ThrottlingRuleEditorServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="updateThrottlingRules">
+            <http:operation location="updateThrottlingRules" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="retrieveThrottlingRules">
+            <http:operation location="retrieveThrottlingRules" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ThrottlingRuleEditorService">
+        <wsdl:port name="ThrottlingRuleEditorServiceHttpsSoap11Endpoint" binding="ns:ThrottlingRuleEditorServiceSoap11Binding">
+            <soap:address location="https://192.168.1.100:9443/services/ThrottlingRuleEditorService.ThrottlingRuleEditorServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ThrottlingRuleEditorServiceHttpsSoap12Endpoint" binding="ns:ThrottlingRuleEditorServiceSoap12Binding">
+            <soap12:address location="https://192.168.1.100:9443/services/ThrottlingRuleEditorService.ThrottlingRuleEditorServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ThrottlingRuleEditorServiceHttpsEndpoint" binding="ns:ThrottlingRuleEditorServiceHttpBinding">
+            <http:address location="https://192.168.1.100:9443/services/ThrottlingRuleEditorService.ThrottlingRuleEditorServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

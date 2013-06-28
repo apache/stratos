@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ ~ Copyright (c) 2009-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>carbon-features</artifactId>
+        <version>4.1.0</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>stratos-features</artifactId>
+    <packaging>pom</packaging>
+    <version>2.1.0</version>
+    <name>WSO2 Stratos - Features</name>
+    <description>features</description>
+    <url>http://wso2.com</url>
+
+    <modules>
+        <module>common</module>
+	<module>tenant-mgt</module>
+	<module>load-balance-agent</module>
+        <module>gapp</module>
+        <module>throttling</module>
+        <module>usage</module>
+        <module>billing</module>
+	<module>deployment/2.1.0</module>
+	<module>status-monitor</module>
+	<module>sso-mgt</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>wso2-maven2-repository</id>
+            <name>WSO2 Maven2 Repository</name>
+            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>wso2-maven2-snapshot-repository</id>
+            <name>WSO2 Maven2 Snapshot Repository</name>
+            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/snapshots/maven2/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <connection>
+            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
+        </connection>
+        <developerConnection>
+            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
+        </developerConnection>
+    </scm>
+    
+    <properties>
+        <stratos.version>2.1.0</stratos.version>
+	<synapse.version>2.1.0-wso2v6</synapse.version>
+        <carbon.version>4.1.0</carbon.version>
+        <quartz.wso2.version>2.1.1.wso2v1</quartz.wso2.version>
+	<carbon.p2.plugin.version>1.5</carbon.p2.plugin.version>
+    </properties>
+<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.activation</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.sample.installer</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.redirector.servlet</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.redirector.servlet.ui</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.stratos.common</artifactId>
+                <version>${stratos.version}</version>
+			</dependency>
+			<dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.stratos.landing.page.deployer</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.throttling.agent</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.tenant.activity</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.throttling.agent.stub</artifactId>
+                <version>${wso2carbon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.usage.agent</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.tenant.dispatcher</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler.wso2</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.task</artifactId>
+                <version>${wso2carbon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.application.upload</artifactId>
+                <version>${wso2carbon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.synapse</groupId>
+                <artifactId>synapse-tasks</artifactId>
+                <version>${synapse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.sso.redirector.ui</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.google.analytics.ui</artifactId>
+                <version>${stratos.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

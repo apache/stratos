@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"></meta>
+  <title>WSDL Validator - User Guide</title></head>
+
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+
+
+<body>
+<h1>WSDL Validator </h1>
+
+<p>WSDL Validator tool can be used to validate a WSDL document. You can
+    upload your WSDL or you can provide a WSDL URL. The tool will validate
+    your WSDL and print the result in the "Validation Result" section.</p>
+
+<h2>Uploading a WSDL</h2>
+
+<p>You can upload your WSDL document to be validated, using the following UI.</p>
+
+<p><img alt="WSDL Uploading UI" src="images/upload-wsdl.png" height="120" width="984"/></p>
+
+<p><i>Figure 1: Uploading a WSDL</i></p>
+
+<p>Click on "Validate From File" button after selecting the WSDL location.</p>
+
+<h2>Providing a WSDL URL</h2>
+
+<p>You can provide the URL of your WSDL document to be validated, using the
+    following UI.</p>
+
+<p><img alt="WSDL URL UI" src="images/url-wsdl.png" height="117" width="984"/></p>
+
+<p><i>Figure 2: Providing a WSDL URL</i></p>
+
+<p>Click on "Validate From URL" button after providing the WSDL URL.</p>
+
+<h2>Validation Result</h2>
+
+<p>Validation result will be shown as follows.</p>
+
+<p><img alt="WSDL Validation Result" src="images/result.png" height="215" width="994"/></p>
+
+<p><i>Figure 3: WSDL Validation Result</i></p>
+
+</body></html>

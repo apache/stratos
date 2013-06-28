@@ -1,0 +1,84 @@
+<!--
+  ~ Copyright 2005-2007 WSO2, Inc. (http://wso2.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!--
+  ~ This file contains the configuration of the transport connectors used by
+  ~ the embedded application server instance which hosts the Carbon management
+  ~ console
+  -->
+
+<transports>
+    <transport name="http" class="org.wso2.carbon.server.transports.http.HttpTransport">
+        <parameter name="port">9763</parameter>
+
+        <!--
+       Uncomment the following to enable Apache2 mod_proxy. The port on the Apache server is 80
+       in this case. 
+        -->
+        <!--<parameter name="proxyPort">80</parameter>-->
+
+        <parameter name="maxHttpHeaderSize">8192</parameter>
+        <parameter name="maxThreads">150</parameter>
+        <parameter name="minSpareThreads">25</parameter>
+        <parameter name="maxSpareThreads">75</parameter>
+        <parameter name="enableLookups">false</parameter>
+        <parameter name="disableUploadTimeout">false</parameter>
+        <parameter name="clientAuth">false</parameter>
+        <parameter name="maxKeepAliveRequests">100</parameter>
+        <parameter name="acceptCount">100</parameter>
+
+        <parameter name="compression">force</parameter>
+        <parameter name="compressionMinSize">2048</parameter>
+        <parameter name="noCompressionUserAgents">gozilla, traviata</parameter>
+        <parameter name="compressableMimeType">
+            text/html,text/javascript,application/x-javascript,application/javascript,application/xml,text/css,application/xslt+xml,text/xsl,image/gif,image/jpg,image/jpeg
+        </parameter>
+    </transport>
+
+    <transport name="https" class="org.wso2.carbon.server.transports.http.HttpsTransport">
+        <parameter name="port">9443</parameter>
+
+        <!--
+       Uncomment the following to enable Apache2 mod_proxy. The port on the Apache server is 443
+       in this case. 
+        -->
+        <!--<parameter name="proxyPort">443</parameter>-->
+        <!--
+       Uncomment the following to run on IBM J9 VM. Also, change the sslProtocol to SSL from the
+       Default value of TLS.
+        -->
+        <!--<parameter name="algorithm">IbmX509</parameter>-->
+        <parameter name="sslProtocol">TLS</parameter>
+        <parameter name="maxHttpHeaderSize">8192</parameter>
+        <parameter name="maxThreads">150</parameter>
+        <parameter name="minSpareThreads">25</parameter>
+        <parameter name="maxSpareThreads">75</parameter>
+        <parameter name="enableLookups">false</parameter>
+        <parameter name="disableUploadTimeout">false</parameter>
+        <parameter name="clientAuth">false</parameter>
+        <parameter name="maxKeepAliveRequests">100</parameter>
+        <parameter name="acceptCount">100</parameter>
+
+        <parameter name="compression">force</parameter>
+        <parameter name="compressionMinSize">2048</parameter>
+        <parameter name="noCompressionUserAgents">gozilla, traviata</parameter>
+        <parameter name="compressableMimeType">
+            text/html,text/javascript,application/x-javascript,application/javascript,application/xml,text/css,application/xslt+xml,text/xsl,image/gif,image/jpg,image/jpeg
+        </parameter>
+        <parameter name="keystore">${carbon.home}/resources/security/wso2carbon.jks</parameter>
+        <parameter name="keypass">wso2carbon</parameter>
+    </transport>
+</transports>

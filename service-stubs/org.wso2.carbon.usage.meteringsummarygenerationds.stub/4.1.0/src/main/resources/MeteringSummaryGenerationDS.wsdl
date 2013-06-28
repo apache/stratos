@@ -1,0 +1,1395 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://ws.wso2.org/dataservice" xmlns:ax28="http://bam.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://ws.wso2.org/dataservice">
+    <wsdl:documentation />
+    <wsdl:types>
+        <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://bam.carbon.wso2.org">
+            <xs:element name="getRegistryBandwidthUsageForMonthlySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="bandwidthUsageValues">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="bandwidthUsageValue" nillable="true" type="ax28:bandwidthUsageValue" />
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:element name="bandwidthUsageValues" type="ax28:bandwidthUsageValues" />
+            <xs:complexType name="bandwidthUsageValue">
+                <xs:sequence>
+                    <xs:element name="keyName" nillable="true" type="xs:string" />
+                    <xs:element name="registryBandwidth" nillable="true" type="xs:long" />
+                    <xs:element name="registryHistoryBandwidth" nillable="true" type="xs:long" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getLatestYearlyBandwidthSummaryPeriodId">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="summaryTimes">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="summaryTime" nillable="true" type="ax28:summaryTime" />
+
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="summaryTimes" type="ax28:summaryTimes" />
+            <xs:complexType name="summaryTime">
+                <xs:sequence>
+                    <xs:element name="startTime" nillable="true" type="xs:dateTime" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getLatestHourlyBandwidthSummaryPeriodId">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLatestMonthlyBandwidthSummaryPeriodId">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRegistryHistoryBandwidthUsage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="bandwidthUsages">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="bandwidthUsage" nillable="true" type="ax28:bandwidthUsage" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="bandwidthUsages" type="ax28:bandwidthUsages" />
+            <xs:complexType name="bandwidthUsage">
+
+                <xs:sequence>
+                    <xs:element name="bandwidth" nillable="true" type="xs:long" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getDataForDailySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="bandwidthStatValues">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="bandwidthStatValue" nillable="true" type="ax28:bandwidthStatValue" />
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:element name="bandwidthStatValues" type="ax28:bandwidthStatValues" />
+            <xs:complexType name="bandwidthStatValue">
+                <xs:sequence>
+                    <xs:element name="keyName" nillable="true" type="xs:string" />
+                    <xs:element name="IncomingBandwidth" nillable="true" type="xs:long" />
+                    <xs:element name="OutgoingBandwidth" nillable="true" type="xs:long" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getLatestQuarterlyBandwidthSummaryPeriodId">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataForHourlySummary">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="keyName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="bandwidthHourlyStatValues">
+                <xs:sequence>
+
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="bandwidthHourlyStatValue" nillable="true" type="ax28:bandwidthHourlyStatValue" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="bandwidthHourlyStatValues" type="ax28:bandwidthHourlyStatValues" />
+            <xs:complexType name="bandwidthHourlyStatValue">
+                <xs:sequence>
+                    <xs:element name="keyName" nillable="true" type="xs:string" />
+                    <xs:element name="keyValue" nillable="true" type="xs:string" />
+                </xs:sequence>
+
+            </xs:complexType>
+            <xs:element name="getMinimumPeriodId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataForYearlySummary">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataForMonthlySummary">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLatestMonthlyRegistryBandwidthSummaryPeriodId">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLatestDailyRegistryBandwidthSummaryPeriodId">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLatestDailyBandwidthSummaryPeriodId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDataForQuarterlySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRegistryBandwidthUsage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+        </xs:schema>
+        <xs:schema xmlns:ns="http://ws.wso2.org/dataservice" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://ws.wso2.org/dataservice">
+            <xs:element name="DataServiceFault" type="xs:string" />
+            <xs:element name="addRegistryBandwidthUsageMonthlySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="monthId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+
+                        <xs:element minOccurs="0" name="registryBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="registryHistoryBandwidth" nillable="true" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteServerUserData">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="startTimestamp" nillable="true" type="xs:dateTime" />
+                        <xs:element minOccurs="0" name="endTimestamp" nillable="true" type="xs:dateTime" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addRegistryBandwidthUsageDailySummary">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="tenantId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="dayId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="registryBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="registryHistoryBandwidth" nillable="true" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addBandwidthStatQuarterlySummary">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="qtrId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="incomingBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="outgoingBandwidth" nillable="true" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="addBandwidthStatMonthlySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="monthId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="incomingBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="outgoingBandwidth" nillable="true" type="xs:long" />
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addBandwidthStatHourlySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="hourId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+
+                        <xs:element minOccurs="0" name="incomingBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="outgoingBandwidth" nillable="true" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addBandwidthStatDailySummary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+
+                        <xs:element minOccurs="0" name="dayId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="incomingBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="outgoingBandwidth" nillable="true" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addBandwidthStatYearlySummary">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="yearId" nillable="true" type="xs:int" />
+                        <xs:element minOccurs="0" name="BandwidthName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="incomingBandwidth" nillable="true" type="xs:long" />
+                        <xs:element minOccurs="0" name="outgoingBandwidth" nillable="true" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getRegistryBandwidthUsageRequest">
+        <wsdl:part name="parameters" element="ax28:getRegistryBandwidthUsage" />
+    </wsdl:message>
+    <wsdl:message name="getRegistryBandwidthUsageResponse">
+        <wsdl:part name="parameters" element="ax28:bandwidthUsages" />
+    </wsdl:message>
+    <wsdl:message name="DataServiceFault">
+
+        <wsdl:part name="parameters" element="ns1:DataServiceFault" />
+    </wsdl:message>
+    <wsdl:message name="getDataForMonthlySummaryRequest">
+        <wsdl:part name="parameters" element="ax28:getDataForMonthlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getDataForMonthlySummaryResponse">
+        <wsdl:part name="parameters" element="ax28:bandwidthStatValues" />
+    </wsdl:message>
+    <wsdl:message name="deleteServerUserDataRequest">
+
+        <wsdl:part name="parameters" element="ns1:deleteServerUserData" />
+    </wsdl:message>
+    <wsdl:message name="addBandwidthStatHourlySummaryRequest">
+        <wsdl:part name="parameters" element="ns1:addBandwidthStatHourlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getRegistryBandwidthUsageForMonthlySummaryRequest">
+        <wsdl:part name="parameters" element="ax28:getRegistryBandwidthUsageForMonthlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getRegistryBandwidthUsageForMonthlySummaryResponse">
+
+        <wsdl:part name="parameters" element="ax28:bandwidthUsageValues" />
+    </wsdl:message>
+    <wsdl:message name="getLatestDailyBandwidthSummaryPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getLatestDailyBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestDailyBandwidthSummaryPeriodIdResponse">
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="addBandwidthStatDailySummaryRequest">
+
+        <wsdl:part name="parameters" element="ns1:addBandwidthStatDailySummary" />
+    </wsdl:message>
+    <wsdl:message name="getLatestMonthlyRegistryBandwidthSummaryPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getLatestMonthlyRegistryBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestMonthlyRegistryBandwidthSummaryPeriodIdResponse">
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="getDataForHourlySummaryRequest">
+
+        <wsdl:part name="parameters" element="ax28:getDataForHourlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getDataForHourlySummaryResponse">
+        <wsdl:part name="parameters" element="ax28:bandwidthHourlyStatValues" />
+    </wsdl:message>
+    <wsdl:message name="getRegistryHistoryBandwidthUsageRequest">
+        <wsdl:part name="parameters" element="ax28:getRegistryHistoryBandwidthUsage" />
+    </wsdl:message>
+    <wsdl:message name="getRegistryHistoryBandwidthUsageResponse">
+
+        <wsdl:part name="parameters" element="ax28:bandwidthUsages" />
+    </wsdl:message>
+    <wsdl:message name="getDataForYearlySummaryRequest">
+        <wsdl:part name="parameters" element="ax28:getDataForYearlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getDataForYearlySummaryResponse">
+        <wsdl:part name="parameters" element="ax28:bandwidthStatValues" />
+    </wsdl:message>
+    <wsdl:message name="addRegistryBandwidthUsageDailySummaryRequest">
+
+        <wsdl:part name="parameters" element="ns1:addRegistryBandwidthUsageDailySummary" />
+    </wsdl:message>
+    <wsdl:message name="getLatestHourlyBandwidthSummaryPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getLatestHourlyBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestHourlyBandwidthSummaryPeriodIdResponse">
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="getLatestDailyRegistryBandwidthSummaryPeriodIdRequest">
+
+        <wsdl:part name="parameters" element="ax28:getLatestDailyRegistryBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestDailyRegistryBandwidthSummaryPeriodIdResponse">
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="addBandwidthStatQuarterlySummaryRequest">
+        <wsdl:part name="parameters" element="ns1:addBandwidthStatQuarterlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getDataForQuarterlySummaryRequest">
+
+        <wsdl:part name="parameters" element="ax28:getDataForQuarterlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getDataForQuarterlySummaryResponse">
+        <wsdl:part name="parameters" element="ax28:bandwidthStatValues" />
+    </wsdl:message>
+    <wsdl:message name="getLatestYearlyBandwidthSummaryPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getLatestYearlyBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestYearlyBandwidthSummaryPeriodIdResponse">
+
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="getDataForDailySummaryRequest">
+        <wsdl:part name="parameters" element="ax28:getDataForDailySummary" />
+    </wsdl:message>
+    <wsdl:message name="getDataForDailySummaryResponse">
+        <wsdl:part name="parameters" element="ax28:bandwidthStatValues" />
+    </wsdl:message>
+    <wsdl:message name="addRegistryBandwidthUsageMonthlySummaryRequest">
+
+        <wsdl:part name="parameters" element="ns1:addRegistryBandwidthUsageMonthlySummary" />
+    </wsdl:message>
+    <wsdl:message name="addBandwidthStatYearlySummaryRequest">
+        <wsdl:part name="parameters" element="ns1:addBandwidthStatYearlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getLatestQuarterlyBandwidthSummaryPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getLatestQuarterlyBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestQuarterlyBandwidthSummaryPeriodIdResponse">
+
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="addBandwidthStatMonthlySummaryRequest">
+        <wsdl:part name="parameters" element="ns1:addBandwidthStatMonthlySummary" />
+    </wsdl:message>
+    <wsdl:message name="getMinimumPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getMinimumPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getMinimumPeriodIdResponse">
+
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:message name="getLatestMonthlyBandwidthSummaryPeriodIdRequest">
+        <wsdl:part name="parameters" element="ax28:getLatestMonthlyBandwidthSummaryPeriodId" />
+    </wsdl:message>
+    <wsdl:message name="getLatestMonthlyBandwidthSummaryPeriodIdResponse">
+        <wsdl:part name="parameters" element="ax28:summaryTimes" />
+    </wsdl:message>
+    <wsdl:portType name="MeteringSummaryGenerationDSPortType">
+
+        <wsdl:operation name="getRegistryBandwidthUsage">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getRegistryBandwidthUsageRequest" wsaw:Action="urn:getRegistryBandwidthUsage" />
+            <wsdl:output message="ns1:getRegistryBandwidthUsageResponse" wsaw:Action="urn:getRegistryBandwidthUsageResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getRegistryBandwidthUsageDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="getDataForMonthlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getDataForMonthlySummaryRequest" wsaw:Action="urn:getDataForMonthlySummary" />
+
+            <wsdl:output message="ns1:getDataForMonthlySummaryResponse" wsaw:Action="urn:getDataForMonthlySummaryResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getDataForMonthlySummaryDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="deleteServerUserData">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:deleteServerUserDataRequest" wsaw:Action="urn:deleteServerUserData" />
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatHourlySummary">
+
+            <wsdl:documentation />
+            <wsdl:input message="ns1:addBandwidthStatHourlySummaryRequest" wsaw:Action="urn:addBandwidthStatHourlySummary" />
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryBandwidthUsageForMonthlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getRegistryBandwidthUsageForMonthlySummaryRequest" wsaw:Action="urn:getRegistryBandwidthUsageForMonthlySummary" />
+            <wsdl:output message="ns1:getRegistryBandwidthUsageForMonthlySummaryResponse" wsaw:Action="urn:getRegistryBandwidthUsageForMonthlySummaryResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getRegistryBandwidthUsageForMonthlySummaryDataServiceFault" />
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestDailyBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestDailyBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestDailyBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestDailyBandwidthSummaryPeriodIdResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestDailyBandwidthSummaryPeriodIdDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatDailySummary">
+            <wsdl:documentation />
+
+            <wsdl:input message="ns1:addBandwidthStatDailySummaryRequest" wsaw:Action="urn:addBandwidthStatDailySummary" />
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyRegistryBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestMonthlyRegistryBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestMonthlyRegistryBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestMonthlyRegistryBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestMonthlyRegistryBandwidthSummaryPeriodIdResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestMonthlyRegistryBandwidthSummaryPeriodIdDataServiceFault" />
+        </wsdl:operation>
+
+        <wsdl:operation name="getDataForHourlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getDataForHourlySummaryRequest" wsaw:Action="urn:getDataForHourlySummary" />
+            <wsdl:output message="ns1:getDataForHourlySummaryResponse" wsaw:Action="urn:getDataForHourlySummaryResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getDataForHourlySummaryDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryHistoryBandwidthUsage">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getRegistryHistoryBandwidthUsageRequest" wsaw:Action="urn:getRegistryHistoryBandwidthUsage" />
+
+            <wsdl:output message="ns1:getRegistryHistoryBandwidthUsageResponse" wsaw:Action="urn:getRegistryHistoryBandwidthUsageResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getRegistryHistoryBandwidthUsageDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="getDataForYearlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getDataForYearlySummaryRequest" wsaw:Action="urn:getDataForYearlySummary" />
+            <wsdl:output message="ns1:getDataForYearlySummaryResponse" wsaw:Action="urn:getDataForYearlySummaryResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getDataForYearlySummaryDataServiceFault" />
+        </wsdl:operation>
+
+        <wsdl:operation name="addRegistryBandwidthUsageDailySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:addRegistryBandwidthUsageDailySummaryRequest" wsaw:Action="urn:addRegistryBandwidthUsageDailySummary" />
+        </wsdl:operation>
+        <wsdl:operation name="getLatestHourlyBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestHourlyBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestHourlyBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestHourlyBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestHourlyBandwidthSummaryPeriodIdResponse" />
+
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestHourlyBandwidthSummaryPeriodIdDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyRegistryBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestDailyRegistryBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestDailyRegistryBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestDailyRegistryBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestDailyRegistryBandwidthSummaryPeriodIdResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestDailyRegistryBandwidthSummaryPeriodIdDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatQuarterlySummary">
+
+            <wsdl:documentation />
+            <wsdl:input message="ns1:addBandwidthStatQuarterlySummaryRequest" wsaw:Action="urn:addBandwidthStatQuarterlySummary" />
+        </wsdl:operation>
+        <wsdl:operation name="getDataForQuarterlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getDataForQuarterlySummaryRequest" wsaw:Action="urn:getDataForQuarterlySummary" />
+            <wsdl:output message="ns1:getDataForQuarterlySummaryResponse" wsaw:Action="urn:getDataForQuarterlySummaryResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getDataForQuarterlySummaryDataServiceFault" />
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestYearlyBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestYearlyBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestYearlyBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestYearlyBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestYearlyBandwidthSummaryPeriodIdResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestYearlyBandwidthSummaryPeriodIdDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="getDataForDailySummary">
+            <wsdl:documentation />
+
+            <wsdl:input message="ns1:getDataForDailySummaryRequest" wsaw:Action="urn:getDataForDailySummary" />
+            <wsdl:output message="ns1:getDataForDailySummaryResponse" wsaw:Action="urn:getDataForDailySummaryResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getDataForDailySummaryDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageMonthlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:addRegistryBandwidthUsageMonthlySummaryRequest" wsaw:Action="urn:addRegistryBandwidthUsageMonthlySummary" />
+        </wsdl:operation>
+
+        <wsdl:operation name="addBandwidthStatYearlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:addBandwidthStatYearlySummaryRequest" wsaw:Action="urn:addBandwidthStatYearlySummary" />
+        </wsdl:operation>
+        <wsdl:operation name="getLatestQuarterlyBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestQuarterlyBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestQuarterlyBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestQuarterlyBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestQuarterlyBandwidthSummaryPeriodIdResponse" />
+
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestQuarterlyBandwidthSummaryPeriodIdDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatMonthlySummary">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:addBandwidthStatMonthlySummaryRequest" wsaw:Action="urn:addBandwidthStatMonthlySummary" />
+        </wsdl:operation>
+        <wsdl:operation name="getMinimumPeriodId">
+            <wsdl:documentation />
+
+            <wsdl:input message="ns1:getMinimumPeriodIdRequest" wsaw:Action="urn:getMinimumPeriodId" />
+            <wsdl:output message="ns1:getMinimumPeriodIdResponse" wsaw:Action="urn:getMinimumPeriodIdResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getMinimumPeriodIdDataServiceFault" />
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyBandwidthSummaryPeriodId">
+            <wsdl:documentation />
+            <wsdl:input message="ns1:getLatestMonthlyBandwidthSummaryPeriodIdRequest" wsaw:Action="urn:getLatestMonthlyBandwidthSummaryPeriodId" />
+            <wsdl:output message="ns1:getLatestMonthlyBandwidthSummaryPeriodIdResponse" wsaw:Action="urn:getLatestMonthlyBandwidthSummaryPeriodIdResponse" />
+            <wsdl:fault message="ns1:DataServiceFault" name="DataServiceFault" wsaw:Action="urn:getLatestMonthlyBandwidthSummaryPeriodIdDataServiceFault" />
+
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="MeteringSummaryGenerationDSSOAP11Binding" type="ns1:MeteringSummaryGenerationDSPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getRegistryBandwidthUsage">
+            <soap:operation soapAction="urn:getRegistryBandwidthUsage" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForMonthlySummary">
+            <soap:operation soapAction="urn:getDataForMonthlySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="deleteServerUserData">
+            <soap:operation soapAction="urn:deleteServerUserData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatHourlySummary">
+            <soap:operation soapAction="urn:addBandwidthStatHourlySummary" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryBandwidthUsageForMonthlySummary">
+            <soap:operation soapAction="urn:getRegistryBandwidthUsageForMonthlySummary" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestDailyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatDailySummary">
+            <soap:operation soapAction="urn:addBandwidthStatDailySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyRegistryBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestMonthlyRegistryBandwidthSummaryPeriodId" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDataForHourlySummary">
+            <soap:operation soapAction="urn:getDataForHourlySummary" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryHistoryBandwidthUsage">
+            <soap:operation soapAction="urn:getRegistryHistoryBandwidthUsage" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForYearlySummary">
+            <soap:operation soapAction="urn:getDataForYearlySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageDailySummary">
+            <soap:operation soapAction="urn:addRegistryBandwidthUsageDailySummary" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestHourlyBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestHourlyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyRegistryBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestDailyRegistryBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatQuarterlySummary">
+            <soap:operation soapAction="urn:addBandwidthStatQuarterlySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForQuarterlySummary">
+            <soap:operation soapAction="urn:getDataForQuarterlySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestYearlyBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestYearlyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForDailySummary">
+            <soap:operation soapAction="urn:getDataForDailySummary" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageMonthlySummary">
+            <soap:operation soapAction="urn:addRegistryBandwidthUsageMonthlySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatYearlySummary">
+            <soap:operation soapAction="urn:addBandwidthStatYearlySummary" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestQuarterlyBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestQuarterlyBandwidthSummaryPeriodId" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatMonthlySummary">
+            <soap:operation soapAction="urn:addBandwidthStatMonthlySummary" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getMinimumPeriodId">
+            <soap:operation soapAction="urn:getMinimumPeriodId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyBandwidthSummaryPeriodId">
+            <soap:operation soapAction="urn:getLatestMonthlyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="MeteringSummaryGenerationDSSOAP12Binding" type="ns1:MeteringSummaryGenerationDSPortType">
+
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getRegistryBandwidthUsage">
+            <soap12:operation soapAction="urn:getRegistryBandwidthUsage" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForMonthlySummary">
+            <soap12:operation soapAction="urn:getDataForMonthlySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deleteServerUserData">
+            <soap12:operation soapAction="urn:deleteServerUserData" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatHourlySummary">
+            <soap12:operation soapAction="urn:addBandwidthStatHourlySummary" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryBandwidthUsageForMonthlySummary">
+            <soap12:operation soapAction="urn:getRegistryBandwidthUsageForMonthlySummary" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestDailyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatDailySummary">
+            <soap12:operation soapAction="urn:addBandwidthStatDailySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyRegistryBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestMonthlyRegistryBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForHourlySummary">
+            <soap12:operation soapAction="urn:getDataForHourlySummary" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryHistoryBandwidthUsage">
+            <soap12:operation soapAction="urn:getRegistryHistoryBandwidthUsage" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForYearlySummary">
+            <soap12:operation soapAction="urn:getDataForYearlySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageDailySummary">
+            <soap12:operation soapAction="urn:addRegistryBandwidthUsageDailySummary" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestHourlyBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestHourlyBandwidthSummaryPeriodId" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyRegistryBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestDailyRegistryBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatQuarterlySummary">
+            <soap12:operation soapAction="urn:addBandwidthStatQuarterlySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDataForQuarterlySummary">
+            <soap12:operation soapAction="urn:getDataForQuarterlySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestYearlyBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestYearlyBandwidthSummaryPeriodId" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDataForDailySummary">
+            <soap12:operation soapAction="urn:getDataForDailySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageMonthlySummary">
+            <soap12:operation soapAction="urn:addRegistryBandwidthUsageMonthlySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatYearlySummary">
+            <soap12:operation soapAction="urn:addBandwidthStatYearlySummary" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestQuarterlyBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestQuarterlyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatMonthlySummary">
+            <soap12:operation soapAction="urn:addBandwidthStatMonthlySummary" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getMinimumPeriodId">
+            <soap12:operation soapAction="urn:getMinimumPeriodId" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyBandwidthSummaryPeriodId">
+            <soap12:operation soapAction="urn:getLatestMonthlyBandwidthSummaryPeriodId" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="DataServiceFault">
+                <soap12:fault use="literal" name="DataServiceFault" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="MeteringSummaryGenerationDSHttpBinding" type="ns1:MeteringSummaryGenerationDSPortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="getRegistryBandwidthUsage">
+            <http:operation location="getRegistryBandwidthUsage" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForMonthlySummary">
+            <http:operation location="getDataForMonthlySummary" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteServerUserData">
+            <http:operation location="deleteServerUserData" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatHourlySummary">
+            <http:operation location="addBandwidthStatHourlySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryBandwidthUsageForMonthlySummary">
+            <http:operation location="getRegistryBandwidthUsageForMonthlySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyBandwidthSummaryPeriodId">
+            <http:operation location="getLatestDailyBandwidthSummaryPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatDailySummary">
+            <http:operation location="addBandwidthStatDailySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyRegistryBandwidthSummaryPeriodId">
+            <http:operation location="getLatestMonthlyRegistryBandwidthSummaryPeriodId" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForHourlySummary">
+            <http:operation location="getDataForHourlySummary" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRegistryHistoryBandwidthUsage">
+            <http:operation location="getRegistryHistoryBandwidthUsage" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDataForYearlySummary">
+            <http:operation location="getDataForYearlySummary" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageDailySummary">
+            <http:operation location="addRegistryBandwidthUsageDailySummary" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestHourlyBandwidthSummaryPeriodId">
+            <http:operation location="getLatestHourlyBandwidthSummaryPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestDailyRegistryBandwidthSummaryPeriodId">
+            <http:operation location="getLatestDailyRegistryBandwidthSummaryPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatQuarterlySummary">
+            <http:operation location="addBandwidthStatQuarterlySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDataForQuarterlySummary">
+            <http:operation location="getDataForQuarterlySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestYearlyBandwidthSummaryPeriodId">
+            <http:operation location="getLatestYearlyBandwidthSummaryPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDataForDailySummary">
+            <http:operation location="getDataForDailySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="addRegistryBandwidthUsageMonthlySummary">
+            <http:operation location="addRegistryBandwidthUsageMonthlySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatYearlySummary">
+            <http:operation location="addBandwidthStatYearlySummary" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getLatestQuarterlyBandwidthSummaryPeriodId">
+            <http:operation location="getLatestQuarterlyBandwidthSummaryPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addBandwidthStatMonthlySummary">
+            <http:operation location="addBandwidthStatMonthlySummary" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+        </wsdl:operation>
+        <wsdl:operation name="getMinimumPeriodId">
+            <http:operation location="getMinimumPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getLatestMonthlyBandwidthSummaryPeriodId">
+            <http:operation location="getLatestMonthlyBandwidthSummaryPeriodId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="MeteringSummaryGenerationDS">
+        <wsdl:port name="SOAP11Endpoint" binding="ns1:MeteringSummaryGenerationDSSOAP11Binding">
+            <soap:address location="http://cloud.shankar.com:9763/services/MeteringSummaryGenerationDS.SOAP11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="SecureSOAP11Endpoint" binding="ns1:MeteringSummaryGenerationDSSOAP11Binding">
+            <soap:address location="https://cloud.shankar.com:9443/services/MeteringSummaryGenerationDS.SecureSOAP11Endpoint/" />
+        </wsdl:port>
+
+        <wsdl:port name="SecureSOAP12Endpoint" binding="ns1:MeteringSummaryGenerationDSSOAP12Binding">
+            <soap12:address location="https://cloud.shankar.com:9443/services/MeteringSummaryGenerationDS.SecureSOAP12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="SOAP12Endpoint" binding="ns1:MeteringSummaryGenerationDSSOAP12Binding">
+            <soap12:address location="http://cloud.shankar.com:9763/services/MeteringSummaryGenerationDS.SOAP12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="HTTPEndpoint" binding="ns1:MeteringSummaryGenerationDSHttpBinding">
+            <http:address location="http://cloud.shankar.com:9763/services/MeteringSummaryGenerationDS.HTTPEndpoint/" />
+        </wsdl:port>
+
+        <wsdl:port name="SecureHTTPEndpoint" binding="ns1:MeteringSummaryGenerationDSHttpBinding">
+            <http:address location="https://cloud.shankar.com:9443/services/MeteringSummaryGenerationDS.SecureHTTPEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

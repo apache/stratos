@@ -1,0 +1,121 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://service.mgt.hosting.carbon.wso2.org" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.mgt.hosting.carbon.wso2.org">
+    <wsdl:documentation>RepoNotificationService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ns="http://org.apache.axis2/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://org.apache.axis2/xsd">
+            <xs:element name="RepoNotificationServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RepoNotificationServiceException" nillable="true" type="ns1:Exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="synchronize">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="repositoryURL" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="notifyRepoUpdate">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="notifyRepoUpdateRequest">
+        <wsdl:part name="parameters" element="ns1:notifyRepoUpdate"/>
+    </wsdl:message>
+    <wsdl:message name="RepoNotificationServiceException">
+        <wsdl:part name="parameters" element="ns1:RepoNotificationServiceException"/>
+    </wsdl:message>
+    <wsdl:message name="synchronizeRequest">
+        <wsdl:part name="parameters" element="ns1:synchronize"/>
+    </wsdl:message>
+    <wsdl:portType name="RepoNotificationServicePortType">
+        <wsdl:operation name="notifyRepoUpdate">
+            <wsdl:input message="tns:notifyRepoUpdateRequest" wsaw:Action="urn:notifyRepoUpdate"/>
+            <wsdl:fault message="tns:RepoNotificationServiceException" name="RepoNotificationServiceException" wsaw:Action="urn:notifyRepoUpdateRepoNotificationServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="synchronize">
+            <wsdl:input message="tns:synchronizeRequest" wsaw:Action="urn:synchronize"/>
+            <wsdl:fault message="tns:RepoNotificationServiceException" name="RepoNotificationServiceException" wsaw:Action="urn:synchronizeRepoNotificationServiceException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RepoNotificationServiceSoap11Binding" type="tns:RepoNotificationServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="notifyRepoUpdate">
+            <soap:operation soapAction="urn:notifyRepoUpdate" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="RepoNotificationServiceException">
+                <soap:fault use="literal" name="RepoNotificationServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="synchronize">
+            <soap:operation soapAction="urn:synchronize" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="RepoNotificationServiceException">
+                <soap:fault use="literal" name="RepoNotificationServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RepoNotificationServiceSoap12Binding" type="tns:RepoNotificationServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="notifyRepoUpdate">
+            <soap12:operation soapAction="urn:notifyRepoUpdate" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="RepoNotificationServiceException">
+                <soap12:fault use="literal" name="RepoNotificationServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="synchronize">
+            <soap12:operation soapAction="urn:synchronize" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="RepoNotificationServiceException">
+                <soap12:fault use="literal" name="RepoNotificationServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RepoNotificationServiceHttpBinding" type="tns:RepoNotificationServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="notifyRepoUpdate">
+            <http:operation location="notifyRepoUpdate"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="synchronize">
+            <http:operation location="synchronize"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RepoNotificationService">
+        <wsdl:port name="RepoNotificationServiceHttpsSoap11Endpoint" binding="tns:RepoNotificationServiceSoap11Binding">
+            <soap:address location="https://192.168.93.68:9445/services/RepoNotificationService.RepoNotificationServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RepoNotificationServiceHttpsSoap12Endpoint" binding="tns:RepoNotificationServiceSoap12Binding">
+            <soap12:address location="https://192.168.93.68:9445/services/RepoNotificationService.RepoNotificationServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RepoNotificationServiceHttpsEndpoint" binding="tns:RepoNotificationServiceHttpBinding">
+            <http:address location="https://192.168.93.68:9445/services/RepoNotificationService.RepoNotificationServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

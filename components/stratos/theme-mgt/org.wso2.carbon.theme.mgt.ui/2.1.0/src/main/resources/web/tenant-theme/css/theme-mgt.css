@@ -1,0 +1,16 @@
+.subcontent {
+    padding:5px 0px 5px; 0px
+}
+
+.subtopic {
+    padding:10px 0px 5px; 0px;
+    border-bottom:1px solid #000000;
+    font-size:140%;
+    font-weight:normal;
+    margin-bottom:10px;
+    margin-top:5px;
+}
+
+.green-note {
+    color: #058000;    
+}

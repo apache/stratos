@@ -1,0 +1,22 @@
+<policies>
+	<policy name="single" isDefault="true">
+		<description>Single - Instances: Min 1, Max 1</description>
+		<min_app_instances>1</min_app_instances>
+		<max_app_instances>1</max_app_instances>
+		<max_requests_per_second>5</max_requests_per_second>
+		<alarming_upper_rate>0.7</alarming_upper_rate>
+		<alarming_lower_rate>0.2</alarming_lower_rate>
+		<scale_down_factor>0.25</scale_down_factor>
+		<rounds_to_average>2</rounds_to_average>
+	</policy>
+	<policy name="elastic" isDefault="false">
+		<description>Elastic - Instances: Min 1, Max 4</description>
+		<min_app_instances>1</min_app_instances>
+		<max_app_instances>4</max_app_instances>
+		<max_requests_per_second>5</max_requests_per_second>
+		<alarming_upper_rate>0.7</alarming_upper_rate>
+		<alarming_lower_rate>0.2</alarming_lower_rate>
+		<scale_down_factor>0.25</scale_down_factor>
+		<rounds_to_average>2</rounds_to_average>
+	</policy>
+</policies>

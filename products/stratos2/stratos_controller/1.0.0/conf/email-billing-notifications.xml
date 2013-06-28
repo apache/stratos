@@ -1,0 +1,49 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<!-- 
+    Contains the body of the mail that to be sent as the invoice of the tenant for the period.
+  -->
+
+<configuration>       
+    <subject>WSO2 Cloud Services</subject>
+    <body>
+Hi {customer-name},
+
+This is the billing information for the time period of {start-date} to {end-date} for the use of WSO2 cloud services.
+
+Charges for subscriptions
+=========================
+{subscription-charges}
+
+Payment details
+===============
+{payment-details}
+
+Invoice Summary
+===============
+Brought Forward      {bought-forward}
+Total Cost          {total-cost}
+Total Payments      {total-payments}
+Carried Forward     {carried-forward}
+
+Best Regards,
+WSO2 Cloud Services
+http://stratoslive.wso2.com
+    </body>
+</configuration>
