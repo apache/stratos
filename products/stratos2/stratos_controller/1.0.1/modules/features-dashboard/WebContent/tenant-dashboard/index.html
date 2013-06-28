@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link type="text/css" href="../../../../features-dashboard/tenant-dashboard/css/features-dashboard-new.css" rel="stylesheet"/>
+    <script type="text/javascript" src="../../../../features-dashboard/tenant-dashboard/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="../../../../features-dashboard/tenant-dashboard/js/jquery.masonry.min.js"></script>
+
+    <script type="text/javascript">
+        var def = 'manager'; //This is the default section to display images
+        var hideOnMouseLeave = false; //Set this to true if you want to hide the popup on mouse out from the popup
+        var nameObj = {
+            manager:'Cloud Services',
+            as:'Application Services',
+            dss:'Data Services',
+            ms:'Mashup Services',
+            is:'Identity Services',
+            greg:'Governance Services',
+            gs:'Gadget Services',
+            bam:'Business Activity Monitor',
+            bps:'Business Process Services',
+            brs:'Business Rules Services',
+            esb:'Enterprise Service Bus',
+            cep:'Complex Event Processing Services',
+            mb:'Message Broker Services',
+            csg:'Cloud Gateway'
+        };
+        $(document).ready(function() {
+            for (var name in nameObj) {
+                var newDiv = document.createElement('div');
+                newDiv.id = name + "_content";
+                newDiv.style.display = "none";
+                jQuery(newDiv).load('../../../../features-dashboard/dashboards/' + name + '.html');
+                document.getElementById('container').appendChild(newDiv);
+            }
+            //Close button event register
+            $('#popup-close').click(
+                    function(){
+                        $(this).hide();
+                        $('#db_content_title').hide();
+                        $('#container > div').hide('slow');
+                        $('#page-popup').removeClass("page-popup");
+                        $('.db_menu li').removeClass("selected");
+                        loadDefalut();
+                    }
+                    );
+
+
+            //Showing title and content for the default manager div
+                $('#db_content_title').html(nameObj[def]);
+                $('#' + def + '_info').addClass("selected");
+//                $('#page-popup').addClass("page-popup");
+            var loadDefalut = function() {
+                $('#db_content_title').show();
+                var container = $('#' + def + '_content');
+                container.show(function() {
+                    container.imagesLoaded(function() {
+                        container.masonry({
+                            itemSelector : '.story',
+                            columnWidth : 250,
+                            isAnimated: true,
+                            animationOptions: {
+                                duration: 750,
+                                easing: 'linear',
+                                queue: false
+                            }
+                        });
+                    });
+                });
+            };
+            loadDefalut();
+
+            //Handle mouse over event
+            $('.db_menu li a').mouseover(
+                    function() {
+                        //Handle the menu styles
+                        $('.db_menu li').removeClass("selected");
+
+                        if(hideOnMouseLeave){
+                            $('#page-popup').mouseleave(
+                                    function(){
+                                        $('#page-popup').removeClass("page-popup");
+                                        $('#container > div').hide('slow');
+                                        $('#db_content_title').hide();
+                                        $('#popup-close').hide();
+                                    }
+                                    );
+                        }
+
+
+                        //Get the relevent catagory from the id of the link that has been mouse overred.
+                        var cat = this.id.split('_')[0];
+
+                        //hide all content and show and init the  mansonry for the relevent one
+                        $('#container > div').hide();
+                        $('#db_content_title').show();
+                        $('#db_content_title').html(nameObj[cat]);
+                        if(cat == def){
+                            $('#page-popup').removeClass("page-popup");
+                            $('#popup-close').hide();
+                        }else{
+
+                            //Show the gray box and register an event handler to remove it when the mouse is ouside
+                            $('#page-popup').addClass("page-popup");
+                            $('#popup-close').show();
+                            $(this.parentNode).addClass("selected");
+
+                        }
+                        var container = $('#' + cat + "_content");
+                        $('#' + cat + '_content').show(
+                                function() {
+                                    container.imagesLoaded(function() {
+                                        container.masonry({
+                                            itemSelector : '.story',
+                                            columnWidth : 250,
+                                            isAnimated: true,
+                                            animationOptions: {
+                                                duration: 750,
+                                                easing: 'linear',
+                                                queue: false
+                                            }
+                                        });
+                                    });
+                                }
+                                );
+                    }
+                    );
+        });
+
+
+    </script>
+</head>
+<body>
+<div class="page-background">
+<div class="page-picture">
+<div id="page-popup">
+    <a id="popup-close" style="display:none;">close</a>
+    <table class="db_table">
+        <tr>
+            <div class="main-title">Services</div>
+            <td class="db_menu">
+                <ul>
+                    <li><a id="manager_info">Cloud Services</a></li>
+                    <li><a id="as_info" onclick="gotoAppServer();">Application Services </a></li>
+                    <li><a id="dss_info" onclick="gotoDss();">Data Services </a></li>
+                    <li><a id="ms_info" onclick="gotoMs();">Mashup Services </a></li>
+                    <li><a id="is_info" onclick="gotoIs();">Identity Services </a></li>
+                    <li><a id="greg_info" onclick="gotoGreg();">Governance Services </a></li>
+                    <li><a id="gs_info" onclick="gotoGs();">Gadget Services </a></li>
+                    <li><a id="bam_info" onclick="gotoBam();">Business Activity Monitor </a></li>
+                    <li><a id="bps_info" onclick="gotoBps();">Business Process Services </a></li>
+                    <li><a id="brs_info" onclick="gotoBrs();">Business Rules Services </a></li>
+                    <li><a id="esb_info" onclick="gotoEsb();">Enterprise Service Bus </a></li>
+                    <li><a id="cep_info" onclick="gotoCep();">Complex Event Processing Services </a></li>
+                    <li><a id="mb_info" onclick="gotoMb();">Message Broker </a></li>
+                    <li><a id="csg_info" onclick="gotoCsg();">Cloud Gateway </a></li>
+                </ul>
+
+            </td>
+            <td class="db_content">
+                <div class="popup-circle">
+                    <div id="db_content_title"></div>
+                    <div id="container"></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</div>
+</div>
+
+</body>
+</html>

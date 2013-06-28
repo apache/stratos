@@ -1,0 +1,231 @@
+div.dashboard-clear {
+    clear:both;
+    margin-top:5px;
+}
+
+div.dashboard-comp {
+    width: 300px;
+    margin: 5px;
+    float: left;
+    border:1px solid #6997b2;
+    background: #ffffff;
+    height: 300px;
+}
+.dashboard-comp-head{
+background-image:url( ../../admin/images/table-header.gif);
+background-position:left bottom;
+background-repeat:repeat-x;
+font-weight:normal;
+height:22px;
+line-height:22px;
+text-indent:5px;
+font-weight:bold;
+}
+.dashboard-comp-bottom{
+padding-left:5px;
+padding-top:5px;
+}
+.dashboard-comp-msg{
+color:#505050;
+padding:5px;
+}
+
+div.dashboard-comp-body {
+    overflow: auto;
+    max-height: 230px;
+}
+
+div.activity-comp-body {
+    overflow: auto;
+    max-height: 278px;
+}
+table.tips {
+	border-collapse: separate;
+	padding-bottom: 10px;
+	width: 90%;
+}
+table.tips tbody tr.tips-row {
+}
+tr.tips-row td {
+	border-bottom: solid 1px #ccc;
+}
+tr.tips-row td.tip-checkbox {
+	padding-left: 40px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    vertical-align: top;
+    padding-right:12px !important;
+}
+tr.tips-row td.tip-img {
+	padding-left: 15px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    vertical-align: top;
+    padding-right:12px !important;
+}
+tr.tips-row td.tip-img a img {
+	border: 0px;
+}
+tr.tips-row td.tip {
+	background-image: url(../images/aas-top.gif);
+	background-repeat: no-repeat;
+	background-position: left 7px;
+    margin: 0px;
+    padding-left: 0px;
+    padding-right: 15px;
+    padding-top: 20px;
+    padding-bottom: 0px;
+    /*border-bottom: 1px solid #aaa;*/
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    vertical-align: top;
+}
+tr.tips-row td.tip img {
+	float: left;
+	margin-top: -20px;
+	margin-left: 17px;
+	margin-right: 12px;
+	margin-bottom: 20px;
+}
+tr.tips-row td.tip h2 {
+    background-color: transparent !important;
+	font-size: 125%;
+	line-height: 125%;
+	margin-top: 0px;
+	margin-bottom: 3px;
+    border:medium none !important;
+    margin-top:3px !important;
+    margin-left: 0px !important;
+    padding-left: 0px !important;
+}
+tr.tips-row td.tip h2 a {
+	font-size:14px;
+    text-decoration:underline;
+}
+tr.tips-row td.tip p {
+	padding-bottom: 15px;
+}
+tr.tips-row td.access {
+	padding-left: 30px;
+	padding-right: 30px;
+	vertical-align: middle;
+}
+tr.tips-row td.access a.go-button {
+	width: 63px;
+	height: 42px;
+	display: block;
+	background-color: #ccc;
+	font-size: 20px;
+	line-height: 40px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+	padding-left: 19px;
+	background-image: url(../images/go-button.gif);
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+tr.tips-row td.access span.inactive {
+	width: 63px;
+	height: 42px;
+	display: block;
+	background-color: #ccc;
+	font-size: 20px;
+	line-height: 40px;
+	font-weight: bold;
+	color: #999999;
+	text-decoration: none;
+	padding-left: 19px;
+	background-image: url(../images/inactive-go-button.gif);
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+tr.tips-row td.access a.go-button:hover {
+	color: #0084A9;
+}
+tr.tips-row td.powered {
+	padding-left: 10px;
+	padding-right: 20px;
+	text-align: right;
+	font-size: 12px;
+	line-height: 20px;
+	color: #666666;
+	vertical-align: middle;
+}
+.green-note {
+    color: #f00;
+}
+div#menu ul.main li a.menu-home {
+display:block !important;
+}
+/* service config buttons */
+td.access a.activate-button {
+	width: 98px;
+	height: 42px;
+	cursor: pointer;
+	display: block;
+	background-color: #ccc;
+	font-size: 15px;
+	line-height: 40px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	padding-left: 47px;
+	background-image: url(../images/activate-button.gif);
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+td.access a.activate-button:hover {
+	color: #00853F;
+}
+td.access a.deactivate-button {
+	width: 103px;
+	height: 42px;
+	cursor: pointer;
+	display: block;
+	background-color: #ccc;
+	font-size: 15px;
+	line-height: 40px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	padding-left: 42px;
+	background-image: url(../images/deactivate-button.gif);
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+td.access a.deactivate-button:hover {
+	color: #B5121B;
+}
+.home_tips{
+width:100%;
+}
+.home_tips td{
+border-bottom:solid 1px #ccc;
+padding-bottom:5px !important;
+padding-top:5px !important;
+}
+.home_tips td img{
+vertical-align:middle;
+
+}
+.home_tips td img.iconImage{
+margin-right:10px;
+
+}
+.linkToService{
+color:#0D4D79 !important;
+padding-left:10px !important;
+font-size:18px;
+text-decoration:underline !important;
+}
+.home_tips td.powered{
+text-align:right;
+}

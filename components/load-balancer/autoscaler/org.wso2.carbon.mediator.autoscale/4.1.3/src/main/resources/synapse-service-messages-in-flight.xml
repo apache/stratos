@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<!-- The default synapse configuration shipped with the WSO2 Load Balancer
+     This handles the load balancing and the autoscaling of the stratos services
+ -->
+
+<definitions xmlns="http://ws.apache.org/ns/synapse">
+
+    <!-- You can add any flat sequences, endpoints, etc.. to this synapse-messages-in-flight.xml file if you do
+         *not* want to have the defaults given below, specific to WSO2 LB and auto-scaler
+    -->
+
+
+    <!-- Given below is the auto-scale mediator specific task. Uncomment it, if you want to
+         auto-scale your applications.
+    -->
+    <task class="org.wso2.carbon.mediator.autoscale.lbautoscale.ServiceRequestsInFlightAutoscaler"
+          name="LoadAnalyzer">
+
+        <!--
+            The private key for ec2
+        -->
+        <property name="ec2PrivateKey" value="/mnt/payload/pk.pem"/>
+
+        <!--
+            The certificate for ec2
+        -->
+        <property name="ec2Cert" value="/mnt/payload/cert.pem"/>
+        <!--
+            The key pair
+        -->
+        <property name="sshKey" value="stratos-1.0.0-keypair"/>
+
+        <property name="loadBalancer">
+            <loadBalancer>
+                <property name="securityGroup" value="stratos-appserver-lb"/>
+                <property name="instanceType" value="m1.large"/>
+                <property name="instances" value="1"/>
+                <property name="elasticIP" value="${ELASTIC_IP}"/>
+                <property name="availabilityZone" value="us-east-1c"/>
+                <property name="payload" value="/mnt/payload.zip"/>
+            </loadBalancer>
+        </property>
+
+        <property name="services">
+            <services>
+                <defaults>
+                    <property name="payload" value="resources/cluster_node.zip"/>
+                    <property name="availabilityZone" value="us-east-1c"/>
+                    <property name="securityGroup" value="as-2011-02-23"/>
+                    <property name="instanceType" value="m1.large"/>
+                    <property name="minAppInstances" value="1"/>
+                    <property name="maxAppInstances" value="5"/>
+                    <property name="queueLengthPerNode" value="400"/>
+                    <property name="roundsToAverage" value="10"/>
+                    <property name="instancesPerScaleUp" value="1"/>
+                    <property name="messageExpiryTime" value="60000"/>
+                </defaults>
+                <service domain="wso2.as.domain">
+                    <property name="payload" value="resources/cluster_node.zip"/>
+                    <property name="availabilityZone" value="us-east-1c"/>
+                </service>
+                <service domain="wso2.ds.domain">
+                    <property name="payload" value="resources/cluster_node.zip"/>
+                    <property name="minAppInstances" value="1"/>
+                    <property name="maxAppInstances" value="5"/>
+                    <property name="queueLengthPerNode" value="400"/>
+                    <property name="roundsToAverage" value="10"/>
+                    <property name="instancesPerScaleUp" value="1"/>
+                    <property name="availabilityZone" value="us-east-1c"/>
+                    <property name="securityGroup" value="ds-2011-02-23"/>
+                </service>
+                <service domain="wso2.bps.domain">
+                    <property name="payload" value="resources/cluster_node.zip"/>
+                    <property name="minAppInstances" value="1"/>
+                    <property name="maxAppInstances" value="5"/>
+                    <property name="queueLengthPerNode" value="400"/>
+                    <property name="roundsToAverage" value="10"/>
+                    <property name="instancesPerScaleUp" value="1"/>
+                    <property name="availabilityZone" value="us-east-1c"/>
+                    <property name="securityGroup" value="bps-2011-02-23"/>
+                </service>
+            </services>
+        </property>
+
+        <!--
+            The interval to trigger the task in seconds
+        -->
+        <trigger interval="5"/>
+    </task>
+</definitions>

@@ -1,0 +1,1370 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://authentication.services.core.carbon.wso2.org" xmlns:ax2103="http://transport.axis2.apache.org/xsd" xmlns:ax287="http://constants.schema.commons.ws.apache.org/xsd" xmlns:ax239="http://util.java/xsd" xmlns:ax285="http://dom.w3c.org/xsd" xmlns:ax283="http://schema.commons.ws.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2101="http://client.axis2.apache.org/xsd" xmlns:ax280="http://neethi.apache.org/xsd" xmlns:ax262="http://util.deployment.axis2.apache.org/xsd" xmlns:ax246="http://clustering.axis2.apache.org/xsd" xmlns:ax245="http://engine.axis2.apache.org/xsd" xmlns:ax265="http://net.java/xsd" xmlns:ax267="http://securevault.wso2.org/xsd" xmlns:ax241="http://lifecycle.attachments.axiom.apache.org/xsd" xmlns:ax244="http://description.axis2.apache.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax269="http://util.axis2.apache.org/xsd" xmlns:ax249="http://threadpool.util.axis2.apache.org/xsd" xmlns:ax298="http://addressing.axis2.apache.org/xsd" xmlns:ax292="http://soap.axiom.apache.org/xsd" xmlns:ax293="http://om.axiom.apache.org/xsd" xmlns:ax233="http://authentication.services.core.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax231="http://common.core.carbon.wso2.org/xsd" xmlns:ax236="http://attachments.axiom.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax237="http://io.java/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax271="http://transaction.axis2.apache.org/xsd" xmlns:ax235="http://context.axis2.apache.org/xsd" xmlns:ax277="http://java2wsdl.description.axis2.apache.org/xsd" xmlns:ax256="http://state.clustering.axis2.apache.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax253="http://management.clustering.axis2.apache.org/xsd" targetNamespace="http://authentication.services.core.carbon.wso2.org">
+    <wsdl:documentation>AuthenticationAdmin</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://transaction.axis2.apache.org/xsd">
+            <xs:complexType name="TransactionConfiguration">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="transactionManager" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="transactionTimeout" type="xs:int"/>
+                    <xs:element minOccurs="0" name="userTransaction" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax281="http://util.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://neethi.apache.org/xsd">
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:complexType abstract="true" name="AbstractPolicyOperator">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="empty" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="firstPolicyComponent" nillable="true" type="ax280:PolicyComponent"/>
+                    <xs:element minOccurs="0" name="policyComponents" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="PolicyComponent">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="type" type="xs:short"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="All">
+                <xs:complexContent>
+                    <xs:extension base="ax280:AbstractPolicyOperator">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="assertions" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="type" type="xs:short"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="Policy">
+                <xs:complexContent>
+                    <xs:extension base="ax280:All">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="alternatives" nillable="true" type="ax239:Iterator"/>
+                            <xs:element minOccurs="0" name="attributes" nillable="true" type="ax239:Map"/>
+                            <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="type" type="xs:short"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://constants.schema.commons.ws.apache.org/xsd">
+            <xs:complexType abstract="true" name="Enum">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://threadpool.util.axis2.apache.org/xsd">
+            <xs:complexType abstract="true" name="ThreadFactory">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax284="http://util.java/xsd" xmlns:ax288="http://constants.schema.commons.ws.apache.org/xsd" xmlns:ax286="http://dom.w3c.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schema.commons.ws.apache.org/xsd">
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://dom.w3c.org/xsd"/>
+            <xs:import namespace="http://constants.schema.commons.ws.apache.org/xsd"/>
+            <xs:complexType abstract="true" name="XmlSchemaObject">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lineNumber" type="xs:int"/>
+                    <xs:element minOccurs="0" name="linePosition" type="xs:int"/>
+                    <xs:element minOccurs="0" name="metaInfoMap" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="sourceURI" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaAnnotated">
+                <xs:complexContent>
+                    <xs:extension base="ax283:XmlSchemaObject">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="annotation" nillable="true" type="ax283:XmlSchemaAnnotation"/>
+                            <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                            <xs:element maxOccurs="unbounded" minOccurs="0" name="unhandledAttributes" nillable="true" type="ax285:Attr"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaAnnotation">
+                <xs:complexContent>
+                    <xs:extension base="ax283:XmlSchemaObject">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="items" nillable="true" type="ax283:XmlSchemaObjectCollection"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaObjectCollection">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="count" type="xs:int"/>
+                    <xs:element minOccurs="0" name="iterator" nillable="true" type="ax239:Iterator"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaParticle">
+                <xs:complexContent>
+                    <xs:extension base="ax283:XmlSchemaAnnotated">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="maxOccurs" type="xs:long"/>
+                            <xs:element minOccurs="0" name="minOccurs" type="xs:long"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaElement">
+                <xs:complexContent>
+                    <xs:extension base="ax283:XmlSchemaParticle">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="QName" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="abstract" type="xs:boolean"/>
+                            <xs:element minOccurs="0" name="block" nillable="true" type="ax283:XmlSchemaDerivationMethod"/>
+                            <xs:element minOccurs="0" name="blockResolved" nillable="true" type="ax283:XmlSchemaDerivationMethod"/>
+                            <xs:element minOccurs="0" name="constraints" nillable="true" type="ax283:XmlSchemaObjectCollection"/>
+                            <xs:element minOccurs="0" name="defaultValue" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="elementType" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="final" nillable="true" type="ax283:XmlSchemaDerivationMethod"/>
+                            <xs:element minOccurs="0" name="fixedValue" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="form" nillable="true" type="ax283:XmlSchemaForm"/>
+                            <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="nillable" type="xs:boolean"/>
+                            <xs:element minOccurs="0" name="refName" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="schemaType" nillable="true" type="ax283:XmlSchemaType"/>
+                            <xs:element minOccurs="0" name="schemaTypeName" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="substitutionGroup" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="type" nillable="true" type="ax283:XmlSchemaType"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaDerivationMethod">
+                <xs:complexContent>
+                    <xs:extension base="ax287:Enum">
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" minOccurs="0" name="values" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaForm">
+                <xs:complexContent>
+                    <xs:extension base="ax287:Enum">
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" minOccurs="0" name="values" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="XmlSchemaType">
+                <xs:complexContent>
+                    <xs:extension base="ax283:XmlSchemaAnnotated">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="QName" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="baseSchemaType" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="baseSchemaTypeName" nillable="true" type="xs:anyType"/>
+                            <xs:element minOccurs="0" name="dataType" nillable="true" type="ax283:XmlSchemaDatatype"/>
+                            <xs:element minOccurs="0" name="deriveBy" nillable="true" type="ax283:XmlSchemaDerivationMethod"/>
+                            <xs:element minOccurs="0" name="final" nillable="true" type="ax283:XmlSchemaDerivationMethod"/>
+                            <xs:element minOccurs="0" name="finalResolved" nillable="true" type="ax283:XmlSchemaDerivationMethod"/>
+                            <xs:element minOccurs="0" name="mixed" type="xs:boolean"/>
+                            <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="XmlSchemaDatatype">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.axis2.apache.org/xsd">
+            <xs:complexType abstract="true" name="TargetResolver">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://lifecycle.attachments.axiom.apache.org/xsd">
+            <xs:complexType abstract="true" name="LifecycleManager">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax294="http://om.axiom.apache.org/xsd" xmlns:ax295="http://util.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://soap.axiom.apache.org/xsd">
+            <xs:import namespace="http://om.axiom.apache.org/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:complexType abstract="true" name="SOAPEnvelope">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="SOAPBodyFirstElementLocalName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="SOAPBodyFirstElementNS" nillable="true" type="ax293:OMNamespace"/>
+                    <xs:element minOccurs="0" name="body" nillable="true" type="ax292:SOAPBody"/>
+                    <xs:element minOccurs="0" name="header" nillable="true" type="ax292:SOAPHeader"/>
+                    <xs:element minOccurs="0" name="version" nillable="true" type="ax292:SOAPVersion"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPBody">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="fault" nillable="true" type="ax292:SOAPFault"/>
+                    <xs:element minOccurs="0" name="firstElementLocalName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="firstElementNS" nillable="true" type="ax293:OMNamespace"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFault">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="code" nillable="true" type="ax292:SOAPFaultCode"/>
+                    <xs:element minOccurs="0" name="detail" nillable="true" type="ax292:SOAPFaultDetail"/>
+                    <xs:element minOccurs="0" name="exception" nillable="true"/>
+                    <xs:element minOccurs="0" name="node" nillable="true" type="ax292:SOAPFaultNode"/>
+                    <xs:element minOccurs="0" name="reason" nillable="true" type="ax292:SOAPFaultReason"/>
+                    <xs:element minOccurs="0" name="role" nillable="true" type="ax292:SOAPFaultRole"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFaultCode">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFaultDetail">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="allDetailEntries" nillable="true" type="ax239:Iterator"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFaultNode">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="nodeValue" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFaultReason">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="allSoapTexts" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="firstSOAPText" nillable="true" type="ax292:SOAPFaultText"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFaultText">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lang" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPFaultRole">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="roleValue" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPHeader">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="SOAPVersion">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="encodingURI" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="envelopeURI" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="faultCodeQName" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="faultDetailQName" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="faultReasonQName" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="faultRoleQName" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="mustUnderstandFaultCode" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="nextRoleURI" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="receiverFaultCode" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="roleAttributeQName" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="senderFaultCode" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax240="http://util.java/xsd" xmlns:ax242="http://lifecycle.attachments.axiom.apache.org/xsd" xmlns:ax238="http://io.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://attachments.axiom.apache.org/xsd">
+            <xs:import namespace="http://io.java/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://lifecycle.attachments.axiom.apache.org/xsd"/>
+            <xs:complexType name="Attachments">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="SOAPPartContentID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="SOAPPartContentType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="SOAPPartInputStream" nillable="true" type="ax238:InputStream"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allContentIDs" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="attachmentSpecType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="contentIDList" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="contentIDSet" nillable="true" type="ax239:Set"/>
+                    <xs:element minOccurs="0" name="contentLength" type="xs:long"/>
+                    <xs:element minOccurs="0" name="incomingAttachmentStreams" nillable="true" type="ax236:IncomingAttachmentStreams"/>
+                    <xs:element minOccurs="0" name="incomingAttachmentsAsSingleStream" nillable="true" type="ax238:InputStream"/>
+                    <xs:element minOccurs="0" name="lifecycleManager" nillable="true" type="ax242:LifecycleManager"/>
+                    <xs:element minOccurs="0" name="map" nillable="true" type="ax239:Map"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="IncomingAttachmentStreams">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="nextStream" nillable="true" type="ax236:IncomingAttachmentInputStream"/>
+                    <xs:element minOccurs="0" name="readyToGetNextStream" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="IncomingAttachmentInputStream">
+                <xs:complexContent>
+                    <xs:extension base="ax238:InputStream">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="contentId" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="contentLocation" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="contentType" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="headers" nillable="true" type="ax239:Map"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.core.carbon.wso2.org/xsd">
+            <xs:complexType name="AuthenticationException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="uiErrorCode" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://transport.axis2.apache.org/xsd">
+            <xs:complexType abstract="true" name="TransportListener">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="TransportSender">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://dom.w3c.org/xsd">
+            <xs:complexType abstract="true" name="Attr">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ownerElement" nillable="true" type="ax285:Element"/>
+                    <xs:element minOccurs="0" name="schemaTypeInfo" nillable="true" type="ax285:TypeInfo"/>
+                    <xs:element minOccurs="0" name="specified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Element">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="schemaTypeInfo" nillable="true" type="ax285:TypeInfo"/>
+                    <xs:element minOccurs="0" name="tagName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="TypeInfo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="typeName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="typeNamespace" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2107="http://description.axis2.apache.org/xsd" xmlns:ax2102="http://addressing.axis2.apache.org/xsd" xmlns:ax2104="http://transport.axis2.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://client.axis2.apache.org/xsd">
+            <xs:import namespace="http://addressing.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://transport.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://description.axis2.apache.org/xsd"/>
+            <xs:complexType name="Options">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="action" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="callTransportCleanup" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="exceptionToBeThrownOnSOAPFault" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="faultTo" nillable="true" type="ax2102:EndpointReference"/>
+                    <xs:element minOccurs="0" name="from" nillable="true" type="ax2102:EndpointReference"/>
+                    <xs:element minOccurs="0" name="listener" nillable="true" type="ax2103:TransportListener"/>
+                    <xs:element minOccurs="0" name="logCorrelationIDString" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="manageSession" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="messageId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parent" nillable="true" type="ax2101:Options"/>
+                    <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="relatesTo" nillable="true" type="ax2102:RelatesTo"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="relationships" nillable="true" type="ax2102:RelatesTo"/>
+                    <xs:element minOccurs="0" name="replyTo" nillable="true" type="ax2102:EndpointReference"/>
+                    <xs:element minOccurs="0" name="soapVersionURI" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="timeOutInMilliSeconds" type="xs:long"/>
+                    <xs:element minOccurs="0" name="to" nillable="true" type="ax2102:EndpointReference"/>
+                    <xs:element minOccurs="0" name="transportIn" nillable="true" type="ax2107:TransportInDescription"/>
+                    <xs:element minOccurs="0" name="transportInProtocol" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="transportOut" nillable="true" type="ax2107:TransportOutDescription"/>
+                    <xs:element minOccurs="0" name="useSeparateListener" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.java/xsd">
+            <xs:complexType abstract="true" name="Set">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="empty" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Map">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="empty" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Iterator">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="LinkedList">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="first" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="last" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LinkedHashMap">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://io.java/xsd">
+            <xs:complexType abstract="true" name="InputStream">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax254="http://context.axis2.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://management.clustering.axis2.apache.org/xsd">
+            <xs:import namespace="http://context.axis2.apache.org/xsd"/>
+            <xs:complexType abstract="true" name="NodeManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="configurationContext" nillable="true" type="ax235:ConfigurationContext"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2106="http://transport.axis2.apache.org/xsd" xmlns:ax289="http://schema.commons.ws.apache.org/xsd" xmlns:ax273="http://engine.axis2.apache.org/xsd" xmlns:ax276="http://net.java/xsd" xmlns:ax275="http://util.deployment.axis2.apache.org/xsd" xmlns:ax282="http://neethi.apache.org/xsd" xmlns:ax274="http://util.java/xsd" xmlns:ax279="http://java2wsdl.description.axis2.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://description.axis2.apache.org/xsd">
+            <xs:import namespace="http://engine.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://util.deployment.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://net.java/xsd"/>
+            <xs:import namespace="http://java2wsdl.description.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://neethi.apache.org/xsd"/>
+            <xs:import namespace="http://schema.commons.ws.apache.org/xsd"/>
+            <xs:import namespace="http://transport.axis2.apache.org/xsd"/>
+            <xs:complexType name="AxisMessage">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="axisOperation" nillable="true" type="ax244:AxisOperation"/>
+                    <xs:element minOccurs="0" name="direction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="effectivePolicy" nillable="true" type="ax282:Policy"/>
+                    <xs:element minOccurs="0" name="elementQName" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="extensibilityAttributes" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="messageFlow" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="messagePartName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="modulerefs" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="partName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="policyUpdated" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="schemaElement" nillable="true" type="ax289:XmlSchemaElement"/>
+                    <xs:element minOccurs="0" name="soapHeaders" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="wrapped" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="AxisOperation">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="WSAMappingList" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="axisService" nillable="true" type="ax244:AxisService"/>
+                    <xs:element minOccurs="0" name="axisSpecificMEPConstant" type="xs:int"/>
+                    <xs:element minOccurs="0" name="controlOperation" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="faultAction" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="faultActionNames" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="faultMessages" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="inputAction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="messageExchangePattern" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="messageReceiver" nillable="true" type="ax245:MessageReceiver"/>
+                    <xs:element minOccurs="0" name="messages" nillable="true" type="ax239:Iterator"/>
+                    <xs:element minOccurs="0" name="moduleRefs" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="outputAction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="phasesInFaultFlow" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="phasesOutFaultFlow" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="phasesOutFlow" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="remainingPhasesInFlow" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="soapAction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="style" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="wsamappingList" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AxisService">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="EPRs" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="WSAddressingFlag" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="active" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="axisServiceGroup" nillable="true" type="ax244:AxisServiceGroup"/>
+                    <xs:element minOccurs="0" name="bindingName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="classLoader" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="clientSide" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="controlOperations" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="customSchemaNamePrefix" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="customSchemaNameSuffix" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="customWsdl" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="elementFormDefault" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="enableAllTransports" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="endpointName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="endpointURL" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="endpoints" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="excludeInfo" nillable="true" type="ax262:ExcludeInfo"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="exposedTransports" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="fileName" nillable="true" type="ax265:URL"/>
+                    <xs:element minOccurs="0" name="importedNamespaces" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="lastUpdate" type="xs:long"/>
+                    <xs:element minOccurs="0" name="lastupdate" type="xs:long"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="messageElementQNameToOperationMap" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="modifyUserWSDLPortAddress" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="modules" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="nameSpacesMap" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="namespaceMap" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="objectSupplier" nillable="true" type="ax245:ObjectSupplier"/>
+                    <xs:element minOccurs="0" name="operations" nillable="true" type="ax239:Iterator"/>
+                    <xs:element minOccurs="0" name="operationsNameList" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="p2nMap" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="parent" nillable="true" type="ax244:AxisServiceGroup"/>
+                    <xs:element minOccurs="0" name="portTypeName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="publishedOperations" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="schemaLocationsAdjusted" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="schemaMappingTable" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="schemaTargetNamespace" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="schemaTargetNamespacePrefix" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="schematargetNamespace" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="schematargetNamespacePrefix" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="scope" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceDescription" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceLifeCycle" nillable="true" type="ax245:ServiceLifeCycle"/>
+                    <xs:element minOccurs="0" name="setEndpointsToAllUsedBindings" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="soapNsUri" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="targetNamespace" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="targetNamespacePrefix" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="typeTable" nillable="true" type="ax277:TypeTable"/>
+                    <xs:element minOccurs="0" name="useDefaultChains" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="useUserWSDL" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="wsdlFound" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AxisServiceGroup">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="axisDescription" nillable="true" type="ax245:AxisConfiguration"/>
+                    <xs:element minOccurs="0" name="foundWebResources" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="moduleRefs" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="serviceGroupClassLoader" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="serviceGroupName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="services" nillable="true" type="ax239:Iterator"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TransportInDescription">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="faultFlow" nillable="true" type="ax244:Flow"/>
+                    <xs:element minOccurs="0" name="faultPhase" nillable="true" type="ax245:Phase"/>
+                    <xs:element minOccurs="0" name="inFlow" nillable="true" type="ax244:Flow"/>
+                    <xs:element minOccurs="0" name="inPhase" nillable="true" type="ax245:Phase"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parameters" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="receiver" nillable="true" type="ax2106:TransportListener"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Flow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="handlerCount" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="HandlerDescription">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="className" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="handler" nillable="true" type="ax245:Handler"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parameters" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="parent" nillable="true" type="ax244:ParameterInclude"/>
+                    <xs:element minOccurs="0" name="rules" nillable="true" type="ax244:PhaseRule"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ParameterInclude">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="parameters" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PhaseRule">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="after" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="before" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="phaseFirst" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="phaseLast" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="phaseName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TransportOutDescription">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="faultFlow" nillable="true" type="ax244:Flow"/>
+                    <xs:element minOccurs="0" name="faultPhase" nillable="true" type="ax245:Phase"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="outFlow" nillable="true" type="ax244:Flow"/>
+                    <xs:element minOccurs="0" name="outPhase" nillable="true" type="ax245:Phase"/>
+                    <xs:element minOccurs="0" name="parameters" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="sender" nillable="true" type="ax2106:TransportSender"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://om.axiom.apache.org/xsd">
+            <xs:complexType abstract="true" name="OMNamespace">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="namespaceURI" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="prefix" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax232="http://common.core.carbon.wso2.org/xsd" xmlns:ax2109="http://context.axis2.apache.org/xsd" xmlns:ax234="http://authentication.services.core.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://authentication.services.core.carbon.wso2.org">
+            <xs:import namespace="http://common.core.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://authentication.services.core.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://context.axis2.apache.org/xsd"/>
+            <xs:element name="AuthenticationAdminAuthenticationException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthenticationException" nillable="true" type="ax232:AuthenticationException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="logout">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginWithRememberMeOption">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="remoteAddress" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginWithRememberMeOptionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax233:RememberMeData"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginWithRememberMeCookie">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cookie" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginWithRememberMeCookieResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="login">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="remoteAddress" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isDisabled">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isDisabledResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPriority">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPriorityResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAuthenticatorName">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAuthenticatorNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="authenticateWithRememberMe">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="messageContext" nillable="true" type="ax2109:MessageContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="authenticateWithRememberMeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax250="http://threadpool.util.axis2.apache.org/xsd" xmlns:ax2108="http://client.axis2.apache.org/xsd" xmlns:ax296="http://soap.axiom.apache.org/xsd" xmlns:ax297="http://util.java/xsd" xmlns:ax2100="http://addressing.axis2.apache.org/xsd" xmlns:ax247="http://engine.axis2.apache.org/xsd" xmlns:ax290="http://description.axis2.apache.org/xsd" xmlns:ax291="http://neethi.apache.org/xsd" xmlns:ax243="http://attachments.axiom.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://context.axis2.apache.org/xsd">
+            <xs:import namespace="http://attachments.axiom.apache.org/xsd"/>
+            <xs:import namespace="http://engine.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://threadpool.util.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://description.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://neethi.apache.org/xsd"/>
+            <xs:import namespace="http://soap.axiom.apache.org/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://addressing.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://client.axis2.apache.org/xsd"/>
+            <xs:complexType name="MessageContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="FLOW" type="xs:int"/>
+                    <xs:element minOccurs="0" name="SOAP11" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="WSAAction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="WSAMessageId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="attachmentMap" nillable="true" type="ax243:Attachments"/>
+                    <xs:element minOccurs="0" name="axisMessage" nillable="true" type="ax244:AxisMessage"/>
+                    <xs:element minOccurs="0" name="axisOperation" nillable="true" type="ax244:AxisOperation"/>
+                    <xs:element minOccurs="0" name="axisService" nillable="true" type="ax244:AxisService"/>
+                    <xs:element minOccurs="0" name="axisServiceGroup" nillable="true" type="ax244:AxisServiceGroup"/>
+                    <xs:element minOccurs="0" name="configurationContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="currentHandlerIndex" type="xs:int"/>
+                    <xs:element minOccurs="0" name="currentPhaseIndex" type="xs:int"/>
+                    <xs:element minOccurs="0" name="doingMTOM" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="doingREST" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="doingSwA" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="effectivePolicy" nillable="true" type="ax280:Policy"/>
+                    <xs:element minOccurs="0" name="envelope" nillable="true" type="ax296:SOAPEnvelope"/>
+                    <xs:element minOccurs="0" name="executedPhases" nillable="true" type="ax239:Iterator"/>
+                    <xs:element minOccurs="0" name="executedPhasesExplicit" nillable="true" type="ax239:LinkedList"/>
+                    <xs:element minOccurs="0" name="executionChain" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="failureReason" nillable="true"/>
+                    <xs:element minOccurs="0" name="fault" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="faultTo" nillable="true" type="ax2100:EndpointReference"/>
+                    <xs:element minOccurs="0" name="from" nillable="true" type="ax2100:EndpointReference"/>
+                    <xs:element minOccurs="0" name="headerPresent" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="inboundContentLength" type="xs:long"/>
+                    <xs:element minOccurs="0" name="incomingTransportName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="isSOAP11Explicit" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="logCorrelationID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="logIDString" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="messageID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="newThreadRequired" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="operationContext" nillable="true" type="ax235:OperationContext"/>
+                    <xs:element minOccurs="0" name="options" nillable="true" type="ax2108:Options"/>
+                    <xs:element minOccurs="0" name="optionsExplicit" nillable="true" type="ax2108:Options"/>
+                    <xs:element minOccurs="0" name="outputWritten" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="paused" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="processingFault" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="relatesTo" nillable="true" type="ax2100:RelatesTo"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="relationships" nillable="true" type="ax2100:RelatesTo"/>
+                    <xs:element minOccurs="0" name="replyTo" nillable="true" type="ax2100:EndpointReference"/>
+                    <xs:element minOccurs="0" name="responseWritten" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="rootContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="selfManagedDataMapExplicit" nillable="true" type="ax239:LinkedHashMap"/>
+                    <xs:element minOccurs="0" name="serverSide" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="serviceContext" nillable="true" type="ax235:ServiceContext"/>
+                    <xs:element minOccurs="0" name="serviceContextID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceGroupContext" nillable="true" type="ax235:ServiceGroupContext"/>
+                    <xs:element minOccurs="0" name="serviceGroupContextId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="sessionContext" nillable="true" type="ax235:SessionContext"/>
+                    <xs:element minOccurs="0" name="soapAction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="to" nillable="true" type="ax2100:EndpointReference"/>
+                    <xs:element minOccurs="0" name="transportIn" nillable="true" type="ax244:TransportInDescription"/>
+                    <xs:element minOccurs="0" name="transportOut" nillable="true" type="ax244:TransportOutDescription"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ConfigurationContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="anyOperationContextRegistered" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="axisConfiguration" nillable="true" type="ax245:AxisConfiguration"/>
+                    <xs:element minOccurs="0" name="contextRoot" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="listenerManager" nillable="true" type="ax245:ListenerManager"/>
+                    <xs:element minOccurs="0" name="rootContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="serviceContextPath" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="serviceGroupContextIDs" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceGroupContextTimeoutInterval" type="xs:long"/>
+                    <xs:element minOccurs="0" name="serviceGroupContextTimoutInterval" type="xs:long"/>
+                    <xs:element minOccurs="0" name="serviceGroupContexts" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="servicePath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="threadPool" nillable="true" type="ax249:ThreadFactory"/>
+                    <xs:element minOccurs="0" name="transportManager" nillable="true" type="ax245:ListenerManager"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="OperationContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="axisOperation" nillable="true" type="ax244:AxisOperation"/>
+                    <xs:element minOccurs="0" name="complete" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="configurationContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="logCorrelationIDString" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="messageContexts" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="operationName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="rootContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="serviceContext" nillable="true" type="ax235:ServiceContext"/>
+                    <xs:element minOccurs="0" name="serviceGroupName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ServiceContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="axisService" nillable="true" type="ax244:AxisService"/>
+                    <xs:element minOccurs="0" name="cachingOperationContext" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="configurationContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="groupName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lastOperationContext" nillable="true" type="ax235:OperationContext"/>
+                    <xs:element minOccurs="0" name="logCorrelationIDString" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="myEPR" nillable="true" type="ax2100:EndpointReference"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="rootContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="serviceGroupContext" nillable="true" type="ax235:ServiceGroupContext"/>
+                    <xs:element minOccurs="0" name="targetEPR" nillable="true" type="ax2100:EndpointReference"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ServiceGroupContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="ax244:AxisServiceGroup"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="rootContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="serviceContexts" nillable="true" type="ax239:Iterator"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SessionContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cookieID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lastTouchedTime" type="xs:long"/>
+                    <xs:element minOccurs="0" name="rootContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="serviceGroupContext" nillable="true" type="ax239:Iterator"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax263="http://description.axis2.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.deployment.axis2.apache.org/xsd">
+            <xs:import namespace="http://description.axis2.apache.org/xsd"/>
+            <xs:complexType name="PhasesInfo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="INPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="IN_FaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="OUTPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="OUT_FaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="globalInFaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="globalInflow" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="globalOutPhaseList" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="operationInFaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="operationInPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="operationOutFaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="operationOutPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="operationPhases" nillable="true" type="ax263:AxisOperation"/>
+                    <xs:element minOccurs="0" name="outFaultPhaseList" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ExcludeInfo">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://net.java/xsd">
+            <xs:complexType name="URL">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="authority" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="content" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="defaultPort" type="xs:int"/>
+                    <xs:element minOccurs="0" name="file" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="host" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="port" type="xs:int"/>
+                    <xs:element minOccurs="0" name="protocol" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="query" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ref" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="userInfo" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax299="http://util.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://addressing.axis2.apache.org/xsd">
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:complexType name="EndpointReference">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="WSAddressingAnonymous" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="address" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="addressAttributes" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="allReferenceParameters" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="attributes" nillable="true" type="xs:anyType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="extensibleElements" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="logCorrelationIDString" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="metaData" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="metadataAttributes" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="referenceParameters" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RelatesTo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="extensibilityAttributes" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="relationshipType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://securevault.wso2.org/xsd">
+            <xs:complexType name="SecretResolver">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="initialized" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax260="http://clustering.axis2.apache.org/xsd" xmlns:ax272="http://transaction.axis2.apache.org/xsd" xmlns:ax2105="http://description.axis2.apache.org/xsd" xmlns:ax270="http://util.axis2.apache.org/xsd" xmlns:ax261="http://util.java/xsd" xmlns:ax264="http://util.deployment.axis2.apache.org/xsd" xmlns:ax248="http://context.axis2.apache.org/xsd" xmlns:ax266="http://net.java/xsd" xmlns:ax268="http://securevault.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://engine.axis2.apache.org/xsd">
+            <xs:import namespace="http://context.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://clustering.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://util.deployment.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://net.java/xsd"/>
+            <xs:import namespace="http://securevault.wso2.org/xsd"/>
+            <xs:import namespace="http://util.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://transaction.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://description.axis2.apache.org/xsd"/>
+            <xs:complexType name="AxisConfiguration">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="childFirstClassLoading" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="clusteringAgent" nillable="true" type="ax260:ClusteringAgent"/>
+                    <xs:element minOccurs="0" name="configurator" nillable="true" type="ax245:AxisConfigurator"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="faultyModules" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="faultyServices" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="faultyServicesDuetoModules" nillable="true" type="ax239:Map"/>
+                    <xs:element minOccurs="0" name="globalModules" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="globalOutPhase" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="inFaultFlowPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="inFaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="inFlowPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="inPhasesUptoAndIncludingPostDispatch" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:anyType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="localPolicyAssertions" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="moduleClassLoader" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="modules" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="observersList" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="outFaultFlowPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="outFaultPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="outFlowPhases" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="phasesInfo" nillable="true" type="ax262:PhasesInfo"/>
+                    <xs:element minOccurs="0" name="repository" nillable="true" type="ax266:URL"/>
+                    <xs:element minOccurs="0" name="secretResolver" nillable="true" type="ax268:SecretResolver"/>
+                    <xs:element minOccurs="0" name="serviceClassLoader" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="serviceGroups" nillable="true" type="ax239:Iterator"/>
+                    <xs:element minOccurs="0" name="services" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="start" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="systemClassLoader" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="targetResolverChain" nillable="true" type="ax269:TargetResolver"/>
+                    <xs:element minOccurs="0" name="transactionConfig" nillable="true" type="ax272:TransactionConfiguration"/>
+                    <xs:element minOccurs="0" name="transactionConfiguration" nillable="true" type="ax272:TransactionConfiguration"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="transportsIn" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="transportsOut" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ListenerManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="configctx" nillable="true" type="ax248:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="shutdownHookRequired" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="stopped" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="AxisConfigurator">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="axisConfiguration" nillable="true" type="ax245:AxisConfiguration"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ObjectSupplier">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ServiceLifeCycle">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="MessageReceiver">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="Phase">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="handlerCount" type="xs:int"/>
+                    <xs:element minOccurs="0" name="handlerDesc" nillable="true" type="ax2105:HandlerDescription"/>
+                    <xs:element minOccurs="0" name="handlers" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="phaseFirst" nillable="true" type="ax245:Handler"/>
+                    <xs:element minOccurs="0" name="phaseLast" nillable="true" type="ax245:Handler"/>
+                    <xs:element minOccurs="0" name="phaseName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Handler">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="handlerDesc" nillable="true" type="ax2105:HandlerDescription"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax258="http://util.java/xsd" xmlns:ax257="http://context.axis2.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://state.clustering.axis2.apache.org/xsd">
+            <xs:import namespace="http://context.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:complexType abstract="true" name="StateManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="configurationContext" nillable="true" type="ax235:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="replicationExcludePatterns" nillable="true" type="ax239:Map"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://authentication.services.core.carbon.wso2.org/xsd">
+            <xs:complexType name="RememberMeData">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="authenticated" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="maxAge" type="xs:int"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax259="http://state.clustering.axis2.apache.org/xsd" xmlns:ax251="http://context.axis2.apache.org/xsd" xmlns:ax255="http://management.clustering.axis2.apache.org/xsd" xmlns:ax252="http://util.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://clustering.axis2.apache.org/xsd">
+            <xs:import namespace="http://context.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://management.clustering.axis2.apache.org/xsd"/>
+            <xs:import namespace="http://state.clustering.axis2.apache.org/xsd"/>
+            <xs:complexType abstract="true" name="ClusteringAgent">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="aliveMemberCount" type="xs:int"/>
+                    <xs:element minOccurs="0" name="configurationContext" nillable="true" type="ax251:ConfigurationContext"/>
+                    <xs:element minOccurs="0" name="coordinator" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="domains" nillable="true" type="ax239:Set"/>
+                    <xs:element minOccurs="0" name="members" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="nodeManager" nillable="true" type="ax255:NodeManager"/>
+                    <xs:element minOccurs="0" name="stateManager" nillable="true" type="ax259:StateManager"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax278="http://util.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://java2wsdl.description.axis2.apache.org/xsd">
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:complexType name="TypeTable">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="complexSchemaMap" nillable="true" type="ax239:Map"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="logoutRequest">
+        <wsdl:part name="parameters" element="ns:logout"/>
+    </wsdl:message>
+    <wsdl:message name="AuthenticationAdminAuthenticationException">
+        <wsdl:part name="parameters" element="ns:AuthenticationAdminAuthenticationException"/>
+    </wsdl:message>
+    <wsdl:message name="loginWithRememberMeCookieRequest">
+        <wsdl:part name="parameters" element="ns:loginWithRememberMeCookie"/>
+    </wsdl:message>
+    <wsdl:message name="loginWithRememberMeCookieResponse">
+        <wsdl:part name="parameters" element="ns:loginWithRememberMeCookieResponse"/>
+    </wsdl:message>
+    <wsdl:message name="authenticateWithRememberMeRequest">
+        <wsdl:part name="parameters" element="ns:authenticateWithRememberMe"/>
+    </wsdl:message>
+    <wsdl:message name="authenticateWithRememberMeResponse">
+        <wsdl:part name="parameters" element="ns:authenticateWithRememberMeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getAuthenticatorNameRequest">
+        <wsdl:part name="parameters" element="ns:getAuthenticatorName"/>
+    </wsdl:message>
+    <wsdl:message name="getAuthenticatorNameResponse">
+        <wsdl:part name="parameters" element="ns:getAuthenticatorNameResponse"/>
+    </wsdl:message>
+    <wsdl:message name="loginWithRememberMeOptionRequest">
+        <wsdl:part name="parameters" element="ns:loginWithRememberMeOption"/>
+    </wsdl:message>
+    <wsdl:message name="loginWithRememberMeOptionResponse">
+        <wsdl:part name="parameters" element="ns:loginWithRememberMeOptionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="loginRequest">
+        <wsdl:part name="parameters" element="ns:login"/>
+    </wsdl:message>
+    <wsdl:message name="loginResponse">
+        <wsdl:part name="parameters" element="ns:loginResponse"/>
+    </wsdl:message>
+    <wsdl:message name="isDisabledRequest">
+        <wsdl:part name="parameters" element="ns:isDisabled"/>
+    </wsdl:message>
+    <wsdl:message name="isDisabledResponse">
+        <wsdl:part name="parameters" element="ns:isDisabledResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPriorityRequest">
+        <wsdl:part name="parameters" element="ns:getPriority"/>
+    </wsdl:message>
+    <wsdl:message name="getPriorityResponse">
+        <wsdl:part name="parameters" element="ns:getPriorityResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="AuthenticationAdminPortType">
+        <wsdl:operation name="logout">
+            <wsdl:input message="ns:logoutRequest" wsaw:Action="urn:logout"/>
+            <wsdl:fault message="ns:AuthenticationAdminAuthenticationException" name="AuthenticationAdminAuthenticationException" wsaw:Action="urn:logoutAuthenticationAdminAuthenticationException"/>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeCookie">
+            <wsdl:input message="ns:loginWithRememberMeCookieRequest" wsaw:Action="urn:loginWithRememberMeCookie"/>
+            <wsdl:output message="ns:loginWithRememberMeCookieResponse" wsaw:Action="urn:loginWithRememberMeCookieResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="authenticateWithRememberMe">
+            <wsdl:input message="ns:authenticateWithRememberMeRequest" wsaw:Action="urn:authenticateWithRememberMe"/>
+            <wsdl:output message="ns:authenticateWithRememberMeResponse" wsaw:Action="urn:authenticateWithRememberMeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAuthenticatorName">
+            <wsdl:input message="ns:getAuthenticatorNameRequest" wsaw:Action="urn:getAuthenticatorName"/>
+            <wsdl:output message="ns:getAuthenticatorNameResponse" wsaw:Action="urn:getAuthenticatorNameResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeOption">
+            <wsdl:input message="ns:loginWithRememberMeOptionRequest" wsaw:Action="urn:loginWithRememberMeOption"/>
+            <wsdl:output message="ns:loginWithRememberMeOptionResponse" wsaw:Action="urn:loginWithRememberMeOptionResponse"/>
+            <wsdl:fault message="ns:AuthenticationAdminAuthenticationException" name="AuthenticationAdminAuthenticationException" wsaw:Action="urn:loginWithRememberMeOptionAuthenticationAdminAuthenticationException"/>
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <wsdl:input message="ns:loginRequest" wsaw:Action="urn:login"/>
+            <wsdl:output message="ns:loginResponse" wsaw:Action="urn:loginResponse"/>
+            <wsdl:fault message="ns:AuthenticationAdminAuthenticationException" name="AuthenticationAdminAuthenticationException" wsaw:Action="urn:loginAuthenticationAdminAuthenticationException"/>
+        </wsdl:operation>
+        <wsdl:operation name="isDisabled">
+            <wsdl:input message="ns:isDisabledRequest" wsaw:Action="urn:isDisabled"/>
+            <wsdl:output message="ns:isDisabledResponse" wsaw:Action="urn:isDisabledResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPriority">
+            <wsdl:input message="ns:getPriorityRequest" wsaw:Action="urn:getPriority"/>
+            <wsdl:output message="ns:getPriorityResponse" wsaw:Action="urn:getPriorityResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="AuthenticationAdminSoap11Binding" type="ns:AuthenticationAdminPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="logout">
+            <soap:operation soapAction="urn:logout" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AuthenticationAdminAuthenticationException">
+                <soap:fault use="literal" name="AuthenticationAdminAuthenticationException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeCookie">
+            <soap:operation soapAction="urn:loginWithRememberMeCookie" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="authenticateWithRememberMe">
+            <soap:operation soapAction="urn:authenticateWithRememberMe" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAuthenticatorName">
+            <soap:operation soapAction="urn:getAuthenticatorName" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <soap:operation soapAction="urn:login" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="AuthenticationAdminAuthenticationException">
+                <soap:fault use="literal" name="AuthenticationAdminAuthenticationException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeOption">
+            <soap:operation soapAction="urn:loginWithRememberMeOption" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="AuthenticationAdminAuthenticationException">
+                <soap:fault use="literal" name="AuthenticationAdminAuthenticationException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isDisabled">
+            <soap:operation soapAction="urn:isDisabled" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPriority">
+            <soap:operation soapAction="urn:getPriority" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="AuthenticationAdminSoap12Binding" type="ns:AuthenticationAdminPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="logout">
+            <soap12:operation soapAction="urn:logout" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AuthenticationAdminAuthenticationException">
+                <soap12:fault use="literal" name="AuthenticationAdminAuthenticationException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeCookie">
+            <soap12:operation soapAction="urn:loginWithRememberMeCookie" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="authenticateWithRememberMe">
+            <soap12:operation soapAction="urn:authenticateWithRememberMe" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAuthenticatorName">
+            <soap12:operation soapAction="urn:getAuthenticatorName" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <soap12:operation soapAction="urn:login" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="AuthenticationAdminAuthenticationException">
+                <soap12:fault use="literal" name="AuthenticationAdminAuthenticationException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeOption">
+            <soap12:operation soapAction="urn:loginWithRememberMeOption" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="AuthenticationAdminAuthenticationException">
+                <soap12:fault use="literal" name="AuthenticationAdminAuthenticationException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isDisabled">
+            <soap12:operation soapAction="urn:isDisabled" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPriority">
+            <soap12:operation soapAction="urn:getPriority" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="AuthenticationAdminHttpBinding" type="ns:AuthenticationAdminPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="logout">
+            <http:operation location="logout"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeCookie">
+            <http:operation location="loginWithRememberMeCookie"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="authenticateWithRememberMe">
+            <http:operation location="authenticateWithRememberMe"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAuthenticatorName">
+            <http:operation location="getAuthenticatorName"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <http:operation location="login"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="loginWithRememberMeOption">
+            <http:operation location="loginWithRememberMeOption"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isDisabled">
+            <http:operation location="isDisabled"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPriority">
+            <http:operation location="getPriority"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="AuthenticationAdmin">
+        <wsdl:port name="AuthenticationAdminHttpsSoap11Endpoint" binding="ns:AuthenticationAdminSoap11Binding">
+            <soap:address location="https://10.144.64.164:9445/services/AuthenticationAdmin.AuthenticationAdminHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="AuthenticationAdminHttpsSoap12Endpoint" binding="ns:AuthenticationAdminSoap12Binding">
+            <soap12:address location="https://10.144.64.164:9445/services/AuthenticationAdmin.AuthenticationAdminHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="AuthenticationAdminHttpsEndpoint" binding="ns:AuthenticationAdminHttpBinding">
+            <http:address location="https://10.144.64.164:9445/services/AuthenticationAdmin.AuthenticationAdminHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

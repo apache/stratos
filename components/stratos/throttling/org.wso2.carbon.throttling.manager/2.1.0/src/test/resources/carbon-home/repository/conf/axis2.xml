@@ -1,0 +1,630 @@
+<!--
+  ~ Copyright 2005-2007 WSO2, Inc. (http://wso2.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<axisconfig name="AxisJava2.0">
+
+    <!-- ================================================= -->
+    <!-- Globally engaged modules -->
+    <!-- ================================================= -->
+    <module ref="addressing"/>
+
+    <!-- ================================================= -->
+    <!-- Parameters -->
+    <!-- ================================================= -->
+    <parameter name="hotdeployment">${hotdeployment}</parameter>
+    <parameter name="hotupdate">${hotupdate}</parameter>
+    <parameter name="enableMTOM" locked="false">optional</parameter>
+    <parameter name="cacheAttachments">true</parameter>
+    <parameter name="attachmentDIR">work/mtom</parameter>
+    <parameter name="sizeThreshold">4000</parameter>
+
+    <!--
+    Defines how the persistence of WS-ReliableMessaging is handled
+
+    Possible value are: inmemory & persistent
+    -->
+    <!-- Following parameter will completely disable REST handling in both the servlets-->
+    <parameter name="disableREST" locked="false">false</parameter>
+
+    <parameter name="Sandesha2StorageManager">inmemory</parameter>
+
+    <!-- This deployment interceptor will be called whenever before a module is initialized or
+     service is deployed -->
+    <listener class="org.wso2.carbon.core.deployment.DeploymentInterceptor"/>
+
+    <!-- setting servicePath. contextRoot is defined in the carbon.xml file -->
+    <parameter name="servicePath">services</parameter>
+
+    <!--the directory in which .aar services are deployed inside axis2 repository-->
+    <parameter name="ServicesDirectory">axis2services</parameter>
+
+    <!--the directory in which modules are deployed inside axis2 repository-->
+    <parameter name="ModulesDirectory">axis2modules</parameter>
+
+    <parameter name="userAgent" locked="true">
+        @product.name@-@product.version@
+    </parameter>
+    <parameter name="server" locked="true">
+        @product.name@-@product.version@
+    </parameter>
+
+    <!-- ========================================================================-->
+
+    <!--During a fault, stacktrace can be sent with the fault message. The following flag will control -->
+    <!--that behaviour.-->
+    <parameter name="sendStacktraceDetailsWithFaults">false</parameter>
+
+    <!--If there aren't any information available to find out the fault reason, we set the message of the expcetion-->
+    <!--as the faultreason/Reason. But when a fault is thrown from a service or some where, it will be -->
+    <!--wrapped by different levels. Due to this the initial exception message can be lost. If this flag-->
+    <!--is set then, Axis2 tries to get the first exception and set its message as the faultreason/Reason.-->
+    <parameter name="DrillDownToRootCauseForFaultReason">false</parameter>
+
+    <!--Set the flag to true if you want to enable transport level session mangment-->
+    <parameter name="manageTransportSession">true</parameter>
+
+    <!-- Synapse Configuration file -->
+    <parameter name="SynapseConfig.ConfigurationFile" locked="false">./repository/conf/synapse.xml</parameter>
+
+    <!-- Synapse Home parameter -->
+    <parameter name="SynapseConfig.HomeDirectory" locked="false">.</parameter>
+
+    <!-- Resolve root used to resolve synapse references like schemas inside a WSDL -->
+    <parameter name="SynapseConfig.ResolveRoot" locked="false">.</parameter>
+
+    <!-- Synapse Server name parameter -->
+    <parameter name="SynapseConfig.ServerName" locked="false">WSO2 Carbon Server</parameter>
+
+    <!--By default, JAXWS services are created by reading annotations. WSDL and schema are generated-->
+    <!--using a separate WSDL generator only when ?wsdl is called. Therefore, even if you engage-->
+    <!--policies etc.. to AxisService, it doesn't appear in the WSDL. By setting the following property-->
+    <!--to true, you can create the AxisService using the generated WSDL and remove the need for a-->
+    <!--WSDL generator. When ?wsdl is called, WSDL is generated in the normal way.-->
+    <parameter name="useGeneratedWSDLinJAXWS">true</parameter>
+
+    <!-- Deployer for the dataservice. -->
+    <!--<deployer extension="dbs" directory="dataservices" class="org.wso2.dataservices.DBDeployer"/>-->
+
+    <!-- Axis1 deployer for Axis2-->
+    <!--<deployer extension="wsdd" class="org.wso2.carbon.axis1services.Axis1Deployer" directory="axis1services"/>-->
+
+    <!-- POJO service deployer for Jar -->
+    <!--<deployer extension="jar" class="org.apache.axis2.deployment.POJODeployer" directory="pojoservices"/>-->
+
+    <!-- POJO service deployer for Class  -->
+    <!--<deployer extension="class" class="org.apache.axis2.deployment.POJODeployer" directory="pojoservices"/>-->
+
+    <!-- JAXWS service deployer  -->
+    <!--<deployer extension=".jar" class="org.apache.axis2.jaxws.framework.JAXWSDeployer" directory="servicejars"/>-->
+    <!-- ================================================= -->
+    <!-- Message Receivers -->
+    <!-- ================================================= -->
+    <!--This is the Default Message Receiver for the system , if you want to have MessageReceivers for -->
+    <!--all the other MEP implement it and add the correct entry to here , so that you can refer from-->
+    <!--any operation -->
+    <!--Note : You can ovride this for particular service by adding the same element with your requirement-->
+
+    <messageReceivers>
+        <messageReceiver mep="http://www.w3.org/ns/wsdl/in-only"
+                         class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver"/>
+        <messageReceiver mep="http://www.w3.org/ns/wsdl/robust-in-only"
+                         class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver"/>
+        <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out"
+                         class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
+    </messageReceivers>
+
+    <messageFormatters>
+        <messageFormatter contentType="application/x-www-form-urlencoded"
+                         class="org.apache.axis2.transport.http.XFormURLEncodedFormatter"/>
+        <messageFormatter contentType="multipart/form-data"
+                         class="org.apache.axis2.transport.http.MultipartFormDataFormatter"/>
+        <messageFormatter contentType="application/xml"
+                         class="org.apache.axis2.transport.http.ApplicationXMLFormatter"/>
+        <messageFormatter contentType="text/xml"
+                         class="org.apache.axis2.transport.http.SOAPMessageFormatter"/>
+        <messageFormatter contentType="application/soap+xml"
+                         class="org.apache.axis2.transport.http.SOAPMessageFormatter"/>
+	<!--messageFormatter contentType="application/x-www-form-urlencoded"
+                        class="org.wso2.carbon.relay.ExpandingMessageFormatter"/-->
+        <!--messageFormatter contentType="multipart/form-data"
+                        class="org.wso2.carbon.relay.ExpandingMessageFormatter"/-->
+	<!--messageFormatter contentType="application/xml"
+                        class="org.wso2.carbon.relay.ExpandingMessageFormatter"/-->
+	<!--messageFormatter contentType="text/html"
+                        class="org.wso2.carbon.relay.ExpandingMessageFormatter"/-->
+	<!--messageFormatter contentType="application/soap+xml"
+                        class="org.wso2.carbon.relay.ExpandingMessageFormatter"/-->
+	 <!--messageFormatter contentType="x-application/hessian"
+			class="org.apache.synapse.format.hessian.HessianMessageFormatter"/-->
+        <!--<messageFormatter contentType="">
+			class="org.apache.synapse.format.hessian.HessianMessageFormatter"/-->
+   </messageFormatters>
+
+    <messageBuilders>
+        <messageBuilder contentType="application/xml"
+                        class="org.apache.axis2.builder.ApplicationXMLBuilder"/>
+        <messageBuilder contentType="application/x-www-form-urlencoded"
+                        class="org.apache.axis2.builder.XFormURLEncodedBuilder"/>
+        <messageBuilder contentType="multipart/form-data"
+                        class="org.apache.axis2.builder.MultipartFormDataBuilder"/>
+        <!--messageBuilder contentType="application/xml"
+     		        class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageBuilder contentType="application/x-www-form-urlencoded"
+                        class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageBuilder contentType="multipart/form-data"
+                        class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageBuilder contentType="multipart/related"
+                       class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageBuilder contentType="application/soap+xml"
+                       class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageBuilder contentType="text/plain"
+                       class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageBuilder contentType="text/xml"
+                       class="org.wso2.carbon.relay.BinaryRelayBuilder"/-->
+	<!--messageFormatter contentType="text/plain"
+                        class="org.apache.axis2.format.PlainTextBuilder"/-->
+	<!--messageBuilder contentType="x-application/hessian"
+		       class="org.apache.synapse.format.hessian.HessianMessageBuilder"/-->
+    </messageBuilders>
+
+
+    <!-- ================================================= -->
+    <!-- In Transports -->
+    <!-- ================================================= -->
+    <transportReceiver name="http"
+                       class="org.wso2.carbon.core.transports.http.HttpTransportListener">
+        <!--
+           Uncomment the following if you are deploying this within an application server. You
+           need to specify the HTTP port of the application server
+        -->
+        <parameter name="port">9763</parameter>
+
+        <!--
+       Uncomment the following to enable Apache2 mod_proxy. The port on the Apache server is 80
+       in this case.
+        -->
+        <!--<parameter name="proxyPort">80</parameter>-->
+    </transportReceiver>
+
+    <!--Please uncomment this in Multiple Instance Scenario if you want to use NIO Transport Recievers and 
+ 	Remove the current transport REceivers in axis2.xml -->    
+    <!--transportReceiver name="http" class="org.apache.synapse.transport.nhttp.HttpCoreNIOListener">
+        <parameter name="port" locked="false">8280</parameter>
+        <parameter name="non-blocking" locked="false">true</parameter>
+    </transportReceiver>
+    
+    <transportReceiver name="https" class="org.apache.synapse.transport.nhttp.HttpCoreNIOSSLListener">
+        <parameter name="port" locked="false">8243</parameter>
+        <parameter name="non-blocking" locked="false">true</parameter>
+        <parameter name="keystore" locked="false">
+            <KeyStore>
+                <Location>resources/security/wso2carbon.jks</Location>
+                <Type>JKS</Type>
+                <Password>wso2carbon</Password>
+                <KeyPassword>wso2carbon</KeyPassword>
+            </KeyStore>
+        </parameter>
+        <parameter name="truststore" locked="false">
+            <TrustStore>
+                <Location>resources/security/client-truststore.jks</Location>
+                <Type>JKS</Type>
+                <Password>wso2carbon</Password>
+            </TrustStore>
+        </parameter>
+    </transportReceiver-->
+    
+
+
+    <transportReceiver name="https"
+                       class="org.wso2.carbon.core.transports.http.HttpsTransportListener">
+        <!--
+           Uncomment the following if you are deploying this within an application server. You
+           need to specify the HTTPS port of the application server
+        -->
+        <parameter name="port">9443</parameter>
+
+        <!--
+       Uncomment the following to enable Apache2 mod_proxy. The port on the Apache server is 443
+       in this case.
+        -->
+        <!--<parameter name="proxyPort">443</parameter>-->
+    </transportReceiver>
+
+    <!--
+       Uncomment the following segment to enable TCP transport.
+       Note : Addressing module should be engaged for TCP transport to work
+    -->
+    <!--<transportReceiver name="tcp"
+                       class="org.apache.axis2.transport.tcp.TCPServer">
+        <parameter name="port">6667</parameter>
+    </transportReceiver>-->
+
+    <!--
+     To Enable SimpleMailListener, please change the configuration
+     parameters and uncomment the following
+    -->
+    <!--<transportReceiver name="mailto" class="org.apache.axis2.transport.mail.SimpleMailListener">
+        <parameter name="mail.pop3.host">localhost</parameter>
+        <parameter name="mail.pop3.user">red</parameter>
+        <parameter name="mail.store.protocol">pop3</parameter>
+        <parameter name="transport.mail.pop3.password">red</parameter>
+        <parameter name="transport.mail.replyToAddress">red@localhost</parameter>
+        <parameter name="transport.listener.interval">3000</parameter>
+    </transportReceiver>-->
+
+    <!--
+      Uncomment this and configure as appropriate for JMS transport support,
+      after setting up your JMS environment (e.g. ActiveMQ)
+    -->
+    <!--<transportReceiver name="jms" class="org.apache.axis2.transport.jms.JMSListener">
+        <parameter name="myTopicConnectionFactory">
+        	<parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
+        	<parameter name="java.naming.provider.url">tcp://localhost:61616</parameter>
+        	<parameter name="transport.jms.ConnectionFactoryJNDIName">TopicConnectionFactory</parameter>
+        </parameter>
+
+        <parameter name="myQueueConnectionFactory">
+        	<parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
+        	<parameter name="java.naming.provider.url">tcp://localhost:61616</parameter>
+        	<parameter name="transport.jms.ConnectionFactoryJNDIName">QueueConnectionFactory</parameter>
+        </parameter>
+
+        <parameter name="default">
+        	<parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
+        	<parameter name="java.naming.provider.url">tcp://localhost:61616</parameter>
+        	<parameter name="transport.jms.ConnectionFactoryJNDIName">QueueConnectionFactory</parameter>
+        </parameter>
+    </transportReceiver>-->
+
+    <!-- ================================================= -->
+    <!-- Out Transports -->
+    <!-- ================================================= -->
+
+    <transportSender name="tcp"
+                     class="org.apache.axis2.transport.tcp.TCPTransportSender"/>
+    <transportSender name="local"
+                     class="org.apache.axis2.transport.local.LocalTransportSender"/>
+    <!--<transportSender name="jms"
+                     class="org.apache.axis2.transport.jms.JMSSender"/>-->
+    <transportSender name="http"
+                     class="org.apache.axis2.transport.http.CommonsHTTPTransportSender">
+        <parameter name="PROTOCOL">HTTP/1.1</parameter>
+        <parameter name="Transfer-Encoding">chunked</parameter>
+        <!-- This parameter has been added to overcome problems encounted in SOAP action parameter -->
+        <parameter name="OmitSOAP12Action">true</parameter>
+    </transportSender>
+    <transportSender name="https"
+                     class="org.apache.axis2.transport.http.CommonsHTTPTransportSender">
+        <parameter name="PROTOCOL">HTTP/1.1</parameter>
+        <parameter name="Transfer-Encoding">chunked</parameter>
+        <!-- This parameter has been added to overcome problems encounted in SOAP action parameter -->
+        <parameter name="OmitSOAP12Action">true</parameter>
+    </transportSender>
+
+    <!--<transportSender name="mailto" class="org.apache.axis2.transport.mail.MailTransportSender">
+        <parameter name="mail.smtp.host">localhost</parameter>
+    </transportSender>-->
+
+
+    <!--Please uncomment this in Multiple Instance Scenario if you want to use NIO sender -->
+    <!--  
+    <transportSender name="http" class="org.apache.synapse.transport.nhttp.HttpCoreNIOSender">
+        <parameter name="non-blocking" locked="false">true</parameter>
+    </transportSender>
+    <transportSender name="https" class="org.apache.synapse.transport.nhttp.HttpCoreNIOSSLSender">
+        <parameter name="non-blocking" locked="false">true</parameter>
+        <parameter name="keystore" locked="false">
+            <KeyStore>
+                <Location>resources/security/wso2carbon.jks</Location>
+                <Type>JKS</Type>
+                <Password>wso2carbon</Password>
+                <KeyPassword>wso2carbon</KeyPassword>
+            </KeyStore>
+        </parameter>
+        <parameter name="truststore" locked="false">
+            <TrustStore>
+                <Location>resources/security/client-truststore.jks</Location>
+                <Type>JKS</Type>
+                <Password>wso2carbon</Password>
+            </TrustStore>
+        </parameter>
+    </transportSender>
+	-->
+
+
+
+    <!-- ================================================= -->
+    <!-- Phases  -->
+    <!-- ================================================= -->
+    <phaseOrder type="InFlow">
+        <!--  System pre defined phases       -->
+        <phase name="Transport">
+            <handler name="RequestURIBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.RequestURIBasedDispatcher">
+                <order phase="Transport"/>
+            </handler>
+            <handler name="SOAPActionBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.SOAPActionBasedDispatcher">
+                <order phase="Transport"/>
+            </handler>
+        </phase>
+        <phase name="Addressing">
+             <handler name="AddressingBasedDispatcher"
+                     class="org.wso2.carbon.core.multitenancy.MultitenantAddressingBasedDispatcher">
+                 <order phase="Addressing"/>
+            </handler>
+        </phase>
+        <phase name="Security"/>
+        <phase name="PreDispatch"/>
+        <phase name="Dispatch" class="org.apache.axis2.engine.DispatchPhase">
+            <handler name="RequestURIBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.RequestURIBasedDispatcher"/>
+            <handler name="SOAPActionBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.SOAPActionBasedDispatcher"/>
+            <handler name="RequestURIOperationDispatcher"
+                     class="org.apache.axis2.dispatchers.RequestURIOperationDispatcher"/>
+            <handler name="SOAPMessageBodyBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.SOAPMessageBodyBasedDispatcher"/>
+
+            <handler name="HTTPLocationBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.HTTPLocationBasedDispatcher"/>
+
+            <handler name="MultitenantDispatcher"
+                     class="org.wso2.carbon.core.multitenancy.MultitenantDispatcher"/>
+        </phase>
+        <!--  System pre defined phases       -->
+        <phase name="RMPhase"/>
+        <phase name="OpPhase"/>
+        <!--   After Postdispatch phase module author or or service author can add any phase he want      -->
+        <phase name="OperationInPhase"/>
+    </phaseOrder>
+    <phaseOrder type="OutFlow">
+        <phase name="RMPhase"/>
+        <phase name="OpPhase"/>
+        <!--      user can add his own phases to this area  -->
+        <phase name="OperationOutPhase"/>
+        <!--system predefined phase-->
+        <!--these phase will run irrespective of the service-->
+        <phase name="PolicyDetermination"/>
+        <phase name="MessageOut"/>
+	    <phase name="Security">
+            <!--<handler name="test"
+                     class="org.wso2.carbon.core.multitenancy.MultitenantMeteringHandler">
+                <order phase="Security"/>
+            </handler>-->
+        </phase>
+    </phaseOrder>
+    <phaseOrder type="InFaultFlow">
+        <!--  System pre defined phases       -->
+        <phase name="Transport">
+            <handler name="RequestURIBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.RequestURIBasedDispatcher">
+                <order phase="Transport"/>
+            </handler>
+            <handler name="SOAPActionBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.SOAPActionBasedDispatcher">
+                <order phase="Transport"/>
+            </handler>
+            <!--<handler name="POXSecHandler"
+                     class="org.wso2.carbon.core.security.pox.POXSecurityHandler">
+                <order phase="Transport"/>
+            </handler>-->
+        </phase>
+
+        <phase name="Addressing">
+             <handler name="AddressingBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.AddressingBasedDispatcher">
+                 <order phase="Addressing"/>
+            </handler>
+        </phase>
+        <phase name="Security"/>
+        <phase name="PreDispatch"/>
+        <phase name="Dispatch" class="org.apache.axis2.engine.DispatchPhase">
+            <handler name="RequestURIBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.RequestURIBasedDispatcher"/>
+            <handler name="SOAPActionBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.SOAPActionBasedDispatcher"/>
+            <handler name="RequestURIOperationDispatcher"
+                     class="org.apache.axis2.dispatchers.RequestURIOperationDispatcher"/>
+            <handler name="SOAPMessageBodyBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.SOAPMessageBodyBasedDispatcher"/>
+
+            <handler name="HTTPLocationBasedDispatcher"
+                     class="org.apache.axis2.dispatchers.HTTPLocationBasedDispatcher"/>
+            <!--handler name="AdminServiceAuthenticationHandler"
+                     class="org.wso2.carbon.core.auth.AuthenticationHandler"/-->
+        </phase>
+        <phase name="RMPhase"/>
+        <phase name="OpPhase"/>
+        <!--      user can add his own phases to this area  -->
+        <phase name="OperationInFaultPhase"/>
+    </phaseOrder>
+    <phaseOrder type="OutFaultFlow">
+        <phase name="RMPhase"/>
+        <!--      user can add his own phases to this area  -->
+        <phase name="OperationOutFaultPhase"/>
+        <phase name="PolicyDetermination"/>
+        <phase name="MessageOut"/>
+        <phase name="Security"/>
+    </phaseOrder>
+
+    <!-- ================================================= -->
+    <!-- Clustering  -->
+    <!-- ================================================= -->
+    <!--
+     To enable clustering for this node, set the value of "enable" attribute of the "clustering"
+     element to "true". The initialization of a node in the cluster is handled by the class
+     corresponding to the "class" attribute of the "clustering" element. It is also responsible for
+     getting this node to join the cluster.
+     -->
+    <clustering class="org.apache.axis2.clustering.tribes.TribesClusteringAgent" enable="false">
+
+        <!--
+           This parameter indicates whether the cluster has to be automatically initalized
+           when the AxisConfiguration is built. If set to "true" the initialization will not be
+           done at that stage, and some other party will have to explictly initialize the cluster.
+        -->
+        <parameter name="AvoidInitiation">true</parameter>
+
+        <!--
+           The membership scheme used in this setup. The only values supported at the moment are
+           "multicast" and "wka"
+
+           1. multicast - membership is automatically discovered using multicasting
+           2. wka - Well-Known Address based multicasting. Membership is discovered with the help
+                    of one or more nodes running at a Well-Known Address. New members joining a
+                    cluster will first connect to a well-known node, register with the well-known node
+                    and get the membership list from it. When new members join, one of the well-known
+                    nodes will notify the others in the group. When a member leaves the cluster or
+                    is deemed to have left the cluster, it will be detected by the Group Membership
+                    Service (GMS) using a TCP ping mechanism.
+        -->
+        <parameter name="membershipScheme">multicast</parameter>
+
+        <!--
+         The clustering domain/group. Nodes in the same group will belong to the same multicast
+         domain. There will not be interference between nodes in different groups.
+        -->
+        <parameter name="domain">wso2.carbon.domain</parameter>
+
+        <!--
+           When a Web service request is received, and processed, before the response is sent to the
+           client, should we update the states of all members in the cluster? If the value of
+           this parameter is set to "true", the response to the client will be sent only after
+           all the members have been updated. Obviously, this can be time consuming. In some cases,
+           such this overhead may not be acceptable, in which case the value of this parameter
+           should be set to "false"
+        -->
+        <parameter name="synchronizeAll">true</parameter>
+
+        <!--
+          The maximum number of times we need to retry to send a message to a particular node
+          before giving up and considering that node to be faulty
+        -->
+        <parameter name="maxRetries">10</parameter>
+
+        <!-- The multicast address to be used -->
+        <parameter name="mcastAddress">228.0.0.4</parameter>
+
+        <!-- The multicast port to be used -->
+        <parameter name="mcastPort">45564</parameter>
+
+        <!-- The frequency of sending membership multicast messages (in ms) -->
+        <parameter name="mcastFrequency">500</parameter>
+
+        <!-- The time interval within which if a member does not respond, the member will be
+         deemed to have left the group (in ms)
+         -->
+        <parameter name="memberDropTime">3000</parameter>
+
+        <!--
+           The IP address of the network interface to which the multicasting has to be bound to.
+           Multicasting would be done using this interface.
+        -->
+	<!--
+        <parameter name="mcastBindAddress">127.0.0.1</parameter>
+	-->
+        <!-- The host name or IP address of this member -->
+        <!--
+	<parameter name="localMemberHost">127.0.0.1</parameter>
+	-->
+        <!--
+        The TCP port used by this member. This is the port through which other nodes will
+        contact this member
+         -->
+        <parameter name="localMemberPort">4000</parameter>
+
+        <!--
+        Preserve message ordering. This will be done according to sender order.
+        -->
+        <parameter name="preserveMessageOrder">true</parameter>
+
+        <!--
+        Maintain atmost-once message processing semantics
+        -->
+        <parameter name="atmostOnceMessageSemantics">true</parameter>
+
+        <!--
+        Properties specific to this member
+        -->
+        <parameter name="properties">
+            <property name="backendServerURL" value="https://${hostName}:${httpsPort}/services/"/>
+            <property name="mgtConsoleURL" value="https://${hostName}:${httpsPort}/"/>
+        </parameter>
+
+        <!--
+           The list of static or well-known members. These entries will only be valid if the
+           "membershipScheme" above is set to "wka"
+        -->
+        <members>
+            <member>
+                <hostName>127.0.0.1</hostName>
+                <port>4000</port>
+            </member>
+            <member>
+                <hostName>127.0.0.1</hostName>
+                <port>4001</port>
+            </member>
+        </members>
+
+        <!--
+        Enable the groupManagement entry if you need to run this node as a cluster manager.
+        Multiple application domains with different GroupManagementAgent implementations
+        can be defined in this section.
+        -->
+        <groupManagement enable="false">
+            <applicationDomain name="apache.axis2.application.domain"
+                               description="Axis2 group"
+                               agent="org.apache.axis2.clustering.management.DefaultGroupManagementAgent"/>
+        </groupManagement>
+
+        <!--
+           This interface is responsible for handling management of a specific node in the cluster
+           The "enable" attribute indicates whether Node management has been enabled
+        -->
+        <nodeManager class="org.apache.axis2.clustering.management.DefaultNodeManager"
+                     enable="true"/>
+
+        <!--
+           This interface is responsible for handling state replication. The property changes in
+           the Axis2 context hierarchy in this node, are propagated to all other nodes in the cluster.
+
+           The "excludes" patterns can be used to specify the prefixes (e.g. local_*) or
+           suffixes (e.g. *_local) of the properties to be excluded from replication. The pattern
+           "*" indicates that all properties in a particular context should not be replicated.
+
+            The "enable" attribute indicates whether context replication has been enabled
+        -->
+        <stateManager class="org.apache.axis2.clustering.state.DefaultStateManager"
+                      enable="true">
+            <replication>
+                <defaults>
+                    <exclude name="local_*"/>
+                    <exclude name="LOCAL_*"/>
+                </defaults>
+                <context class="org.apache.axis2.context.ConfigurationContext">
+                    <exclude name="local_*"/>
+                </context>
+                <context class="org.apache.axis2.context.ServiceGroupContext">
+                    <exclude name="local_*"/>
+                </context>
+                <context class="org.apache.axis2.context.ServiceContext">
+                    <exclude name="local_*"/>
+                </context>
+            </replication>
+        </stateManager>
+    </clustering>
+</axisconfig>

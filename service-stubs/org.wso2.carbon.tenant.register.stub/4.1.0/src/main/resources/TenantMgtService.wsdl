@@ -1,0 +1,392 @@
+<!--
+ !
+ ! Copyright 2006 The Apache Software Foundation.
+ !
+ ! Licensed under the Apache License, Version 2.0 (the "License");
+ ! you may not use this file except in compliance with the License.
+ ! You may obtain a copy of the License at
+ !
+ !      http://www.apache.org/licenses/LICENSE-2.0
+ !
+ ! Unless required by applicable law or agreed to in writing, software
+ ! distributed under the License is distributed on an "AS IS" BASIS,
+ ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ! See the License for the specific language governing permissions and
+ ! limitations under the License.
+ !-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:ns1="http://org.apache.axis2/xsd"
+                  xmlns:ns="http://services.mgt.tenant.carbon.wso2.org"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:ax2207="http://beans.mgt.tenant.carbon.wso2.org/xsd"
+                  xmlns:ax23="http://beans.mgt.captcha.carbon.wso2.org/xsd"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  targetNamespace="http://services.mgt.tenant.carbon.wso2.org">
+<wsdl:documentation>TenantMgtService</wsdl:documentation>
+<wsdl:types>
+    <xs:schema xmlns:ax24="http://beans.mgt.captcha.carbon.wso2.org/xsd" 
+               xmlns:ax2208="http://beans.mgt.tenant.carbon.wso2.org/xsd"
+               attributeFormDefault="qualified" elementFormDefault="qualified"
+               targetNamespace="http://services.mgt.tenant.carbon.wso2.org">
+        <xs:import namespace="http://beans.mgt.tenant.carbon.wso2.org/xsd"/>
+        <xs:import namespace="http://beans.mgt.captcha.carbon.wso2.org/xsd"/>
+        <xs:element name="validateOrSuggestDomainException">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="validateOrSuggestDomainException"
+                                nillable="true" type="ns:Exception"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:complexType name="Exception">
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:element name="validateOrSuggestDomain">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="successKey" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="validateOrSuggestDomainResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="registerTenantException">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="registerTenantException" nillable="true"
+                                type="ns:Exception"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="registerTenant">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="tenantInfoBean" nillable="true"
+                                type="ax2208:TenantInfoBean"/>
+                    <xs:element minOccurs="0" name="captchaInfoBean" nillable="true"
+                                type="ax24:CaptchaInfoBean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="registerTenantResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="generateRandomCaptchaException">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="generateRandomCaptchaException" nillable="true"
+                                type="ns:Exception"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="generateRandomCaptcha">
+            <xs:complexType>
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="generateRandomCaptchaResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" nillable="true"
+                                type="ax24:CaptchaInfoBean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="checkDomainAvailabilityException">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="checkDomainAvailabilityException"
+                                nillable="true" type="ns:Exception"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="checkDomainAvailability">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="checkDomainAvailabilityResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+    </xs:schema>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+               targetNamespace="http://beans.mgt.tenant.carbon.wso2.org/xsd">
+        <xs:complexType name="TenantInfoBean">
+            <xs:sequence>
+                <xs:element minOccurs="0" name="active" type="xs:boolean"/>
+                <xs:element minOccurs="0" name="admin" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="adminPassword" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="createdDate" nillable="true" type="xs:dateTime"/>
+                <xs:element minOccurs="0" name="email" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="firstname" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="lastname" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="originatedService" nillable="true"
+                            type="xs:string"/>
+                <xs:element minOccurs="0" name="successKey" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                <xs:element minOccurs="0" name="usagePlan" nillable="true" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.mgt.captcha.carbon.wso2.org/xsd">
+        <xs:complexType name="CaptchaInfoBean">
+            <xs:sequence>
+                <xs:element minOccurs="0" name="imagePath" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="secretKey" nillable="true" type="xs:string"/>
+                <xs:element minOccurs="0" name="userAnswer" nillable="true" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:schema>
+</wsdl:types>
+<wsdl:message name="registerTenantRequest">
+    <wsdl:part name="parameters" element="ns:registerTenant"/>
+</wsdl:message>
+<wsdl:message name="registerTenantResponse">
+    <wsdl:part name="parameters" element="ns:registerTenantResponse"/>
+</wsdl:message>
+<wsdl:message name="registerTenantException">
+    <wsdl:part name="parameters" element="ns:registerTenantException"/>
+</wsdl:message>
+<wsdl:message name="checkDomainAvailabilityRequest">
+    <wsdl:part name="parameters" element="ns:checkDomainAvailability"/>
+</wsdl:message>
+<wsdl:message name="checkDomainAvailabilityResponse">
+    <wsdl:part name="parameters" element="ns:checkDomainAvailabilityResponse"/>
+</wsdl:message>
+<wsdl:message name="checkDomainAvailabilityException">
+    <wsdl:part name="parameters" element="ns:checkDomainAvailabilityException"/>
+</wsdl:message>
+<wsdl:message name="validateOrSuggestDomainRequest">
+    <wsdl:part name="parameters" element="ns:validateOrSuggestDomain"/>
+</wsdl:message>
+<wsdl:message name="validateOrSuggestDomainResponse">
+    <wsdl:part name="parameters" element="ns:validateOrSuggestDomainResponse"/>
+</wsdl:message>
+<wsdl:message name="validateOrSuggestDomainException">
+    <wsdl:part name="parameters" element="ns:validateOrSuggestDomainException"/>
+</wsdl:message>
+<wsdl:message name="generateRandomCaptchaRequest">
+    <wsdl:part name="parameters" element="ns:generateRandomCaptcha"/>
+</wsdl:message>
+<wsdl:message name="generateRandomCaptchaResponse">
+    <wsdl:part name="parameters" element="ns:generateRandomCaptchaResponse"/>
+</wsdl:message>
+<wsdl:message name="generateRandomCaptchaException">
+    <wsdl:part name="parameters" element="ns:generateRandomCaptchaException"/>
+</wsdl:message>
+<wsdl:portType name="TenantMgtServicePortType">
+    <wsdl:operation name="registerTenant">
+        <wsdl:input message="ns:registerTenantRequest" wsaw:Action="urn:registerTenant"/>
+        <wsdl:output message="ns:registerTenantResponse" wsaw:Action="urn:registerTenantResponse"/>
+        <wsdl:fault message="ns:registerTenantException" name="registerTenantException"
+                    wsaw:Action="urn:registerTenantregisterTenantException"/>
+    </wsdl:operation>
+    <wsdl:operation name="checkDomainAvailability">
+        <wsdl:input message="ns:checkDomainAvailabilityRequest"
+                    wsaw:Action="urn:checkDomainAvailability"/>
+        <wsdl:output message="ns:checkDomainAvailabilityResponse"
+                     wsaw:Action="urn:checkDomainAvailabilityResponse"/>
+        <wsdl:fault message="ns:checkDomainAvailabilityException"
+                    name="checkDomainAvailabilityException"
+                    wsaw:Action="urn:checkDomainAvailabilitycheckDomainAvailabilityException"/>
+    </wsdl:operation>
+    <wsdl:operation name="validateOrSuggestDomain">
+        <wsdl:input message="ns:validateOrSuggestDomainRequest"
+                    wsaw:Action="urn:validateOrSuggestDomain"/>
+        <wsdl:output message="ns:validateOrSuggestDomainResponse"
+                     wsaw:Action="urn:validateOrSuggestDomainResponse"/>
+        <wsdl:fault message="ns:validateOrSuggestDomainException"
+                    name="validateOrSuggestDomainException"
+                    wsaw:Action="urn:validateOrSuggestDomainvalidateOrSuggestDomainException"/>
+    </wsdl:operation>
+    <wsdl:operation name="generateRandomCaptcha">
+        <wsdl:input message="ns:generateRandomCaptchaRequest"
+                    wsaw:Action="urn:generateRandomCaptcha"/>
+        <wsdl:output message="ns:generateRandomCaptchaResponse"
+                     wsaw:Action="urn:generateRandomCaptchaResponse"/>
+        <wsdl:fault message="ns:generateRandomCaptchaException"
+                    name="generateRandomCaptchaException"
+                    wsaw:Action="urn:generateRandomCaptchagenerateRandomCaptchaException"/>
+    </wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="TenantMgtServiceSoap11Binding" type="ns:TenantMgtServicePortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="registerTenant">
+        <soap:operation soapAction="urn:registerTenant" style="document"/>
+        <wsdl:input>
+            <soap:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="registerTenantException">
+            <soap:fault use="literal" name="registerTenantException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="checkDomainAvailability">
+        <soap:operation soapAction="urn:checkDomainAvailability" style="document"/>
+        <wsdl:input>
+            <soap:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="checkDomainAvailabilityException">
+            <soap:fault use="literal" name="checkDomainAvailabilityException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateOrSuggestDomain">
+        <soap:operation soapAction="urn:validateOrSuggestDomain" style="document"/>
+        <wsdl:input>
+            <soap:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="validateOrSuggestDomainException">
+            <soap:fault use="literal" name="validateOrSuggestDomainException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="generateRandomCaptcha">
+        <soap:operation soapAction="urn:generateRandomCaptcha" style="document"/>
+        <wsdl:input>
+            <soap:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="generateRandomCaptchaException">
+            <soap:fault use="literal" name="generateRandomCaptchaException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+</wsdl:binding>
+<wsdl:binding name="TenantMgtServiceSoap12Binding" type="ns:TenantMgtServicePortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="registerTenant">
+        <soap12:operation soapAction="urn:registerTenant" style="document"/>
+        <wsdl:input>
+            <soap12:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap12:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="registerTenantException">
+            <soap12:fault use="literal" name="registerTenantException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="checkDomainAvailability">
+        <soap12:operation soapAction="urn:checkDomainAvailability" style="document"/>
+        <wsdl:input>
+            <soap12:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap12:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="checkDomainAvailabilityException">
+            <soap12:fault use="literal" name="checkDomainAvailabilityException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateOrSuggestDomain">
+        <soap12:operation soapAction="urn:validateOrSuggestDomain" style="document"/>
+        <wsdl:input>
+            <soap12:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap12:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="validateOrSuggestDomainException">
+            <soap12:fault use="literal" name="validateOrSuggestDomainException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="generateRandomCaptcha">
+        <soap12:operation soapAction="urn:generateRandomCaptcha" style="document"/>
+        <wsdl:input>
+            <soap12:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap12:body use="literal"/>
+        </wsdl:output>
+        <wsdl:fault name="generateRandomCaptchaException">
+            <soap12:fault use="literal" name="generateRandomCaptchaException"/>
+        </wsdl:fault>
+    </wsdl:operation>
+</wsdl:binding>
+<wsdl:binding name="TenantMgtServiceHttpBinding" type="ns:TenantMgtServicePortType">
+    <http:binding verb="POST"/>
+    <wsdl:operation name="registerTenant">
+        <http:operation location="registerTenant"/>
+        <wsdl:input>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:input>
+        <wsdl:output>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="checkDomainAvailability">
+        <http:operation location="checkDomainAvailability"/>
+        <wsdl:input>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:input>
+        <wsdl:output>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="validateOrSuggestDomain">
+        <http:operation location="validateOrSuggestDomain"/>
+        <wsdl:input>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:input>
+        <wsdl:output>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="generateRandomCaptcha">
+        <http:operation location="generateRandomCaptcha"/>
+        <wsdl:input>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:input>
+        <wsdl:output>
+            <mime:content type="text/xml" part="parameters"/>
+        </wsdl:output>
+    </wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="TenantMgtService">
+    <wsdl:port name="TenantMgtServiceHttpsSoap11Endpoint"
+               binding="ns:TenantMgtServiceSoap11Binding">
+        <soap:address
+                location="https://10.100.0.19:9443/services/TenantMgtService.TenantMgtServiceHttpsSoap11Endpoint/"/>
+    </wsdl:port>
+    <wsdl:port name="TenantMgtServiceHttpsSoap12Endpoint"
+               binding="ns:TenantMgtServiceSoap12Binding">
+        <soap12:address
+                location="https://10.100.0.19:9443/services/TenantMgtService.TenantMgtServiceHttpsSoap12Endpoint/"/>
+    </wsdl:port>
+    <wsdl:port name="TenantMgtServiceHttpsEndpoint" binding="ns:TenantMgtServiceHttpBinding">
+        <http:address
+                location="https://10.100.0.19:9443/services/TenantMgtService.TenantMgtServiceHttpsEndpoint/"/>
+    </wsdl:port>
+</wsdl:service>
+</wsdl:definitions>        

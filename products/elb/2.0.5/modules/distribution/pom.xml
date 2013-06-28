@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+        
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.elb</groupId>
+        <artifactId>elb-parent</artifactId>
+        <version>2.0.5</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>wso2elb</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 ELB - Distribution</name>
+    <url>http://wso2.org/projects/load-balancer</url>
+    <description>WSO2 Elastic Load Balancer Distribution</description>
+
+    <dependencies>
+
+        <!-- Carbon core distribution -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>wso2carbon-core</artifactId>
+            <version>${carbon.kernel.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- Synapse dependencies -->
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-commons</artifactId>
+            <version>2.1.1-wso2v4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-nhttp-transport</artifactId>
+            <version>2.1.1-wso2v4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-pipe-transport</artifactId>
+            <version>2.1.1-wso2v4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-core</artifactId>
+            <version>2.1.1-wso2v4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-tasks</artifactId>
+            <version>2.1.1-wso2v4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-extensions</artifactId>
+            <version>2.1.1-wso2v4</version>
+        </dependency>
+
+        <!-- Carbon mediation initializer -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediation.initializer</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediator.bridge</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+	      <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediation.dependency.mgt</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+
+        
+        <!-- ### Required Carbon components ### -->
+        <!-- Transport managament components -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.transport.mgt</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Transport components -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.transport.http</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.transport.nhttp</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.transport.https</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.transport.mail</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Sequence management components -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediator.service</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.sequences.common</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.sequences</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediator.router.impl</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediator.clazz.services</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediator.command.services</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        
+         <!--Entitlement mediator dependency -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.identity.entitlement.mediator</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        
+         <!--OAuth mediator dependency -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth.mediator</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+
+        <!--Drools dependency-->
+        <dependency>
+            <groupId>org.drools.wso2</groupId>
+            <artifactId>drools</artifactId>
+            <version>5.0.1.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>jsr94.wso2</groupId>
+            <artifactId>jsr94</artifactId>
+            <version>1.1.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mvel.wso2</groupId>
+            <artifactId>mvel2</artifactId>
+            <version>2.0.10.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time.wso2</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr.wso2</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.1.1.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>janino.wso2</groupId>
+            <artifactId>janino</artifactId>
+            <version>2.5.15.wso2v1</version>
+        </dependency>
+        <!-- Endpoints component -->
+	      <!--dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.endpoint.common</artifactId>
+            <version>${carbon.version}</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.endpoint</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Local Entries component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.localentry</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Service management component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.service.mgt</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Operation management component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.operation.mgt</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Module Management component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.module.mgt</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Security components (orbit) -->
+         <dependency>
+            <groupId>org.apache.rampart.wso2</groupId>
+            <artifactId>rampart-policy</artifactId>
+            <version>1.6.1.wso2v1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rampart.wso2</groupId>
+            <artifactId>rampart-trust</artifactId>
+            <version>1.6.1.wso2v1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rampart.wso2</groupId>
+            <artifactId>rampart-core</artifactId>
+            <version>1.6.1.wso2v1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rampart</groupId>
+            <artifactId>rampart</artifactId>
+            <type>mar</type>
+            <version>1.6.1-wso2v1</version>
+        </dependency>
+        
+        <!-- Policy Editor component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.policyeditor</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Task component with startups -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.startup</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.task</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.task.services</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Synapse Config admin component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediation.configadmin</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Synapse Registry component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediation.registry</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Datasources component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.datasource</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Throttle component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.throttle</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Caching component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.caching</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- RM component -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.rm</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- Eventing components -->
+        <!--dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.eventing</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.eventing.core</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.eventing.impl</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.eventing.broker</artifactId>
+            <version>${carbon.version}</version>
+        </dependency-->
+        <!-- Eventsource component.-->
+	      <!-- Removed since this is not required by LB product.-->
+        <!--dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.eventing.eventsource</artifactId>
+            <version>${carbon.version}</version>
+        </dependency-->
+        <!-- Menus -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ui.menu.registry</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        <!-- ### Required Carbon orbit dependencies ### -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs.wso2</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <version>1.1.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.andes.wso2</groupId>
+            <artifactId>andes-client</artifactId>
+            <version>0.13.wso2v8</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-net.wso2</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>2.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>jsch.wso2</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.41-wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpcore-nio</artifactId>
+            <version>4.2.3.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler.wso2</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.1.1.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon.wso2</groupId>
+            <artifactId>saxon</artifactId>
+            <version>8.9.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.abdera.wso2</groupId>
+            <artifactId>abdera</artifactId>
+            <version>1.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ws.wso2</groupId>
+            <artifactId>spring.framework</artifactId>
+            <version>2.5.1.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io.wso2</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.0.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections.wso2</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.savan.wso2</groupId>
+            <artifactId>savan-core</artifactId>
+            <version>1.0.0-wso2v2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.caching</groupId>
+            <artifactId>wso2caching-core</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <!--Bouncycastle dependency for clients and servers-->
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <version>132</version>
+        </dependency>
+
+        <!-- autoscale components -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.mediator.autoscale</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.discovery.core</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.relay</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.0-alpha-4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>unpack-wso2carbon</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon</groupId>
+                                    <artifactId>wso2carbon-core</artifactId>
+                                    <version>${carbon.kernel.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>extract-docs-from-components</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="tempdir" value="target/docs-temp"/>
+                                <mkdir dir="${tempdir}"/>
+                                <unzip dest="${tempdir}">
+                                    <fileset dir="target">
+                                        <include name="${project.artifactId}-${project.version}.zip"/>
+                                    </fileset>
+                                </unzip>
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/" overwrite="false">
+                                    <fileset dir="${tempdir}/${project.artifactId}-${project.version}/repository/components/">
+                                    </fileset>
+                                </copy>
+                                <delete file="target/${project.artifactId}-${project.version}.zip"/>
+                                <delete dir="${tempdir}"/>
+                                <mkdir dir="${tempdir}"/>
+                                <unzip dest="${tempdir}">
+                                    <fileset dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
+                                        <include name="*.ui*.jar"/>
+                                    </fileset>
+                                </unzip>
+                                <move todir="${tempdir}/web/" includeemptydirs="false">
+                                    <fileset dir="${tempdir}/web/">
+                                        <exclude name="**/yui/**"/>
+                                        <exclude name="**/ajax/**"/>
+                                        <exclude name="**/WEB-INF/**"/>
+                                        <include name="**/*.html"/>
+                                    </fileset>
+                                    <mapper type="glob" from="*.html" to="*.xml"/>
+                                </move>
+                                <delete dir="${tempdir}"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>clean_target</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="target/archive-tmp"/>
+                                <delete dir="target/dependency-maven-plugin-markers"/>
+                                <delete dir="target/maven-archiver"/>
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
+                                <delete dir="target/sources"/>
+                                <delete dir="target/site"/>
+                                <delete dir="src/site"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>   
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>pre_dist</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>${basedir}/src/main/assembly/filter.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dist</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>${basedir}/src/main/assembly/filter.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

@@ -1,0 +1,40 @@
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+	<cartridges>
+	
+		<!-- You can have 1..n cartridge elements. -->
+		<cartridge type="php" version="5.1">
+			<!-- Display name of this cartridge -->
+			<displayName>PHP</displayName>
+			<!-- A cartridge element should add a reference to an existing IaaS provider (specified
+				 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+				 Provider (which should have a unique "type" attribute. -->
+			<iaasProvider type="openstack" >
+				<imageId>nova/xxxxxxxxxx</imageId>
+			</iaasProvider>
+		
+			<deployment>
+				<dir>abc</dir>
+			</deployment>
+		</cartridge>
+	
+	</cartridges>
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+	<cartridges>
+	
+		<!-- You can have 1..n cartridge elements. -->
+		<cartridge type="php" version="5.1">
+			<!-- Display name of this cartridge -->
+			<displayName>PHP</displayName>
+			<!-- A cartridge element should add a reference to an existing IaaS provider (specified
+				 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+				 Provider (which should have a unique "type" attribute. -->
+			<iaasProvider type="openstack" >
+				<imageId>nova/xxxxxxxxxx</imageId>
+			</iaasProvider>
+		
+			<deployment>
+				<dir>abc</dir>
+			</deployment>
+		</cartridge>
+	
+	</cartridges>

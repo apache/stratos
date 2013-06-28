@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2009, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>carbon-products</artifactId>
+        <version>4.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.cc</groupId>
+    <artifactId>cc-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+    <name>Cloud Controller</name>
+    <url>http://wso2.org/projects/mb/java</url>
+    <description>Stratos Cloud Controller</description>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <modules>
+        <module>modules/p2-profile</module>
+        <module>modules/distribution</module>
+    </modules>
+
+    <scm>
+        <connection>scm:svn:http://wso2.org/repos/wso2/trunk/mb/java</connection>
+        <developerConnection>scm:svn:https://wso2.org/repos/wso2/trunk/mb/java</developerConnection>
+        <url>https://wso2.org/repos/wso2/trunk/mb/java/</url>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>wso2-nexus</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>wso2-maven2-repository</id>
+            <url>http://dist.wso2.org/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+    <distributionManagement>
+        <repository>
+            <id>wso2-maven2-repository</id>
+            <name>WSO2 Maven2 Repository</name>
+            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>wso2-maven2-snapshot-repository</id>
+            <name>WSO2 Maven2 Snapshot Repository</name>
+            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/snapshots/maven2/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>signed-build</id>
+            <activation>
+                <property>
+                    <name>sign</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.0-alpha-3</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <organization>
+        <name>WSO2 Inc</name>
+        <url>http://wso2.com</url>
+    </organization>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://wso2.org/jira/browse/CARBON</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>WSO2 Users' list</name>
+            <post>mailto:user@wso2.org</post>
+            <archive>http://wso2.markmail.org/search/+list:org%2Ewso2%2Euser</archive>
+            <subscribe>mailto:dev-request@wso2.org?subject=subscribe</subscribe>
+            <unsubscribe>mailto:dev-request@wso2.org?subject=unsubscribe</unsubscribe>
+        </mailingList>
+        <mailingList>
+            <name>WSO2 Developers' List</name>
+            <post>mailto:dev@wso2.org</post>
+            <archive>http://wso2.markmail.org/search/+list:org%2Ewso2%2Edev</archive>
+            <subscribe>mailto:user-request@wso2.org?subject=subscribe</subscribe>
+            <unsubscribe>mailto:user-request@wso2.org?subject=unsubscribe</unsubscribe>
+        </mailingList>
+    </mailingLists>
+
+    <properties>
+        <carbon.version>4.1.0</carbon.version>
+	<carbon.patch.version>4.1.1</carbon.patch.version>
+	<carbon.kernel.version>4.1.0</carbon.kernel.version>
+	<stratos.component.version>2.1.0</stratos.component.version>
+	<stratos.component.patch.version.2.1.1>2.1.1</stratos.component.patch.version.2.1.1>
+	<passthru.transport.version>1.0.2</passthru.transport.version>
+        <synapse.version>2.1.1-wso2v4</synapse.version>
+
+    </properties>
+
+</project>

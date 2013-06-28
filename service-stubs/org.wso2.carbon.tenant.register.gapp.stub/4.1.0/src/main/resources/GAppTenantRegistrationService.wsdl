@@ -1,0 +1,212 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://services.mgt.tenant.carbon.wso2.org" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2405="http://beans.mgt.tenant.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2403="http://exception.mgt.tenant.carbon.wso2.org/xsd" targetNamespace="http://services.mgt.tenant.carbon.wso2.org">
+    <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="SigOnly">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <sp:AsymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <wsp:Policy>
+                        <sp:InitiatorToken>
+                            <wsp:Policy>
+                                <sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                                    <wsp:Policy>
+                                        <sp:RequireThumbprintReference />
+                                        <sp:WssX509V3Token10 />
+                                    </wsp:Policy>
+                                </sp:X509Token>
+                            </wsp:Policy>
+                        </sp:InitiatorToken>
+                        <sp:RecipientToken>
+                            <wsp:Policy>
+                                <sp:X509Token sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never">
+                                    <wsp:Policy>
+                                        <sp:RequireThumbprintReference />
+                                        <sp:WssX509V3Token10 />
+                                    </wsp:Policy>
+                                </sp:X509Token>
+                            </wsp:Policy>
+                        </sp:RecipientToken>
+                        <sp:AlgorithmSuite>
+                            <wsp:Policy>
+                                <sp:Basic256 />
+                            </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:Layout>
+                            <wsp:Policy>
+                                <sp:Strict />
+                            </wsp:Policy>
+                        </sp:Layout>
+                        <sp:IncludeTimestamp />
+                        <sp:OnlySignEntireHeadersAndBody />
+                    </wsp:Policy>
+                </sp:AsymmetricBinding>
+                <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <sp:Policy>
+                        <sp:MustSupportRefKeyIdentifier />
+                        <sp:MustSupportRefIssuerSerial />
+                    </sp:Policy>
+                </sp:Wss10>
+                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <sp:Body />
+                </sp:SignedParts>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="10e338136f2086e67131033d0dd4832f314b8c9f652be93d">
+        <wsp:ExactlyOne>
+            <wsp:All />
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsdl:documentation>GAppTenantRegistrationService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.mgt.tenant.carbon.wso2.org/xsd">
+            <xs:complexType name="TenantManagementException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ns="http://org.apache.axis2/xsd" xmlns:ax2406="http://beans.mgt.tenant.carbon.wso2.org/xsd" xmlns:ax2404="http://exception.mgt.tenant.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://org.apache.axis2/xsd">
+            <xs:import namespace="http://exception.mgt.tenant.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://beans.mgt.tenant.carbon.wso2.org/xsd" />
+            <xs:element name="GAppTenantRegistrationServiceTenantManagementException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="TenantManagementException" nillable="true" type="ax2404:TenantManagementException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerGoogleAppsTenant">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantInfoBean" nillable="true" type="ax2406:TenantInfoBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerGoogleAppsTenantResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isRegisteredAsGoogleAppDomain">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isRegisteredAsGoogleAppDomainResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.mgt.tenant.carbon.wso2.org/xsd">
+            <xs:complexType name="TenantInfoBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="active" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="admin" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="adminPassword" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="createdDate" nillable="true" type="xs:dateTime" />
+                    <xs:element minOccurs="0" name="email" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="firstname" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="lastname" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="originatedService" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="successKey" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int" />
+                    <xs:element minOccurs="0" name="usagePlan" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="registerGoogleAppsTenantRequest">
+        <wsdl:part name="parameters" element="ns1:registerGoogleAppsTenant" />
+    </wsdl:message>
+    <wsdl:message name="registerGoogleAppsTenantResponse">
+        <wsdl:part name="parameters" element="ns1:registerGoogleAppsTenantResponse" />
+    </wsdl:message>
+    <wsdl:message name="GAppTenantRegistrationServiceTenantManagementException">
+        <wsdl:part name="parameters" element="ns1:GAppTenantRegistrationServiceTenantManagementException" />
+    </wsdl:message>
+    <wsdl:message name="isRegisteredAsGoogleAppDomainRequest">
+        <wsdl:part name="parameters" element="ns1:isRegisteredAsGoogleAppDomain" />
+    </wsdl:message>
+    <wsdl:message name="isRegisteredAsGoogleAppDomainResponse">
+        <wsdl:part name="parameters" element="ns1:isRegisteredAsGoogleAppDomainResponse" />
+    </wsdl:message>
+    <wsdl:portType xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" name="GAppTenantRegistrationServicePortType" wsp:PolicyURIs="#10e338136f2086e67131033d0dd4832f314b8c9f652be93d #SigOnly">
+        <wsdl:operation name="registerGoogleAppsTenant">
+            <wsdl:input message="tns:registerGoogleAppsTenantRequest" wsaw:Action="urn:registerGoogleAppsTenant" />
+            <wsdl:output message="tns:registerGoogleAppsTenantResponse" wsaw:Action="urn:registerGoogleAppsTenantResponse" />
+            <wsdl:fault message="tns:GAppTenantRegistrationServiceTenantManagementException" name="GAppTenantRegistrationServiceTenantManagementException" wsaw:Action="urn:registerGoogleAppsTenantGAppTenantRegistrationServiceTenantManagementException" />
+        </wsdl:operation>
+        <wsdl:operation name="isRegisteredAsGoogleAppDomain">
+            <wsdl:input message="tns:isRegisteredAsGoogleAppDomainRequest" wsaw:Action="urn:isRegisteredAsGoogleAppDomain" />
+            <wsdl:output message="tns:isRegisteredAsGoogleAppDomainResponse" wsaw:Action="urn:isRegisteredAsGoogleAppDomainResponse" />
+            <wsdl:fault message="tns:GAppTenantRegistrationServiceTenantManagementException" name="GAppTenantRegistrationServiceTenantManagementException" wsaw:Action="urn:isRegisteredAsGoogleAppDomainGAppTenantRegistrationServiceTenantManagementException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="GAppTenantRegistrationServiceSoap11Binding" type="tns:GAppTenantRegistrationServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="registerGoogleAppsTenant">
+            <soap:operation soapAction="urn:registerGoogleAppsTenant" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="GAppTenantRegistrationServiceTenantManagementException">
+                <soap:fault use="literal" name="GAppTenantRegistrationServiceTenantManagementException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isRegisteredAsGoogleAppDomain">
+            <soap:operation soapAction="urn:isRegisteredAsGoogleAppDomain" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="GAppTenantRegistrationServiceTenantManagementException">
+                <soap:fault use="literal" name="GAppTenantRegistrationServiceTenantManagementException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="GAppTenantRegistrationServiceSoap12Binding" type="tns:GAppTenantRegistrationServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="registerGoogleAppsTenant">
+            <soap12:operation soapAction="urn:registerGoogleAppsTenant" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="GAppTenantRegistrationServiceTenantManagementException">
+                <soap12:fault use="literal" name="GAppTenantRegistrationServiceTenantManagementException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isRegisteredAsGoogleAppDomain">
+            <soap12:operation soapAction="urn:isRegisteredAsGoogleAppDomain" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="GAppTenantRegistrationServiceTenantManagementException">
+                <soap12:fault use="literal" name="GAppTenantRegistrationServiceTenantManagementException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="GAppTenantRegistrationService">
+        <wsdl:port name="GAppTenantRegistrationServiceHttpsSoap11Endpoint" binding="tns:GAppTenantRegistrationServiceSoap11Binding">
+            <soap:address location="https://cloud-test.wso2.com:9443/services/GAppTenantRegistrationService.GAppTenantRegistrationServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="GAppTenantRegistrationServiceHttpsSoap12Endpoint" binding="tns:GAppTenantRegistrationServiceSoap12Binding">
+            <soap12:address location="https://cloud-test.wso2.com:9443/services/GAppTenantRegistrationService.GAppTenantRegistrationServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

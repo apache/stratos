@@ -1,0 +1,82 @@
+.treeControl div.title{
+    font-size:14px;
+    font-weight:bold;
+    color:#788cb3;
+}
+.topicData{
+	border:solid 1px #ccc;
+	padding:5px;
+}
+td.tree-top{
+   background-image:url(../images/treetop.jpg);
+   background-repeat:repeat-x;
+    height:21px;
+}
+td.tree-top h3{
+    padding-left:10px !important;
+    padding-right:0px !important;
+    padding-top:3px !important;
+    padding-bottom:0px !important;
+    margin:0px !important;
+    font-size:12px !important;
+    font-weight:bold !important;
+    color:#414141;
+    
+}
+.leftBox{
+	border:solid 1px #ccc;
+	padding:5px;
+}
+.treeControl{
+margin-bottom:10px;
+}
+.selected{
+    background-color:#a0afcd;
+    color:#fff !important;
+    padding:3px;
+}
+.secure{
+    color: #009966 !important;
+    text-decoration:underline;
+    background-image:url(../images/secure.gif);
+    background-repeat:no-repeat;
+    background-position:right center;
+    padding-right:15px;
+}
+div#eprInput {
+    margin: 0px 0px 0px 0px;
+    display: block;
+}
+
+div#scriptInput {
+    margin: 0px 20px 0px 20px;
+    display: none;
+}
+
+.initE {
+    border: solid 1px #e8e7e7;
+    text-align: left;
+    font-style: italic;
+    color: #adadad;
+}
+
+.normalE {
+    border: solid 1px #bfbebe;
+    text-align: left;
+}
+.importantArea {
+background-color:#DDDDDD;
+border:1px solid #949494;
+padding:5px;
+}
+#permissionsDiv h4 {
+color:#999999;
+font-size:12px !important;
+font-weight:bold !important;
+}
+.perRow td {
+background-color:#C6C7C8;
+border-right:1px solid #DFDFDF !important;
+font-weight:bold;
+text-align:center;
+}

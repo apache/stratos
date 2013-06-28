@@ -1,0 +1,18 @@
+import org.wso2.stratos.throttling.manager.dataobjects.*;
+import org.wso2.stratos.common.constants.*;
+
+rule restrictBandwidth
+when
+
+$dataContext : ThrottlingDataContext()
+eval($dataContext.getDataLong(ThrottlingDataEntryConstants.TENANT_INCOMING_BANDWIDTH) > 12)
+
+then
+
+ThrottlingAccessValidation validation = $dataContext.getAccessValidation();
+long tenantIncomingBandwidth = $dataContext.getDataLong(
+		ThrottlingDataEntryConstants.TENANT_INCOMING_BANDWIDTH);
+validation.setTenantBlocked(StratosConstants.THROTTLING_IN_DATA_ACTION, true,
+		"Your incoming bw is big. Bigger than 12. your value: " + tenantIncomingBandwidth);
+
+end

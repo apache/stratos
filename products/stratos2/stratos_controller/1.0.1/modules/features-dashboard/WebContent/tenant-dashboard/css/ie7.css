@@ -1,0 +1,8 @@
+div#middle h2{
+    margin-top:15px;
+}
+
+table#main-table td#middle-content{
+    background-position:left 30px;
+    background-color:#fff;
+}

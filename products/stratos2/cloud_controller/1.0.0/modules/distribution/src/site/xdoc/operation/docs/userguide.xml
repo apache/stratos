@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<html><head>
+  <meta content="text/html; charset=iso-8859-1" http-equiv="content-type"></meta>
+  <title>Operation Management - User Guide</title>
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<body>
+<h1>Operation Management</h1>
+This feature is used to manage service operations. A service contains one or
+more operations, and these service operations appear in the Published
+Operations section on the <em><strong>Operations of Service</strong></em>
+page.The following quality of service configuration options are available for
+the operations: response caching, access throttling, flows, modules,
+parameters. 
+
+For example, you will get the following screen , when you click the Hello
+Service that contains a single operation called <em>greet</em>.
+
+
+<p><img src="images/published-operations.jpg" alt=" "/>
+Figure1. Operations list </p>
+
+<h2>Managing Operations</h2>
+<ol>
+  <li>In the navigator, under Manage/Services, click <strong>List</strong>.
+    The <em><strong>Deployed Services</strong></em> page appears. </li>
+  <li>Click the service name for which you want to configure the operations.
+    The <em><strong>Service Dashboard</strong></em> page appears. </li>
+  <li>Click <strong>Operations</strong> in the Quality of Service
+    Configuration panel. The <em><strong>Operation of Service</strong></em>
+    page appears.
+
+    <ul>
+      <li>You can click on the available actions for the service, or </li>
+      <li>Click the service name to view the <em><strong>Operation
+        Dashboard</strong></em> page. Actions for the operation will be
+        available in the Quality of Service Configuration panel. </li>
+    </ul>
+    <ul>
+      <p><img src="images/operation-dashboard.jpg" alt=" "/>
+      Figure2 . Operation Dashboard</p>
+    </ul>
+  </li>
+</ol>
+
+<h2><strong>Field Descriptions</strong>           </h2>
+
+<div>
+
+<table style="text-align: left; width: 712px; height: 155px;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td colspan="2" rowspan="1"><strong>Operations Dashboard</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Field Name</strong></td>
+      <td><strong>Description</strong></td>
+    </tr>
+    <tr>
+      <td>Response Caching</td>
+      <td>Use this option to configure response caching</td>
+    </tr>
+    <tr>
+      <td style="height: 25px;">Access Throttling</td>
+      <td style="height: 25px;">Use this option to configure access
+        throttling for the selected operation</td>
+    </tr>
+    <tr>
+      <td>MTOM</td>
+      <td>Enables/disables MTOM</td>
+    </tr>
+    <tr>
+      <td style="height: 25px;">Flows</td>
+      <td style="height: 25px;">View the configured flows graphically</td>
+    </tr>
+    <tr>
+      <td>Modules</td>
+      <td>Engages modules for the selected operation</td>
+    </tr>
+    <tr>
+      <td style="height: 25px;">Parameters</td>
+      <td style="height: 25px;">Edits/deletes operation parameters.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</body></html>

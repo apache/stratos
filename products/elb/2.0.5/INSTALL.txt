@@ -1,0 +1,55 @@
+Installing  WSO2 Elastic Load Balancer (ELB) 2.0.5
+==================================================
+
+WSO2 ELB 2.0.5 can be run as a light-weight software load balancer in 
+stand-alone mode, that can be configured to balance the load across the services nodes.
+
+Standalone Mode
+===============
+1. The directory containing this INSTALL.txt file will be the root and it will be
+   treated as Carbon home directory and let it be CARBON_HOME.
+
+2. All the shell scripts and .bat files are available in CARBON_HOME/bin folder.
+
+3. To start ELB one can use either wso2server.sh in all Unix
+   systems & wso2server.bat file on Windows operating systems.
+
+4. Either of the following commands can be used to start ELB
+      i)  ./wso2server.sh {console|start|stop|restart|version}
+     ii)  wso2server.bat {start|stop|version}
+
+        Usage: wso2server.sh [command] [options] [system-properties]
+
+            command:
+                --start		    Start ELB as a Unix daemon in the background
+                --console	    Start ELB as a Unix daemon in the foreground
+                --stop		    Stop the ELB Unix daemon
+                --restart	    Restart the ELB Unix daemon
+                --version	    What version of the ELB server are you running
+            options:
+                --debug <port> 	Start the server in remote debugging mode.
+                                port: The remote debugging port.
+
+            system-properties:
+                -DhttpPort		Overrides the HTTP port defined in the
+                                catalina-server.xml file
+                -DhttpsPort		Overrides the HTTPS port defined in the
+                                catalina-server.xml file
+                -DosgiConsole=[port]
+                                Start Carbon with Equinox OSGi console.
+                                If the optional 'port' parameter is provided, a
+                                telnet port will be opened
+                -DosgiDebugOptions=[options-file]
+                                Start Carbon with OSGi debugging enabled.
+                                If the optional 'options-file is provided, the
+                                OSGi debug options will be loaded from it.
+                -Dsetup			Clean the Registry database & other
+                                configuration, recreate DB, re-populate the
+                                configuration, and start Carbon
+
+System Requirements
+=======================
+1. Minimum memory - 1.5GB
+2. Processor      - Pentium 800MHz or equivalent at minimum
+3. Java SE Development Kit 1.6.0_24 or higher
+

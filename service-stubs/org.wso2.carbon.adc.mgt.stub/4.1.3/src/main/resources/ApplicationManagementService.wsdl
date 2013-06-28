@@ -1,0 +1,1192 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://service.mgt.adc.carbon.wso2.org" xmlns:ax27="http://dto.mgt.adc.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax25="http://exception.mgt.adc.carbon.wso2.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.mgt.adc.carbon.wso2.org">
+    <wsdl:documentation>ApplicationManagementService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://dto.mgt.adc.carbon.wso2.org/xsd">
+            <xs:complexType name="RepositoryInformation">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="refName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="repoURL" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SubscriptionInfo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="hostname" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="repositoryURL" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Cartridge">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="accessURLs" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="activeInstances" type="xs:int"/>
+                    <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dbUserName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mappedDomain" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="policy" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="policyDescription" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="repoURL" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="status" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PolicyDefinition">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="defaultPolicy" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CartridgeWrapper">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="ax27:Cartridge"/>
+                    <xs:element minOccurs="0" name="numberOfPages" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.mgt.adc.carbon.wso2.org/xsd">
+            <xs:complexType name="ADCException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NotSubscribedException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RepositoryRequiredException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RepositoryCredentialsRequiredException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidRepositoryException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RepositoryTransportException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PolicyException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="UnregisteredCartridgeException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeAliasException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DuplicateCartridgeAliasException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AlreadySubscribedException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DomainMappingExistsException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax28="http://dto.mgt.adc.carbon.wso2.org/xsd" xmlns:ax26="http://exception.mgt.adc.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.mgt.adc.carbon.wso2.org">
+            <xs:import namespace="http://exception.mgt.adc.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://dto.mgt.adc.carbon.wso2.org/xsd"/>
+            <xs:element name="ApplicationManagementServiceADCException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ADCException" nillable="true" type="ax25:ADCException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceNotSubscribedException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NotSubscribedException" nillable="true" type="ax25:NotSubscribedException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unsubscribe">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceRepositoryRequiredException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RepositoryRequiredException" nillable="true" type="ax25:RepositoryRequiredException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceRepositoryCredentialsRequiredException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RepositoryCredentialsRequiredException" nillable="true" type="ax25:RepositoryCredentialsRequiredException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceInvalidRepositoryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidRepositoryException" nillable="true" type="ax25:InvalidRepositoryException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceRepositoryTransportException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RepositoryTransportException" nillable="true" type="ax25:RepositoryTransportException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testRepositoryConnection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="repoURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testRepositoryConnectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:RepositoryInformation"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="synchronizeRepository">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServicePolicyException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="PolicyException" nillable="true" type="ax25:PolicyException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceUnregisteredCartridgeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax25:UnregisteredCartridgeException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceInvalidCartridgeAliasException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeAliasException" nillable="true" type="ax25:InvalidCartridgeAliasException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceDuplicateCartridgeAliasException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="DuplicateCartridgeAliasException" nillable="true" type="ax25:DuplicateCartridgeAliasException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceAlreadySubscribedException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AlreadySubscribedException" nillable="true" type="ax25:AlreadySubscribedException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="subscribe">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="policy" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="repoURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="dataCartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="dataCartridgeAlias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="subscribeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:SubscriptionInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeDomainMapping">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isFeatureEnabled">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isFeatureEnabledResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTenantDomain">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTenantDomainResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSubscribedCartridges">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSubscribedCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:Cartridge"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSubscribedCartridgeAliases">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSubscribedCartridgeAliasesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPolicyDefinitions">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPolicyDefinitionsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:PolicyDefinition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPagedSubscribedCartridges">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeSearchString" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPagedSubscribedCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:CartridgeWrapper"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPagedAvailableCartridges">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeSearchString" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
+                        <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPagedAvailableCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:CartridgeWrapper"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeInfo">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeInfoResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:Cartridge"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableCartridges">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:Cartridge"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ApplicationManagementServiceDomainMappingExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="DomainMappingExistsException" nillable="true" type="ax25:DomainMappingExistsException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addDomainMapping">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="mappedDomain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeAlias" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addDomainMappingResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="isFeatureEnabledRequest">
+        <wsdl:part name="parameters" element="ns:isFeatureEnabled"/>
+    </wsdl:message>
+    <wsdl:message name="isFeatureEnabledResponse">
+        <wsdl:part name="parameters" element="ns:isFeatureEnabledResponse"/>
+    </wsdl:message>
+    <wsdl:message name="unsubscribeRequest">
+        <wsdl:part name="parameters" element="ns:unsubscribe"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceADCException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceADCException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceNotSubscribedException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceNotSubscribedException"/>
+    </wsdl:message>
+    <wsdl:message name="getSubscribedCartridgesRequest">
+        <wsdl:part name="parameters" element="ns:getSubscribedCartridges"/>
+    </wsdl:message>
+    <wsdl:message name="getSubscribedCartridgesResponse">
+        <wsdl:part name="parameters" element="ns:getSubscribedCartridgesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="synchronizeRepositoryRequest">
+        <wsdl:part name="parameters" element="ns:synchronizeRepository"/>
+    </wsdl:message>
+    <wsdl:message name="getCartridgeInfoRequest">
+        <wsdl:part name="parameters" element="ns:getCartridgeInfo"/>
+    </wsdl:message>
+    <wsdl:message name="getCartridgeInfoResponse">
+        <wsdl:part name="parameters" element="ns:getCartridgeInfoResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addDomainMappingRequest">
+        <wsdl:part name="parameters" element="ns:addDomainMapping"/>
+    </wsdl:message>
+    <wsdl:message name="addDomainMappingResponse">
+        <wsdl:part name="parameters" element="ns:addDomainMappingResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceDomainMappingExistsException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceDomainMappingExistsException"/>
+    </wsdl:message>
+    <wsdl:message name="removeDomainMappingRequest">
+        <wsdl:part name="parameters" element="ns:removeDomainMapping"/>
+    </wsdl:message>
+    <wsdl:message name="subscribeRequest">
+        <wsdl:part name="parameters" element="ns:subscribe"/>
+    </wsdl:message>
+    <wsdl:message name="subscribeResponse">
+        <wsdl:part name="parameters" element="ns:subscribeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServicePolicyException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServicePolicyException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceUnregisteredCartridgeException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceUnregisteredCartridgeException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceInvalidCartridgeAliasException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceInvalidCartridgeAliasException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceDuplicateCartridgeAliasException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceDuplicateCartridgeAliasException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceRepositoryRequiredException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceRepositoryRequiredException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceAlreadySubscribedException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceAlreadySubscribedException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceRepositoryCredentialsRequiredException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceInvalidRepositoryException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceInvalidRepositoryException"/>
+    </wsdl:message>
+    <wsdl:message name="ApplicationManagementServiceRepositoryTransportException">
+        <wsdl:part name="parameters" element="ns:ApplicationManagementServiceRepositoryTransportException"/>
+    </wsdl:message>
+    <wsdl:message name="getPagedAvailableCartridgesRequest">
+        <wsdl:part name="parameters" element="ns:getPagedAvailableCartridges"/>
+    </wsdl:message>
+    <wsdl:message name="getPagedAvailableCartridgesResponse">
+        <wsdl:part name="parameters" element="ns:getPagedAvailableCartridgesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPagedSubscribedCartridgesRequest">
+        <wsdl:part name="parameters" element="ns:getPagedSubscribedCartridges"/>
+    </wsdl:message>
+    <wsdl:message name="getPagedSubscribedCartridgesResponse">
+        <wsdl:part name="parameters" element="ns:getPagedSubscribedCartridgesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getSubscribedCartridgeAliasesRequest">
+        <wsdl:part name="parameters" element="ns:getSubscribedCartridgeAliases"/>
+    </wsdl:message>
+    <wsdl:message name="getSubscribedCartridgeAliasesResponse">
+        <wsdl:part name="parameters" element="ns:getSubscribedCartridgeAliasesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="testRepositoryConnectionRequest">
+        <wsdl:part name="parameters" element="ns:testRepositoryConnection"/>
+    </wsdl:message>
+    <wsdl:message name="testRepositoryConnectionResponse">
+        <wsdl:part name="parameters" element="ns:testRepositoryConnectionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getAvailableCartridgesRequest">
+        <wsdl:part name="parameters" element="ns:getAvailableCartridges"/>
+    </wsdl:message>
+    <wsdl:message name="getAvailableCartridgesResponse">
+        <wsdl:part name="parameters" element="ns:getAvailableCartridgesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPolicyDefinitionsRequest">
+        <wsdl:part name="parameters" element="ns:getPolicyDefinitions"/>
+    </wsdl:message>
+    <wsdl:message name="getPolicyDefinitionsResponse">
+        <wsdl:part name="parameters" element="ns:getPolicyDefinitionsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getTenantDomainRequest">
+        <wsdl:part name="parameters" element="ns:getTenantDomain"/>
+    </wsdl:message>
+    <wsdl:message name="getTenantDomainResponse">
+        <wsdl:part name="parameters" element="ns:getTenantDomainResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="ApplicationManagementServicePortType">
+        <wsdl:operation name="isFeatureEnabled">
+            <wsdl:input message="ns:isFeatureEnabledRequest" wsaw:Action="urn:isFeatureEnabled"/>
+            <wsdl:output message="ns:isFeatureEnabledResponse" wsaw:Action="urn:isFeatureEnabledResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="unsubscribe">
+            <wsdl:input message="ns:unsubscribeRequest" wsaw:Action="urn:unsubscribe"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:unsubscribeApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceNotSubscribedException" name="ApplicationManagementServiceNotSubscribedException" wsaw:Action="urn:unsubscribeApplicationManagementServiceNotSubscribedException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridges">
+            <wsdl:input message="ns:getSubscribedCartridgesRequest" wsaw:Action="urn:getSubscribedCartridges"/>
+            <wsdl:output message="ns:getSubscribedCartridgesResponse" wsaw:Action="urn:getSubscribedCartridgesResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:getSubscribedCartridgesApplicationManagementServiceADCException"/>
+        </wsdl:operation>
+        <wsdl:operation name="synchronizeRepository">
+            <wsdl:input message="ns:synchronizeRepositoryRequest" wsaw:Action="urn:synchronizeRepository"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:synchronizeRepositoryApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceNotSubscribedException" name="ApplicationManagementServiceNotSubscribedException" wsaw:Action="urn:synchronizeRepositoryApplicationManagementServiceNotSubscribedException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getCartridgeInfo">
+            <wsdl:input message="ns:getCartridgeInfoRequest" wsaw:Action="urn:getCartridgeInfo"/>
+            <wsdl:output message="ns:getCartridgeInfoResponse" wsaw:Action="urn:getCartridgeInfoResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:getCartridgeInfoApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceNotSubscribedException" name="ApplicationManagementServiceNotSubscribedException" wsaw:Action="urn:getCartridgeInfoApplicationManagementServiceNotSubscribedException"/>
+        </wsdl:operation>
+        <wsdl:operation name="addDomainMapping">
+            <wsdl:input message="ns:addDomainMappingRequest" wsaw:Action="urn:addDomainMapping"/>
+            <wsdl:output message="ns:addDomainMappingResponse" wsaw:Action="urn:addDomainMappingResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:addDomainMappingApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceDomainMappingExistsException" name="ApplicationManagementServiceDomainMappingExistsException" wsaw:Action="urn:addDomainMappingApplicationManagementServiceDomainMappingExistsException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceNotSubscribedException" name="ApplicationManagementServiceNotSubscribedException" wsaw:Action="urn:addDomainMappingApplicationManagementServiceNotSubscribedException"/>
+        </wsdl:operation>
+        <wsdl:operation name="removeDomainMapping">
+            <wsdl:input message="ns:removeDomainMappingRequest" wsaw:Action="urn:removeDomainMapping"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:removeDomainMappingApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceNotSubscribedException" name="ApplicationManagementServiceNotSubscribedException" wsaw:Action="urn:removeDomainMappingApplicationManagementServiceNotSubscribedException"/>
+        </wsdl:operation>
+        <wsdl:operation name="subscribe">
+            <wsdl:input message="ns:subscribeRequest" wsaw:Action="urn:subscribe"/>
+            <wsdl:output message="ns:subscribeResponse" wsaw:Action="urn:subscribeResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:subscribeApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServicePolicyException" name="ApplicationManagementServicePolicyException" wsaw:Action="urn:subscribeApplicationManagementServicePolicyException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceUnregisteredCartridgeException" name="ApplicationManagementServiceUnregisteredCartridgeException" wsaw:Action="urn:subscribeApplicationManagementServiceUnregisteredCartridgeException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceInvalidCartridgeAliasException" name="ApplicationManagementServiceInvalidCartridgeAliasException" wsaw:Action="urn:subscribeApplicationManagementServiceInvalidCartridgeAliasException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceDuplicateCartridgeAliasException" name="ApplicationManagementServiceDuplicateCartridgeAliasException" wsaw:Action="urn:subscribeApplicationManagementServiceDuplicateCartridgeAliasException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceRepositoryRequiredException" name="ApplicationManagementServiceRepositoryRequiredException" wsaw:Action="urn:subscribeApplicationManagementServiceRepositoryRequiredException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceAlreadySubscribedException" name="ApplicationManagementServiceAlreadySubscribedException" wsaw:Action="urn:subscribeApplicationManagementServiceAlreadySubscribedException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceRepositoryCredentialsRequiredException" name="ApplicationManagementServiceRepositoryCredentialsRequiredException" wsaw:Action="urn:subscribeApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceInvalidRepositoryException" name="ApplicationManagementServiceInvalidRepositoryException" wsaw:Action="urn:subscribeApplicationManagementServiceInvalidRepositoryException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceRepositoryTransportException" name="ApplicationManagementServiceRepositoryTransportException" wsaw:Action="urn:subscribeApplicationManagementServiceRepositoryTransportException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedAvailableCartridges">
+            <wsdl:input message="ns:getPagedAvailableCartridgesRequest" wsaw:Action="urn:getPagedAvailableCartridges"/>
+            <wsdl:output message="ns:getPagedAvailableCartridgesResponse" wsaw:Action="urn:getPagedAvailableCartridgesResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:getPagedAvailableCartridgesApplicationManagementServiceADCException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedSubscribedCartridges">
+            <wsdl:input message="ns:getPagedSubscribedCartridgesRequest" wsaw:Action="urn:getPagedSubscribedCartridges"/>
+            <wsdl:output message="ns:getPagedSubscribedCartridgesResponse" wsaw:Action="urn:getPagedSubscribedCartridgesResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:getPagedSubscribedCartridgesApplicationManagementServiceADCException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridgeAliases">
+            <wsdl:input message="ns:getSubscribedCartridgeAliasesRequest" wsaw:Action="urn:getSubscribedCartridgeAliases"/>
+            <wsdl:output message="ns:getSubscribedCartridgeAliasesResponse" wsaw:Action="urn:getSubscribedCartridgeAliasesResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="testRepositoryConnection">
+            <wsdl:input message="ns:testRepositoryConnectionRequest" wsaw:Action="urn:testRepositoryConnection"/>
+            <wsdl:output message="ns:testRepositoryConnectionResponse" wsaw:Action="urn:testRepositoryConnectionResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceRepositoryRequiredException" name="ApplicationManagementServiceRepositoryRequiredException" wsaw:Action="urn:testRepositoryConnectionApplicationManagementServiceRepositoryRequiredException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:testRepositoryConnectionApplicationManagementServiceADCException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceRepositoryCredentialsRequiredException" name="ApplicationManagementServiceRepositoryCredentialsRequiredException" wsaw:Action="urn:testRepositoryConnectionApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceInvalidRepositoryException" name="ApplicationManagementServiceInvalidRepositoryException" wsaw:Action="urn:testRepositoryConnectionApplicationManagementServiceInvalidRepositoryException"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceRepositoryTransportException" name="ApplicationManagementServiceRepositoryTransportException" wsaw:Action="urn:testRepositoryConnectionApplicationManagementServiceRepositoryTransportException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableCartridges">
+            <wsdl:input message="ns:getAvailableCartridgesRequest" wsaw:Action="urn:getAvailableCartridges"/>
+            <wsdl:output message="ns:getAvailableCartridgesResponse" wsaw:Action="urn:getAvailableCartridgesResponse"/>
+            <wsdl:fault message="ns:ApplicationManagementServiceADCException" name="ApplicationManagementServiceADCException" wsaw:Action="urn:getAvailableCartridgesApplicationManagementServiceADCException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyDefinitions">
+            <wsdl:input message="ns:getPolicyDefinitionsRequest" wsaw:Action="urn:getPolicyDefinitions"/>
+            <wsdl:output message="ns:getPolicyDefinitionsResponse" wsaw:Action="urn:getPolicyDefinitionsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getTenantDomain">
+            <wsdl:input message="ns:getTenantDomainRequest" wsaw:Action="urn:getTenantDomain"/>
+            <wsdl:output message="ns:getTenantDomainResponse" wsaw:Action="urn:getTenantDomainResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ApplicationManagementServiceSoap11Binding" type="ns:ApplicationManagementServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="isFeatureEnabled">
+            <soap:operation soapAction="urn:isFeatureEnabled" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="unsubscribe">
+            <soap:operation soapAction="urn:unsubscribe" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridges">
+            <soap:operation soapAction="urn:getSubscribedCartridges" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="synchronizeRepository">
+            <soap:operation soapAction="urn:synchronizeRepository" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCartridgeInfo">
+            <soap:operation soapAction="urn:getCartridgeInfo" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addDomainMapping">
+            <soap:operation soapAction="urn:addDomainMapping" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceDomainMappingExistsException">
+                <soap:fault use="literal" name="ApplicationManagementServiceDomainMappingExistsException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeDomainMapping">
+            <soap:operation soapAction="urn:removeDomainMapping" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="subscribe">
+            <soap:operation soapAction="urn:subscribe" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryRequiredException">
+                <soap:fault use="literal" name="ApplicationManagementServiceRepositoryRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryTransportException">
+                <soap:fault use="literal" name="ApplicationManagementServiceRepositoryTransportException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryCredentialsRequiredException">
+                <soap:fault use="literal" name="ApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceInvalidRepositoryException">
+                <soap:fault use="literal" name="ApplicationManagementServiceInvalidRepositoryException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceUnregisteredCartridgeException">
+                <soap:fault use="literal" name="ApplicationManagementServiceUnregisteredCartridgeException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceInvalidCartridgeAliasException">
+                <soap:fault use="literal" name="ApplicationManagementServiceInvalidCartridgeAliasException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceAlreadySubscribedException">
+                <soap:fault use="literal" name="ApplicationManagementServiceAlreadySubscribedException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceDuplicateCartridgeAliasException">
+                <soap:fault use="literal" name="ApplicationManagementServiceDuplicateCartridgeAliasException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServicePolicyException">
+                <soap:fault use="literal" name="ApplicationManagementServicePolicyException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedAvailableCartridges">
+            <soap:operation soapAction="urn:getPagedAvailableCartridges" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedSubscribedCartridges">
+            <soap:operation soapAction="urn:getPagedSubscribedCartridges" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="testRepositoryConnection">
+            <soap:operation soapAction="urn:testRepositoryConnection" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryRequiredException">
+                <soap:fault use="literal" name="ApplicationManagementServiceRepositoryRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryTransportException">
+                <soap:fault use="literal" name="ApplicationManagementServiceRepositoryTransportException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryCredentialsRequiredException">
+                <soap:fault use="literal" name="ApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceInvalidRepositoryException">
+                <soap:fault use="literal" name="ApplicationManagementServiceInvalidRepositoryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridgeAliases">
+            <soap:operation soapAction="urn:getSubscribedCartridgeAliases" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableCartridges">
+            <soap:operation soapAction="urn:getAvailableCartridges" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyDefinitions">
+            <soap:operation soapAction="urn:getPolicyDefinitions" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getTenantDomain">
+            <soap:operation soapAction="urn:getTenantDomain" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ApplicationManagementServiceSoap12Binding" type="ns:ApplicationManagementServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="isFeatureEnabled">
+            <soap12:operation soapAction="urn:isFeatureEnabled" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="unsubscribe">
+            <soap12:operation soapAction="urn:unsubscribe" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridges">
+            <soap12:operation soapAction="urn:getSubscribedCartridges" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="synchronizeRepository">
+            <soap12:operation soapAction="urn:synchronizeRepository" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCartridgeInfo">
+            <soap12:operation soapAction="urn:getCartridgeInfo" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addDomainMapping">
+            <soap12:operation soapAction="urn:addDomainMapping" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceDomainMappingExistsException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceDomainMappingExistsException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeDomainMapping">
+            <soap12:operation soapAction="urn:removeDomainMapping" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceNotSubscribedException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceNotSubscribedException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="subscribe">
+            <soap12:operation soapAction="urn:subscribe" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryRequiredException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceRepositoryRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryTransportException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceRepositoryTransportException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryCredentialsRequiredException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceInvalidRepositoryException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceInvalidRepositoryException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceUnregisteredCartridgeException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceUnregisteredCartridgeException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceInvalidCartridgeAliasException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceInvalidCartridgeAliasException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceAlreadySubscribedException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceAlreadySubscribedException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceDuplicateCartridgeAliasException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceDuplicateCartridgeAliasException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServicePolicyException">
+                <soap12:fault use="literal" name="ApplicationManagementServicePolicyException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedAvailableCartridges">
+            <soap12:operation soapAction="urn:getPagedAvailableCartridges" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedSubscribedCartridges">
+            <soap12:operation soapAction="urn:getPagedSubscribedCartridges" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="testRepositoryConnection">
+            <soap12:operation soapAction="urn:testRepositoryConnection" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryRequiredException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceRepositoryRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryTransportException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceRepositoryTransportException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceRepositoryCredentialsRequiredException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceRepositoryCredentialsRequiredException"/>
+            </wsdl:fault>
+            <wsdl:fault name="ApplicationManagementServiceInvalidRepositoryException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceInvalidRepositoryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridgeAliases">
+            <soap12:operation soapAction="urn:getSubscribedCartridgeAliases" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableCartridges">
+            <soap12:operation soapAction="urn:getAvailableCartridges" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ApplicationManagementServiceADCException">
+                <soap12:fault use="literal" name="ApplicationManagementServiceADCException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyDefinitions">
+            <soap12:operation soapAction="urn:getPolicyDefinitions" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getTenantDomain">
+            <soap12:operation soapAction="urn:getTenantDomain" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ApplicationManagementServiceHttpBinding" type="ns:ApplicationManagementServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="isFeatureEnabled">
+            <http:operation location="isFeatureEnabled"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="unsubscribe">
+            <http:operation location="unsubscribe"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridges">
+            <http:operation location="getSubscribedCartridges"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="synchronizeRepository">
+            <http:operation location="synchronizeRepository"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getCartridgeInfo">
+            <http:operation location="getCartridgeInfo"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addDomainMapping">
+            <http:operation location="addDomainMapping"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeDomainMapping">
+            <http:operation location="removeDomainMapping"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="subscribe">
+            <http:operation location="subscribe"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedAvailableCartridges">
+            <http:operation location="getPagedAvailableCartridges"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPagedSubscribedCartridges">
+            <http:operation location="getPagedSubscribedCartridges"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testRepositoryConnection">
+            <http:operation location="testRepositoryConnection"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSubscribedCartridgeAliases">
+            <http:operation location="getSubscribedCartridgeAliases"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableCartridges">
+            <http:operation location="getAvailableCartridges"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyDefinitions">
+            <http:operation location="getPolicyDefinitions"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getTenantDomain">
+            <http:operation location="getTenantDomain"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ApplicationManagementService">
+        <wsdl:port name="ApplicationManagementServiceHttpsSoap11Endpoint" binding="ns:ApplicationManagementServiceSoap11Binding">
+            <soap:address location="https://10.204.45.38:9445/services/ApplicationManagementService.ApplicationManagementServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ApplicationManagementServiceHttpsSoap12Endpoint" binding="ns:ApplicationManagementServiceSoap12Binding">
+            <soap12:address location="https://10.204.45.38:9445/services/ApplicationManagementService.ApplicationManagementServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ApplicationManagementServiceHttpsEndpoint" binding="ns:ApplicationManagementServiceHttpBinding">
+            <http:address location="https://10.204.45.38:9445/services/ApplicationManagementService.ApplicationManagementServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

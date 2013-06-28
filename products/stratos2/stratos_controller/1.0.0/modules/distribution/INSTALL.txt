@@ -1,0 +1,61 @@
+Installing  WSO2 Stratos Manager 2.0.1
+===============================================
+
+Standalone Mode
+===============
+1. The directory containing this INSTALL file will be the root and it will be
+   treated as Carbon home directory and let it be CARBON_HOME.
+
+2. All the shell scripts and .bat files are available in CARBON_HOME/bin directory.
+
+3. To start Stratos-Manager one can use either wso2server.sh or daemon.sh in all *nix
+   system & wso2server.bat file on Windows operating systems.
+
+4. Either of the following commands can be used to start Stratos-Manager
+      i)  ./wso2server.sh {console|start|stop|restart|status|dump|version}
+    ii)  wso2server.bat {start|stop|version}
+
+            Usage: wso2server.sh [command] [system-properties]
+
+            command:
+                --debug <port> 	Start the server in remote debugging mode.
+                        port: The remote debugging port.
+                --start		Start Carbon as a Unix daemon in the background
+                --stop		Stop the Carbon Unix daemon
+                --restart	Restart the Carbon Unix daemon
+                --cleanRegistry	Clean registry space. [CAUTION] All Registry data will be lost.
+                --version	What version of the product are you running?
+
+            system-properties:
+                -DhttpPort=<httpPort>		Overrides the HTTP port defined in the catalina-server.xml file
+                -DhttpsPort=<httpsPort>		Overrides the HTTPS port defined in the catalina-server.xml file
+                -DosgiConsole=[port]		Start Carbon with Equinox OSGi console.
+                                            If the optional 'port' parameter is provided, a telnet port will be opened
+                -DosgiDebugOptions=[options-file]
+                                            Start Carbon with OSGi debugging enabled.
+                                            If the optional 'options-file is provided, the OSGi debug options will be loaded from it.
+                -Dsetup				        Clean the Registry & other configuration, recreate DB, re-populate the configuration, and start Carbon
+                -DserverRoles=<roles>		A comma separated list of roles. Used in deploying cApps
+                -Dcarbon.use.registry.repo	Use registry based repository.
+                -DdisableHttpLog		    Disable HTTP access logging
+                -DapplyPatches			    Use this system property when there are patches to be applied/reverted to/from the system.
+                                            Drop the patches to $CARBON_HOME/repository/componenets/patches directory and restart the system with this property.
+                                            When you want to revert a patch, delete it from the patches directory and restart the system with this property
+                -DworkerNode=true			This is required in clustered setups with master and worker nodes, not applicable for Stratos Manager.
+
+
+
+System Requirements
+===================
+1. Minimum memory - 1 GB
+2. Processor      - Pentium 800MHz or equivalent at minimum
+3. JDK - 1.6.x (1.6.0_24 onwards recommended for production)
+4. The Management Console requires you to enable Javascript of the Web browser,
+   with MS IE 6 and 7. In addition to JavaScript, ActiveX should also be enabled
+   with IE. This can be achieved by setting your security level to
+   medium or lower.
+   NOTE:
+     On Windows Server 2003, it is not allowed to go below the medium security
+     level in Internet Explorer 6.x and the default medium security setting with
+     IE does not allow sufficient level of JS or ActiveX enablement for the
+     management console to run.

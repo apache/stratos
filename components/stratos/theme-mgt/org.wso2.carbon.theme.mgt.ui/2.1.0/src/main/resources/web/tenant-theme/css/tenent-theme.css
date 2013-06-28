@@ -1,0 +1,32 @@
+.sel-box{
+	background-image:url(../images/sel-02.jpg);
+	background-repeat:repeat-x;
+	background-position:0 0;
+	background-color:#f2f2f2;
+	border: inset 2px #48657a;
+	padding:3px;
+	float:left;
+	margin-right:20px;
+	margin-bottom:20px;
+}
+.sel-box span{
+	color:#1c475f;
+	font-weight:bold;
+	text-align:center;
+	font-size:14px;
+	line-height:30px;
+}
+.nor-box{
+	background-color:#ffffff;
+	border: solid 1px #7699b3;
+	padding:3px;
+	float:left;
+	margin-right:20px;
+	margin-bottom:20px;
+}
+.nor-box span{
+	color:#1c475f;
+	font-weight:bold;
+	text-align:center;
+	line-height:30px;
+}

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<!-- The default synapse configuration shipped with the WSO2 Load Balancer
+     This handles the load balancing and the autoscaling of the stratos services
+ -->
+
+<definitions xmlns="http://ws.apache.org/ns/synapse">
+
+    <!-- You can add any flat sequences, endpoints, etc.. to this synapse-messages-in-flight.xml file if you do
+         *not* want to have the defaults given below, specific to WSO2 LB and auto-scaler
+    -->
+
+
+    <!-- Given below is the auto-scale mediator specific task. Uncomment it, if you want to
+         auto-scale your applications.
+    -->
+
+    <task class="org.wso2.carbon.mediator.autoscale2.LoadAverageBasedEC2LoadAnalyzerTask"
+          name="LoadAnalyzer">
+
+
+        <!--
+            The private key for the ec2
+        -->
+        <property name="ec2PrivateKey" value="/mnt/payload/pk.pem"/>
+
+        <!--
+            The certificate for the ec2
+        -->
+        <property name="ec2Cert" value="/mnt/payload/cert.pem"/>
+
+        <!--
+            The amazon instance type for the load balanced service instances.
+            Recommended and the default is m1.large.
+        -->
+        <property name="instanceType" value="m1.large"/>
+
+        <!--
+            The amazon instance type for the instances of the load balancer itself.
+            Default is m1.large. Can be changed to m1.small too.
+        -->
+        <property name="loadBalancerInstanceType" value="m1.large"/>
+
+        <!--
+            The group of the service being load balanced.
+        -->
+        <property name="applicationGroup" value="as-2011-02-23,cloud-mysql,default"/>
+
+        <!--
+            The group of the load balancer.
+        -->
+        <property name="loadBalancerGroup" value="stratos-appserver-lb,cloud-mysql,default"/>
+
+        <!--
+            The Amazon availability zone for the instances. 1-c is given as the default
+        -->
+        <property name="availabilityZone" value="us-east-1c"/>
+
+        <!--
+            Additional information for the amazon instances
+        -->
+        <property name="instanceAdditionalInfo" value="EC2 autoscale instance"/>
+
+        <!--
+            The key pair
+        -->
+        <property name="key" value="stratos-1.0.0-keypair"/>
+
+        <!--
+            The service payload file which should be loaded to the bucket
+        -->
+        <property name="applicationPayload" value="resources/cluster_node.zip"/>
+
+        <!--
+            The load balancer payload file which should be loaded to the bucket
+        -->
+        <property name="loadBalancerPayload" value="/mnt/payload.zip"/>
+
+        <!--
+            The elasticIP property can be overriden by the ELASTIC_IP environment var,
+             which is set in the payload
+        -->
+        <property name="elasticIP" value="${ELASTIC_IP}"/>
+
+        <!--
+            The minimum and maximum limits of the load balanced service instances
+        -->
+        <property name="minAppInstances" value="1"/>
+        <property name="maxAppInstances" value="5"/>
+
+        <!--
+            The minimum and maximum limits of the load balancer instances
+        -->
+        <property name="minLoadBalancerInstances" value="1"/>
+
+        <property name="roundsToAverage" value="10"/>
+
+        <!--
+            The instances spawned at once, per scaling up decision.
+	    Default and the recommended value is 1
+        -->
+        <property name="instancesPerScaleUp" value="1"/>
+
+        <!--
+            The low and high limits of the load average
+        -->
+        <property name="loadAverageLowerLimit" value="2"/>
+        <property name="loadAverageHigherLimit" value="5"/>
+
+        <!--
+            The Load Balanced Service Ports
+        -->
+        <property name="serviceHttpPort" value="9763"/>
+        <property name="serviceHttpsPort" value="9443"/>
+
+        <!--
+            The interval to trigger the task in seconds
+        -->
+        <trigger interval="5"/>
+    </task>
+</definitions>

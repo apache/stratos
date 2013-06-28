@@ -1,0 +1,73 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<component xmlns="http://products.wso2.org/carbon">
+    <!-- sample menu configuration -->
+    <menus>
+        <menu>
+            <id>usage_monitoring_menu</id>
+            <i18n-key>usage.monitoring</i18n-key>
+            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <parent-menu></parent-menu>
+            <link>#</link>
+            <region>region4</region>
+            <style-class>home</style-class>
+            <order>22</order>
+            <icon>../services/images/services.gif</icon>
+        </menu>
+        <menu>
+            <id>tenant_usage_menu</id>
+            <i18n-key>tenant.usage.report</i18n-key>
+            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>monitor_menu</parent-menu>
+            <link>../tenant-usage/tenant_usage.jsp</link>
+            <region>region4</region>
+            <order>51</order>
+            <style-class>manage</style-class>
+            <icon>../tenant-usage/images/user-usage-report.gif</icon>
+            <require-permission>/permission/admin/monitor/tenantUsage</require-permission>
+            <require-not-super-tenant>true</require-not-super-tenant>
+        </menu>
+        <!--menu>
+            <id>all_tenant_instance_usage_menu</id>
+            <i18n-key>instance.usage.report</i18n-key>
+            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>monitor_menu</parent-menu>
+            <link>../tenant-usage/all_tenant_instance_usage.jsp</link>
+            <region>region4</region>
+            <order>50</order>
+            <style-class>manage</style-class>
+            <icon>../tenant-usage/images/instance-usage-report.gif</icon>
+            <require-permission>/permission/protected/monitor/userUsage</require-permission>
+            <require-super-tenant>true</require-super-tenant>
+        </menu-->
+        <menu>
+            <id>all_tenant_usage_menu</id>
+            <i18n-key>all.tenant.usage.report</i18n-key>
+            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>monitor_menu</parent-menu>
+            <link>../tenant-usage/all_tenant_usage.jsp</link>
+            <region>region4</region>
+            <order>50</order>
+            <style-class>manage</style-class>
+            <icon>../tenant-usage/images/tenant-usage-report.gif</icon>
+            <require-permission>/permission/protected/monitor/userUsage</require-permission>
+            <require-super-tenant>true</require-super-tenant>
+        </menu>
+    </menus>
+
+</component>

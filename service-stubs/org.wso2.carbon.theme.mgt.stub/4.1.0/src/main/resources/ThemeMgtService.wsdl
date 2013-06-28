@@ -1,0 +1,1157 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:ns1="http://org.apache.axis2/xsd"
+                  xmlns:ns="http://services.mgt.theme.carbon.wso2.org"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:ax2334="http://common.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2332="http://beans.resource.registry.carbon.wso2.org/xsd"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  targetNamespace="http://services.mgt.theme.carbon.wso2.org">
+    <wsdl:documentation>ThemeMgtService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2336="http://common.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.resource.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://common.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="ResourceTreeEntryBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="children" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="collection" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="symlink" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="MetadataBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="activeResourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="author" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="collection" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="contentPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="deleteLocked" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="formattedCreatedOn" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="formattedLastModified" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="lastUpdater" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="navigatablePaths" nillable="true" type="ax2336:WebResourcePath" />
+                    <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="pathWithVersion" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="permalink" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="resourceVersion" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="serverBaseURL" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="versionView" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="writeLocked" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ContentDownloadBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="content" nillable="true" type="xs:base64Binary" />
+                    <xs:element minOccurs="0" name="lastUpdatedTime" nillable="true" type="xs:dateTime" />
+                    <xs:element minOccurs="0" name="mediatype" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourceName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ContentBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="absent" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="collection" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="contentPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="loggedIn" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="pathWithVersion" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="realPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="versionView" type="xs:boolean" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CollectionContentBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="childCount" type="xs:int" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childPaths" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="collectionTypes" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="pathWithVersion" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="remoteInstances" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="versionView" type="xs:boolean" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="ResourceData">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="absent" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="authorUserName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="averageRating" type="xs:float" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="averageStars" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="createdOn" nillable="true" type="xs:dateTime" />
+                    <xs:element minOccurs="0" name="deleteAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="externalLink" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="formattedCreatedOn" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="getAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="link" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="mounted" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="realPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="relativePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourceType" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tagCounts" nillable="true" type="ax2334:TagCount" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TagCount">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:long" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WebResourcePath">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="navigateName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="navigatePath" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2335="http://common.registry.carbon.wso2.org/xsd" xmlns:ax2333="http://beans.resource.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.mgt.theme.carbon.wso2.org">
+            <xs:import namespace="http://beans.resource.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://common.registry.carbon.wso2.org/xsd" />
+            <xs:element name="ThemeMgtServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ThemeMgtServiceException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="updateTextContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="contentText" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="renameResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="parentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="oldResourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="newResourceName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="importResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="parentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="resourceName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="fetchURL" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="symlinkLocation" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="tenantPass" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTextContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTextContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSessionResourcePath">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSessionResourcePathResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getResourceTreeEntry">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getResourceTreeEntryResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2333:ResourceTreeEntryBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getResourceData">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="paths" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getResourceDataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2335:ResourceData" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getMetadata">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getMetadataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2333:MetadataBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentDownloadBean">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentDownloadBeanResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2333:ContentDownloadBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentBean">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentBeanResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2333:ContentBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCollectionContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCollectionContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2333:CollectionContentBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllThemes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantPass" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllThemesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllPaths">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllPathsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="delete">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="pathToDelete" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="applyTheme">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="themeName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="tenantPass" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addTextResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="parentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="fileName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="content" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="content" nillable="true" type="xs:base64Binary" />
+                        <xs:element minOccurs="0" name="symlinkLocation" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="tenantPass" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCollection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="parentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="collectionName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCollectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="deleteRequest">
+        <wsdl:part name="parameters" element="ns:delete" />
+    </wsdl:message>
+    <wsdl:message name="deleteResponse" />
+    <wsdl:message name="ThemeMgtServiceException">
+        <wsdl:part name="parameters" element="ns:ThemeMgtServiceException" />
+    </wsdl:message>
+    <wsdl:message name="getContentBeanRequest">
+        <wsdl:part name="parameters" element="ns:getContentBean" />
+    </wsdl:message>
+    <wsdl:message name="getContentBeanResponse">
+        <wsdl:part name="parameters" element="ns:getContentBeanResponse" />
+    </wsdl:message>
+    <wsdl:message name="getContentDownloadBeanRequest">
+        <wsdl:part name="parameters" element="ns:getContentDownloadBean" />
+    </wsdl:message>
+    <wsdl:message name="getContentDownloadBeanResponse">
+        <wsdl:part name="parameters" element="ns:getContentDownloadBeanResponse" />
+    </wsdl:message>
+    <wsdl:message name="getResourceDataRequest">
+        <wsdl:part name="parameters" element="ns:getResourceData" />
+    </wsdl:message>
+    <wsdl:message name="getResourceDataResponse">
+        <wsdl:part name="parameters" element="ns:getResourceDataResponse" />
+    </wsdl:message>
+    <wsdl:message name="getResourceTreeEntryRequest">
+        <wsdl:part name="parameters" element="ns:getResourceTreeEntry" />
+    </wsdl:message>
+    <wsdl:message name="getResourceTreeEntryResponse">
+        <wsdl:part name="parameters" element="ns:getResourceTreeEntryResponse" />
+    </wsdl:message>
+    <wsdl:message name="addTextResourceRequest">
+        <wsdl:part name="parameters" element="ns:addTextResource" />
+    </wsdl:message>
+    <wsdl:message name="addTextResourceResponse" />
+    <wsdl:message name="importResourceRequest">
+        <wsdl:part name="parameters" element="ns:importResource" />
+    </wsdl:message>
+    <wsdl:message name="importResourceResponse" />
+    <wsdl:message name="updateTextContentRequest">
+        <wsdl:part name="parameters" element="ns:updateTextContent" />
+    </wsdl:message>
+    <wsdl:message name="updateTextContentResponse" />
+    <wsdl:message name="getSessionResourcePathRequest">
+        <wsdl:part name="parameters" element="ns:getSessionResourcePath" />
+    </wsdl:message>
+    <wsdl:message name="getSessionResourcePathResponse">
+        <wsdl:part name="parameters" element="ns:getSessionResourcePathResponse" />
+    </wsdl:message>
+    <wsdl:message name="getMetadataRequest">
+        <wsdl:part name="parameters" element="ns:getMetadata" />
+    </wsdl:message>
+    <wsdl:message name="getMetadataResponse">
+        <wsdl:part name="parameters" element="ns:getMetadataResponse" />
+    </wsdl:message>
+    <wsdl:message name="addCollectionRequest">
+        <wsdl:part name="parameters" element="ns:addCollection" />
+    </wsdl:message>
+    <wsdl:message name="addCollectionResponse">
+        <wsdl:part name="parameters" element="ns:addCollectionResponse" />
+    </wsdl:message>
+    <wsdl:message name="renameResourceRequest">
+        <wsdl:part name="parameters" element="ns:renameResource" />
+    </wsdl:message>
+    <wsdl:message name="renameResourceResponse" />
+    <wsdl:message name="addResourceRequest">
+        <wsdl:part name="parameters" element="ns:addResource" />
+    </wsdl:message>
+    <wsdl:message name="addResourceResponse" />
+    <wsdl:message name="applyThemeRequest">
+        <wsdl:part name="parameters" element="ns:applyTheme" />
+    </wsdl:message>
+    <wsdl:message name="applyThemeResponse" />
+    <wsdl:message name="getCollectionContentRequest">
+        <wsdl:part name="parameters" element="ns:getCollectionContent" />
+    </wsdl:message>
+    <wsdl:message name="getCollectionContentResponse">
+        <wsdl:part name="parameters" element="ns:getCollectionContentResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAllThemesRequest">
+        <wsdl:part name="parameters" element="ns:getAllThemes" />
+    </wsdl:message>
+    <wsdl:message name="getAllThemesResponse">
+        <wsdl:part name="parameters" element="ns:getAllThemesResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAllPathsRequest">
+        <wsdl:part name="parameters" element="ns:getAllPaths" />
+    </wsdl:message>
+    <wsdl:message name="getAllPathsResponse">
+        <wsdl:part name="parameters" element="ns:getAllPathsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getTextContentRequest">
+        <wsdl:part name="parameters" element="ns:getTextContent" />
+    </wsdl:message>
+    <wsdl:message name="getTextContentResponse">
+        <wsdl:part name="parameters" element="ns:getTextContentResponse" />
+    </wsdl:message>
+    <wsdl:portType name="ThemeMgtServicePortType">
+        <wsdl:operation name="delete">
+            <wsdl:input message="ns:deleteRequest" wsaw:Action="urn:delete" />
+            <wsdl:output message="ns:deleteResponse" wsaw:Action="urn:deleteResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:deleteThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getContentBean">
+            <wsdl:input message="ns:getContentBeanRequest" wsaw:Action="urn:getContentBean" />
+            <wsdl:output message="ns:getContentBeanResponse" wsaw:Action="urn:getContentBeanResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getContentBeanThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getContentDownloadBean">
+            <wsdl:input message="ns:getContentDownloadBeanRequest" wsaw:Action="urn:getContentDownloadBean" />
+            <wsdl:output message="ns:getContentDownloadBeanResponse" wsaw:Action="urn:getContentDownloadBeanResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getContentDownloadBeanThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getResourceData">
+            <wsdl:input message="ns:getResourceDataRequest" wsaw:Action="urn:getResourceData" />
+            <wsdl:output message="ns:getResourceDataResponse" wsaw:Action="urn:getResourceDataResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getResourceDataThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getResourceTreeEntry">
+            <wsdl:input message="ns:getResourceTreeEntryRequest" wsaw:Action="urn:getResourceTreeEntry" />
+            <wsdl:output message="ns:getResourceTreeEntryResponse" wsaw:Action="urn:getResourceTreeEntryResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getResourceTreeEntryThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="addTextResource">
+            <wsdl:input message="ns:addTextResourceRequest" wsaw:Action="urn:addTextResource" />
+            <wsdl:output message="ns:addTextResourceResponse" wsaw:Action="urn:addTextResourceResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:addTextResourceThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="importResource">
+            <wsdl:input message="ns:importResourceRequest" wsaw:Action="urn:importResource" />
+            <wsdl:output message="ns:importResourceResponse" wsaw:Action="urn:importResourceResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:importResourceThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="updateTextContent">
+            <wsdl:input message="ns:updateTextContentRequest" wsaw:Action="urn:updateTextContent" />
+            <wsdl:output message="ns:updateTextContentResponse" wsaw:Action="urn:updateTextContentResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:updateTextContentThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getSessionResourcePath">
+            <wsdl:input message="ns:getSessionResourcePathRequest" wsaw:Action="urn:getSessionResourcePath" />
+            <wsdl:output message="ns:getSessionResourcePathResponse" wsaw:Action="urn:getSessionResourcePathResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getSessionResourcePathThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getMetadata">
+            <wsdl:input message="ns:getMetadataRequest" wsaw:Action="urn:getMetadata" />
+            <wsdl:output message="ns:getMetadataResponse" wsaw:Action="urn:getMetadataResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getMetadataThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="addCollection">
+            <wsdl:input message="ns:addCollectionRequest" wsaw:Action="urn:addCollection" />
+            <wsdl:output message="ns:addCollectionResponse" wsaw:Action="urn:addCollectionResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:addCollectionThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="renameResource">
+            <wsdl:input message="ns:renameResourceRequest" wsaw:Action="urn:renameResource" />
+            <wsdl:output message="ns:renameResourceResponse" wsaw:Action="urn:renameResourceResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:renameResourceThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="addResource">
+            <wsdl:input message="ns:addResourceRequest" wsaw:Action="urn:addResource" />
+            <wsdl:output message="ns:addResourceResponse" wsaw:Action="urn:addResourceResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:addResourceThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="applyTheme">
+            <wsdl:input message="ns:applyThemeRequest" wsaw:Action="urn:applyTheme" />
+            <wsdl:output message="ns:applyThemeResponse" wsaw:Action="urn:applyThemeResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:applyThemeThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <wsdl:input message="ns:getCollectionContentRequest" wsaw:Action="urn:getCollectionContent" />
+            <wsdl:output message="ns:getCollectionContentResponse" wsaw:Action="urn:getCollectionContentResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getCollectionContentThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAllThemes">
+            <wsdl:input message="ns:getAllThemesRequest" wsaw:Action="urn:getAllThemes" />
+            <wsdl:output message="ns:getAllThemesResponse" wsaw:Action="urn:getAllThemesResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getAllThemesThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAllPaths">
+            <wsdl:input message="ns:getAllPathsRequest" wsaw:Action="urn:getAllPaths" />
+            <wsdl:output message="ns:getAllPathsResponse" wsaw:Action="urn:getAllPathsResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getAllPathsThemeMgtServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="getTextContent">
+            <wsdl:input message="ns:getTextContentRequest" wsaw:Action="urn:getTextContent" />
+            <wsdl:output message="ns:getTextContentResponse" wsaw:Action="urn:getTextContentResponse" />
+            <wsdl:fault message="ns:ThemeMgtServiceException" name="ThemeMgtServiceException" wsaw:Action="urn:getTextContentThemeMgtServiceException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ThemeMgtServiceSoap11Binding" type="ns:ThemeMgtServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="delete">
+            <soap:operation soapAction="urn:delete" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContentBean">
+            <soap:operation soapAction="urn:getContentBean" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContentDownloadBean">
+            <soap:operation soapAction="urn:getContentDownloadBean" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getResourceData">
+            <soap:operation soapAction="urn:getResourceData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getResourceTreeEntry">
+            <soap:operation soapAction="urn:getResourceTreeEntry" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="importResource">
+            <soap:operation soapAction="urn:importResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addTextResource">
+            <soap:operation soapAction="urn:addTextResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateTextContent">
+            <soap:operation soapAction="urn:updateTextContent" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getMetadata">
+            <soap:operation soapAction="urn:getMetadata" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionResourcePath">
+            <soap:operation soapAction="urn:getSessionResourcePath" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addCollection">
+            <soap:operation soapAction="urn:addCollection" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addResource">
+            <soap:operation soapAction="urn:addResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="renameResource">
+            <soap:operation soapAction="urn:renameResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="applyTheme">
+            <soap:operation soapAction="urn:applyTheme" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <soap:operation soapAction="urn:getCollectionContent" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAllThemes">
+            <soap:operation soapAction="urn:getAllThemes" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPaths">
+            <soap:operation soapAction="urn:getAllPaths" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getTextContent">
+            <soap:operation soapAction="urn:getTextContent" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ThemeMgtServiceSoap12Binding" type="ns:ThemeMgtServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="delete">
+            <soap12:operation soapAction="urn:delete" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContentBean">
+            <soap12:operation soapAction="urn:getContentBean" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContentDownloadBean">
+            <soap12:operation soapAction="urn:getContentDownloadBean" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getResourceData">
+            <soap12:operation soapAction="urn:getResourceData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getResourceTreeEntry">
+            <soap12:operation soapAction="urn:getResourceTreeEntry" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="importResource">
+            <soap12:operation soapAction="urn:importResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addTextResource">
+            <soap12:operation soapAction="urn:addTextResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateTextContent">
+            <soap12:operation soapAction="urn:updateTextContent" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getMetadata">
+            <soap12:operation soapAction="urn:getMetadata" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionResourcePath">
+            <soap12:operation soapAction="urn:getSessionResourcePath" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addCollection">
+            <soap12:operation soapAction="urn:addCollection" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addResource">
+            <soap12:operation soapAction="urn:addResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="renameResource">
+            <soap12:operation soapAction="urn:renameResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="applyTheme">
+            <soap12:operation soapAction="urn:applyTheme" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <soap12:operation soapAction="urn:getCollectionContent" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAllThemes">
+            <soap12:operation soapAction="urn:getAllThemes" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPaths">
+            <soap12:operation soapAction="urn:getAllPaths" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getTextContent">
+            <soap12:operation soapAction="urn:getTextContent" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ThemeMgtServiceException">
+                <soap12:fault use="literal" name="ThemeMgtServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ThemeMgtServiceHttpBinding" type="ns:ThemeMgtServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="delete">
+            <http:operation location="delete" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getContentBean">
+            <http:operation location="getContentBean" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getContentDownloadBean">
+            <http:operation location="getContentDownloadBean" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getResourceData">
+            <http:operation location="getResourceData" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getResourceTreeEntry">
+            <http:operation location="getResourceTreeEntry" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="importResource">
+            <http:operation location="importResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addTextResource">
+            <http:operation location="addTextResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateTextContent">
+            <http:operation location="updateTextContent" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMetadata">
+            <http:operation location="getMetadata" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSessionResourcePath">
+            <http:operation location="getSessionResourcePath" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addCollection">
+            <http:operation location="addCollection" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addResource">
+            <http:operation location="addResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="renameResource">
+            <http:operation location="renameResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="applyTheme">
+            <http:operation location="applyTheme" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <http:operation location="getCollectionContent" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllThemes">
+            <http:operation location="getAllThemes" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPaths">
+            <http:operation location="getAllPaths" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getTextContent">
+            <http:operation location="getTextContent" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ThemeMgtService">
+        <wsdl:port name="ThemeMgtServiceHttpsSoap11Endpoint" binding="ns:ThemeMgtServiceSoap11Binding">
+            <soap:address location="https://192.168.1.100:9443/services/ThemeMgtService.ThemeMgtServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ThemeMgtServiceHttpsSoap12Endpoint" binding="ns:ThemeMgtServiceSoap12Binding">
+            <soap12:address location="https://192.168.1.100:9443/services/ThemeMgtService.ThemeMgtServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ThemeMgtServiceHttpsEndpoint" binding="ns:ThemeMgtServiceHttpBinding">
+            <http:address location="https://192.168.1.100:9443/services/ThemeMgtService.ThemeMgtServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

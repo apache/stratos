@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>stratos-components</artifactId>
+        <version>2.1.0</version>
+	<relativePath>../../../pom.xml</relativePath>
+    </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.wso2.carbon</groupId>
+  <artifactId>org.wso2.carbon.payment.paypal</artifactId>
+  <version>2.1.0</version>
+  <packaging>bundle</packaging>
+  <name>WSO2 Stratos - Payment (PayPal)</name>
+
+  <dependencies>
+       <dependency>
+           <groupId>org.wso2.carbon</groupId>
+           <artifactId>org.wso2.carbon.business.messaging.paypal.integration.core</artifactId>
+           <version>4.1.0</version>
+       </dependency>
+      <dependency>
+           <groupId>org.wso2.carbon</groupId>
+           <artifactId>org.wso2.carbon.stratos.common</artifactId>
+           <version>2.1.0</version>
+       </dependency>
+
+   </dependencies>
+
+   <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            org.wso2.carbon.payment.paypal.*,
+                        </Export-Package>
+                        <Import-Package>
+                            com.paypal.sdk.*; version="0.0.0",
+                            org.apache.commons.logging.*; version="1.0.4",
+                            org.wso2.carbon.business.messaging.paypal.integration.*; version="0.0.0",
+                            com.paypal.soap.api.*; version="0.0.0",
+                            org.apache.axis.*,
+                            javax.xml.soap.*; version="1.2.0",
+                            *;resolution:=optional
+                        </Import-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,38 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<!-- 
+   The mail that to be sent upon receiving an email change request from the account management.
+   The new email address will be notified of this change.
+  -->
+
+<configuration>       
+    <targetEpr>https://localhost:9443/carbon/email-verification/validator_ajaxprocessor.jsp</targetEpr>
+    <subject>WSO2 Cloud Services - Updating the contact email address</subject>
+    <body>
+Hi {first-name},
+
+We got a request from you or some one to associate this email address, as the contact email address of your WSO2 cloud services account. Please click the following link to verify your email address.
+    </body>
+    <footer>
+Best Regards,
+WSO2 Cloud Services Team
+http://stratoslive.wso2.com
+    </footer>
+    <redirectPath>../account-mgt/update_verifier_redirector_ajaxprocessor.jsp</redirectPath>
+</configuration>

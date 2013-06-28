@@ -1,0 +1,17 @@
+.noDataDiv {
+    border: solid 1px #d1cece;
+    padding: 10px;
+    background-color: #f3f3f3;
+    color: #6b6b6b;
+    font-style: italic;
+}
+
+.noDataDiv-plain {
+    padding: 10px;
+    color: #6b6b6b;
+    font-style: italic;
+}
+
+#topicTree a {
+    cursor: pointer;
+}

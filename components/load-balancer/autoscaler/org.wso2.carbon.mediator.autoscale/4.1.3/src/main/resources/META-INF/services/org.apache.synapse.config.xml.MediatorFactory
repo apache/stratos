@@ -1,0 +1,2 @@
+org.wso2.carbon.mediator.autoscale.ec2autoscale.mediators.AutoscaleInMediatorFactory
+org.wso2.carbon.mediator.autoscale.ec2autoscale.mediators.AutoscaleOutMediatorFactory

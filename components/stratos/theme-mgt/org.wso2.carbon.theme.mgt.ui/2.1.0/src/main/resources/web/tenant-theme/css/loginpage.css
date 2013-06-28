@@ -1,0 +1,110 @@
+.gou-page{
+    background-image: url(../images/page-back.jpg);
+    background-position: 0px 0px;
+    background-repeat:repeat-x;
+    background-color:#5b4e17;
+}
+.gou-header{
+    background-image: url(../images/header.jpg);
+    background-position: top right;
+    background-repeat:no-repeat;
+}
+.gou-logo{
+    background-image: url(../images/logo.jpg);
+    background-position: top right;
+    background-repeat:no-repeat;
+    width:387px;
+    height:89px;
+}
+.gou-page-sizer{
+    width:100%;
+}
+.gou-content{
+    background-image: url(../images/content-back.jpg);
+    background-position: 0px 0px;
+    background-repeat:repeat-x;
+    background-color:#ffffff;
+    border:solid 1px #eafde6;
+    margin-left:10px;
+    margin-right:10px;
+}
+.gou-content-img{
+    background-image: url(../images/content-back-left.jpg);
+    background-position: 0px 0px;
+    background-repeat:no-repeat;
+    padding-top:20px;
+    padding-left:20px;
+    padding-right:20px;
+    padding-bottom:20px;
+
+}
+.gou-footer{
+    background-image: url(../images/footer.jpg);
+    background-position: 0px 0px;
+    background-repeat:repeat-x;
+    border-bottom:solid 1px #eafde6;
+    height:42px;
+    color:#ffffff;
+    font-size:10px;
+    line-height:40px;
+    padding-left:10px;
+}
+.gou-input-text{
+    height:18px;
+    font-size:10.5px;
+    border:solid 1px #cccccc;
+    width:200px;
+}
+.gou-input-button{
+       background-image: url(../images/button-back.gif);
+    background-position: 0px 0px;
+    background-repeat:repeat-x;
+    height:22px;
+    color:#ffffff;
+    background-color:#515151;
+}
+.gou-content-box{
+    padding:15px;
+    background-color:#ffffff;
+    border:solid 1px #4f301c;
+    margin-right:20px;
+}
+.gou-h1,.gou-h1 a{
+    font-size:16px;
+    font-weight:bold;
+    color:#ffffff;
+}
+.gou-content-text{
+    font-size:11px;
+    color:#636363;
+}
+body, td, th,h1, h2, div{
+    font-family:Helvetica,Arial,Sans-serif;
+    font-size:11px;
+    padding:0px;
+    margin:0px;
+}
+.gou-login-table td{
+    padding-right:20px;
+    padding-top:10px;
+}
+.gou-form-label{
+    font-color:#3b3b3b;
+    font-size:12px;
+}
+.gou-sign-in{
+    padding-left:5px;
+    color:#1b676b;
+    height:40px;
+    text-decoration:none;
+}
+.gou-links-table img{
+    border: none;
+}
+.gou-links-table td{
+    padding-bottom:20px;
+    padding-left:20px;
+}
+.gou-links-table a{
+    text-decoration:none;
+}

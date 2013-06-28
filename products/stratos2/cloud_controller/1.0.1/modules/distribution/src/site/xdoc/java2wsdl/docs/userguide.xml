@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"></meta>
+  
+  <title>Java2WSDL Tool - User Guide</title>
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+
+<h1>Java2WSDL Tool</h1>
+
+<p>Java2WSDL allows you to generate the WSDL for Java code that is already
+written to provide a Web service. This tool helps you to develop Web services
+in the code first approach, where the development starts with the code and
+thereafter you derive the WSDL from the source. </p>
+
+<h2>Using the Java2WSDL User Interface</h2>
+<ol>
+  <li>In the navigator, under Tools, click <strong>Java2WSDL.
+    </strong>The <strong>Java2WSDL</strong> page appears.</li>
+  <li>Click <strong>Browse</strong> to locate the file you want to add. If
+    you want to add more than one file, click the plus sign (+) button.</li>
+    <br/>   
+
+  <img alt="" src="images/add_resource.png" height="159" width="1014"/>
+
+  <p>Figure 1: Add Resources</p>
+
+  <br/>
+  <li>Enter values as required.</li>
+  <li>Click <strong>Generate.</strong></li>
+</ol>
+
+<p><strong>Note</strong>: Each field is described in the user interface.</p>
+<img src="images/java2wsdl.png" alt="java2wsdl" height="746" width="1408"/>
+
+<p>Figure 2: Java2wsdl User Interface</p>
+</body></html>

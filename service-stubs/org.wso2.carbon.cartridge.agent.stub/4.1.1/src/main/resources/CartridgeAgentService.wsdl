@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://agent.cartridge.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://registrant.agent.cartridge.carbon.wso2.org/xsd" xmlns:ax21="http://agent.cartridge.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://agent.cartridge.carbon.wso2.org">
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="unqualified" targetNamespace="http://agent.cartridge.carbon.wso2.org/xsd">
+            <xs:complexType name="CartridgeAgentException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax24="http://registrant.agent.cartridge.carbon.wso2.org/xsd" xmlns:ax22="http://agent.cartridge.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="unqualified" targetNamespace="http://agent.cartridge.carbon.wso2.org">
+            <xs:import namespace="http://agent.cartridge.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://registrant.agent.cartridge.carbon.wso2.org/xsd"/>
+            <xs:element name="CartridgeAgentServiceCartridgeAgentException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeAgentException" nillable="true" type="ax21:CartridgeAgentException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unregister">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="subDomain" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unregisterResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="register">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax23:Registrant"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="unqualified" targetNamespace="http://registrant.agent.cartridge.carbon.wso2.org/xsd">
+            <xs:complexType name="Registrant">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alarmingLowerRate" type="xs:double"/>
+                    <xs:element minOccurs="0" name="alarmingUpperRate" type="xs:double"/>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="maxInstanceCount" type="xs:int"/>
+                    <xs:element minOccurs="0" name="maxRequestsPerSecond" type="xs:int"/>
+                    <xs:element minOccurs="0" name="minInstanceCount" type="xs:int"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax23:PortMapping"/>
+                    <xs:element minOccurs="0" name="remoteHost" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="roundsToAverage" type="xs:int"/>
+                    <xs:element minOccurs="0" name="scaleDownFactor" type="xs:double"/>
+                    <xs:element minOccurs="0" name="service" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PortMapping">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="primaryPort" type="xs:int"/>
+                    <xs:element minOccurs="0" name="proxyPort" type="xs:int"/>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="unregisterRequest">
+        <wsdl:part name="parameters" element="ns:unregister"/>
+    </wsdl:message>
+    <wsdl:message name="unregisterResponse">
+        <wsdl:part name="parameters" element="ns:unregisterResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CartridgeAgentServiceCartridgeAgentException">
+        <wsdl:part name="parameters" element="ns:CartridgeAgentServiceCartridgeAgentException"/>
+    </wsdl:message>
+    <wsdl:message name="registerRequest">
+        <wsdl:part name="parameters" element="ns:register"/>
+    </wsdl:message>
+    <wsdl:message name="registerResponse">
+        <wsdl:part name="parameters" element="ns:registerResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="CartridgeAgentServicePortType">
+        <wsdl:operation name="unregister">
+            <wsdl:input message="ns:unregisterRequest" wsaw:Action="urn:unregister"/>
+            <wsdl:output message="ns:unregisterResponse" wsaw:Action="urn:unregisterResponse"/>
+            <wsdl:fault message="ns:CartridgeAgentServiceCartridgeAgentException" name="CartridgeAgentServiceCartridgeAgentException" wsaw:Action="urn:unregisterCartridgeAgentServiceCartridgeAgentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="register">
+            <wsdl:input message="ns:registerRequest" wsaw:Action="urn:register"/>
+            <wsdl:output message="ns:registerResponse" wsaw:Action="urn:registerResponse"/>
+            <wsdl:fault message="ns:CartridgeAgentServiceCartridgeAgentException" name="CartridgeAgentServiceCartridgeAgentException" wsaw:Action="urn:registerCartridgeAgentServiceCartridgeAgentException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="CartridgeAgentServiceSoap11Binding" type="ns:CartridgeAgentServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="unregister">
+            <soap:operation soapAction="urn:unregister" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CartridgeAgentServiceCartridgeAgentException">
+                <soap:fault use="literal" name="CartridgeAgentServiceCartridgeAgentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="register">
+            <soap:operation soapAction="urn:register" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CartridgeAgentServiceCartridgeAgentException">
+                <soap:fault use="literal" name="CartridgeAgentServiceCartridgeAgentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CartridgeAgentServiceSoap12Binding" type="ns:CartridgeAgentServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="unregister">
+            <soap12:operation soapAction="urn:unregister" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CartridgeAgentServiceCartridgeAgentException">
+                <soap12:fault use="literal" name="CartridgeAgentServiceCartridgeAgentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="register">
+            <soap12:operation soapAction="urn:register" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CartridgeAgentServiceCartridgeAgentException">
+                <soap12:fault use="literal" name="CartridgeAgentServiceCartridgeAgentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CartridgeAgentServiceHttpBinding" type="ns:CartridgeAgentServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="unregister">
+            <http:operation location="unregister"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="register">
+            <http:operation location="register"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="CartridgeAgentService">
+        <wsdl:port name="CartridgeAgentServiceHttpSoap11Endpoint" binding="ns:CartridgeAgentServiceSoap11Binding">
+            <soap:address location="http://localhost:6060/axis2/services/CartridgeAgentService.CartridgeAgentServiceHttpSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="CartridgeAgentServiceHttpSoap12Endpoint" binding="ns:CartridgeAgentServiceSoap12Binding">
+            <soap12:address location="http://localhost:6060/axis2/services/CartridgeAgentService.CartridgeAgentServiceHttpSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="CartridgeAgentServiceHttpEndpoint" binding="ns:CartridgeAgentServiceHttpBinding">
+            <http:address location="http://localhost:6060/axis2/services/CartridgeAgentService.CartridgeAgentServiceHttpEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
