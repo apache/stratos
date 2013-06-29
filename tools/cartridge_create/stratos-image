@@ -1,0 +1,79 @@
+#!/bin/bash
+# Die on any error:
+set -e
+
+# This script will create an cartridge image from a running virtual machine instance in Openstack using a given cartridge template. Then it will be
+# uploaded into the Glance Server. This script should be executed after logging into the Openstack controller with a valid user account that can
+# upload images to the glance server.
+
+vm_instance_ip=""
+cartridge_template=""
+vm_instance_user=""
+vm_instance_private_key=""
+software=""
+function help {
+    echo ""
+    echo "    This script  will upload the cartridge template execution file into the remote virtual machine from"
+    echo "            which you need to create the image, and execute it. At the end of the execution, image is ready for"
+    echo "            upload"
+    echo "    Usage for action create:"
+    echo ""
+    echo "    stratos-image -s <software> create <ip/hostname of the virtual machine> <cartridge template> <vm instance user> <vm instance private key>"
+    echo ""
+    echo "    -s : Softwared to be copied to the new image, separated by colon(:). Default is none. These will be"
+    echo "         copied into the /opt folder of the instance"
+    echo "    <ip/hostname of the virtual machine> : ip or hostname of the virtual machine using which image will be created from"
+    echo "    <cartridge template> : Template for the new image"
+    echo "    <vm instance user> : User name of the instance from which you need to create the image"
+    echo "    <vm instance private key> : Name of the private key of the user for logging into the virtual machine instance."
+    echo "            Copy the private key to init_scripts/<cartridge template> (e.g., init_scripts/php) folder"
+    echo ""
+}
+
+function image_validate {
+
+if [[ -z $vm_instance_ip || -z $cartridge_template || -z $vm_instance_user || -z $vm_instance_private_key ]]; then
+    help
+    exit 1
+fi
+
+}
+
+while getopts s: opts
+do
+  case $opts in
+    s)
+        software=${OPTARG}
+        ;;
+    *)
+        help
+        exit 1
+        ;;
+  esac
+done
+shift $((OPTIND-1))
+
+vm_instance_ip=$1
+echo $vm_instance_ip
+cartridge_template=$2
+echo $cartridge_template
+vm_instance_user=$3
+vm_instance_private_key=$4
+
+image_validate
+
+echo "Install from cartridge_template $cartridge_template"
+pushd ./init_scripts/$cartridge_template
+chmod 755 ./$cartridge_template
+./$cartridge_template $vm_instance_ip $vm_instance_user $vm_instance_private_key $software
+popd
+echo "Installed from cartridge_template $cartridge_template"
+echo "Now upload the image by using Openstack nova command"
+echo "nova image-create <vm instance id> <image name>"
+echo "where"
+echo "<vm instance id> is the id of the virtual machine instance from which you need to create the image"
+echo "<image name> is the name you wish to give for your new cartridge image"
+
+
+echo "Done"
+

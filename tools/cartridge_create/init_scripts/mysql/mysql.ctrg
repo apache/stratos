@@ -1,0 +1,37 @@
+#!/bin/bash
+    mv ./wso2-cartridge-init.sh /opt/
+    mv ./get-launch-params.rb /opt/
+    mv ./ssl-cert-snakeoil.pem /etc/ssl/certs/
+    mv ./ssl-cert-snakeoil.key /etc/ssl/private/
+    mv ./*.tar.gz /opt/
+    mv ./*.zip /opt/
+#    tar -xf phpMyAdmin-3.5.6-english.tar.xz
+	apt-get update
+	# Next, all th packages.
+	
+	apt-get install -y \
+	nano zip mysql-server git \
+	xml-twig-tools phpmyadmin ruby
+#	apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common dbconfig-common fontconfig-config libapache2-mod-php5 \
+#	libaprutil1-dbd-sqlite3 libaprutil1-ldap libcap2 libfontconfig1 libgd2-xpm libjpeg-turbo8 libjpeg8 libmcrypt4 \
+#	libt1-5 libxpm4 php5-cli php5-common php5-gd php5-mcrypt php5-mysql ssl-cert ttf-dejavu-core libboost-all-dev ruby
+
+	# Enable HTTPS:
+	a2enmod ssl
+	a2ensite default-ssl	
+	# Desable HTTP
+#	a2dissite default	
+
+ 	# set mysql to listen to all network
+	cp /etc/mysql/my.cnf /etc/mysql/my.cnf.org
+	cat /etc/mysql/my.cnf.org | sed -e 's/127.0.0.1/0.0.0.0/' > $ROOTFS/etc/mysql/my.cnf	
+
+	# See http://blog.bodhizazen.net/linux/lxc-configure-ubuntu-lucid-containers/
+	# This requirement is confirmed on 10.04.1 LTS.  Within LXC, the
+	# upstart "startup" signal is sent, but not "network-interface", etc.
+    echo "#!/bin/bash -e
+mkdir -p /etc/agent/conf
+chmod 755 /opt/wso2-cartridge-init.sh
+/opt/wso2-cartridge-init.sh > /var/log/wso2-cartridge-init.log
+exit 0
+    " > /etc/rc.local

@@ -1,0 +1,30 @@
+#!/bin/bash
+    mv ./wso2-openstack-init.sh /opt/
+    mv ./default.ctrg 
+    mv ./get-launch-params.rb /opt/
+    mv ./*.tar.gz /opt/
+    mv ./*.zip /opt/
+
+	apt-get update
+	# Next, all th packages.
+	
+	# See http://blog.bodhizazen.net/linux/lxc-configure-ubuntu-lucid-containers/
+	# This requirement is confirmed on 10.04.1 LTS.  Within LXC, the
+	# upstart "startup" signal is sent, but not "network-interface", etc.
+	pushd /etc/init/
+	cp -a ufw.conf ufw.conf-dist
+	sed '
+s/start on (starting network-interface/start on startup\n#start on (starting network-interface/
+s/          or starting network-manager/#          or starting network-manager/
+s/          or starting networking)/#          or starting network-manager/
+' < ufw.conf-dist > ufw.conf
+	
+	popd
+    
+    pushd /etc
+    echo "#!/bin/bash -e
+chmod 755 /opt/wso2-openstack-init.sh
+/opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log
+exit 0
+    " > rc.local
+    popd

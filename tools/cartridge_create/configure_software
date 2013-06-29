@@ -1,0 +1,363 @@
+#!/bin/bash
+
+ROOTFS=$1
+TEMPLATE=$2
+
+#
+# Locale settings (en_GB for Redcoats, en_US for Yanks):
+#
+LANG="en_US.UTF-8" 
+LANGUAGE="en_US.UTF-8" 
+LC_ALL="en_US.UTF-8" 
+LC_CTYPE="C"
+
+#
+# Ubuntu mirror to use:
+#
+###DEBMIRROR="http://archive.ubuntu.com/ubuntu/"
+#DEBMIRROR="http://us.archive.ubuntu.com/ubuntu/"
+DEBMIRROR="http://lk.archive.ubuntu.com/ubuntu/"
+
+
+mysql() {
+
+	# MySQL still prompts.  Bug.
+	#DEBCONF_FRONTEND='noninteractive' 
+	
+	chroot $ROOTFS apt-get update
+	# Next, all the LAMP packages.  We must first pre-save the password
+	# for MySQL to use:
+	#chroot $ROOTFS echo "mysql-server mysql-server/root_password select ubuntu" | chroot $ROOTFS debconf-set-selections
+	#chroot $ROOTFS echo "mysql-server mysql-server/root_password_again select ubuntu" | chroot $ROOTFS debconf-set-selections
+	
+	chroot $ROOTFS apt-get install -y \
+	nano zip mysql-server git \
+	apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common dbconfig-common fontconfig-config libapache2-mod-php5 \
+	libaprutil1-dbd-sqlite3 libaprutil1-ldap libcap2 libfontconfig1 libgd2-xpm libjpeg-turbo8 libjpeg8 libmcrypt4 \
+	libt1-5 libxpm4 php5-cli php5-common php5-gd php5-mcrypt php5-mysql phpmyadmin ssl-cert ttf-dejavu-core ruby
+
+	# Be sure to have a new SSL cert for this new LXC host:
+	rm -f $ROOTFS/etc/ssl/private/ssl-cert-snakeoil.key
+    cp -f ./init_scripts/mysql/cc/ssl-cert-snakeoil.pem $ROOTFS/etc/ssl/certs/
+    cp -f ./init_scripts/mysql/cc/ssl-cert-snakeoil.key $ROOTFS/etc/ssl/private/
+	#chroot $ROOTFS dpkg-reconfigure ssl-cert
+
+	# Enable HTTPS:
+	chroot $ROOTFS a2enmod ssl
+	chroot $ROOTFS a2ensite default-ssl	
+	# Desable HTTP
+	chroot $ROOTFS a2dissite default	
+
+ 	# set mysql to listen to all network
+	chroot $ROOTFS cp /etc/mysql/my.cnf /etc/mysql/my.cnf.org
+	chroot $ROOTFS cat /etc/mysql/my.cnf.org | sed -e 's/127.0.0.1/0.0.0.0/' > $ROOTFS/etc/mysql/my.cnf	
+
+	# See http://blog.bodhizazen.net/linux/lxc-configure-ubuntu-lucid-containers/
+	# This requirement is confirmed on 10.04.1 LTS.  Within LXC, the
+	# upstart "startup" signal is sent, but not "network-interface", etc.
+	pushd $ROOTFS/etc/init/
+	cp -a ufw.conf ufw.conf-dist
+	sed '
+s/start on (starting network-interface/start on startup\n#start on (starting network-interface/
+s/          or starting network-manager/#          or starting network-manager/
+s/          or starting networking)/#          or starting network-manager/
+' < ufw.conf-dist > ufw.conf
+	
+	popd
+
+}
+
+php() {
+
+    cp -f ./init_scripts/php/wso2-openstack-init.sh $ROOTFS/opt/
+    cp -f ./init_scripts/php/get-launch-params.rb $ROOTFS/opt/
+    cp -f ./init_scripts/php/cc/ssl-cert-snakeoil.pem $ROOTFS/etc/ssl/certs/
+    cp -f ./init_scripts/php/cc/ssl-cert-snakeoil.key $ROOTFS/etc/ssl/private/
+    
+	chroot $ROOTFS apt-get update
+	# Next, all the packages. 
+	
+	chroot $ROOTFS apt-get install -y \
+    nano zip build-essential mysql-client apache2 php5 php5-cli libapache2-mod-php5 php5-gd php5-mysql php-db php-pear \
+    php5-curl curl wget php5-ldap php5-adodb mailutils php5-imap php5-ldap \
+    openssl ssl-cert ldap-utils php5-mcrypt mcrypt ufw fail2ban git libboost-all-dev ruby
+
+    # Install the thrift library
+    tar -zxf ./init_scripts/php/thrift-0.8.0.tar.gz -C$ROOTFS/opt
+    chroot $ROOTFS cd /opt/thrift-0.8.0;./configure --libdir=/usr/lib;make;make install
+    tar -zxf ./init_scripts/php/cartridge_data_publisher_1.0.0.tar.gz -C$ROOTFS/opt
+    chroot $ROOTFS cd /opt/cartridge_data_publisher_1.0.0;make
+
+	# install gitpython 
+	# chroot $ROOTFS easy_install GitPython
+
+
+	# configure apache log write to syslog TODO : Need generic solution
+	chroot $ROOTFS cp /etc/apache2/apache2.conf /etc/apache2/apache2.conf.org
+    chroot $ROOTFS cat /etc/apache2/apache2.conf.org | sed -e 's/^ErrorLog.*/ErrorLog syslog:local2/' > $ROOTFS/etc/apache2/apache2.conf
+
+	# configure rsyslog TODO : Need generic solution
+	chroot $ROOTFS cp /etc/rsyslog.conf /etc/rsyslog.conf.org
+    chroot $ROOTFS cat /etc/rsyslog.conf.org | sed -e 's/^#$ModLoad\simtcp.*/$ModLoad imtcp/' |  sed -e 's/^\#\$ModLoad\simtcp.*/\$ModLoad imtcp/' | sed -e 's/^\#\$InputTCPServerRun\s514.*/\$InputTCPServerRun 514\nlocal2\.\*        \@\@localhost\:32000/' > $ROOTFS/etc/rsyslog.conf
+
+
+# adding simplesaml alias to apache
+chroot $ROOTFS cp /etc/apache2/sites-available/default /etc/apache2/sites-available/default-org
+chroot $ROOTFS cp /etc/apache2/sites-available/default-ssl /etc/apache2/sites-available/default-ssl-org
+chroot $ROOTFS cat /etc/apache2/sites-available/default-org | sed -e 's@DocumentRoot \/var\/www@DocumentRoot \/var\/www\/public\n\tAlias \/simplesaml \/var\/www\/simplesamlphp\/www@' > $ROOTFS/etc/apache2/sites-available/default
+chroot $ROOTFS cat /etc/apache2/sites-available/default-ssl-org | sed -e 's@DocumentRoot \/var\/www@DocumentRoot \/var\/www\/public\n\tAlias \/simplesaml \/var\/www\/simplesamlphp\/www@' > $ROOTFS/etc/apache2/sites-available/default-ssl
+	# Enable HTTPS:
+	chroot $ROOTFS a2enmod ssl
+	chroot $ROOTFS a2ensite default-ssl	
+
+
+	# See http://blog.bodhizazen.net/linux/lxc-configure-ubuntu-lucid-containers/
+	# This requirement is confirmed on 10.04.1 LTS.  Within LXC, the
+	# upstart "startup" signal is sent, but not "network-interface", etc.
+	pushd $ROOTFS/etc/init/
+	cp -a ufw.conf ufw.conf-dist
+	sed '
+s/start on (starting network-interface/start on startup\n#start on (starting network-interface/
+s/          or starting network-manager/#          or starting network-manager/
+s/          or starting networking)/#          or starting network-manager/
+' < ufw.conf-dist > ufw.conf
+	popd
+	
+    pushd $ROOTFS/etc
+    echo "#!/bin/bash -e
+mkdir -p /etc/agent/conf
+chmod 755 /opt/wso2-openstack-init.sh
+/opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log
+exit 0
+    " > rc.local
+    popd
+
+}
+
+lamp() {
+
+    cp -f ./init_scripts/lamp/wso2-openstack-init.sh $ROOTFS/opt/
+    cp -f ./init_scripts/lamp/get-launch-params.rb $ROOTFS/opt/
+    cp -f ./init_scripts/lamp/server $ROOTFS/opt/
+    cp -f ./init_scripts/lamp/svn_client.sh $ROOTFS/opt/
+    cp -f ./init_scripts/lamp/svn_client_y.sh $ROOTFS/opt/
+    cp -f ./init_scripts/lamp/deployer.sh $ROOTFS/opt/
+
+    # Copy software
+    arr=$(echo $SOFTWARE | tr ":" "\n")
+    for x in $arr
+    do
+       cp -rf $x $ROOTFS/opt/
+    done
+
+
+	# MySQL still prompts.  Bug.
+	#DEBCONF_FRONTEND='noninteractive' 
+	
+	chroot $ROOTFS apt-get update
+	# Next, all the LAMP packages.  We must first pre-save the password
+	# for MySQL to use:
+	chroot $ROOTFS echo "mysql-server mysql-server/root_password select ubuntu" | chroot $ROOTFS debconf-set-selections
+	chroot $ROOTFS echo "mysql-server mysql-server/root_password_again select ubuntu" | chroot $ROOTFS debconf-set-selections
+	
+	chroot $ROOTFS apt-get install -y \
+	 nano zip mysql-server mysql-client \
+	 apache2 php5 php5-cli libapache2-mod-php5 php5-gd php5-mysql php-db php-pear php5-curl curl wget php5-ldap php5-adodb mailutils \
+	 php5-imap php5-ldap \
+	 openssl ssl-cert ldap-utils \
+	 php5-mcrypt mcrypt ufw fail2ban ruby subversion
+
+	# Be sure to have a new SSL cert for this new LXC host:
+	#rm -f $ROOTFS/etc/ssl/private/ssl-cert-snakeoil.key
+	#chroot $ROOTFS dpkg-reconfigure ssl-cert
+
+	# Enable HTTPS:
+	#chroot $ROOTFS a2enmod ssl
+	#chroot $ROOTFS a2ensite default-ssl	
+
+	# Turn on MySQL replication logs by default.  (Necessary for 
+	# incremental backups, even if you're not doing replication.)
+	pushd $ROOTFS/etc/mysql/conf.d
+	echo "[mysqld]
+log-bin=mysqld-bin
+server-id = 1
+
+# For an SSH Tunneled slave:
+# See also: /etc/rc.local for the SSH Tunnel that makes this work.
+#[mysqld]
+#master-host     = 127.0.0.1
+#master-user     = root
+#master-password = ubuntu
+#master-port     = 13306
+#server-id       = 2
+	" >> replication.cnf
+	popd
+
+pushd $ROOTFS/etc
+    echo "#!/bin/bash -e
+/opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log
+exit 0
+    " > rc.local
+    popd
+
+	# Next, fix a couple of Debian gotchas:
+
+	# Comment out these two lines.  (Don't expire,
+	# and use the 1G default file size.
+	pushd $ROOTFS/etc/mysql
+	cp -a my.cnf my.cnf-dist
+	sed '
+s/expire_logs_days/#expire_logs_days/
+s/max_binlog_size/#max_binlog_size/
+' < my.cnf-dist > my.cnf
+	popd
+	
+	# See http://blog.bodhizazen.net/linux/lxc-configure-ubuntu-lucid-containers/
+	# This requirement is confirmed on 10.04.1 LTS.  Within LXC, the
+	# upstart "startup" signal is sent, but not "network-interface", etc.
+	pushd $ROOTFS/etc/init/
+	cp -a ufw.conf ufw.conf-dist
+	sed '
+s/start on (starting network-interface/start on startup\n#start on (starting network-interface/
+s/          or starting network-manager/#          or starting network-manager/
+s/          or starting networking)/#          or starting network-manager/
+' < ufw.conf-dist > ufw.conf
+	
+	cp -a mysql.conf mysql.conf-dist
+	sed --posix -e '
+s/start on (net-device-up/start on startup\n#start on (net-device-up/
+s/          and local-filesystems/#          and local-filesystems/
+s/\t  and runlevel \[2345\])/#\t  and runlevel \[2345\])/
+' < mysql.conf-dist > mysql.conf
+	popd
+	
+}
+
+wso2_carbon_server() {
+
+    cp -f ./init_scripts/carbon/wso2-openstack-init.sh $ROOTFS/opt/
+    cp -f ./init_scripts/carbon/get-launch-params.rb $ROOTFS/opt/
+    # Copy software
+    arr=$(echo $SOFTWARE | tr ":" "\n")
+    for x in $arr
+    do
+       cp -rf $x $ROOTFS/opt/
+    done
+
+	#chroot $ROOTFS apt-get update
+	
+	 chroot $ROOTFS apt-get install -y \
+	 nano zip \
+	 wget \
+	 openssl ssl-cert ldap-utils ruby git
+  
+     # TODO install puppet agent
+
+	# Be sure to have a new SSL cert for this new LXC host:
+	#rm -f $ROOTFS/etc/ssl/private/ssl-cert-snakeoil.key
+	#chroot $ROOTFS dpkg-reconfigure ssl-cert
+
+pushd $ROOTFS/etc
+    echo "#!/bin/bash -e
+/opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log
+exit 0
+    " > rc.local
+    popd
+
+}
+
+jetty() {
+
+    cp -f ./init_scripts/jetty/wso2-openstack-init.sh $ROOTFS/opt/
+    cp -f ./init_scripts/jetty/get-launch-params.rb $ROOTFS/opt/
+    cp -f ./init_scripts/jetty/server $ROOTFS/opt/
+    cp -f ./init_scripts/jetty/svn_client.sh $ROOTFS/opt/
+    cp -f ./init_scripts/jetty/svn_client_y.sh $ROOTFS/opt/
+    cp -f ./init_scripts/jetty/deployer.sh $ROOTFS/opt/
+    # Copy software
+    arr=$(echo $SOFTWARE | tr ":" "\n")
+    for x in $arr
+    do
+       cp -rf $x $ROOTFS/opt/
+    done
+
+	#chroot $ROOTFS apt-get update
+	
+	chroot $ROOTFS apt-get install -y \
+	 nano zip \
+	 wget \
+	 openssl ssl-cert ldap-utils ruby subversion
+   
+pushd $ROOTFS/etc
+    echo "#!/bin/bash -e
+/opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log
+exit 0
+    " > rc.local
+    popd
+
+}
+
+
+tomcat7() {
+
+    #chroot $ROOTFS echo "nameserver 8.8.8.8" >> $ROOTFS/etc/resolvconf/resolv.conf.d/base
+    echo "Please fix the resolve conf file"
+    read
+    #chroot $ROOTFS mkdir -p /run/resolveconf
+    #chroot $ROORFS touch /run/resolveconf/resolv.conf
+    #chroot echo "nameserver 8.8.8.8" > /run/resolveconf/resolv.conf
+    
+    echo "------------------------------------------"
+    chroot $ROOTFS cat /etc/resolv.conf
+    echo "------------------------------------------"
+
+
+    mount -o bind /dev $ROOTFS/dev
+
+
+    mount -t proc none $ROOTFS/proc
+
+
+    cp -f ./init_scripts/tomcat7/wso2-openstack-init.sh $ROOTFS/opt/
+    cp -f ./init_scripts/tomcat7/get-launch-params.rb $ROOTFS/opt/
+    
+    
+	chroot $ROOTFS apt-get update
+	# Next, all the packages. 
+	
+    chroot $ROOTFS apt-get install -y \
+    nano zip git\
+    ruby curl wget tomcat7
+     
+	# See http://blog.bodhizazen.net/linux/lxc-configure-ubuntu-lucid-containers/
+	# This requirement is confirmed on 10.04.1 LTS.  Within LXC, the
+	# upstart "startup" signal is sent, but not "network-interface", etc.
+	pushd $ROOTFS/etc/init/
+	cp -a ufw.conf ufw.conf-dist
+	sed '
+s/start on (starting network-interface/start on startup\n#start on (starting network-interface/
+s/          or starting network-manager/#          or starting network-manager/
+s/          or starting networking)/#          or starting network-manager/
+' < ufw.conf-dist > ufw.conf
+	popd
+	
+    pushd $ROOTFS/etc
+    echo "#!/bin/bash -e
+mkdir -p /etc/agent/conf
+chmod 755 /opt/wso2-openstack-init.sh
+/opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log
+exit 0
+    " > rc.local
+    popd
+
+    umount $ROOTFS/dev
+    umount $ROOTFS/proc
+}
+
+
+# Don't prompt when running apt-get:
+export DEBCONF_FRONTEND='noninteractive' 
+
+# Run the config function with given $TEMPLATE name (if it exists):
+$TEMPLATE 
+

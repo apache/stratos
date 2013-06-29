@@ -1,0 +1,22 @@
+#!/bin/bash
+INSTANCE=$1
+INSTANCE_USER=$2
+KEY=$3
+SOFTWARE=$4
+
+SCP="scp -i ./$KEY"
+SSH="ssh -i ./$KEY"
+
+$SCP ./wso2-openstack-init.sh $INSTANCE_USER@$INSTANCE:
+$SCP ./default.ctrg $INSTANCE_USER@$INSTANCE:
+$SCP ./get-launch-params.rb $INSTANCE_USER@$INSTANCE:
+
+# Copy additional software
+arr=$(echo $SOFTWARE | tr ":" "\n")
+for x in $arr
+do
+   $SCP $x $INSTANCE_USER@$INSTANCE:
+done
+
+# Execute the cartridge creation process in the remoter server
+$SSH $INSTANCE_USER@$INSTANCE "sudo chmod 755 ./default.ctrg;sudo ./default.ctrg"
