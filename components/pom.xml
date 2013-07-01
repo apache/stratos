@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+		~ Copyright (c) 2009-2010, WSO2 Inc. (http://www.wso2.org) All Rights
+		Reserved. ~ ~ Licensed under the Apache License, Version 2.0 (the
+		"License"); ~ you may not use this file except in compliance with the
+		License. ~ You may obtain a copy of the License at ~ ~
+		http://www.apache.org/licenses/LICENSE-2.0 ~ ~ Unless required by
+		applicable law or agreed to in writing, software ~ distributed under
+		the License is distributed on an "AS IS" BASIS, ~ WITHOUT WARRANTIES
+		OR CONDITIONS OF ANY KIND, either express or implied. ~ See the
+		License for the specific language governing permissions and ~
+		limitations under the License.
+	-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!--parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-parent</artifactId>
+        <version>4.1.0</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent-->
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.apache.stratos</groupId>
+	<artifactId>stratos-components-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>2.0.0</version>
+	<name>Apache Stratos Components - Parent Module</name>
+	<url>http://apache.org</url>
+
+	<licenses>
+	    <license>
+	        <name>Apache License Version 2.0</name>
+	        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+	    </license>
+	</licenses>
+
+	<organization>
+		<name>WSO2 Inc</name>
+		<url>http://wso2.org</url>
+	</organization>
+
+            <modules>
+		<module>load-balancer</module>
+                <!--module>stratos</module-->
+            </modules>
+	    <build>
+	        <plugins>
+	            <plugin>
+	                <groupId>org.codehaus.mojo</groupId>
+	                <artifactId>build-helper-maven-plugin</artifactId>
+	                <version>1.7</version>
+	            </plugin>
+	            <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-compiler-plugin</artifactId>
+	               <version>2.3.2</version>
+	            </plugin>
+	            <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-surefire-plugin</artifactId>
+	               <version>2.12</version>
+	            </plugin>
+	            <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-resources-plugin</artifactId>
+	               <version>2.5</version>
+	            </plugin>
+	        </plugins>
+	    </build>
+    <scm>
+        <connection>
+            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
+        </connection>
+        <developerConnection>
+            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
+        </developerConnection>
+    </scm>
+
+    <dependencyManagement>
+        <dependencies>
+	<!-- OSGi dependencies -->
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>${version.equinox.osgi}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+            <version>${version.equinox.osgi.services}</version>
+        </dependency>
+
+	    <!-- Carbon Core dependencies -->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.logging</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core.services</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+	    <dependency>
+	    <groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.application.deployer</artifactId>
+                <version>${carbon.platform.version}</version>
+		     <exclusions>
+			<exclusion>
+			  <groupId>org.wso2.carbon</groupId>
+			  <artifactId>org.wso2.carbon.feature.mgt.core</artifactId>
+			</exclusion>
+			<exclusion>
+			  <groupId>org.wso2.carbon</groupId>
+			  <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
+			</exclusion>
+		     </exclusions>
+	    </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.server</artifactId>
+       	    <version>${carbon.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.server.admin.common</artifactId>
+            <version>${carbon.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.server.admin.ui</artifactId>
+            <version>${carbon.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.base</artifactId>
+            <version>${carbon.platform.version}</version>
+        </dependency>
+        
+	<!-- Service Stubs -->  
+	   <dependency>
+                 <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.autoscaler.service.jvm.agentmgt.stub</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+	<!-- Test Scope -->
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <wso2carbon.version>4.1.0</wso2carbon.version>
+	<junit.version>3.8.2</junit.version>
+	<synapse.core.version>2.1.1-wso2v4</synapse.core.version>
+	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
+	<jclouds.version>1.5.0-beta.5</jclouds.version>
+	<carbon.platform.version>4.1.0</carbon.platform.version>
+	<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
+        <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
+
+	
+        <!--eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
+        <eclipse.osgi.services.version>3.2.0.v20090520-1800</eclipse.osgi.services.version>
+        <equinox.commons.logging.version>1.0.4.v200706111724</equinox.commons.logging.version>
+        <synapse.version>2.1.1-wso2v3</synapse.version>
+        <wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
+        <geronimo.stax.api.wso2.version>1.0.1.wso2v1</geronimo.stax.api.wso2.version>
+        <xmlschema.version>1.4.3</xmlschema.version>
+        <addressing.version>1.6.1-wso2v1</addressing.version>
+        <rampart.version>1.6.1-wso2v9</rampart.version>
+        <wss4j.version>1.5.11.wso2v1</wss4j.version>
+        <gdata-core.wso2.version>1.47.0.wso2v1</gdata-core.wso2.version>
+        <gdata-spreadsheet.wso2.version>3.0.0.wso2v1</gdata-spreadsheet.wso2.version>
+        <poi.wso2.version>3.5.0.wso2v1</poi.wso2.version>
+        <junit.version>3.8.2</junit.version>
+        <rhino.wso2.version>1.7.0.R1-wso2v2</rhino.wso2.version>
+        <xercesImpl.version>2.8.1</xercesImpl.version>
+        <xercesImpl.wso2.version>2.8.1.wso2v1</xercesImpl.wso2.version>
+        <uddi4j.version>1.0.1</uddi4j.version>
+        <wsdl-validator.version>1.2.0.wso2v1</wsdl-validator.version>
+        <wsdl4j.version>1.6.2</wsdl4j.version>
+        <jetty.version>6.1.5</jetty.version>
+        <hsqldb.version>1.8.0</hsqldb.version>
+        <xml-apis.version>1.3.04</xml-apis.version>
+        <jaxen.version>1.1.1</jaxen.version>
+        <woodstox.version>3.2.9</woodstox.version>
+        <stax.version>1.0.1</stax.version>
+        <axiom.version>1.2.11-wso2v2</axiom.version>
+        <commons-dbcp.version>1.2.2</commons-dbcp.version>
+        <commons-logging.version>1.1</commons-logging.version>
+        <commons-pool.version>1.5.0.wso2v1</commons-pool.version>
+        <commons-beanutils.version>1.8.0</commons-beanutils.version>
+        <commons-collections.version>3.2</commons-collections.version>
+        <commons-digester.version>1.8</commons-digester.version>
+        <authenticator.version>0.5</authenticator.version>
+        <javamail.version>1.4</javamail.version>
+        <activation.version>1.1</activation.version>
+        <commons-fileupload.version>1.1.1</commons-fileupload.version>
+        <commons-httpclient.version>3.0.1</commons-httpclient.version>
+        <commons-httpclient.wso2.version>${orbit.version.commons.httpclient}</commons-httpclient.wso2.version>
+        <validateutility.version>0.95</validateutility.version>
+        <derby.version>10.4.2.0</derby.version>
+        <axis2-transports.version>1.1.0-wso2v4</axis2-transports.version-->
+        <!--derby.wso2.version>${version.wso2.derby}</derby.wso2.version--><!-- derby orbit version need to be updated -->
+        <!--commons-fileupload.wso2.version>1.2.2.wso2v1</commons-fileupload.wso2.version>
+        <geronimo-stax-api.wso2.version>1.0.1.wso2v1</geronimo-stax-api.wso2.version>
+        <neethi.wso2.version>${neethi.osgi.version}</neethi.wso2.version>
+        <commons-lang.wso2.version>2.6.0.wso2v1</commons-lang.wso2.version>
+        <wso2mex.version>2.2</wso2mex.version>
+        <rampart.wso2.version>1.6.1.wso2v9</rampart.wso2.version>
+        <sandesha2.version>1.6.1-wso2v1</sandesha2.version>
+        <jasperreports.wso2.version>3.7.1.wso2v1</jasperreports.wso2.version>
+        <wso2throttle.version>3.3.0</wso2throttle.version>
+        <wso2xfer.version>3.2.0</wso2xfer.version>
+        <jxl.wso2.version>2.6.8.wso2v1</jxl.wso2.version>
+	<wso2.h2.orbit.version>1.2.140.wso2v3</wso2.h2.orbit.version>
+	<commons-io.wso2.version>2.0.0.wso2v1</commons-io.wso2.version>
+	<juddi.wso2.version>3.0.3.wso2v2</juddi.wso2.version>
+	<smack.wso2.version>3.0.4.wso2v1</smack.wso2.version>
+	<smackx.wso2.version>3.0.4.wso2v1</smackx.wso2.version>
+	<sun-xacml.wso2.version>2.0.1.wso2v1</sun-xacml.wso2.version>
+	<opensaml.wso2.version>1.1.0.wso2v1</opensaml.wso2.version>
+	<opensaml2.wso2.version>2.4.1.wso2v1</opensaml2.wso2.version>
+	<openid4java.wso2.version>0.9.6.wso2v1</openid4java.wso2.version>
+	<httpcomponents-httpclient.wso2.version>4.1.1-wso2v1</httpcomponents-httpclient.wso2.version>
+	<httpcomponents-httpcore.wso2.version>4.1.0-wso2v1</httpcomponents-httpcore.wso2.version>
+	<scxml.version>0.9.0.wso2v1</scxml.version>
+	<google.step2.wso2.version>1.0.wso2v1</google.step2.wso2.version>
+	<google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
+        <version.solr>1.4.1.wso2v1</version.solr>
+        <shindig.version>1.1.0.wso2v6</shindig.version>
+        <batik.version>1.7.0.wso2v1</batik.version>
+        <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
+	<orbit.version.json>2.0.0.wso2v1</orbit.version.json>
+	<orbit.version.json-simple>1.1.wso2v1</orbit.version.json-simple>
+	<orbit.version.woden>1.0.0.M8-wso2v1</orbit.version.woden>
+	<orbit.version.commons-configuration>1.6.0.wso2v1</orbit.version.commons-configuration>
+        <orbit.version.infinispan>5.1.2.wso2v1</orbit.version.infinispan>
+        <zookeeper.orbit.version>3.3.5.wso2v1</zookeeper.orbit.version>
+        <quartz2.orbit.version>2.1.1.wso2v1</quartz2.orbit.version>
+        <mvel2.orbit.version>2.0.19.wso2v1</mvel2.orbit.version>
+        <antlr-runtime.orbit.version>3.2.0.wso2v1</antlr-runtime.orbit.version>
+        <siddhi.orbit.version>1.0.0.wso2v1</siddhi.orbit.version>
+        <gson.version>2.1</gson.version>
+        <jclouds.version>1.5.0-beta.5</jclouds.version-->
+    </properties>
+
+</project>
