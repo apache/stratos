@@ -22,31 +22,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-components</artifactId>
-        <version>4.1.0</version>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-components-parent</artifactId>
+        <version>2.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
+    <groupId>org.apache.stratos</groupId>
     <artifactId>loadbalancer-components</artifactId>
     <packaging>pom</packaging>
     <version>4.1.0</version>
-    <name>WSO2 Carbon Loadbalancer Components</name>
+    <name>Apache Stratos Loadbalancer Components</name>
     <description>Carbon Components specifically used in Loadbalancer</description>
     <url>http://wso2.com</url>
 
     <modules>
-        <module>org.wso2.carbon.lb.common/4.1.0</module>
-        <!--module>lb-endpoint</module-->
-        <module>autoscaler-service/org.wso2.carbon.autoscaler.service/4.1.0</module>
-        <!--module>jvm-autoscaler-agent</module-->
-        <module>autoscaler/org.wso2.carbon.mediator.autoscale/4.1.0</module>
-        <!--module>autoscaler-service/jvmagentmgtservice/4.1.0</module>
-        <module>autoscaler-service/autoscalerservice/4.1.0</module>
-        <module>jvm-autoscaler-agent/jvmagentclient/4.1.0</module>
-        <module>jvm-autoscaler-agent/jvmagent</module-->
+        <module>org.apache.stratos.lb.common/4.1.3</module>
+        <module>autoscaler-service/org.apache.stratos.autoscaler.service/4.1.0</module>
+        <module>autoscaler/org.apache.stratos.mediator.autoscale/4.1.3</module>
     </modules>
 
     <dependencyManagement>
