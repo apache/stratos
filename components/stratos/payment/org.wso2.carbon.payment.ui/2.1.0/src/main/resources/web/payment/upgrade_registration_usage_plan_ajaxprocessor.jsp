@@ -15,9 +15,9 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 --%>
-<%@ page import="org.wso2.carbon.account.mgt.ui.clients.UsagePlanClient" %>
+<%@ page import="org.apache.stratos.account.mgt.UsagePlanClient" %>
 <%@ page import="org.wso2.carbon.utils.CarbonUtils" %>
-<%@ page import="org.wso2.carbon.account.mgt.stub.services.BillingDataAccessServiceStub" %>
+<%@ page import="org.apache.stratos.account.mgt.BillingDataAccessServiceStub" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.apache.axis2.context.ConfigurationContext" %>

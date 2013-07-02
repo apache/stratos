@@ -23,8 +23,7 @@
 <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.account.mgt</artifactId>
+    <modelVersion>4.0.0</modelVorg.apache.stratos.account.mgtg.wso2.carbon.account.mgt</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Stratos - Account Management</name>
 
@@ -45,7 +44,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>
-                            org.wso2.carbon.account.mgt.*,
+                            org.apache.stratos.account.mgt.*,
                         </Private-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.core.*;version=1.0.1,

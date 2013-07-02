@@ -15,7 +15,7 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 -->
-<%@ page import="org.wso2.carbon.account.mgt.stub.beans.xsd.AccountInfoBean" %>
+<%@ page import="org.apache.stratos.account.mgt.AccountInfoBean" %>
 <%@ page import="org.wso2.carbon.account.mgt.ui.clients.AccountMgtClient" %>
 <%@ page import="org.wso2.carbon.account.mgt.ui.clients.UsagePlanClient" %>
 <%@ page import="org.wso2.carbon.stratos.common.constants.StratosConstants" %>

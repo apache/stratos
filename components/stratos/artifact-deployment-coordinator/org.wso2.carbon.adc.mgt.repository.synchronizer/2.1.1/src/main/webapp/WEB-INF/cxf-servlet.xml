@@ -29,6 +29,6 @@
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
-    <bean id="serviceBean" class="org.wso2.carbon.adc.mgt.reposync.service.RepositorySynchronizer"/>
+    <bean id="serviceBean" class="org.apache.stratos.adc.mgt.reposync.service.RepositorySynchronizer"/>
 </beans>
 

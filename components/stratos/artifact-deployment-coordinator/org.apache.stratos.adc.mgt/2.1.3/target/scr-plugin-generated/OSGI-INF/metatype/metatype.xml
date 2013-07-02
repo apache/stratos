@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
+    <OCD id="org.wso2.carbon.hosting.mgt.internal.ADCManagementServerComponent" name="%org.wso2.carbon.hosting.mgt.internal.ADCManagementServerComponent.name" description="%org.wso2.carbon.hosting.mgt.internal.ADCManagementServerComponent.description"/>
+    <Designate pid="org.wso2.carbon.hosting.mgt.internal.ADCManagementServerComponent">
+        <Object ocdref="org.wso2.carbon.hosting.mgt.internal.ADCManagementServerComponent"/>
+    </Designate>
+</metatype:MetaData>

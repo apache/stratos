@@ -24,8 +24,7 @@
 <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.account.mgt.ui</artifactId>
+    <modelVersion>4.0.0</modelorg.apache.stratos.account.mgt.uiwso2.carbon.account.mgt.ui</artifactId>
     <version>2.1.0</version>
     <packaging>bundle</packaging>
     <name>WSO2 Stratos - Account Managment - User Interface</name>
