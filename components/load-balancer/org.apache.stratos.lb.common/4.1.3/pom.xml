@@ -20,12 +20,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!--parent>
-        <groupId>org.wso2.carbon</groupId>
+    <parent>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>loadbalancer-components</artifactId>
         <version>4.1.0</version>
         <relativePath>../../pom.xml</relativePath>
-    </parent-->
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
@@ -39,23 +39,22 @@
     	<dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
-            <version>4.1.0</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava.wso2</groupId>
 	        <artifactId>guava</artifactId>
-            <version>12.0.0.wso2v1</version>
-            <!--version>${google.guava.wso2.version}</version-->
+            <version>${google.guava.wso2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.synapse</groupId>
             <artifactId>synapse-core</artifactId>
-            <version>2.1.1-wso2v4</version>
+            <version>${synapse.core.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.2</version>
+            <version>${junit.version}</version>
         </dependency>
         <!--dependency>
           <groupId>org.testng</groupId>
