@@ -144,7 +144,15 @@
             <artifactId>org.wso2.carbon.base</artifactId>
             <version>${carbon.platform.version}</version>
         </dependency>
-        
+
+        <!-- Registry dependencies  -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
+            <version>${carbon.platform.version}</version>
+        </dependency>
+
+
 	<!-- Service Stubs -->  
 	   <dependency>
                  <groupId>org.wso2.carbon</groupId>
@@ -165,16 +173,15 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wso2carbon.version>4.1.0</wso2carbon.version>
-	<junit.version>3.8.2</junit.version>
-	<synapse.core.version>2.1.1-wso2v4</synapse.core.version>
-	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
-	<jclouds.version>1.5.0-beta.5</jclouds.version>
-	<carbon.platform.version>4.1.0</carbon.platform.version>
-	<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
+    	<junit.version>3.8.2</junit.version>
+	    <synapse.core.version>2.1.1-wso2v4</synapse.core.version>
+    	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
+	    <jclouds.version>1.5.0-beta.5</jclouds.version>
+    	<carbon.platform.version>4.1.0</carbon.platform.version>
+	    <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
         <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
-	<axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>
-
-	
+    	<axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>
+        <version.tomcat>7.0.34</version.tomcat>	
         <!--eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
         <eclipse.osgi.services.version>3.2.0.v20090520-1800</eclipse.osgi.services.version>
         <equinox.commons.logging.version>1.0.4.v200706111724</equinox.commons.logging.version>
@@ -229,28 +236,28 @@
         <wso2throttle.version>3.3.0</wso2throttle.version>
         <wso2xfer.version>3.2.0</wso2xfer.version>
         <jxl.wso2.version>2.6.8.wso2v1</jxl.wso2.version>
-	<wso2.h2.orbit.version>1.2.140.wso2v3</wso2.h2.orbit.version>
-	<commons-io.wso2.version>2.0.0.wso2v1</commons-io.wso2.version>
-	<juddi.wso2.version>3.0.3.wso2v2</juddi.wso2.version>
-	<smack.wso2.version>3.0.4.wso2v1</smack.wso2.version>
-	<smackx.wso2.version>3.0.4.wso2v1</smackx.wso2.version>
-	<sun-xacml.wso2.version>2.0.1.wso2v1</sun-xacml.wso2.version>
-	<opensaml.wso2.version>1.1.0.wso2v1</opensaml.wso2.version>
-	<opensaml2.wso2.version>2.4.1.wso2v1</opensaml2.wso2.version>
-	<openid4java.wso2.version>0.9.6.wso2v1</openid4java.wso2.version>
-	<httpcomponents-httpclient.wso2.version>4.1.1-wso2v1</httpcomponents-httpclient.wso2.version>
-	<httpcomponents-httpcore.wso2.version>4.1.0-wso2v1</httpcomponents-httpcore.wso2.version>
-	<scxml.version>0.9.0.wso2v1</scxml.version>
-	<google.step2.wso2.version>1.0.wso2v1</google.step2.wso2.version>
-	<google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
+    	<wso2.h2.orbit.version>1.2.140.wso2v3</wso2.h2.orbit.version>
+	    <commons-io.wso2.version>2.0.0.wso2v1</commons-io.wso2.version>
+    	<juddi.wso2.version>3.0.3.wso2v2</juddi.wso2.version>
+	    <smack.wso2.version>3.0.4.wso2v1</smack.wso2.version>
+    	<smackx.wso2.version>3.0.4.wso2v1</smackx.wso2.version>
+	    <sun-xacml.wso2.version>2.0.1.wso2v1</sun-xacml.wso2.version>
+    	<opensaml.wso2.version>1.1.0.wso2v1</opensaml.wso2.version>
+	    <opensaml2.wso2.version>2.4.1.wso2v1</opensaml2.wso2.version>
+    	<openid4java.wso2.version>0.9.6.wso2v1</openid4java.wso2.version>
+	    <httpcomponents-httpclient.wso2.version>4.1.1-wso2v1</httpcomponents-httpclient.wso2.version>
+    	<httpcomponents-httpcore.wso2.version>4.1.0-wso2v1</httpcomponents-httpcore.wso2.version>
+	    <scxml.version>0.9.0.wso2v1</scxml.version>
+    	<google.step2.wso2.version>1.0.wso2v1</google.step2.wso2.version>
+	    <google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
         <version.solr>1.4.1.wso2v1</version.solr>
         <shindig.version>1.1.0.wso2v6</shindig.version>
         <batik.version>1.7.0.wso2v1</batik.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
-	<orbit.version.json>2.0.0.wso2v1</orbit.version.json>
-	<orbit.version.json-simple>1.1.wso2v1</orbit.version.json-simple>
-	<orbit.version.woden>1.0.0.M8-wso2v1</orbit.version.woden>
-	<orbit.version.commons-configuration>1.6.0.wso2v1</orbit.version.commons-configuration>
+    	<orbit.version.json>2.0.0.wso2v1</orbit.version.json>
+	    <orbit.version.json-simple>1.1.wso2v1</orbit.version.json-simple>
+    	<orbit.version.woden>1.0.0.M8-wso2v1</orbit.version.woden>
+	    <orbit.version.commons-configuration>1.6.0.wso2v1</orbit.version.commons-configuration>
         <orbit.version.infinispan>5.1.2.wso2v1</orbit.version.infinispan>
         <zookeeper.orbit.version>3.3.5.wso2v1</zookeeper.orbit.version>
         <quartz2.orbit.version>2.1.1.wso2v1</quartz2.orbit.version>
