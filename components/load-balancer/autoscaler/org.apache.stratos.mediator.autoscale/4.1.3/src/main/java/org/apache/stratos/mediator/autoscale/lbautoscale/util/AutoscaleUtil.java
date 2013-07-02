@@ -1,35 +1,38 @@
-/*
- * Copyright 2004,2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ *  Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+
+ *  http://www.apache.org/licenses/LICENSE-2.0
+
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  */
 package org.apache.stratos.mediator.autoscale.lbautoscale.util;
 
+import org.apache.axiom.om.util.Base64;
 import org.apache.axis2.clustering.ClusteringAgent;
-import org.apache.axis2.clustering.management.GroupManagementAgent;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.stratos.mediator.autoscale.lbautoscale.context.LoadBalancerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.protocol.HTTP;
-import org.apache.synapse.MessageContext;
-import org.apache.synapse.SynapseException;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration;
 import org.apache.stratos.mediator.autoscale.lbautoscale.clients.CloudControllerClient;
 import org.apache.stratos.mediator.autoscale.lbautoscale.context.AppDomainContext;
+import org.apache.stratos.mediator.autoscale.lbautoscale.context.LoadBalancerContext;
 import org.apache.stratos.mediator.autoscale.lbautoscale.state.check.PendingInstancesStateChecker;
-import org.apache.axiom.om.util.Base64;
+import org.apache.synapse.MessageContext;
+import org.apache.synapse.SynapseException;
+import org.apache.synapse.core.axis2.Axis2MessageContext;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
