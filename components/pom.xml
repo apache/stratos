@@ -43,7 +43,7 @@
 	</organization>
 
             <modules>
-		<module>load-balancer</module>
+		<!--module>load-balancer</module-->
                 <!--module>stratos</module-->
             </modules>
 	    <build>
