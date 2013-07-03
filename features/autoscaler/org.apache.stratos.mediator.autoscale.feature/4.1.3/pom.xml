@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- ~ Copyright (c) 2009-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- ~
- ~ Licensed under the Apache License, Version 2.0 (the "License");
- ~ you may not use this file except in compliance with the License.
- ~ You may obtain a copy of the License at
- ~
- ~      http://www.apache.org/licenses/LICENSE-2.0
- ~
- ~ Unless required by applicable law or agreed to in writing, software
- ~ distributed under the License is distributed on an "AS IS" BASIS,
- ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- ~ See the License for the specific language governing permissions and
- ~ limitations under the License.
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -20,36 +24,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>autoscaler-feature</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <version>4.1.3</version>
-    <artifactId>org.wso2.carbon.mediator.autoscale.feature</artifactId>
+    <artifactId>org.apache.stratis.mediator.autoscale.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Autoscaler Feature</name>
-    <url>http://wso2.org</url>
+    <name>Autoscaler Feature</name>
+    <url>http://apache.org</url>
     <description>This feature contains the required bundles for autoscaling functionality</description>
 
     <dependencies>
-	      <!--dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.load.balance.agent.stub</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency-->
-	      <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.load.balance.cartridge.autoscaler.service.stub</artifactId>
+	<dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.load.balance.cartridge.autoscaler.service.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
-	      <dependency>
-	          <groupId>org.wso2.carbon</groupId>
-	          <artifactId>org.wso2.carbon.mediator.autoscale</artifactId>
-	          <version>${project.version}</version>	
-	      </dependency>
+	<dependency>
+	    <groupId>org.apache.stratos</groupId>
+	    <artifactId>org.apache.stratos.mediator.autoscale</artifactId>
+	    <version>${project.version}</version>	
+	</dependency>
     </dependencies>
 
     <build>
@@ -66,7 +65,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.mediator.autoscale</id>
+                            <id>org.apache.stratos.mediator.autoscale</id>
                             <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -75,16 +74,14 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <!--bundleDef>org.wso2.carbon:org.wso2.carbon.load.balance.agent.stub</bundleDef>
-                                -->
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.load.balance.cartridge.autoscaler.service.stub:${project.version}</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.mediator.autoscale:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.load.balance.cartridge.autoscaler.service.stub:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.mediator.autoscale:${project.version}</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-api:1.6.4</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12:1.6.4</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.apache.synapse.wso2:${synapse.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.lb.common:${project.version}</importFeatureDef>
+                                <importFeatureDef>org.apache.synapse.wso2:${synapse.wso2.version}</importFeatureDef>
+                                <importFeatureDef>org.apache.stratos.lb.common:${project.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
