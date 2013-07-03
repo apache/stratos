@@ -144,6 +144,14 @@
             <artifactId>org.wso2.carbon.base</artifactId>
             <version>${carbon.platform.version}</version>
         </dependency>
+	
+	<!-- Axis2 -->
+        <dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2</artifactId>
+            <version>${axis2.wso2.version}</version>
+        </dependency>
+
 
         <!-- Registry dependencies  -->
         <dependency>
@@ -174,14 +182,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wso2carbon.version>4.1.0</wso2carbon.version>
     	<junit.version>3.8.2</junit.version>
-	    <synapse.core.version>2.1.1-wso2v4</synapse.core.version>
+	<synapse.core.version>2.1.1-wso2v4</synapse.core.version>
     	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
-	    <jclouds.version>1.5.0-beta.5</jclouds.version>
+	<jclouds.version>1.5.0-beta.5</jclouds.version>
     	<carbon.platform.version>4.1.0</carbon.platform.version>
-	    <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
+	<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
         <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
     	<axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>
         <version.tomcat>7.0.34</version.tomcat>	
+	<axis2.wso2.version>1.6.1.wso2v9</axis2.wso2.version>
+
         <!--eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
         <eclipse.osgi.services.version>3.2.0.v20090520-1800</eclipse.osgi.services.version>
         <equinox.commons.logging.version>1.0.4.v200706111724</equinox.commons.logging.version>
