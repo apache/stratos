@@ -20,31 +20,33 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>adc-mgt-feature</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.3</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.adc.topology.mgt.feature</artifactId>
-    <version>2.1.3</version>    
+    <artifactId>org.apache.stratos.adc.mgt.feature</artifactId>    
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - ADC Topology Management Feature</name>
-    <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Topology Management in ADC</description>
+    <version>2.1.3</version>
+    <name>Apache Stratos - ADC Management Composite Feature</name>
+    <url>http://apache.org</url>
+    <description>This feature contains the core bundles required for Artifact Deployment Controller</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.adc.topology.mgt</artifactId>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.adc.mgt.server.feature</artifactId>
             <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.lb.common</artifactId>
-            <version>4.1.3</version>
-        </dependency>
+            <type>zip</type>
+            </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.adc.topology.mgt.feature</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            </dependency>
     </dependencies>
 
     <build>
@@ -61,18 +63,12 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.adc.topology.mgt</id>
-                            <propertiesFile>../../etc/feature.properties</propertiesFile>
-                            <adviceFile>
-                                <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
-                                </properties>
-                            </adviceFile>
-                            <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.adc.topology.mgt:${project.version}</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.lb.common:4.1.3</bundleDef>
-                            </bundles>
+                            <id>org.apache.stratos.adc.mgt</id>
+                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <includedFeatures>
+                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.adc.mgt.server.feature:${project.version}</includedFeatureDef>
+				<includedFeatureDef>org.apache.stratos:org.apache.stratos.adc.topology.mgt.feature:${project.version}</includedFeatureDef>
+                            </includedFeatures>
                         </configuration>
                     </execution>
                 </executions>
