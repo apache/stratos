@@ -1,0 +1,8 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.stratos.cloud.controller_${feature.version}/conf/cloud-controller.xml,target:${installFolder}/../conf/cloud-controller.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.stratos.cloud.controller_${feature.version}/conf/etc/cartridge.xsd,target:${installFolder}/../conf/etc/cartridge.xsd,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.stratos.cloud.controller_${feature.version}/conf/etc/cartridges.xsd,target:${installFolder}/../conf/etc/cartridges.xsd,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.stratos.cloud.controller_${feature.version}/conf/etc/service.xsd,target:${installFolder}/../conf/etc/service.xsd,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.stratos.cloud.controller_${feature.version}/conf/etc/services.xsd,target:${installFolder}/../conf/etc/services.xsd,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../deployment/server/cartridges);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../deployment/server/services);\
