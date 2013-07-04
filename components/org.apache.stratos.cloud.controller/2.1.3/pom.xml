@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ ~ Copyright (c) 2009-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+    <parent>
+       <groupId>org.wso2.carbon</groupId>
+       <artifactId>stratos-components</artifactId>
+       <version>2.1.0</version>
+       <relativePath>../../pom.xml</relativePath>
+    </parent>
+-->
+    <parent>
+       <groupId>org.apache.stratos</groupId>
+       <artifactId>stratos-components-parent</artifactId>
+       <version>2.0.0</version>
+       <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.stratos</groupId>
+    <artifactId>org.apache.stratos.cloud.controller</artifactId>
+    <packaging>bundle</packaging>
+    <version>2.1.3</version>
+    <name>Apache - Stratos Cloud Controller</name>
+    <url>http://apache.org</url>
+
+    <build>
+        <plugins>
+            <!--plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.7.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.jclouds:*</include>
+                                    <include>org.jclouds.*:*</include>
+                                </includes>
+                            </artifactSet>
+                            <filtering>true</filtering>
+                            <filters>
+                                <filter>
+                                    <artifact>org.jclouds*:*</artifact>
+                                    <includes>
+                                        <include>META-INF/services/org.jclouds.apis.ApiMetadata</include>
+                                        <include>META-INF/services/org.jclouds.providers.ProviderMetadata</include>
+                                    </includes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin-->
+            <!--plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-aar-maven-plugin</artifactId>
+                <version>1.4</version>
+                <extensions>true</extensions>
+            </plugin-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            og.apache.stratos.cloud.controller.interfaces.*,
+                            og.apache.stratos.cloud.controller.publisher.*,
+                            og.apache.stratos.cloud.controller.topic.*,
+                            og.apache.stratos.cloud.controller.iaases.*,
+                            og.apache.stratos.cloud.controller.util.*,
+				org.apache.stratos.cloud.controller.deployers.*,
+				org.apache.stratos.cloud.controller.exception.*,
+				org.apache.stratos.cloud.controller.*
+                        </Export-Package>
+                        <Private-Package>
+                            og.apache.stratos.cloud.controller.*,
+                            !og.apache.stratos.cloud.controller.interfaces,
+                            !og.apache.stratos.cloud.controller.publisher,
+                            !og.apache.stratos.cloud.controller.topic,
+                            !og.apache.stratos.cloud.controller.iaases 
+                        </Private-Package>
+                        <Import-Package>
+                        	  !org.apache.commons.logging,
+                            org.apache.commons.logging; version=0.0.0,
+                            org.wso2.carbon.utils.*,
+                            <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
+                            org.jclouds*;version="${jclouds.version}",-->
+                            *; resolution:=optional
+                        </Import-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        
+                        <Axis2Deployer>CloudControllerDeployer</Axis2Deployer>
+                        
+                        <Axis2Deployer>CartridgeDeployer</Axis2Deployer>
+                        
+                        <Axis2Deployer>ServiceDeployer</Axis2Deployer>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+	    <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
+	    <version>4.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.lb.common</artifactId>
+            <version>4.1.3</version>
+        </dependency>
+
+
+<dependency>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>org.wso2.carbon.securevault</artifactId>
+    <version>${wso2carbon.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.hectorclient.wso2</groupId>
+    <artifactId>hector-core</artifactId>
+    <version>1.1.0.wso2v1</version>
+    <exclusions>
+        <exclusion>
+            <groupId>com.google.guava.wso2</groupId>
+            <artifactId>guava</artifactId>
+        </exclusion>
+    </exclusions>
+
+</dependency>
+<dependency>
+    <groupId>com.google.guava.wso2</groupId>
+    <artifactId>guava</artifactId>
+    <version>${google.guava.wso2.version}</version>
+</dependency>
+<dependency>
+        <groupId>org.wso2.andes.wso2</groupId>
+        <artifactId>andes-client</artifactId>
+        <version>0.13.wso2v3</version>
+    </dependency>
+<dependency>
+        <groupId>org.apache.geronimo.specs.wso2</groupId>
+        <artifactId>geronimo-jms_1.1_spec</artifactId>
+        <version>${orbit.version.geronimo-jms_1.1_spec}</version>
+    </dependency>
+
+<dependency>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>org.wso2.carbon.analytics.hive.stub</artifactId>
+       <version>4.1.0</version>
+</dependency>
+
+<!--  Jclouds dependencies -->
+       <dependency>
+           <groupId>org.jclouds</groupId>
+           <artifactId>jclouds-core</artifactId>
+           <version>${jclouds.version}</version>
+          </dependency>
+        <dependency>
+           <groupId>org.jclouds</groupId>
+           <artifactId>jclouds-compute</artifactId>
+           <version>${jclouds.version}</version>
+         </dependency>
+<!--
+	 <dependency>
+            <groupId>org.jclouds.api</groupId>
+            <artifactId>vcloud</artifactId>
+            <version>1.6.0-wso2v1</version>
+        </dependency>
+-->
+         <dependency>
+           <groupId>org.jclouds.driver</groupId>
+           <artifactId>jclouds-bouncycastle</artifactId>
+           <version>${jclouds.version}</version>
+           <exclusions>
+              <exclusion>
+                 <groupId>org.bouncycastle</groupId>
+                 <artifactId>bcprov-jdk16</artifactId>
+              </exclusion>
+           </exclusions>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.driver</groupId>
+           <artifactId>jclouds-sshj</artifactId>
+           <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.driver</groupId>
+           <artifactId>jclouds-log4j</artifactId>
+           <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.driver</groupId>
+           <artifactId>jclouds-enterprise</artifactId>
+           <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.api</groupId>
+           <artifactId>ec2</artifactId>
+           <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.provider</groupId>
+           <artifactId>aws-ec2</artifactId>
+           <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.api</groupId>
+           <artifactId>openstack-nova</artifactId>
+           <version>${jclouds.wso2.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.jclouds.api</groupId>
+           <artifactId>openstack-keystone</artifactId>
+           <version>${jclouds.wso2.version}</version>
+         </dependency>
+         <dependency>
+          <groupId>org.jclouds</groupId>
+            <artifactId>jclouds-scriptbuilder</artifactId>
+              <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+          <groupId>org.jclouds.common</groupId>
+            <artifactId>aws-common</artifactId>
+              <version>${jclouds.version}</version>
+         </dependency>
+         <dependency>
+             <groupId>com.jamesmurty.utils.wso2</groupId>
+             <artifactId>java-xmlbuilder</artifactId>
+             <version>0.4.wso2v1</version>
+         </dependency>
+        <dependency>
+            <groupId>org.jclouds.api</groupId>
+            <artifactId>vcloud</artifactId>
+            <version>1.6.0-wso2v1</version>
+        </dependency>
+         <dependency>
+           <groupId>com.google.code.gson</groupId>
+           <artifactId>gson</artifactId>
+           <version>${gson2.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>com.google.guice.wso2</groupId>
+           <artifactId>guice</artifactId>
+           <version>${google.guice.wso2.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>com.google.guice.assistedinject.wso2</groupId>
+           <artifactId>guice-assistedinject</artifactId>
+           <version>${com.google.guice.assistedinject.wso2.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>com.sun.jersey</groupId>
+           <artifactId>jersey-core</artifactId>
+           <version>${sun.jersey.version}</version>
+         </dependency>
+         <dependency>
+          <groupId>net.oauth.core</groupId>
+          <artifactId>oauth</artifactId>
+          <version>20100527</version>
+         </dependency>
+         <dependency>
+           <groupId>commons-io.wso2</groupId>
+           <artifactId>commons-io</artifactId>
+           <version>2.0.0.wso2v1</version>
+         </dependency>
+         <dependency>
+           <groupId>rhino.wso2</groupId>
+           <artifactId>js</artifactId>
+           <version>1.7.0.R1-wso2v3</version>
+         </dependency>
+         <dependency>
+           <groupId>org.wso2.carbon</groupId>
+           <artifactId>org.wso2.carbon.cartridge.messages</artifactId>
+           <version>2.1.1</version>
+         </dependency>
+         <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <gson2.version>2.2</gson2.version>
+        <jclouds.version>1.5.0-beta.5</jclouds.version>
+        <jclouds.wso2.version>1.5.0-beta.5.wso2v1</jclouds.wso2.version>
+        <com.google.guice.assistedinject.wso2.version>3.0.wso2v1</com.google.guice.assistedinject.wso2.version>
+        <sun.jersey.version>1.12</sun.jersey.version>
+    </properties>
+</project>
+
