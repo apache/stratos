@@ -63,6 +63,11 @@
             <artifactId>org.apache.stratos.lb.common</artifactId>
             <version>4.1.3</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2</artifactId>
+            <version>${axis2.wso2.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-kernel</artifactId>
@@ -96,18 +101,11 @@
                             org.apache.stratos.lb.endpoint,
                             org.apache.stratos.lb.endpoint.util,
                         </Export-Package>
-                        <!--Import-Package>
-                            !org.wso2.carbon.lb.endpoint.endpoint,
-                            !org.wso2.carbon.lb.endpoint,
-                            org.wso2.carbon.lb.common.*; version=${wso2carbon.version},
-                            org.wso2.carbon.registry.core.service; version=1.0.1,
-                            *;resolution:=optional
-                        </Import-Package-->
                         <Import-Package>
                             !org.apache.stratos.lb.endpoint.endpoint,
                             !org.apache.stratos.lb.endpoint,
-                            org.apache.stratos.lb.common.*;
-                            org.wso2.carbon.registry.core.service; version=1.0.1,
+                            org.apache.stratos.lb.common.*; version=${project.version},
+                            org.apache.stratos.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
