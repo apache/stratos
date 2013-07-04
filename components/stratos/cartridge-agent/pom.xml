@@ -56,7 +56,7 @@
             <dependency>
                 <groupId>org.apache.axis2.wso2</groupId>
                 <artifactId>axis2</artifactId>
-                <version>1.6.1.wso2v6</version>
+                <!--version>${axis2.wso2.version}</version-->
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>

@@ -38,6 +38,7 @@
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
+            <version>${axis2.wso2.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -61,7 +62,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.startos.cartridge.messages.*
+                            org.apache.stratos.cartridge.messages.*
                         </Export-Package>
                         <Import-Package>
                             !org.apache.commons.logging,
