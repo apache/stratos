@@ -50,7 +50,7 @@
     </organization>
 
     <modules>
-        <module>loadbalancer</module>
+        <module>load-balancer</module>
 	<module>autoscaler</module>        
         <module>tenantaware-load-balancer</module>
     </modules>
@@ -64,7 +64,6 @@
             </plugin>
         </plugins>
     </build>
-
 
     <scm>
         <connection>
@@ -80,7 +79,6 @@
 	<carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1>
 	<carbon.p2.plugin.version>1.5.2</carbon.p2.plugin.version>
 	<synapse.wso2.version>2.1.1-wso2v4</synapse.wso2.version>        
-
     </properties>
 
 </project>
