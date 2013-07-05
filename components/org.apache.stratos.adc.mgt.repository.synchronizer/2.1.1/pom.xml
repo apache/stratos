@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.adc.mgt.repository.synchronizer</artifactId>
     <version>2.1.1</version>
-    <name>Repository Synchronizer</name>
+    <name>Apache Stratos - Repository Synchronizer</name>
     <description>Repository Synchronizer</description>
     <packaging>war</packaging>
 
