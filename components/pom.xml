@@ -43,8 +43,9 @@
 	</organization>
 
             <modules>
-		<!--module>load-balancer</module-->
-                <!--module>stratos</module-->
+		<module>org.apache.stratos.cloud.controller/2.1.3</module>
+		<module>org.apache.stratos.cartridge.agent/2.1.3</module>
+		<module>org.apache.stratos.cartridge.messages/2.1.1</module>
             </modules>
 	    <build>
 	        <plugins>
