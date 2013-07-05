@@ -20,12 +20,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!--parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>platform-parent</artifactId>
-        <version>4.1.0</version>
-        <relativePath>../parent/pom.xml</relativePath>
-    </parent-->
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-parent</artifactId>
+        <version>2.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
@@ -56,6 +56,11 @@
                 <groupId>org.apache.axis2.wso2</groupId>
                 <artifactId>axis2</artifactId>
                 <version>${axis2.wso2.version}</version>
+            </dependency>
+	    <dependency>
+            	<groupId>org.apache.axis2.wso2</groupId>
+            	<artifactId>axis2-client</artifactId>
+		<version>${axis2.wso2.client.version}</version>
             </dependency>
 	    <dependency>
                 <groupId>wsdl4j.wso2</groupId>
@@ -93,6 +98,7 @@
 
     <properties>
 	<axis2.wso2.version>1.6.1.wso2v9</axis2.wso2.version>
+	<axis2.wso2.client.version>${axis2.wso2.version}</axis2.wso2.client.version>
 	<wsdl4j.wso2.version>1.6.2.wso2v4</wsdl4j.wso2.version>
 	<version.commons.logging>1.1.1</version.commons.logging>
         <xmlschema.wso2.version>1.4.7.wso2v2</xmlschema.wso2.version>

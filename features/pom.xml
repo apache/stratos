@@ -51,7 +51,7 @@
 
     <modules>
         <module>load-balancer</module>
-	<module>autoscaler</module>        
+	<module>autoscaler</module>
         <module>tenantaware-load-balancer</module>
     </modules>
 
@@ -79,6 +79,14 @@
 	<carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1>
 	<carbon.p2.plugin.version>1.5.2</carbon.p2.plugin.version>
 	<synapse.wso2.version>2.1.1-wso2v4</synapse.wso2.version>        
+	<jclouds.version>1.5.0-beta.5</jclouds.version>
+	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
+	<google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
+	<com.google.guice.assistedinject.wso2.version>3.0.wso2v1</com.google.guice.assistedinject.wso2.version>
+	<com.google.guice.assistedinject.wso2.version>3.0.wso2v1</com.google.guice.assistedinject.wso2.version>
+	<sun.jersey.version>1.12</sun.jersey.version>
+	<gson2.version>2.2</gson2.version>
+	<google.collect.osgi.version>1.0.0.wso2v2</google.collect.osgi.version>
     </properties>
 
 </project>
