@@ -50,9 +50,15 @@
     </organization>
 
     <modules>
+	<!-- LB -->
         <module>load-balancer</module>
+	<!--module>tenantaware-load-balancer</module-->
+	
+	<!-- Auto Scaler -->
 	<module>autoscaler</module>
-        <module>tenantaware-load-balancer</module>
+
+	<!-- ADC -->
+	<module>adc</module>
     </modules>
 
     <build>

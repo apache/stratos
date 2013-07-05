@@ -37,6 +37,7 @@
 
     <modules>
         <module>org.apache.stratos.lb.common.feature/4.1.3</module>
+	<module>org.apache.stratos.lb.endpoint.server.feature/4.1.3</module>
     </modules>
 </project>
 

@@ -126,7 +126,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt:${project.version}</bundleDef>
-				<bundleDef>org.apache.stratosn:org.apache.stratos.adc.mgt.stub:4.1.3</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:4.1.3</bundleDef>
 				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.load.balance.cartridge.autoscaler.service.stub:4.1.3</bundleDef>
 				<bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
