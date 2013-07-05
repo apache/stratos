@@ -18,7 +18,7 @@ package org.apache.stratos.adc.mgt.internal;
 
 import org.apache.axis2.context.ConfigurationContext;
 import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
 

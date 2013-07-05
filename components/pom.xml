@@ -194,6 +194,7 @@
 	<axis2.kernel.version>1.6.1-wso2v9</axis2.kernel.version>
 	<orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
         <google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
+	<commons-httpclient.version>3.0.1</commons-httpclient.version>
         <!--eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
         <eclipse.osgi.services.version>3.2.0.v20090520-1800</eclipse.osgi.services.version>
         <equinox.commons.logging.version>1.0.4.v200706111724</equinox.commons.logging.version>

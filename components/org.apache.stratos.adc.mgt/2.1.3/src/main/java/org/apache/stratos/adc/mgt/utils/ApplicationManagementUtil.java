@@ -457,8 +457,8 @@ public class ApplicationManagementUtil {
     private static String createPortMappingPayloadString(CartridgeInfo cartridgeInfo) {
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
-        org.wso2.carbon.stratos.cloud.controller.util.xsd.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
-        for (org.wso2.carbon.stratos.cloud.controller.util.xsd.PortMapping portMapping : portMappings) {
+        org.apache.stratos.cloud.controller.util.xsd.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
+        for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : portMappings) {
             String port = portMapping.getPort();
             String protocol = portMapping.getProtocol();
             String proxyPort = portMapping.getProxyPort();
@@ -587,7 +587,7 @@ public class ApplicationManagementUtil {
         List<PortMapping> portMappings = new ArrayList<PortMapping>();
 
         if (cartridgeInfo.getPortMappings() != null) {
-            for (org.wso2.carbon.stratos.cloud.controller.util.xsd.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
+            for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
                 PortMapping portMap = new PortMapping();
                 portMap.setPrimaryPort(portMapping.getPort());
                 portMap.setProxyPort(portMapping.getProxyPort());
@@ -1013,7 +1013,7 @@ public class ApplicationManagementUtil {
         List<String> accessURLs = new ArrayList<String>();
 
         if (cartridgeInfo.getPortMappings() != null) {
-            for (org.wso2.carbon.stratos.cloud.controller.util.xsd.PortMapping portMapping : cartridgeInfo
+            for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : cartridgeInfo
                     .getPortMappings()) {
                 if (portMapping != null) {
 					try {

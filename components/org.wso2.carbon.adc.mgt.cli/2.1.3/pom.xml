@@ -12,19 +12,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<parent>
-		<groupId>org.wso2.carbon</groupId>
-		<artifactId>adc-mgt</artifactId>
-		<version>2.1.0</version>
+		<groupId>org.apache.stratos</groupId>
+		<artifactId>stratos-components-parent</artifactId>
+		<version>2.0.0</version>
                 <relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.wso2.carbon.adc.mgt.cli</artifactId>
+	<artifactId>org.apache.stratos.adc.mgt.cli</artifactId>
         <version>2.1.3</version>
 	<packaging>jar</packaging>
-	<name>WSO2 Carbon - ADC Management CLI</name>
+	<name>Apache Stratos - ADC Management CLI</name>
 	<description>ADC management CLI bundle</description>
-	<url>http://wso2.org</url>
+	<url>http://apache.org</url>
 	
 	<properties>
 		<slf4j.version>1.7.5</slf4j.version>
@@ -39,6 +39,7 @@
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
+			<version>${commons-httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.securevault</groupId>
@@ -51,8 +52,8 @@
 			<version>4.1.0-wso2v1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.adc.mgt.stub</artifactId>
+			<groupId>org.apache.stratos</groupId>
+			<artifactId>org.apache.stratos.adc.mgt.stub</artifactId>
 			<version>4.1.3</version>
 		</dependency>
 		<dependency>
@@ -101,7 +102,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.wso2.carbon.adc.mgt.cli.CliTool</mainClass>
+							<mainClass>org.apache.stratos.adc.mgt.cli.CliTool</mainClass>
 						</manifest>
 					</archive>
 					<descriptors>
