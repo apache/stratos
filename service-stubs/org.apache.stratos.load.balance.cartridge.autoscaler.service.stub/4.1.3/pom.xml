@@ -49,7 +49,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.stratos.cloud.controller.stub"/>
+                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
