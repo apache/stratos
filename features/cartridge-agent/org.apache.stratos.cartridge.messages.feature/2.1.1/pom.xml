@@ -20,14 +20,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
    <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>cartridge-agent</artifactId>
-        <version>2.1.0</version>
+        <version>2.0.0</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.cartridge.messages.feature</artifactId>
+    <artifactId>org.apache.stratos.cartridge.messages.feature</artifactId>
     <packaging>pom</packaging>
     <version>2.1.1</version>    
     <name>WSO2 Carbon - Cartridge Messages Feature</name>
@@ -36,8 +36,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.cartridge.messages</artifactId>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cartridge.messages</artifactId>
 	    <version>${project.version}</version>
         </dependency>
 	<dependency>
@@ -61,16 +61,16 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.cartridge.messages</id>
+                            <id>org.apache.stratos.cartridge.messages</id>
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                              <adviceFile>
                                 <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+                                    <propertyDef>org.apache.stratos.p2.category.type:server</propertyDef>
                                     <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.cartridge.messages</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages</bundleDef>
 				<bundleDef>org.apache.axis2.wso2:axis2</bundleDef>
                             </bundles>
                         </configuration>
