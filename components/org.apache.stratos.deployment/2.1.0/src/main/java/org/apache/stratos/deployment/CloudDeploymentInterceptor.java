@@ -1,19 +1,22 @@
-/*                                                                             
- * Copyright 2004,2005 The Apache Software Foundation.                         
- *                                                                             
- * Licensed under the Apache License, Version 2.0 (the "License");             
- * you may not use this file except in compliance with the License.            
- * You may obtain a copy of the License at                                     
- *                                                                             
- *      http://www.apache.org/licenses/LICENSE-2.0                             
- *                                                                             
- * Unless required by applicable law or agreed to in writing, software         
- * distributed under the License is distributed on an "AS IS" BASIS,           
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    
- * See the License for the specific language governing permissions and         
- * limitations under the License.                                              
- */
-package org.wso2.carbon.stratos.deployment;
+/*
+*  Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
+package org.apache.stratos.deployment;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
@@ -37,21 +40,21 @@ import java.util.ArrayList;
  */
 public class CloudDeploymentInterceptor implements AxisObserver {
     private static final Log log = LogFactory.getLog(CloudDeploymentInterceptor.class);
-    
+
     public void init(AxisConfiguration axisConfiguration) {
     }
 
     public void serviceUpdate(AxisEvent axisEvent, AxisService axisService) {
         try {
             if (axisEvent.getEventType() == AxisEvent.SERVICE_DEPLOY &&
-                axisService.getName().equals("ServiceAdmin")){
+                    axisService.getName().equals("ServiceAdmin")){
                 AxisOperation operation = axisService.getOperation(new QName("listServiceGroups"));
                 ArrayList<Parameter> params = operation.getParameters();
                 for(Parameter param: params) {
                     operation.removeParameter(param);
                 }
                 Parameter authAction = new Parameter("AuthorizationAction",
-                                                     "/permission/admin/manage/monitor/service");
+                        "/permission/admin/manage/monitor/service");
                 operation.addParameter(authAction);
             }
         } catch (AxisFault e) {
