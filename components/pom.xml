@@ -67,6 +67,7 @@
            	<module>autoscaler-service/org.apache.stratos.autoscaler.service/4.1.0</module>
 		<!-- COMMON -->
 		<module>org.apache.stratos.common/2.1.2</module>
+		<module>org.apache.stratos.tenant.dispatcher/2.1.0</module>
 	    </modules>
 	    
 	    <build>
@@ -180,6 +181,11 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.mgt</artifactId>
+            <version>${carbon.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
             <version>${carbon.platform.version}</version>
         </dependency>
 	
