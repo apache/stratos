@@ -21,7 +21,7 @@
             <transport>https</transport>
         </transports>
         <parameter name="ServiceClass" locked="false">
-            org.wso2.carbon.load.balance.agent.LoadBalanceAgentService
+            org.apache.stratos.load.balance.agent.LoadBalanceAgentService
         </parameter>
         <operation name="getLoadAverage"/>
     </service>
