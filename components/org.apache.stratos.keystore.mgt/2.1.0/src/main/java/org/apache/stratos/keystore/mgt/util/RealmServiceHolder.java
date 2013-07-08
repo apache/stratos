@@ -15,7 +15,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.keystore.mgt.util;
+package org.apache.stratos.keystore.mgt.util;
 
 import org.wso2.carbon.user.core.service.RealmService;
 

@@ -15,19 +15,19 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.keystore.mgt.internal;
+package org.apache.stratos.keystore.mgt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.keystore.mgt.KeystoreTenantMgtListener;
-import org.wso2.carbon.keystore.mgt.util.RealmServiceHolder;
-import org.wso2.carbon.keystore.mgt.util.RegistryServiceHolder;
+import org.apache.stratos.keystore.mgt.KeystoreTenantMgtListener;
+import org.apache.stratos.keystore.mgt.util.RealmServiceHolder;
+import org.apache.stratos.keystore.mgt.util.RegistryServiceHolder;
 
 /**
- * @scr.component name="org.wso2.carbon.keystore.mgt"
+ * @scr.component name="org.apache.stratos.keystore.mgt"
  * immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
@@ -44,7 +44,7 @@ public class KeyStoreMgtServiceComponent {
     protected void activate(ComponentContext ctxt){
         KeystoreTenantMgtListener keystoreTenantMgtListener = new KeystoreTenantMgtListener();
         ctxt.getBundleContext().registerService(
-                org.wso2.carbon.stratos.common.listeners.TenantMgtListener.class.getName(),
+                org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                 keystoreTenantMgtListener, null);
         if (log.isDebugEnabled()) {
             log.debug("*************Stratos Keystore mgt component is activated.**************");
