@@ -24,7 +24,7 @@
 	<parent>
             <groupId>org.apache.stratos</groupId>
             <artifactId>stratos-parent</artifactId>
-            <version>2.0.0</version>
+            <version>3.0.0</version>
             <relativePath>../pom.xml</relativePath>
         </parent>
 
@@ -32,7 +32,7 @@
 	<groupId>org.apache.stratos</groupId>
 	<artifactId>stratos-components-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>2.0.0</version>
+	<version>3.0.0</version>
 	<name>Apache Stratos Components - Parent Module</name>
 	<url>http://apache.org</url>
 
@@ -42,11 +42,6 @@
 	        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
 	    </license>
 	</licenses>
-
-	<organization>
-		<name>WSO2 Inc</name>
-		<url>http://wso2.org</url>
-	</organization>
 
             <modules>
 		<!-- CC -->

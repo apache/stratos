@@ -26,10 +26,17 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.0</version>
+    <version>3.0.0</version>
     <name>Apache Stratos - Parent Pom</name>
     <description>Apache Stratos Parent pom hold the properties, plugins which are required to build stratos components, stratos features and products</description>
     <url>http://apache.org</url>
+
+    <modules>
+	<module>components</module>
+	<module>service-stubs</module>
+	<module>features</module>
+	<module>products</module>
+    </modules>
 
     <repositories>
          <repository>
