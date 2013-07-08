@@ -1,0 +1,15 @@
+div.not-validated {
+    color: #f00;
+    padding: 15px 0px 10px 0px;
+}
+
+div.validated {
+    font-color: #058000;
+    padding: 15px 0px 10px 0px;
+}
+
+
+div.table-spacer {
+    margin: 5px;
+    clear:both;
+}
