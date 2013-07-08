@@ -155,6 +155,7 @@
     </build>
 
     <properties>
-        
+	<wso2carbon.version>4.1.0</wso2carbon.version>
+     	<carbon.platform.package.export.version>4.1.0</carbon.platform.package.export.version>   
     </properties>
 </project>
