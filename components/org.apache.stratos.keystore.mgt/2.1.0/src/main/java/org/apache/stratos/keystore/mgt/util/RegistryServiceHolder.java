@@ -15,25 +15,19 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.keystore.mgt;
+package org.apache.stratos.keystore.mgt.util;
 
-/**
- * This class is used to wrap the exceptions thrown from stratos keystore mgt component.
- */
-public class KeyStoreMgtException extends Exception {
-    public KeyStoreMgtException() {
+import org.wso2.carbon.registry.core.service.RegistryService;
+
+public class RegistryServiceHolder {
+
+    private static RegistryService registryService;
+
+    public static RegistryService getRegistryService() {
+        return registryService;
     }
 
-    public KeyStoreMgtException(String message) {
-        super(message);
+    public static void setRegistryService(RegistryService registryService) {
+        RegistryServiceHolder.registryService = registryService;
     }
-
-    public KeyStoreMgtException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public KeyStoreMgtException(Throwable cause) {
-        super(cause);
-    }
-
 }

@@ -15,7 +15,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.keystore.mgt;
+package org.apache.stratos.keystore.mgt;
 
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.commons.logging.Log;
@@ -24,8 +24,8 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.X509V3CertificateGenerator;
 import org.wso2.carbon.core.RegistryResources;
 import org.wso2.carbon.core.util.CryptoUtil;
-import org.wso2.carbon.keystore.mgt.util.RealmServiceHolder;
-import org.wso2.carbon.keystore.mgt.util.RegistryServiceHolder;
+import org.apache.stratos.keystore.mgt.util.RealmServiceHolder;
+import org.apache.stratos.keystore.mgt.util.RegistryServiceHolder;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;

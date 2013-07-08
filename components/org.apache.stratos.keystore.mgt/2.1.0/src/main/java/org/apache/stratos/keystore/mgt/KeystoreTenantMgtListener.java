@@ -15,11 +15,11 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.keystore.mgt;
+package org.apache.stratos.keystore.mgt;
 
-import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
-import org.wso2.carbon.stratos.common.exception.StratosException;
-import org.wso2.carbon.stratos.common.listeners.TenantMgtListener;
+import org.apache.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.listeners.TenantMgtListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

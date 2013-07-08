@@ -68,6 +68,7 @@
 		<!-- COMMON -->
 		<module>org.apache.stratos.common/2.1.2</module>
 		<module>org.apache.stratos.tenant.dispatcher/2.1.0</module>
+		<module>org.apache.stratos.keystore.mgt/2.1.0</module>
 	    </modules>
 	    
 	    <build>
