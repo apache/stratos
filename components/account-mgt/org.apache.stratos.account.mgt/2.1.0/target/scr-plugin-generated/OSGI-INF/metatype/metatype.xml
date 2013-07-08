@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
+    <OCD id="org.apache.stratos.account.mgt" name="%org.apache.stratos.account.mgt.name" description="%org.apache.stratos.account.mgt.description"/>
+    <Designate pid="org.apache.stratos.account.mgt">
+        <Object ocdref="org.apache.stratos.account.mgt"/>
+    </Designate>
+</metatype:MetaData>

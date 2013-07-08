@@ -37,6 +37,9 @@
 
     <modules>                            
         <module>org.apache.stratos.load.balance.cartridge.autoscaler.service.stub/4.1.3</module>
+	<module>org.apache.stratos.adc.mgt.stub/4.1.3</module>
+	<module>org.apache.stratos.account.mgt.stub/4.1.3</module>
+	<module>org.apache.stratos.tenant.mgt.stub/4.1.0</module>
     </modules>
 
     <build>
