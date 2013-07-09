@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0">
+    <scr:component enabled="true" immediate="true" name="org.wso2.carbon.stratos.cloud.controller">
+        <implementation class="org.apache.stratos.cloud.controller.internal.CloudControllerDSComponent"/>
+        <property name="service.pid" value="org.wso2.carbon.stratos.cloud.controller"/>
+        <reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService" cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"/>
+        <reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"/>
+    </scr:component>
+</components>
