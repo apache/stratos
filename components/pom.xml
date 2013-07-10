@@ -64,6 +64,8 @@
 		<module>org.apache.stratos.common/2.1.2</module>
 		<module>org.apache.stratos.tenant.dispatcher/2.1.0</module>
 		<module>org.apache.stratos.keystore.mgt/2.1.0</module>
+		<module>org.apache.stratos.email.sender</module>
+                <module>tenant-activity</module>
 	    </modules>
 	    
 	    <build>
@@ -249,6 +251,8 @@
         <google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
 	<commons-httpclient.version>3.0.1</commons-httpclient.version>
 	<json.wso2.version>2.0.0.wso2v1</json.wso2.version>
+	<orbit.version.axis2>1.6.1.wso2v5</orbit.version.axis2>
+	<orbit.version.axiom>1.2.11.wso2v3</orbit.version.axiom>
         <!--eclipse.osgi.version>3.5.0.v20090520</eclipse.osgi.version>
         <eclipse.osgi.services.version>3.2.0.v20090520-1800</eclipse.osgi.services.version>
         <equinox.commons.logging.version>1.0.4.v200706111724</equinox.commons.logging.version>
