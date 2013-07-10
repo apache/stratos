@@ -24,7 +24,7 @@
 	<parent>
             <groupId>org.apache.stratos</groupId>
             <artifactId>stratos-parent</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.0-SNAPSHOT</version>
             <relativePath>../pom.xml</relativePath>
         </parent>
 
@@ -32,7 +32,6 @@
 	<groupId>org.apache.stratos</groupId>
 	<artifactId>stratos-components-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.0</version>
 	<name>Apache Stratos Components - Parent Module</name>
 	<url>http://apache.org</url>
 
@@ -45,9 +44,9 @@
 
             <modules>
 		<!-- CC -->
-		<module>org.apache.stratos.cloud.controller/2.1.3</module>
-		<module>org.apache.stratos.cartridge.agent/2.1.3</module>
+		<module>org.apache.stratos.cloud.controller</module>
 		<module>org.apache.stratos.cartridge.messages/2.1.1</module>
+		<module>org.apache.stratos.cartridge.agent/2.1.3</module>
 		<!-- ADC -->
 		<module>org.apache.stratos.adc.topology.mgt/2.1.3</module>
 		<module>org.apache.stratos.adc.mgt/2.1.3</module>
@@ -64,7 +63,7 @@
 		<module>org.apache.stratos.common/2.1.2</module>
 		<module>org.apache.stratos.tenant.dispatcher/2.1.0</module>
 		<module>org.apache.stratos.keystore.mgt/2.1.0</module>
-		<module>org.apache.stratos.email.sender</module>
+		<module>org.apache.stratos.tenant.mgt.email.sender/2.1.0</module>
                 <module>tenant-activity</module>
 	    </modules>
 	    

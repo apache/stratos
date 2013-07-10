@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0" localization="OSGI-INF/metatype/metatype">
-    <OCD id="org.wso2.carbon.stratos.cloud.controller" name="%org.wso2.carbon.stratos.cloud.controller.name" description="%org.wso2.carbon.stratos.cloud.controller.description"/>
-    <Designate pid="org.wso2.carbon.stratos.cloud.controller">
-        <Object ocdref="org.wso2.carbon.stratos.cloud.controller"/>
-    </Designate>
-</metatype:MetaData>
