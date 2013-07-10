@@ -29,7 +29,7 @@ public class AxiomValidationTest extends TestCase {
     AxiomXpathParser util1, util2, util3, util4, util5, util6, util7, util8, util9;
     File xmlSchemaCartridges = new File("src/main/resources/cartridges.xsd");
     File xmlSchemaCartridge = new File("src/main/resources/cartridge.xsd");
-    String dir = "src/test/resources/";
+    private String dir = "src/test/resources/";
 
     public AxiomValidationTest(String name) {
         super(name);
