@@ -15,7 +15,7 @@
        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
        KIND, either express or implied.  See the License for the
        specific language governing permissions and limitations
-       under the License.  
+       under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -27,34 +27,48 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.tenant.mgt.ui</artifactId>
+    <artifactId>org.apache.stratos.tenant.activity.ui</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - User Interface for Tenant CRUD operations</name>
+    <name>Apache Stratos - Tenant Activity - User Interface</name>
 
     <build>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                
+                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Private-Package>
+                            org.apache.stratos.tenant.activity.ui.internal.*,
+                        </Private-Package>
                         <Export-Package>
-                            org.apache.stratos.tenant.mgt.ui.*,
+                            org.apache.stratos.tenant.activity.ui.*,
                         </Export-Package>
                         <Import-Package>
-                            org.apache.stratos.tenant.mgt.stub.*; version="${carbon.platform.package.import.version.range}",
-                            org.apache.axis2.client.*,
+			    org.wso2.carbon.tenant.activity.stub.*; version="${carbon.platform.package.import.version.range}",
+                            org.apache.stratos.common.*,
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
+                            !javax.xml.namespace,
+                            javax.xml.namespace; version=0.0.0,                            
                             org.apache.lucene.*,
                             *;resolution:=optional
                         </Import-Package>
-			<DynamicImport-Package>*</DynamicImport-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
                     </instructions>
                 </configuration>
@@ -64,20 +78,28 @@
     </build>
 
     <dependencies>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+	    <dependency>
+            <groupId>commons-codec.wso2</groupId>
+            <artifactId>commons-codec</artifactId>
+	    <version>${version.commons.codec}</version>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
-            <version>${wso2carbon.version}</version>
+	    <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>
-            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-	    <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
@@ -97,27 +119,26 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>${wso2carbon.version}</version>
+	    <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.mgt.stub</artifactId>
-            <version>${wso2carbon.version}</version>
+            <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
 	    <version>${apache.stratos.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.json.wso2</groupId>
-            <artifactId>json</artifactId>
-   	    <version>${json.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+	    <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.tenant.activity.stub</artifactId>
+            <version>4.1.0</version>
         </dependency>
     </dependencies>
+    
+    <properties>
+	<version.commons.codec>1.4.0.wso2v1</version.commons.codec>
+    </properties>
+    
 </project>

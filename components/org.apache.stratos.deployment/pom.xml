@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements.  See the NOTICE file
@@ -15,25 +14,38 @@
        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
        KIND, either express or implied.  See the License for the
        specific language governing permissions and limitations
-       under the License.  
+       under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-components-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+       <groupId>org.apache.stratos</groupId>
+       <artifactId>stratos-components-parent</artifactId>
+       <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.tenant.mgt.ui</artifactId>
+    <artifactId>org.apache.stratos.deployment</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - User Interface for Tenant CRUD operations</name>
+    <name>Apache Stratos - Deployment</name>
 
     <build>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -43,31 +55,40 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Private-Package>
+                            org.apache.stratos.deployment.internal.*
+                        </Private-Package>
                         <Export-Package>
-                            org.apache.stratos.tenant.mgt.ui.*,
+                            !org.apache.stratos.deployment.internal.*,
+                            org.apache.stratos.deployment.*
                         </Export-Package>
                         <Import-Package>
-                            org.apache.stratos.tenant.mgt.stub.*; version="${carbon.platform.package.import.version.range}",
-                            org.apache.axis2.client.*,
+                            !javax.xml.namespace,
+                            org.apache.axis2.*; version="${axis2.osgi.version.range}",
+                            javax.xml.namespace; version=0.0.0,
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
-                            org.apache.lucene.*,
                             *;resolution:=optional
                         </Import-Package>
-			<DynamicImport-Package>*</DynamicImport-Package>
-                        <Carbon-Component>UIBundle</Carbon-Component>
                     </instructions>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
-            <version>${wso2carbon.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+            <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -77,47 +98,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-	    <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.equinox</groupId>
-            <artifactId>javax.servlet</artifactId>
-	    <version>3.0.0.v201112011016</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-            <artifactId>axiom</artifactId>
-	    <version>${axiom.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.mgt.stub</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common</artifactId>
-	    <version>${apache.stratos.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json.wso2</groupId>
-            <artifactId>json</artifactId>
-   	    <version>${json.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common.stub</artifactId>
-            <version>${apache.stratos.version}</version>
         </dependency>
     </dependencies>
 </project>
+
