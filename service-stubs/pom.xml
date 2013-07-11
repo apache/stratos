@@ -29,7 +29,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
-    <artifactId>stratos-service-stubs</artifactId>
+    <artifactId>stratos-service-stubs-parent</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Service Stubs - Aggregator Module</name>
     <url>http://apache.org</url>
