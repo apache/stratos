@@ -9,8 +9,8 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.stratos.common.packages.stub.PackageInfoServiceStub;
-import org.wso2.carbon.stratos.common.packages.stub.PackageInfo;
+import org.apache.stratos.common.packages.stub.PackageInfoServiceStub;
+import org.apache.stratos.common.packages.stub.PackageInfo;
 
 /**
  * PackageInfoService client

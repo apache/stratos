@@ -26,7 +26,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Apache Stratos - Parent Pom</name>
     <description>Apache Stratos Parent pom hold the properties, plugins which are required to build stratos components, stratos features and products</description>
     <url>http://apache.org</url>
@@ -162,7 +162,11 @@
     </build>
 
     <properties>
+	<!-- Apache Stratos version -->
+	<apache.stratos.version>3.0.0-SNAPSHOT</apache.stratos.version>
+	<!-- carbon related versions -->
 	<wso2carbon.version>4.1.0</wso2carbon.version>
+	<carbon.platform.package.import.version.range>[4.1.0, 4.2.0)</carbon.platform.package.import.version.range>
      	<carbon.platform.package.export.version>4.1.0</carbon.platform.package.export.version>   
     </properties>
 </project>
