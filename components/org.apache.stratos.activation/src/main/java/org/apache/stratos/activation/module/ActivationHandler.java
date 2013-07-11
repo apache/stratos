@@ -16,7 +16,7 @@
  *  under the License.
  *
  */
-package org.apache.stratos.activation.activation.module;
+package org.apache.stratos.activation.module;
 
 import javax.xml.namespace.QName;
 
@@ -29,8 +29,8 @@ import org.apache.axis2.engine.Handler;
 import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.activation.activation.utils.ActivationManager;
-import org.apache.stratos.activation.activation.utils.Util;
+import org.apache.stratos.activation.utils.ActivationManager;
+import org.apache.stratos.activation.utils.Util;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
 import org.apache.stratos.common.util.CloudServicesUtil;

@@ -16,7 +16,7 @@
  *  under the License.
  *
  */
-package org.apache.stratos.activation.activation.utils;
+package org.apache.stratos.activation.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -16,12 +16,12 @@
  *  under the License.
  *
  */
-package org.apache.stratos.activation.activation.service;
+package org.apache.stratos.activation.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.activation.activation.utils.ActivationManager;
-import org.apache.stratos.activation.activation.utils.Util;
+import org.apache.stratos.activation.utils.ActivationManager;
+import org.apache.stratos.activation.utils.Util;
 import org.apache.stratos.common.config.CloudServiceConfigParser;
 import org.apache.stratos.common.config.CloudServicesDescConfig;
 import org.apache.stratos.common.util.CloudServicesUtil;

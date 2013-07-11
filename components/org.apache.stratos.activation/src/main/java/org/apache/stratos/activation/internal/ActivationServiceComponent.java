@@ -16,7 +16,7 @@
  *  under the License.
  *
  */
-package org.apache.stratos.activation.activation.internal;
+package org.apache.stratos.activation.internal;
 
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
@@ -26,9 +26,9 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
-import org.apache.stratos.activation.activation.service.ActivationService;
-import org.apache.stratos.activation.activation.utils.ActivationManager;
-import org.apache.stratos.activation.activation.utils.Util;
+import org.apache.stratos.activation.service.ActivationService;
+import org.apache.stratos.activation.utils.ActivationManager;
+import org.apache.stratos.activation.utils.Util;
 
 /**
  * The Declarative Service Component for the Service Activation Module for Tenants.

@@ -16,7 +16,7 @@
  *  under the License.
  *
  */
-package org.apache.stratos.activation.activation.module;
+package org.apache.stratos.activation.module;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
