@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ !
+ ! Copyright 2006 The Apache Software Foundation.
+ !
+ ! Licensed under the Apache License, Version 2.0 (the "License");
+ ! you may not use this file except in compliance with the License.
+ ! You may obtain a copy of the License at
+ !
+ !      http://www.apache.org/licenses/LICENSE-2.0
+ !
+ ! Unless required by applicable law or agreed to in writing, software
+ ! distributed under the License is distributed on an "AS IS" BASIS,
+ ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ! See the License for the specific language governing permissions and
+ ! limitations under the License.
+ !-->
+<serviceGroup>
+    <service name="ThemeMgtService" scope="transportsession">
+        <transports>
+            <transport>https</transport>
+        </transports>
+        <parameter name="ServiceClass" locked="false">
+            org.apache.stratos.theme.mgt.services.ThemeMgtService
+        </parameter>
+
+        <operation name="getResourceTreeEntry">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getContentBean">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getCollectionContent">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getResourceData">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="addCollection">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="addResource">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="importResource">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="addTextResource">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getMetadata">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getSessionResourcePath">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getTextContent">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="updateTextContent">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getContentDownloadBean">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="renameResource">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="delete">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+
+        <operation name="getAllPaths">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+        <operation name="getAllThemes">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+        
+        <operation name="applyTheme">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/theme</parameter>
+        </operation>
+        
+        
+        <parameter name="enableMTOM" locked="true">false</parameter>
+    </service>
+     <parameter name="adminService" locked="true">true</parameter>
+    <parameter name="hiddenService" locked="true">true</parameter>
+</serviceGroup>
