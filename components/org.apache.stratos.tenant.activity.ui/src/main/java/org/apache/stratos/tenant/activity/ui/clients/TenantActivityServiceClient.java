@@ -26,13 +26,13 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.authenticator.proxy.AuthenticationAdminClient;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.tenant.activity.stub.TenantActivityServiceExceptionException;
-import org.wso2.carbon.tenant.activity.stub.beans.xsd.*;
+import org.apache.stratos.tenant.activity.stub.TenantActivityServiceExceptionException;
+import org.apache.stratos.tenant.activity.stub.beans.xsd.*;
 import org.apache.stratos.tenant.activity.ui.internal.TenantActivityUIServiceComponent;
 import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.utils.ServerConstants;
-import org.wso2.carbon.tenant.activity.stub.TenantActivityServiceStub;
+import org.apache.stratos.tenant.activity.stub.TenantActivityServiceStub;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;

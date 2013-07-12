@@ -21,11 +21,11 @@
 <%@ page import="org.wso2.carbon.billing.mgt.stub.beans.xsd.Payment" %>
 <%@ page import="org.wso2.carbon.billing.mgt.ui.utils.BillingUtil" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="org.wso2.carbon.tenant.activity.ui.clients.TenantActivityServiceClient" %>
+<%@ page import="org.apache.stratos.tenant.activity.ui.clients.TenantActivityServiceClient" %>
 <%@ page import="java.io.Console" %>
 <%@ page import="javax.rmi.CORBA.Util" %>
-<%@ page import="org.wso2.carbon.tenant.activity.ui.utils.TenantMonitorUtil" %>
-<%@ page import="org.wso2.carbon.tenant.activity.stub.beans.xsd.PaginatedTenantDataBean" %>
+<%@ page import="org.apache.stratos.tenant.activity.ui.utils.TenantMonitorUtil" %>
+<%@ page import="org.apache.stratos.tenant.activity.stub.beans.xsd.PaginatedTenantDataBean" %>
 
 <%
     String serverUrl = request.getParameter("backEndUrl");

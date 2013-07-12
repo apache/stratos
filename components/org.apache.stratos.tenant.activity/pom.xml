@@ -80,7 +80,7 @@
                             org.apache.stratos.tenant.activity.commands.*,
                         </Export-Package>
                         <Import-Package>
-                            !org.wso2.carbon.tenant.activity.stub.*,
+                            !org.apache.stratos.tenanat.activity.stub.*,
                             org.apache.stratos.common.*,
                             org.wso2.carbon.cluster.mgt.core.*,
                             !javax.xml.namespace,

@@ -26,8 +26,8 @@ import org.apache.stratos.common.config.CloudServicesDescConfig;
 
 import java.util.*;
 
-import org.wso2.carbon.tenant.activity.stub.beans.xsd.PaginatedTenantDataBean;
-import org.wso2.carbon.tenant.activity.stub.beans.xsd.TenantDataBean;
+import org.apache.stratos.tenant.activity.stub.beans.xsd.PaginatedTenantDataBean;
+import org.apache.stratos.tenant.activity.stub.beans.xsd.TenantDataBean;
 
 public class TenantMonitorUtil {
     private static final Log log = LogFactory.getLog(TenantMonitorUtil.class);

@@ -17,7 +17,7 @@
 -->
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="carbon" uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" %>
-<%@ page import="org.wso2.carbon.tenant.activity.ui.utils.TenantMonitorUtil" %>
+<%@ page import="org.apache.stratos.tenant.activity.ui.utils.TenantMonitorUtil" %>
 <%@ page import="org.apache.stratos.common.config.CloudServiceConfig" %>
 <%@ page import="java.util.Map" %>
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
@@ -27,13 +27,13 @@
 <script type="text/javascript" src="js/tenant_config.js"></script>
 
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.tenant.activity.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.tenant.activity.ui.i18n.JSResources"
         request="<%=request%>"/>
 
-<fmt:bundle basename="org.wso2.carbon.tenant.activity.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.tenant.activity.ui.i18n.Resources">
     <carbon:breadcrumb
             label="govern.view_tenants.menu"
-            resourceBundle="org.wso2.carbon.tenant.activity.ui.i18n.Resources"
+            resourceBundle="org.apache.stratos.tenant.activity.ui.i18n.Resources"
             topPage="true"
             request="<%=request%>"/>
     <%

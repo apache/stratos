@@ -21,7 +21,7 @@
         <menu>
             <id>all_tenant_monitor_menu</id>
             <i18n-key>Tenant Activity Monitor</i18n-key>
-            <i18n-bundle>org.wso2.carbon.tenant.activity.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.tenant.activity.ui.i18n.Resources</i18n-bundle>
             <parent-menu>monitor_menu</parent-menu>
             <link>../tenant-activity/tenant-activity.jsp</link>
             <region>region4</region>

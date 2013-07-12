@@ -16,8 +16,8 @@
 ~ under the License.
 -->
 <%@ page import="java.util.List" %>
-<%@ page import="org.wso2.carbon.tenant.activity.ui.clients.TenantActivityServiceClient" %>
-<%@ page import="org.wso2.carbon.tenant.activity.ui.utils.TenantMonitorUtil" %>
+<%@ page import="org.apache.stratos.tenant.activity.ui.clients.TenantActivityServiceClient" %>
+<%@ page import="org.apache.stratos.tenant.activity.ui.utils.TenantMonitorUtil" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.wso2.carbon.tenant.reg.agent.client.util.Util" %>
 <%@ page import="org.apache.stratos.common.config.CloudServiceConfig" %>
@@ -32,8 +32,8 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="org.wso2.carbon.tenant.activity.stub.TenantActivityServiceStub" %>
-<%@ page import="org.wso2.carbon.tenant.activity.stub.beans.xsd.TenantDataBean" %>
+<%@ page import="org.apache.stratos.tenant.activity.stub.TenantActivityServiceStub" %>
+<%@ page import="org.apache.stratos.tenant.activity.stub.beans.xsd.TenantDataBean" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
@@ -43,13 +43,13 @@
 <script type="text/javascript" src="js/tenant_config.js"></script>
 
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.tenant.activity.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.tenant.activity.ui.i18n.JSResources"
         request="<%=request%>"/>
 
-<fmt:bundle basename="org.wso2.carbon.tenant.activity.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.tenant.activity.ui.i18n.Resources">
     <carbon:breadcrumb
             label="govern.view_tenants.menu"
-            resourceBundle="org.wso2.carbon.tenant.activity.ui.i18n.Resources"
+            resourceBundle="org.apache.stratos.tenant.activity.ui.i18n.Resources"
             topPage="true"
             request="<%=request%>"/>
     <%
