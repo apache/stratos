@@ -19,17 +19,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-service-stubs</artifactId>
-        <version>4.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-service-stubs</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.validate.domain.stub</artifactId>
+    <artifactId>org.apache.stratos.validate.domain.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Validate Domains Stub</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - Validate Domains Stub</name>
+    <url>http://apache.org</url>
 
     <build>
         <plugins>
@@ -47,21 +47,30 @@
                         </goals>
                         <configuration>
                             <tasks>
+<path id="wsdl2java.classpath">
+                                    <!-- <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar"/>-->
+                                    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/1.2.11.wso2v4/axiom-1.2.11.wso2v4.jar"/>
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar"/>
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar"/>
+                                </path>
+
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/ValidateDomainService.wsdl -u -uw -o target/generated-code
-                                    -p org.wso2.carbon.validate.domain.stub.services
-                                    -ns2p http://services.domain.validate.carbon.wso2.org=org.wso2.carbon.validate.domain.stub.services,http://util.domain.validate.carbon.wso2.org/xsd=org.wso2.carbon.validate.domain.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.validate.domain.stub.exceptions"/>
-                                    <classpath refid="maven.dependency.classpath"/>
+                                    -p org.apache.stratos.validate.domain.stub.services
+                                    -ns2p http://services.domain.validate.stratos.apache.org=org.apache.stratos.validate.domain.stub.services,http://util.domain.validate.stratos.apache.org/xsd=org.apache.stratos.validate.domain.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.apache.stratos.validate.domain.stub.exceptions"/>
+                                    <!--<classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <classpath refid="maven.runtime.classpath"/>-->
+					<classpath refid="wsdl2java.classpath"/>
                                 </java>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/ValidateDomainAdminService.wsdl -u -uw -o target/generated-code
-                                    -p org.wso2.carbon.validate.domain.stub.services
-                                    -ns2p http://services.domain.validate.carbon.wso2.org=org.wso2.carbon.validate.domain.stub.services,http://util.domain.validate.carbon.wso2.org/xsd=org.wso2.carbon.validate.domain.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.validate.domain.stub.exceptions"/>
-                                    <classpath refid="maven.dependency.classpath"/>
+                                    -p org.apache.stratos.validate.domain.stub.services
+                                    -ns2p http://services.domain.validate.stratos.apache.org=org.apache.stratos.validate.domain.stub.services,http://util.domain.validate.stratos.apache.org/xsd=org.apache.stratos.validate.domain.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.apache.stratos.validate.domain.stub.exceptions"/>
+                                    <!--<classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <classpath refid="maven.runtime.classpath"/>-->
+					<classpath refid="wsdl2java.classpath"/>
                                 </java>
                             </tasks>
                         </configuration>
@@ -79,10 +88,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.validate.domain.stub.*; version="${carbon.platform.package.export.version}"
+                            org.apache.stratos.validate.domain.stub.*; version="${carbon.platform.package.export.version}"
                         </Export-Package>
                         <Import-Package>
-                            !org.wso2.carbon.validate.domain.stub.*,
+                            !org.apache.stratos.validate.domain.stub.*,
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>
@@ -117,6 +126,33 @@
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
-    </dependencies>
+	<dependency>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+            <artifactId>axiom</artifactId>
+       </dependency>
+	<dependency>
+                <groupId>wsdl4j.wso2</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>1.6.2.wso2v4</version>
+            </dependency>
+	 <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+	<dependency>
+                <groupId>org.apache.ws.commons.schema.wso2</groupId>
+                <artifactId>XmlSchema</artifactId>
+                <version>${xmlschema.wso2.version}</version>
+            </dependency>
+<dependency>
+                        <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+                        <artifactId>axiom</artifactId>
+                        <version>${orbit.version.axiom}</version>
+                </dependency>
 
+    </dependencies>
+    <properties>
+	<orbit.version.axiom>1.2.11.wso2v3</orbit.version.axiom>
+    </properties>
 </project>
