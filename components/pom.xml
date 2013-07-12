@@ -64,6 +64,7 @@
 		<!-- Tenant Mgt -->
 		<module>org.apache.stratos.tenant.mgt.core</module>
 		<module>org.apache.stratos.tenant.mgt</module>
+		<module>org.apache.stratos.account.mgt.ui</module>
 		<module>org.apache.stratos.tenant.mgt.email.sender</module>	
 
 		<module>org.apache.stratos.tenant.dispatcher</module>

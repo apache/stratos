@@ -53,7 +53,7 @@ public class UsagePlanClient {
             ServiceClient client = stub._getServiceClient();
             Options option = client.getOptions();
             option.setManageSession(true);
-            option.setProperty(org.wso2.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
+            option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
 
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate Add Services service client. " + axisFault.getMessage();
