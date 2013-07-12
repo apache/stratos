@@ -27,11 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.ui.CarbonUIUtil;
-import org.wso2.carbon.usage.stub.beans.xsd.InstanceUsageStatics;
-import org.wso2.carbon.usage.stub.beans.xsd.PaginatedInstanceUsage;
-import org.wso2.carbon.usage.stub.beans.xsd.PaginatedTenantUsageInfo;
-import org.wso2.carbon.usage.stub.beans.xsd.TenantUsage;
-import org.wso2.carbon.usage.stub.services.UsageServiceStub;
+import org.apache.stratos.usage.stub.beans.xsd.InstanceUsageStatics;
+import org.apache.stratos.usage.stub.beans.xsd.PaginatedInstanceUsage;
+import org.apache.stratos.usage.stub.beans.xsd.PaginatedTenantUsageInfo;
+import org.apache.stratos.usage.stub.beans.xsd.TenantUsage;
+import org.apache.stratos.usage.stub.services.UsageServiceStub;
 import org.wso2.carbon.utils.ServerConstants;
 
 import javax.servlet.ServletConfig;

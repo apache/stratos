@@ -1,4 +1,4 @@
-<%@ page import="org.wso2.carbon.usage.ui.report.UsageReport" %>
+<%@ page import="org.apache.stratos.usage.ui.report.UsageReport" %>
 <!--
   ~  Licensed to the Apache Software Foundation (ASF) under one
   ~  or more contributor license agreements.  See the NOTICE file
@@ -19,7 +19,7 @@
   -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <carbon:jsi18n
-resourceBundle="org.wso2.carbon.usage.ui.i18n.JSResources"
+resourceBundle="org.apache.stratos.usage.ui.i18n.JSResources"
 request="<%=request%>" />
 <%
 

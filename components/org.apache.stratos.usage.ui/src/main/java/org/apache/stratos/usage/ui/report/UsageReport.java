@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.usage.ui.report;
 
-import org.wso2.carbon.usage.stub.beans.xsd.BandwidthStatistics;
-import org.wso2.carbon.usage.stub.beans.xsd.RequestStatistics;
-import org.wso2.carbon.usage.stub.beans.xsd.TenantUsage;
+import org.apache.stratos.usage.stub.beans.xsd.BandwidthStatistics;
+import org.apache.stratos.usage.stub.beans.xsd.RequestStatistics;
+import org.apache.stratos.usage.stub.beans.xsd.TenantUsage;
 import org.apache.stratos.usage.ui.utils.UsageUtil;
 
 import javax.servlet.ServletConfig;

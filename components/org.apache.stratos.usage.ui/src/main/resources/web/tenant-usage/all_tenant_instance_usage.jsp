@@ -16,22 +16,22 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-<%@ page import="org.wso2.carbon.usage.stub.beans.xsd.InstanceUsageStatics" %>
-<%@ page import="org.wso2.carbon.usage.stub.beans.xsd.PaginatedInstanceUsage" %>
-<%@ page import="org.wso2.carbon.usage.ui.utils.UsageUtil" %>
+<%@ page import="org.apache.stratos.usage.stub.beans.xsd.InstanceUsageStatics" %>
+<%@ page import="org.apache.stratos.usage.stub.beans.xsd.PaginatedInstanceUsage" %>
+<%@ page import="org.apache.stratos.usage.ui.utils.UsageUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.usage.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.usage.ui.i18n.JSResources"
         request="<%=request%>"/>
 
 
-<fmt:bundle basename="org.wso2.carbon.usage.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.usage.ui.i18n.Resources">
     <carbon:breadcrumb
             label="tenants.usage.report"
-            resourceBundle="org.wso2.carbon.usage.ui.i18n.Resources"
+            resourceBundle="org.apache.stratos.usage.ui.i18n.Resources"
             topPage="true"
             request="<%=request%>"/>
     <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
@@ -198,7 +198,7 @@
                                 %>
                                 <carbon:resourcePaginator pageNumber="<%=pageNumber%>"
                                                           numberOfPages="<%=numberOfPages%>"
-                                                          resourceBundle="org.wso2.carbon.usage.ui.i18n.Resources"
+                                                          resourceBundle="org.apache.stratos.usage.ui.i18n.Resources"
                                                           nextKey="next" prevKey="prev"
                                                           tdColSpan="6"
                                                           paginationFunction="submitAllTenantPaginatedUsage({0})"/>

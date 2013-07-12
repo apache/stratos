@@ -16,7 +16,7 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-<%@ page import="org.wso2.carbon.usage.ui.report.AllTenantUsageReport" %>
+<%@ page import="org.apache.stratos.usage.ui.report.AllTenantUsageReport" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     AllTenantUsageReport usageReport = new AllTenantUsageReport(config, session, request);
