@@ -22,7 +22,7 @@ package org.apache.stratos.usage.ui.report;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.usage.stub.beans.xsd.TenantUsage;
+import org.apache.stratos.usage.stub.beans.xsd.TenantUsage;
 import org.apache.stratos.usage.ui.utils.UsageUtil;
 
 import javax.servlet.ServletConfig;

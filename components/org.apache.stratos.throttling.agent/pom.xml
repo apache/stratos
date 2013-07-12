@@ -59,7 +59,7 @@
                             org.apache.stratos.throttling.agent.*,
                         </Private-Package>
                         <Import-Package>
-                            org.wso2.carbon.throttling.agent.stub.*;
+                            org.apache.stratos.throttling.agent.stub.*;
                             version="${carbon.platform.package.import.version.range}",
                             org.apache.stratos.common.*,
                             org.wso2.carbon.server.*,
@@ -92,12 +92,12 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -106,12 +106,12 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.extensions</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.resource</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
@@ -119,19 +119,19 @@
 	    <version>${apache.stratos.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-	    <artifactId>org.wso2.carbon.throttling.agent.stub</artifactId>
-            <version>${carbon.platform.version}</version>
+            <groupId>org.apache.stratos</groupId>
+	    <artifactId>org.apache.stratos.throttling.agent.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.server</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.tomcat.ext</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
     </dependencies>
 

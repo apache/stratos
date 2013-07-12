@@ -1,27 +1,29 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.usage.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2343="http://beans.usage.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.usage.carbon.wso2.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.usage.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2351="http://beans.usage.stratos.apache.org/xsd" targetNamespace="http://services.usage.stratos.apache.org">
     <wsdl:documentation>UsageService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.usage.carbon.wso2.org/xsd">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.usage.stratos.apache.org/xsd">
             <xs:complexType name="TenantUsage">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="apiManagerUsageStats" nillable="true" type="ax2343:APIManagerUsageStats"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="apiManagerUsageStats" nillable="true" type="ax2351:APIManagerUsageStats"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeStatistics" nillable="true" type="ax2351:CartridgeStatistics"/>
                     <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="numberOfUsers" type="xs:int"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="registryBandwidthStatistics" nillable="true" type="ax2343:BandwidthStatistics"/>
-                    <xs:element minOccurs="0" name="registryCapacity" nillable="true" type="ax2343:TenantDataCapacity"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="registryBandwidthStatistics" nillable="true" type="ax2351:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="registryCapacity" nillable="true" type="ax2351:TenantDataCapacity"/>
                     <xs:element minOccurs="0" name="registryContentCapacity" type="xs:long"/>
                     <xs:element minOccurs="0" name="registryContentHistoryCapacity" type="xs:long"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="requestStatistics" nillable="true" type="ax2343:RequestStatistics"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="serviceBandwidthStatistics" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="requestStatistics" nillable="true" type="ax2351:RequestStatistics"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="serviceBandwidthStatistics" nillable="true" type="ax2351:BandwidthStatistics"/>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="totalCartridgeHours" nillable="true" type="ax2351:CartridgeStatistics"/>
                     <xs:element minOccurs="0" name="totalIncomingBandwidth" type="xs:long"/>
                     <xs:element minOccurs="0" name="totalOutgoingBandwidth" type="xs:long"/>
-                    <xs:element minOccurs="0" name="totalRegistryBandwidth" nillable="true" type="ax2343:BandwidthStatistics"/>
-                    <xs:element minOccurs="0" name="totalRequestStatistics" nillable="true" type="ax2343:RequestStatistics"/>
-                    <xs:element minOccurs="0" name="totalServiceBandwidth" nillable="true" type="ax2343:BandwidthStatistics"/>
-                    <xs:element minOccurs="0" name="totalWebappBandwidth" nillable="true" type="ax2343:BandwidthStatistics"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="usageEntries" nillable="true" type="ax2343:UsageEntry"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="webappBandwidthStatistics" nillable="true" type="ax2343:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="totalRegistryBandwidth" nillable="true" type="ax2351:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="totalRequestStatistics" nillable="true" type="ax2351:RequestStatistics"/>
+                    <xs:element minOccurs="0" name="totalServiceBandwidth" nillable="true" type="ax2351:BandwidthStatistics"/>
+                    <xs:element minOccurs="0" name="totalWebappBandwidth" nillable="true" type="ax2351:BandwidthStatistics"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="usageEntries" nillable="true" type="ax2351:UsageEntry"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="webappBandwidthStatistics" nillable="true" type="ax2351:BandwidthStatistics"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="APIManagerUsageStats">
@@ -31,6 +33,13 @@
                     <xs:element minOccurs="0" name="outgoingBandwidth" type="xs:long"/>
                     <xs:element minOccurs="0" name="requestCount" type="xs:long"/>
                     <xs:element minOccurs="0" name="serverUrl" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CartridgeStatistics">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeHours" type="xs:long"/>
+                    <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="BandwidthStatistics">
@@ -65,12 +74,12 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="numberOfPages" type="xs:int"/>
                     <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tenantUsages" nillable="true" type="ax2343:TenantUsage"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tenantUsages" nillable="true" type="ax2351:TenantUsage"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PaginatedInstanceUsage">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceUsages" nillable="true" type="ax2343:InstanceUsageStatics"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceUsages" nillable="true" type="ax2351:InstanceUsageStatics"/>
                     <xs:element minOccurs="0" name="numberOfPages" type="xs:int"/>
                     <xs:element minOccurs="0" name="pageNumber" type="xs:int"/>
                 </xs:sequence>
@@ -86,8 +95,8 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax2344="http://beans.usage.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.usage.carbon.wso2.org">
-            <xs:import namespace="http://beans.usage.carbon.wso2.org/xsd"/>
+        <xs:schema xmlns:ax2352="http://beans.usage.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.usage.stratos.apache.org">
+            <xs:import namespace="http://beans.usage.stratos.apache.org/xsd"/>
             <xs:element name="UsageServiceException">
                 <xs:complexType>
                     <xs:sequence>
@@ -110,7 +119,7 @@
             <xs:element name="retrieveTenantUsagesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2344:TenantUsage"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2352:TenantUsage"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -125,7 +134,7 @@
             <xs:element name="retrieveTenantUsageResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:TenantUsage"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2352:TenantUsage"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -141,7 +150,7 @@
             <xs:element name="retrievePaginatedTenantUsagesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:PaginatedTenantUsageInfo"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2352:PaginatedTenantUsageInfo"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -157,7 +166,7 @@
             <xs:element name="retrievePaginatedInstanceUsageResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:PaginatedInstanceUsage"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2352:PaginatedInstanceUsage"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -169,7 +178,7 @@
             <xs:element name="retrieveInstanceUsageResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2344:InstanceUsageStatics"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2352:InstanceUsageStatics"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -183,14 +192,14 @@
             <xs:element name="retrieveCurrentTenantUsageResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:TenantUsage"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2352:TenantUsage"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getValidUsageEntry">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="usage" nillable="true" type="ax2344:InstanceUsageStatics"/>
+                        <xs:element minOccurs="0" name="usage" nillable="true" type="ax2352:InstanceUsageStatics"/>
                         <xs:element minOccurs="0" name="yearMonth" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
@@ -198,7 +207,7 @@
             <xs:element name="getValidUsageEntryResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2344:InstanceUsageStatics"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2352:InstanceUsageStatics"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -521,13 +530,13 @@
     </wsdl:binding>
     <wsdl:service name="UsageService">
         <wsdl:port name="UsageServiceHttpsSoap11Endpoint" binding="ns:UsageServiceSoap11Binding">
-            <soap:address location="https://10.200.3.127:9443/services/UsageService.UsageServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://10.100.2.91:9443/services/UsageService.UsageServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="UsageServiceHttpsSoap12Endpoint" binding="ns:UsageServiceSoap12Binding">
-            <soap12:address location="https://10.200.3.127:9443/services/UsageService.UsageServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://10.100.2.91:9443/services/UsageService.UsageServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="UsageServiceHttpsEndpoint" binding="ns:UsageServiceHttpBinding">
-            <http:address location="https://10.200.3.127:9443/services/UsageService.UsageServiceHttpsEndpoint/"/>
+            <http:address location="https://10.100.2.91:9443/services/UsageService.UsageServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

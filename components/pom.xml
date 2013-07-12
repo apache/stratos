@@ -64,14 +64,39 @@
 		<!-- Tenant Mgt -->
 		<module>org.apache.stratos.tenant.mgt.core</module>
 		<module>org.apache.stratos.tenant.mgt</module>
+		<module>org.apache.stratos.tenant.mgt.ui/2.1.0</module>
+		<module>org.apache.stratos.tenant.mgt.email.sender</module>
+		<!-- Tenant Activity -->
+		<module>org.apache.stratos.tenant.activity</module>	
+		<module>org.apache.stratos.tenant.activity.ui</module>
+		<!-- Account Mgt -->
+		<module>org.apache.stratos.account.mgt</module>
 		<module>org.apache.stratos.account.mgt.ui</module>
-		<module>org.apache.stratos.tenant.mgt.email.sender</module>	
+		<!-- Domain Validation -->
+		<module>org.apache.stratos.validate.domain</module>
+                <module>org.apache.stratos.validate.domain.ui</module>
+		<!-- Throttling -->
+		<module>org.apache.stratos.throttling.agent</module>
+		<module>org.apache.stratos.throttling.manager</module>
+		<module>org.apache.stratos.throttling.ui</module>
+		<!-- Redirector -->
+		<module>org.apache.stratos.sso.redirector.ui</module>
+		<module>org.apache.stratos.redirector.servlet</module>
+		<module>org.apache.stratos.redirector.servlet.ui</module>
+		<!-- Status Monotor -->
+		<module>org.apache.stratos.status.monitor.core</module>
+		<module>org.apache.stratos.status.monitor</module>
+		<module>org.apache.stratos.status.monitor.agent</module>
+		<module>org.apache.stratos.status.monitor.ui</module>
+		<!-- Usage -->
+		<module>org.apache.stratos.usage</module>		
+		<module>org.apache.stratos.usage.agent</module>
+		<module>org.apache.stratos.usage.summary.helper</module>
+		<module>org.apache.stratos.usage.ui</module>
 
 		<module>org.apache.stratos.tenant.dispatcher</module>
 		<module>org.apache.stratos.keystore.mgt</module>
 		<module>org.apache.stratos.activation</module>
-		<module>org.apache.stratos.tenant.activity</module>
-                <module>org.apache.stratos.tenant.activity.ui</module>
 	    </modules>
 	    
 	    <build>
