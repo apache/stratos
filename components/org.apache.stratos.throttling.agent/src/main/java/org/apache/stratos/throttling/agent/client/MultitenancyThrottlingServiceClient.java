@@ -22,7 +22,7 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.wso2.carbon.authenticator.proxy.AuthenticationAdminClient;
 import org.apache.stratos.throttling.agent.internal.ThrottlingAgentServiceComponent;
-import org.wso2.carbon.throttling.agent.stub.services.MultitenancyThrottlingServiceStub;
+import org.apache.stratos.throttling.agent.stub.services.MultitenancyThrottlingServiceStub;
 
 public class MultitenancyThrottlingServiceClient implements ThrottlingRuleInvoker {
     MultitenancyThrottlingServiceStub stub;
