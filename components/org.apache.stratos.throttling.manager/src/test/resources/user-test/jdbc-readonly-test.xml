@@ -1,0 +1,60 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<UserManager>
+    <Realm>
+        <Configuration>
+            <AdminRole>adminx</AdminRole>
+            <AdminUser>
+                <UserName>adminx</UserName>
+                <Password>adminy</Password>
+            </AdminUser>
+            <SystemUserName>system</SystemUserName>
+            <EveryOneRoleName>everyonex</EveryOneRoleName>
+            <ReadOnly>true</ReadOnly>
+            <MaxUserNameListLength>500</MaxUserNameListLength>
+            <Property name="url">jdbc:h2:target/ReadOnlyTest/CARBON_TEST</Property>
+            <Property name="driverName">org.h2.Driver</Property>
+            <Property name="maxActive">50</Property>
+            <Property name="maxWait">60000</Property>
+            <Property name="minIdle">5</Property>
+        </Configuration>
+        <UserStoreManager
+            class="org.wso2.carbon.user.core.jdbc.JDBCUserStoreManager">
+            <Property name="url">jdbc:h2:target/ReadOnlyTest/CARBON_TEST</Property>
+            <Property name="driverName">org.h2.Driver</Property>
+            <Property name="maxActive">50</Property>
+            <Property name="maxWait">60000</Property>
+            <Property name="minIdle">5</Property>
+            <Property name="PasswordDigest">MD5</Property>
+            <Property name="GetPasswordSQL">SELECT * FROM UM_USER WHERE UM_USER_NAME=? AND UM_TENANT_ID=?</Property>
+            <Property name="GetRoleListSQL">SELECT UM_ROLE_NAME FROM UM_ROLE WHERE UM_TENANT_ID=?</Property>
+            <Property name="UserFilterSQL">SELECT UM_USER_NAME FROM UM_USER WHERE UM_USER_NAME LIKE ? AND UM_TENANT_ID=? ORDER BY UM_USER_NAME</Property>
+            <Property name="UserRoleSQL">SELECT UM_ROLE_NAME FROM UM_USER_ROLE, UM_ROLE, UM_USER WHERE UM_USER.UM_USER_NAME=? AND UM_USER.UM_ID=UM_USER_ROLE.UM_USER_ID AND UM_ROLE.UM_ID=UM_USER_ROLE.UM_ROLE_ID AND UM_USER_ROLE.UM_TENANT_ID=? AND UM_ROLE.UM_TENANT_ID=? AND UM_USER.UM_TENANT_ID=?</Property>
+            <Property name="IsRoleExistingSQL">SELECT UM_ID FROM UM_ROLE WHERE UM_ROLE_NAME=? AND UM_TENANT_ID=?</Property>
+            <Property name="IsUserExistingSQL">SELECT UM_ID FROM UM_USER WHERE UM_USER_NAME=? AND UM_TENANT_ID=?</Property>
+            <Property name="GetUserListOfRoleSQL">SELECT UM_USER_NAME FROM UM_USER_ROLE, UM_ROLE, UM_USER WHERE UM_ROLE.UM_ROLE_NAME=? AND UM_USER.UM_ID=UM_USER_ROLE.UM_USER_ID AND UM_ROLE.UM_ID=UM_USER_ROLE.UM_ROLE_ID AND UM_USER_ROLE.UM_TENANT_ID=? AND UM_ROLE.UM_TENANT_ID=? AND UM_USER.UM_TENANT_ID=?</Property>
+            <Property name="GetUserPropertyForProfileSQL">SELECT UM_ATTR_VALUE FROM UM_USER_ATTRIBUTE, UM_USER WHERE UM_USER.UM_ID = UM_USER_ATTRIBUTE.UM_USER_ID AND UM_USER.UM_USER_NAME=? AND UM_ATTR_NAME=? AND UM_PROFILE_ID=? AND UM_USER_ATTRIBUTE.UM_TENANT_ID=? AND UM_USER.UM_TENANT_ID=?</Property>
+            <Property name="GetUserPropertiesForProfileSQL">SELECT UM_ATTR_NAME, UM_ATTR_VALUE FROM UM_USER_ATTRIBUTE, UM_USER WHERE UM_USER.UM_ID = UM_USER_ATTRIBUTE.UM_USER_ID AND UM_USER.UM_USER_NAME=? AND UM_PROFILE_ID=? AND UM_USER_ATTRIBUTE.UM_TENANT_ID=? AND UM_USER.UM_TENANT_ID=?</Property>
+            <Property name="GetProfileNamesSQL">SELECT DISTINCT UM_PROFILE_ID FROM UM_USER_ATTRIBUTE WHERE UM_TENANT_ID=?</Property>
+            <Property name="PasswordDigest">SHA-256</Property>           
+        </UserStoreManager>
+        <AuthorizationManager
+            class="org.wso2.carbon.user.core.authorization.JDBCAuthorizationManager"></AuthorizationManager>
+    </Realm>
+</UserManager>

@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!--
+    This is the main server configuration file
+    
+    ${carbon.home} represents the carbon.home system property.
+    Other system properties can be specified in a similar manner.
+-->
+<Server xmlns="http://wso2.org/projects/carbon/carbon.xml">
+
+    <!--
+       Product Name
+    -->
+    <Name>${product.name}</Name>
+
+    <!--
+       Product Version
+    -->
+    <Version>${product.version}</Version>
+
+    <!--
+       The fully qualified name of the server
+    -->
+    <Package>org.wso2.carbon</Package>
+
+    <!--
+    Webapp context root of WSO2 Carbon. If Carbon is to be deployed on a different context,
+    the carbon webapp directory has to be renamed, and this entry has to be changed to have the
+    same name as the renamed carbon webapp directory.
+    -->
+    <WebContextRoot>/</WebContextRoot>
+
+    <!--
+     The URL of the back end server. This is where the admin services are hosted and
+     will be used by the clients in the front end server.
+     This is required only for the Front-end server. This is used when seperating BE server from FE server
+    -->
+    <ServerURL>https://${carbon.local.ip}:${carbon.management.port}${carbon.context}/services/</ServerURL>
+
+
+    <!-- In-order to  get the registry http Port from the back-end when the default http transport is not the same-->
+    <!--RegistryHttpPort>9763</RegistryHttpPort-->
+
+    <!--
+    Number of items to be displayed on a management console page. This is used at the
+    backend server for pagination of various items.
+    -->
+    <ItemsPerPage>15</ItemsPerPage>
+
+    <!--
+       Host name or IP address of the machine hosting this server
+       e.g. www.wso2.org, 192.168.1.10
+       This is will become part of the End Point Reference of the
+       services deployed on this server instance.
+    -->
+
+    <!--HostName>www.wso2.org</HostName-->
+
+    <!--
+     The URL of the index page. This is where the user will be redirected after signing in to the
+     carbon server.
+    -->
+    <!--IndexPageURL>/carbon/admin/index.jsp</IndexPageURL-->
+
+    <!-- HTTP and HTTPS ports when apache is fronted to a carbon server-->
+    <!--ApacheHttpPort>80</ApacheHttpPort>
+    <ApacheHttpsPort>443</ApacheHttpsPort-->
+
+    <!--
+       Ports used by this server
+    -->
+    <Ports>
+        <!--
+           The JMX Port
+        -->
+        <!--
+        <JMX>9999</JMX>
+         -->
+    </Ports>
+
+    <!--
+    Axis2 related configurations
+    -->
+    <Axis2Config>
+        <!--
+             Location of the Axis2 Services & Modules repository
+
+             This can be a directory in the local file system, or a URL.
+
+             e.g.
+             1. /home/wso2wsas/repository/ - An absolute path
+             2. repository - In this case, the path is relative to CARBON_HOME
+             3. file:///home/wso2wsas/repository/
+             4. http://wso2wsas/repository/
+        -->
+        <RepositoryLocation>${carbon.home}/repository/deployment/server/</RepositoryLocation>
+
+        <!--
+            Location of the main Axis2 configuration descriptor file, a.k.a. axis2.xml file
+
+            This can be a file on the local file system, or a URL
+
+            e.g.
+            1. /home/repository/axis2.xml - An absolute path
+            2. conf/axis2.xml - In this case, the path is relative to CARBON_HOME
+            3. file:///home/carbon/repository/axis2.xml
+            4. http://repository/conf/axis2.xml
+        -->
+        <ConfigurationFile>${carbon.home}/repository/conf/axis2.xml</ConfigurationFile>
+
+        <!--
+          ServiceGroupContextIdleTime, which will be set in ConfigurationContex
+          for multiple clients which are going to access the same ServiceGroupContext
+          Default Value is 30 Sec.
+        -->
+        <ServiceGroupContextIdleTime>30000</ServiceGroupContextIdleTime>
+
+        <!--
+          This repository location is used to crete the client side configuration
+          context used by the server when calling admin services.
+        -->
+        <ClientRepositoryLocation>${carbon.home}/repository/deployment/client/</ClientRepositoryLocation>
+        <!-- This axis2 xml is used in createing the configuration context by the FE server
+         calling to BE server -->
+        <clientAxis2XmlLocation>${carbon.home}/repository/conf/axis2_client.xml</clientAxis2XmlLocation>
+    </Axis2Config>
+
+    <!--
+       The default user roles which will be created when the server
+       is started up for the first time.
+    -->
+    <ServiceUserRoles>
+        <Role>
+            <Name>admin</Name>
+            <Description>Default Administrator Role</Description>
+        </Role>
+        <Role>
+            <Name>user</Name>
+            <Description>Default User Role</Description>
+        </Role>
+    </ServiceUserRoles>
+
+    <!--
+      Security configurations
+    -->
+    <Security>
+        <!--
+            KeyStore which will be used for encrypting/decrypting passwords
+            and other sensitive information.
+        -->
+        <KeyStore>
+            <!-- Keystore file location-->
+            <Location>${carbon.home}/resources/security/wso2carbon.jks</Location>
+            <!-- Keystore type (JKS/PKCS12 etc.)-->
+            <Type>JKS</Type>
+            <!-- Keystore password-->
+            <Password>wso2carbon</Password>
+            <!-- Private Key alias-->
+            <KeyAlias>wso2carbon</KeyAlias>
+            <!-- Private Key password-->
+            <KeyPassword>wso2carbon</KeyPassword>
+        </KeyStore>
+
+        <!--
+           The directory under which all other KeyStore files will be stored
+        -->
+        <KeyStoresDir>${carbon.home}/repository/conf/keystores</KeyStoresDir>
+    </Security>
+
+    <!--
+       The temporary work directory
+    -->
+    <WorkDirectory>${carbon.home}/tmp/work</WorkDirectory>
+
+    <!--
+       House-keeping configuration
+    -->
+    <HouseKeeping>
+
+        <!--
+           true  - Start House-keeping thread on server startup
+           false - Do not start House-keeping thread on server startup.
+                   The user will run it manually as and when he wishes.
+        -->
+        <AutoStart>true</AutoStart>
+
+        <!--
+           The interval in *minutes*, between house-keeping runs
+        -->
+        <Interval>10</Interval>
+
+        <!--
+          The maximum time in *minutes*, temp files are allowed to live
+          in the system. Files/directories which were modified more than
+          "MaxTempFileLifetime" minutes ago will be removed by the
+          house-keeping task
+        -->
+        <MaxTempFileLifetime>30</MaxTempFileLifetime>
+    </HouseKeeping>
+
+    <!--
+       Configuration for handling different types of file upload.
+
+       To map all actions to a particular FileUploadExecutor, use
+       <Action>*</Action>
+    -->
+    <FileUploadConfig>
+        <Mapping>
+            <Actions>
+                <Action>keystore</Action>
+                <Action>certificate</Action>
+                <Action>*</Action>
+            </Actions>
+            <Class>org.wso2.carbon.ui.transports.fileupload.AnyFileUploadExecutor</Class>
+        </Mapping>
+
+        <Mapping>
+            <Actions>
+                <Action>jarZip</Action>
+            </Actions>
+            <Class>org.wso2.carbon.ui.transports.fileupload.JarZipUploadExecutor</Class>
+        </Mapping>
+        <Mapping>
+            <Actions>
+                <Action>dbs</Action>
+            </Actions>
+            <Class>org.wso2.carbon.ui.transports.fileupload.DBSFileUploadExecutor</Class>
+        </Mapping>
+        <Mapping>
+            <Actions>
+                <Action>tools</Action>
+            </Actions>
+            <Class>org.wso2.carbon.ui.transports.fileupload.ToolsFileUploadExecutor</Class>
+        </Mapping>
+        <Mapping>
+            <Actions>
+                <Action>toolsAny</Action>
+            </Actions>
+            <Class>org.wso2.carbon.ui.transports.fileupload.ToolsAnyFileUploadExecutor</Class>
+        </Mapping>
+    </FileUploadConfig>
+
+    <!--
+       Processors which process special HTTP GET requests such as ?wsdl, ?policy etc.
+
+       In order to plug in a processor to handle a special request, simply add an entry to this
+       section.
+
+       The value of the Item element is the first parameter in the query string(e.g. ?wsdl)
+       which needs special processing
+       
+       The value of the Class element is a class which implements
+       org.wso2.carbon.transport.HttpGetRequestProcessor
+    -->
+    <HttpGetRequestProcessors>
+        <Processor>
+            <Item>info</Item>
+            <Class>org.wso2.carbon.core.transports.util.InfoProcessor</Class>
+        </Processor>
+        <Processor>
+            <Item>wsdl</Item>
+            <Class>org.wso2.carbon.core.transports.util.Wsdl11Processor</Class>
+        </Processor>
+        <Processor>
+            <Item>wsdl2</Item>
+            <Class>org.wso2.carbon.core.transports.util.Wsdl20Processor</Class>
+        </Processor>
+        <Processor>
+            <Item>xsd</Item>
+            <Class>org.wso2.carbon.core.transports.util.XsdProcessor</Class>
+        </Processor>
+    </HttpGetRequestProcessors>
+
+    <!--
+    Server intializing code, specified as implementation classes of org.wso2.carbon.core.ServerInitializer.
+    This code will be run when the Carbon server is initialized
+    -->
+    <ServerInitializers>
+        <!--<Initializer></Initializer>-->
+    </ServerInitializers>
+    
+    <!--
+    Un-comment the following block to enable token based authenticator.
+    The priority of the default authenticator is 5 - to supersede that, you need to have higher priority level.
+    -->
+    <!-- Authenticators>
+		<TokenUIAuthenticator>
+			<Priority>20</Priority>
+		</TokenUIAuthenticator>
+	</Authenticators -->
+
+    <!--
+    @deprecated Use the registry.xml file to configure the Registry.
+    -->
+    <Registry/>
+
+    <!--
+    Indicates whether the Carbon Servlet is required by the system, and whether it should be
+    registered
+    -->
+    <RequireCarbonServlet>${require.carbon.servlet}</RequireCarbonServlet>
+
+    <!--
+    Carbon H2 OSGI Configuration
+    By default non of the servers start.
+        name="web" - Start the web server with the H2 Console
+        name="webPort" - The port (default: 8082)
+        name="webAllowOthers" - Allow other computers to connect
+        name="webSSL" - Use encrypted (HTTPS) connections
+        name="tcp" - Start the TCP server
+        name="tcpPort" - The port (default: 9092)
+        name="tcpAllowOthers" - Allow other computers to connect
+        name="tcpSSL" - Use encrypted (SSL) connections
+        name="pg" - Start the PG server
+        name="pgPort"  - The port (default: 5435)
+        name="pgAllowOthers"  - Allow other computers to connect
+        name="trace" - Print additional trace information; for all servers
+        name="baseDir" - The base directory for H2 databases; for all servers  
+    -->
+    <!--H2DatabaseConfiguration>
+        <property name="web" />
+        <property name="webPort">8082</property>
+        <property name="webAllowOthers" />
+        <property name="webSSL" />
+        <property name="tcp" />
+        <property name="tcpPort">9092</property>
+        <property name="tcpAllowOthers" />
+        <property name="tcpSSL" />
+        <property name="pg" />
+        <property name="pgPort">5435</property>
+        <property name="pgAllowOthers" />
+        <property name="trace" />
+        <property name="baseDir">${carbon.home}</property>
+    </H2DatabaseConfiguration-->
+</Server>

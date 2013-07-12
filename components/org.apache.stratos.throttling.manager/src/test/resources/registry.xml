@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<wso2registry>
+    <currentDBConfig>h2-db</currentDBConfig>
+    
+    <readOnly>false</readOnly>
+    <enableCache>true</enableCache>
+    <registryRoot>/beep</registryRoot>
+
+    <dbConfig name="derby-embedded-db">
+        <url>jdbc:derby:databasetest/CARBON_TEST;create=true</url>
+        <!--userName>su</userName>
+        <password>su</password-->
+        <driverName>org.apache.derby.jdbc.EmbeddedDriver</driverName>
+        <maxActive>80</maxActive>
+        <maxWait>60000</maxWait>
+        <minIdle>5</minIdle>
+    </dbConfig>
+
+    <dbConfig name="in-memory">
+        <url>jdbc:hsqldb:mem:aname</url>
+        <userName>sa</userName>
+        <password/>
+        <driverName>org.hsqldb.jdbcDriver</driverName>
+    </dbConfig>
+
+    <dbConfig name="sample">
+        <url>jdbc:hsqldb:$basedir$/sample/sample-db;shutdown=true</url>
+        <userName>sa</userName>
+        <password/>
+        <driverName>org.hsqldb.jdbcDriver</driverName>
+    </dbConfig>
+
+    <dbConfig name="derby-db">
+        <url>jdbc:derby://localhost:1527/derbyDB;create=true</url>
+        <userName>userName</userName>
+        <password>password</password>
+        <driverName>org.apache.derby.jdbc.ClientDriver</driverName>
+        <maxActive>80</maxActive>
+        <maxWait>60000</maxWait>
+        <minIdle>5</minIdle>
+    </dbConfig>
+
+    <dbConfig name="mysql-db">
+        <url>jdbc:mysql://localhost:3306/regdb</url>
+        <userName>regadmin</userName>
+        <password>regadmin</password>
+        <driverName>com.mysql.jdbc.Driver</driverName>
+        <maxActive>80</maxActive>
+        <maxWait>60000</maxWait>
+        <minIdle>5</minIdle>
+    </dbConfig>
+
+    <dbConfig name="registry-datasource">
+        <dataSource>dataSourceName</dataSource>
+    </dbConfig>
+
+    <dbConfig name="oracle-db">
+        <url>jdbc:oracle:thin:@hostname:1521:registry</url>
+        <userName>username</userName>
+        <password>password</password>
+        <driverName>oracle.jdbc.driver.OracleDriver</driverName>
+        <maxActive>100</maxActive>
+        <maxWait>60000</maxWait>
+        <minIdle>5</minIdle>
+    </dbConfig>
+
+	<dbConfig name="mssql-db">
+        <url>jdbc:jtds:sqlserver://localhost:1433/registry</url>
+        <userName>registry</userName>
+        <password>registry</password>
+        <driverName>net.sourceforge.jtds.jdbc.Driver</driverName>
+        <maxActive>100</maxActive>
+        <maxWait>60000</maxWait>
+        <minIdle>5</minIdle>
+    </dbConfig>
+
+    <dbConfig name="h2-db">
+        <url>jdbc:h2:target/databasetest/CARBON_TEST</url>
+        <!--userName>sa</userName>
+        <password>sa</password-->
+        <driverName>org.h2.Driver</driverName>
+        <maxActive>80</maxActive>
+        <maxWait>60000</maxWait>
+        <minIdle>5</minIdle>
+    </dbConfig>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.SynapseRepositoryHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.apache.synapse</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.SynapseRepositoryHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.wso2.esb</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.Axis2RepositoryHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.apache.axis2</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.Axis2RepositoryHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.wso2.wsas</property>
+        </filter>
+    </handler>
+
+    <!--handler class="org.wso2.carbon.registry.extensions.handlers.IndexingHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">text/plain</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.XMLIndexingHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.PDFIndexingHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/pdf</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MSWordIndexingHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/msword</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MSExcelIndexingHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.ms-excel</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MSPowerpointIndexingHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.ms-powerpoint</property>
+        </filter>
+    </handler-->
+    
+	<handler class="org.wso2.carbon.registry.extensions.handlers.WSDLMediaTypeHandler">
+		<property name="schemaLocationConfiguration" type="xml">
+            <location>/test_schemas/</location>
+	    </property>
+		<property name="wsdlLocationConfiguration" type="xml">
+            <location>/test_wsdls/</location>
+	    </property>
+		<filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/wsdl+xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.ZipWSDLMediaTypeHandler">
+        <property name="wsdlMediaType">application/wsdl+xml</property>
+        <property name="schemaLocationConfiguration" type="xml">
+            <location>/test_schemas/</location>
+        </property>
+        <property name="wsdlLocationConfiguration" type="xml">
+            <location>/test_wsdls/</location>
+        </property>
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.wso2.governance-archive</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.ServiceMediaTypeHandler">
+      <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+	<property name="mediaType">application/vnd.wso2-service+xml</property>
+      </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.PolicyMediaTypeHandler">
+	<property name="policyLocationConfiguration" type="xml">
+            <location>/test_policies/</location>
+	</property>
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/policy+xml</property>
+        </filter>
+    </handler>
+
+	<handler class="org.wso2.carbon.registry.extensions.handlers.XSDMediaTypeHandler">
+        <property name="locationConfiguration" type="xml">
+            <locationType>absolute</locationType>
+            <location>/test_schemas/</location>
+        </property>
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/x-xsd+xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.EndpointMediaTypeHandler">
+        <property name="endpointMediaType">application/vnd.wso2.endpoint</property>
+        <property name="endpointLocationConfiguration" type="xml">
+            <location>/test_endpoints/</location>
+        </property>
+        <filter class="org.wso2.carbon.registry.extensions.filters.EndpointMediaTypeMatcher">
+        </filter>
+    </handler>
+
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.ExternalLinkHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.wso2-hyperlink</property>
+        </filter>
+    </handler>
+
+	<!--remoteInstance url="https://host:port/registry">
+	<id>instanceid</id>
+	<username>username</username>
+	<password>password</password>
+    </remoteInstance-->
+
+    <staticConfiguration>
+        <versioningProperties>true</versioningProperties>
+        <versioningComments>true</versioningComments>
+        <versioningTags>true</versioningTags>
+        <versioningRatings>true</versioningRatings>
+        <!-- Location you want to add service and default location will be /governance/services/ -->
+        <servicePath>/test_services</servicePath>
+    </staticConfiguration>
+		
+
+    <versionResourcesOnChange>true</versionResourcesOnChange>
+
+</wso2registry>
