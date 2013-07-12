@@ -19,17 +19,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-service-stubs</artifactId>
-        <version>4.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-service-stubs-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.tenant.activity.stub</artifactId>
+    <artifactId>org.apache.stratos.tenant.activity.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Tenant activity Stub</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - Tenant activity Stub</name>
+    <url>http://apache.org</url>
 
     <build>
         <plugins>
@@ -49,8 +49,8 @@
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/TenantActivityService.wsdl -u -uw -o target/generated-code
-                                    -p org.wso2.carbon.tenant.activity.stub
-                                    -ns2p http://services.activity.tenant.carbon.wso2.org=org.wso2.carbon.tenant.activity.stub.services,http://beans.activity.tenant.carbon.wso2.org/xsd=org.wso2.carbon.tenant.activity.stub.beans.xsd"/>
+                                    -p org.apache.stratos.tenant.activity.stub
+                                    -ns2p http://services.activity.tenant.stratos.apache.org=org.apache.stratos.tenant.activity.stub.services,http://beans.activity.tenant.stratos.apache.org/xsd=org.apache.stratos.tenant.activity.stub.beans.xsd"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -71,10 +71,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.tenant.activity.stub.*; version="${carbon.platform.package.export.version}"
+                            org.apache.stratos.tenant.activity.stub.*; version="${carbon.platform.package.export.version}"
                         </Export-Package>
                         <Import-Package>
-			    			!org.wso2.carbon.tenant.activity.stub.*,
+			    			!org.apache.stratos.tenant.activity.stub.*,
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>
@@ -108,6 +108,10 @@
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
+        </dependency>
+	<dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2-client</artifactId>
         </dependency>
     </dependencies>
 
