@@ -20,20 +20,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-service-stubs</artifactId>
+    	<groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-service-stubs-parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.adc.mgt.stub</artifactId>
+    <artifactId>org.apache.stratos.tenant.mgt.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Cartridge app Management Stub</name>
+    <name>Apache Stratos - Tenant Management Stub</name>
     <url>http://apache.org</url>
 
     <build>
-        <plugins>       
+        <plugins>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -47,20 +47,40 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <path id="wsdl2java.classpath">
-				    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar"/>
-                                </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ApplicationManagementService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.adc.mgt.stub"/>
-                                    <classpath refid="wsdl2java.classpath"/>
+                                    <arg line="-uri src/main/resources/TenantMgtAdminService.wsdl -u -uw -o target/generated-code
+                                    -p org.wso2.carbon.tenant.mgt.stub
+                                    -ns2p http://services.mgt.tenant.carbon.wso2.org=org.wso2.carbon.tenant.mgt.stub.services,http://beans.mgt.tenant.carbon.wso2.org/xsd=org.wso2.carbon.tenant.mgt.stub.beans.xsd,http://beans.common.stratos.carbon.wso2.org/xsd=org.wso2.carbon.tenant.mgt.stub.beans.xsd"/>
+                                    <classpath refid="maven.dependency.classpath"/>
+                                    <classpath refid="maven.compile.classpath"/>
+                                    <classpath refid="maven.runtime.classpath"/>
                                 </java>
                             </tasks>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            org.wso2.carbon.tenant.mgt.stub.*; version="${carbon.platform.package.export.version}"
+                        </Export-Package>
+                        <Import-Package>
+			    			!org.wso2.carbon.tenant.mgt.stub.*,
+                            *;resolution:=optional
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -81,30 +101,6 @@
                     </execution>
                 </executions>
             </plugin>
-	    <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>
-                        </Private-Package>
-                        <Export-Package>
-                            org.apache.stratos.adc.mgt.stub.*; version="1.0.0",
-                            org.apache.stratos.adc.mgt.service.*; version="1.0.0",
-                            org.apache.stratos.adc.mgt.dto.xsd*; version="1.0.0",
-                            org.apache.stratos.adc.mgt.exception.xsd.*; version="1.0.0
-                        </Export-Package>
-                        <Import-Package>
-                            !org.apache.stratos.adc.mgt.stub.*
-                        </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -113,30 +109,26 @@
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
-	<dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2-client</artifactId>
-        </dependency>
         <dependency>
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.ws.commons.schema.wso2</groupId>
-            <artifactId>XmlSchema</artifactId>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.schema.wso2</groupId>
+            <artifactId>XmlSchema</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.neethi.wso2</groupId>
             <artifactId>neethi</artifactId>
-       </dependency-->
+        </dependency>
     </dependencies>
 
 </project>
