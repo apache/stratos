@@ -40,6 +40,14 @@
 	<module>org.apache.stratos.account.mgt.stub/4.1.3</module>
 	<module>org.apache.stratos.tenant.mgt.stub/4.1.0</module>
 	<module>org.apache.stratos.common.stub</module>
+	<module>org.apache.stratos.usage.stub</module>
+	<module>org.apache.stratos.throttling.agent.stub</module>
+	<module>org.apache.stratos.throttling.stub</module>
+	<module>org.apache.stratos.tenant.register.stub</module>
+	<module>org.apache.stratos.cartridge.agent.stub</module>
+	<module>org.apache.stratos.tenant.activity.stub</module>
+	<module>org.apache.stratos.theme.mgt.stub</module>
+	<module>org.apache.stratos.validate.domain.stub</module>
     </modules>
 
     <build>
