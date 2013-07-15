@@ -25,14 +25,12 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
-        <version>3.0.0</version>
-        <relativePath>../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-features-parent</artifactId>
-    <version>3.0.0</version>
     <packaging>pom</packaging>
     <name>Apache Stratos - Features Aggregator Module</name>
     <url>http://apache.org</url>
