@@ -48,6 +48,7 @@
 	<module>org.apache.stratos.tenant.activity.stub</module>
 	<module>org.apache.stratos.theme.mgt.stub</module>
 	<module>org.apache.stratos.validate.domain.stub</module>
+	<module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
     </modules>
 
     <build>
