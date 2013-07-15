@@ -26,23 +26,26 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>loadbalancer-features</artifactId>
-        <version>4.1.3</version>
-        <relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>4.1.3</version>
-    <artifactId>org.apache.stratos.lb.common.feature</artifactId>
+    <artifactId>org.apache.stratos.lb.endpoint.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>LB Common Feature</name>
+    <name>Loadbalancer Endpoint Management Feature</name>
     <url>http://apache.org</url>
-    <description>This feature contains the common bundle for loadbalancer features</description>
+    <description>This feature contains the required bundles for loadbalancer endpoint management functionality</description>
 
     <dependencies>
+	<!--dependency>
+	    <groupId>org.wso2.carbon</groupId>
+	    <artifactId>org.wso2.carbon.lb.common</artifactId>
+	    <version>${project.version}</version>
+	</dependency-->
 	<dependency>
 	    <groupId>org.apache.stratos</groupId>
-	    <artifactId>org.apache.stratos.lb.common</artifactId>
-	    <version>${project.version}</version>	
+	    <artifactId>org.apache.stratos.lb.endpoint</artifactId>
+	    <version>${apache.stratos.version}</version>	
 	</dependency>
     </dependencies>
 
@@ -60,7 +63,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.apache.stratos.lb.common</id>
+                            <id>org.apache.stratos.lb.endpoint.server</id>
                             <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -69,14 +72,12 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <!--bundleDef>org.wso2.carbon:org.wso2.carbon.load.balance.agent.stub</bundleDef>
-                                -->
-                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.common:${project.version}</bundleDef>
-                                <bundleDef>org.slf4j:slf4j-api:1.6.4</bundleDef>
-                                <bundleDef>org.slf4j:slf4j-log4j12:1.6.4</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.endpoint:${apache.stratos.version}</bundleDef>
                             </bundles>
                             <importFeatures>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.patch.version}</importFeatureDef>
                                 <importFeatureDef>org.apache.synapse.wso2:${synapse.wso2.version}</importFeatureDef>
+                                <importFeatureDef>org.apache.stratos.lb.common:${apache.stratos.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
@@ -84,5 +85,9 @@
             </plugin>
         </plugins>
     </build>
+<properties>
+	<carbon.version>4.1.0</carbon.version>
+	<carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1>
+</properties>
 
 </project>
