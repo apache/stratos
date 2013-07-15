@@ -60,9 +60,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.cartridge.agent.stub</artifactId>
-			<version>4.1.1</version>
+			<groupId>org.apache.stratos</groupId>
+			<artifactId>org.apache.stratos.cartridge.agent.stub</artifactId>
+			<version>${apache.stratos.version}</version>
 		</dependency>
 
 		<dependency>

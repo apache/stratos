@@ -21,7 +21,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
-import org.wso2.carbon.cartridge.agent.stub.CartridgeAgentServiceStub;
+import org.apache.stratos.cartridge.agent.stub.CartridgeAgentServiceStub;
 
 public class CartridgeAgentClient {
 
