@@ -22,16 +22,14 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cloud-controller-feature</artifactId>
-        <version>2.0.0</version>
-        <relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>2.1.3</version>
-    <artifactId>org.wso2.carbon.stratos.cloud.controller.feature</artifactId>
+    <artifactId>org.apache.stratos.cloud.controller.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Stratos Cloud Controller Feature</name>
-    <url>http://wso2.org</url>
+    <name>Apache - Stratos Cloud Controller Feature</name>
+    <url>http://apache.org</url>
     <description>This feature contains the required bundles for the functionality of Cloud Controller</description>
     <dependencies>
 	<dependency>
