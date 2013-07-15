@@ -97,6 +97,10 @@
 		<module>org.apache.stratos.tenant.dispatcher</module>
 		<module>org.apache.stratos.keystore.mgt</module>
 		<module>org.apache.stratos.activation</module>
+		<module>org.apache.stratos.cartridge.mgt.ui</module>
+		<!-- Theme mgt -->
+		<module>org.apache.stratos.theme.mgt</module>
+		<module>org.apache.stratos.theme.mgt.ui</module>
 	    </modules>
 	    
 	    <build>
