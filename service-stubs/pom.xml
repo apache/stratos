@@ -50,6 +50,7 @@
 	<module>org.apache.stratos.validate.domain.stub</module>
 	<module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
 	<module>org.apache.stratos.tenant.register.gapp.stub</module>
+	<module>org.apache.stratos.redirector.servlet.stub</module>
     </modules>
 
     <build>
