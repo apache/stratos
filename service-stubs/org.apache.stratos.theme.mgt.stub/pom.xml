@@ -60,8 +60,8 @@
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/ThemeMgtService.wsdl -u -uw -o target/generated-code
-                                    -p org.wso2.carbon.theme.mgt.stub
-                                    -ns2p http://services.mgt.theme.carbon.wso2.org=org.wso2.carbon.theme.mgt.stub.services,http://utils.services.resource.registry.carbon.wso2.org/xsd=org.wso2.carbon.theme.mgt.stub.registry.resource.stub.services.utils.xsd,http://common.registry.carbon.wso2.org/xsd=org.wso2.carbon.theme.mgt.stub.registry.resource.stub.common.xsd,http://beans.resource.registry.carbon.wso2.org/xsd=org.wso2.carbon.theme.mgt.stub.registry.resource.stub.beans.xsd,http://services.resource.registry.carbon.wso2.org=org.wso2.carbon.theme.mgt.stub.registry.resource.stub.services"/>
+                                    -p org.apache.stratos.theme.mgt.stub
+                                    -ns2p http://services.mgt.theme.carbon.wso2.org=org.apache.stratos.theme.mgt.stub.services,http://utils.services.resource.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.services.utils.xsd,http://common.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.common.xsd,http://beans.resource.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.beans.xsd,http://services.resource.registry.carbon.wso2.org=org.apache.stratos.theme.mgt.stub.registry.resource.stub.services"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -101,10 +101,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.theme.mgt.stub.*; version="${carbon.platform.package.export.version}",
+                            org.apache.stratos.theme.mgt.stub.*; version="${carbon.platform.package.export.version}",
                         </Export-Package>
                         <Import-Package>
-                            !org.wso2.carbon.theme.mgt.stub.*;
+                            !org.apache.stratos.theme.mgt.stub.*;
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>

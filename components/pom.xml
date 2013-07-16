@@ -99,8 +99,8 @@
 		<module>org.apache.stratos.activation</module>
 		<module>org.apache.stratos.cartridge.mgt.ui</module>
 		<!-- Theme mgt -->
-		<module>org.apache.stratos.theme.mgt</module>
 		<module>org.apache.stratos.theme.mgt.ui</module>
+		<module>org.apache.stratos.theme.mgt</module>
 	    </modules>
 	    
 	    <build>
