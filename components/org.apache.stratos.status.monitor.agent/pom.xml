@@ -101,9 +101,9 @@
 
         <!--dependencies to invoke the load average service-->
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.load.balance.agent.stub</artifactId>
-            <version>${wso2carbon.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
     </dependencies>
 </project>

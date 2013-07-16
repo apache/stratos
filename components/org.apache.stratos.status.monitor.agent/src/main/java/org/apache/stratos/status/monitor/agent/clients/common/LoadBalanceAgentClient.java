@@ -22,7 +22,7 @@ import org.apache.axis2.AxisFault;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.load.balance.agent.stub.LoadBalanceAgentServiceStub;
+import org.apache.stratos.load.balance.agent.stub.LoadBalanceAgentServiceStub;
 import org.apache.stratos.status.monitor.agent.internal.core.MySQLConnector;
 
 import java.rmi.RemoteException;
