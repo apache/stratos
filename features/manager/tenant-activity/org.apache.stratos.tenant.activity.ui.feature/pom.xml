@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- ~ Copyright (c) WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- ~
- ~ Licensed under the Apache License, Version 2.0 (the "License");
- ~ you may not use this file except in compliance with the License.
- ~ You may obtain a copy of the License at
- ~
- ~      http://www.apache.org/licenses/LICENSE-2.0
- ~
- ~ Unless required by applicable law or agreed to in writing, software
- ~ distributed under the License is distributed on an "AS IS" BASIS,
- ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- ~ See the License for the specific language governing permissions and
- ~ limitations under the License.
--->
-
+<!-- 
+  #  Licensed to the Apache Software Foundation (ASF) under one
+  #  or more contributor license agreements.  See the NOTICE file
+  #  distributed with this work for additional information
+  #  regarding copyright ownership.  The ASF licenses this file
+  #  to you under the Apache License, Version 2.0 (the
+  #  "License"); you may not use this file except in compliance
+  #  with the License.  You may obtain a copy of the License at
+  #  
+  #  http://www.apache.org/licenses/LICENSE-2.0
+  #  
+  #  Unless required by applicable law or agreed to in writing,
+  #  software distributed under the License is distributed on an
+  #  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  #  KIND, either express or implied.  See the License for the
+  #  specific language governing permissions and limitations
+  #  under the License.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>tenant-activity-feature</artifactId>
-        <version>2.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.tenant.activity.ui.feature</artifactId>
-    <version>2.1.0</version>
+    <artifactId>org.apache.stratos.tenant.activity.ui.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Tenant Activity UI Feature</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - Tenant Activity UI Feature</name>
+    <url>http://apache.org</url>
     <description>This feature contains the bundles required for Tenant Activity front-end functionality
     </description>
 
     <dependencies>
  	<dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.activity.stub</artifactId>
-            <version>4.1.0</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.activity.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
 	<dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.activity.ui</artifactId>
-            <version>2.1.0</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.activity.ui</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
 	<dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.activity</artifactId>
-            <version>2.1.0</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.activity</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
     </dependencies>
 
@@ -68,7 +68,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.tenant.activity.ui</id>
+                            <id>org.apache.stratos.tenant.activity.ui</id>
                             <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -79,9 +79,9 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.activity.stub</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.activity.ui</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.activity</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.tenant.activity.stub</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.activity.ui</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.activity</bundleDef>
                             </bundles>
                             <importBundles>
                                 <!--<importBundleDef>org.wso2.carbon:org.wso2.carbon.identity.core</importBundleDef>-->
