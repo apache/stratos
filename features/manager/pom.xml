@@ -43,10 +43,9 @@
         <module>gapp</module>
         <module>throttling</module>
         <module>usage</module>
-        <module>billing</module>
-	<module>deployment/2.1.0</module>
+	<module>deployment</module>
 	<module>status-monitor</module>
-	<module>sso-mgt</module>
+	<module>tenant-activity</module>
     </modules>
 
     <distributionManagement>
