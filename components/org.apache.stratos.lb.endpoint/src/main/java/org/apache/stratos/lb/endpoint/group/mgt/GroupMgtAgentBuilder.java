@@ -70,8 +70,10 @@ public class GroupMgtAgentBuilder {
 
         // checks the existence. 
         if (clusteringAgent.getGroupManagementAgent(domain, subDomain) != null) {
-            
-            clusteringAgent.resetGroupManagementAgent(domain, subDomain);
+           
+	    // FIX THIS IN PROPER WAY
+            // This has changed some API of axis2 and we need to send upstream before using it
+            //clusteringAgent.resetGroupManagementAgent(domain, subDomain);
             
             log.info("Group management agent of cluster domain: " +
                 domain + " and sub domain: " + subDomain+" is removed.");
