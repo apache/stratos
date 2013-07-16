@@ -49,6 +49,7 @@
 	<module>org.apache.stratos.theme.mgt.stub</module>
 	<module>org.apache.stratos.validate.domain.stub</module>
 	<module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
+	<module>org.apache.stratos.tenant.register.gapp.stub</module>
     </modules>
 
     <build>
