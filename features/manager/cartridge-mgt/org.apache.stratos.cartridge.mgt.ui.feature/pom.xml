@@ -20,30 +20,29 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>cartridge-mgt-feature</artifactId>
-        <version>2.1.0</version>
-        <relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.cartridge.mgt.ui.feature</artifactId>
+    <artifactId>org.apache.stratos.cartridge.mgt.ui.feature</artifactId>
     <packaging>pom</packaging>
-    <version>2.1.1</version>
-    <name>WSO2 Carbon - Cartridge Management UI Feature</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - Cartridge Management UI Feature</name>
+    <url>http://apache.org</url>
     <description>This feature contains the bundles required for Front-end Stratos manager</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.cartridge.mgt.ui</artifactId>
-	    <version>${project.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cartridge.mgt.ui</artifactId>
+	    <version>${apache.stratos.version}</version>
         </dependency>
 	<dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.adc.mgt.stub</artifactId>
-	    <version>4.1.1</version>	
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.adc.mgt.stub</artifactId>
+	    <version>${apache.stratos.version}</version>	
         </dependency>
 	<dependency>
 	    <groupId>org.wso2.carbon</groupId>
@@ -66,7 +65,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.cartridge.mgt.ui</id>
+                            <id>org.apache.stratos.cartridge.mgt.ui</id>
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -75,9 +74,9 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.cartridge.mgt.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.adc.mgt.stub</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.adc.reponotification.service.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.mgt.ui:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.adc.reponotification.service.stub:4.1.1</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
