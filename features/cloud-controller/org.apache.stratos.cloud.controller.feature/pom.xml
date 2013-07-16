@@ -211,8 +211,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:2.1.1</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:2.1.3</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${apache.stratos.version}</bundleDef>
                                 <bundleDef>org.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
                                 <bundleDef>org.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>
                                 <bundleDef>org.jclouds.driver:jclouds-log4j:${jclouds.version}</bundleDef>
