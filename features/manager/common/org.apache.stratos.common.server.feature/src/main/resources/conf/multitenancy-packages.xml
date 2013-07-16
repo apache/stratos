@@ -35,6 +35,10 @@
             <limit>50</limit> <!-- mb per tenant -->
             <overuseCharge>0</overuseCharge> <!-- $ per mb -->
         </bandwidth>
+	<cartridge>
+	    <hourLimit>5</hourLimit>
+	    <overUsageCharge>0.1</overUsageCharge>
+	</cartridge>
     </package>
     <package name="SMB">
         <subscriptionCharge>100</subscriptionCharge> <!-- $ per month -->
@@ -50,6 +54,10 @@
             <limit>150</limit> <!-- mb per tenant -->
             <overuseCharge>0</overuseCharge> <!-- $ per mb -->
         </bandwidth>
+	<cartridge>
+            <hourLimit>24</hourLimit>
+            <overUsageCharge>0.1</overUsageCharge>
+        </cartridge>
     </package>
     <package name="Professional">
         <subscriptionCharge>500</subscriptionCharge> <!-- $ per month -->
@@ -65,6 +73,10 @@
             <limit>1536</limit> <!-- mb per tenant -->
             <overuseCharge>0.03</overuseCharge> <!-- $ per mb -->
         </bandwidth>
+	<cartridge>
+            <hourLimit>500</hourLimit>
+            <overUsageCharge>0.1</overUsageCharge>
+        </cartridge>
     </package>
     <package name="Enterprise">
         <subscriptionCharge>2000</subscriptionCharge> <!-- $ per month -->
@@ -80,5 +92,9 @@
             <limit>15360</limit> <!-- mb per tenant -->
             <overuseCharge>0.02</overuseCharge> <!-- $ per mb -->
         </bandwidth>
+	<cartridge>
+            <hourLimit>1000</hourLimit>
+            <overUsageCharge>0.1</overUsageCharge>
+        </cartridge>
     </package>
 </packages>
