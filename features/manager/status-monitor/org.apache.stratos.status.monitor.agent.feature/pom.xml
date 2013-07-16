@@ -20,16 +20,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
    	<artifactId>status-monitor-feature</artifactId>
-        <version>2.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.status.monitor.agent.feature</artifactId>
+    <artifactId>org.apache.stratos.status.monitor.agent.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Stratos - Status Monitor Agent Feature</name>
+    <name>Apache Stratos - Status Monitor Agent Feature</name>
     <url>http://wso2.org</url>
     <description>
         This feature contains the bundles required for Status Monitoring Backend Functionality
@@ -37,12 +37,14 @@
 
     <dependencies>
         <dependency>              
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor.core</artifactId>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.status.monitor.core</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
         <dependency>              
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor.agent</artifactId>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.status.monitor.agent</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
 
         <!--dependencies for the service service-->
@@ -68,9 +70,9 @@
 
         <!--dependencies to invoke the load average service-->
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.load.balance.agent.stub</artifactId>
-            <version>${wso2carbon.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
 
     </dependencies>
@@ -89,7 +91,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.status.monitor.agent</id>
+                            <id>org.apache.stratos.status.monitor.agent</id>
                             <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -98,12 +100,12 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.status.monitor.core</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.status.monitor.agent</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.status.monitor.core</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.status.monitor.agent</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.authenticator.stub</bundleDef>
                                 <bundleDef>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec</bundleDef>
                                 <bundleDef>org.apache.qpid.wso2:qpid-client</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.load.balance.agent.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.load.balance.agent.stub</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
@@ -114,4 +116,8 @@
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+	<orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
+    </properties>
 </project>

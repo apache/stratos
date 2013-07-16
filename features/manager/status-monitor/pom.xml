@@ -20,45 +20,45 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>stratos-features</artifactId>
-        <version>2.1.0</version>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-features-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>status-monitor-feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Stratos - Status Monitor Aggregator Module</name>
+    <name>Apache Stratos - Status Monitor Aggregator Module</name>
     <url>http://wso2.org</url>
 
     <modules>
-        <module>org.wso2.carbon.status.monitor.feature/2.1.0</module>
-        <module>org.wso2.carbon.status.monitor.server.feature/2.1.0</module>
-        <module>org.wso2.carbon.status.monitor.agent.feature/2.1.0</module>
-        <module>org.wso2.carbon.status.monitor.ui.feature/2.1.0</module>
+        <module>org.apache.stratos.status.monitor.feature</module>
+        <module>org.apache.stratos.status.monitor.server.feature</module>
+        <module>org.apache.stratos.status.monitor.agent.feature</module>
+        <module>org.apache.stratos.status.monitor.ui.feature</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.status.monitor</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.status.monitor</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.status.monitor.core</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.status.monitor.core</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
 	    <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.status.monitor.agent</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.status.monitor.agent</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
 	    <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.status.monitor.ui</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.status.monitor.ui</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
 	    <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -67,5 +67,9 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <properties>
+        <stratos.version>2.1.0</stratos.version>
+    </properties>
 </project>
 

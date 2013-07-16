@@ -20,39 +20,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
-    	<artifactId>status-monitor-feature</artifactId>
-        <version>2.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <groupId>org.apache.stratos</groupId>
+   	<artifactId>status-monitor-feature</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.status.monitor.feature</artifactId>
+    <artifactId>org.apache.stratos.status.monitor.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Stratos - Status Monitor Feature</name>
+    <name>WSO2 Stratos - Status Monitor Server Feature</name>
     <url>http://wso2.org</url>
     <description>
-        This feature contains the bundles required for the Stratos Status Monitor Functionality
+        This feature contains the bundles required for Status Monitoring Backend Functionality
     </description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor.server.feature</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
+        <dependency>              
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.status.monitor.core</artifactId>
+	    <version>${apache.stratos.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor.ui.feature</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor.agent.feature</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
+        <dependency>              
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.status.monitor</artifactId>
+	    <version>${apache.stratos.version}</version>
         </dependency>
     </dependencies>
 
@@ -70,21 +62,25 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.status.monitor</id>
+                            <id>org.apache.stratos.status.monitor.server</id>
                             <propertiesFile>../../../etc/feature.properties</propertiesFile>
+                            <adviceFile>
+                                <properties>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>   
+                                </properties>
+                            </adviceFile>
+                            <bundles>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.status.monitor.core</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.status.monitor</bundleDef>
+                            </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core:${wso2carbon.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
                             </importFeatures>
-                            <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.status.monitor.ui.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.status.monitor.server.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.status.monitor.agent.feature</includedFeatureDef>
-                            </includedFeatures>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>

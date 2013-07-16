@@ -20,29 +20,30 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
    	<artifactId>status-monitor-feature</artifactId>
-        <version>2.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.status.monitor.server.feature</artifactId>
+    <artifactId>org.apache.stratos.status.monitor.ui.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Stratos - Status Monitor Server Feature</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - Status Monitor UI Feature</name>
+    <url>http://apache.org</url>
     <description>
-        This feature contains the bundles required for Status Monitoring Backend Functionality
+        This feature contains the bundles required for the Status Monitor Front End
     </description>
 
     <dependencies>
         <dependency>              
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor.core</artifactId>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.status.monitor.ui</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
         <dependency>              
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.status.monitor</artifactId>
+            <artifactId>org.wso2.carbon.status.monitor.stub</artifactId>
         </dependency>
     </dependencies>
 
@@ -60,20 +61,20 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.status.monitor.server</id>
+                            <id>org.apache.stratos.status.monitor.ui</id>
                             <propertiesFile>../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
                                     <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>   
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.status.monitor.core</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.status.monitor</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.status.monitor.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.status.monitor.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
+                                <importFeatureDef>org.apache.stratos.core.ui:${wso2carbon.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
