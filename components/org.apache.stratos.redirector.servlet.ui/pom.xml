@@ -54,7 +54,7 @@
                             org.apache.stratos.redirector.servlet.ui.util.*,
                         </Private-Package>
                         <Import-Package>
-			    org.apache.stratos.redirector.servlet.stub.*; version="${carbon.platform.package.import.version.range}",
+			    org.apache.stratos.redirector.servlet.stub.*; version="${apache.stratos.version}",
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.lucene.*,
@@ -100,9 +100,9 @@
 	    <version>${apache.stratos.version}</version>
         </dependency>
 	<dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.redirector.servlet.stub</artifactId>
-            <version>${carbon.platform.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.redirector.servlet.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
 
     </dependencies>
