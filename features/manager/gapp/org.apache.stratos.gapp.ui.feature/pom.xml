@@ -20,17 +20,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.apache.stratos</groupId>
         <artifactId>gapp-feature</artifactId>
-        <version>2.1.0</version>
-<relativePath>../../pom.xml</relativePath>
+        <version>3.0.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.stratos.gapp.ui.feature</artifactId>
+    <artifactId>org.apache.stratos.gapp.ui.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Stratos - GApp UI Feature</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - GApp UI Feature</name>
+    <url>http://apache.org</url>
 
     <dependencies>
         <dependency>
@@ -39,14 +39,14 @@
 	    <version>${stratos.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.stratos.common.stub</artifactId>
-            <version>${carbon.platform.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.register.gapp.stub</artifactId>
-            <version>${carbon.platform.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.register.gapp.stub</artifactId>
+            <version>${apache.stratos.version}</version>
         </dependency>
     </dependencies>
 
@@ -64,12 +64,12 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.stratos.gapp.ui</id>
+                            <id>org.apache.stratos.gapp.ui</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.gapp.registration.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.stratos.common.stub</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.register.gapp.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.common.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.tenant.register.gapp.stub</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.identity.relying.party.ui:${carbon.version}</importFeatureDef>
@@ -81,6 +81,8 @@
             </plugin>
         </plugins>
     </build>
-
+    <properties>
+	<stratos.version>2.1.0</stratos.version>
+    </properties>
 </project>
 
