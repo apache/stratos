@@ -32,7 +32,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.mediator.autoscale.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Autoscaler Feature</name>
+    <name>Apache Stratos - Autoscaler Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the required bundles for autoscaling functionality</description>
 

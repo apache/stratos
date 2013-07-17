@@ -32,7 +32,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.lb.endpoint.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Loadbalancer Endpoint Management Feature</name>
+    <name>Apache Stratos - Load Balancer - Endpoint Management Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the required bundles for loadbalancer endpoint management functionality</description>
 
