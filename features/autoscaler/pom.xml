@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>autoscaler-feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos Autoscaler Module</name>
+    <name>Apache Stratos - Autoscaler Module</name>
     <url>http://apache.org</url>
 
     <modules>
