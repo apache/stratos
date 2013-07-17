@@ -26,7 +26,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.straos.redirector.servlet</artifactId>
+    <artifactId>org.apache.stratos.redirector.servlet</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Stratos - Tenant Specific URL redirector</name>
 
