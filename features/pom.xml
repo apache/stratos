@@ -64,7 +64,7 @@
         <!-- Manager -->
 	<module>manager</module>
 
-        <Cartridge Agent>
+       <!-- <Cartridge Agent> -->
 	<module>cartridge-agent</module>
     </modules>
 
