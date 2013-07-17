@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.common.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apche Stratos - Common Core Feature</name>
+    <name>Apache Stratos - Common Core Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Back-end servlet functionality</description>
 
@@ -217,7 +217,7 @@
                                 
                                 <!-- Tenant Mgmt -->
                                 <bundleDef>org.json.wso2:json</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt:${stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt:${apache.stratos.version}</bundleDef>
 				<bundleDef>kaptcha.wso2:kaptcha</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.core:${apache.stratos.version}</bundleDef>

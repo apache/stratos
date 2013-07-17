@@ -4,9 +4,9 @@
      given here. 
   -->
 <cloudServices xmlns="http://wso2.com/carbon/cloud/mgt/services">
-   <cloudService name="WSO2 Stratos Controller" default="true">
+   <cloudService name="Apache Stratos Controller" default="true">
 	<key>SCC</key>
-        <label>WSO2 Stratos Controller</label>
+        <label>Apache Stratos Controller</label>
         <link>https://scc.cloud.wso2.com</link>
         <!--icon>
             https://localhost:9443/cloud-services-icons/esb.gif
@@ -24,15 +24,15 @@
         <productPageURL>http://wso2.com/cloud/stratos</productPageURL>
         <description>WSO2 Cloud Controller.</description>
     </cloudService>
-    <cloudService name="WSO2 Stratos Agent" default="true">
+    <cloudService name="Apache Stratos Agent" default="true">
 	<key>Agent</key>
-        <label>WSO2 Stratos Agent</label>
+        <label>Apache Stratos Agent</label>
         <link>https://cc.cloud.wso2.com</link>
         <!--icon>
             https://localhost:9443/cloud-services-icons/esb.gif
         </icon-->
         <productPageURL>http://wso2.com/cloud/stratos</productPageURL>
-        <description>WSO2 Stratos Agent.</description>
+        <description>Apache Stratos Agent.</description>
     </cloudService>
     <cloudService name="WSO2 Enterprise Service Bus" default="true">
 	<key>ESB</key>

@@ -28,7 +28,6 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.sso.redirector.ui</artifactId>
-    <version>2.1.0</version>
     <packaging>bundle</packaging>
     <name>Apache Stratos - SSO redirector UI component</name>
 

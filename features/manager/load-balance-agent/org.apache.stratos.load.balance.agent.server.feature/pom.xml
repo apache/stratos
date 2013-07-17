@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.load.balance.agent.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos -Load Balance Agent Server Feature</name>
+    <name>Apache Stratos - Load Balance Agent Server Feature</name>
     <url>http://apache.org</url>
     <description>
         This feature contains the bundles required for Load Balance Agent Back End Functionality
