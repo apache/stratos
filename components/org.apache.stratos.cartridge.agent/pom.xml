@@ -30,7 +30,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.apache.stratos.cartridge.agent</artifactId>
         <packaging>bundle</packaging>
-	<name>Apache Stratos Cartridge Agent - agent</name>
+	<name>Apache Stratos - Cartridge Agent</name>
 
 	<dependencies>
 		<dependency>
