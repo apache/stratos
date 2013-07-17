@@ -30,7 +30,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.lb.common</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos Loadbalancer - Common</name>
+    <name>Apache Stratos - Loadbalancer - Common</name>
     <url>http://apache.org</url>
     
     <dependencies>

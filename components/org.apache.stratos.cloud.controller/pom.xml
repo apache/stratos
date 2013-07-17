@@ -28,7 +28,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.cloud.controller</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos Cloud Controller</name>
+    <name>Apache Stratos - Cloud Controller</name>
     <url>http://apache.org</url>
 
     <build>

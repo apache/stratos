@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cloud-controller-feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Cloud Controller Feature Aggregator Module</name>
+    <name>Apache Stratos - Cloud Controller Feature Aggregator Module</name>
     <url>http://wso2.org</url>
 
     <modules>

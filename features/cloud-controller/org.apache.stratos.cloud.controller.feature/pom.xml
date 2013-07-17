@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.cloud.controller.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache - Stratos Cloud Controller Feature</name>
+    <name>Apache Stratos - Cloud Controller Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the required bundles for the functionality of Cloud Controller</description>
     <dependencies>

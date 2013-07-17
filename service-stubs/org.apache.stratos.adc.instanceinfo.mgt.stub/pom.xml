@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.adc.instanceinfo.mgt.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache stratos - Cartridge Info Management Stub</name>
+    <name>Apache Stratos - Cartridge Info Management Stub</name>
     <url>http://apache.org</url>
 
     <build>
