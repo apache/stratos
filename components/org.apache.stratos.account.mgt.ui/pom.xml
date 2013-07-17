@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.account.mgt.ui</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Stratos - Account Managment - User Interface</name>
+    <name>Apache Stratos - Account Managment - User Interface</name>
 
     <build>
 

@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.validate.domain.ui</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Stratos - Validate Domains - User Interface</name>
+    <name>Apache Stratos - Validate Domains - User Interface</name>
 
     <build>
 
