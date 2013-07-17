@@ -46,6 +46,7 @@
 	<module>deployment</module>
 	<module>status-monitor</module>
 	<module>tenant-activity</module>
+	<module>cartridge-mgt</module>
     </modules>
 
     <distributionManagement>
@@ -80,9 +81,9 @@
 <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.activation</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.activation</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -90,49 +91,49 @@
                 <version>${stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.redirector.servlet</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.redirector.servlet</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.redirector.servlet.ui</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.redirector.servlet.ui</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.stratos.common</artifactId>
-                <version>${stratos.version}</version>
-			</dependency>
-			<dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.common</artifactId>
+                <version>${apache.stratos.version}</version>
+	    </dependency>
+	    <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.stratos.landing.page.deployer</artifactId>
                 <version>${stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.throttling.agent</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.throttling.agent</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.tenant.activity</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.tenant.activity</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
 	    <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.throttling.agent.stub</artifactId>
-                <version>${wso2carbon.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.throttling.agent.stub</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.usage.agent</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.usage.agent</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.tenant.dispatcher</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.tenant.dispatcher</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler.wso2</groupId>
@@ -155,9 +156,9 @@
                 <version>${synapse.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.sso.redirector.ui</artifactId>
-                <version>${stratos.version}</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.sso.redirector.ui</artifactId>
+                <version>${apache.stratos.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>

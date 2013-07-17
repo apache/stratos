@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.tenant.mgt.core.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Multitenancy Tenant Management Server Feature</name>
+    <name>Apache Stratos - Multitenancy Tenant Management Core Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Back-end Multitenancy Tenant Management Core functionality</description>
 
