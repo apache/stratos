@@ -26,7 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.validate.domain</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Validate domains</name>
+    <name>Apache Stratos - Validate Domains</name>
 
     <build>
 
