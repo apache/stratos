@@ -33,6 +33,8 @@
     <modules>
         <module>org.apache.stratos.usage.server.feature</module>
         <module>org.apache.stratos.usage.agent.feature</module>
+	<module>org.apache.stratos.usage.ui.feature</module>
+	<module>org.apache.stratos.usage.feature</module>
     </modules>
 </project>
 
