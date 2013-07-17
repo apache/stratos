@@ -72,12 +72,6 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
             <version>4.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.adc.instanceinfo.mgt.stub</artifactId>
-            <version>4.1.1</version>
-        </dependency>
-
     </dependencies>
 
     <build>
