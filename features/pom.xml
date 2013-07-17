@@ -43,8 +43,8 @@
     </licenses>
 
     <organization>
-        <name>WSO2 Inc</name>
-        <url>http://wso2.org</url>
+        <name>Apache</name>
+        <url>http://apache.org</url>
     </organization>
 
     <modules>
