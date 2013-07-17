@@ -27,7 +27,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.stratos.gapp.server.feature</artifactId>
+    <artifactId>org.apache.stratos.gapp.server.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - GApp Server Feature</name>
     <url>http://apache.org</url>

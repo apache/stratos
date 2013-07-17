@@ -60,6 +60,12 @@
 
 	<!-- Coud Controller -->
 	<module>cloud-controller</module>
+
+        <!-- Manager -->
+	<module>manager</module>
+
+        <Cartridge Agent>
+	<module>cartridge-agent</module>
     </modules>
 
     <build>
