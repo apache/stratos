@@ -31,7 +31,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.cartridge.agent.server.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Cartridge Agent Feature</name>
+    <name>Apache Stratos - Cartridge Agent Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the bundles required for agent functionality</description>
 
