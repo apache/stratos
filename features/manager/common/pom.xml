@@ -31,7 +31,7 @@
     <artifactId>common-feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Common Feature Aggregator Module</name>
-    <url>http://wso2.org</url>
+    <url>http://apache.org</url>
 
     <modules>
         <module>org.apache.stratos.common.feature</module>

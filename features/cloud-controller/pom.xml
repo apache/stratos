@@ -30,7 +30,7 @@
     <artifactId>cloud-controller-feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Cloud Controller Feature Aggregator Module</name>
-    <url>http://wso2.org</url>
+    <url>http://apache.org</url>
 
     <modules>
         <module>org.apache.stratos.cloud.controller.feature</module>
