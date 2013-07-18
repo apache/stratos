@@ -23,18 +23,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.elb</groupId>
+        <groupId>org.apache.stratos.elb</groupId>
         <artifactId>elb-parent</artifactId>
         <version>2.0.5</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wso2elb</artifactId>
+    <artifactId>apache-stratos-elb</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 ELB - Distribution</name>
-    <url>http://wso2.org/projects/load-balancer</url>
-    <description>WSO2 Elastic Load Balancer Distribution</description>
+    <name>Apache Stratos - ELB - Distribution</name>
+    <url>http://apache.org</url>
+    <description>Apache Stratos Elastic Load Balancer Distribution</description>
 
     <dependencies>
 

@@ -22,17 +22,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.elb</groupId>
+        <groupId>org.apache.stratos.elb</groupId>
         <artifactId>elb-parent</artifactId>
         <version>2.0.5</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wso2elb-p2-profile-gen</artifactId>
+    <artifactId>apache-stratos-elb-p2-profile-gen</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 ELB - P2 Profile Generation</name>
-    <url>http://www.wso2.org</url>
+    <name>Apache Stratos - ELB - P2 Profile Generation</name>
+    <url>http://www.apache.org</url>
 
     <build>
         <plugins>
@@ -61,7 +61,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                     <execution>
+                    <execution>
                         <id>2-unpack-kernel-patch</id>
                         <phase>test</phase>
                         <goals>
@@ -142,7 +142,7 @@
                                     org.wso2.carbon:org.wso2.carbon.endpoint.server.feature:${carbon.patch.version.4.1.1}
                                 </featureArtifactDef>
 
-				 <featureArtifactDef>
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.lb.endpoint.server.feature:${carbon.patch.version.4.1.3}
                                 </featureArtifactDef>
 
@@ -184,16 +184,26 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.registry.core.feature:${carbon.version}
                                 </featureArtifactDef>
-		                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.security.mgt.server.feature:${carbon.version}</featureArtifactDef>
-		                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.module.mgt.server.feature:${carbon.version}</featureArtifactDef>
-		                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.throttle.server.feature:${carbon.version}</featureArtifactDef>
-		                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.caching.server.feature:${carbon.version}</featureArtifactDef>
-		                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.rm.server.feature:${carbon.version}</featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.security.mgt.server.feature:${carbon.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.module.mgt.server.feature:${carbon.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.throttle.server.feature:${carbon.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.caching.server.feature:${carbon.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.rm.server.feature:${carbon.version}
+                                </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.databridge.datapublisher.feature:${carbon.patch.version.4.1.1}
                                 </featureArtifactDef>
-				<!--***********************************************-->
-				<featureArtifactDef>
+                                <!--***********************************************-->
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.event.server.feature:${carbon.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
@@ -299,7 +309,7 @@
                                     <id>org.wso2.carbon.lb.common.feature.group</id>
                                     <version>${carbon.patch.version.4.1.3}</version>
                                 </feature>
-				<feature>
+                                <feature>
                                     <id>org.wso2.carbon.lb.endpoint.server.feature.group</id>
                                     <version>${carbon.patch.version.4.1.3}</version>
                                 </feature>
@@ -307,8 +317,8 @@
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
                                     <version>${carbon.patch.version.4.1.1}</version>
                                 </feature>
-				<!--***********************************************-->
-				<feature>
+                                <!--***********************************************-->
+                                <feature>
                                     <id>org.wso2.carbon.event.server.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
@@ -318,27 +328,27 @@
                     </execution>
                 </executions>
             </plugin>
-	    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-            <execution>
-                <phase>package</phase>
-                <configuration>
-                    <tasks>
-                        <replace token="false" value="true"
-                                 dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/configuration/org.eclipse.equinox.simpleconfigurator">
-                            <include name="**/bundles.info"/>
-                        </replace>
-                    </tasks>
-                </configuration>
-                <goals>
-                    <goal>run</goal>
-                </goals>
-            </execution>
-        </executions>
-    </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <replace token="false" value="true"
+                                         dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/configuration/org.eclipse.equinox.simpleconfigurator">
+                                    <include name="**/bundles.info"/>
+                                </replace>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

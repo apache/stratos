@@ -26,7 +26,7 @@
     <fileSets>
         <fileSet>
             <directory>target/site</directory>
-            <outputDirectory>wso2elb-${pom.version}-docs</outputDirectory>
+            <outputDirectory>apache-stratos-elb-${pom.version}-docs</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
     </fileSets>
