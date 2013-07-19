@@ -25,7 +25,7 @@
         <artifactId>stratos-parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
-    
+
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stratos-products-parent</artifactId>
     <packaging>pom</packaging>
@@ -35,7 +35,8 @@
 
 
     <modules>
-	<module>stratos_cli</module>
+        <module>elb</module>
+        <module>stratos_cli</module>
     </modules>
 
 </project>
