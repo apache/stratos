@@ -44,7 +44,7 @@ Installation & Running
 ==================================
 
 1. Extract the wso2elb-2.0.5.zip and go to the extracted directory
-2. Run the wso2server.sh or wso2server.bat as appropriate
+2. Run the stratos.sh or stratos.bat as appropriate
 3. Configure the load balancer to manage the load across the instants to be balanced.
 
 WSO2 ELB 2.0.5 distribution directory structure

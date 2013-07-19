@@ -37,7 +37,7 @@
                 <exclude>**/services/sample01.aar</exclude>
                 <exclude>**/repository/services/version/**</exclude>
                 <exclude>**/version.txt</exclude>
-                <exclude>**/wso2server.bat</exclude>
+                <exclude>**/stratos.bat</exclude>
                 <exclude>**/README.txt</exclude>
                 <exclude>**/LICENSE.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
@@ -152,16 +152,16 @@
 
     <files>
         <file>
-            <source>src/main/bin/wso2server.sh</source>
+            <source>src/main/bin/stratos.sh</source>
             <outputDirectory>apache-stratos-elb-${pom.version}/bin</outputDirectory>
-            <destName>wso2server.sh</destName>
+            <destName>stratos.sh</destName>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </file>
         <file>
-            <source>src/main/bin/wso2server.bat</source>
+            <source>src/main/bin/stratos.bat</source>
             <outputDirectory>apache-stratos-elb-${pom.version}/bin</outputDirectory>
-            <destName>wso2server.bat</destName>
+            <destName>stratos.bat</destName>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </file>
@@ -277,7 +277,7 @@
             <fileMode>644</fileMode>
         </file>
         <!--file>
-            <source>target/wso2carbon-core-${carbon.patch.version}/bin/wso2server.bat
+            <source>target/wso2carbon-core-${carbon.patch.version}/bin/stratos.bat
             </source>
             <outputDirectory>apache-stratos-elb-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>

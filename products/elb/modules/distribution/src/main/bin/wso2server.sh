@@ -184,7 +184,7 @@ elif [ "$CMD" = "--n" ]; then
   fi
 elif [ "$CMD" = "start" ]; then
   export CARBON_HOME=$CARBON_HOME
-  nohup $CARBON_HOME/bin/wso2server.sh &
+  nohup $CARBON_HOME/bin/stratos.sh &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME=$CARBON_HOME
@@ -203,7 +203,7 @@ elif [ "$CMD" = "restart" ]; then
   done
 
   # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/wso2server.sh > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/stratos.sh > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "test" ]; then
     JAVACMD="exec "$JAVACMD""
@@ -272,10 +272,10 @@ exec "$JAVACMD" \
         -XX:+CMSClassUnloadingEnabled \
         -XX:+OptimizeStringConcat \
         -XX:+HeapDumpOnOutOfMemoryError \
-        -XX:OnOutOfMemoryError="kill -9 `echo $$`;nohup ./wso2server.sh &" \
+        -XX:OnOutOfMemoryError="kill -9 `echo $$`;nohup ./stratos.sh &" \
         -XX:HeapDumpPath=repository/logs/heap-dump.hprof \
         -XX:ErrorFile=repository/logs/hs_err_pid.log \
-        -XX:OnError="nohup ./wso2server.sh &" \
+        -XX:OnError="nohup ./stratos.sh &" \
         $JAVA_OPTS \
         -Dcarbon.pid=$$ \
         -Dcom.sun.management.jmxremote \

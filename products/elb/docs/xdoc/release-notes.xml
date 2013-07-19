@@ -66,7 +66,7 @@
 <ol>
   <li>Extract the downloaded zip</li>
   <li>Go to the bin directory in the extracted folder</li>
-  <li>Run the wso2server.sh or wso2server.bat as appropriate</li>
+  <li>Run the stratos.sh or stratos.bat as appropriate</li>
   <li>Configure the load balancer to manage the load across the instances to be balanced.</li>
   <li>If you need to start the OSGi console with the server use the property
     -DosgiConsole when starting the server. The INSTALL.txt file found on the
