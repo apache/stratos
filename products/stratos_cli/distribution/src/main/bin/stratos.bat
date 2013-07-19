@@ -30,5 +30,5 @@ if "%STRATOS_CLI_HOME%"=="" set STRATOS_CLI_HOME=%CD%
 
 cd %STRATOS_CLI_HOME%
 
-java -jar "org.wso2.carbon.adc.mgt.cli-2.1.3-Tool.jar" %*
+java -jar "org.apache.stratos.adc.mgt.cli-3.0.0-SNAPSHOT-Tool.jar" %*
 

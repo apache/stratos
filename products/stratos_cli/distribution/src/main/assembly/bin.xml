@@ -16,7 +16,6 @@
  ~ under the License.
  -->
 <assembly>
-    <!--<id>bin</id>-->
     <formats>
         <format>zip</format>
     </formats>
@@ -24,10 +23,10 @@
 
     <fileSets>
         <fileSet>
-            <directory>../../../../components/stratos/artifact-deployment-coordinator/org.wso2.carbon.adc.mgt.cli/2.1.1/target</directory>
+            <directory>../../../../../components/stratos/artifact-deployment-coordinator/org.apache.stratos.adc.mgt.cli/3.0.0-SNAPSHOT/target</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <includes>
-                <include>org.wso2.carbon.adc.mgt.cli-2.1.1-Tool.jar</include>
+                <include>org.apache.stratos.adc.mgt.cli-3.0.0-SNAPSHOT-Tool.jar</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -36,7 +35,22 @@
             <includes>
                 <include>stratos.sh</include>
             </includes>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/bin</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <includes>
+                <include>stratos.bat</include>
+            </includes>
+        </fileSet>
+	<fileSet>
+            <directory>../</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <includes>
+                <include>README.txt</include>
+		<include>LICENSE.txt</include>
+            </includes>
         </fileSet>
     </fileSets>
-
 </assembly>

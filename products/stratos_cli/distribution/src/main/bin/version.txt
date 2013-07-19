@@ -1,0 +1,1 @@
+WSO2 Stratos CLI 3.0.0-SNAPSHOT

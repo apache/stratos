@@ -22,25 +22,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
      <parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>stratos2-products</artifactId>
-        <version>4.1.0</version>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-products-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.stratos2</groupId>
-    <artifactId>wso2s2cli-parent</artifactId>
+    <artifactId>apache-s2cli-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
-    <name>WSO2 stratos cli - Distribution</name>
-    <url>http://wso2.org/projects/load-balancer</url>
-    <description>WSO2 Stratos cli Distribution</description>
+    <name>Apache Stratos CLI - Distribution</name>
+    <url>http://apache.org/cloud/stratos/</url>
+    <description>Apache Stratos CLI</description>
 
    
     <modules>
 	<module>
-	    distribution/pom.xml
+	    distribution
    	</module>
     </modules>
 </project>

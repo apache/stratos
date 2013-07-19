@@ -1,11 +1,11 @@
 ================================================================================
-                        WSO2 Stratos CLI v1.0.1
+                        Apache Stratos CLI v1.0.1
 ================================================================================
 
-Welcome to the WSO2 Stratos CLI release
+Welcome to the Apache Stratos CLI release
 
 The command line interface (CLI) is a powerful tool that clients can use
-to communicate with Stratos 2.0 services. 
+to communicate with Stratos services. 
 
 The tenant can use the CLI tool on two separate modes if needed, which 
 are namely single command line mode and interactive mode. 
@@ -57,10 +57,10 @@ chmod +x ./stratos.sh
 2. Export the host and port of the SC as environment variables
 
 Linux:
-export STRATOS_URL=https://s2demo.wso2.com:9445
+export STRATOS_URL=https://s2demo.apache.com:9445
 
 Windows:
-set STRATOS_URL=https://s2demo.wso2.com:9445
+set STRATOS_URL=https://s2demo.apache.com:9445
 
 3. Run the stratos.sh or stratos.bat as appropriate
 
@@ -90,8 +90,6 @@ set STRATOS_PASSWORD=<password>
 Issue Tracker
 ==================================
 
-  https://wso2.org/jira/browse/SPI
 
 --------------------------------------------------------------------------------
-(c) Copyright 2013 WSO2 Inc.
 
