@@ -230,8 +230,8 @@
                                 <importBundleDef>org.wso2.carbon:org.wso2.carbon.application.upload</importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.platform.version}</importFeatureDef>
-				<importFeatureDef>org.wso2.carbon.identity.authenticator.saml2.sso.server:${carbon.platform.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
+				<importFeatureDef>org.wso2.carbon.identity.authenticator.saml2.sso.server:${wso2carbon.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

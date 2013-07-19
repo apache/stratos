@@ -118,6 +118,7 @@
 	<version.commons.logging>1.1.1</version.commons.logging>
         <xmlschema.wso2.version>1.4.7.wso2v2</xmlschema.wso2.version>
 	<axiom.wso2.version>1.2.11.wso2v4</axiom.wso2.version>
+	<orbit.version.axiom>1.2.11.wso2v3</orbit.version.axiom>
 	<neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
     </properties>     
 

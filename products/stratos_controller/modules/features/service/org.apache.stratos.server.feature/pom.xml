@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  #  Licensed to the Apache Software Foundation (ASF) under one
+  #  or more contributor license agreements.  See the NOTICE file
+  #  distributed with this work for additional information
+  #  regarding copyright ownership.  The ASF licenses this file
+  #  to you under the Apache License, Version 2.0 (the
+  #  "License"); you may not use this file except in compliance
+  #  with the License.  You may obtain a copy of the License at
+  #  
+  #  http://www.apache.org/licenses/LICENSE-2.0
+  #  
+  #  Unless required by applicable law or agreed to in writing,
+  #  software distributed under the License is distributed on an
+  #  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  #  KIND, either express or implied.  See the License for the
+  #  specific language governing permissions and limitations
+  #  under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-features</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.apache.stratos.server.feature</artifactId>
+    <packaging>pom</packaging>
+    <name>Apache Stratos - Cloud Manager Core Feature</name>
+    <url>http://apache.org</url>
+    <description>This feature contains the core bundles required for Back-end Cloud Manager
+        functionality
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.account.mgt</artifactId>
+	    <version>${apache.stratos.version}</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.stratos.common</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.email.sender</artifactId>
+	        <version>${stratos.component.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.mgt</artifactId>
+            <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.mgt.core</artifactId>
+            <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.mgt.email.sender</artifactId>
+            <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.theme.mgt</artifactId>
+	    <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.validate.domain</artifactId>
+            <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.keystore.mgt</artifactId>
+            <version>${apache.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.email.verification</artifactId>
+		<version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.task</artifactId>
+	<version>${carbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler.wso2</groupId>
+            <artifactId>quartz</artifactId>
+	<version>2.1.1.wso2v1</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.mvel.wso2</groupId>
+            <artifactId>mvel2</artifactId>
+            <version>2.0.10.wso2v1</version>
+        </dependency>-->
+        <dependency>
+            <groupId>joda-time.wso2</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.0.wso2v1</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>antlr.wso2</groupId>
+            <artifactId>antlr</artifactId>
+            <version>${antlr.wso2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr.wso2</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.2.0.wso2v1</version>
+        </dependency>-->
+        <dependency>
+            <groupId>janino.wso2</groupId>
+            <artifactId>janino</artifactId>
+            <version>2.5.15.wso2v1</version>
+        </dependency>
+	    <dependency>
+            <groupId>org.apache.axis.wso2</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4.0.wso2v1</version>
+        </dependency>
+
+
+        <!--<dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-core</artifactId>
+	<version>${synapse.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-commons</artifactId>
+	<version>${synapse.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-extensions</artifactId>
+	<version>${synapse.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-tasks</artifactId>
+	<version>${synapse.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>kaptcha.wso2</groupId>
+            <artifactId>kaptcha</artifactId>
+	<version>2.3.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.security.mgt</artifactId>
+            <version>${carbon.version}</version>
+        </dependency>
+   <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.manager.services.mgt</artifactId>
+                <version>${apache.stratos.version}</version>
+            </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.wso2.maven</groupId>
+                <artifactId>carbon-p2-plugin</artifactId>
+                <version>${carbon.p2.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>p2-feature-generation</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-feature-gen</goal>
+                        </goals>
+                        <configuration>
+                            <id>org.apache.stratos.server</id>
+                            <propertiesFile>../etc/feature.properties</propertiesFile>
+                            <adviceFile>
+                                <properties>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server
+                                    </propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:false
+                                    </propertyDef>
+                                </properties>
+                            </adviceFile>
+                            <bundles>
+                                <bundleDef>org.quartz-scheduler.wso2:quartz</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.task:${carbon.version}</bundleDef>
+                                <!--<bundleDef>org.mvel.wso2:mvel2</bundleDef>-->
+                                <bundleDef>joda-time.wso2:joda-time</bundleDef>
+                                <!--<bundleDef>antlr.wso2:antlr</bundleDef>
+                                <bundleDef>org.antlr.wso2:antlr-runtime</bundleDef>-->
+                                <bundleDef>janino.wso2:janino:2.5.15.wso2v1</bundleDef>
+				<bundleDef>org.apache.axis.wso2:axis:1.4.0.wso2v1</bundleDef>
+
+                                <!--<bundleDef>org.apache.synapse:synapse-core:2.1.0-wso2v7</bundleDef>
+                                <bundleDef>org.apache.synapse:synapse-commons:2.1.0-wso2v7</bundleDef>
+                                <bundleDef>org.apache.synapse:synapse-extensions:2.1.0-wso2v7</bundleDef>
+                                <bundleDef>org.apache.synapse:synapse-tasks:2.1.0-wso2v7</bundleDef>-->
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.payment.paypal:${stratos.component.version}</bundleDef>
+				<bundleDef>com.paypal.sdk.wso2:paypal:1.1.0.wso2v1</bundleDef>
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.business.messaging.paypal.integration.core:${carbon.version}</bundleDef>
+				
+                                <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.stratos.common</bundleDef>-->
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.email.sender:${stratos.component.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.email.sender:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt:${apache.stratos.version}</bundleDef>
+                                <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt</bundleDef>-->
+                                <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.core</bundleDef>-->
+                                <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.theme.mgt</bundleDef>-->
+                                <bundleDef>org.apache.stratos:org.apache.stratos.validate.domain:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.email.verification:${carbon.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.services.mgt:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt:${apache.stratos.version}</bundleDef>
+                                <bundleDef>kaptcha.wso2:kaptcha:2.3.0.wso2v1</bundleDef>
+                                <!-- stubs -->
+                            </bundles>
+                            <importFeatures>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.security.mgt:${carbon.version}</importFeatureDef>
+                            </importFeatures>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
