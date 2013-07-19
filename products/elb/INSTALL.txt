@@ -1,7 +1,7 @@
-Installing  WSO2 Elastic Load Balancer (ELB) 2.0.5
+Installing Apache Stratos Elastic Load Balancer (ELB) 2.0.5
 ==================================================
 
-WSO2 ELB 2.0.5 can be run as a light-weight software load balancer in 
+Apache Stratos ELB 2.0.5 can be run as a light-weight software load balancer in
 stand-alone mode, that can be configured to balance the load across the services nodes.
 
 Standalone Mode

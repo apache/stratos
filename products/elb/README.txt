@@ -1,23 +1,23 @@
 ================================================================================
-                        WSO2 Elastic Load Balancer 2.0.5
+                        Apache Stratos Elastic Load Balancer 2.0.5
 ================================================================================
 
-Welcome to the WSO2 Elastic Load Balancer 2.0.5 release
+Welcome to the Apache Stratos Elastic Load Balancer 2.0.5 release
 
-WSO2 ELB is a lightweight and easy-to-use Open Source Elastic Load Balancer
-(ELB) available under the Apache Software License v2.0. WSO2 ELB allows
+Apache Stratos ELB is a lightweight and easy-to-use Open Source Elastic Load Balancer
+(ELB) available under the Apache Software License v2.0. Apache Stratos ELB allows
 administrators to simply configure message load balancing, failover routing,
 and auto scaling. The runtime has been designed to be completely
 asynchronous, non-blocking and streaming based on the Apache Synapse core.
 
 This is based on the revolutionary WSO2 Carbon [Middleware a' la carte]
 framework. All the major features have been developed as pluggable Carbon
-components. WSO2 Elastic Load Balancer is a compact version doing the load balancing
+components. Apache Stratos Elastic Load Balancer is a compact version doing the load balancing
 features of WSO2 Enterprise Service Bus.
 
 
-Key Features of WSO2 ELB
-========================
+Key Features of Apache Stratos ELB
+======================================
 
 1. Non-blocking HTTP/S transports based on Apache HttpCore for ultra fast
    execution and support for thousands of connections at high concurrency with
@@ -34,21 +34,21 @@ Key Features of WSO2 ELB
 7. Administrator friendly - Configurations are simple and easy.
 
 System Requirements
-==================================
+=======================
 
 1. Minimum memory - 1.5GB
 2. Processor      - Pentium 800MHz or equivalent at minimum
 3. Java SE Development Kit 1.6.0_24 or higher
 
 Installation & Running
-==================================
+==========================
 
 1. Extract the wso2elb-2.0.5.zip and go to the extracted directory
 2. Run the stratos.sh or stratos.bat as appropriate
 3. Configure the load balancer to manage the load across the instants to be balanced.
 
-WSO2 ELB 2.0.5 distribution directory structure
-===============================================
+Apache Stratos ELB 2.0.5 distribution directory structure
+=============================================================
 
     CARBON_HOME
 	|- bin <folder>
@@ -72,7 +72,7 @@ WSO2 ELB 2.0.5 distribution directory structure
 	  in standalone mode
 
     - repository
-	  The repository where services and modules deployed in WSO2 ELB
+	  The repository where services and modules deployed in Apache Stratos ELB
 	  are stored. In addition to this, the components directory inside the
 	  repository directory contains the carbon runtime and the user added
 	  jar files including mediators, third party libraries etc. All
@@ -85,33 +85,30 @@ WSO2 ELB 2.0.5 distribution directory structure
 
     - LICENSE.txt
 	  Apache License 2.0 and the relevant other licenses under which
-	  WSO2 ELB is distributed.
+	  Apache Stratos ELB is distributed.
 
     - README.txt
 	  This document.
 
     - INSTALL.txt
-      This document will contain information on installing WSO2 ELB
+      This document will contain information on installing Apache Stratos ELB
 
     - release-notes.html
-	  Release information for WSO2 ELB 2.0.5
+	  Release information for Apache Stratos ELB 2.0.5
 
 Support
 ==================================
 
-WSO2 Inc. offers a variety of development and production support
+Apache offers a variety of development and production support
 programs, ranging from Web-based support up through normal business
 hours, to premium 24x7 phone support.
 
 For additional support information please refer to http://wso2.com/support/
 
-For more information on WSO2 ELB, visit the WSO2 Oxygen Tank (http://wso2.org)
+For more information on Apache Stratos ELB, visit Apache (http://apache.org)
 
 Issue Tracker
 ==================================
-
-  https://wso2.org/jira/browse/CARBON
-  https://wso2.org/jira/browse/LB
 
 Crypto Notice
 ==================================
@@ -144,4 +141,4 @@ Crypto Notice
    Bouncycastle     : http://www.bouncycastle.org/
 
 --------------------------------------------------------------------------------
-(c) Copyright 2013 WSO2 Inc.
+(c) Copyright 2013 Apache
