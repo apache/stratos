@@ -25,6 +25,7 @@
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-features-parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -34,8 +35,8 @@
     <url>http://apache.org</url>
 
     <modules>
-	<module>org.apache.stratos.gapp.server.feature</module>
-	<module>org.apache.stratos.gapp.ui.feature</module>
+        <module>org.apache.stratos.gapp.server.feature</module>
+        <module>org.apache.stratos.gapp.ui.feature</module>
         <module>org.apache.stratos.gapp.feature</module>
     </modules>
 
