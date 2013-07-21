@@ -28,18 +28,20 @@
     <packaging>pom</packaging>
     <version>3.0.0-SNAPSHOT</version>
     <name>Apache Stratos - Parent Pom</name>
-    <description>Apache Stratos Parent pom hold the properties, plugins which are required to build stratos components, stratos features and products</description>
+    <description>Apache Stratos Parent pom hold the properties, plugins which are required to build stratos components,
+        stratos features and products
+    </description>
     <url>http://apache.org</url>
 
     <modules>
-	<module>components</module>
-	<module>service-stubs</module>
-	<module>features</module>
-<!--	<module>products</module> -->
+        <module>components</module>
+        <module>service-stubs</module>
+        <module>features</module>
+        <module>products</module>
     </modules>
 
     <repositories>
-         <repository>
+        <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
             <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
@@ -49,7 +51,7 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-   </repositories>
+    </repositories>
 
     <distributionManagement>
         <repository>
@@ -73,16 +75,16 @@
             <id>wso2-maven2-repository-2</id>
             <url>http://dist.wso2.org/snapshots/maven2</url>
         </pluginRepository>
-     </pluginRepositories>
+    </pluginRepositories>
 
     <build>
         <extensions>
-      	    <extension>
-        	<groupId>org.apache.maven.wagon</groupId>
-        	<artifactId>wagon-ssh</artifactId>
-        	<version>2.1</version>
-      	    </extension>
-    	</extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.1</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.jvnet.maven.incrementalbuild</groupId>
@@ -148,25 +150,25 @@
                         </execution>
                     </executions>
                 </plugin>
-		<plugin>
-        	    <artifactId>maven-assembly-plugin</artifactId>
-        	    <version>2.2-beta-2</version>
-		</plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-project-info-reports-plugin</artifactId>
-          	    <version>2.4</version>
-        	</plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2-beta-2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <properties>
-	<!-- Apache Stratos version -->
-	<apache.stratos.version>3.0.0-SNAPSHOT</apache.stratos.version>
-	<!-- carbon related versions -->
-	<wso2carbon.version>4.1.0</wso2carbon.version>
-	<carbon.platform.package.import.version.range>[4.1.0, 4.2.0)</carbon.platform.package.import.version.range>
-     	<carbon.platform.package.export.version>4.1.0</carbon.platform.package.export.version>   
+        <!-- Apache Stratos version -->
+        <apache.stratos.version>3.0.0-SNAPSHOT</apache.stratos.version>
+        <!-- carbon related versions -->
+        <wso2carbon.version>4.1.0</wso2carbon.version>
+        <carbon.platform.package.import.version.range>[4.1.0, 4.2.0)</carbon.platform.package.import.version.range>
+        <carbon.platform.package.export.version>4.1.0</carbon.platform.package.export.version>
     </properties>
 </project>
