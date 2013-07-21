@@ -29,9 +29,9 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-controller-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Stratos Controller Parent</name>
+    <name>Apache Stratos - Controller Parent</name>
     <url>http://apache.org</url>
-    <description>Stratos Controller Parent</description>
+    <description>Apache Stratos Controller Parent</description>
 
     <licenses>
         <license>
