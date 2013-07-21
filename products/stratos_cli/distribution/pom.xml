@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apaches2cli</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos CLI</name>
+    <name>Apache Stratos - CLI</name>
     <url>http://apache.org/cloud/stratos/</url>
     <description>Apache Stratos CLI Distribution</description>
 

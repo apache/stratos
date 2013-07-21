@@ -38,6 +38,7 @@
         <module>elb</module>
         <module>stratos_agent</module>
         <module>stratos_cli</module>
+        <module>stratos_controller</module>
     </modules>
 
 </project>
