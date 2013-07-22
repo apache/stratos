@@ -20,17 +20,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.cc</groupId>
+        <groupId>org.apache.stratos.cc</groupId>
         <artifactId>cc-parent</artifactId>
         <version>1.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>cloud-controller-p2-profile</artifactId>
+    <artifactId>stratos-cc-p2-profile</artifactId>
     <packaging>pom</packaging>
-    <name> cloud controller - P2 Profile Generation</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos - Cloud Controller - P2 Profile Generation</name>
+    <url>http://apache.org</url>
 
     <build>
         <plugins>

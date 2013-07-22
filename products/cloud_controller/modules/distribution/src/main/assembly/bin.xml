@@ -24,7 +24,7 @@
     <fileSets>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
-            <outputDirectory>wso2cc-${pom.version}</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/*.bat</exclude>
@@ -44,7 +44,7 @@
         </fileSet>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
-            <outputDirectory>wso2cc-${pom.version}</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/wso2server.sh</exclude>
                 <exclude>**/wso2server.bat</exclude>     
@@ -58,25 +58,25 @@
 		<!--samples set of product-->
         <fileSet>
             <directory>../../modules/samples/product/jmsclient</directory>
-            <outputDirectory>wso2cc-${pom.version}/samples/jmsclient</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/samples/jmsclient</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/jmstransport</directory>
-            <outputDirectory>wso2cc-${pom.version}/samples/jmstransport</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/samples/jmstransport</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/wsclient</directory>
-            <outputDirectory>wso2cc-${pom.version}/samples/wsclient</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/samples/wsclient</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/services</directory>
-            <outputDirectory>wso2cc-${pom.version}/samples/services</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/samples/services</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/advanced/
             </directory>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/advanced
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/advanced
             </outputDirectory>
             <includes>
                 <include>**/qpid-config.xml</include>
@@ -86,23 +86,23 @@
         </fileSet>
 	<fileSet>
             <directory>src/main/conf/synapse-configs</directory>
-            <outputDirectory>wso2cc-${pom.version}/repository/deployment/server/synapse-configs
+            <outputDirectory>stratos-cc-${pom.version}/repository/deployment/server/synapse-configs
             </outputDirectory>
         </fileSet>
 	 <fileSet>
             <directory>src/main/cartridges</directory>
-            <outputDirectory>wso2cc-${pom.version}/repository/deployment/server/cartridges</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/deployment/server/cartridges</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>src/main/services</directory>
-            <outputDirectory>wso2cc-${pom.version}/repository/deployment/server/services</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/deployment/server/services</outputDirectory>
         </fileSet>
 	 <!--Multitenancy related file -->
         <fileSet>
             <directory>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/multitenancy/
             </directory>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/multitenancy</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/multitenancy</outputDirectory>
             <includes>
                 <include>**/stratos.xml</include>
                 <include>**/multitenancy-packages.xml</include>
@@ -113,7 +113,7 @@
 
         <fileSet>
            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/</directory>
-           <outputDirectory>wso2cc-${pom.version}/repository/conf/etc</outputDirectory>
+           <outputDirectory>stratos-cc-${pom.version}/repository/conf/etc</outputDirectory>
            <includes>
                <include>**/cassandra.yaml</include>
            </includes>
@@ -122,13 +122,13 @@
 	<!-- copy the landing page webapp -->
         <fileSet>
 		<directory>lib/home</directory>
-		<outputDirectory>wso2cc-${pom.version}/repository/deployment/server/webapps/STRATOS_ROOT</outputDirectory>
+		<outputDirectory>stratos-cc-${pom.version}/repository/deployment/server/webapps/STRATOS_ROOT</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/
             </directory>
-            <outputDirectory>wso2cc-${pom.version}/dbscripts/identity</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/dbscripts/identity</outputDirectory>
             <includes>
                 <include>**/h2.sql</include>
             </includes>
@@ -161,14 +161,14 @@
 
     <dependencySets>
         <dependencySet>
-            <outputDirectory>wso2cc-${pom.version}/repository/deployment/client/modules
+            <outputDirectory>stratos-cc-${pom.version}/repository/deployment/client/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.rampart:rampart:mar</include>
             </includes>
         </dependencySet>
 	<dependencySet>
-            <outputDirectory>wso2cc-${pom.version}/client-lib</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/client-lib</outputDirectory>
             <includes>
                 <include>org.wso2.andes.wso2:andes-client:jar</include>
                 <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
@@ -183,17 +183,17 @@
     <files>
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/axis2/axis2.xml</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/axis2</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/axis2</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>src/main/conf/event-broker.xml</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf</outputDirectory>
         </file>
 	<!--file>
             <source>src/main/conf/user-mgt.xml</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf</outputDirectory>
             <destName>user-mgt.xml</destName>
         </file-->
 	  <!-- Setting jamm javaagent in bam -->
@@ -205,110 +205,110 @@
         </file>
         <file>
             <source>src/main/conf/embedded-ldap.xml</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf</outputDirectory>
             <destName>embedded-ldap.xml</destName>
         </file>
          <file>
             <source>src/main/conf/zoo.cfg</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/etc</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/etc</outputDirectory>
         </file>
          <file>
             <source>src/main/conf/jaas.conf</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/security</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/security</outputDirectory>
         </file>
          <file>
             <source>src/main/resources/wso2server.sh</source>
-            <outputDirectory>wso2cc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/main/resources/log4j.properties</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	 <file>
             <source>src/main/conf/synapse.properties</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf</outputDirectory>
             <destName>synapse.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/conf/cipher-text.properties</source>
-            <outputDirectory>wso2cc-${pom.version}/lib</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/lib</outputDirectory>
             <destName>cipher-text.properties</destName>
             <filtered>true</filtered>
         </file>
          <file>
             <source>src/main/resources/wso2server.bat</source>
-            <outputDirectory>wso2cc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/main/conf/datasources.properties</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf</outputDirectory>
             <destName>datasources.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>../../LICENSE.txt</source>
-            <outputDirectory>wso2cc-${pom.version}</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../README.txt</source>
-            <outputDirectory>wso2cc-${pom.version}</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../INSTALL.txt</source>
-            <outputDirectory>wso2cc-${pom.version}</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <!--file>
             <source>../../docs/xdoc/release-notes.xml</source>
-            <outputDirectory>wso2cc-${pom.version}</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <destName>release-notes.html</destName>
             <fileMode>644</fileMode>
         </file-->
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/bin/README.txt</source>
-            <outputDirectory>wso2cc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/bin/version.txt</source>
-            <outputDirectory>wso2cc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
 	<!--file>
             <source>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/security/authenticators.xml
             </source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/security/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/security/</outputDirectory>
             <filtered>true</filtered>
         </file-->
 
 	<!-- Including logging-config.xml file -->
  	<file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/logging-config.xml</source>
-            <outputDirectory>wso2cc-${pom.version}/repository/conf/etc/</outputDirectory>
+            <outputDirectory>stratos-cc-${pom.version}/repository/conf/etc/</outputDirectory>
         </file>
         <file>
              <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/identity.xml</source>
-	     <outputDirectory>wso2cc-${pom.version}/repository/conf/</outputDirectory>
+	     <outputDirectory>stratos-cc-${pom.version}/repository/conf/</outputDirectory>
         </file>
 	<file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/cloud-controller.xml</source>

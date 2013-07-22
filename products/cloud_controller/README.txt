@@ -68,7 +68,7 @@ For more details see
 Installation & Running
 ==================================
 
-1. Extract the wso2cc-1.0.1.zip and go to the extracted directory
+1. Extract the stratos-cc-1.0.1.zip and go to the extracted directory
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 

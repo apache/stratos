@@ -22,18 +22,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.cc</groupId>
+        <groupId>org.apache.stratos.cc</groupId>
         <artifactId>cc-parent</artifactId>
         <version>1.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wso2cc</artifactId>
+    <artifactId>stratos-cc</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Cloud Controller - Distribution</name>
-    <url>http://wso2.org/projects/mb/java</url>
-    <description>WSO2 Cloud Controller - Distribution</description>
+    <name>Apache Stratos - Cloud Controller - Distribution</name>
+    <url>http://apache.org</url>
+    <description>Apache Stratos - Cloud Controller - Distribution</description>
 
     <dependencies>
         <dependency>
@@ -121,13 +121,13 @@
                                 <mkdir dir="${tempdir}"/>
                                 <unzip dest="${tempdir}">
                                     <fileset dir="target">
-                                        <include name="wso2cc-${project.version}.zip"/>
+                                        <include name="stratos-cc-${project.version}.zip"/>
                                     </fileset>
                                 </unzip>
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
                                       overwrite="false">
                                     <fileset
-                                            dir="${tempdir}/wso2cc-${project.version}/repository/components/">
+                                            dir="${tempdir}/stratos-cc-${project.version}/repository/components/">
                                     </fileset>
                                 </copy>
                                 <unzip dest="${tempdir}">
