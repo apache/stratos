@@ -116,6 +116,9 @@
 					org.apache.stratos:org.apache.stratos.common.feature:${apache.stratos.version}
 				    </featureArtifactDef>
 				    <featureArtifactDef>
+					org.apache.stratos:org.apache.stratos.tenant.activity.server.feature:${apache.stratos.version}
+				    </featureArtifactDef>
+				    <featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.usage.feature:${apache.stratos.version}
 				    </featureArtifactDef>
 				    <featureArtifactDef>
@@ -270,7 +273,7 @@
 				    <version>${apache.stratos.version}</version>
 				</feature>
 				<feature>
-				    <id>org.apche.stratos.common.feature.group</id>
+				    <id>org.apache.stratos.common.feature.group</id>
 				    <version>${apache.stratos.version}</version>
 				</feature>
 				<!-- start BAM -->
@@ -329,8 +332,8 @@
 				<!--End GApp SSO features -->
 
 				<feature>
-				    <id>org.wso2.carbon.load.balance.agent.server.feature.group</id>
-				    <version>${stratos.component.version}</version>
+				    <id>org.apache.stratos.load.balance.agent.server.feature.group</id>
+				    <version>${apache.stratos.version}</version>
 				</feature>
 				<feature>
 				    <id>org.apache.stratos.usage.feature.group</id>

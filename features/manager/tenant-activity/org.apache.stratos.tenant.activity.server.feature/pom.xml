@@ -84,7 +84,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.tenant.activity</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.tenant.activity:${apache.stratos.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>

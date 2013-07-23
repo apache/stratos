@@ -48,7 +48,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.apache.stratos.stratos.gapp.server</id>
+                            <id>org.apache.stratos.gapp.server</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.identity.core.server:${carbon.version}</importFeatureDef>

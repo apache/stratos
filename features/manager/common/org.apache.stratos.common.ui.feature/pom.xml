@@ -91,7 +91,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.apache.stratos.stratos.common.ui</id>
+                            <id>org.apache.stratos.common.ui</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>

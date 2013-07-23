@@ -70,7 +70,7 @@
                         <Import-Package>
                             org.wso2.carbon.rule.*,
                             org.apache.stratos.common.*,
-                            org.apahce.throttling.agent.*,
+                            org.apache.throttling.agent.*,
                             org.wso2.carbon.billing.mgt.*,
                             org.wso2.carbon.registry.core.*;version=1.0.1,
                             org.wso2.carbon.registry.resource.*,

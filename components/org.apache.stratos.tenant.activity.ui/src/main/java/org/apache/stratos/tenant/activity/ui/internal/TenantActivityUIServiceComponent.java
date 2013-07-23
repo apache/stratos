@@ -13,7 +13,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * cardinality="1..1" policy="dynamic"  bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
  * @scr.reference name="stratos.config.service"
- * interface="org.wso2.stratos.stratos.common.util.StratosConfiguration" cardinality="1..1"
+ * interface="org.apache.stratos.common.util.StratosConfiguration" cardinality="1..1"
  * policy="dynamic" bind="setStratosConfigurationService" unbind="unsetStratosConfigurationService"
  */
 public class TenantActivityUIServiceComponent {
