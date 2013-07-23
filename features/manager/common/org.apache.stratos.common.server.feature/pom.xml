@@ -202,7 +202,7 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.common:${apache.stratos.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.activation:2.1.2</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.activation:${apache.stratos.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.sample.installer:${stratos.version}</bundleDef>-->
                                 <bundleDef>org.apache.stratos:org.apache.stratos.tenant.dispatcher</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.throttling.agent</bundleDef>-->

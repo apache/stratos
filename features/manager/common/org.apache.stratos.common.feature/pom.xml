@@ -67,7 +67,7 @@
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <includedFeatures>
                                 <includedFeatureDef>org.apache.stratos:org.apache.stratos.common.server.feature</includedFeatureDef>
-				<includedFeatureDef>org.apache.stratos:org.apache.stratos.common.ui.feature:${apache.stratos.version}</includedFeatureDef>
+				<includedFeatureDef>org.apache.stratos:org.apache.stratos.common.ui.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
@@ -75,7 +75,4 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <apache.stratos.version>3.0.0-SNAPSHOT</apache.stratos.version>
-    </properties>
 </project>

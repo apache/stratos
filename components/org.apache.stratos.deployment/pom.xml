@@ -100,5 +100,8 @@
             <artifactId>commons-logging</artifactId>
         </dependency>
     </dependencies>
+    <properties>
+	<axis2.osgi.version.range>1.6.1.wso2v8</axis2.osgi.version.range>
+    </properties>
 </project>
 
