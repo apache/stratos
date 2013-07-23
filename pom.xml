@@ -34,8 +34,8 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>components</module>
         <module>service-stubs</module>
+        <module>components</module>
         <module>features</module>
         <module>products</module>
     </modules>
