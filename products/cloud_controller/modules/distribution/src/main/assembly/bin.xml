@@ -35,7 +35,7 @@
                 <exclude>**/repository/services/version/**</exclude>
                 <exclude>**/version.txt</exclude>
                 <exclude>**/LICENSE.txt</exclude>
-                <exclude>**/wso2server.bat</exclude>
+                <exclude>**/stratos.bat</exclude>
 		<exclude>**/launch.ini</exclude>
                 <exclude>**/README.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
@@ -47,8 +47,8 @@
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
             <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <excludes>
-                <exclude>**/wso2server.sh</exclude>
-                <exclude>**/wso2server.bat</exclude>     
+                <exclude>**/stratos.sh</exclude>
+                <exclude>**/stratos.bat</exclude>
             </excludes>
 	    <includes>
                 <include>**/*.sh</include>
@@ -218,7 +218,7 @@
             <outputDirectory>stratos-cc-${pom.version}/repository/conf/security</outputDirectory>
         </file>
          <file>
-            <source>src/main/resources/wso2server.sh</source>
+            <source>src/main/resources/stratos.sh</source>
             <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
@@ -242,7 +242,7 @@
             <filtered>true</filtered>
         </file>
          <file>
-            <source>src/main/resources/wso2server.bat</source>
+            <source>src/main/resources/stratos.bat</source>
             <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>

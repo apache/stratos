@@ -69,7 +69,7 @@ Installation & Running
 ==================================
 
 1. Extract the stratos-cc-1.0.1.zip and go to the extracted directory
-2. Run the wso2server.sh or wso2server.bat as appropriate
+2. Run the stratos.sh or stratos.bat as appropriate
 3. Point your favourite browser to
 
     https://localhost:9443/carbon

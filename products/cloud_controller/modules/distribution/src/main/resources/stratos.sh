@@ -184,7 +184,7 @@ elif [ "$CMD" = "--n" ]; then
   fi
 elif [ "$CMD" = "start" ]; then
   export CARBON_HOME=$CARBON_HOME
-  nohup $CARBON_HOME/bin/wso2server.sh &
+  nohup $CARBON_HOME/bin/stratos.sh &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME=$CARBON_HOME
@@ -193,7 +193,7 @@ elif [ "$CMD" = "stop" ]; then
 elif [ "$CMD" = "restart" ]; then
   export CARBON_HOME=$CARBON_HOME
   kill -9 `cat $CARBON_HOME/wso2carbon.pid`
-  nohup $CARBON_HOME/bin/wso2server.sh &
+  nohup $CARBON_HOME/bin/stratos.sh &
   exit 0
 elif [ "$CMD" = "test" ]; then
     JAVACMD="exec "$JAVACMD""
@@ -264,10 +264,10 @@ do
      -XX:+CMSClassUnloadingEnabled \
      -XX:+OptimizeStringConcat \
      -XX:+HeapDumpOnOutOfMemoryError \
-     -XX:OnOutOfMemoryError="kill -9 `echo $$`;nohup ./wso2server.sh &" \
+     -XX:OnOutOfMemoryError="kill -9 `echo $$`;nohup ./stratos.sh &" \
      -XX:HeapDumpPath=repository/logs/heap-dump.hprof \
      -XX:ErrorFile=repository/logs/hs_err_pid.log \
-     -XX:OnError="nohup ./wso2server.sh &" \
+     -XX:OnError="nohup ./stratos.sh &" \
      -javaagent:"$CARBON_HOME/repository/components/plugins/jamm_0.2.5.wso2v2.jar" \
     $JAVA_OPTS \
     -DandesConfig=qpid-config.xml \

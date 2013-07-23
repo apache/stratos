@@ -115,8 +115,8 @@ which Java is installed. </p>
 <h5>4.1 Running WSO2 MB in Standalone Mode </h5>
 
 <p>Now you are all set to start WSO2 MB in the standalone mode. Go to
-MB_HOME/bin directory and if you are on Unix/Linux execute the wso2server.sh
-shell script or if you are on Windows execute the wso2server.bat batch file.
+MB_HOME/bin directory and if you are on Unix/Linux execute the stratos.sh
+shell script or if you are on Windows execute the stratos.bat batch file.
 This will start the MB and you can see the progress of the startup procedure
 on the console. Please note that server startup may take some time depending on
 the hardware configuration of your system. The first time startup can take up
@@ -306,7 +306,7 @@ files (with .bat extension) for Windows users. In general you will find the
 following scripts in this directory.<br />
 <br />
 <ul>
-  <li>wso2server.sh/wso2server.bat - Launches WSO2 MB </li>
+  <li>stratos.sh/stratos.bat - Launches WSO2 MB </li>
   <li>wsdl2java.sh/wsdl2java.bat - Launches the Java stub generation tool for
     Web Services </li>
   <li>java2wsdl.sh/java2wsdl.bat - Launches the WSDL generation tool for Java

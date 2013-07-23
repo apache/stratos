@@ -70,7 +70,7 @@
             <ol>
               <li>Extract the downloaded zip</li>
               <li>Go to the bin directory in the extracted folder</li>
-              <li>Run the wso2server.sh or wso2server.bat as appropriate</li>
+              <li>Run the stratos.sh or stratos.bat as appropriate</li>
               <li>Point your browser to the URL https://localhost:9443/carbon</li>
               <li>Use "admin", "admin" as the username and password to login as an admin</li>
               <li>If you need to start the OSGi console with the server use the property

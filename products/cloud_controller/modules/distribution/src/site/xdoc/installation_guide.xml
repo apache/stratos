@@ -217,8 +217,8 @@
             </li>
             <li>
                 Execute the WSO2 MB start script or the daemon script from the bin
-                directory. e.g. ./wso2server.sh OR ./daemon.sh start OR
-                ./wso2server.sh --console
+                directory. e.g. ./stratos.sh OR ./daemon.sh start OR
+                ./stratos.sh --console
             </li>
             <li>
                 Check your WSO2 MB instance using the URL https://localhost:9443/carbon
@@ -252,7 +252,7 @@
                 variable to the Java /bin directory.
             </li>
             <li>
-                Execute the WSO2 MB start script from the bin folder. e.g. wso2server.bat
+                Execute the WSO2 MB start script from the bin folder. e.g. stratos.bat
             </li>
             <li>
                 If you would like to install the WSO2 MB as a Windows service, use the
