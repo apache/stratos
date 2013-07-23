@@ -21,16 +21,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-            <groupId>org.apache.stratos</groupId>
-	    <artifactId>stratos-controller-parent</artifactId>
-	    <version>3.0.0-SNAPSHOT</version>
-            <relativePath>../../pom.xml</relativePath>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-controller-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>wso2sc</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Stratos2  - Distribution</name>
+    <name>Apache Stratos2 - Distribution</name>
     <description>Apache Stratos2 - Distribution</description>
 
     <dependencies>
@@ -40,24 +40,24 @@
             <version>${rampart.mar.version}</version>
             <type>mar</type>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
             <version>0.13.wso2v6</version>
             <type>jar</type>
         </dependency>
-	<!--dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>features-dashboard</artifactId>
-            <version>${features-dashboard.war.version}</version>
-            <type>war</type>
-        </dependency-->
+        <!--dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>features-dashboard</artifactId>
+                <version>${features-dashboard.war.version}</version>
+                <type>war</type>
+            </dependency-->
         <!--dependency>
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
             <version>${orbit.version.h2.engine}</version>
         </dependency-->
-	 <!-- Carbon core distribution -->
+        <!-- Carbon core distribution -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>wso2carbon-core</artifactId>
@@ -108,13 +108,13 @@
             <artifactId>org.wso2.carbon.mediator.bridge</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-	      <dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.mediation.dependency.mgt</artifactId>
             <version>${carbon.version}</version>
         </dependency>
 
-        
+
         <!-- ### Required Carbon components ### -->
         <!-- Transport managament components -->
         <dependency>
@@ -174,15 +174,15 @@
             <artifactId>org.wso2.carbon.mediator.command.services</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-        
-         <!--Entitlement mediator dependency -->
+
+        <!--Entitlement mediator dependency -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.identity.entitlement.mediator</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-        
-         <!--OAuth mediator dependency -->
+
+        <!--OAuth mediator dependency -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.identity.oauth.mediator</artifactId>
@@ -221,11 +221,11 @@
             <version>2.5.15.wso2v1</version>
         </dependency>
         <!-- Endpoints component -->
-	      <!--dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.endpoint.common</artifactId>
-            <version>${carbon.version}</version>
-        </dependency-->
+        <!--dependency>
+          <groupId>org.wso2.carbon</groupId>
+          <artifactId>org.wso2.carbon.endpoint.common</artifactId>
+          <version>${carbon.version}</version>
+      </dependency-->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.endpoint</artifactId>
@@ -256,7 +256,7 @@
             <version>${carbon.version}</version>
         </dependency>
         <!-- Security components (orbit) -->
-         <dependency>
+        <dependency>
             <groupId>org.apache.rampart.wso2</groupId>
             <artifactId>rampart-policy</artifactId>
             <version>1.6.1.wso2v1</version>
@@ -274,13 +274,6 @@
             <version>1.6.1.wso2v1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart</artifactId>
-            <type>mar</type>
-            <version>1.6.1-wso2v1</version>
-        </dependency>
-        
         <!-- Policy Editor component -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -339,7 +332,7 @@
             <artifactId>org.wso2.carbon.rm</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-              
+
         <!-- Menus -->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -430,13 +423,13 @@
             <artifactId>org.wso2.carbon.mediator.autoscale</artifactId>
             <version>4.0.3</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.discovery.core</artifactId>
             <version>${carbon.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.relay</artifactId>
@@ -531,7 +524,7 @@
                                         <path refid="h2.classpath"/>
                                     </classpath>
                                     <fileset file="../../billing-script/billing-h2.sql"/>
-				    <fileset file="../../billing-script/metering_h2.sql"/>
+                                    <fileset file="../../billing-script/metering_h2.sql"/>
                                 </sql>
                                 <echo
                                         message="##################### END ########################"/>
@@ -560,7 +553,7 @@
                                     <classpath>
                                         <path refid="h2.classpath"/>
                                     </classpath>
-				    <fileset file="../../billing-script/s2_h2.sql"/>
+                                    <fileset file="../../billing-script/s2_h2.sql"/>
                                 </sql>
                                 <echo
                                         message="##################### END ########################"/>
@@ -582,11 +575,14 @@
                                         <include name="${project.artifactId}-${project.version}.zip"/>
                                     </fileset>
                                 </unzip>
-                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components" overwrite="true">
-                                    <fileset dir="${tempdir}/${project.artifactId}-${project.version}/repository/components">
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${tempdir}/${project.artifactId}-${project.version}/repository/components">
                                     </fileset>
                                 </copy>
-                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/conf" overwrite="true">
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/conf"
+                                      overwrite="true">
                                     <fileset dir="../../conf">
                                         <include name="user-mgt.xml"/>
                                     </fileset>
@@ -595,7 +591,8 @@
                                 <delete dir="${tempdir}"/>
                                 <mkdir dir="${tempdir}"/>
                                 <unzip dest="${tempdir}">
-                                    <fileset dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
+                                    <fileset
+                                            dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
                                         <include name="*.ui*.jar"/>
                                     </fileset>
                                 </unzip>
