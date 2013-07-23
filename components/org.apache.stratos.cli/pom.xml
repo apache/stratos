@@ -27,10 +27,10 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.apache.stratos.adc.mgt.cli</artifactId>
+	<artifactId>org.apache.stratos.cli</artifactId>
 	<packaging>jar</packaging>
-	<name>Apache Stratos - ADC Management CLI</name>
-	<description>ADC management CLI bundle</description>
+	<name>Apache Stratos - CLI</name>
+	<description>Apache Stratos CLI</description>
 	<url>http://apache.org</url>
 	
 	<properties>
@@ -109,7 +109,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.apache.stratos.adc.mgt.cli.CliTool</mainClass>
+							<mainClass>org.apache.stratos.cli.CliTool</mainClass>
 						</manifest>
 					</archive>
 					<descriptors>

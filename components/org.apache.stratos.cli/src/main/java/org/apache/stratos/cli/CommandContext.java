@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli;
+package org.apache.stratos.cli;
 
 import java.util.HashMap;
 import java.util.Map;

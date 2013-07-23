@@ -16,10 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli;
+package org.apache.stratos.cli;
 
-import static org.apache.stratos.adc.mgt.cli.utils.CliConstants.STRATOS_DIR;
-import static org.apache.stratos.adc.mgt.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.stratos.adc.mgt.cli.completer.CommandCompleter;
-import org.apache.stratos.adc.mgt.cli.exception.CommandException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -44,18 +42,20 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.stratos.adc.mgt.cli.commands.AddDomainMappingCommand;
-import org.apache.stratos.adc.mgt.cli.commands.CartridgesCommand;
-import org.apache.stratos.adc.mgt.cli.commands.ExitCommand;
-import org.apache.stratos.adc.mgt.cli.commands.HelpCommand;
-import org.apache.stratos.adc.mgt.cli.commands.InfoCommand;
-import org.apache.stratos.adc.mgt.cli.commands.ListCommand;
-import org.apache.stratos.adc.mgt.cli.commands.PoliciesCommand;
-import org.apache.stratos.adc.mgt.cli.commands.RemoveDomainMappingCommand;
-import org.apache.stratos.adc.mgt.cli.commands.SubscribeCommand;
-import org.apache.stratos.adc.mgt.cli.commands.SyncCommand;
-import org.apache.stratos.adc.mgt.cli.commands.UnsubscribeCommand;
-import org.apache.stratos.adc.mgt.cli.utils.CliConstants;
+import org.apache.stratos.cli.commands.AddDomainMappingCommand;
+import org.apache.stratos.cli.commands.CartridgesCommand;
+import org.apache.stratos.cli.commands.ExitCommand;
+import org.apache.stratos.cli.commands.HelpCommand;
+import org.apache.stratos.cli.commands.InfoCommand;
+import org.apache.stratos.cli.commands.ListCommand;
+import org.apache.stratos.cli.commands.PoliciesCommand;
+import org.apache.stratos.cli.commands.RemoveDomainMappingCommand;
+import org.apache.stratos.cli.commands.SubscribeCommand;
+import org.apache.stratos.cli.commands.SyncCommand;
+import org.apache.stratos.cli.commands.UnsubscribeCommand;
+import org.apache.stratos.cli.completer.CommandCompleter;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CliConstants;
 
 public class StratosApplication extends CommandLineApplication<StratosCommandContext> {
 

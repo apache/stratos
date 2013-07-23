@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli;
+package org.apache.stratos.cli;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -40,9 +40,6 @@ import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.stratos.adc.mgt.cli.exception.CommandException;
-import org.apache.stratos.adc.mgt.cli.utils.CommandLineUtils;
-import org.apache.stratos.adc.mgt.cli.utils.RowMapper;
 import org.apache.stratos.adc.mgt.dto.xsd.Cartridge;
 import org.apache.stratos.adc.mgt.dto.xsd.PolicyDefinition;
 import org.apache.stratos.adc.mgt.dto.xsd.SubscriptionInfo;
@@ -59,6 +56,9 @@ import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceRepositoryReq
 import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceRepositoryTransportExceptionException;
 import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceStub;
 import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.RowMapper;
 
 import com.google.gson.Gson;
 

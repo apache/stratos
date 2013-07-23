@@ -53,8 +53,9 @@
 		<module>org.apache.stratos.adc.topology.mgt</module>
 		<module>org.apache.stratos.adc.mgt</module>
 		<module>org.apache.stratos.adc.mgt.repository.synchronizer</module>
-		<module>org.apache.stratos.adc.mgt.cli</module>
 		<module>org.apache.stratos.deployment</module>
+		<!-- CLI -->
+		<module>org.apache.stratos.cli</module>
 		<!-- ELB -->
 		<module>org.apache.stratos.lb.common</module>
 		<module>org.apache.stratos.lb.endpoint</module>

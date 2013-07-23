@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package org.apache.stratos.adc.mgt.cli.utils;
+package org.apache.stratos.cli.utils;
 
 /**
  * Constants for CLI Tool
@@ -94,10 +94,10 @@ public class CliConstants {
 	public static final String EXIT_ACTION = "exit";
 
 	public static final String REPO_URL_OPTION = "r";
-	public static final String REPO_URL_LONG_OPTION = "repoURL";
+	public static final String REPO_URL_LONG_OPTION = "repo-url";
 	
 	public static final String PRIVATE_REPO_OPTION = "i";
-	public static final String PRIVATE_REPO_LONG_OPTION = "privateRepo";
+	public static final String PRIVATE_REPO_LONG_OPTION = "private-repo";
 
 	public static final String USERNAME_OPTION = "u";
 	public static final String USERNAME_LONG_OPTION = "username";

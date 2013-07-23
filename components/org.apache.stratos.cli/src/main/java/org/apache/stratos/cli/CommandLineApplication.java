@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli;
+package org.apache.stratos.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import jline.console.ConsoleReader;
 import jline.console.history.FileHistory;
 
-import org.apache.stratos.adc.mgt.cli.utils.CliConstants;
+import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli.completer;
+package org.apache.stratos.cli.completer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +34,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.stratos.adc.mgt.cli.Command;
-import org.apache.stratos.adc.mgt.cli.StratosApplication;
-import org.apache.stratos.adc.mgt.cli.StratosCommandContext;
-import org.apache.stratos.adc.mgt.cli.utils.CliConstants;
+import org.apache.stratos.cli.Command;
+import org.apache.stratos.cli.StratosApplication;
+import org.apache.stratos.cli.StratosCommandContext;
+import org.apache.stratos.cli.utils.CliConstants;
 
 public class CommandCompleter implements Completer {
 

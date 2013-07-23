@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli.utils;
+package org.apache.stratos.cli.utils;
 
 public interface RowMapper<T> {
 	String[] getData(T t);

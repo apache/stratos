@@ -16,9 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli;
+package org.apache.stratos.cli;
 
-import org.apache.stratos.adc.mgt.cli.exception.CommandException;
+import org.apache.stratos.cli.exception.CommandException;
 import org.apache.commons.cli.Options;
 
 public interface Command<T extends CommandContext> {
@@ -59,7 +59,7 @@ public interface Command<T extends CommandContext> {
 	 * @param args
 	 *            The arguments for the command
 	 * @return The status code
-	 * @throws org.apache.stratos.adc.mgt.cli.exception.CommandException
+	 * @throws org.apache.stratos.cli.exception.CommandException
 	 *             if any errors occur when executing the command
 	 */
 	int execute(T context, String[] args) throws CommandException;

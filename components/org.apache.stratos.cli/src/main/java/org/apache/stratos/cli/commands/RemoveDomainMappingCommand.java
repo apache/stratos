@@ -16,13 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli.commands;
+package org.apache.stratos.cli.commands;
 
-import org.apache.stratos.adc.mgt.cli.Command;
-import org.apache.stratos.adc.mgt.cli.CommandLineService;
-import org.apache.stratos.adc.mgt.cli.StratosCommandContext;
-import org.apache.stratos.adc.mgt.cli.exception.CommandException;
-import org.apache.stratos.adc.mgt.cli.utils.CliConstants;
+import org.apache.stratos.cli.Command;
+import org.apache.stratos.cli.CommandLineService;
+import org.apache.stratos.cli.StratosCommandContext;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

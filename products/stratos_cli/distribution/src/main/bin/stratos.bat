@@ -17,7 +17,7 @@ rem  KIND, either express or implied.  See the License for the
 rem  specific language governing permissions and limitations
 rem  under the License.
 rem ---------------------------------------------------------------------------
-rem  Main Script for WSO2 Carbon
+rem  Main Script for Apache Stratos CLI
 rem
 rem  Environment Variable Prequisites
 rem
@@ -32,5 +32,5 @@ if "%STRATOS_CLI_HOME%"=="" set STRATOS_CLI_HOME=%CD%
 
 cd %STRATOS_CLI_HOME%
 
-java -jar "org.apache.stratos.adc.mgt.cli-3.0.0-SNAPSHOT-Tool.jar" %*
+java -jar "org.apache.stratos.cli-3.0.0-SNAPSHOT-Tool.jar" %*
 

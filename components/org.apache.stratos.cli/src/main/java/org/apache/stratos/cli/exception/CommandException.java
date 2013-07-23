@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli.exception;
+package org.apache.stratos.cli.exception;
 
 public class CommandException extends Exception {
 

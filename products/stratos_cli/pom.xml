@@ -29,10 +29,10 @@
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>apache-s2cli-parent</artifactId>
+    <artifactId>apache-stratos-cli-parent</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - CLI - Distribution</name>
-    <url>http://apache.org/cloud/stratos/</url>
+    <url>http://apache.org</url>
     <description>Apache Stratos CLI</description>
 
    

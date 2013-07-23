@@ -16,9 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli;
+package org.apache.stratos.cli;
 
-import static org.apache.stratos.adc.mgt.cli.utils.CliConstants.STRATOS_DIR;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
 
 import java.io.File;
 

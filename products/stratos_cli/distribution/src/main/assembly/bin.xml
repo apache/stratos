@@ -25,10 +25,10 @@
 
     <fileSets>
         <fileSet>
-            <directory>../../../../../components/stratos/artifact-deployment-coordinator/org.apache.stratos.adc.mgt.cli/3.0.0-SNAPSHOT/target</directory>
+            <directory>../../../components/org.apache.stratos.cli/target</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <includes>
-                <include>org.apache.stratos.adc.mgt.cli-3.0.0-SNAPSHOT-Tool.jar</include>
+                <include>org.apache.stratos.cli-${pom.version}-Tool.jar</include>
             </includes>
         </fileSet>
         <fileSet>

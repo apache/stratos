@@ -16,12 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.adc.mgt.cli.commands;
+package org.apache.stratos.cli.commands;
 
-import org.apache.stratos.adc.mgt.cli.Command;
-import org.apache.stratos.adc.mgt.cli.CommandLineService;
-import org.apache.stratos.adc.mgt.cli.StratosCommandContext;
-import org.apache.stratos.adc.mgt.cli.exception.CommandException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -31,7 +27,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.stratos.adc.mgt.cli.utils.CliConstants;
+import org.apache.stratos.cli.Command;
+import org.apache.stratos.cli.CommandLineService;
+import org.apache.stratos.cli.StratosCommandContext;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CliConstants;
 
 public class SubscribeCommand implements Command<StratosCommandContext> {
 
