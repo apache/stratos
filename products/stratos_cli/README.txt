@@ -87,9 +87,25 @@ Windows:
 set STRATOS_USERNAME=<username>
 set STRATOS_PASSWORD=<password>
 
+
+Support
+==================================
+
+Any problem with this release can be reported to Apache Stratos mailing list
+or in the JIRA issue tracker. If you are sending an email to the mailing
+list make sure to add the [Apache Stratos] prefix to the subject.
+
+Mailing list subscription:
+    dev-subscribe@stratos.incubator.apache.org
+
+
 Issue Tracker
 ==================================
 
+Jira:
+    https://issues.apache.org/jira/browse/stratos
 
---------------------------------------------------------------------------------
+
+Thank you for using Apache Stratos!
+The Stratos Team.
 

@@ -2,19 +2,19 @@
                         WSO2 Cloud Controller Server 1.0.1
 ================================================================================
 
-Welcome to the WSO2 CC 1.0.1 release.
+Welcome to the Apache Stratos CC 1.0.1 release.
 
-WSO2 Cloud Controller plays a vital role in Stratos 2.0 and is open source and freely 
-distributed. WSO2 CC is available under the Apache Software License v2.0.
+Apache Stratos Cloud Controller plays a vital role in Stratos 2.0 and is open source and freely
+distributed. Apache Stratos CC is available under the Apache Software License v2.0.
 
 This is based on the revolutionary WSO2 Carbon [Middleware a' la carte]
 framework. All the major features have been developed as pluggable Carbon
 components.
 
-WSO2 CC leverages the jclouds (http://jclouds.incubator.apache.org/) APIs and provides
+Apache Stratos CC leverages the jclouds (http://jclouds.incubator.apache.org/) APIs and provides
 a generic layer to communicate with different IaaSes. 
 
-Key Features of WSO2 CC
+Key Features of Apache Stratos CC
 ========================
 
  * It acts as a bridge between application level and Infrastructure as a Service (IaaS) level via jclouds API.
@@ -58,7 +58,7 @@ System Requirements
    medium or lower.
 5. To compile and run the sample clients, an Ant version is required. Ant 1.7.0
    version is recommended
-6. To build WSO2 CC from the Source distribution, it is necessary that you have
+6. To build Apache Stratos CC from the Source distribution, it is necessary that you have
    JDK 1.6.24 version and Maven 3.0.4 or later
 
 
@@ -81,7 +81,7 @@ Installation & Running
 
    
 
-WSO2 CC 1.0.1 distribution directory structure
+Apache Stratos CC 1.0.1 distribution directory structure
 =============================================
 
 	CARBON_HOME
@@ -119,11 +119,11 @@ WSO2 CC 1.0.1 distribution directory structure
       Contains required libraries for JMS,Event Clients
 
     - lib
-      Contains the basic set of libraries required to start-up  WSO2 CC
+      Contains the basic set of libraries required to start-up  Apache Stratos CC
       in standalone mode
 
     - repository
-      The repository where cartridges and services are deployed in WSO2 CC.
+      The repository where cartridges and services are deployed in Apache Stratos CC.
 
         - components
           Contains OSGi bundles and configurations
@@ -157,30 +157,31 @@ WSO2 CC 1.0.1 distribution directory structure
       java.io.tmpdir System property
 
     - LICENSE.txt
-      Apache License 2.0 under which WSO2 CC is distributed.
+      Apache License 2.0 under which Apache Stratos CC is distributed.
 
     - README.txt
       This document.
 
     - INSTALL.txt
-      This document will contain information on installing WSO2 CC
-
+      This document will contain information on installing Apache Stratos CC
 
 
 Support
 ==================================
-WSO2 Inc. offers a variety of development and production support
-programs, ranging from Web-based support up through normal business
-hours, to premium 24x7 phone support.
 
-For additional support information please refer to http://wso2.com/support/
+Any problem with this release can be reported to Apache Stratos mailing list
+or in the JIRA issue tracker. If you are sending an email to the mailing
+list make sure to add the [Apache Stratos] prefix to the subject.
 
-For more information on WSO2 CC, visit the WSO2 Oxygen Tank (http://wso2.org)
+Mailing list subscription:
+    dev-subscribe@stratos.incubator.apache.org
 
-For more details and to take advantage of this unique opportunity please visit
-http://wso2.com/support/
 
-Thank you for your interest in WSO2 Cloud Controller.
+Issue Tracker
+==================================
+
+Jira:
+    https://issues.apache.org/jira/browse/stratos
 
 
 Crypto Notice
@@ -213,6 +214,7 @@ Crypto Notice
    Apache Santuario : http://santuario.apache.org/
    Bouncycastle     : http://www.bouncycastle.org/
 
---------------------------------------------------------------------------------
-(c) Copyright 2013 WSO2 Inc.
+
+Thank you for using Apache Stratos!
+The Stratos Team.
 

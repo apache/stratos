@@ -60,19 +60,24 @@ Apache Stratos Agent 1.0.1 distribution directory structure
     - INSTALL.txt
       This document will contain information on installing Apache Stratos Agent
 
+
 Support
 ==================================
 
-Apache offers a variety of development and production support
-programs, ranging from Web-based support up through normal business
-hours, to premium 24x7 phone support.
+Any problem with this release can be reported to Apache Stratos mailing list
+or in the JIRA issue tracker. If you are sending an email to the mailing
+list make sure to add the [Apache Stratos] prefix to the subject.
 
-For additional support information please refer to http://wso2.com/support/
+Mailing list subscription:
+    dev-subscribe@stratos.incubator.apache.org
 
-For more information on Apache Stratos Agent, visit the Apache (http://apache.org)
 
 Issue Tracker
 ==================================
+
+Jira:
+    https://issues.apache.org/jira/browse/stratos
+
 
 Crypto Notice
 ==================================
@@ -104,5 +109,6 @@ Crypto Notice
    Apache Santuario : http://santuario.apache.org/
    Bouncycastle     : http://www.bouncycastle.org/
 
---------------------------------------------------------------------------------
-(c) Copyright 2013 Apache.
+
+Thank you for using Apache Stratos!
+The Stratos Team.
