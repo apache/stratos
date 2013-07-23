@@ -1,4 +1,4 @@
-Installing  WSO2 Cloud Controller Server (CC) 1.0.1
+Installing  Apache Stratos Cloud Controller Server (CC) 1.0.1
 ===================================================================
 
 1. The directory containing this INSTALL.txt file will be the root and it will be
@@ -67,7 +67,7 @@ System Requirements
    medium or lower.
 5. To compile and run the sample clients, an Ant version is required. Ant 1.7.0
    version is recommended
-6. To build WSO2 CC from the Source distribution, it is necessary that you have
+6. To build Apache Stratos CC from the Source distribution, it is necessary that you have
    JDK 1.6.24 version and Maven 3.0.4 or later
 
 
