@@ -26,7 +26,6 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>4.1.1</version>
     <artifactId>org.apache.stratos.adc.reponotification.service.stub</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Stratos - Repository Notification Service Stub</name>
