@@ -29,7 +29,7 @@
     <version>4.1.1</version>
     <artifactId>org.apache.stratos.adc.topologymgt.service.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos -Topology Management Service Stub</name>
+    <name>Apache Stratos - Topology Management Service Stub</name>
     <url>http://apache.org</url>
 
     <build>
