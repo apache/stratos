@@ -20,18 +20,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>carbon-service-stubs</artifactId>
-        <version>4.1.0</version>
-        <relativePath>../../pom.xml</relativePath>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-service-stubs-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <version>4.1.1</version>
-    <artifactId>org.wso2.carbon.adc.topologymgt.service.stub</artifactId>
+    <artifactId>org.apache.stratos.adc.topologymgt.service.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon -Topology Management Service Stub</name>
-    <url>http://wso2.org</url>
+    <name>Apache Stratos -Topology Management Service Stub</name>
+    <url>http://apache.org</url>
 
     <build>
         <plugins>            
@@ -49,7 +48,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/TopologyMgtService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.topology.mgt"/>
+                                    <arg line="-uri src/main/resources/TopologyMgtService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.topology.mgt"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -89,8 +88,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.stratos.topology.mgt.service.impl.*; version=0.0.0,
-                            org.wso2.carbon.topology.mgt.*; version=0.0.0
+                            org.apache.stratos.stratos.topology.mgt.service.impl.*; version=0.0.0,
+                            org.apache.stratos.topology.mgt.*; version=0.0.0
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
@@ -105,6 +104,14 @@
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j.wso2</groupId>
+            <artifactId>wsdl4j</artifactId>
         </dependency>
     </dependencies>
 
