@@ -69,10 +69,10 @@
                             <propertiesFile>../etc/feature.properties</propertiesFile>
                             <includedFeatures>
                                 <includedFeatureDef>
-                                    org.apache.stratos:org.apache.stratos.server.feature
+                                    org.apache.stratos:org.apache.stratos.server.feature:${apache.stratos.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.apache.stratos:org.apache.stratos.ui.feature
+                                    org.apache.stratos:org.apache.stratos.ui.feature:${apache.stratos.version}
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>

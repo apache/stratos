@@ -66,8 +66,8 @@
                             <id>org.apache.stratos.common</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.common.server.feature</includedFeatureDef>
-				<includedFeatureDef>org.apache.stratos:org.apache.stratos.common.ui.feature</includedFeatureDef>
+                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.common.server.feature:${apache.stratos.version}</includedFeatureDef>
+				<includedFeatureDef>org.apache.stratos:org.apache.stratos.common.ui.feature:${apache.stratos.version}</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
