@@ -53,6 +53,7 @@
         <module>org.apache.stratos.redirector.servlet.stub</module>
         <module>org.apache.stratos.load.balance.agent.stub</module>
         <module>org.apache.stratos.adc.reponotification.service.stub</module>
+        <module>org.apache.stratos.adc.repoinformation.service.stub</module>
     </modules>
 
     <build>
