@@ -49,7 +49,7 @@
 	<dependency>
 	    <groupId>org.apache.stratos</groupId>
 	    <artifactId>org.apache.stratos.adc.reponotification.service.stub</artifactId>
-	    <version>4.1.1</version>
+	    <version>${project.version}</version>
 	</dependency>
          </dependencies>
 
@@ -78,7 +78,7 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.mgt.ui:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${project.version}</bundleDef>
-				                <bundleDef>org.apache.stratos:org.apache.stratos.adc.reponotification.service.stub:4.1.1</bundleDef>
+				                <bundleDef>org.apache.stratos:org.apache.stratos.adc.reponotification.service.stub:${project.version}</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
