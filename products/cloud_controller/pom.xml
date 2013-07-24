@@ -32,7 +32,6 @@
     <groupId>org.apache.stratos.cc</groupId>
     <artifactId>cc-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
     <name>Apache Stratos - Cloud Controller</name>
     <url>http://wso2.org/projects/mb/java</url>
     <description>Apache Stratos Cloud Controller</description>

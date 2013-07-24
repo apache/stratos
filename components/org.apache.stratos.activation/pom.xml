@@ -49,7 +49,7 @@
                         <Axis2Module>${project.artifactId}-${project.version}</Axis2Module>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.activation.activation.*,
+                            org.apache.stratos.activation.*,
                         </Export-Package>
                         <Import-Package>
                             org.apache.stratos.common.*,

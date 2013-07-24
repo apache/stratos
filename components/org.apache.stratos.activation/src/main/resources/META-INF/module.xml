@@ -16,17 +16,17 @@
   #  specific language governing permissions and limitations
   #  under the License.
   -->
-<module name="activation" class="org.apache.stratos.activation.activation.module.ActivationModule">
+<module name="activation" class="org.apache.stratos.activation.module.ActivationModule">
    <InFlow>
         <handler name="InFlowActivationHandler"
-                 class="org.apache.stratos.activation.activation.module.ActivationHandler">
+                 class="org.apache.stratos.activation.module.ActivationHandler">
         <order phase="Validation" phaseFirst="true"/>
         </handler>
    </InFlow>
 
    <InFaultFlow>
         <handler name="FaultInFlowActivationHandler"
-                 class="org.apache.stratos.activation.activation.module.ActivationHandler">
+                 class="org.apache.stratos.activation.module.ActivationHandler">
         <order phase="Validation" phaseFirst="true"/>
         </handler>
    </InFaultFlow>
