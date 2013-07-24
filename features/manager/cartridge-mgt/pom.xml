@@ -45,9 +45,14 @@
                 <artifactId>org.apache.stratos.cartridge.mgt.ui</artifactId>
                 <version>${apache.stratos.version}</version>
             </dependency>
-	    <dependency>
+	        <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.adc.mgt.stub</artifactId>
+                <version>${apache.stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.adc.reponotification.service.stub</artifactId>
                 <version>${apache.stratos.version}</version>
             </dependency>
         </dependencies>

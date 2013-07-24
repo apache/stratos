@@ -36,22 +36,23 @@
 
     <modules>                            
         <module>org.apache.stratos.load.balance.cartridge.autoscaler.service.stub</module>
-	<module>org.apache.stratos.adc.mgt.stub</module>
-	<module>org.apache.stratos.account.mgt.stub</module>
-	<module>org.apache.stratos.tenant.mgt.stub</module>
-	<module>org.apache.stratos.common.stub</module>
-	<module>org.apache.stratos.usage.stub</module>
-	<module>org.apache.stratos.throttling.agent.stub</module>
-	<module>org.apache.stratos.throttling.stub</module>
-	<module>org.apache.stratos.tenant.register.stub</module>
-	<module>org.apache.stratos.cartridge.agent.stub</module>
-	<module>org.apache.stratos.tenant.activity.stub</module>
-	<module>org.apache.stratos.theme.mgt.stub</module>
-	<module>org.apache.stratos.validate.domain.stub</module>
-	<module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
-	<module>org.apache.stratos.tenant.register.gapp.stub</module>
-	<module>org.apache.stratos.redirector.servlet.stub</module>
-	<module>org.apache.stratos.load.balance.agent.stub</module>
+        <module>org.apache.stratos.adc.mgt.stub</module>
+        <module>org.apache.stratos.account.mgt.stub</module>
+        <module>org.apache.stratos.tenant.mgt.stub</module>
+        <module>org.apache.stratos.common.stub</module>
+        <module>org.apache.stratos.usage.stub</module>
+        <module>org.apache.stratos.throttling.agent.stub</module>
+        <module>org.apache.stratos.throttling.stub</module>
+        <module>org.apache.stratos.tenant.register.stub</module>
+        <module>org.apache.stratos.cartridge.agent.stub</module>
+        <module>org.apache.stratos.tenant.activity.stub</module>
+        <module>org.apache.stratos.theme.mgt.stub</module>
+        <module>org.apache.stratos.validate.domain.stub</module>
+        <module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
+        <module>org.apache.stratos.tenant.register.gapp.stub</module>
+        <module>org.apache.stratos.redirector.servlet.stub</module>
+        <module>org.apache.stratos.load.balance.agent.stub</module>
+        <module>org.apache.stratos.adc.reponotification.service.stub</module>
     </modules>
 
     <build>

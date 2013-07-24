@@ -49,8 +49,8 @@
 			<version>${apache.stratos.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.adc.reponotification.service.stub</artifactId>
+			<groupId>org.apache.stratos</groupId>
+			<artifactId>org.apache.stratos.adc.reponotification.service.stub</artifactId>
 			<version>4.1.1</version>
 		</dependency>
 		<dependency>

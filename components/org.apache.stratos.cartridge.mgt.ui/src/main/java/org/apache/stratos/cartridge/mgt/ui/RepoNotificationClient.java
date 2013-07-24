@@ -1,9 +1,5 @@
 package org.apache.stratos.cartridge.mgt.ui;
 
-import java.rmi.RemoteException;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.client.Options;
@@ -11,8 +7,12 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.adc.reponotification.stub.RepoNotificationServiceException;
-import org.wso2.carbon.adc.reponotification.stub.RepoNotificationServiceStub;
+import org.apache.stratos.adc.reponotification.stub.RepoNotificationServiceException;
+import org.apache.stratos.adc.reponotification.stub.RepoNotificationServiceStub;
+
+import java.rmi.RemoteException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class RepoNotificationClient {
 

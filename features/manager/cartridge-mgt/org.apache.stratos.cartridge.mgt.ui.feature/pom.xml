@@ -47,8 +47,8 @@
 	    <version>${apache.stratos.version}</version>	
         </dependency>
 	<dependency>
-	    <groupId>org.wso2.carbon</groupId>
-	    <artifactId>org.wso2.carbon.adc.reponotification.service.stub</artifactId>
+	    <groupId>org.apache.stratos</groupId>
+	    <artifactId>org.apache.stratos.adc.reponotification.service.stub</artifactId>
 	    <version>4.1.1</version>
 	</dependency>
          </dependencies>
@@ -78,7 +78,7 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.mgt.ui:${apache.stratos.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${apache.stratos.version}</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.adc.reponotification.service.stub:4.1.1</bundleDef>
+				                <bundleDef>org.apache.stratos:org.apache.stratos.adc.reponotification.service.stub:4.1.1</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
