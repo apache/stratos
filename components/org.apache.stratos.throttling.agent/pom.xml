@@ -116,12 +116,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
 	    <artifactId>org.apache.stratos.throttling.agent.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

@@ -39,7 +39,7 @@
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.account.mgt.ui</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -49,7 +49,7 @@
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.common</artifactId>
-		<version>${apache.stratos.version}</version>
+		<version>${project.version}</version>
             </dependency>
             <!--<dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -59,12 +59,12 @@
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.theme.mgt.ui</artifactId>
-		<version>${apache.stratos.version}</version>
+		<version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.theme.mgt.stub</artifactId>
-		<version>${apache.stratos.version}</version>
+		<version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.batik.wso2</groupId>
@@ -73,7 +73,7 @@
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.validate.domain.ui</artifactId>
-		<version>${apache.stratos.version}</version>
+		<version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -103,7 +103,7 @@
  <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.tenant.register.stub</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
         <dependency>
@@ -114,7 +114,7 @@
 	<dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.manager.dashboard.ui</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
 		</dependency>
 	<dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -124,18 +124,18 @@
          <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.manager.login.ui</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.manager.styles</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
 	    <!--stubs-->
 	    <dependency>
 		 <groupId>org.apache.stratos</groupId>
                  <artifactId>org.apache.stratos.account.mgt.stub</artifactId>
-                 <version>${apache.stratos.version}</version>
+                 <version>${project.version}</version>
             </dependency>
 	    <dependency>
                  <groupId>org.wso2.carbon</groupId>
@@ -166,7 +166,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt.ui:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt.ui:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.ui</bundleDef>-->
                                 <bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt.ui</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt.stub</bundleDef>
@@ -185,10 +185,10 @@
 
 				<!--stub bundles -->
 
-				<bundleDef>org.apache.stratos:org.apache.stratos.account.mgt.stub:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.account.mgt.stub:${project.version}</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.validate.domain.stub</bundleDef>
 				<!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.stub:${wso2carbon.version}</bundleDef>-->
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.register.stub:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.register.stub:${project.version}</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.payment.stub:${wso2carbon.version}</bundleDef>
                             </bundles>
                             <importBundles>

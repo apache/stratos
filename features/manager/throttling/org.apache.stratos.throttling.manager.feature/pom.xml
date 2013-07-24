@@ -44,12 +44,12 @@
 	<dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.throttling.manager</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
         </dependency>
 	<dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.throttling.ui</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
         </dependency>
         </dependencies>
     <build>
@@ -75,8 +75,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-				<bundleDef>org.apache.stratos:org.apache.stratos.throttling.manager:${apache.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.throttling.ui:${apache.stratos.version}</bundleDef>								 <bundleDef>org.apache.stratos:org.apache.stratos.throttling.stub:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.throttling.manager:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.throttling.ui:${project.version}</bundleDef>								 <bundleDef>org.apache.stratos:org.apache.stratos.throttling.stub:${project.version}</bundleDef>
                             </bundles>
                             <!--importFeatures>
                                 <importFeatureDef>org.wso2.carbon.stratos.common:${wso2carbon.version}</importFeatureDef>

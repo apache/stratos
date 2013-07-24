@@ -160,7 +160,7 @@
          <dependency>
            <groupId>org.apache.stratos</groupId>
            <artifactId>org.apache.stratos.cartridge.messages</artifactId>
-           <version>${apache.stratos.version}</version>
+           <version>${project.version}</version>
          </dependency>
     </dependencies>
 
@@ -213,8 +213,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${apache.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}</bundleDef>
                                 <bundleDef>org.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
                                 <bundleDef>org.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>
                                 <bundleDef>org.jclouds.driver:jclouds-log4j:${jclouds.version}</bundleDef>
@@ -257,7 +257,7 @@
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
-                                <importFeatureDef>org.apache.stratos.lb.common:${apache.stratos.version}</importFeatureDef>
+                                <importFeatureDef>org.apache.stratos.lb.common:${project.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.ntask.core:${wso2carbon.version}</importFeatureDef> 
                             </importFeatures>
                         </configuration>

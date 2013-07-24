@@ -43,12 +43,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.register.gapp.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

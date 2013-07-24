@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.cartridge.messages</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
 	<dependency>
             <groupId>org.apache.axis2.wso2</groupId>
@@ -71,7 +71,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${project.version}</bundleDef>
 				<bundleDef>org.apache.axis2.wso2:axis2:${axis2.wso2.version}</bundleDef>
                             </bundles>
                         </configuration>

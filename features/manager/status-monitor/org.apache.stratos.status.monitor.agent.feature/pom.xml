@@ -41,12 +41,12 @@
         <dependency>              
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.status.monitor.core</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>              
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.status.monitor.agent</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--dependencies for the service service-->
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>

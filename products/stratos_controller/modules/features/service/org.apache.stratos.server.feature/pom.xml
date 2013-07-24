@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.account.mgt</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <!--<dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -54,32 +54,32 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.mgt</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.mgt.core</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.mgt.email.sender</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.theme.mgt</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.validate.domain</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.keystore.mgt</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -161,7 +161,7 @@
    <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.manager.services.mgt</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
     </dependencies>
 
@@ -210,15 +210,15 @@
 				
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.stratos.common</bundleDef>-->
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.email.sender:${stratos.component.version}</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.email.sender:${apache.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.email.sender:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt</bundleDef>-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.core</bundleDef>-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.theme.mgt</bundleDef>-->
-                                <bundleDef>org.apache.stratos:org.apache.stratos.validate.domain:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.validate.domain:${project.version}</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.email.verification:${carbon.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.services.mgt:${apache.stratos.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.services.mgt:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt:${project.version}</bundleDef>
                                 <bundleDef>kaptcha.wso2:kaptcha:2.3.0.wso2v1</bundleDef>
                                 <!-- stubs -->
                             </bundles>

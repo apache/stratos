@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.lb.common</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
 

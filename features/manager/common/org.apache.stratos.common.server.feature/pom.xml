@@ -38,17 +38,17 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
 	</dependency>
 	<!--dependency>
             <groupId>org.apache.stratos</groupId>
 	    <artifactId>org.apache.stratos.landing.page.deployer</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
 	</dependency-->
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.activation</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
 	<!--<dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -62,12 +62,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.dispatcher</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.redirector.servlet</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <!--<dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -76,7 +76,7 @@
 	<dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.throttling.agent.stub</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <!--<dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -114,7 +114,7 @@
         <dependency>
         	<groupId>org.apache.stratos</groupId>
         	<artifactId>org.apache.stratos.tenant.mgt</artifactId>
-        	<version>${apache.stratos.version}</version>
+        	<version>${project.version}</version>
         </dependency>
 		
 		<dependency>
@@ -125,12 +125,12 @@
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.keystore.mgt</artifactId>
-			<version>${apache.stratos.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.tenant.mgt.core</artifactId>
-			<version>${apache.stratos.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.theme.mgt</artifactId>
-			<version>${apache.stratos.version}</version>
+			<version>${project.version}</version>
 		</dependency>
     </dependencies>
 
@@ -200,9 +200,9 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.common:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.common:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.activation:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.activation:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.sample.installer:${stratos.version}</bundleDef>-->
                                 <bundleDef>org.apache.stratos:org.apache.stratos.tenant.dispatcher</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.throttling.agent</bundleDef>-->
@@ -217,12 +217,12 @@
                                 
                                 <!-- Tenant Mgmt -->
                                 <bundleDef>org.json.wso2:json</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt:${project.version}</bundleDef>
 				<bundleDef>kaptcha.wso2:kaptcha</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.core:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.core:${project.version}</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.captcha.mgt</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt:${project.version}</bundleDef>
                                 <!-- End Tenant Mgmt -->
                                 
                             </bundles>

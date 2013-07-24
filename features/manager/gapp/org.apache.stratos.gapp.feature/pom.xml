@@ -50,8 +50,8 @@
                             <id>org.apache.stratos.gapp</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.gapp.server.feature:${apache.stratos.version}</includedFeatureDef>
-                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.gapp.ui.feature:${apache.stratos.version}</includedFeatureDef>                                
+                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.gapp.server.feature:${project.version}</includedFeatureDef>
+                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.gapp.ui.feature:${project.version}</includedFeatureDef>                                
                             </includedFeatures>
                         </configuration>
                     </execution>

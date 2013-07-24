@@ -71,17 +71,17 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.account.mgt.stub</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.mgt.stub</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-  	    <version>${apache.stratos.version}</version>
+  	    <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.json.wso2</groupId>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common.stub</artifactId>
-  	    <version>${apache.stratos.version}</version>
+  	    <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

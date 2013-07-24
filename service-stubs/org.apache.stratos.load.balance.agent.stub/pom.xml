@@ -88,8 +88,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.load.balance.agent.stub.*; version="${apache.stratos.version}",
-                            org.apache.stratos.load.balance.agent.*; version="${apache.stratos.version}",
+                            org.apache.stratos.load.balance.agent.stub.*; version="${project.version}",
+                            org.apache.stratos.load.balance.agent.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional

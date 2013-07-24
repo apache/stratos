@@ -38,13 +38,13 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.usage.server.feature</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
             </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.usage.ui.feature</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
             </dependency>
     </dependencies>
@@ -66,8 +66,8 @@
                             <id>org.apache.stratos.usage</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.usage.server.feature:${apache.stratos.version}</includedFeatureDef>
-				<includedFeatureDef>org.apache.stratos:org.apache.stratos.usage.ui.feature:${apache.stratos.version}</includedFeatureDef>
+                                <includedFeatureDef>org.apache.stratos:org.apache.stratos.usage.server.feature:${project.version}</includedFeatureDef>
+				<includedFeatureDef>org.apache.stratos:org.apache.stratos.usage.ui.feature:${project.version}</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

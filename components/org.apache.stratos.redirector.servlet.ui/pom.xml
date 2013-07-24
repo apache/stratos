@@ -54,7 +54,7 @@
                             org.apache.stratos.redirector.servlet.ui.util.*,
                         </Private-Package>
                         <Import-Package>
-			    org.apache.stratos.redirector.servlet.stub.*; version="${apache.stratos.version}",
+			    org.apache.stratos.redirector.servlet.stub.*; version="${project.version}",
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.lucene.*,
@@ -97,12 +97,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-	    <version>${apache.stratos.version}</version>
+	    <version>${project.version}</version>
         </dependency>
 	<dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.redirector.servlet.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>

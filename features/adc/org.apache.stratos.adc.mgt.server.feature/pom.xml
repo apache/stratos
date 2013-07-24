@@ -39,12 +39,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.adc.mgt</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 	<dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.load.balance.cartridge.autoscaler.service.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 	<dependency>
             <groupId>org.wso2.andes.wso2</groupId>
@@ -54,7 +54,7 @@
 	<dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.adc.mgt.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
 	<dependency>
             <groupId>com.gitblit</groupId>
@@ -126,10 +126,10 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt:${apache.stratos.version}</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt:${project.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${project.version}</bundleDef>
 				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.load.balance.cartridge.autoscaler.service.stub:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.load.balance.cartridge.autoscaler.service.stub:${project.version}</bundleDef>
 				<bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
 				<bundleDef>com.google.code.gson:gson:2.1</bundleDef>
 				<bundleDef>org.eclipse.jgit:org.eclipse.jgit:2.1.0.wso2v1</bundleDef>

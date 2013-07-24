@@ -160,16 +160,16 @@
                                     org.apache.stratos:org.apache.stratos.common.feature:3.0.0-SNAPSHOT
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.usage.agent.feature:${apache.stratos.version}
+                                    org.apache.stratos:org.apache.stratos.usage.agent.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.throttling.agent.feature:${apache.stratos.version}
+                                    org.apache.stratos:org.apache.stratos.throttling.agent.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.deployment.feature:${apache.stratos.version}
+                                    org.apache.stratos:org.apache.stratos.deployment.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.load.balance.agent.server.feature:${apache.stratos.version}
+                                    org.apache.stratos:org.apache.stratos.load.balance.agent.server.feature:${project.version}
                                 </featureArtifactDef>
 				 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.ui.feature:${carbon.version}
@@ -192,7 +192,7 @@
                                     org.wso2.carbon:org.wso2.carbon.rm.server.feature:${carbon.version}
                                 </featureArtifactDef>
 				<featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.cloud.controller.feature:${apache.stratos.version}
+                                    org.apache.stratos:org.apache.stratos.cloud.controller.feature:${project.version}
                                 </featureArtifactDef>
                                 
                                 <featureArtifactDef>
@@ -216,7 +216,7 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${apache.stratos.version}
+                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${project.version}
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
@@ -354,7 +354,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.lb.common.feature.group</id>
-                                    <version>${apache.stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.ntask.core.feature.group</id>
@@ -362,7 +362,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.cloud.controller.feature.group</id>
-                                    <version>${apache.stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.apache.synapse.wso2.feature.group</id>
@@ -541,7 +541,7 @@
                                 <!--Cloud service deployment feature -->
                                 <feature>
                                     <id>org.apache.stratos.deployment.feature.group</id>
-                                    <version>${apache.stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
 
                                 <!-- multitenancy feature groups -->
@@ -552,15 +552,15 @@
 
                                 <feature>
                                     <id>org.apache.stratos.load.balance.agent.server.feature.group</id>
-                                    <version>${apache.stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.usage.agent.feature.group</id>
-                                    <version>${apache.stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.throttling.agent.feature.group</id>
-                                    <version>${apache.stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.cassandra.server.feature.group</id>

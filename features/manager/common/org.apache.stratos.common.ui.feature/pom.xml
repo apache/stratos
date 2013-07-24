@@ -38,12 +38,12 @@
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.redirector.servlet.ui</artifactId>
-    		<version>${apache.stratos.version}</version>
+    		<version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.sso.redirector.ui</artifactId>
-            	<version>${apache.stratos.version}</version>
+            	<version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -52,28 +52,28 @@
             <dependency>
             	<groupId>org.apache.stratos</groupId>
             	<artifactId>org.apache.stratos.tenant.mgt.stub</artifactId>
-            	<version>${apache.stratos.version}</version>
+            	<version>${project.version}</version>
             </dependency>
             <!--  Tenant Mgmt  -->
             <dependency>
             	<groupId>org.apache.stratos</groupId>
             	<artifactId>org.apache.stratos.tenant.mgt.ui</artifactId>
-            	<version>${apache.stratos.version}</version>
+            	<version>${project.version}</version>
             </dependency>
             <dependency>
             	<groupId>org.apache.stratos</groupId>
             	<artifactId>org.apache.stratos.common.stub</artifactId>
-            	<version>${apache.stratos.version}</version>
+            	<version>${project.version}</version>
             </dependency>
             <dependency>
             	<groupId>org.apache.stratos</groupId>
             	<artifactId>org.apache.stratos.theme.mgt.ui</artifactId>
-            	<version>${apache.stratos.version}</version>
+            	<version>${project.version}</version>
             </dependency>
             <dependency>
             	<groupId>org.apache.stratos</groupId>
             	<artifactId>org.apache.stratos.theme.mgt.stub</artifactId>
-            	<version>${apache.stratos.version}</version>
+            	<version>${project.version}</version>
             </dependency>
              
         </dependencies>
@@ -101,7 +101,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet.ui</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet.stub:${apache.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet.stub:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.sso.redirector.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.google.analytics.ui</bundleDef>
                             	

@@ -66,7 +66,7 @@
                             ${basedir}/../distribution/target/wso2sc-${project.version}.zip
                         </carbon.zip>
                         <sec.verifier.dir>${basedir}/target/security-verifier/</sec.verifier.dir>
-                        <extracted.dir>stratos-controller-parent-${apache.stratos.version}</extracted.dir>
+                        <extracted.dir>stratos-controller-parent-${project.version}</extracted.dir>
                         <emma.home>${basedir}/target/emma</emma.home>
                     </systemProperties>
                     <workingDirectory>${basedir}/target</workingDirectory>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.mgt.stub</artifactId>
-            <version>${apache.stratos.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
         	<groupId>org.wso2.carbon</groupId>

@@ -45,7 +45,7 @@
 	<dependency>
 	    <groupId>org.apache.stratos</groupId>
 	    <artifactId>org.apache.stratos.lb.endpoint</artifactId>
-	    <version>${apache.stratos.version}</version>	
+	    <version>${project.version}</version>	
 	</dependency>
     </dependencies>
 
@@ -72,12 +72,12 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.endpoint:${apache.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.endpoint:${project.version}</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.patch.version}</importFeatureDef>
                                 <importFeatureDef>org.apache.synapse.wso2:${synapse.wso2.version}</importFeatureDef>
-                                <importFeatureDef>org.apache.stratos.lb.common:${apache.stratos.version}</importFeatureDef>
+                                <importFeatureDef>org.apache.stratos.lb.common:${project.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

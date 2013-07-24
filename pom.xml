@@ -164,9 +164,7 @@
     </build>
 
     <properties>
-        <!-- Apache Stratos version -->
-        <apache.stratos.version>3.0.0-SNAPSHOT</apache.stratos.version>
-        <!-- carbon related versions -->
+        <!-- Carbon related versions -->
         <wso2carbon.version>4.1.0</wso2carbon.version>
         <carbon.platform.package.import.version.range>[4.1.0, 4.2.0)</carbon.platform.package.import.version.range>
         <carbon.platform.package.export.version>4.1.0</carbon.platform.package.export.version>

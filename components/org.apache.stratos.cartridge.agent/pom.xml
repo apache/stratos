@@ -36,7 +36,7 @@
 		<dependency>
 		<groupId>org.apache.stratos</groupId>
 		<artifactId>org.apache.stratos.cartridge.messages</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.axis2.wso2</groupId>

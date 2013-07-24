@@ -38,22 +38,22 @@
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.tenant.mgt.core</artifactId>
-		<version>${apache.stratos.version}</version>
+		<version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.keystore.mgt</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
 	    <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.theme.mgt</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.common</artifactId>
-                <version>${apache.stratos.version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
 
