@@ -66,7 +66,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.stratos.throttling.manager</id>
+                            <id>org.apache.stratos.throttling.manager</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
