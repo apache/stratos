@@ -18,8 +18,8 @@
   -->
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="org.json.JSONObject" %>
-<%@ page import="org.wso2.carbon.billing.mgt.stub.beans.xsd.Invoice" %>
-<%@ page import="org.wso2.carbon.billing.mgt.stub.beans.xsd.Payment" %>
+<%@ page import="org.apache.stratos.billing.mgt.stub.beans.xsd.Invoice" %>
+<%@ page import="org.apache.stratos.billing.mgt.stub.beans.xsd.Payment" %>
 <%@ page import="org.wso2.carbon.billing.mgt.ui.utils.BillingUtil" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.apache.stratos.tenant.activity.ui.clients.TenantActivityServiceClient" %>

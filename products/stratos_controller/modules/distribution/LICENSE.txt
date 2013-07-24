@@ -215,7 +215,7 @@ org.wso2.carbon.authenticator.proxy_4.1.0.jar                                   
 org.wso2.carbon.authenticator.stub_4.1.0.jar                                    bundle         apache2   
 org.wso2.carbon.base_4.1.0.jar                                                  bundle         apache2   
 org.wso2.carbon.billing.core_2.1.3.jar                                          bundle         apache2   
-org.wso2.carbon.billing.mgt.stub_4.1.0.jar                                      bundle         apache2   
+org.apache.stratos.billing.mgt.stub_4.1.0.jar                                      bundle         apache2
 org.wso2.carbon.billing.mgt.ui_2.1.0.jar                                        bundle         apache2   
 org.wso2.carbon.billing.mgt_2.1.3.jar                                           bundle         apache2   
 org.wso2.carbon.bootstrap-4.1.0.jar                                             bundle         apache2   

@@ -56,6 +56,7 @@
         <module>org.apache.stratos.adc.repoinformation.service.stub</module>
         <module>org.apache.stratos.adc.topologymgt.service.stub</module>
         <module>org.apache.stratos.load.balance.autoscaler.service.stub</module>
+        <module>org.apache.stratos.billing.mgt.stub</module>
     </modules>
 
     <build>
