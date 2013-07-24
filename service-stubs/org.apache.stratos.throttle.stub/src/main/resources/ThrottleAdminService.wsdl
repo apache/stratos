@@ -1,0 +1,635 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://service.throttle.carbon.wso2.org" xmlns:ax286="http://throttle.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://service.throttle.carbon.wso2.org">
+    <wsdl:documentation>ThrottleAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax288="http://throttle.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.throttle.carbon.wso2.org">
+            <xs:import namespace="http://throttle.carbon.wso2.org/xsd"/>
+            <xs:complexType name="Exception">
+                <xs:all>
+                    <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType"/>
+                </xs:all>
+            </xs:complexType>
+            <xs:element name="ThrottleComponentException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ThrottleComponentException" nillable="true" type="ax288:ThrottleComponentException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="toThrottlePolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="policyXML" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="toThrottlePolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="throttlePolicyToString">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="policy" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="throttlePolicyToStringResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="globallyEngageThrottling">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="policy" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPolicyConfigs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPolicyConfigsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getOperationPolicyConfigs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="operationName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getOperationPolicyConfigsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getGlobalPolicyConfigsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="engageThrottlingForOperation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="policy" nillable="true" type="ax288:ThrottlePolicy"/>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="operationName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="engageThrottlingForOperationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="enableThrottling">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="policy" nillable="true" type="ax288:ThrottlePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="disengageThrottlingForOperation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="operationName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="disengageThrottlingForOperationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="disableThrottling">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax287="http://service.throttle.carbon.wso2.org" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://throttle.carbon.wso2.org/xsd">
+            <xs:import namespace="http://service.throttle.carbon.wso2.org"/>
+            <xs:complexType name="ThrottleComponentException">
+                <xs:complexContent>
+                    <xs:extension base="ax287:Exception">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="ThrottlePolicy">
+                <xs:all>
+                    <xs:element minOccurs="0" name="engaged" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="internalConfigs" nillable="true" type="ax286:InternalData"/>
+                    <xs:element minOccurs="0" name="maxConcurrentAccesses" type="xs:int"/>
+                </xs:all>
+            </xs:complexType>
+            <xs:complexType name="InternalData">
+                <xs:all>
+                    <xs:element minOccurs="0" name="accessLevel" type="xs:int"/>
+                    <xs:element minOccurs="0" name="maxRequestCount" type="xs:int"/>
+                    <xs:element minOccurs="0" name="prohibitTimePeriod" type="xs:int"/>
+                    <xs:element minOccurs="0" name="range" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="rangeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="unitTime" type="xs:int"/>
+                </xs:all>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getGlobalPolicyConfigsRequest"/>
+    <wsdl:message name="getGlobalPolicyConfigsResponse">
+        <wsdl:part name="parameters" element="ns:getGlobalPolicyConfigsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ThrottleComponentException">
+        <wsdl:part name="parameters" element="ns:ThrottleComponentException"/>
+    </wsdl:message>
+    <wsdl:message name="globallyEngageThrottlingRequest">
+        <wsdl:part name="parameters" element="ns:globallyEngageThrottling"/>
+    </wsdl:message>
+    <wsdl:message name="disengageThrottlingForOperationRequest">
+        <wsdl:part name="parameters" element="ns:disengageThrottlingForOperation"/>
+    </wsdl:message>
+    <wsdl:message name="disengageThrottlingForOperationResponse">
+        <wsdl:part name="parameters" element="ns:disengageThrottlingForOperationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="toThrottlePolicyRequest">
+        <wsdl:part name="parameters" element="ns:toThrottlePolicy"/>
+    </wsdl:message>
+    <wsdl:message name="toThrottlePolicyResponse">
+        <wsdl:part name="parameters" element="ns:toThrottlePolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="throttlePolicyToStringRequest">
+        <wsdl:part name="parameters" element="ns:throttlePolicyToString"/>
+    </wsdl:message>
+    <wsdl:message name="throttlePolicyToStringResponse">
+        <wsdl:part name="parameters" element="ns:throttlePolicyToStringResponse"/>
+    </wsdl:message>
+    <wsdl:message name="engageThrottlingForOperationRequest">
+        <wsdl:part name="parameters" element="ns:engageThrottlingForOperation"/>
+    </wsdl:message>
+    <wsdl:message name="engageThrottlingForOperationResponse">
+        <wsdl:part name="parameters" element="ns:engageThrottlingForOperationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPolicyConfigsRequest">
+        <wsdl:part name="parameters" element="ns:getPolicyConfigs"/>
+    </wsdl:message>
+    <wsdl:message name="getPolicyConfigsResponse">
+        <wsdl:part name="parameters" element="ns:getPolicyConfigsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="disengageGlobalThrottlingRequest"/>
+    <wsdl:message name="disableThrottlingRequest">
+        <wsdl:part name="parameters" element="ns:disableThrottling"/>
+    </wsdl:message>
+    <wsdl:message name="getOperationPolicyConfigsRequest">
+        <wsdl:part name="parameters" element="ns:getOperationPolicyConfigs"/>
+    </wsdl:message>
+    <wsdl:message name="getOperationPolicyConfigsResponse">
+        <wsdl:part name="parameters" element="ns:getOperationPolicyConfigsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="enableThrottlingRequest">
+        <wsdl:part name="parameters" element="ns:enableThrottling"/>
+    </wsdl:message>
+    <wsdl:portType name="ThrottleAdminServicePortType">
+        <wsdl:operation name="getGlobalPolicyConfigs">
+            <wsdl:input message="ns:getGlobalPolicyConfigsRequest" wsaw:Action="urn:getGlobalPolicyConfigs"/>
+            <wsdl:output message="ns:getGlobalPolicyConfigsResponse" wsaw:Action="urn:getGlobalPolicyConfigsResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:getGlobalPolicyConfigsThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="globallyEngageThrottling">
+            <wsdl:input message="ns:globallyEngageThrottlingRequest" wsaw:Action="urn:globallyEngageThrottling"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:globallyEngageThrottlingThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="disengageThrottlingForOperation">
+            <wsdl:input message="ns:disengageThrottlingForOperationRequest" wsaw:Action="urn:disengageThrottlingForOperation"/>
+            <wsdl:output message="ns:disengageThrottlingForOperationResponse" wsaw:Action="urn:disengageThrottlingForOperationResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:disengageThrottlingForOperationThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="toThrottlePolicy">
+            <wsdl:input message="ns:toThrottlePolicyRequest" wsaw:Action="urn:toThrottlePolicy"/>
+            <wsdl:output message="ns:toThrottlePolicyResponse" wsaw:Action="urn:toThrottlePolicyResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:toThrottlePolicyThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="throttlePolicyToString">
+            <wsdl:input message="ns:throttlePolicyToStringRequest" wsaw:Action="urn:throttlePolicyToString"/>
+            <wsdl:output message="ns:throttlePolicyToStringResponse" wsaw:Action="urn:throttlePolicyToStringResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:throttlePolicyToStringThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="engageThrottlingForOperation">
+            <wsdl:input message="ns:engageThrottlingForOperationRequest" wsaw:Action="urn:engageThrottlingForOperation"/>
+            <wsdl:output message="ns:engageThrottlingForOperationResponse" wsaw:Action="urn:engageThrottlingForOperationResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:engageThrottlingForOperationThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyConfigs">
+            <wsdl:input message="ns:getPolicyConfigsRequest" wsaw:Action="urn:getPolicyConfigs"/>
+            <wsdl:output message="ns:getPolicyConfigsResponse" wsaw:Action="urn:getPolicyConfigsResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:getPolicyConfigsThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="disengageGlobalThrottling">
+            <wsdl:input message="ns:disengageGlobalThrottlingRequest" wsaw:Action="urn:disengageGlobalThrottling"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:disengageGlobalThrottlingThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="disableThrottling">
+            <wsdl:input message="ns:disableThrottlingRequest" wsaw:Action="urn:disableThrottling"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:disableThrottlingThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getOperationPolicyConfigs">
+            <wsdl:input message="ns:getOperationPolicyConfigsRequest" wsaw:Action="urn:getOperationPolicyConfigs"/>
+            <wsdl:output message="ns:getOperationPolicyConfigsResponse" wsaw:Action="urn:getOperationPolicyConfigsResponse"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:getOperationPolicyConfigsThrottleComponentException"/>
+        </wsdl:operation>
+        <wsdl:operation name="enableThrottling">
+            <wsdl:input message="ns:enableThrottlingRequest" wsaw:Action="urn:enableThrottling"/>
+            <wsdl:fault message="ns:ThrottleComponentException" name="ThrottleComponentException" wsaw:Action="urn:enableThrottlingThrottleComponentException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ThrottleAdminServiceSoap11Binding" type="ns:ThrottleAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="globallyEngageThrottling">
+            <soap:operation soapAction="urn:globallyEngageThrottling" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getGlobalPolicyConfigs">
+            <soap:operation soapAction="urn:getGlobalPolicyConfigs" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="toThrottlePolicy">
+            <soap:operation soapAction="urn:toThrottlePolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="disengageThrottlingForOperation">
+            <soap:operation soapAction="urn:disengageThrottlingForOperation" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="engageThrottlingForOperation">
+            <soap:operation soapAction="urn:engageThrottlingForOperation" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="throttlePolicyToString">
+            <soap:operation soapAction="urn:throttlePolicyToString" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyConfigs">
+            <soap:operation soapAction="urn:getPolicyConfigs" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="disengageGlobalThrottling">
+            <soap:operation soapAction="urn:disengageGlobalThrottling" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="disableThrottling">
+            <soap:operation soapAction="urn:disableThrottling" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getOperationPolicyConfigs">
+            <soap:operation soapAction="urn:getOperationPolicyConfigs" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="enableThrottling">
+            <soap:operation soapAction="urn:enableThrottling" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ThrottleAdminServiceSoap12Binding" type="ns:ThrottleAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="globallyEngageThrottling">
+            <soap12:operation soapAction="urn:globallyEngageThrottling" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getGlobalPolicyConfigs">
+            <soap12:operation soapAction="urn:getGlobalPolicyConfigs" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="toThrottlePolicy">
+            <soap12:operation soapAction="urn:toThrottlePolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="disengageThrottlingForOperation">
+            <soap12:operation soapAction="urn:disengageThrottlingForOperation" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="engageThrottlingForOperation">
+            <soap12:operation soapAction="urn:engageThrottlingForOperation" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="throttlePolicyToString">
+            <soap12:operation soapAction="urn:throttlePolicyToString" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyConfigs">
+            <soap12:operation soapAction="urn:getPolicyConfigs" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="disengageGlobalThrottling">
+            <soap12:operation soapAction="urn:disengageGlobalThrottling" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="disableThrottling">
+            <soap12:operation soapAction="urn:disableThrottling" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getOperationPolicyConfigs">
+            <soap12:operation soapAction="urn:getOperationPolicyConfigs" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="enableThrottling">
+            <soap12:operation soapAction="urn:enableThrottling" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ThrottleComponentException">
+                <soap12:fault use="literal" name="ThrottleComponentException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ThrottleAdminServiceHttpBinding" type="ns:ThrottleAdminServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="globallyEngageThrottling">
+            <http:operation location="globallyEngageThrottling"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="globallyEngageThrottling"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getGlobalPolicyConfigs">
+            <http:operation location="getGlobalPolicyConfigs"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getGlobalPolicyConfigs"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getGlobalPolicyConfigs"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="toThrottlePolicy">
+            <http:operation location="toThrottlePolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="toThrottlePolicy"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="toThrottlePolicy"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="disengageThrottlingForOperation">
+            <http:operation location="disengageThrottlingForOperation"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="disengageThrottlingForOperation"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="disengageThrottlingForOperation"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="engageThrottlingForOperation">
+            <http:operation location="engageThrottlingForOperation"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="engageThrottlingForOperation"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="engageThrottlingForOperation"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="throttlePolicyToString">
+            <http:operation location="throttlePolicyToString"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="throttlePolicyToString"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="throttlePolicyToString"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyConfigs">
+            <http:operation location="getPolicyConfigs"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getPolicyConfigs"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getPolicyConfigs"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="disengageGlobalThrottling">
+            <http:operation location="disengageGlobalThrottling"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="disengageGlobalThrottling"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="disableThrottling">
+            <http:operation location="disableThrottling"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="disableThrottling"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getOperationPolicyConfigs">
+            <http:operation location="getOperationPolicyConfigs"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getOperationPolicyConfigs"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getOperationPolicyConfigs"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="enableThrottling">
+            <http:operation location="enableThrottling"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="enableThrottling"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ThrottleAdminService">
+        <wsdl:port name="ThrottleAdminServiceHttpsSoap11Endpoint" binding="ns:ThrottleAdminServiceSoap11Binding">
+            <soap:address location="https://10.100.1.137:9443/services/ThrottleAdminService.ThrottleAdminServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ThrottleAdminServiceHttpsSoap12Endpoint" binding="ns:ThrottleAdminServiceSoap12Binding">
+            <soap12:address location="https://10.100.1.137:9443/services/ThrottleAdminService.ThrottleAdminServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ThrottleAdminServiceHttpsEndpoint" binding="ns:ThrottleAdminServiceHttpBinding">
+            <http:address location="https://10.100.1.137:9443/services/ThrottleAdminService.ThrottleAdminServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
