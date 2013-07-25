@@ -25,9 +25,9 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants"%>
 <%@ page import="org.apache.stratos.cartridge.mgt.ui.CartridgeAdminClient"%>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon"%>
-<%@ page import="org.wso2.carbon.adc.mgt.dto.xsd.Cartridge"%>
-<%@ page import="org.wso2.carbon.adc.mgt.dto.xsd.CartridgeWrapper"%>
-<%@ page import="org.wso2.carbon.adc.mgt.stub.ApplicationManagementServiceADCExceptionException"%>
+<%@ page import="org.apache.stratos.adc.mgt.dto.xsd.Cartridge"%>
+<%@ page import="org.apache.stratos.adc.mgt.dto.xsd.CartridgeWrapper"%>
+<%@ page import="org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceADCExceptionException"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.util.ResourceBundle"%>
 <%@ page import="java.util.ArrayList"%>

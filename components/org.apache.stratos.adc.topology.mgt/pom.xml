@@ -123,7 +123,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.stratos.lb.common.*; version=${project.version},
-                            org.apache.stratos.registry.core.service; version=1.0.1,
+                            org.wso2.carbon.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

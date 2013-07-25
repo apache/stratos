@@ -124,21 +124,21 @@
 				    <featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.usage.agent.feature:${project.version}
 				    </featureArtifactDef>
-				    <featureArtifactDef>
+				    <!--featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.throttling.manager.feature:${project.version}
-				    </featureArtifactDef>
+				    </featureArtifactDef-->
 				    <featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.throttling.agent.feature:${project.version}
 				    </featureArtifactDef>
-				    <featureArtifactDef>
+				    <!--featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.billing.server.feature:2.1.3
-				    </featureArtifactDef>
+				    </featureArtifactDef-->
 				    <featuredArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.rule.service.server.feature:${carbon.version}
 				    </featuredArtifactDef>
-				    <featureArtifactDef>
+				    <!--featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.billing.ui.feature:${stratos.component.version}
-				    </featureArtifactDef>
+				    </featureArtifactDef-->
 				    <!-- Security Mgt feature to manage key stores -->
 				    <featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.security.mgt.feature:${carbon.version}
@@ -343,22 +343,22 @@
 				    <id>org.apache.stratos.usage.agent.feature.group</id>
 				    <version>${project.version}</version>
 				</feature>
-				<feature>
+				<!--feature>
 				    <id>org.apache.stratos.throttling.manager.feature.group</id>
 				    <version>${project.version}</version>
-				</feature>
+				</feature-->
 				<feature>
 				    <id>org.apache.stratos.throttling.agent.feature.group</id>
 				    <version>${project.version}</version>
 				</feature>
-				<feature>
+				<!--feature>
 				    <id>org.wso2.carbon.billing.server.feature.group</id>
 				    <version>2.1.3</version>
-				</feature>
-				<feature>
+				</feature-->
+				<!--feature>
 				    <id>org.wso2.carbon.billing.ui.feature.group</id>
 				    <version>${stratos.component.version}</version>
-				</feature>
+				</feature-->
 				<feature>
 				    <id>org.wso2.carbon.rule.service.server.feature.group</id>
 				    <version>${carbon.version}</version>
