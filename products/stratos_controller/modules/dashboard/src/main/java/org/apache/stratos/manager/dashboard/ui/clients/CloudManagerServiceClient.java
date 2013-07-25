@@ -30,7 +30,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.utils.ServerConstants;
 import org.apache.stratos.manager.dashboard.stub.CloudManagerServiceStub;
-import org.apache.stratos.manager.dashboard.stub.xsd.CloudService;
+import org.apache.stratos.manager.dashboard.services.mgt.beans.xsd.CloudService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletRequest;
