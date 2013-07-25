@@ -16,7 +16,7 @@
  ~ under the License.
  -->
 <%@ page import="org.wso2.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
-<%@ page import="org.wso2.carbon.stratos.manager.dashboard.stub.xsd.CloudService" %>
+<%@ page import="org.apache.stratos.manager.dashboard.stub.xsd.CloudService" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>

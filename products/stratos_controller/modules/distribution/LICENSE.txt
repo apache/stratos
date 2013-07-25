@@ -343,7 +343,7 @@ org.wso2.carbon.sso.redirector.ui_2.1.0.jar                                     
 org.wso2.carbon.stratos.common.stub_4.1.0.jar                                   bundle         apache2   
 org.wso2.carbon.stratos.common_2.1.0.jar                                        bundle         apache2   
 org.wso2.carbon.stratos.landing.page.deployer_2.1.0.jar                         bundle         apache2   
-org.wso2.carbon.stratos.manager.dashboard.stub_4.1.0.jar                        bundle         apache2   
+org.apache.stratos.manager.dashboard.stub_4.1.0.jar                        bundle         apache2
 org.wso2.carbon.task.services_4.1.0.jar                                         bundle         apache2   
 org.wso2.carbon.task_4.1.0.jar                                                  bundle         apache2   
 org.wso2.carbon.tenant.activity_2.1.0.jar                                       bundle         apache2   

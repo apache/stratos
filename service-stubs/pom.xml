@@ -59,6 +59,7 @@
         <module>org.apache.stratos.billing.mgt.stub</module>
         <module>org.apache.stratos.throttle.stub</module>
         <module>org.apache.stratos.usage.meteringqueryds.stub</module>
+        <module>org.apache.stratos.manager.dashboard.stub</module>
     </modules>
 
     <build>
