@@ -20,9 +20,9 @@
 package org.apache.stratos.theme.mgt.util;
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
-import org.wso2.carbon.stratos.common.exception.StratosException;
-import org.wso2.carbon.stratos.common.listeners.TenantMgtListener;
+import org.apache.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.listeners.TenantMgtListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

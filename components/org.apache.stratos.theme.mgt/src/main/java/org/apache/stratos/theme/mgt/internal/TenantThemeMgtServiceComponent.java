@@ -19,7 +19,7 @@
 
 package org.apache.stratos.theme.mgt.internal;
 
-import org.wso2.carbon.stratos.common.listeners.TenantMgtListener;
+import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.theme.mgt.util.ThemeLoadingListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
