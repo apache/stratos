@@ -1,8 +1,8 @@
 ================================================================================
-                        WSO2 Cloud Controller Server 1.0.1
+                        Apache Cloud Controller Server 3.0.0-SNAPSHOT
 ================================================================================
 
-Welcome to the Apache Stratos CC 1.0.1 release.
+Welcome to the Apache Stratos CC 3.0.0-SNAPSHOT release.
 
 Apache Stratos Cloud Controller plays a vital role in Stratos 2.0 and is open source and freely
 distributed. Apache Stratos CC is available under the Apache Software License v2.0.

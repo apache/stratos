@@ -47,8 +47,8 @@
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
             <outputDirectory>stratos-cc-${pom.version}</outputDirectory>
             <excludes>
-                <exclude>**/stratos.sh</exclude>
-                <exclude>**/stratos.bat</exclude>
+                <exclude>**/wso2server.sh</exclude>
+                <exclude>**/wso2server.bat</exclude>
             </excludes>
 	    <includes>
                 <include>**/*.sh</include>
@@ -277,12 +277,13 @@
             <destName>release-notes.html</destName>
             <fileMode>644</fileMode>
         </file-->
+<!--
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/bin/README.txt</source>
             <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
-        </file>
+        </file>-->
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/bin/version.txt</source>
             <outputDirectory>stratos-cc-${pom.version}/bin/</outputDirectory>
