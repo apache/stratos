@@ -23,7 +23,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.registrant.Registrant;
-import org.wso2.carbon.adc.instanceinfo.mgt.stub.InstanceInformationManagementServiceStub;
+import org.apache.stratos.adc.instanceinfo.mgt.stub.InstanceInformationManagementServiceStub;
 
 import java.rmi.RemoteException;
 
