@@ -26,9 +26,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.load.balance.autoscaler.service.stub</artifactId>
+    <artifactId>org.apache.stratos.lb.agent.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Autoscaler Service Stub</name>
+    <name>Apache Stratos - Load Balance Agent Stub</name>
     <url>http://apache.org</url>
 
     <build>
@@ -48,7 +48,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/AutoscalerService.wsdl -u -uw -o target/generated-code                                     -p org.apache.stratos.load.balance.autoscaler.service.stub                                     -ns2p http://services.autoscaler.balance.load.carbon.wso2.org=org.apache.stratos.load.balance.autoscaler.stub.services,http://beans.autoscaler.balance.load.carbon.wso2.org/xsd=org.apache.stratos.load.balance.autoscaler.stub.beans.xsd,"/>
+                                    <arg line="-uri src/main/resources/LoadBalanceAgentService.wsdl -u -uw -o target/generated-code                                     -p org.apache.stratos.lb.agent.stub                                     -ns2p http://services.agent.balance.load.stratos.apache.org=org.apache.stratos.lb.agent.stub.services,http://beans.agent.balance.load.stratos.apache.org/xsd=org.apache.stratos.lb.agent.stub.beans.xsd,"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -88,8 +88,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.load.balance.autoscaler.service.stub.*; version="${carbon.platform.package.export.version}",
-                            org.apache.stratos.load.balance.autoscaler.service.*; version="${carbon.platform.package.export.version}",
+                            org.apache.stratos.lb.agent.stub.*; version="${project.version}",
+                            org.apache.stratos.lb.agent.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
@@ -108,10 +108,6 @@
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>wsdl4j.wso2</groupId>
-            <artifactId>wsdl4j</artifactId>
         </dependency>
     </dependencies>
 

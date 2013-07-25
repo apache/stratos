@@ -73,7 +73,7 @@
         <!--dependencies to invoke the load average service-->
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
+            <artifactId>org.apache.stratos.lb.agent.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -107,7 +107,7 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.authenticator.stub</bundleDef>
                                 <bundleDef>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec</bundleDef>
                                 <bundleDef>org.apache.qpid.wso2:qpid-client</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.load.balance.agent.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.agent.stub</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>

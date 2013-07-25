@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balance.agent;
+package org.apache.stratos.lb.agent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

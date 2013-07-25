@@ -28,7 +28,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.load.balance.agent.ui.feature</artifactId>
+    <artifactId>org.apache.stratos.lb.agent.ui.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Load Balance Agent UI Feature</name>
     <url>http://apache.org</url>
@@ -39,7 +39,7 @@
     <dependencies>
         <dependency>              
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
+            <artifactId>org.apache.stratos.lb.agent.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -58,7 +58,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.load.balance.agent.ui</id>
+                            <id>org.apache.stratos.lb.agent.ui</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -67,7 +67,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.load.balance.agent.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.agent.stub</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

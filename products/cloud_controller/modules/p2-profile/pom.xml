@@ -169,7 +169,7 @@
                                     org.apache.stratos:org.apache.stratos.deployment.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.load.balance.agent.server.feature:${project.version}
+                                    org.apache.stratos:org.apache.stratos.lb.agent.server.feature:${project.version}
                                 </featureArtifactDef>
 				 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.ui.feature:${carbon.version}
@@ -551,7 +551,7 @@
                                 </feature>
 
                                 <feature>
-                                    <id>org.apache.stratos.load.balance.agent.server.feature.group</id>
+                                    <id>org.apache.stratos.lb.agent.server.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>

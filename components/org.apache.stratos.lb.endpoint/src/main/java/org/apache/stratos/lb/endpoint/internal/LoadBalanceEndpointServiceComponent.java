@@ -60,7 +60,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @scr.component name="org.apache.stratos.load.balancer.endpoint" immediate="true"
+ * @scr.component name="org.apache.stratos.lbr.endpoint" immediate="true"
  * @scr.reference name="configuration.context.service"
  * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
  * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"

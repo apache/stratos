@@ -168,7 +168,7 @@
 				    </featureArtifactDef>
 				    <!-- End GApp SSO features -->
 
-				    <featureArtifactDef>org.apache.stratos:org.apache.stratos.load.balance.agent.server.feature:${project.version}
+				    <featureArtifactDef>org.apache.stratos:org.apache.stratos.lb.agent.server.feature:${project.version}
 				    </featureArtifactDef>
 
 				    <!-- Status Monitor Feature. Uncomment, if you want the manager to be used as a Stratos Status Monitor -->
@@ -332,7 +332,7 @@
 				<!--End GApp SSO features -->
 
 				<feature>
-				    <id>org.apache.stratos.load.balance.agent.server.feature.group</id>
+				    <id>org.apache.stratos.lb.agent.server.feature.group</id>
 				    <version>${project.version}</version>
 				</feature>
 				<feature>

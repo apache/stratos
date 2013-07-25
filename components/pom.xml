@@ -59,7 +59,7 @@
 		<!-- ELB -->
 		<module>org.apache.stratos.lb.common</module>
 		<module>org.apache.stratos.lb.endpoint</module>
-		<module>org.apache.stratos.load.balance.agent</module>
+		<module>org.apache.stratos.lb.agent</module>
 		<module>org.apache.stratos.mediator.autoscale</module>
            	<module>org.apache.stratos.autoscaler.service</module>
 		<!-- Tenant Mgt -->
