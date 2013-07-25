@@ -532,16 +532,16 @@
 	    	<version>${project.version}</version>
             </dependency>
       	    <dependency>
-            	<groupId>org.wso2.carbon</groupId>
-            	<artifactId>org.wso2.carbon.usage.meteringsummarygenerationds.stub</artifactId>
-	    	<version>${wso2carbon.version}</version>
+            	<groupId>org.apache.stratos</groupId>
+            	<artifactId>org.apache.stratos.usage.meteringsummarygenerationds.stub</artifactId>
+	    	    <version>${project.version}</version>
             </dependency>
             <dependency>
             	<groupId>org.wso2.carbon</groupId>
             	<artifactId>org.wso2.carbon.stratos.common.stub</artifactId>
 	    	<version>${wso2carbon.version}</version>
             </dependency>
-	    <dependency>
+	        <dependency>
                  <groupId>org.wso2.carbon</groupId>
                  <artifactId>org.wso2.carbon.tenant.activity</artifactId>
                  <version>${stratos.version}</version>
