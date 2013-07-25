@@ -53,9 +53,9 @@
 			<artifactId>commons-logging</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.adc.instanceinfo.mgt.stub</artifactId>
-			<version>4.1.1</version>
+			<groupId>org.apache.stratos</groupId>
+			<artifactId>org.apache.stratos.adc.instanceinfo.mgt.stub</artifactId>
+			<version>${project.version}</version>
 		</dependency>
         <dependency>
             <groupId>org.eclipse.osgi</groupId>

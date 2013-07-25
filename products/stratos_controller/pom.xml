@@ -40,7 +40,7 @@
         </license>
     </licenses>
 
-    <!--modules>
+    <modules>
         <module>modules/styles</module>
         <module>modules/cloud-service-mgt</module>
         <module>modules/dashboard</module>
@@ -51,7 +51,7 @@
         <module>resources/cloud-services-icons</module>
         <module>modules/distribution</module>
         <module>modules/integration</module>
-    </modules-->
+    </modules>
 
     <dependencyManagement>
         <dependencies>

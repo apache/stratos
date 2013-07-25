@@ -102,7 +102,7 @@
         <!--dependencies to invoke the load average service-->
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
+            <artifactId>org.apache.stratos.lb.agent.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -100,9 +100,9 @@
             <version>4.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.stratos.common</artifactId>
-            <version>2.1.2</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+	    <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

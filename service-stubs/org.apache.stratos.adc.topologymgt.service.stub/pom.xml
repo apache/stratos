@@ -88,7 +88,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.stratos.topology.mgt.service.impl.*; version=0.0.0,
+                            org.apache.stratos.topology.mgt.service.impl.*; version=0.0.0,
                             org.apache.stratos.topology.mgt.*; version=0.0.0
                         </Export-Package>
                         <Import-Package>

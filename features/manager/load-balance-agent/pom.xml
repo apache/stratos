@@ -34,21 +34,21 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>org.apache.stratos.load.balance.agent.feature</module>
-        <module>org.apache.stratos.load.balance.agent.server.feature</module>
-        <module>org.apache.stratos.load.balance.agent.ui.feature</module>
+        <module>org.apache.stratos.lb.agent.feature</module>
+        <module>org.apache.stratos.lb.agent.server.feature</module>
+        <module>org.apache.stratos.lb.agent.ui.feature</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.load.balance.agent</artifactId>
+                <artifactId>org.apache.stratos.lb.agent</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.load.balance.agent.stub</artifactId>
+                <artifactId>org.apache.stratos.lb.agent.stub</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

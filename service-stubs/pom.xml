@@ -35,7 +35,7 @@
     <url>http://apache.org</url>
 
     <modules>                            
-        <module>org.apache.stratos.load.balance.cartridge.autoscaler.service.stub</module>
+        <module>org.apache.stratos.lb.cartridge.autoscaler.service.stub</module>
         <module>org.apache.stratos.adc.mgt.stub</module>
         <module>org.apache.stratos.account.mgt.stub</module>
         <module>org.apache.stratos.tenant.mgt.stub</module>
@@ -51,11 +51,16 @@
         <module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
         <module>org.apache.stratos.tenant.register.gapp.stub</module>
         <module>org.apache.stratos.redirector.servlet.stub</module>
-        <module>org.apache.stratos.load.balance.agent.stub</module>
+        <module>org.apache.stratos.lb.agent.stub</module>
         <module>org.apache.stratos.adc.reponotification.service.stub</module>
         <module>org.apache.stratos.adc.repoinformation.service.stub</module>
         <module>org.apache.stratos.adc.topologymgt.service.stub</module>
-        <module>org.apache.stratos.load.balance.autoscaler.service.stub</module>
+        <module>org.apache.stratos.lb.autoscaler.service.stub</module>
+        <module>org.apache.stratos.billing.mgt.stub</module>
+        <module>org.apache.stratos.throttle.stub</module>
+        <module>org.apache.stratos.usage.meteringqueryds.stub</module>
+        <module>org.apache.stratos.manager.dashboard.stub</module>
+        <module>org.apache.stratos.usage.meteringsummarygenerationds.stub</module>
     </modules>
 
     <build>
