@@ -47,9 +47,9 @@
             <artifactId>org.wso2.carbon.stratos.common</artifactId>
         </dependency>-->
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.email.sender</artifactId>
-	        <version>${stratos.component.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.email.sender</artifactId>
+	        <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
@@ -209,7 +209,7 @@
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.business.messaging.paypal.integration.core:${carbon.version}</bundleDef>
 				
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.stratos.common</bundleDef>-->
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.email.sender:${stratos.component.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.email.sender:${project.version}</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.email.sender:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt</bundleDef>-->

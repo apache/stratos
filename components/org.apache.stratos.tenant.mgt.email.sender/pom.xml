@@ -56,7 +56,7 @@
                         <Import-Package>
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
-                            org.wso2.carbon.email.sender.api,
+                            org.apache.stratos.email.sender.api,
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>
