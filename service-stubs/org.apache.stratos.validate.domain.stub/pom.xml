@@ -93,7 +93,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.validate.domain.stub.*;
-                            version="${carbon.platform.package.export.version}"
+                            version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.validate.domain.stub.*,

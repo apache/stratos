@@ -5,13 +5,13 @@
             <class name="org.apache.stratos.manager.integration.tests.StratosManagerTestServerManager"/>
             <class name="org.apache.stratos.manager.integration.tests.LoginLogoutTestCase"/>
             <class name="org.apache.stratos.manager.integration.tests.SecurityVerificationTestCase"/>
-            <class name="org.apache.stratos.manager.integration.tests.TenantMgtTestCase">
+            <!--class name="org.apache.stratos.manager.integration.tests.TenantMgtTestCase">
                 <methods>
                     <include name="init"/>
                     <include name="addTenantTest"/>
                     <include name="activateTenantTest"/>
                 </methods>
-            </class>
+            </class-->
         </classes>
     </test>
 </suite>

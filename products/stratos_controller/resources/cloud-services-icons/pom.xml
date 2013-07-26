@@ -25,8 +25,8 @@
     <artifactId>cloud-services-icons</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>cloud-services-icons</name>
-    <description>WSO2 Manager - Cloud Services Icons</description>
+    <name>Apache Stratos - Manager Cloud Services Icons</name>
+    <description>Apache Stratos - Manager Cloud Services Icons</description>
 
     <licenses>
         <license>

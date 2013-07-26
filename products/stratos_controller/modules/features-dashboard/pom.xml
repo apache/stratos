@@ -35,8 +35,8 @@
     <artifactId>features-dashboard</artifactId>
     <packaging>war</packaging>
     <version>1.0.0</version>
-    <name>features-dashboard-webapp</name>
-    <description>features-dashboard-webapp</description>
+    <name>Apache Stratos - Features Dashboard Webapp</name>
+    <description>Apache Stratos - Features Dashboard Webapp</description>
 
     <properties>
         <CApp.type>web/application</CApp.type>

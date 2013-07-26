@@ -30,8 +30,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>wso2sc</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Stratos2 - Distribution</name>
-    <description>Apache Stratos2 - Distribution</description>
+    <name>Apache Stratos - Distribution</name>
+    <description>Apache Stratos - Distribution</description>
 
     <dependencies>
         <dependency>
