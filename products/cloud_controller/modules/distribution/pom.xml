@@ -190,6 +190,7 @@
                                 <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
                                 <delete dir="target/sources"/>
                                 <delete dir="target/site"/>
+				<delete dir="src/site"/>
                             </tasks>
                         </configuration>
                         <goals>

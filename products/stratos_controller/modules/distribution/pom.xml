@@ -641,6 +641,7 @@
                                 <delete dir="target/sources"/>
                                 <delete dir="target/site"/>
                                 <delete dir="target/database"/>
+				<delete dir="src/site"/>
                             </tasks>
                         </configuration>
                         <goals>
