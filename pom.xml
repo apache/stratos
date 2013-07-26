@@ -168,5 +168,6 @@
         <wso2carbon.version>4.1.0</wso2carbon.version>
         <carbon.platform.package.import.version.range>[4.1.0, 4.2.0)</carbon.platform.package.import.version.range>
         <carbon.platform.package.export.version>4.1.0</carbon.platform.package.export.version>
+	<axis2.osgi.version>1.6.1.wso2v9</axis2.osgi.version>
     </properties>
 </project>
