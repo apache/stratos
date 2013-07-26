@@ -1,4 +1,4 @@
-package org.wso2.carbon.email.sender.api;
+package org.apache.stratos.email.sender.api;
 
 import java.util.Map;
 

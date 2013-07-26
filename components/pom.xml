@@ -74,6 +74,7 @@
 		<!-- Account Mgt -->
 		<module>org.apache.stratos.account.mgt</module>
 		<module>org.apache.stratos.account.mgt.ui</module>
+		<module>org.apache.stratos.email.sender</module>
 		<!-- Domain Validation -->
 		<module>org.apache.stratos.validate.domain</module>
                 <module>org.apache.stratos.validate.domain.ui</module>
@@ -85,7 +86,7 @@
 		<module>org.apache.stratos.sso.redirector.ui</module>
 		<module>org.apache.stratos.redirector.servlet</module>
 		<module>org.apache.stratos.redirector.servlet.ui</module>
-		<!-- Status Monotor -->
+		<!-- Status Monitor -->
 		<module>org.apache.stratos.status.monitor.core</module>
 		<module>org.apache.stratos.status.monitor</module>
 		<module>org.apache.stratos.status.monitor.agent</module>
