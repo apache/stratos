@@ -96,9 +96,9 @@
 	    <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.email.sender</artifactId>
-            <version>2.1.0</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.email.sender</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

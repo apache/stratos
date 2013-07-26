@@ -19,8 +19,8 @@
 package org.apache.stratos.tenant.mgt.email.sender.util;
 
 import org.apache.stratos.tenant.mgt.email.sender.internal.DataHolder;
-import org.wso2.carbon.email.sender.api.EmailSender;
-import org.wso2.carbon.email.sender.api.EmailSenderConfiguration;
+import org.apache.stratos.email.sender.api.EmailSender;
+import org.apache.stratos.email.sender.api.EmailSenderConfiguration;
 import org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber;
 import org.wso2.carbon.email.verification.util.EmailVerifierConfig;
 import org.wso2.carbon.registry.core.RegistryConstants;
