@@ -41,7 +41,7 @@ public class AppDomainContextsTest extends TestCase {
     ConfigurationContext configCtx;
     ClusteringAgent clusteringAgent;
     
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         configCtx = ConfigurationContextFactory.createEmptyConfigurationContext();
         clusteringAgent = new TribesClusteringAgent();
