@@ -76,9 +76,9 @@
 		<version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.register.ui</artifactId>
-		<version>2.1.1</version>
+                <groupId>org.apache.stratos</groupId>
+                <artifactId>org.apache.stratos.register.ui</artifactId>
+		<version>${project.version}</version>
             </dependency>
             <!--<dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -100,15 +100,10 @@
                 <artifactId>org.wso2.carbon.email.verification.stub</artifactId>
 		<version>${carbon.version}</version>
             </dependency>
-	    <!--dependency>
+	    <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.tenant.register.stub</artifactId>
                 <version>${project.version}</version>
-            </dependency-->
-	    <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.tenant.register.stub</artifactId>
-                <version>${carbon.version}</version>
             </dependency>
 	    <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -172,28 +167,27 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt.ui:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.ui</bundleDef>-->
-                                <bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt.ui</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt.stub</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt.ui:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt.stub:${project.version}</bundleDef>
                                 <bundleDef>org.apache.batik.wso2:batik</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.validate.domain.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.register.ui:2.1.1</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.validate.domain.ui:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.register.ui:${project.version}</bundleDef>
 				<!--bundleDef>org.wso2.carbon:org.wso2.carbon.payment.ui:${stratos.component.version}</bundleDef-->
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.email.verification.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.email.verification.stub</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.dashboard.ui </bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.manager.dashboard.stub</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.login.ui</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.styles</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.dashboard.ui:${project.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.manager.dashboard.stub:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.login.ui:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.styles:${project.version}</bundleDef>
 				<!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.activity.ui</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.activity.stub:${wso2carbon.version}</bundleDef>-->
 
 				<!--stub bundles -->
 
 				<bundleDef>org.apache.stratos:org.apache.stratos.account.mgt.stub:${project.version}</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.validate.domain.stub</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.validate.domain.stub:${project.version}</bundleDef>
 				<!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.stub:${wso2carbon.version}</bundleDef>-->
-				<!--bundleDef>org.apache.stratos:org.apache.stratos.tenant.register.stub:${project.version}</bundleDef-->
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.register.stub:${carbon.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.register.stub:${project.version}</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.payment.stub:${wso2carbon.version}</bundleDef>
                             </bundles>
                             <importBundles>

@@ -63,6 +63,7 @@
 		<module>org.apache.stratos.mediator.autoscale</module>
            	<module>org.apache.stratos.autoscaler.service</module>
 		<!-- Tenant Mgt -->
+		<module>org.apache.stratos.register.ui</module>
 		<module>org.apache.stratos.tenant.mgt.core</module>
 		<module>org.apache.stratos.tenant.mgt</module>
 		<module>org.apache.stratos.tenant.mgt.ui</module>

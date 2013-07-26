@@ -43,10 +43,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.register.ui.*,
+                            org.apache.stratos.register.ui.*,
                         </Export-Package>
                         <Import-Package>
-                            org.apache.stratos.tenant.register.stub.*; version=3.0.0-SHAPSHOT,
+                            org.apache.stratos.tenant.register.stub.*; version=${project.version},
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             !javax.xml.namespace,
