@@ -23,7 +23,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <carbon:jsi18n
-		resourceBundle="org.wso2.carbon.register.ui.i18n.JSResources"
+		resourceBundle="org.apache.stratos.register.ui.i18n.JSResources"
 		request="<%=request%>" />
 <link href="css/update_profile.css" rel="stylesheet" type="text/css" media="all"/>
 

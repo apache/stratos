@@ -54,9 +54,9 @@
         return;
     }
 %>
-<fmt:bundle basename="org.wso2.stratos.manager.dashboard.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.manager.dashboard.ui.i18n.Resources">
 <carbon:jsi18n
-        resourceBundle="org.wso2.stratos.manager.dashboard.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.manager.dashboard.ui.i18n.JSResources"
         request="<%=request%>" namespace="org.wso2.stratos.manager.dashboard.ui"/>
 
 <div id="middle">

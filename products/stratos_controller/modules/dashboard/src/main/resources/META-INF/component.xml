@@ -22,7 +22,7 @@
         <menu>
             <id>mt_cloud_services_configurations</id>
             <i18n-key>cloud.services.configurations</i18n-key>
-            <i18n-bundle>org.wso2.stratos.manager.dashboard.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.manager.dashboard.ui.i18n.Resources</i18n-bundle>
             <parent-menu>configure_menu</parent-menu>
             <link>../tenant-dashboard/cloud_services_configuration.jsp</link>
             <region>region1</region>

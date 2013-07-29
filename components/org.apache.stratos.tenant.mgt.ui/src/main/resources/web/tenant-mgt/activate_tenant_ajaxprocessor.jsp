@@ -25,7 +25,7 @@
 <script type="text/javascript" src="../dialog/js/jqueryui/jquery-ui.min.js"></script>
 
 <%--<carbon:jsi18n--%>
-		<%--resourceBundle="org.wso2.carbon.tenant.mgt.ui.i18n.JSResources"--%>
+		<%--resourceBundle="org.apache.stratos.tenant.mgt.ui.i18n.JSResources"--%>
 		<%--request="<%=request%>" />--%>
 
 <div id="middle">

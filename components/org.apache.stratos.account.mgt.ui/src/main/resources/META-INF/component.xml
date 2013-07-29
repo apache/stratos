@@ -21,7 +21,7 @@
     <menus>
         <menu>
             <id>gaas_account_mgt_menu</id>
-	    <i18n-bundle>org.wso2.carbon.account.mgt.ui.i18n.Resources</i18n-bundle>
+	    <i18n-bundle>org.apache.stratos.account.mgt.ui.i18n.Resources</i18n-bundle>
             <i18n-key>account.mgt.menu</i18n-key>            
             <parent-menu>configure_menu</parent-menu>
             <link>../account-mgt/account_mgt.jsp</link>

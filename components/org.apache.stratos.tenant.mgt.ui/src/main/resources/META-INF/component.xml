@@ -22,7 +22,7 @@
         <menu>
             <id>multitenancy_menu</id>
             <i18n-key>multitenancy</i18n-key>
-            <i18n-bundle>org.wso2.carbon.tenant.mgt.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.tenant.mgt.ui.i18n.Resources</i18n-bundle>
             <parent-menu>configure_menu</parent-menu>
             <link>#</link>
             <region>region1</region>
@@ -34,7 +34,7 @@
         <menu>
             <id>govern_add_tenants_menu</id>
             <i18n-key>govern.add_tenants.menu</i18n-key>
-            <i18n-bundle>org.wso2.carbon.tenant.mgt.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.tenant.mgt.ui.i18n.Resources</i18n-bundle>
             <parent-menu>multitenancy_menu</parent-menu>
             <link>../tenant-mgt/add_tenant.jsp</link>
             <region>region1</region>
@@ -47,7 +47,7 @@
         <menu>
             <id>govern_view_tenants_menu</id>
             <i18n-key>govern.view_tenants.menu</i18n-key>
-            <i18n-bundle>org.wso2.carbon.tenant.mgt.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.tenant.mgt.ui.i18n.Resources</i18n-bundle>
             <parent-menu>multitenancy_menu</parent-menu>
             <link>../tenant-mgt/view_tenants.jsp</link>
             <region>region1</region>

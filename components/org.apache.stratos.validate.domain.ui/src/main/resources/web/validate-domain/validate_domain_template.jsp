@@ -44,13 +44,13 @@
 	src="../registry_common/js/registry_common.js"></script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.validate.domain.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.validate.domain.ui.i18n.JSResources"
         request="<%=request%>" namespace="org.wso2.carbon.validate.domain.ui"/>
 
 <script type="text/javascript" src="../validate-domain/js/validate_domain.js"></script>
 
 <fmt:bundle
-	basename="org.wso2.carbon.validate.domain.ui.i18n.Resources">
+	basename="org.apache.stratos.validate.domain.ui.i18n.Resources">
 	<%
 	    String domain = request.getParameter("domain");
 		String status = request.getParameter("status");
@@ -97,7 +97,7 @@
 	<div id="middle">
 
     <carbon:breadcrumb label="validate"
-        resourceBundle="org.wso2.carbon.validate.domain.ui.i18n.Resources"
+        resourceBundle="org.apache.stratos.validate.domain.ui.i18n.Resources"
         topPage="false" request="<%=request%>" />
     
 	<div id="workArea">

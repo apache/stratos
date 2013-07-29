@@ -22,7 +22,7 @@
         <menu>
             <id>status_monitor_menu</id>
             <i18n-key>monitor.service.status</i18n-key>
-            <i18n-bundle>org.wso2.carbon.status.monitor.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.status.monitor.ui.i18n.Resources</i18n-bundle>
             <parent-menu>monitor_menu</parent-menu>
             <link>../status-monitor/service-status.jsp</link>
             <region>region4</region>
@@ -35,7 +35,7 @@
         <menu>
             <id>status_details_menu</id>
             <i18n-key>services.state.details</i18n-key>
-            <i18n-bundle>org.wso2.carbon.status.monitor.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.status.monitor.ui.i18n.Resources</i18n-bundle>
             <parent-menu>monitor_menu</parent-menu>
             <link>../status-monitor/status-details.jsp</link>
             <region>region4</region>

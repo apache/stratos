@@ -32,7 +32,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <carbon:jsi18n
-		resourceBundle="org.wso2.carbon.register.ui.i18n.JSResources"
+		resourceBundle="org.apache.stratos.register.ui.i18n.JSResources"
 		request="<%=request%>" />
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>

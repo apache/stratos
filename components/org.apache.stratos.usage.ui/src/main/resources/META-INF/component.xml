@@ -22,7 +22,7 @@
         <menu>
             <id>usage_monitoring_menu</id>
             <i18n-key>usage.monitoring</i18n-key>
-            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.usage.ui.i18n.Resources</i18n-bundle>
             <parent-menu></parent-menu>
             <link>#</link>
             <region>region4</region>
@@ -33,7 +33,7 @@
         <menu>
             <id>tenant_usage_menu</id>
             <i18n-key>tenant.usage.report</i18n-key>
-            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.usage.ui.i18n.Resources</i18n-bundle>
             <parent-menu>monitor_menu</parent-menu>
             <link>../tenant-usage/tenant_usage.jsp</link>
             <region>region4</region>
@@ -46,7 +46,7 @@
         <!--menu>
             <id>all_tenant_instance_usage_menu</id>
             <i18n-key>instance.usage.report</i18n-key>
-            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.usage.ui.i18n.Resources</i18n-bundle>
             <parent-menu>monitor_menu</parent-menu>
             <link>../tenant-usage/all_tenant_instance_usage.jsp</link>
             <region>region4</region>
@@ -59,7 +59,7 @@
         <menu>
             <id>all_tenant_usage_menu</id>
             <i18n-key>all.tenant.usage.report</i18n-key>
-            <i18n-bundle>org.wso2.carbon.usage.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.usage.ui.i18n.Resources</i18n-bundle>
             <parent-menu>monitor_menu</parent-menu>
             <link>../tenant-usage/all_tenant_usage.jsp</link>
             <region>region4</region>

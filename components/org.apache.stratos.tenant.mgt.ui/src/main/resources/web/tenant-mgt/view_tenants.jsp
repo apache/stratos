@@ -52,13 +52,13 @@
 
 %>
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.tenant.mgt.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.tenant.mgt.ui.i18n.JSResources"
         request="<%=request%>"/>
 
-<fmt:bundle basename="org.wso2.carbon.tenant.mgt.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.tenant.mgt.ui.i18n.Resources">
     <carbon:breadcrumb
             label="govern.view_tenants.menu"
-            resourceBundle="org.wso2.carbon.tenant.mgt.ui.i18n.Resources"
+            resourceBundle="org.apache.stratos.tenant.mgt.ui.i18n.Resources"
             topPage="true"
             request="<%=request%>"/>
 

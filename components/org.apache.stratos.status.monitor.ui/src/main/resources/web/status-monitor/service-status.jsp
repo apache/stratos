@@ -39,13 +39,13 @@
 
 
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.status.monitor.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.status.monitor.ui.i18n.JSResources"
         request="<%=request%>"/>
 
-<fmt:bundle basename="org.wso2.carbon.status.monitor.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.status.monitor.ui.i18n.Resources">
     <carbon:breadcrumb
             label="monitor.service_status.menu"
-            resourceBundle="org.wso2.carbon.status.monitor.ui.i18n.Resources"
+            resourceBundle="org.apache.stratos.status.monitor.ui.i18n.Resources"
             topPage="true"
             request="<%=request%>"/>
 

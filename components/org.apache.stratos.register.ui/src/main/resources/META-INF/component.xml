@@ -22,7 +22,7 @@
         <menu>
             <id>gaas_menu</id>
             <i18n-key>gaas</i18n-key>
-            <i18n-bundle>org.wso2.carbon.register.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.register.ui.i18n.Resources</i18n-bundle>
             <parent-menu></parent-menu>
             <link>#</link>
             <skip-authentication/>
@@ -33,7 +33,7 @@
         <menu>
             <id>gaas_register_org_menu</id>
             <i18n-key>register.org.menu</i18n-key>
-            <i18n-bundle>org.wso2.carbon.register.ui.i18n.Resources</i18n-bundle>
+            <i18n-bundle>org.apache.stratos.register.ui.i18n.Resources</i18n-bundle>
             <parent-menu>gaas_menu</parent-menu>
             <link>../tenant-register/select_domain.jsp</link>
             <region>region1</region>

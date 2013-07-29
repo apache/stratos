@@ -35,9 +35,9 @@
 <script type="text/javascript" src="../dialog/js/jqueryui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="../googleanalytics/js/googleAnalyticsProcessor.js"></script>
 <carbon:jsi18n
-        resourceBundle="org.wso2.carbon.register.ui.i18n.JSResources"
+        resourceBundle="org.apache.stratos.register.ui.i18n.JSResources"
         request="<%=request%>"/>
-<fmt:bundle basename="org.wso2.carbon.register.ui.i18n.Resources">
+<fmt:bundle basename="org.apache.stratos.register.ui.i18n.Resources">
 
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <link href="../tenant-register/css/tenant-register.css" rel="stylesheet" type="text/css" media="all"/>
