@@ -1,2 +1,2 @@
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.tenant.mgt.core_${feature.version}/conf/cloud-services-desc.xml,target:${installFolder}/../conf/cloud-services-desc.xml,overwrite:true);
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.apache.stratos.tenant.mgt.core_${feature.version}/conf/cloud-services-desc.xml,target:${installFolder}/../conf/cloud-services-desc.xml,overwrite:true);

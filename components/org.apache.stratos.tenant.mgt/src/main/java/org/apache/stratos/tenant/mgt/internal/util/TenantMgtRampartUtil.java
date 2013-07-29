@@ -22,7 +22,7 @@ public class TenantMgtRampartUtil {
         //Populate Rampart Configuration
         RampartConfig rampartConfig = new RampartConfig();
         rampartConfig.setUser(privateKeyAlias);
-        rampartConfig.setPwCbClass("org.wso2.carbon.tenant.mgt.services.InMemoryPasswordcallbackHandler");
+        rampartConfig.setPwCbClass("org.apache.stratos.tenant.mgt.services.InMemoryPasswordcallbackHandler");
 
         //Set the private key alias and private key password in the password callback handler
         InMemoryPasswordcallbackHandler.addUser(privateKeyAlias, privateKeyPassword);

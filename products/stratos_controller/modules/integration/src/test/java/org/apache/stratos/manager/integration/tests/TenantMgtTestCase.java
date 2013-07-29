@@ -27,8 +27,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
-import org.wso2.carbon.tenant.mgt.stub.TenantMgtAdminServiceStub;
-import org.wso2.carbon.tenant.mgt.stub.beans.xsd.TenantInfoBean;
+import org.apache.stratos.tenant.mgt.stub.TenantMgtAdminServiceStub;
+import org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.util.Calendar;

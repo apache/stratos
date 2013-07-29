@@ -212,8 +212,8 @@
                                 <bundleDef>org.apache.stratos:org.apache.stratos.email.sender:${project.version}</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.email.sender:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.account.mgt:${project.version}</bundleDef>
-                                <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt</bundleDef>-->
-                                <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.core</bundleDef>-->
+                                <!--<bundleDef>org.wso2.carbon:org.apache.stratos.tenant.mgt</bundleDef>-->
+                                <!--<bundleDef>org.wso2.carbon:org.apache.stratos.tenant.mgt.core</bundleDef>-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.theme.mgt</bundleDef>-->
                                 <bundleDef>org.apache.stratos:org.apache.stratos.validate.domain:${project.version}</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.email.verification:${carbon.version}</bundleDef>

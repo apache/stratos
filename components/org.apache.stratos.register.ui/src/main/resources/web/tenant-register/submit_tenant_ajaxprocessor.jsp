@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<%@ page import="org.wso2.carbon.register.ui.utils.TenantConfigUtil" %>
+<%@ page import="org.apache.stratos.register.ui.utils.TenantConfigUtil" %>
 <%@ page import="org.apache.stratos.common.constants.StratosConstants"%>
 <%@ page import="org.wso2.carbon.captcha.mgt.constants.CaptchaMgtConstants"%>
 <%@ page import="org.wso2.carbon.utils.multitenancy.MultitenantConstants" %>

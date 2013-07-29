@@ -65,7 +65,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.tenant.mgt.server</id>
+                            <id>org.apache.stratos.tenant.mgt.server</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>

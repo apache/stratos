@@ -18,7 +18,7 @@
   -->
 
 <%@ page import="org.apache.axis2.AxisFault" %>
-<%@ page import="org.wso2.carbon.stratos.common.util.CommonUtil" %>
+<%@ page import="org.apache.stratos.common.util.CommonUtil" %>
 <%@ page import="org.json.JSONException" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

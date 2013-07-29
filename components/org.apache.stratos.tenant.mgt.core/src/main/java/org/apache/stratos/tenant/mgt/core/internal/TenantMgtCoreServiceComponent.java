@@ -33,7 +33,7 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.apache.stratos.tenant.mgt.core.DefaultTenantPersistor;
 
 /**
- * @scr.component name="org.wso2.carbon.tenant.mgt.core" immediate="true"
+ * @scr.component name="org.apache.stratos.tenant.mgt.core" immediate="true"
  * @scr.reference name="registry.service"
  *                interface="org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService"

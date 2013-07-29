@@ -150,9 +150,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.mgt.stub</artifactId>
-            <version>${carbon.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.mgt.stub</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
         	<groupId>org.wso2.carbon</groupId>

@@ -20,7 +20,7 @@ package org.apache.stratos.tenant.mgt.ui.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.tenant.mgt.stub.beans.xsd.TenantInfoBean;
+import org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean;
 import org.apache.stratos.tenant.mgt.ui.clients.TenantServiceClient;
 
 import javax.servlet.ServletConfig;

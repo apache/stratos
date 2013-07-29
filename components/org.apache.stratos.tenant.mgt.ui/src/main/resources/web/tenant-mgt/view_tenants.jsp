@@ -18,10 +18,10 @@
   -->
 <%@ page import="org.apache.axis2.context.ConfigurationContext" %>
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.stub.beans.xsd.PaginatedTenantInfoBean" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.stub.beans.xsd.TenantInfoBean" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.ui.clients.TenantServiceClient" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.ui.utils.TenantMgtUtil" %>
+<%@ page import="org.apache.stratos.tenant.mgt.stub.beans.xsd.PaginatedTenantInfoBean" %>
+<%@ page import="org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean" %>
+<%@ page import="org.apache.stratos.tenant.mgt.ui.clients.TenantServiceClient" %>
+<%@ page import="org.apache.stratos.tenant.mgt.ui.utils.TenantMgtUtil" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>

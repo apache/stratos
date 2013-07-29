@@ -19,7 +19,7 @@
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
-<%@ page import="org.wso2.carbon.register.ui.utils.TenantConfigUtil" %>
+<%@ page import="org.apache.stratos.register.ui.utils.TenantConfigUtil" %>
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

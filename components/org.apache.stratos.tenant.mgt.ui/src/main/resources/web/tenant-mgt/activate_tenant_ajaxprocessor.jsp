@@ -17,7 +17,7 @@
   ~ under the License.
   -->
 
-<%@ page import="org.wso2.carbon.tenant.mgt.ui.clients.TenantServiceClient" %>
+<%@ page import="org.apache.stratos.tenant.mgt.ui.clients.TenantServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script type="text/javascript" src="../admin/js/jquery.js"></script>

@@ -18,7 +18,7 @@
   -->
 <%@ page import="org.apache.stratos.common.constants.StratosConstants" %>
 <%@ page import="org.apache.stratos.common.util.CommonUtil" %>
-<%@ page import="org.wso2.carbon.register.ui.utils.TenantConfigUtil" %>
+<%@ page import="org.apache.stratos.register.ui.utils.TenantConfigUtil" %>
 <%@ page import="org.apache.stratos.tenant.register.stub.beans.xsd.CaptchaInfoBean" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

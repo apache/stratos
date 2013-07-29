@@ -18,7 +18,7 @@
   -->
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.json.JSONArray" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.ui.clients.PackageInfoServiceClient" %>
+<%@ page import="org.apache.stratos.tenant.mgt.ui.clients.PackageInfoServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.apache.axis2.context.ConfigurationContext" %>
 <%@ page import="org.wso2.carbon.CarbonConstants" %>

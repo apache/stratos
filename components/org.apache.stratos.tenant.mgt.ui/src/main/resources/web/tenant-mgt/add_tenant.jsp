@@ -16,9 +16,9 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<%@ page import="org.wso2.carbon.stratos.common.util.CommonUtil" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.stub.beans.xsd.TenantInfoBean" %>
-<%@ page import="org.wso2.carbon.tenant.mgt.ui.utils.TenantMgtUtil" %>
+<%@ page import="org.apache.stratos.common.util.CommonUtil" %>
+<%@ page import="org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean" %>
+<%@ page import="org.apache.stratos.tenant.mgt.ui.utils.TenantMgtUtil" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.base.ServerConfiguration" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

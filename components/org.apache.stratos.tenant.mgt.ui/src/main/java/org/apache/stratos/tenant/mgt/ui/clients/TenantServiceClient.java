@@ -26,9 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.tenant.mgt.stub.TenantMgtAdminServiceStub;
-import org.wso2.carbon.tenant.mgt.stub.beans.xsd.PaginatedTenantInfoBean;
-import org.wso2.carbon.tenant.mgt.stub.beans.xsd.TenantInfoBean;
+import org.apache.stratos.tenant.mgt.stub.TenantMgtAdminServiceStub;
+import org.apache.stratos.tenant.mgt.stub.beans.xsd.PaginatedTenantInfoBean;
+import org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean;
 import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.utils.ServerConstants;
 
