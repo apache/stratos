@@ -93,6 +93,9 @@ public class AppDomainContextsTest extends TestCase {
         
         Assert.assertEquals(true, map.containsKey("wso2.as3.domain"));
         Assert.assertEquals(true, map.get("wso2.as3.domain").get("mgt") != null);
+
+        // Remove service configuration since lbConfig is singleton
+        lbConfig.removeServiceConfiguration("wso2.as3.domain", "mgt");
     }
 
     @Deprecated // use only for writing test cases
