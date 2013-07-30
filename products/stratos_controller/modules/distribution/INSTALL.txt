@@ -1,4 +1,4 @@
-Installing  WSO2 Stratos Controller (SC) 1.0.1
+Installing  Apache Stratos Controller (SC) 1.0.1
 ===============================================
 
 Standalone Mode
@@ -8,14 +8,14 @@ Standalone Mode
 
 2. All the shell scripts and .bat files are available in CARBON_HOME/bin directory.
 
-3. To start SC one can use either wso2server.sh or daemon.sh in all *nix
-   system & wso2server.bat file on Windows operating systems.
+3. To start SC one can use either stratos.sh or daemon.sh in all *nix
+   system & stratos.bat file on Windows operating systems.
 
 4. Either of the following commands can be used to start Stratos-Manager
-      i)  ./wso2server.sh {console|start|stop|restart|status|dump|version}
-    ii)  wso2server.bat {start|stop|version}
+     i)  ./stratos.sh {console|start|stop|restart|status|dump|version}
+    ii)  stratos.bat {start|stop|version}
 
-            Usage: wso2server.sh [command] [system-properties]
+            Usage: stratos.sh [command] [system-properties]
 
             command:
                 --debug <port> 	Start the server in remote debugging mode.

@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.mediator.autoscale.lbautoscale;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.tribes.TribesClusteringAgent;
 import org.apache.axis2.context.ConfigurationContext;
@@ -30,24 +26,31 @@ import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration;
 import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration.ServiceConfiguration;
 import org.apache.stratos.lb.common.group.mgt.SubDomainAwareGroupManagementAgent;
 import org.apache.stratos.mediator.autoscale.lbautoscale.util.AutoscaleUtil;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import java.io.File;
+import java.util.Iterator;
+import java.util.Map;
 
-public class AppDomainContextsTest extends TestCase {
-
+@RunWith(JUnit4.class)
+public class AppDomainContextsTest {
     private static Map<String, Map<String, ?>> map;
-    private LoadBalancerConfiguration lbConfig;
-    ConfigurationContext configCtx;
-    ClusteringAgent clusteringAgent;
-    
-    public void setUp() throws Exception {
-        super.setUp();
+    private static LoadBalancerConfiguration lbConfig;
+    private static ConfigurationContext configCtx;
+    private static ClusteringAgent clusteringAgent;
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
         configCtx = ConfigurationContextFactory.createEmptyConfigurationContext();
         clusteringAgent = new TribesClusteringAgent();
         clusteringAgent.addGroupManagementAgent(new SubDomainAwareGroupManagementAgent(
-                    "worker"),
-                    "wso2.as1.domain", "worker", -1);
+                "worker"),
+                "wso2.as1.domain", "worker", -1);
         clusteringAgent.addGroupManagementAgent(new SubDomainAwareGroupManagementAgent(
                 "mgt"),
                 "wso2.as1.domain", "mgt", -1);
@@ -55,24 +58,33 @@ public class AppDomainContextsTest extends TestCase {
                 "mgt"),
                 "wso2.as2.domain", "mgt", -1);
         configCtx.getAxisConfiguration().setClusteringAgent(clusteringAgent);
-        
+
         File f = new File("src/test/resources/loadbalancer.conf");
         System.setProperty("loadbalancer.conf", f.getAbsolutePath());
         lbConfig = LoadBalancerConfiguration.getInstance();
-        
+
         map = AutoscaleUtil.getAppDomainContexts(configCtx, lbConfig);
-        
     }
-    
-    
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        // Remove service configurations since lbConfig is singleton
+        lbConfig = LoadBalancerConfiguration.getInstance();
+        lbConfig.removeServiceConfiguration("wso2.as1.domain", "worker");
+        lbConfig.removeServiceConfiguration("wso2.as1.domain", "mgt");
+        lbConfig.removeServiceConfiguration("wso2.as2.domain", "mgt");
+        map = AutoscaleUtil.getAppDomainContexts(configCtx, lbConfig);
+    }
+
+    @Test
     public void testRemoval(){
-        // removing a cluster domain with only 1 sub domain 
+        // Removing a cluster domain with only 1 sub domain
         lbConfig.removeServiceConfiguration("wso2.as2.domain", "mgt");
         map = AutoscaleUtil.getAppDomainContexts(configCtx, lbConfig);
         
         Assert.assertEquals(true, !map.containsKey("wso2.as2.domain"));
         
-        // removing a cluster domain with more than 1 sub domain
+        // Removing a cluster domain with more than 1 sub domain
         lbConfig.removeServiceConfiguration("wso2.as1.domain", "mgt");
         map = AutoscaleUtil.getAppDomainContexts(configCtx, lbConfig);
         
@@ -80,7 +92,8 @@ public class AppDomainContextsTest extends TestCase {
         Assert.assertEquals(true, map.get("wso2.as1.domain").get("mgt") == null);
         Assert.assertEquals(true, map.get("wso2.as1.domain").get("worker") != null);
     }
-    
+
+    @Test
     public void testAddition(){
         ServiceConfiguration config1 = lbConfig.new ServiceConfiguration();
         config1.setDomain("wso2.as3.domain");
@@ -96,6 +109,7 @@ public class AppDomainContextsTest extends TestCase {
 
         // Remove service configuration since lbConfig is singleton
         lbConfig.removeServiceConfiguration("wso2.as3.domain", "mgt");
+        map = AutoscaleUtil.getAppDomainContexts(configCtx, lbConfig);
     }
 
     @Deprecated // use only for writing test cases

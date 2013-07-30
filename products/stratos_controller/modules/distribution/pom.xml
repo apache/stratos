@@ -28,7 +28,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wso2sc</artifactId>
+    <artifactId>apache-stratos-sc</artifactId>
     <packaging>jar</packaging>
     <name>Apache Stratos - Distribution</name>
     <description>Apache Stratos - Distribution</description>

@@ -26,7 +26,7 @@
         <!-- Copying p2 profile and osgi bundles-->
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/components</directory>
-            <outputDirectory>stratos-cc-${pom.version}/repository/components</outputDirectory>
+            <outputDirectory>apache-stratos-cc-${pom.version}/repository/components</outputDirectory>
             <excludes>
                 <exclude>**/eclipse.ini</exclude>
                 <exclude>**/*.lock</exclude>

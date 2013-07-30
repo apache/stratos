@@ -480,50 +480,50 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
         </file>
 	<file>
-            <source>src/bin/wso2server.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <source>src/bin/stratos.sh</source>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+	<file>
+            <source>src/bin/stratos.bat</source>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/git-folder-structure.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/manage-git-repo.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/set-mysql-password.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/bin/add_entry_zone_file.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/bin/remove_entry_zone_file.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/update-instance.sh</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
-        </file>
-	<file>
-            <source>src/bin/wso2server.bat</source>
-            <outputDirectory>wso2sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>

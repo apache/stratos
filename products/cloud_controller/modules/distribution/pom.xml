@@ -30,7 +30,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>stratos-cc</artifactId>
+    <artifactId>apache-stratos-cc</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Cloud Controller - Distribution</name>
     <url>http://apache.org</url>
@@ -122,13 +122,13 @@
                                 <mkdir dir="${tempdir}"/>
                                 <unzip dest="${tempdir}">
                                     <fileset dir="target">
-                                        <include name="stratos-cc-${project.version}.zip"/>
+                                        <include name="apache-stratos-cc-${project.version}.zip"/>
                                     </fileset>
                                 </unzip>
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
                                       overwrite="false">
                                     <fileset
-                                            dir="${tempdir}/stratos-cc-${project.version}/repository/components/">
+                                            dir="${tempdir}/apache-stratos-cc-${project.version}/repository/components/">
                                     </fileset>
                                 </copy>
                                 <unzip dest="${tempdir}">

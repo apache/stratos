@@ -30,7 +30,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>stratos-cc-p2-profile</artifactId>
+    <artifactId>apache-stratos-cc-p2-profile</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Cloud Controller - P2 Profile Generation</name>
     <url>http://apache.org</url>
