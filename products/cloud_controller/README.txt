@@ -1,5 +1,5 @@
 ================================================================================
-                        Apache Cloud Controller Server 3.0.0-SNAPSHOT
+                        Apache Stratos Cloud Controller 3.0.0-SNAPSHOT
 ================================================================================
 
 Welcome to the Apache Stratos CC 3.0.0-SNAPSHOT release.
@@ -68,7 +68,7 @@ For more details see
 Installation & Running
 ==================================
 
-1. Extract the stratos-cc-1.0.1.zip and go to the extracted directory
+1. Extract the apache-stratos-cc-3.0.0-SNAPSHOT.zip and go to the extracted directory
 2. Run the stratos.sh or stratos.bat as appropriate
 3. Point your favourite browser to
 
@@ -81,7 +81,7 @@ Installation & Running
 
    
 
-Apache Stratos CC 1.0.1 distribution directory structure
+Apache Stratos CC 3.0.0-SNAPSHOT distribution directory structure
 =============================================
 
 	CARBON_HOME
