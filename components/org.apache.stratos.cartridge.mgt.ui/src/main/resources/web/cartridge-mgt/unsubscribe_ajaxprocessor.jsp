@@ -1,4 +1,4 @@
-<!--
+<%--
      ~  Licensed to the Apache Software Foundation (ASF) under one
      ~  or more contributor license agreements.  See the NOTICE file
      ~  distributed with this work for additional information
@@ -16,7 +16,7 @@
      ~  specific language governing permissions and limitations
      ~  under the License.
      ~
- -->
+ --%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.apache.axis2.context.ConfigurationContext" %>
 <%@ page import="org.wso2.carbon.CarbonConstants" %>
