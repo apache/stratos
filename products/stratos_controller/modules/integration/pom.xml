@@ -63,7 +63,7 @@
                     <systemProperties>
                         <maven.test.haltafterfailure>false</maven.test.haltafterfailure>
                         <carbon.zip>
-                            ${basedir}/../distribution/target/wso2sc-${project.version}.zip
+                            ${basedir}/../distribution/target/apache-stratos-sc-${project.version}.zip
                         </carbon.zip>
                         <sec.verifier.dir>${basedir}/target/security-verifier/</sec.verifier.dir>
                         <extracted.dir>stratos-controller-parent-${project.version}</extracted.dir>
