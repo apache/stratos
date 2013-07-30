@@ -52,7 +52,7 @@
 		same property over and over again. -->
 	<iaasProviders>
         <!--iaasProvider type="ec2" name="ec2 specific details">
-            <className>org.wso2.carbon.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
 			<provider>aws-ec2</provider>
 			<identity svns:secretAlias="elastic.scaler.openstack.identity">dhsaghfdal</identity>
 			<credential svns:secretAlias="elastic.scaler.openstack.credential">jdkjaskd</credential>
@@ -66,7 +66,7 @@
 			<imageId>us-east-1/ami-52409a3b</imageId>
 		</iaasProvider-->
 		<iaasProvider type="openstack" name="openstack specific details">
-            <className>org.wso2.carbon.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
 			<provider>openstack-nova</provider>
 			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
 			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
