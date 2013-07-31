@@ -1,4 +1,4 @@
-Installing  Apache Stratos Cloud Controller Server (CC) 1.0.1
+Installing  Apache Stratos Cloud Controller Server (CC) 3.0.0-SNAPSHOT
 ===================================================================
 
 1. The directory containing this INSTALL.txt file will be the root and it will be
@@ -70,9 +70,6 @@ System Requirements
 6. To build Apache Stratos CC from the Source distribution, it is necessary that you have
    JDK 1.6.24 version and Maven 3.0.4 or later
 
-
-For more details see
-    http://docs.wso2.org/wiki/display/Carbon401/Installation+Prerequisites
 
 
 
