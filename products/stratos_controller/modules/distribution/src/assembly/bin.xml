@@ -62,8 +62,8 @@
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/daemon.sh</exclude>
-                <exclude>**/wso2server.bat</exclude>
-		<exclude>**/wso2server.sh</exclude>
+                <exclude>**/stratos.bat</exclude>
+		<exclude>**/stratos.sh</exclude>
 		 <exclude>**/log4j.properties</exclude>
             </excludes>
             <includes>
