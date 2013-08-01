@@ -88,10 +88,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.adc.repository.information.service.*; version=0.0.0,
-                            org.apache.stratos.adc.repository.information.*; version=0.0.0,
-                            org.apache.stratos.adc.mgt.dao.xsd.*; version=0.0.0,
-                            axis2.apache.org.xsd.*; version=0.0.0
+                            org.apache.stratos.adc.repository.information.service.*; version=${project.version},
+                            org.apache.stratos.adc.repository.information.*; version=${project.version},
+                            org.apache.stratos.adc.mgt.dao.xsd.*; version=${project.version},
+                            axis2.apache.org.xsd.*; version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional

@@ -48,7 +48,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/AutoscalerService.wsdl -u -uw -o target/generated-code                                     -p org.apache.stratos.lb.autoscaler.service.stub                                     -ns2p http://services.autoscaler.balance.load.carbon.wso2.org=org.apache.stratos.lb.autoscaler.stub.services,http://beans.autoscaler.balance.load.carbon.wso2.org/xsd=org.apache.stratos.lb.autoscaler.stub.beans.xsd,"/>
+                                    <arg line="-uri src/main/resources/AutoscalerService.wsdl -u -uw -o target/generated-code                                     -p org.apache.stratos.lb.autoscaler.service.stub                                     -ns2p http://services.autoscaler.lb.stratos.apache.org=org.apache.stratos.lb.autoscaler.stub.services,http://beans.autoscaler.lb.stratos.apache.org/xsd=org.apache.stratos.lb.autoscaler.stub.beans.xsd,"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -88,8 +88,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.lb.autoscaler.service.stub.*; version="${carbon.platform.package.export.version}",
-                            org.apache.stratos.lb.autoscaler.service.*; version="${carbon.platform.package.export.version}",
+                            org.apache.stratos.lb.autoscaler.service.stub.*; version="${project.version}",
+                            org.apache.stratos.lb.autoscaler.service.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional

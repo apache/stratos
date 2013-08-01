@@ -71,10 +71,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.tenant.mgt.stub.*; version="${carbon.platform.package.export.version}"
+                            org.apache.stratos.tenant.mgt.stub.*; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
-			    			!org.apache.stratos.tenant.mgt.stub.*,
+			    !org.apache.stratos.tenant.mgt.stub.*,
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>

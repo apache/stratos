@@ -96,7 +96,7 @@
                         </Private-Package>
                         <Export-Package>
                             org.apache.stratos.adc.instanceinfo.mgt.stub.*;
-                            version="${carbon.platform.package.export.version}"
+                            version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.adc.instanceinfo.mgt.stub.*

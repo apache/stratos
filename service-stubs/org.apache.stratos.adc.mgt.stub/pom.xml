@@ -92,10 +92,10 @@
                         <Private-Package>
                         </Private-Package>
                         <Export-Package>
-                            org.apache.stratos.adc.mgt.stub.*; version="1.0.0",
-                            org.apache.stratos.adc.mgt.service.*; version="1.0.0",
-                            org.apache.stratos.adc.mgt.dto.xsd*; version="1.0.0",
-                            org.apache.stratos.adc.mgt.exception.xsd.*; version="1.0.0
+                            org.apache.stratos.adc.mgt.stub.*; version="${project.version}",
+                            org.apache.stratos.adc.mgt.service.*; version="${project.version}",
+                            org.apache.stratos.adc.mgt.dto.xsd*; version="${project.version}",
+                            org.apache.stratos.adc.mgt.exception.xsd.*; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.adc.mgt.stub.*

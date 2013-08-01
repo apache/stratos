@@ -29,7 +29,7 @@
     <artifactId>org.apache.stratos.cartridge.agent.stub</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Stratos - Cartridge Agent Stub</name>
-    <url>http://wso2.org</url>
+    <url>http://apache.org</url>
 
     <build>
         <plugins>
@@ -98,10 +98,10 @@
                         <Private-Package>
                         </Private-Package>
                         <Export-Package>
-                            org.apache.stratos.cartridge.agent.*;version="1.0.0",
-                            org.apache.stratos.cartridge.agent.registrant.xsd.*;version="1.0.0",
-                            org.apache.stratos.cartridge.agent.stub.*;version="1.0.0"
-                            org.apache.stratos.cartridge.agent.xsd.*;version="1.0.0
+                            org.apache.stratos.cartridge.agent.*;version="${project.version}",
+                            org.apache.stratos.cartridge.agent.registrant.xsd.*;version="${project.version}",
+                            org.apache.stratos.cartridge.agent.stub.*;version="${project.version}",
+                            org.apache.stratos.cartridge.agent.xsd.*;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.hosting.mgt.stub.*

@@ -81,10 +81,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.usage.meteringsummarygenerationds.stub.*; version="${carbon.platform.package.export.version}",
+                            org.apache.stratos.usage.meteringsummarygenerationds.stub.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
-			                !org.apache.stratos.usage.meteringsummarygenerationds.stub.*,
+			    !org.apache.stratos.usage.meteringsummarygenerationds.stub.*,
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>

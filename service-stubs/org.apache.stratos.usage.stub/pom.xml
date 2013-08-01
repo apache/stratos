@@ -76,7 +76,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.usage.stub.*; version="${carbon.platform.package.export.version}",
+                            org.apache.stratos.usage.stub.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
 			    !org.apache.stratos.usage.stub.*,

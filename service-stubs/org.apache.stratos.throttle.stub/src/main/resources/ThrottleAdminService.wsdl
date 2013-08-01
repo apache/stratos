@@ -16,11 +16,11 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://service.throttle.carbon.wso2.org" xmlns:ax286="http://throttle.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://service.throttle.carbon.wso2.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://service.throttle.stratos.apache.org" xmlns:ax286="http://throttle.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://service.throttle.stratos.apache.org">
     <wsdl:documentation>ThrottleAdminService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema xmlns:ax288="http://throttle.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.throttle.carbon.wso2.org">
-            <xs:import namespace="http://throttle.carbon.wso2.org/xsd"/>
+        <xs:schema xmlns:ax288="http://throttle.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.throttle.stratos.apache.org">
+            <xs:import namespace="http://throttle.stratos.apache.org/xsd"/>
             <xs:complexType name="Exception">
                 <xs:all>
                     <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType"/>
@@ -151,8 +151,8 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax287="http://service.throttle.carbon.wso2.org" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://throttle.carbon.wso2.org/xsd">
-            <xs:import namespace="http://service.throttle.carbon.wso2.org"/>
+        <xs:schema xmlns:ax287="http://service.throttle.stratos.apache.org" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://throttle.stratos.apache.org/xsd">
+            <xs:import namespace="http://service.throttle.stratos.apache.org"/>
             <xs:complexType name="ThrottleComponentException">
                 <xs:complexContent>
                     <xs:extension base="ax287:Exception">

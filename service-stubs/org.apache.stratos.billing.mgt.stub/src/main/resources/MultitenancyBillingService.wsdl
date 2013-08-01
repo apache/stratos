@@ -17,10 +17,10 @@
   ~ under the License.
   -->
 
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax215="http://beans.mgt.billing.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.mgt.billing.carbon.wso2.org" xmlns:ax213="http://dataobjects.core.billing.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax217="http://beans.core.billing.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.mgt.billing.carbon.wso2.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax215="http://beans.mgt.billing.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.mgt.billing.stratos.apache.org" xmlns:ax213="http://dataobjects.core.billing.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax217="http://beans.core.billing.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.mgt.billing.stratos.apache.org">
     <wsdl:documentation>MultitenancyBillingService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.mgt.billing.carbon.wso2.org/xsd">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.mgt.billing.stratos.apache.org/xsd">
             <xs:complexType name="MultitenancyInvoice">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="billingDate" nillable="true" type="xs:date"/>
@@ -68,10 +68,10 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax214="http://dataobjects.core.billing.carbon.wso2.org/xsd" xmlns:ax216="http://beans.mgt.billing.carbon.wso2.org/xsd" xmlns:ax218="http://beans.core.billing.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.mgt.billing.carbon.wso2.org">
-            <xs:import namespace="http://dataobjects.core.billing.carbon.wso2.org/xsd"/>
-            <xs:import namespace="http://beans.mgt.billing.carbon.wso2.org/xsd"/>
-            <xs:import namespace="http://beans.core.billing.carbon.wso2.org/xsd"/>
+        <xs:schema xmlns:ax214="http://dataobjects.core.billing.stratos.apache.org/xsd" xmlns:ax216="http://beans.mgt.billing.stratos.apache.org/xsd" xmlns:ax218="http://beans.core.billing.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.mgt.billing.stratos.apache.org">
+            <xs:import namespace="http://dataobjects.core.billing.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://beans.mgt.billing.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://beans.core.billing.stratos.apache.org/xsd"/>
             <xs:element name="MultitenancyBillingServiceException">
                 <xs:complexType>
                     <xs:sequence>
@@ -226,7 +226,7 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://dataobjects.core.billing.carbon.wso2.org/xsd">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://dataobjects.core.billing.stratos.apache.org/xsd">
             <xs:complexType name="Payment">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="amount" nillable="true" type="ax213:Cash"/>
@@ -293,7 +293,7 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.core.billing.carbon.wso2.org/xsd">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.core.billing.stratos.apache.org/xsd">
             <xs:complexType name="PaginatedBalanceInfoBean">
                 <xs:sequence>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="balanceInfoBeans" nillable="true" type="ax217:OutstandingBalanceInfoBean"/>

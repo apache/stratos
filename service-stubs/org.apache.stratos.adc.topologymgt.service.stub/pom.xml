@@ -26,7 +26,6 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>4.1.1</version>
     <artifactId>org.apache.stratos.adc.topologymgt.service.stub</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Stratos - Topology Management Service Stub</name>
@@ -88,8 +87,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.topology.mgt.service.impl.*; version=0.0.0,
-                            org.apache.stratos.topology.mgt.*; version=0.0.0
+                            org.apache.stratos.topology.mgt.service.impl.*; version=${project.version},
+                            org.apache.stratos.topology.mgt.*; version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional

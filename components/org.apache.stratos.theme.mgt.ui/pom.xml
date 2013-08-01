@@ -67,7 +67,7 @@
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.lucene.*,
                             org.apache.batik.*,
-                            org.apache.stratos.theme.mgt.stub.*; version="${carbon.platform.package.import.version.range}",
+                            org.apache.stratos.theme.mgt.stub.*; version="${project.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.theme.mgt.stub</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

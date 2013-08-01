@@ -48,7 +48,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/LoadBalanceAgentService.wsdl -u -uw -o target/generated-code                                     -p org.apache.stratos.lb.agent.stub                                     -ns2p http://services.agent.balance.load.stratos.apache.org=org.apache.stratos.lb.agent.stub.services,http://beans.agent.balance.load.stratos.apache.org/xsd=org.apache.stratos.lb.agent.stub.beans.xsd,"/>
+                                    <arg line="-uri src/main/resources/LoadBalanceAgentService.wsdl -u -uw -o target/generated-code                                     -p org.apache.stratos.lb.agent.stub                                     -ns2p http://services.agent.lb.stratos.apache.org=org.apache.stratos.lb.agent.stub.services,http://beans.agent.lb.stratos.apache.org/xsd=org.apache.stratos.lb.agent.stub.beans.xsd,"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>

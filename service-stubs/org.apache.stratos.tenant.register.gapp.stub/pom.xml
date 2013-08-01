@@ -66,7 +66,7 @@
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/GAppTenantRegistrationService.wsdl -u -uw -o target/generated-code
                                     -p org.apache.stratos.tenant.register.gapp.stub
-                                    -ns2p http://services.mgt.tenant.carbon.wso2.org=org.apache.stratos.tenant.register.gapp.stub.services,http://beans.mgt.tenant.carbon.wso2.org/xsd=org.apache.stratos.tenant.register.gapp.stub.xsd,http://org.apache.axis2/xsd=org.apache.stratos.tenant.register.gapp.stub.services,http://exception.mgt.tenant.carbon.wso2.org/xsd=org.apache.stratos.tenant.register.gapp.stub.xsd"/>
+                                    -ns2p http://services.mgt.tenant.stratos.apache.org=org.apache.stratos.tenant.register.gapp.stub.services,http://beans.mgt.tenant.stratos.apache.org/xsd=org.apache.stratos.tenant.register.gapp.stub.xsd,http://org.apache.axis2/xsd=org.apache.stratos.tenant.register.gapp.stub.services,http://exception.mgt.tenant.stratos.apache.org/xsd=org.apache.stratos.tenant.register.gapp.stub.xsd"/>
                                     <classpath refid="wsdl2java.classpath"/>
                                 </java>
 				
@@ -86,7 +86,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.tenant.register.gapp.stub.*; version="${carbon.platform.package.export.version}",
+                            org.apache.stratos.tenant.register.gapp.stub.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
 			    !org.apache.stratos.tenant.register.gapp.stub.*,

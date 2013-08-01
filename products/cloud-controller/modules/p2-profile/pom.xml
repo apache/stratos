@@ -547,7 +547,7 @@
                                 <!-- multitenancy feature groups -->
                                 <feature>
                                     <id>org.apache.stratos.common.feature.group</id>
-                                    <version>3.0.0-SNAPSHOT</version>
+                                    <version>${project.version}</version>
                                 </feature>
 
                                 <feature>
