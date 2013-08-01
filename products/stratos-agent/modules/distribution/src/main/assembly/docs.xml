@@ -26,7 +26,7 @@
     <fileSets>
         <fileSet>
             <directory>target/site</directory>
-            <outputDirectory>stratos-s2-agent-${pom.version}-docs</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}-docs</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
     </fileSets>

@@ -27,14 +27,14 @@
     <fileSets>
         <fileSet>
             <directory>target/sources</directory>
-            <outputDirectory>stratos-s2-agent-${pom.version}-src</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}-src</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../..</directory>
-            <outputDirectory>stratos-s2-agent-${pom.version}-src</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}-src</outputDirectory>
             <includes>
                 <include>modules/**/*</include>
                 <include>**/pom.xml</include>
@@ -57,17 +57,17 @@
     <files>
         <file>
             <source>../../LICENSE.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}-src</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}-src</outputDirectory>
             <filtered>true</filtered>
         </file>
         <file>
             <source>../../README.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}-src</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}-src</outputDirectory>
             <filtered>true</filtered>
         </file>
         <file>
             <source>../../INSTALL.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}-src</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}-src</outputDirectory>
             <filtered>true</filtered>
         </file>
     </files>

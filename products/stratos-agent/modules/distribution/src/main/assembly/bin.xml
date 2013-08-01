@@ -25,7 +25,7 @@
     <fileSets>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.version}</directory>
-            <outputDirectory>stratos-s2-agent-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/native/*</exclude>
@@ -62,13 +62,13 @@
     <dependencySets>
         <!-- use the new tool to create a bundles -->
         <dependencySet>
-            <outputDirectory>stratos-s2-agent-${pom.version}/lib/core/WEB-INF/lib</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/lib/core/WEB-INF/lib</outputDirectory>
             <includes>
                 <include>org.wso2.carbon:org.wso2.carbon.mediator.bridge:jar</include>
             </includes>
         </dependencySet>
         <!--dependencySet>
-            <outputDirectory>stratos-s2-agent-${pom.version}/samples/axis2Client/client_repo/modules
+            <outputDirectory>apache-stratos-agent-${pom.version}/samples/axis2Client/client_repo/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.axis2:addressing:mar</include>
@@ -79,7 +79,7 @@
             </outputFileNameMapping>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>stratos-s2-agent-${pom.version}/samples/axis2Server/repository/modules
+            <outputDirectory>apache-stratos-agent-${pom.version}/samples/axis2Server/repository/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.axis2:addressing:mar</include>
@@ -90,7 +90,7 @@
             </outputFileNameMapping>
         </dependencySet-->
         <dependencySet>
-            <outputDirectory>stratos-s2-agent-${pom.version}/repository/axis2/client/lib</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/axis2/client/lib</outputDirectory>
             <includes>
                 <include>bouncycastle:bcprov-jdk15:jar</include>
             </includes>
@@ -98,7 +98,7 @@
             </outputFileNameMapping>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>stratos-s2-agent-${pom.version}/repository/deployment/client/modules
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/deployment/client/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.rampart:rampart:mar</include>
@@ -106,7 +106,7 @@
         </dependencySet>
         <!-- MB Client libs -->
         <dependencySet>
-            <outputDirectory>stratos-s2-agent-${pom.version}/repository/components/dropins</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/components/dropins</outputDirectory>
             <includes>
                 <include>org.wso2.andes.wso2:andes-client:jar</include>
                 <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
@@ -119,21 +119,21 @@
     <files>
         <file>
             <source>src/main/bin/stratos.sh</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}/bin</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/bin</outputDirectory>
             <destName>stratos.sh</destName>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/bin/stratos.bat</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}/bin</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/bin</outputDirectory>
             <destName>stratos.bat</destName>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/conf/log4j.properties</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/conf</outputDirectory>
             <destName>log4j.properties</destName>
             <filtered>true</filtered>
         </file>
@@ -141,31 +141,31 @@
                                                                 
         <file>
             <source>../../LICENSE.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../README.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../INSTALL.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../docs/xdoc/release-notes.xml</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
             <destName>release-notes.html</destName>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>target/wso2carbon-core-${carbon.version}/bin/version.txt</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
@@ -173,12 +173,12 @@
             <source>
                 target/wso2carbon-core-${carbon.version}/repository/conf/carbon.xml
             </source>
-            <outputDirectory>stratos-s2-agent-${pom.version}/repository/conf/</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
 	<file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.version}/repository/conf/agent.properties</source>
-            <outputDirectory>stratos-s2-agent-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/conf</outputDirectory>
         </file>
     </files>
 </assembly>
