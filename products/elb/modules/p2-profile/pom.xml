@@ -143,7 +143,7 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.lb.endpoint.server.feature:${stratos.version}
+                                    org.apache.stratos:org.apache.stratos.lb.endpoint.server.feature:${project.version}
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
@@ -167,13 +167,13 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.cloud.controller.feature:${stratos.version}
+                                    org.apache.stratos:org.apache.stratos.cloud.controller.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.mediator.autoscale.feature:${stratos.version}
+                                    org.apache.stratos:org.apache.stratos.mediator.autoscale.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${stratos.version}
+                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.server.feature:${carbon.version}
@@ -259,7 +259,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.cloud.controller.feature.group</id>
-                                    <version>${stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.endpoint.server.feature.group</id>
@@ -303,15 +303,15 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.mediator.autoscale.feature.group</id>
-                                    <version>${stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.lb.common.feature.group</id>
-                                    <version>${stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.lb.endpoint.server.feature.group</id>
-                                    <version>${stratos.version}</version>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>

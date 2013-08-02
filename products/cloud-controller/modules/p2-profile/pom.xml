@@ -157,7 +157,7 @@
                                 
                                 <!-- Features related to Cloud -->
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.common.feature:3.0.0-SNAPSHOT
+                                    org.apache.stratos:org.apache.stratos.common.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.usage.agent.feature:${project.version}
