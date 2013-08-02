@@ -373,7 +373,7 @@
          The clustering domain/group. Nodes in the same group will belong to the same multicast
          domain. There will not be interference between nodes in different groups.
         -->
-        <parameter name="domain">wso2.carbon.lb.domain</parameter>
+        <parameter name="domain">lb.domain</parameter>
 
         <!--
            When a Web service request is received, and processed, before the response is sent to the

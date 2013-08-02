@@ -75,7 +75,7 @@
                                 <bundleDef>org.apache.stratos:org.apache.stratos.lb.endpoint:${project.version}</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.patch.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
                                 <importFeatureDef>org.apache.synapse.wso2:${synapse.wso2.version}</importFeatureDef>
                                 <importFeatureDef>org.apache.stratos.lb.common:${project.version}</importFeatureDef>
                             </importFeatures>
@@ -86,7 +86,6 @@
         </plugins>
     </build>
 <properties>
-	<carbon.version>4.1.0</carbon.version>
 	<carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1>
 </properties>
 

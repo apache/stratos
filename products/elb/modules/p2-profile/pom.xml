@@ -143,7 +143,7 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.lb.endpoint.server.feature:${carbon.patch.version.4.1.3}
+                                    org.apache.stratos:org.apache.stratos.lb.endpoint.server.feature:${stratos.version}
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
@@ -167,13 +167,13 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.stratos.cloud.controller.feature:${stratos.component.patch.version.2.1.3}
+                                    org.apache.stratos:org.apache.stratos.cloud.controller.feature:${stratos.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.mediator.autoscale.feature:${carbon.patch.version.4.1.3}
+                                    org.apache.stratos:org.apache.stratos.mediator.autoscale.feature:${stratos.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.lb.common.feature:${carbon.patch.version.4.1.3}
+                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${stratos.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.server.feature:${carbon.version}
@@ -258,8 +258,8 @@
                                     <version>${carbon.patch.version.4.1.1}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.stratos.cloud.controller.feature.group</id>
-                                    <version>${stratos.component.patch.version.2.1.3}</version>
+                                    <id>org.apache.stratos.cloud.controller.feature.group</id>
+                                    <version>${stratos.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.endpoint.server.feature.group</id>
@@ -302,16 +302,16 @@
                                     <version>${carbon.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.mediator.autoscale.feature.group</id>
-                                    <version>${carbon.patch.version.4.1.3}</version>
+                                    <id>org.apache.stratos.mediator.autoscale.feature.group</id>
+                                    <version>${stratos.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.lb.common.feature.group</id>
-                                    <version>${carbon.patch.version.4.1.3}</version>
+                                    <id>org.apache.stratos.lb.common.feature.group</id>
+                                    <version>${stratos.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.lb.endpoint.server.feature.group</id>
-                                    <version>${carbon.patch.version.4.1.3}</version>
+                                    <id>org.apache.stratos.lb.endpoint.server.feature.group</id>
+                                    <version>${stratos.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
