@@ -70,7 +70,7 @@ We need to modify this file since this copied from branch
                             org.wso2.carbon.task.*; version=0.0.0,
                             org.wso2.carbon.core.*,
                             org.apache.stratos.lb.common.*,
-                            org.apache.stratos.lb.cartridge.autoscaler.service.stub.*; version=0.0.0,
+                            org.apache.stratos.lb.autoscaler.service.stub.*; version=0.0.0,
                             org.wso2.carbon.utils.*,
                             org.apache.axiom.om; version="${axiom.osgi.version.range}",
                             org.apache.stratos.cloud.controller.*,

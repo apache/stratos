@@ -92,21 +92,17 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            og.apache.stratos.cloud.controller.interfaces.*,
-                            og.apache.stratos.cloud.controller.publisher.*,
-                            og.apache.stratos.cloud.controller.topic.*,
-                            og.apache.stratos.cloud.controller.iaases.*,
-                            og.apache.stratos.cloud.controller.util.*,
-				org.apache.stratos.cloud.controller.deployers.*,
-				org.apache.stratos.cloud.controller.exception.*,
-				org.apache.stratos.cloud.controller.*
+                            org.apache.stratos.cloud.controller.interfaces.*,
+
+                            org.apache.stratos.cloud.controller.publisher.*,
+                            org.apache.stratos.cloud.controller.topic.*,
+                            org.apache.stratos.cloud.controller.iaases.*,
+                            org.apache.stratos.cloud.controller.util.*,
+				            org.apache.stratos.cloud.controller.deployers.*,
+				            org.apache.stratos.cloud.controller.exception.*,
                         </Export-Package>
                         <Private-Package>
-                            og.apache.stratos.cloud.controller.*,
-                            !og.apache.stratos.cloud.controller.interfaces,
-                            !og.apache.stratos.cloud.controller.publisher,
-                            !og.apache.stratos.cloud.controller.topic,
-                            !og.apache.stratos.cloud.controller.iaases 
+                            org.apache.stratos.cloud.controller.*,
                         </Private-Package>
                         <Import-Package>
                         	  !org.apache.commons.logging,
