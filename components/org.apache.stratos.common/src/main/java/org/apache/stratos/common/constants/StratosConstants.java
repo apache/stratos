@@ -70,7 +70,7 @@ public class StratosConstants {
     public static final String IS_CREDENTIALS_ALREADY_RESET = "isCredentialsReset";
     public static final String TENANT_ADMIN = "tenantAdminUsername";
 
-    public static final String CLOUD_MANAGER_SERVICE = "WSO2 Stratos Manager";
+    public static final String CLOUD_MANAGER_SERVICE = "Apache Stratos Controller";
     public static final String CLOUD_IDENTITY_SERVICE = "WSO2 Stratos Identity";
     public static final String CLOUD_GOVERNANCE_SERVICE = "WSO2 Stratos Governance";
     public static final String CLOUD_ESB_SERVICE = "WSO2 Stratos Enterprise Service Bus";
