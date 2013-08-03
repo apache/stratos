@@ -41,6 +41,18 @@
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/release-notes.html</exclude>
                 <exclude>**/carbon.xml</exclude>
+                <exclude>**/repository/components/**</exclude>
+            </excludes>
+        </fileSet>
+        <!-- Copying p2 profile and osgi bundles-->
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/components</directory>
+            <outputDirectory>apache-stratos-cc-${pom.version}/repository/components</outputDirectory>
+            <excludes>
+                <exclude>**/eclipse.ini</exclude>
+                <exclude>**/*.lock</exclude>
+                <exclude>**/.data</exclude>
+                <exclude>**/.settings</exclude>
             </excludes>
         </fileSet>
         <fileSet>
