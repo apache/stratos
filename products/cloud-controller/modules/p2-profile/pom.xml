@@ -201,16 +201,6 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.core.feature:${carbon.version}
                                 </featureArtifactDef>
-                                <!--featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.andes.server.feature:${carbon.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.event.server.feature:${carbon.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.cassandra.server.feature:${carbon.version}
-                                </featureArtifactDef-->
-
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.tryit.feature:${carbon.version}
                                 </featureArtifactDef>
@@ -316,38 +306,14 @@
                                     <id>org.wso2.carbon.module.mgt.server.feature.group</id>
                                     <version>${carbon.version}</version>
 				</feature>
-				<feature>
-                                    <id>org.wso2.carbon.throttle.server.feature.group</id>
-				    <version>${carbon.version}</version>
-                                </feature>
-				<feature>
-                                    <id>org.wso2.carbon.caching.server.feature.group</id>
-				    <version>${carbon.version}</version>
-                                </feature>
-				<feature>
-				    <id>org.wso2.carbon.rm.server.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
-				<feature>
-                                    <id>org.wso2.carbon.tryit.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
+
+
+
+
                                 <feature>
                                     <id>org.wso2.carbon.coordination.server.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--feature>
-                                    <id>org.wso2.carbon.andes.server.feature.group</id>
-                                    <version>4.0.5</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.event.server.feature.group</id>
-                                    <version>4.0.5</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.cassandra.server.feature.group</id>
-                                    <version>4.0.5</version>
-                                </feature-->
                                 <feature>
                                     <id>org.wso2.carbon.coordination.core.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -396,10 +362,6 @@
                                     <id>org.wso2.carbon.transport.nhttp.feature.group</id>
                                     <version>${carbon.patch.version}</version>
                                 </feature>
-                                <!--feature>
-                                    <id>org.wso2.carbon.localentry.server.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature-->
                                 <feature>
                                     <id>org.wso2.carbon.endpoint.server.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -440,24 +402,7 @@
                                     </id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--feature>
-                                    <id>org.wso2.carbon.load.balance.agent.ui.feature.group</id>
-                                    <version>${stratos.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.aws.java.sdk.feature.group</id>
-                                    <version>1.0.0</version>
-                                </feature-->
 
-                                <!--feature>
-                                    <id>org.wso2.carbon.mediator.autoscale.feature.group</id>
-                                    <version>${carbon.platform.patch.version.4.0.3}</version>
-                                </feature-->
-                                <!--feature>
-                                    <id>org.wso2.carbon.lb.common.feature.group</id>
-                                    <version>${carbon.platform.patch.version.4.0.2}</version>
-                                </feature-->
-                                
 				<!--***********************************CC features end**********************************************-->
 				<!--***********************************MB features start**********************************************-->
                                 <feature>
@@ -472,14 +417,8 @@
                                     <id>org.wso2.carbon.statistics.transport.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.system.statistics.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.soaptracer.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
+
+
                                 <feature>
                                     <id>org.wso2.carbon.security.mgt.server.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -488,18 +427,8 @@
                                     <id>org.wso2.carbon.message.flows.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.xfer.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.mex.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.tryit.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
+
+
                                 <feature>
                                     <id>org.wso2.carbon.registry.core.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -513,10 +442,7 @@
                                     </id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.wsdl.tools.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
+
 
                                 <feature>
                                     <id>org.wso2.carbon.event.server.feature.group</id>
@@ -530,14 +456,6 @@
                                     <id>org.wso2.carbon.andes.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--feature>
-                                    <id>org.wso2.stratos.mb.styles.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature-->
-                                <!--feature>
-                                    <id>org.wso2.stratos.mb.dashboard.ui.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature-->
                                 <!--Cloud service deployment feature -->
                                 <feature>
                                     <id>org.apache.stratos.deployment.feature.group</id>
