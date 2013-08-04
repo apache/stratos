@@ -16,16 +16,15 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-<%@ page import="org.wso2.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
-<%@ page import="org.apache.stratos.manager.dashboard.stub.xsd.CloudService" %>
-<%@ page import="org.wso2.carbon.registry.core.exceptions.RegistryException" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ page import="org.apache.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
+<%@ page import="org.apache.stratos.manager.dashboard.stub.xsd.CloudService" %>
+<%@ page import="org.apache.stratos.account.mgt.ui.clients.AccountMgtClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
-<%@ page import="org.wso2.carbon.account.mgt.ui.clients.AccountMgtClient" %>
 <%@ page import="org.wso2.carbon.utils.multitenancy.MultitenantConstants" %>
-<%@ page import="org.wso2.stratos.manager.dashboard.ui.utils.Util" %>
+<%@ page import="org.wso2.carbon.registry.core.exceptions.RegistryException" %>
 
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
