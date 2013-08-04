@@ -21,7 +21,7 @@
                   xmlns:ns="http://services.mgt.services.manager.stratos.apache.org"
                   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
                   xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
-                  xmlns:ax2298="http://beans.mgt.services.dashboard.manager.stratos.apache.org/xsd"
+                  xmlns:ax2298="http://beans.mgt.services.manager.stratos.apache.org/xsd"
                   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
                   xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
                   xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
@@ -29,7 +29,7 @@
     <wsdl:documentation>CloudManagerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
-                   targetNamespace="http://beans.mgt.services.dashboard.manager.stratos.apache.org/xsd">
+                   targetNamespace="http://beans.mgt.services.manager.stratos.apache.org/xsd">
             <xs:complexType name="CloudService">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="active" type="xs:boolean"/>
@@ -43,10 +43,10 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax2299="http://beans.mgt.services.dashboard.manager.stratos.apache.org/xsd"
+        <xs:schema xmlns:ax2299="http://beans.mgt.services.manager.stratos.apache.org/xsd"
                    attributeFormDefault="qualified" elementFormDefault="qualified"
                    targetNamespace="http://services.mgt.services.manager.stratos.apache.org">
-            <xs:import namespace="http://beans.mgt.services.dashboard.manager.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://beans.mgt.services.manager.stratos.apache.org/xsd"/>
 
             <xs:element name="CloudManagerServiceException">
                 <xs:complexType>
