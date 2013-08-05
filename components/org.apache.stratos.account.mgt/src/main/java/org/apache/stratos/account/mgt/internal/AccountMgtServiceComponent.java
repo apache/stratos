@@ -58,7 +58,7 @@ import org.osgi.service.component.ComponentContext;
  *                unbind="unsetTenantMgtListenerService"
  * @scr.reference name="default.tenant.billing.service"
  *                interface="org.apache.stratos.common.TenantBillingService"
- *                cardinality="1..1" policy="dynamic"
+ *                cardinality="0..1" policy="dynamic"
  *                bind="setTenantBillingService"
  *                unbind="unsetTenantBillingService"
  */
