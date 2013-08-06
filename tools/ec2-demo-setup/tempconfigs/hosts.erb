@@ -1,0 +1,19 @@
+127.0.0.1       localhost
+s2_ip      demo.stratos.apache.org
+
+s2_ip      git.<%= stratos_domain %>
+s2_ip      sc.<%= stratos_domain %>
+s2_ip      cc.<%= stratos_domain %>
+s2_ip      elb.<%= stratos_domain %>
+s2_ip      mysql1.<%= stratos_domain %>
+s2_ip      receiver.<%= stratos_domain %>
+
+<% if s2_instance_data_multitenant == 'false' %>
+s2_ip      <%= s2_instance_data_hostname %>
+<%= server_ip %>        bind.<%= s2_instance_data_hostname %>
+<%= server_ip %>        local.<%= s2_instance_data_hostname %>
+<% elsif s2_instance_data_multitenant == 'true' %>
+s2_ip      <%= s2_instance_data_service %>.<%= stratos_domain %>
+<%= server_ip %>        bind.<%= stratos_domain %>
+<%= server_ip %>        local.<%= stratos_domain %>
+<% end %>

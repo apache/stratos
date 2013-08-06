@@ -1,0 +1,20 @@
+Apache Stratos - Amazon EC2 Demo
+=================================
+
+This folder contains scripts for installing Apache Stratos on an Amazon EC2 instance.
+
+Installation
+=============
+
+1. Build Apache Stratos from source:
+   git clone https://git-wip-us.apache.org/repos/asf/incubator-stratos.git
+   cd incubator-stratos
+   mvn clean install
+2. Copy cloud controller, elb, agent, cli and stratos controller packages to a sub folder called 'dist'.
+3. Run unpack-packages.sh to extract the products to current folder.
+4. Download MySql Java connector from http://dev.mysql.com/downloads and copy the jar file to repository/components/lib folder of cloud controller, stratos controller and elb.
+5.  Run config.sh to start the installation. If the configuration fail due to some reason, correct the problem, run clean.sh and then run config.sh again.
+
+
+Thanks for using Apache Stratos
+Apache Stratos Team
