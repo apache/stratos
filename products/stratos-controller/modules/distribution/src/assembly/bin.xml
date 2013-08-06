@@ -281,11 +281,11 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/identity</outputDirectory>
-            <includes>
-                <include>**/**.sql</include>
-            </includes>
+	        	<directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/</directory>
+        		<outputDirectory>${pom.artifactId}-${pom.version}/dbscripts/identity</outputDirectory>
+            	<includes>
+                	<include>**/**.sql</include>
+            	</includes>
 		</fileSet>
 
 		<!-- copy the billing h2 db -->
@@ -305,7 +305,17 @@
                    <directory>../../billing-script/</directory>
                    <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
                 </fileSet>
- 
+		<fileSet>
+                   <directory>../../payload</directory>
+		   <includes>
+            		<include>user-data</include>
+        	   </includes>
+                   <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources</outputDirectory>
+                </fileSet>
+                <fileSet>
+                   <directory>../../payload/user-data/</directory>
+                   <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/user-data</outputDirectory>
+                </fileSet> 
     </fileSets>
 
     <dependencySets>
