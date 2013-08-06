@@ -18,15 +18,12 @@
  */
 package org.apache.stratos.lb.common.util;
 
-/**
- *
- */
 public class DomainMapping {
     private String mapping;
     private String actualHost;
 
     public DomainMapping(String mapping) {
-        this.mapping = mapping;
+        this.setMapping(mapping);
     }
 
     public String getActualHost() {
@@ -36,5 +33,13 @@ public class DomainMapping {
     public void setActualHost(String actualHost) {
         this.actualHost = actualHost;
     }
+
+	public String getMapping() {
+		return mapping;
+	}
+
+	public void setMapping(String mapping) {
+		this.mapping = mapping;
+	}
 
 }
