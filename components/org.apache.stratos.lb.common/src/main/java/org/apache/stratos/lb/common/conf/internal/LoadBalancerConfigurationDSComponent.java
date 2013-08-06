@@ -24,10 +24,6 @@ import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
 import org.apache.stratos.lb.common.service.impl.LoadBalancerConfigurationServiceImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
-import org.apache.stratos.lb.common.service.impl.LoadBalancerConfigurationServiceImpl;
-import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
-import org.apache.stratos.lb.common.service.impl.LoadBalancerConfigurationServiceImpl;
 
 /**
  * Registering {@link org.apache.stratos.lb.common.service.LoadBalancerConfigurationService} .
