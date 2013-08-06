@@ -49,7 +49,6 @@ public class CartridgeAgentService {
         }
         log.info("Trying to add new registrant " + registrant + "...");
         clusteringClient.joinGroup(registrant, configurationContext);
-//        Main.getHealthChecker().start(registrant);
         DataHolder.getHealthChecker().start(registrant);
         return true;
 

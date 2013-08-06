@@ -92,20 +92,6 @@ public class CartridgeAgentServiceComponent {
                             healthChecker));
             healthChecker.startAll();
             DataHolder.setHealthChecker(healthChecker);
-            /*configurationContext.deployService(AxisService.createService(CartridgeAgentService.class.getName().toString(),
-                     configurationContext.getAxisConfiguration()));*/
-//            axisServer.deployService(CartridgeAgentService.class.getName());
-
-
-            // Starting cliet..
-//            String trustStorePath = conf.getProperty("wso2.carbon.truststore");
-//            System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-//            System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
-//            // new InstanceStateNotificationClient().notify(null, null);
-//
-//            System.setProperty("adc.host",  conf.getProperty("adc.host"));
-//            System.setProperty("adc.port",  conf.getProperty("adc.port"));
-            // ----------------------
 
             Runtime.getRuntime().addShutdownHook(new Thread(){
 
