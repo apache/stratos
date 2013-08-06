@@ -31,69 +31,7 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeExcept
  */
 public interface CloudControllerService {
 
-    /**
-     * Creates a key pair in all IaaSes that are configured for the given cartridge,
-     * having the given name and public key.
-     * 
-     * <p/>
-     * <h4>Supported Formats</h4>
-     * <ul>
-     * <li>OpenSSH public key format (e.g., the format in ~/.ssh/authorized_keys)</li>
-     * <li>Base64 encoded DER format</li>
-     * <li>SSH public key file format as specified in RFC4716</li>
-     * </ul>
-     * DSA keys are not supported. Make sure your key generator is set up to create RSA keys.
-     * <p/>
-     * Supported lengths: 1024, 2048, and 4096.
-     * <p/>
-     * 
-     * @param cartridgeType
-     *            type of the cartridge. Note this cartridge type should be already
-     *            registered one.
-     * @param keyPairName
-     *            name of the key pair which is going to get created in IaaSes.
-     * @param publicKey
-     *            The public key.
-     * 
-     */
-	@Deprecated
-    public boolean createKeyPairFromPublicKey(String cartridgeType, String keyPairName,
-        String publicKey);
 
-    /**
-     * This method will return the information regarding the given cartridge, if present.
-     * Else this will return <code>null</code>.
-     * 
-     * @param cartridgeType
-     *            type of the cartridge.
-     * @return {@link org.apache.stratos.cloud.controller.util.CartridgeInfo} of the given cartridge type or <code>null</code>.
-     * @throws UnregisteredCartridgeException if there is no registered cartridge with this type.
-     */
-    public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException;
-
-    /**
-     * Calling this method will result in returning the pending instances
-     * count of a particular domain.
-     * 
-     * @param domainName
-     *            service cluster domain
-     * @param sudDomainName
-     *            service clustering sub domain of the instance to be started up.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
-     * @return number of pending instances for this domain. If no instances of this
-     *         domain is present, this will return zero.
-     */
-    public int getPendingInstanceCount(String domainName, String subDomainName);
-
-    /**
-     * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.util.Cartridge}s
-     * registered in Cloud Controller.
-     * 
-     * @return String array containing types of registered {@link org.apache.stratos.cloud.controller.util.Cartridge}s.
-     */
-    public String[] getRegisteredCartridges();
-    
     /**
      * <p>
      * Registers the details of a newly created service cluster. This will override an already
@@ -140,6 +78,20 @@ public interface CloudControllerService {
      * @return public IP which is associated with the newly started instance.
      */
     public String startInstance(String domainName, String subDomainName);
+    
+    /**
+     * Calling this method will result in termination of an instance which is belong
+     * to the provided service domain and sub domain.
+     * 
+     * @param domainName
+     *            service domain of the instance to be terminated.
+     * @param sudDomainName
+     *            service clustering sub domain of the instance to be terminated.
+     *            If this is null, the default value will be used. Default value is
+     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
+     * @return whether an instance terminated successfully or not.
+     */
+    public boolean terminateInstance(String domainName, String subDomainName);
 
     /**
      * Calling this method will result in termination of all instances belong
@@ -155,19 +107,6 @@ public interface CloudControllerService {
      */
     public boolean terminateAllInstances(String domainName, String subDomainName);
 
-    /**
-     * Calling this method will result in termination of an instance which is belong
-     * to the provided service domain and sub domain.
-     * 
-     * @param domainName
-     *            service domain of the instance to be terminated.
-     * @param sudDomainName
-     *            service clustering sub domain of the instance to be terminated.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
-     * @return whether an instance terminated successfully or not.
-     */
-    public boolean terminateInstance(String domainName, String subDomainName);
     
     /**
      * Calling this method will result in termination of the lastly spawned instance which is
@@ -191,5 +130,39 @@ public interface CloudControllerService {
      * @throws org.apache.stratos.cloud.controller.exception.UnregisteredServiceException if the service cluster requested is not a registered one.
      */
     public boolean unregisterService(String domain, String subDomain) throws UnregisteredServiceException;
+    
+    /**
+     * This method will return the information regarding the given cartridge, if present.
+     * Else this will return <code>null</code>.
+     * 
+     * @param cartridgeType
+     *            type of the cartridge.
+     * @return {@link org.apache.stratos.cloud.controller.util.CartridgeInfo} of the given cartridge type or <code>null</code>.
+     * @throws UnregisteredCartridgeException if there is no registered cartridge with this type.
+     */
+    public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException;
+
+    /**
+     * Calling this method will result in returning the pending instances
+     * count of a particular domain.
+     * 
+     * @param domainName
+     *            service cluster domain
+     * @param sudDomainName
+     *            service clustering sub domain of the instance to be started up.
+     *            If this is null, the default value will be used. Default value is
+     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
+     * @return number of pending instances for this domain. If no instances of this
+     *         domain is present, this will return zero.
+     */
+    public int getPendingInstanceCount(String domainName, String subDomainName);
+
+    /**
+     * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.util.Cartridge}s
+     * registered in Cloud Controller.
+     * 
+     * @return String array containing types of registered {@link org.apache.stratos.cloud.controller.util.Cartridge}s.
+     */
+    public String[] getRegisteredCartridges();
 
 }

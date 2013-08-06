@@ -1041,34 +1041,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		return cartridgeTypes;
 	}
 
-	@Override
-	public boolean createKeyPairFromPublicKey(String cartridgeType, String keyPairName,
-	                                          String publicKey) {
-
-		Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(cartridgeType);
-
-		if (cartridge == null) {
-			String msg = "Invalid Cartridge type specified : " + cartridgeType;
-			log.fatal(msg);
-			throw new CloudControllerException(msg);
-		}
-
-		for (IaasProvider iaas : cartridge.getIaases()) {
-			String region = ComputeServiceBuilderUtil.extractRegion(iaas);
-
-			if (region == null) {
-				String msg =
-				             "Cannot find a region to create the key pair. Please add a property called 'region' under IaaS '" +
-				                     iaas.getType() + "' of Cartridge - " + cartridgeType;
-				log.fatal(msg);
-				throw new CloudControllerException(msg);
-			}
-
-			return iaas.getIaas().createKeyPairFromPublicKey(iaas, region, keyPairName, publicKey);
-		}
-
-		return false;
-	}
 
 	private String checkSubDomain(String subDomainName) {
 		// if sub domain is null, we assume it as default one.
