@@ -1020,10 +1020,6 @@ public class LoadBalancerConfiguration implements Serializable {
         }
 
         public void setMin_app_instances(int minAppInstances) {
-//            if (minAppInstances < 1) {
-//                LoadBalancerConfigUtil.handleException("minAppInstances in the autoscaler task configuration " +
-//                        "should be at least 1");
-//            }
             this.minAppInstances = minAppInstances;
             this.minAppInstancesSet = true;
         }

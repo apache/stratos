@@ -22,39 +22,27 @@ import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration;
 import org.apache.stratos.lb.common.conf.structure.Node;
 import org.apache.stratos.lb.common.conf.structure.NodeBuilder;
 import org.apache.stratos.lb.common.conf.util.Constants;
-import org.apache.stratos.lb.common.conf.util.HostContext;
 import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
 
-import java.util.Map;
-
-public class LoadBalancerConfigurationServiceImpl implements LoadBalancerConfigurationService {
-
-    @Override
-    public Object getLoadBalancerConfig() {
-        return LoadBalancerConfiguration.getInstance();
-    }
+public class LoadBalancerConfigurationServiceImpl implements
+		LoadBalancerConfigurationService {
 
 	@Override
-    public Object getHostContexts(String config) {
+	public Object getLoadBalancerConfig() {
+		return LoadBalancerConfiguration.getInstance();
+	}
+
+	@Override
+	public Object getHostContexts(String config) {
 
 		// build a Node object for whole loadbalancer.conf
-        Node rootNode = new Node();
-        rootNode.setName(Constants.SERVICES_ELEMENT);
-        rootNode = NodeBuilder.buildNode(rootNode, config);
-		
-        Map<String, HostContext> oldMap = LoadBalancerConfiguration.getInstance().getHostContextMap();
-        LoadBalancerConfiguration.getInstance().createServicesConfig(rootNode);
-        
-//        MapDifference<String, HostContext> diff = Maps.difference(LoadBalancerConfiguration.getInstance().getHostContextMap(),
-//                                                             oldMap );
-//		
-//		return diff.entriesOnlyOnLeft();
-        return LoadBalancerConfiguration.getInstance().getHostContextMap();
-    }
+		Node rootNode = new Node();
+		rootNode.setName(Constants.SERVICES_ELEMENT);
+		rootNode = NodeBuilder.buildNode(rootNode, config);
 
-//	@Override
-//    public Object getHostContext(String config) {
-//	    return null;
-//    }
+		LoadBalancerConfiguration.getInstance().createServicesConfig(rootNode);
+
+		return LoadBalancerConfiguration.getInstance().getHostContextMap();
+	}
 
 }
