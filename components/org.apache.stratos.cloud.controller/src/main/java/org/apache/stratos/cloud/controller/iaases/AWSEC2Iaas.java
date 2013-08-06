@@ -48,167 +48,185 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class AWSEC2Iaas extends Iaas{
-    
-    private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
-    private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
-    private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
+public class AWSEC2Iaas extends Iaas {
 
-    @Override
-    public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
+	private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
+	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
+	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
 
-        // builds and sets Compute Service
-        ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
-        
-        // builds and sets Template
-        buildTemplate(iaasInfo);
-        
-    }
-    
-    private void buildTemplate(IaasProvider iaas) {
-        if (iaas.getComputeService() == null) {
-            String msg = "Compute service is null for IaaS provider: " + iaas.getName();
-            log.fatal(msg);
-            throw new CloudControllerException(msg);
-        }
+	@Override
+	public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
 
-        TemplateBuilder templateBuilder = iaas.getComputeService().templateBuilder();
+		// builds and sets Compute Service
+		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
 
-        // set image id specified
-        templateBuilder.imageId(iaas.getImage());
+		// builds and sets Template
+		buildTemplate(iaasInfo);
 
-        if (iaas.getProperty("instanceType") != null) {
-            // set instance type eg: m1.large
-            templateBuilder.hardwareId(iaas.getProperty("instanceType"));
-        }
+	}
+
+	private void buildTemplate(IaasProvider iaas) {
+		if (iaas.getComputeService() == null) {
+			String msg = "Compute service is null for IaaS provider: "
+					+ iaas.getName();
+			log.fatal(msg);
+			throw new CloudControllerException(msg);
+		}
+
+		TemplateBuilder templateBuilder = iaas.getComputeService()
+				.templateBuilder();
+
+		// set image id specified
+		templateBuilder.imageId(iaas.getImage());
+
+		if (iaas.getProperty("instanceType") != null) {
+			// set instance type eg: m1.large
+			templateBuilder.hardwareId(iaas.getProperty("instanceType"));
+		}
 
 		// build the Template
 		Template template = templateBuilder.build();
 
-		// if you wish to auto assign IPs, instance spawning call should be blocking, but if you
+		// if you wish to auto assign IPs, instance spawning call should be
+		// blocking, but if you
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas.getProperty("autoAssignIp"));
-		template.getOptions().as(TemplateOptions.class).blockUntilRunning(blockUntilRunning);
-        
-        // this is required in order to avoid creation of additional security groups by jclouds.
-        template.getOptions().as(TemplateOptions.class).inboundPorts(new int[]{});
+		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+				.getProperty("autoAssignIp"));
+		template.getOptions().as(TemplateOptions.class)
+				.blockUntilRunning(blockUntilRunning);
 
-        // set EC2 specific options
+		// this is required in order to avoid creation of additional security
+		// groups by jclouds.
+		template.getOptions().as(TemplateOptions.class)
+				.inboundPorts(new int[] {});
+
+		// set EC2 specific options
 		if (iaas.getProperty("subnetId") != null) {
-			template.getOptions().as(AWSEC2TemplateOptions.class).subnetId(iaas.getProperty("subnetId"));
+			template.getOptions().as(AWSEC2TemplateOptions.class)
+					.subnetId(iaas.getProperty("subnetId"));
 		}
 
-        if (iaas.getProperty("availabilityZone") != null) {
-            template.getOptions().as(AWSEC2TemplateOptions.class)
-                    .placementGroup(iaas.getProperty("availabilityZone"));
-        }
+		if (iaas.getProperty("availabilityZone") != null) {
+			template.getOptions().as(AWSEC2TemplateOptions.class)
+					.placementGroup(iaas.getProperty("availabilityZone"));
+		}
 
-        if (iaas.getProperty("securityGroups") != null) {
-            template.getOptions()
-                    .as(AWSEC2TemplateOptions.class)
-                    .securityGroups(iaas.getProperty("securityGroups")
-                                        .split(CloudControllerConstants.ENTRY_SEPARATOR));
+		if (iaas.getProperty("securityGroups") != null) {
+			template.getOptions()
+					.as(AWSEC2TemplateOptions.class)
+					.securityGroups(
+							iaas.getProperty("securityGroups").split(
+									CloudControllerConstants.ENTRY_SEPARATOR));
 
-        }
+		}
 
-        if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
-            template.getOptions()
-                    .as(AWSEC2TemplateOptions.class)
-                    .userData(ComputeServiceBuilderUtil.getUserData(CarbonUtils.getCarbonHome() +
-                                                                File.separator +
-                                                                iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
-        }
+		if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
+			template.getOptions()
+					.as(AWSEC2TemplateOptions.class)
+					.userData(
+							ComputeServiceBuilderUtil.getUserData(CarbonUtils
+									.getCarbonHome()
+									+ File.separator
+									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
+		}
 
-        if (iaas.getProperty("keyPair") != null) {
-            template.getOptions().as(AWSEC2TemplateOptions.class)
-                    .keyPair(iaas.getProperty("keyPair"));
-        }
+		if (iaas.getProperty("keyPair") != null) {
+			template.getOptions().as(AWSEC2TemplateOptions.class)
+					.keyPair(iaas.getProperty("keyPair"));
+		}
 
-        // set Template
-        iaas.setTemplate(template);
-    }
+		// set Template
+		iaas.setTemplate(template);
+	}
 
-    @Override
-    public void setDynamicPayload(IaasProvider iaasInfo) {
+	@Override
+	public void setDynamicPayload(IaasProvider iaasInfo) {
 
-        if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
+		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
 
-            iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
-                    .userData(iaasInfo.getPayload());
-        }
+			iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
+					.userData(iaasInfo.getPayload());
+		}
 
-    }
+	}
 
-    @Override
-    public synchronized boolean createKeyPairFromPublicKey(IaasProvider iaasInfo, String region, String keyPairName,
-        String publicKey) {
+	@Override
+	public synchronized boolean createKeyPairFromPublicKey(
+			IaasProvider iaasInfo, String region, String keyPairName,
+			String publicKey) {
 
-        String ec2Msg = " ec2. Region: "+region+" - Key Pair Name: ";
-        
-        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        @SuppressWarnings("unchecked")
-        RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context.unwrap(RestContext.class);
-        AWSEC2Client ec2Client = restContext.getApi();
-        
-        ImportOrReturnExistingKeypair importer = new ImportOrReturnExistingKeypair(ec2Client);
-        
-        RegionNameAndPublicKeyMaterial regionNameAndKey = new RegionNameAndPublicKeyMaterial(region, keyPairName, publicKey);
-        KeyPair keyPair = importer.apply(regionNameAndKey);
-        
-        if (keyPair != null) {
+		String ec2Msg = " ec2. Region: " + region + " - Key Pair Name: ";
 
-            iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
-                    .keyPair(keyPair.getKeyName());
-
-            log.info(SUCCESSFUL_LOG_LINE + ec2Msg + keyPair.getKeyName());
-            return true;
-        }
-        
-        log.error(FAILED_LOG_LINE+ec2Msg);
-        
-        return false;
-    }
-
-    @Override
-	public synchronized String associateAddress(IaasProvider iaasInfo, NodeMetadata node) {
-
-		ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
 		@SuppressWarnings("unchecked")
-		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext =
-		                                                           context.unwrap(RestContext.class);
+		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context
+				.unwrap(RestContext.class);
+		AWSEC2Client ec2Client = restContext.getApi();
+
+		ImportOrReturnExistingKeypair importer = new ImportOrReturnExistingKeypair(
+				ec2Client);
+
+		RegionNameAndPublicKeyMaterial regionNameAndKey = new RegionNameAndPublicKeyMaterial(
+				region, keyPairName, publicKey);
+		KeyPair keyPair = importer.apply(regionNameAndKey);
+
+		if (keyPair != null) {
+
+			iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
+					.keyPair(keyPair.getKeyName());
+
+			log.info(SUCCESSFUL_LOG_LINE + ec2Msg + keyPair.getKeyName());
+			return true;
+		}
+
+		log.error(FAILED_LOG_LINE + ec2Msg);
+
+		return false;
+	}
+
+	@Override
+	public synchronized String associateAddress(IaasProvider iaasInfo,
+			NodeMetadata node) {
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		@SuppressWarnings("unchecked")
+		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context
+				.unwrap(RestContext.class);
 		AWSEC2Client ec2Client = restContext.getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
 		String ip = null;
-		
+
 		// first try to find an unassigned IP.
-		ArrayList<PublicIpInstanceIdPair> unassignedIps =
-		                                                  Lists.newArrayList(Iterables.filter(ec2Client.getElasticIPAddressServices()
-		                                                                                               .describeAddressesInRegion(region,
-		                                                                                                                          new String[0]),
-		                                                                                      new Predicate<PublicIpInstanceIdPair>() {
+		ArrayList<PublicIpInstanceIdPair> unassignedIps = Lists
+				.newArrayList(Iterables.filter(ec2Client
+						.getElasticIPAddressServices()
+						.describeAddressesInRegion(region, new String[0]),
+						new Predicate<PublicIpInstanceIdPair>() {
 
-			                                                                                      @Override
-			                                                                                      public boolean apply(PublicIpInstanceIdPair arg0) {
-				                                                                                      return arg0.getInstanceId() == null;
-			                                                                                      }
+							@Override
+							public boolean apply(PublicIpInstanceIdPair arg0) {
+								return arg0.getInstanceId() == null;
+							}
 
-		                                                                                      }));
-		
-		
+						}));
+
 		if (!unassignedIps.isEmpty()) {
 			// try to prevent multiple parallel launches from choosing the same
 			// ip.
 			Collections.shuffle(unassignedIps);
 			ip = Iterables.getLast(unassignedIps).getPublicIp();
 		}
-		
+
 		// if no unassigned IP is available, we'll try to allocate an IP.
 		if (ip == null || ip.isEmpty()) {
 			try {
-				ip = ec2Client.getElasticIPAddressServices().allocateAddressInRegion(region);
-				log.info("Assigned ip [" + ip +"]");
+				ip = ec2Client.getElasticIPAddressServices()
+						.allocateAddressInRegion(region);
+				log.info("Assigned ip [" + ip + "]");
 
 			} catch (Exception e) {
 				String msg = "Failed to allocate an IP address. All IP addresses are in use.";
@@ -219,7 +237,8 @@ public class AWSEC2Iaas extends Iaas{
 
 		String id = node.getProviderId();
 
-		// wait till the fixed IP address gets assigned - this is needed before we associate a
+		// wait till the fixed IP address gets assigned - this is needed before
+		// we associate a
 		// public IP
 
 		while (node.getPrivateAddresses() == null) {
@@ -234,23 +253,24 @@ public class AWSEC2Iaas extends Iaas{
 			retries++;
 		}
 
-		// FIXME make this debug
-		log.info("Successfully associated an IP address " + ip + " for node with id: " +
-		         node.getId());
+		log.debug("Successfully associated an IP address " + ip
+				+ " for node with id: " + node.getId());
 
 		return ip;
 
 	}
 
 	/**
-     * @param ec2Client
-     * @param region
-     * @param ip
-     * @param id
-     */
-	private boolean associatePublicIp(AWSEC2Client ec2Client, String region, String ip, String id) {
+	 * @param ec2Client
+	 * @param region
+	 * @param ip
+	 * @param id
+	 */
+	private boolean associatePublicIp(AWSEC2Client ec2Client, String region,
+			String ip, String id) {
 		try {
-			ec2Client.getElasticIPAddressServices().associateAddressInRegion(region, ip, id);
+			ec2Client.getElasticIPAddressServices().associateAddressInRegion(
+					region, ip, id);
 			log.info("Successfully associated public IP ");
 			return true;
 		} catch (Exception e) {
@@ -260,17 +280,20 @@ public class AWSEC2Iaas extends Iaas{
 	}
 
 	@Override
-    public synchronized void releaseAddress(IaasProvider iaasInfo, String ip) {
-	    
-		ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+	public synchronized void releaseAddress(IaasProvider iaasInfo, String ip) {
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
 		@SuppressWarnings("unchecked")
-		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext =
-		                                                           context.unwrap(RestContext.class);
+		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context
+				.unwrap(RestContext.class);
 		AWSEC2Client ec2Client = restContext.getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		ec2Client.getElasticIPAddressServices().disassociateAddressInRegion(region, ip);
-		ec2Client.getElasticIPAddressServices().releaseAddressInRegion(region, ip);
-    }
+		ec2Client.getElasticIPAddressServices().disassociateAddressInRegion(
+				region, ip);
+		ec2Client.getElasticIPAddressServices().releaseAddressInRegion(region,
+				ip);
+	}
 
 }

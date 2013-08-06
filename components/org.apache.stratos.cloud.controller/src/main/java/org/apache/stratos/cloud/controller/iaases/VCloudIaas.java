@@ -38,128 +38,142 @@ import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 
-public class VCloudIaas extends Iaas{
-    
-    private static final Log log = LogFactory.getLog(VCloudIaas.class);
+public class VCloudIaas extends Iaas {
 
-    @Override
-    public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
-
-        // builds and sets Compute Service
-        ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
-        
-        // builds and sets Template
-        buildTemplate(iaasInfo);
-        
-    }
-    
-    private void buildTemplate(IaasProvider iaas) {
-        if (iaas.getComputeService() == null) {
-            String msg = "Compute service is null for IaaS provider: " + iaas.getName();
-            log.fatal(msg);
-            throw new CloudControllerException(msg);
-        }
-
-        TemplateBuilder templateBuilder = iaas.getComputeService().templateBuilder();
-
-        // set image id specified
-        templateBuilder.imageId(iaas.getImage());
-
-        // build the Template
-        Template template = templateBuilder.build();
-
-		// if you wish to auto assign IPs, instance spawning call should be blocking, but if you
-		// wish to assign IPs manually, it can be non-blocking.
-		// is auto-assign-ip mode or manual-assign-ip mode? - default mode is non-blocking 
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas.getProperty("autoAssignIp"));
-		template.getOptions().as(TemplateOptions.class).blockUntilRunning(blockUntilRunning);
-		
-        // this is required in order to avoid creation of additional security groups by Jclouds.
-        template.getOptions().as(TemplateOptions.class).inboundPorts(22, 80, 8080, 443, 8243);
-
-        template.getOptions().as(VCloudTemplateOptions.class).ipAddressAllocationMode(IpAddressAllocationMode.POOL);
-
-        // set Template
-        iaas.setTemplate(template);
-    }
-
-    @Override
-    public void setDynamicPayload(IaasProvider iaasInfo) {
-
-    	// in VCloud case we need to run a script
-        if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
-
-        	Template template = iaasInfo.getTemplate();
-        	String script = "";
-        	String launchParams ="", key="";
-        	
-            // open the zip file stream
-            ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(iaasInfo.getPayload()));
-
-            try
-            {
-
-                // now iterate through each item in the stream. The get next
-                // entry call will return a ZipEntry for each file in the
-                // stream
-                ZipEntry entry;
-                while((entry = stream.getNextEntry())!=null)
-                {
-                	StringWriter writer = new StringWriter();
-                	IOUtils.copy(stream, writer);
-                	
-                	if(entry.getName().contains("launch-params")){
-                		launchParams = writer.toString();
-                	} else if(entry.getName().contains("id_rsa")){
-                		key = writer.toString();
-                	}
-                	
-                }
-            } catch (IOException e) {
-	            log.error(e.getMessage(), e);
-            }
-            finally
-            {
-                // we must always close the zip file.
-                try {
-	                stream.close();
-                } catch (IOException e) {
-
-                	log.error("failed to close the ZIP stream", e);
-                }
-            }
-            
-            script = "mkdir /var/lib/cloud && mkdir /var/lib/cloud/instance && mkdir /var/lib/cloud/instance/payload && " +
-            		 "echo \""+launchParams+"\" > /var/lib/cloud/instance/payload/launch-params && " +
-            		 "echo \""+key+"\" > /var/lib/cloud/instance/payload/id_rsa && " +
-            		 "cd /opt/ && " +
-            		 "chmod 755 wso2-openstack-init.sh && "+
-            		 "./wso2-openstack-init.sh";
-        	
-        	template.getOptions().overrideLoginUser(iaasInfo.getProperty("loginUser")).overrideLoginPassword(iaasInfo.getProperty("loginPassword")).runScript(script);
-        }
-
-    }
-
-    @Override
-    public boolean createKeyPairFromPublicKey(IaasProvider iaasInfo, String region, String keyPairName,
-        String publicKey) {
-        
-    	//TODO
-        return false;
-    }
-
-    @Override
-    public String associateAddress(IaasProvider iaasInfo, NodeMetadata node) {
-
-    	// TODO
-        return "";
-        
-    }
+	private static final Log log = LogFactory.getLog(VCloudIaas.class);
 
 	@Override
-    public void releaseAddress(IaasProvider iaasInfo, String ip) {
-		//TODO
-    }
-	
+	public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
+
+		// builds and sets Compute Service
+		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
+
+		// builds and sets Template
+		buildTemplate(iaasInfo);
+
+	}
+
+	private void buildTemplate(IaasProvider iaas) {
+		if (iaas.getComputeService() == null) {
+			String msg = "Compute service is null for IaaS provider: "
+					+ iaas.getName();
+			log.fatal(msg);
+			throw new CloudControllerException(msg);
+		}
+
+		TemplateBuilder templateBuilder = iaas.getComputeService()
+				.templateBuilder();
+
+		// set image id specified
+		templateBuilder.imageId(iaas.getImage());
+
+		// build the Template
+		Template template = templateBuilder.build();
+
+		// if you wish to auto assign IPs, instance spawning call should be
+		// blocking, but if you
+		// wish to assign IPs manually, it can be non-blocking.
+		// is auto-assign-ip mode or manual-assign-ip mode? - default mode is
+		// non-blocking
+		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+				.getProperty("autoAssignIp"));
+		template.getOptions().as(TemplateOptions.class)
+				.blockUntilRunning(blockUntilRunning);
+
+		// this is required in order to avoid creation of additional security
+		// groups by Jclouds.
+		template.getOptions().as(TemplateOptions.class)
+				.inboundPorts(22, 80, 8080, 443, 8243);
+
+		template.getOptions().as(VCloudTemplateOptions.class)
+				.ipAddressAllocationMode(IpAddressAllocationMode.POOL);
+
+		// set Template
+		iaas.setTemplate(template);
+	}
+
+	@Override
+	public void setDynamicPayload(IaasProvider iaasInfo) {
+
+		// in VCloud case we need to run a script
+		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
+
+			Template template = iaasInfo.getTemplate();
+			String script = "";
+			String launchParams = "", key = "";
+
+			// open the zip file stream
+			ZipInputStream stream = new ZipInputStream(
+					new ByteArrayInputStream(iaasInfo.getPayload()));
+
+			try {
+
+				// now iterate through each item in the stream. The get next
+				// entry call will return a ZipEntry for each file in the
+				// stream
+				ZipEntry entry;
+				while ((entry = stream.getNextEntry()) != null) {
+					StringWriter writer = new StringWriter();
+					IOUtils.copy(stream, writer);
+
+					if (entry.getName().contains("launch-params")) {
+						launchParams = writer.toString();
+					} else if (entry.getName().contains("id_rsa")) {
+						key = writer.toString();
+					}
+
+				}
+			} catch (IOException e) {
+				log.error(e.getMessage(), e);
+			} finally {
+				// we must always close the zip file.
+				try {
+					stream.close();
+				} catch (IOException e) {
+
+					log.error("failed to close the ZIP stream", e);
+				}
+			}
+
+			script = "mkdir /var/lib/cloud && mkdir /var/lib/cloud/instance && mkdir /var/lib/cloud/instance/payload && "
+					+ "echo \""
+					+ launchParams
+					+ "\" > /var/lib/cloud/instance/payload/launch-params && "
+					+ "echo \""
+					+ key
+					+ "\" > /var/lib/cloud/instance/payload/id_rsa && "
+					+ "cd /opt/ && "
+					+ "chmod 755 wso2-openstack-init.sh && "
+					+ "./wso2-openstack-init.sh";
+
+			template.getOptions()
+					.overrideLoginUser(iaasInfo.getProperty("loginUser"))
+					.overrideLoginPassword(
+							iaasInfo.getProperty("loginPassword"))
+					.runScript(script);
+		}
+
+	}
+
+	@Override
+	public boolean createKeyPairFromPublicKey(IaasProvider iaasInfo,
+			String region, String keyPairName, String publicKey) {
+
+		// TODO
+		return false;
+	}
+
+	@Override
+	public String associateAddress(IaasProvider iaasInfo, NodeMetadata node) {
+
+		// TODO
+		return "";
+
+	}
+
+	@Override
+	public void releaseAddress(IaasProvider iaasInfo, String ip) {
+		// TODO
+	}
+
 }
