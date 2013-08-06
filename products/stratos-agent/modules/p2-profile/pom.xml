@@ -61,7 +61,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-		    <execution>
+                    <execution>
                         <id>2-unpack-kernel-patch</id>
                         <phase>test</phase>
                         <goals>
@@ -101,18 +101,18 @@
                             <publishArtifactRepository>true</publishArtifactRepository>
                             <featureArtifacts>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.cartridge.messages.feature:${stratos2.platform.patch.version}
+                                    org.apache.stratos:org.apache.stratos.cartridge.messages.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.cartridge.agent.server.feature:2.1.3
+                                    org.apache.stratos:org.apache.stratos.cartridge.agent.server.feature:${project.version}
                                 </featureArtifactDef>
-				<featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.lb.common.feature:4.1.3
+                                <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${project.version}
                                 </featureArtifactDef>
-				<featureArtifactDef>
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.apache.synapse.wso2.feature:2.1.1-wso2v4
                                 </featureArtifactDef>
-			     </featureArtifacts>
+                            </featureArtifacts>
                         </configuration>
                     </execution>
                     <execution>
@@ -131,48 +131,48 @@
                             </destination>
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
-                                 <feature>
-                                    <id>org.wso2.carbon.cartridge.messages.feature.group</id>
-                                    <version>${stratos2.platform.patch.version}</version>
+                                <feature>
+                                    <id>org.apache.stratos.cartridge.messages.feature.group</id>
+                                    <version>${project.version}</version>
                                 </feature>
-				<feature>
-                                    <id>org.wso2.carbon.cartridge.agent.server.feature.group</id>
-                                    <version>2.1.3</version>
+                                <feature>
+                                    <id>org.apache.stratos.cartridge.agent.server.feature.group</id>
+                                    <version>${project.version}</version>
                                 </feature>
-				<feature>
-                                    <id>org.wso2.carbon.lb.common.feature.group</id>
-                                    <version>4.1.3</version>
+                                <feature>
+                                    <id>org.apache.stratos.lb.common.feature.group</id>
+                                    <version>${project.version}</version>
                                 </feature>
-				<feature>
+                                <feature>
                                     <id>org.apache.synapse.wso2.feature.group</id>
                                     <version>2.1.1-wso2v4</version>
                                 </feature>
-			     </features>
+                            </features>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-	    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-            <execution>
-                <phase>package</phase>
-                <configuration>
-                    <tasks>
-                        <replace token="false" value="true"
-                                 dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components">
-                            <include name="**/bundles.info"/>
-                        </replace>
-                    </tasks>
-                </configuration>
-                <goals>
-                    <goal>run</goal>
-                </goals>
-            </execution>
-        </executions>
-    </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <replace token="false" value="true"
+                                         dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components">
+                                    <include name="**/bundles.info"/>
+                                </replace>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
