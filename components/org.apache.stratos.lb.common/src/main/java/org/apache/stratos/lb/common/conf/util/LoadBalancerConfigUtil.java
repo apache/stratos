@@ -252,17 +252,31 @@ public final class LoadBalancerConfigUtil {
         if (parsedLine[0].equalsIgnoreCase("*")) {
             tenantIds.add(0);
 
-        } else if (parsedLine.length == 1) {
-            try {
-                int tenantId = Integer.parseInt(tenantRange);
-                tenantIds.add(tenantId);
+		} else if (parsedLine.length == 1) {
+			// if there aren't any hyphens in the string, try to see whether
+			// this is a list of ids
+			parsedLine = tenantRange.trim().split(",");
+			
+			// if there aren't any commas in the string, we assume this to be a
+			// one single integer.
+			if (parsedLine.length == 1) {
+				try {
+					int tenantId = Integer.parseInt(tenantRange);
+					tenantIds.add(tenantId);
 
-            } catch (NumberFormatException e) {
-                String msg = "Invalid tenant range is specified : " + tenantRange;
-                log.error(msg, e);
-                throw new RuntimeException(msg, e);
-            }
-        } else if (parsedLine.length == 2) {
+				} catch (NumberFormatException e) {
+					String msg = "Invalid tenant range is specified : "
+							+ tenantRange;
+					log.error(msg, e);
+					throw new RuntimeException(msg, e);
+				}
+			} else {
+				for (int i = 0; i < parsedLine.length; i++) {
+					int tenantId = Integer.parseInt(parsedLine[i]);
+					tenantIds.add(tenantId);
+				}
+			}
+		} else if (parsedLine.length == 2) {
             try {
 
                 int startIndex = Integer.parseInt(parsedLine[0]);
