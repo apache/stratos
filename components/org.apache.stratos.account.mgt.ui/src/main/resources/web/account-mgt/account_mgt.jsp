@@ -16,7 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 --%>
-<%@ page import="org.apache.stratos.account.mgt.AccountInfoBean" %>
+<%@ page import="org.apache.stratos.account.mgt.stub.beans.xsd.AccountInfoBean" %>
 <%@ page import="org.apache.stratos.account.mgt.ui.clients.AccountMgtClient" %>
 <%@ page import="org.apache.stratos.account.mgt.ui.clients.UsagePlanClient" %>
 <%@ page import="org.apache.stratos.common.constants.StratosConstants" %>
