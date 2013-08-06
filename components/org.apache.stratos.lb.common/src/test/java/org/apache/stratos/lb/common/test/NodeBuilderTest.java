@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.lb.common.test;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.stratos.lb.common.conf.structure.Node;
@@ -44,11 +43,11 @@ public class NodeBuilderTest extends TestCase {
 
         a = NodeBuilder.buildNode(a, content);
 
-        Assert.assertEquals("loadbalancer", a.getName());
-        Assert.assertEquals("stratos-appserver-lb", a.getProperty("securityGroups"));
-        Assert.assertEquals("${ELASTIC_IP}", a.getProperty("elasticIP"));
-        Assert.assertEquals("/mnt/payload.zip", a.getProperty("payload"));
-        Assert.assertNull(a.getProperty("payloader"));
+        assertEquals("loadbalancer", a.getName());
+        assertEquals("stratos-appserver-lb", a.getProperty("securityGroups"));
+        assertEquals("${ELASTIC_IP}", a.getProperty("elasticIP"));
+        assertEquals("/mnt/payload.zip", a.getProperty("payload"));
+        assertNull(a.getProperty("payloader"));
 
         // Testing a node has sub nodes and properties
         a = new Node();
@@ -65,28 +64,28 @@ public class NodeBuilderTest extends TestCase {
 
         a = NodeBuilder.buildNode(a, content);
 
-        Assert.assertEquals("appserver", a.getName());
-        Assert.assertEquals(1, a.getChildNodes().size());
-        Assert.assertEquals("domains", a.getChildNodes().get(0).getName());
-        Assert.assertEquals("appserver.cloud-test.wso2.com,as.cloud-test.wso2.com",
+        assertEquals("appserver", a.getName());
+        assertEquals(1, a.getChildNodes().size());
+        assertEquals("domains", a.getChildNodes().get(0).getName());
+        assertEquals("appserver.cloud-test.wso2.com,as.cloud-test.wso2.com",
                             a.getProperty("hosts"));
-        Assert.assertEquals("resources/cluster_node.zip", a.getProperty("payload"));
-        Assert.assertEquals(null, a.getProperty("payloader"));
+        assertEquals("resources/cluster_node.zip", a.getProperty("payload"));
+        assertEquals(null, a.getProperty("payloader"));
 
         Node b = a.getChildNodes().get(0);
 
-        Assert.assertEquals(3, b.getChildNodes().size());
-        Assert.assertEquals(null, b.getProperty("payload"));
+        assertEquals(3, b.getChildNodes().size());
+        assertEquals(null, b.getProperty("payload"));
 
         Node c = b.getChildNodes().get(0);
 
-        Assert.assertEquals(0, c.getChildNodes().size());
-        Assert.assertEquals("1-100", c.getProperty("tenant_range"));
+        assertEquals(0, c.getChildNodes().size());
+        assertEquals("1-100", c.getProperty("tenant_range"));
 
         c = b.getChildNodes().get(2);
 
-        Assert.assertEquals(0, c.getChildNodes().size());
-        Assert.assertEquals("*", c.getProperty("tenant_range"));
+        assertEquals(0, c.getChildNodes().size());
+        assertEquals("*", c.getProperty("tenant_range"));
         
         String nodeStr = "appserver {\n" +
                 "\thosts\tappserver.cloud-test.wso2.com,as.cloud-test.wso2.com;\n" +
