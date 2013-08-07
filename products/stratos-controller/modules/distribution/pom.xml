@@ -572,27 +572,11 @@
                                 <delete dir="target/shopping-cart-global-${shoppingcart.global.version}"/>
                                 <delete file="target/${project.artifactId}-${project.version}.jar"/>
                                 <delete dir="target/sources"/>
-                                <delete dir="target/site"/>
                                 <delete dir="target/database"/>
-				<delete dir="src/site"/>
                             </tasks>
                         </configuration>
                         <goals>
                             <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
-                <executions>
-                    <execution>
-                        <phase>5-package</phase>
-                        <goals>
-                            <goal>site</goal>
                         </goals>
                     </execution>
                 </executions>
