@@ -595,7 +595,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
-                            <execution>
+                            <!--<execution>
                                 <id>1-pre_dist</id>
                                 <phase>test</phase>
                                 <goals>
@@ -609,7 +609,7 @@
                                         <descriptor>${basedir}/src/assembly/dist.xml</descriptor>
                                     </descriptors>
                                 </configuration>
-                            </execution>
+                            </execution>-->
                             <execution>
                                 <id>4-dist</id>
                                 <phase>package</phase>
