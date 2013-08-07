@@ -756,8 +756,9 @@ public class PersistenceManager {
 					}
 				}
 			}
-		} else {
-			System.out.println("No such file ezoxists");
+		}
+        else {
+            log.error(String.format("File does not exist: %s", xmlFile.getPath()));
 		}
 		return securityKey;
 	}
