@@ -66,7 +66,7 @@ fi
 
 # Getting EC2 hostname
 wget http://169.254.169.254/latest/meta-data/public-hostname -O /opt/public-hostname
-s2_hostname=`cat /opt/public-hostname`
+stratos_hostname=`cat /opt/public-hostname`
 
 #prompt for the values that are not retrieved via user-data
 if [[ -z $EC2_KEY_PATH ]]; then
@@ -94,7 +94,7 @@ echo -n "Availability zone (default value: us-east-1c) :"
 read AVAILABILITY_ZONE
 fi
 if [[ -z $SECURITY_GROUP ]]; then
-echo -n "Name of the EC2 security group (eg: s2demo) :"
+echo -n "Name of the EC2 security group (eg: stratosdemo) :"
 read SECURITY_GROUP
 fi
 if [[ -z $KEY_PAIR_NAME ]]; then
@@ -199,23 +199,23 @@ cp $TEMP_CONFIG_DIR/launch-params-esb $TEMP_CONFIG_DIR/launch-params-esb.tmp
 cp $TEMP_CONFIG_DIR/launch-params-bps $TEMP_CONFIG_DIR/launch-params-bps.tmp
 
 
-sed -i "s/s2_ip/$ip/g" $TEMP_CONFIG_DIR/hosts.erb.tmp
-sed -i "s/s2_ip/$ip/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/hosts.erb.tmp
+sed -i "s/startos_ip/$ip/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
 sed -i "s@EC2KEYPATH@$EC2_KEY_PATH@g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
-sed -i "s/s2_hostname/$s2_hostname/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
-sed -i "s/s2_ip/$ip/g" $TEMP_CONFIG_DIR/agent.properties.tmp
-sed -i "s/s2_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-as.tmp
-sed -i "s/s2_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-esb.tmp
-sed -i "s/s2_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-bps.tmp
+sed -i "s/stratos_hostname/$stratos_hostname/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/agent.properties.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-as.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-esb.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-bps.tmp
 sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/launch-params-as.tmp
 sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/launch-params-bps.tmp
 sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/launch-params-esb.tmp
 
 rm -rf $SERVICE_DEFINITIONS/*
 
-cp $TEMP_CONFIG_DIR/s2reponotifier.groovy $TEMP_CONFIG_DIR/s2reponotifier.groovy.tmp
-sed -i "s/s2_hostname/$s2_hostname/g" $TEMP_CONFIG_DIR/s2reponotifier.groovy.tmp
-mv $TEMP_CONFIG_DIR/s2reponotifier.groovy.tmp /opt/GitBlit/data/groovy/s2reponotifier.groovy
+cp $TEMP_CONFIG_DIR/stratosreponotifier.groovy $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp
+sed -i "s/stratos_hostname/$stratos_hostname/g" $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp
+mv $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp /opt/GitBlit/data/groovy/stratosreponotifier.groovy
 
 
 cp $TEMP_CONFIG_DIR/appserver_service.xml $TEMP_CONFIG_DIR/appserver_service.xml.tmp

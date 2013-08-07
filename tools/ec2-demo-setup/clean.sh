@@ -31,10 +31,10 @@ killall java
 sleep 1;
 
 echo "Cleaning up databases... "
-mysqladmin -f -uroot -pg drop s2_foundation
+mysqladmin -f -uroot -pg drop stratos_foundation
 mysqladmin -f -uroot -pg drop userstore
 mysqladmin -f -uroot -pg drop billing
-mysql -uroot -pg </opt/resources/s2foundation_schema.sql
+mysql -uroot -pg </opt/resources/stratosfoundation_schema.sql
 mysql -uroot -pg </opt/resources/userstore.sql
 mysql -uroot -pg </opt/resources/metering_mysql.sql
 mysql -uroot -pg </opt/resources/billing-mysql.sql
