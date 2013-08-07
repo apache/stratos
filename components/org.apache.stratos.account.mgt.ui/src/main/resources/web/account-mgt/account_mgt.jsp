@@ -400,7 +400,8 @@ under the License.
     </tbody>
 </table>
 
-
+<!-- This section get commented because billling component is removed. So this fuctionality didn't work -->
+<!-- 
 <table class="styledLeft">
     <thead>
     <tr>
@@ -441,7 +442,7 @@ function updatePlan(plan, existingPlan, regTenantDomain) {
 }
 </script>
 
-    <tr>
+     <tr>
         <td class="nopadding">
             <form method="POST" id="usagePlanUpdate_form"
             <% if (chargeOnRegistration){ %>
@@ -484,6 +485,7 @@ function updatePlan(plan, existingPlan, regTenantDomain) {
 </div>
 </div>
 </fmt:bundle>
+
 <script type="text/javascript">
 
     jQuery(document).ready(
@@ -525,3 +527,4 @@ function updatePlan(plan, existingPlan, regTenantDomain) {
                           }
             );
 </script>
+ -->
