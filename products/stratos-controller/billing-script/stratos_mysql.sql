@@ -15,18 +15,18 @@
 
 
 --
--- Create schema s2_foundation
+-- Create schema stratos_foundation
 --
 
-CREATE DATABASE IF NOT EXISTS s2_foundation;
-USE s2_foundation;
+CREATE DATABASE IF NOT EXISTS stratos_foundation;
+USE stratos_foundation;
 
 --
--- Definition of table `s2_foundation`.`CARTRIDGE_INSTANCE`
+-- Definition of table `stratos_foundation`.`CARTRIDGE_INSTANCE`
 --
 
-DROP TABLE IF EXISTS `s2_foundation`.`CARTRIDGE_INSTANCE`;
-CREATE TABLE  `s2_foundation`.`CARTRIDGE_INSTANCE` (
+DROP TABLE IF EXISTS `stratos_foundation`.`CARTRIDGE_INSTANCE`;
+CREATE TABLE  `stratos_foundation`.`CARTRIDGE_INSTANCE` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `INSTANCE_IP` varchar(255) NOT NULL,
   `TENANT_ID` int(11) DEFAULT NULL,
@@ -39,11 +39,11 @@ CREATE TABLE  `s2_foundation`.`CARTRIDGE_INSTANCE` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
--- Definition of table `s2_foundation`.`CARTRIDGE_SUBSCRIPTION`
+-- Definition of table `stratos_foundation`.`CARTRIDGE_SUBSCRIPTION`
 --
 
-DROP TABLE IF EXISTS `s2_foundation`.`CARTRIDGE_SUBSCRIPTION`;
-CREATE TABLE  `s2_foundation`.`CARTRIDGE_SUBSCRIPTION` (
+DROP TABLE IF EXISTS `stratos_foundation`.`CARTRIDGE_SUBSCRIPTION`;
+CREATE TABLE  `stratos_foundation`.`CARTRIDGE_SUBSCRIPTION` (
   `SUBSCRIPTION_ID` int(11) NOT NULL AUTO_INCREMENT,
   `TENANT_ID` int(11) NOT NULL,
   `CARTRIDGE` varchar(30) NOT NULL,
@@ -67,11 +67,11 @@ CREATE TABLE  `s2_foundation`.`CARTRIDGE_SUBSCRIPTION` (
 
 
 --
--- Definition of table `s2_foundation`.`DATA_CARTRIDGE`
+-- Definition of table `stratos_foundation`.`DATA_CARTRIDGE`
 --
 
-DROP TABLE IF EXISTS `s2_foundation`.`DATA_CARTRIDGE`;
-CREATE TABLE  `s2_foundation`.`DATA_CARTRIDGE` (
+DROP TABLE IF EXISTS `stratos_foundation`.`DATA_CARTRIDGE`;
+CREATE TABLE  `stratos_foundation`.`DATA_CARTRIDGE` (
   `DATA_CART_ID` int(11) NOT NULL AUTO_INCREMENT,
   `TYPE` varchar(30) NOT NULL,
   `USER_NAME` varchar(255) NOT NULL,
@@ -82,11 +82,11 @@ CREATE TABLE  `s2_foundation`.`DATA_CARTRIDGE` (
 
 
 --
--- Definition of table `s2_foundation`.`PORT_MAPPING`
+-- Definition of table `stratos_foundation`.`PORT_MAPPING`
 --
 
-DROP TABLE IF EXISTS `s2_foundation`.`PORT_MAPPING`;
-CREATE TABLE  `s2_foundation`.`PORT_MAPPING` (
+DROP TABLE IF EXISTS `stratos_foundation`.`PORT_MAPPING`;
+CREATE TABLE  `stratos_foundation`.`PORT_MAPPING` (
   `PORT_MAPPING_ID` int(11) NOT NULL AUTO_INCREMENT,
   `SUBSCRIPTION_ID` int(11) NOT NULL,
   `TYPE` varchar(30) NOT NULL,
@@ -98,11 +98,11 @@ CREATE TABLE  `s2_foundation`.`PORT_MAPPING` (
 
 
 --
--- Definition of table `s2_foundation`.`REPOSITORY`
+-- Definition of table `stratos_foundation`.`REPOSITORY`
 --
 
-DROP TABLE IF EXISTS `s2_foundation`.`REPOSITORY`;
-CREATE TABLE  `s2_foundation`.`REPOSITORY` (
+DROP TABLE IF EXISTS `stratos_foundation`.`REPOSITORY`;
+CREATE TABLE  `stratos_foundation`.`REPOSITORY` (
   `REPO_ID` int(11) NOT NULL AUTO_INCREMENT,
   `REPO_NAME` varchar(255) NOT NULL,
   `STATE` varchar(30) NOT NULL,
