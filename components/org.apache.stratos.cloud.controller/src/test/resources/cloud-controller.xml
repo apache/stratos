@@ -22,12 +22,12 @@
 	<svns:secureVault
 		provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
 	
-	<dataPublisher enable="false">
+	<dataPublisher enable="true">
 		<!-- BAM Server Info - default values are 'admin' and 'admin' 
 			 Optional element. -->
 		<bamServer>
-			<adminUserName>admin</adminUserName>
-			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
+			<adminUserName>nirmal</adminUserName>
+			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">nirmal</adminPassword>
 		</bamServer>
 		<!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
 			 Optional element. -->

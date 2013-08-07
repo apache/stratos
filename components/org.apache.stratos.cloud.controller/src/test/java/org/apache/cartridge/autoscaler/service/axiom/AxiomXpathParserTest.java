@@ -48,5 +48,12 @@ public class AxiomXpathParserTest extends TestCase {
         assertEquals(1, FasterLookUpDataHolder.getInstance().getIaasProviders().size());
         assertEquals(5, FasterLookUpDataHolder.getInstance().getIaasProviders().get(0).getMaxInstanceLimit());
     }
+    
+    public void testDataPublisherConfig() {
+		parser.setDataPublisherRelatedData();
+		assertEquals(true, FasterLookUpDataHolder.getInstance().getEnableBAMDataPublisher());
+		assertEquals("nirmal", FasterLookUpDataHolder.getInstance().getBamUsername());
+		assertEquals("nirmal", FasterLookUpDataHolder.getInstance().getBamPassword());
+	}
 
 }

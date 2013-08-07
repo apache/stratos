@@ -70,7 +70,7 @@ public class CloudControllerDeployer extends AbstractDeployer{
 			// parse the file
 			parser.parse();
 
-			// deploy iaases
+			// load iaases
 			parser.setIaasProvidersList();
 			parser.setDataPublisherRelatedData();
 			parser.setTopologySyncRelatedData();
