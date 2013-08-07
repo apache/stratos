@@ -493,46 +493,6 @@
                 <version>1.1</version>
                 <executions>
                     <execution>
-                        <id>extract-docs-from-components</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <property name="tempdir" value="target/docs-temp"/>
-                                <mkdir dir="${tempdir}"/>
-                                <unzip dest="${tempdir}">
-                                    <fileset dir="target">
-                                        <include name="${project.artifactId}-${project.version}.zip"/>
-                                    </fileset>
-                                </unzip>
-                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/" overwrite="false">
-                                    <fileset dir="${tempdir}/${project.artifactId}-${project.version}/repository/components/">
-                                    </fileset>
-                                </copy>
-                                <delete file="target/${project.artifactId}-${project.version}.zip"/>
-                                <delete dir="${tempdir}"/>
-                                <mkdir dir="${tempdir}"/>
-                                <unzip dest="${tempdir}">
-                                    <fileset dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
-                                        <include name="*.ui*.jar"/>
-                                    </fileset>
-                                </unzip>
-                                <move todir="${tempdir}/web/" includeemptydirs="false">
-                                    <fileset dir="${tempdir}/web/">
-                                        <exclude name="**/yui/**"/>
-                                        <exclude name="**/ajax/**"/>
-                                        <exclude name="**/WEB-INF/**"/>
-                                        <include name="**/*.html"/>
-                                    </fileset>
-                                    <mapper type="glob" from="*.html" to="*.xml"/>
-                                </move>
-                                <delete dir="${tempdir}"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>clean_target</id>
                         <phase>install</phase>
                         <configuration>

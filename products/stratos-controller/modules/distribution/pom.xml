@@ -561,73 +561,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>3-extract-docs-from-components</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <property name="tempdir" value="target/docs-temp"/>
-                                <mkdir dir="${tempdir}"/>
-                                <unzip dest="${tempdir}">
-                                    <fileset dir="target">
-                                        <include name="${project.artifactId}-${project.version}.zip"/>
-                                    </fileset>
-                                </unzip>
-                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components"
-                                      overwrite="true">
-                                    <fileset
-                                            dir="${tempdir}/${project.artifactId}-${project.version}/repository/components">
-                                    </fileset>
-                                </copy>
-                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/conf"
-                                      overwrite="true">
-                                    <fileset dir="../../conf">
-                                        <include name="user-mgt.xml"/>
-                                    </fileset>
-                                </copy>
-                                <delete file="target/${project.artifactId}-${project.version}.zip"/>
-                                <delete dir="${tempdir}"/>
-                                <mkdir dir="${tempdir}"/>
-                                <unzip dest="${tempdir}">
-                                    <fileset
-                                            dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
-                                        <include name="*.ui*.jar"/>
-                                    </fileset>
-                                </unzip>
-                                <move todir="${tempdir}/web/" includeemptydirs="false">
-                                    <fileset dir="${tempdir}/web/">
-                                        <exclude name="**/yui/**"/>
-                                        <exclude name="**/ajax/**"/>
-                                        <exclude name="**/WEB-INF/**"/>
-                                        <include name="**/*.html"/>
-                                    </fileset>
-                                    <mapper type="glob" from="*.html" to="*.xml"/>
-                                </move>
-                                <mkdir dir="src/site/xdoc"/>
-                                <copy todir="src/site/xdoc" overwrite="false" includeemptydirs="false">
-                                    <fileset dir="${tempdir}/web">
-                                        <exclude name="**/yui/**"/>
-                                        <exclude name="**/ajax/**"/>
-                                        <exclude name="**/WEB-INF/**"/>
-                                        <exclude name="**/*.html"/>
-                                        <exclude name="**/*.js"/>
-                                        <exclude name="**/*.jsp"/>
-                                        <exclude name="**/*.xsl"/>
-                                        <exclude name="*.*"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="target/site/" overwrite="false" includeemptydirs="false">
-                                    <fileset dir="src/site/xdoc/">
-                                        <include name="**/images/**/*.*"/>
-                                    </fileset>
-                                </copy>
-                                <delete dir="${tempdir}"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>clean_target</id>
                         <phase>install</phase>
                         <configuration>
@@ -705,8 +638,6 @@
                                     </filters>
                                     <descriptors>
                                         <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
-                                        <!--<descriptor>${basedir}/src/assembly/src.xml</descriptor>-->
-                                        <!--<descriptor>${basedir}/src/assembly/docs.xml</descriptor>-->
                                     </descriptors>
                                 </configuration>
                             </execution>

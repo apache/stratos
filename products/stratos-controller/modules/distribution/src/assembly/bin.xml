@@ -139,13 +139,6 @@
             </includes>
         </fileSet>
 
-        <!-- copy documentation -->
-        <fileSet>
-            <directory>target/site</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/docs</outputDirectory>
-            <fileMode>755</fileMode>
-        </fileSet>
-
         <!-- Copying themes, cloud icons-->
          <fileSet>
             <directory>../../resources</directory>
