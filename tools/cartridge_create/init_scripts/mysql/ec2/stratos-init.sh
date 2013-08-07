@@ -19,7 +19,8 @@
 #  under the License.
 
 # ----------------------------------------------------------------------------
-export LOG=/var/log/wso2-cartridge.log
+
+export LOG=/var/log/stratos-cartridge.log
 instance_path=/opt
 PUBLIC_IP=""
 KEY=`uuidgen`
@@ -108,7 +109,7 @@ echo "Logging sys variables .. PUBLIC_IP:${PUBLIC_IP}, HOST_NAME:${HOST_NAME}, K
 
 mkdir -p  /etc/agent/conf
 
-echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.carbon.wso2.org\">
+echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.stratos.apache.org\">
   <soapenv:Header/>
   <soapenv:Body>
      <agen:register>
@@ -149,4 +150,3 @@ curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/
 
 
 # ========================== // End of script ===========================================================
-

@@ -19,16 +19,18 @@
 #  under the License.
 
 # ----------------------------------------------------------------------------
-export LOG=/var/log/wso2-cartridge.log
+
+# This script will be called from /etc/rc.local when the cartridge
+# instance is spawned. It will initiate all the tasks that needs to 
+# be run to bring the cartridge instance to operational state.
+
+export LOG=/var/log/stratos-cartridge.log
 instance_path=/opt
 PUBLIC_IP=""
 KEY=`uuidgen`
 CRON_DURATION=1
 RETRY_COUNT=30
 SLEEP_DURATION=3
-ACCESSLOG="/var/log/apache2/access.log"
-ERRORLOG="/var/log/apache2/error.log"
-
 
 if [ ! -d ${instance_path}/payload ]; then
 
@@ -91,11 +93,21 @@ do
     export ${i}
 done
 
+
+cp -f ${instance_path}/payload/ssl-cert-snakeoil.pem /etc/ssl/certs/ssl-cert-snakeoil.pem
+cp -f ${instance_path}/payload/ssl-cert-snakeoil.key /etc/ssl/private/ssl-cert-snakeoil.key
+echo "Restarting apache..." >> $LOG
+
+/etc/init.d/apache2 restart
+
+echo "Apache restarted..." >> $LOG
+
+
 echo "Logging sys variables .. PUBLIC_IP:${PUBLIC_IP}, HOST_NAME:${HOST_NAME}, KEY:${KEY}, PORTS=${PORTS}, BAM:${BAM_IP}, GITREPO:${GIT_REPO}" >> $LOG
 
 mkdir -p  /etc/agent/conf
 
-echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.carbon.wso2.org\">
+echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.stratos.apache.org\">
   <soapenv:Header/>
   <soapenv:Body>
      <agen:register>
@@ -105,7 +117,7 @@ echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope
            <hostName>${HOST_NAME}</hostName>
            <key>${KEY}</key>
           <maxInstanceCount>${MAX}</maxInstanceCount>
-      <maxRequestsPerSecond>${MAX_REQUESTS_PER_SEC}</maxRequestsPerSecond>
+	  <maxRequestsPerSecond>${MAX_REQUESTS_PER_SEC}</maxRequestsPerSecond>
           <minInstanceCount>${MIN}</minInstanceCount> " > /etc/agent/conf/request.xml
 
 IFS='|' read -ra PT <<< "${PORTS}"
@@ -120,7 +132,7 @@ done
 
 echo "          <remoteHost>${PUBLIC_IP}</remoteHost>
            <service>${SERVICE}</service>
-       <remoteHost>${PUBLIC_IP}</remoteHost>
+	   <remoteHost>${PUBLIC_IP}</remoteHost>
            <roundsToAverage>${ROUNDS_TO_AVERAGE}</roundsToAverage>
            <scaleDownFactor>${SCALE_DOWN_FACTOR}</scaleDownFactor>
            <tenantRange>${TENANT_RANGE}</tenantRange>
@@ -155,14 +167,7 @@ chmod 0600 /root/.ssh/id_rsa
 echo "StrictHostKeyChecking no" >> /root/.ssh/config
 
 
-cp -f ${instance_path}/payload/ssl-cert-snakeoil.pem /etc/ssl/certs/ssl-cert-snakeoil.pem
-cp -f ${instance_path}/payload/ssl-cert-snakeoil.key /etc/ssl/private/ssl-cert-snakeoil.key
 
-/etc/init.d/apache2 restart
-
-echo "Sending register request to Cartridge agent service" >> $LOG
-
-curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/agent/conf/request.xml -k --silent --output /dev/null "${CARTRIDGE_AGENT_EPR}"
 
 #echo "Getting repo username password from repoInfoService" >> $LOG
 #curl -X POST -H "Content-Type: text/xml" -d @/etc/agent/conf/request.xml --silent --output /dev/null "${CARTRIDGE_AGENT_EPR}"
@@ -177,9 +182,9 @@ if [ -d \"${APP_PATH}/.git\" ]; then
     curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @/opt/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
    sed '1,5d' /tmp/git.xml > /tmp/git1.xml
    sed '2d' /tmp/git1.xml > /tmp/git.xml
-   username=\`xml_grep 'ax211:userName' /tmp/git.xml --text_only\`
-   password=\`xml_grep 'ax211:password' /tmp/git.xml --text_only\`
-   repo=\`xml_grep 'ax211:url' /tmp/git.xml --text_only\`
+   username=\`xml_grep 'ax29:userName' /tmp/git.xml --text_only\`
+   password=\`xml_grep 'ax29:password' /tmp/git.xml --text_only\`
+   repo=\`xml_grep 'ax29:url' /tmp/git.xml --text_only\`
    rm /tmp/git1.xml
    rm /tmp/git.xml
    url=\`echo \$repo |sed 's/http.*\/\///g' |sed 's/\:.*//g' |sed 's/\/.*//g'\`
@@ -187,22 +192,23 @@ if [ -d \"${APP_PATH}/.git\" ]; then
    sudo echo \"machine \${url} login \${username} password \${password}\" > /root/.netrc
    chmod 600 ~/.netrc
    sudo chmod 600 /root/.netrc
+   git config --global --bool --add http.sslVerify false
    sudo git pull
    rm ~/.netrc
    sudo rm /root/.netrc
 
     sudo chown -R www-data:www-data ${APP_PATH}/www
     if [ -f \"${APP_PATH}/sql/alter.sql\" ]; then
-        mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/alter.sql
+    	mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/alter.sql
     fi
 else
     sudo rm -f ${APP_PATH}/index.html
    curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @/opt/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
    sed '1,5d' /tmp/git.xml > /tmp/git1.xml
    sed '2d' /tmp/git1.xml > /tmp/git.xml
-   username=\`xml_grep 'ax211:userName' /tmp/git.xml --text_only\`
-   password=\`xml_grep 'ax211:password' /tmp/git.xml --text_only\`
-   repo=\`xml_grep 'ax211:url' /tmp/git.xml --text_only\`
+   username=\`xml_grep 'ax29:userName' /tmp/git.xml --text_only\`
+   password=\`xml_grep 'ax29:password' /tmp/git.xml --text_only\`
+   repo=\`xml_grep 'ax29:url' /tmp/git.xml --text_only\`
    rm /tmp/git1.xml
    rm /tmp/git.xml
    url=\`echo \$repo |sed 's/http.*\/\///g' |sed 's/\:.*//g' |sed 's/\/.*//g'\`
@@ -210,6 +216,7 @@ else
    sudo echo \"machine \${url} login \${username} password \${password}\" > /root/.netrc
    chmod 600 ~/.netrc
    sudo chmod 600 /root/.netrc
+   git config --global --bool --add http.sslVerify false
    sudo git clone \${repo} ${APP_PATH}
    rm ~/.netrc
    sudo rm /root/.netrc
@@ -230,6 +237,44 @@ else
 fi" > /opt/git.sh
 echo "File created.." >> $LOG
 chmod 755 /opt/git.sh
+
+
+
+while true
+do
+var=`nc -z localhost 80; echo $?`;
+if [ $var -eq 0 ]
+   then
+       echo "port 80 is available" >> $LOG
+       break
+   else
+       echo "port 80 is not available" >> $LOG
+   fi
+   sleep 1
+done
+
+
+while true
+do
+var=`nc -z localhost 443; echo $?`;
+if [ $var -eq 0 ]
+   then
+       echo "port 443 is available" >> $LOG
+       break
+   else
+       echo "port 443 is not available" >> $LOG
+   fi
+   sleep 1
+done
+
+
+
+echo "Sending register request to Cartridge agent service" >> $LOG
+
+curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/agent/conf/request.xml -k --silent --output /dev/null "${CARTRIDGE_AGENT_EPR}"
+
+echo "Registered cartridge..." >> $LOG
+
 echo "running git clone........" >> $LOG
 su - ubuntu /opt/git.sh
 
@@ -241,15 +286,16 @@ echo "host:     ${BAM_IP}
 thriftPort:     ${BAM_PORT}
 
 #cartridge configs
-cartridgeAlias:  ${SERVICE}
+cartridgeAlias:  ${CARTRIDGE_ALIAS}
 tenantName:      ${HOST_NAME}
-tenantId::      ${TENANT_ID}
+tenantId:        ${TENANT_ID}
 localIP:         ${PUBLIC_IP}" > /opt/cartridge_data_publisher_1.0.2/conf/data_publisher.conf
+
 
 
 echo "started loggin ........."
 cd /opt/cartridge_data_publisher_1.0.2/dist/Debug/GNU-Linux-x86/
-nohup ./cartridge_data_publisher_1.0.2 ${ACCESSLOG} ${ERRORLOG} 2>&1> /dev/null &
+nohup ./cartridge_data_publisher_1.0.2 /var/log/apache2/access.log /var/log/apache2/error.log >> /var/log/startos-data-publisher.log  &
 
 
 
