@@ -46,9 +46,21 @@
                 <exclude>**/repository/components/plugins/*.ui*</exclude>
 		<exclude>**/log4j.properties</exclude>
 		<!--exclude>**/samples/*</exclude-->
+		<exclude>**/repository/components/**</exclude>
             </excludes>
         </fileSet>
-
+        <!-- Copying p2 profile and osgi bundles-->
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/components</directory>
+            <outputDirectory>apache-stratos-agent-${pom.version}/repository/components</outputDirectory>
+            <excludes>
+                <exclude>**/eclipse.ini</exclude>
+                <exclude>**/*.lock</exclude>
+                <exclude>**/.data</exclude>
+                <exclude>**/.settings</exclude>
+                <exclude>**/synapse-samples*</exclude>
+            </excludes>
+        </fileSet>
 	<!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
         <fileSet>
            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.1.0-0002/</directory>
