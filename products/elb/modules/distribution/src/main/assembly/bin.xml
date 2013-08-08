@@ -59,8 +59,20 @@
                 <exclude>**/user-mgt.xml</exclude>
                 <exclude>**/*.aar</exclude>
                 <exclude>**/webapp-mode/**</exclude>
-                <exclude>**/repository/components/plugins/*.ui*</exclude>
-                <!--exclude>**/samples/*</exclude-->
+                <exclude>**/repository/components/**</exclude>
+            </excludes>
+        </fileSet>
+        <!-- Copying p2 profile and osgi bundles-->
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/components</directory>
+            <outputDirectory>apache-stratos-elb-${pom.version}/repository/components</outputDirectory>
+            <excludes>
+                <exclude>**/eclipse.ini</exclude>
+                <exclude>**/*.lock</exclude>
+                <exclude>**/.data</exclude>
+                <exclude>**/.settings</exclude>
+                <exclude>**/synapse-samples*</exclude>
+		<exclude>**/plugins/*.ui*</exclude>
             </excludes>
         </fileSet>
         <!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
