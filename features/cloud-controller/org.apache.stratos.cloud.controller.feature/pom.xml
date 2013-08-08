@@ -108,11 +108,6 @@
            <version>${google.guava.wso2.version}</version>
          </dependency>
          <dependency>
-          <groupId>org.jclouds.common</groupId>
-            <artifactId>aws-common</artifactId>
-              <version>${jclouds.version}</version>
-         </dependency>
-         <dependency>
       	     <groupId>com.jamesmurty.utils.wso2</groupId>
              <artifactId>java-xmlbuilder</artifactId>
              <version>0.4.wso2v1</version>
@@ -229,7 +224,6 @@
                                 <bundleDef>org.jclouds.api:openstack-keystone:${jclouds.wso2.version}</bundleDef>
                                 <bundleDef>org.jclouds.provider:aws-ec2:${jclouds.wso2.version}</bundleDef>
                                 <bundleDef>com.google.guava.wso2:guava:${google.guava.wso2.version}</bundleDef>
-                                <bundleDef>org.jclouds.common:aws-common:${jclouds.version}</bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
                                 <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
                                 <bundleDef>com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}</bundleDef>

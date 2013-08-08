@@ -252,11 +252,6 @@
               <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-          <groupId>org.jclouds.common</groupId>
-            <artifactId>aws-common</artifactId>
-              <version>${jclouds.version}</version>
-         </dependency>
-         <dependency>
              <groupId>com.jamesmurty.utils.wso2</groupId>
              <artifactId>java-xmlbuilder</artifactId>
              <version>0.4.wso2v1</version>
@@ -319,7 +314,6 @@
     </dependencies>
     <properties>
         <gson2.version>2.2</gson2.version>
-        <jclouds.version>1.5.0-beta.5</jclouds.version>
         <jclouds.wso2.version>1.5.0-beta.5.wso2v1</jclouds.wso2.version>
         <com.google.guice.assistedinject.wso2.version>3.0.wso2v1</com.google.guice.assistedinject.wso2.version>
         <sun.jersey.version>1.12</sun.jersey.version>
