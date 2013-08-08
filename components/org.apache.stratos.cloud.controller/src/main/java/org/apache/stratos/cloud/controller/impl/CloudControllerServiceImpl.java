@@ -173,7 +173,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				if (!tm.isTaskScheduled(CloudControllerConstants.DATA_PUB_TASK_NAME)) {
 
 					TriggerInfo triggerInfo = new TriggerInfo(
-							FasterLookUpDataHolder.getInstance()
+							dataHolder
 									.getDataPublisherCron());
 					taskInfo = new TaskInfo(
 							CloudControllerConstants.DATA_PUB_TASK_NAME,
@@ -295,7 +295,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				+ " and sub domain : " + subDomainName);
 
 		// get the subjected ServiceContext
-		ServiceContext serviceCtxt = FasterLookUpDataHolder.getInstance()
+		ServiceContext serviceCtxt = dataHolder
 				.getServiceContext(domainName, subDomainName);
 
 		if (serviceCtxt == null) {
@@ -307,7 +307,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		// load Cartridge
 		serviceCtxt.setCartridge(loadCartridge(serviceCtxt.getCartridgeType(),
-				serviceCtxt.getPayload(), FasterLookUpDataHolder.getInstance()
+				serviceCtxt.getPayload(), dataHolder
 						.getCartridges()));
 
 		if (serviceCtxt.getCartridge() == null) {
@@ -336,7 +336,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				ctxt = serviceCtxt.addIaasContext(iaas.getType());
 			}
 
-			if (iaas.getMaxInstanceLimit() > ctxt.getCurrentInstanceCount()) {
+			if (iaas.getMaxInstanceLimit() > dataHolder.getActiveInstanceCount(iaas.getType())) {
 				try {
 
 					iaas.getIaas().setDynamicPayload(iaas);
@@ -423,7 +423,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						ctxt.addNodeToPublicIp(node.getId(), ip);
 
 						// to faster look up
-						FasterLookUpDataHolder.getInstance().addNodeId(
+						dataHolder.addNodeId(
 								node.getId(), serviceCtxt);
 
 						serviceCtxt.getCartridge().setLastlyUsedIaas(iaas);
@@ -431,7 +431,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						// add this ip to the topology
 						appendToPublicIpProperty(ip, serviceCtxt);
 
-						ctxt.incrementCurrentInstanceCountByOne();
+						dataHolder.updateActiveInstanceCount(iaas.getType(), 1);
 
 						// persist in registry
 						persist();
@@ -513,7 +513,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private void persist() {
 		try {
 			RegistryManager.getInstance().persist(
-					FasterLookUpDataHolder.getInstance());
+					dataHolder);
 		} catch (RegistryException e) {
 
 			String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
@@ -545,7 +545,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		log.info("Starting to terminate an instance of domain : " + domainName
 				+ " and sub domain : " + subDomainName);
 
-		ServiceContext serviceCtxt = FasterLookUpDataHolder.getInstance()
+		ServiceContext serviceCtxt = dataHolder
 				.getServiceContext(domainName, subDomainName);
 
 		if (serviceCtxt == null) {
@@ -559,7 +559,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
 					serviceCtxt.getCartridgeType(), serviceCtxt.getPayload(),
-					FasterLookUpDataHolder.getInstance().getCartridges()));
+					dataHolder.getCartridges()));
 		}
 
 		// if still, Cartridge is null
@@ -633,7 +633,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		log.info("Starting to terminate the last instance spawned, of domain : "
 				+ domainName + " and sub domain : " + subDomainName);
 
-		ServiceContext serviceCtxt = FasterLookUpDataHolder.getInstance()
+		ServiceContext serviceCtxt = dataHolder
 				.getServiceContext(domainName, subDomainName);
 
 		if (serviceCtxt == null) {
@@ -647,7 +647,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
 					serviceCtxt.getCartridgeType(), serviceCtxt.getPayload(),
-					FasterLookUpDataHolder.getInstance().getCartridges()));
+					dataHolder.getCartridges()));
 		}
 
 		if (serviceCtxt.getCartridge() == null) {
@@ -709,7 +709,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		log.info("Starting to terminate all instances of domain : "
 				+ domainName + " and sub domain : " + subDomainName);
 
-		ServiceContext serviceCtxt = FasterLookUpDataHolder.getInstance()
+		ServiceContext serviceCtxt = dataHolder
 				.getServiceContext(domainName, subDomainName);
 
 		if (serviceCtxt == null) {
@@ -723,7 +723,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
 					serviceCtxt.getCartridgeType(), serviceCtxt.getPayload(),
-					FasterLookUpDataHolder.getInstance().getCartridges()));
+					dataHolder.getCartridges()));
 		}
 
 		if (serviceCtxt.getCartridge() == null) {
@@ -783,7 +783,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		int pendingInstanceCount = 0;
 
-		ServiceContext subjectedSerCtxt = FasterLookUpDataHolder.getInstance()
+		ServiceContext subjectedSerCtxt = dataHolder
 				.getServiceContext(domainName, subDomainName);
 
 		if (subjectedSerCtxt != null
@@ -792,7 +792,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			// load cartridge
 			subjectedSerCtxt.setCartridge(loadCartridge(subjectedSerCtxt
 					.getCartridgeType(), subjectedSerCtxt.getPayload(),
-					FasterLookUpDataHolder.getInstance().getCartridges()));
+					dataHolder.getCartridges()));
 
 			if (subjectedSerCtxt.getCartridge() == null) {
 				return pendingInstanceCount;
@@ -886,7 +886,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// remove the node id
 		ctxt.removeNodeId(nodeId);
 
-		ctxt.decrementCurrentInstanceCountByOne();
+		dataHolder.updateActiveInstanceCount(iaasTemp.getType(), -1);
 
 		// publish data to BAM
 		CartridgeInstanceDataPublisherTask.publish();
@@ -997,7 +997,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		newServiceCtxt.setCartridgeType(cartridgeType);
 
-		for (Cartridge cartridge : FasterLookUpDataHolder.getInstance()
+		for (Cartridge cartridge : dataHolder
 				.getCartridges()) {
 			if (cartridge.getType().equals(cartridgeType)) {
 				newServiceCtxt.setCartridge(cartridge);
@@ -1066,7 +1066,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	@Override
 	public String[] getRegisteredCartridges() {
 		// get the list of cartridges registered
-		List<Cartridge> cartridges = FasterLookUpDataHolder.getInstance()
+		List<Cartridge> cartridges = dataHolder
 				.getCartridges();
 
 		if (cartridges == null) {
@@ -1098,7 +1098,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	@Override
 	public CartridgeInfo getCartridgeInfo(String cartridgeType)
 			throws UnregisteredCartridgeException {
-		Cartridge cartridge = FasterLookUpDataHolder.getInstance()
+		Cartridge cartridge = dataHolder
 				.getCartridge(cartridgeType);
 
 		if (cartridge != null) {
@@ -1120,7 +1120,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		subDomain = checkSubDomain(subDomain);
 
 		// find the service context
-		ServiceContext subjectedSerCtxt = FasterLookUpDataHolder.getInstance()
+		ServiceContext subjectedSerCtxt = dataHolder
 				.getServiceContext(domain, subDomain);
 
 		if (subjectedSerCtxt == null) {
