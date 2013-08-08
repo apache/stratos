@@ -100,6 +100,14 @@ public class FasterLookUpDataHolder implements Serializable{
 	 * This map is only used by BAM data publisher in CC.
 	 */
 	private Map<String, String> nodeIdToStatusMap = new HashMap<String, String>();
+	
+	/**
+	 * Key - iaas type
+	 * Value - # of running instance count
+	 * This map will be used to track the running instances count in each IaaS
+	 */
+	private Map<String, Integer> iaasToActiveInstanceCountMap = new HashMap<String, Integer>();
+	
 	private transient DataPublisher dataPublisher;
 	private String streamId;
 	private boolean isPublisherRunning;
@@ -246,6 +254,19 @@ public class FasterLookUpDataHolder implements Serializable{
 
 		return null;
 
+	}
+	
+	public void updateActiveInstanceCount(String iaasType, int count) {
+		int currentCount = 0;
+		if(iaasToActiveInstanceCountMap.containsKey(iaasType)){
+			currentCount = iaasToActiveInstanceCountMap.get(iaasType);
+		}
+		iaasToActiveInstanceCountMap.put(iaasType, currentCount+count);
+	}
+	
+	public int getActiveInstanceCount(String iaasType) {
+		Integer count = iaasToActiveInstanceCountMap.get(iaasType);
+		return count == null ? 0 : count;
 	}
 
 //	public void addCartridges(List<Cartridge> newCartridges) {

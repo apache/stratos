@@ -44,8 +44,6 @@ public class IaasContext implements Serializable{
 	
 	private List<String> toBeRemovedNodeIds;
 	
-	private int currentInstanceCount = 0;
-	
 	public IaasContext(String iaasType) {
 		this.type = iaasType;
 		nodeToPublicIp = new HashMap<String, String>();
@@ -153,15 +151,4 @@ public class IaasContext implements Serializable{
         this.type = type;
     }
 
-	public int getCurrentInstanceCount() {
-	    return currentInstanceCount;
-    }
-
-	public void incrementCurrentInstanceCountByOne() {
-	    this.currentInstanceCount += 1;
-    }
-	
-	public void decrementCurrentInstanceCountByOne() {
-	    this.currentInstanceCount -= 1;
-    }
 }
