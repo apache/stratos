@@ -33,11 +33,8 @@ sleep 1;
 echo "Cleaning up databases... "
 mysqladmin -f -uroot -pg drop stratos_foundation
 mysqladmin -f -uroot -pg drop userstore
-mysqladmin -f -uroot -pg drop billing
-mysql -uroot -pg </opt/resources/stratosfoundation_schema.sql
+mysql -uroot -pg </opt/resources/stratos_mysql.sql
 mysql -uroot -pg </opt/resources/userstore.sql
-mysql -uroot -pg </opt/resources/metering_mysql.sql
-mysql -uroot -pg </opt/resources/billing-mysql.sql
 sleep 1;
 
 echo "Cleaning log files... "
@@ -46,7 +43,7 @@ rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/logs/*
 rm -rf /opt/apache-stratos-agent-3.0.0-SNAPSHOT/repository/logs/*
 rm -rf /opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/logs/*
 
-echo "Cleaning S2 Agent's registrants... "
+echo "Cleaning Cartridge Agent's registrants... "
 rm -rf /opt/apache-stratos-agent-3.0.0-SNAPSHOT/registrants/*
 
 echo "Removing zookeeper directory... "

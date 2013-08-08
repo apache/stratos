@@ -47,8 +47,20 @@
                 <exclude>**/org.wso2.carbon.roles.mgt.ui_4.1.0-SNAPSHOT.jar</exclude>
                 <exclude>**/org.wso2.carbon.roles.mgt.stub_4.1.0-SNAPSHOT.jar</exclude>
                <exclude>**/log4j.properties</exclude>
+		<exclude>**/repository/components/**</exclude>
             </excludes>
-        </fileSet>	
+        </fileSet>
+	<!-- Copying p2 profile and osgi bundles-->
+	<fileSet>
+	    <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/components</directory>
+	    <outputDirectory>${pom.artifactId}-${pom.version}/repository/components</outputDirectory>
+	    <excludes>
+	        <exclude>**/eclipse.ini</exclude>
+	        <exclude>**/*.lock</exclude>
+	        <exclude>**/.data</exclude>
+	        <exclude>**/.settings</exclude>
+	    </excludes>
+	</fileSet>
         <fileSet>
             <directory>target/shopping-cart-global-${shoppingcart.global.version}</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/samples/bin</outputDirectory>
@@ -137,13 +149,6 @@
             <includes>
                 <include>stratos-datasources.xml</include>
             </includes>
-        </fileSet>
-
-        <!-- copy documentation -->
-        <fileSet>
-            <directory>target/site</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/docs</outputDirectory>
-            <fileMode>755</fileMode>
         </fileSet>
 
         <!-- Copying themes, cloud icons-->
@@ -369,18 +374,6 @@
                 <include>org.apache.rampart:rampart:mar</include>
             </includes>
         </dependencySet>
-	<dependencySet>
-            <outputDirectory>${pom.artifactId}-${pom.version}/client-lib</outputDirectory>
-            <includes>
-                <include>org.wso2.andes:andes-client:jar</include>
-                <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
-                <include>org.wso2.carbon:org.wso2.carbon.event.client.stub:jar</include>
-                <include>org.wso2.carbon:org.wso2.carbon.event.client:jar</include>
-		<include>slf4j.wso2:slf4j:jar</include>
-                <include>log4j:log4j:jar</include>
-            </includes>
-        </dependencySet>
-	
 	<!--<dependencySet>
 		<outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps</outputDirectory>
 		<includes>

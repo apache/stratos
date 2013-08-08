@@ -73,14 +73,17 @@ public class UsagePlanClient {
     }
 
     public String getUsagePlanName(String tenantDomain) throws Exception{
-        Subscription subscription;
+        //Subscription subscription;
         try {
-            subscription=stub.getActiveSubscriptionOfCustomerByTenant();
-            if(subscription!=null){
-                return subscription.getSubscriptionPlan();
-            } else {
+        	// This section get commented because billing component is removed. In account_mgt jsp file get usage plan functionality removed.
+        	// If rewrite that functionality please uncomment below code lines.
+            
+        	//subscription=stub.getActiveSubscriptionOfCustomerByTenant();
+            //if(subscription!=null){
+            //    return subscription.getSubscriptionPlan();
+            //} else {
                 return "";
-            }
+            //}
         } catch (Exception e) {
             String msg = "Error occurred while getting the usage plan for tenant: " + tenantDomain;
             log.error(msg, e);

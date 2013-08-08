@@ -157,13 +157,7 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
-        <file>
-            <source>../../docs/xdoc/release-notes.xml</source>
-            <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
-            <destName>release-notes.html</destName>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
+	        <file>
             <source>target/wso2carbon-core-${carbon.version}/bin/version.txt</source>
             <outputDirectory>apache-stratos-agent-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>

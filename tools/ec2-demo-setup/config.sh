@@ -153,36 +153,6 @@ sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/tomcat.xml.tmp
 mv $TEMP_CONFIG_DIR/tomcat.xml.tmp $CARTRIDGE_DEFINITIONS/tomcat.xml
 chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/tomcat.xml
 
-cp $TEMP_CONFIG_DIR/as_multitenant_cartridge.xml $TEMP_CONFIG_DIR/as_multitenant_cartridge.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/as_multitenant_cartridge.xml.tmp
-mv $TEMP_CONFIG_DIR/as_multitenant_cartridge.xml.tmp $CARTRIDGE_DEFINITIONS/as_multitenant_cartridge.xml
-chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/as_multitenant_cartridge.xml
-
-cp $TEMP_CONFIG_DIR/as_privatejet_cartridge.xml $TEMP_CONFIG_DIR/as_privatejet_cartridge.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/as_privatejet_cartridge.xml.tmp
-mv $TEMP_CONFIG_DIR/as_privatejet_cartridge.xml.tmp $CARTRIDGE_DEFINITIONS/as_privatejet_cartridge.xml
-chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/as_privatejet_cartridge.xml
-
-cp $TEMP_CONFIG_DIR/esb_multitenant_cartridge.xml $TEMP_CONFIG_DIR/esb_multitenant_cartridge.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/esb_multitenant_cartridge.xml.tmp
-mv $TEMP_CONFIG_DIR/esb_multitenant_cartridge.xml.tmp $CARTRIDGE_DEFINITIONS/esb_multitenant_cartridge.xml.back
-chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/esb_multitenant_cartridge.xml.back
-
-cp $TEMP_CONFIG_DIR/esb_privatejet_cartridge.xml $TEMP_CONFIG_DIR/esb_privatejet_cartridge.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/esb_privatejet_cartridge.xml.tmp
-mv $TEMP_CONFIG_DIR/esb_privatejet_cartridge.xml.tmp $CARTRIDGE_DEFINITIONS/esb_privatejet_cartridge.xml.back
-chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/esb_privatejet_cartridge.xml.back
-
-cp $TEMP_CONFIG_DIR/bps_multitenant_cartridge.xml $TEMP_CONFIG_DIR/bps_multitenant_cartridge.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/bps_multitenant_cartridge.xml.tmp
-mv $TEMP_CONFIG_DIR/bps_multitenant_cartridge.xml.tmp $CARTRIDGE_DEFINITIONS/bps_multitenant_cartridge.xml.back
-chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/bps_multitenant_cartridge.xml.back
-
-cp $TEMP_CONFIG_DIR/bps_privatejet_cartridge.xml $TEMP_CONFIG_DIR/bps_privatejet_cartridge.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/bps_privatejet_cartridge.xml.tmp
-mv $TEMP_CONFIG_DIR/bps_privatejet_cartridge.xml.tmp $CARTRIDGE_DEFINITIONS/bps_privatejet_cartridge.xml.back
-chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/bps_privatejet_cartridge.xml.back
-
 cp $TEMP_CONFIG_DIR/hosts $TEMP_CONFIG_DIR/hosts.tmp
 echo "$ip   s2demo.s2.apache.org puppetmaster" >> $TEMP_CONFIG_DIR/hosts.tmp
 echo "$ip   cc.apache.org" >> $TEMP_CONFIG_DIR/hosts.tmp
@@ -191,25 +161,13 @@ echo "$ip   sc.apache.org" >> $TEMP_CONFIG_DIR/hosts.tmp
 
 mv $TEMP_CONFIG_DIR/hosts.tmp /etc/hosts
 
-cp $TEMP_CONFIG_DIR/hosts.erb $TEMP_CONFIG_DIR/hosts.erb.tmp
 cp $TEMP_CONFIG_DIR/cartridge-config.properties $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
 cp $TEMP_CONFIG_DIR/agent.properties $TEMP_CONFIG_DIR/agent.properties.tmp
-cp $TEMP_CONFIG_DIR/launch-params-as $TEMP_CONFIG_DIR/launch-params-as.tmp
-cp $TEMP_CONFIG_DIR/launch-params-esb $TEMP_CONFIG_DIR/launch-params-esb.tmp
-cp $TEMP_CONFIG_DIR/launch-params-bps $TEMP_CONFIG_DIR/launch-params-bps.tmp
 
 
-sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/hosts.erb.tmp
 sed -i "s/startos_ip/$ip/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
 sed -i "s@EC2KEYPATH@$EC2_KEY_PATH@g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
 sed -i "s/stratos_hostname/$stratos_hostname/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
-sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/agent.properties.tmp
-sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-as.tmp
-sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-esb.tmp
-sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/launch-params-bps.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/launch-params-as.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/launch-params-bps.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/launch-params-esb.tmp
 
 rm -rf $SERVICE_DEFINITIONS/*
 
@@ -217,77 +175,10 @@ cp $TEMP_CONFIG_DIR/stratosreponotifier.groovy $TEMP_CONFIG_DIR/stratosreponotif
 sed -i "s/stratos_hostname/$stratos_hostname/g" $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp
 mv $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp /opt/GitBlit/data/groovy/stratosreponotifier.groovy
 
-
-cp $TEMP_CONFIG_DIR/appserver_service.xml $TEMP_CONFIG_DIR/appserver_service.xml.tmp
-cp $TEMP_CONFIG_DIR/bps_service.xml $TEMP_CONFIG_DIR/bps_service.xml.tmp
-cp $TEMP_CONFIG_DIR/esb_service.xml $TEMP_CONFIG_DIR/esb_service.xml.tmp
-
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/appserver_service.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/bps_service.xml.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/esb_service.xml.tmp
-
-mv $TEMP_CONFIG_DIR/appserver_service.xml.tmp $SERVICE_DEFINITIONS/appserver_service.xml
-chown ubuntu:ubuntu $SERVICE_DEFINITIONS/appserver_service.xml
-
-mv $TEMP_CONFIG_DIR/bps_service.xml.tmp $SERVICE_DEFINITIONS/bps_service.xml.back
-chown ubuntu:ubuntu $SERVICE_DEFINITIONS/bps_service.xml.back
-
-mv $TEMP_CONFIG_DIR/esb_service.xml.tmp $SERVICE_DEFINITIONS/esb_service.xml.back
-chown ubuntu:ubuntu $SERVICE_DEFINITIONS/esb_service.xml.back
-
-cp $TEMP_CONFIG_DIR/nodes.pp $TEMP_CONFIG_DIR/nodes.pp.tmp
-sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/nodes.pp.tmp
-
-#make dirs if not exist
-dir=$PAYLOADS
-if [ ! -d "$dir" ]; then
-mkdir $dir
-fi
-
-dir=$PAYLOADS/as
-if [ ! -d "$dir" ]; then
-mkdir $dir
-fi
-
-dir=$PAYLOADS/bps
-if [ ! -d "$dir" ]; then
-mkdir $dir
-fi
-
-dir=$PAYLOADS/esb
-if [ ! -d "$dir" ]; then
-mkdir $dir
-fi
-
-mv $TEMP_CONFIG_DIR/hosts.erb.tmp /mnt/puppet/stratos2/templates/hosts.erb
 mv $TEMP_CONFIG_DIR/cartridge-config.properties.tmp /opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/conf/cartridge-config.properties
 chown ubuntu:ubuntu /opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/conf/cartridge-config.properties
 mv $TEMP_CONFIG_DIR/agent.properties.tmp /opt/apache-stratos-agent-3.0.0-SNAPSHOT/repository/conf/agent.properties
 chown ubuntu:ubuntu /opt/apache-stratos-agent-3.0.0-SNAPSHOT/repository/conf/agent.properties
-
-mv $TEMP_CONFIG_DIR/launch-params-as.tmp $PAYLOADS/as/launch-params
-chown ubuntu:ubuntu $PAYLOADS/as/launch-params
-mv $TEMP_CONFIG_DIR/launch-params-esb.tmp $PAYLOADS/esb/launch-params
-chown ubuntu:ubuntu $PAYLOADS/esb/launch-params
-mv $TEMP_CONFIG_DIR/launch-params-bps.tmp $PAYLOADS/bps/launch-params
-chown ubuntu:ubuntu $PAYLOADS/bps/launch-params
-
-mv $TEMP_CONFIG_DIR/nodes.pp.tmp /mnt/puppet/stratos2/manifests/nodes.pp
-
-echo "Creating payload zip files.." >> $LOG
-cd $PAYLOADS/as
-zip -r as-default.zip launch-params
-chown ubuntu:ubuntu as-default.zip
-
-cd $PAYLOADS/esb
-zip -r esb-default.zip launch-params
-chown ubuntu:ubuntu esb-default.zip
-
-cd $PAYLOADS/bps
-zip -r bps-default.zip launch-params
-chown ubuntu:ubuntu bps-default.zip
-
-echo "Payloads created .. Done" >> $LOG
 
 echo "Setting up domain in features dashboard" >> $LOG
 cp $TEMP_CONFIG_DIR/features-dashboard.xml $TEMP_CONFIG_DIR/features-dashboard.xml.tmp
