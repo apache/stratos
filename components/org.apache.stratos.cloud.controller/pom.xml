@@ -93,7 +93,6 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.cloud.controller.interfaces.*,
-
                             org.apache.stratos.cloud.controller.publisher.*,
                             org.apache.stratos.cloud.controller.topic.*,
                             org.apache.stratos.cloud.controller.iaases.*,

@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
+import org.apache.stratos.cloud.controller.util.TopologyConfig;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -86,6 +87,7 @@ public class FasterLookUpDataHolder implements Serializable{
 	private String serializationDir;
 	private boolean enableBAMDataPublisher;
 	private boolean enableTopologySync;
+	private TopologyConfig topologyConfig;
 	private String bamUsername = CloudControllerConstants.DEFAULT_BAM_SERVER_USER_NAME;
 	private String bamPassword = CloudControllerConstants.DEFAULT_BAM_SERVER_PASSWORD;
 	private String dataPublisherCron = CloudControllerConstants.PUB_CRON_EXPRESSION;
@@ -102,12 +104,8 @@ public class FasterLookUpDataHolder implements Serializable{
 	private String streamId;
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
-	private String topologySynchronizerCron = CloudControllerConstants.TOPOLOGY_SYNC_CRON;
 
 	private BlockingQueue<List<ServiceContext>> sharedTopologyDiffQueue = new LinkedBlockingQueue<List<ServiceContext>>();
-
-
-	private String mbServerUrl = CloudControllerConstants.MB_SERVER_URL;
 
 	public static FasterLookUpDataHolder getInstance() {
 
@@ -391,22 +389,6 @@ public class FasterLookUpDataHolder implements Serializable{
 		this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
 	}
 
-	public String getTopologySynchronizerCron() {
-		return topologySynchronizerCron;
-	}
-
-	public void setTopologySynchronizerCron(String topologySynchronizerCron) {
-		this.topologySynchronizerCron = topologySynchronizerCron;
-	}
-
-	public void setMBServerUrl(String ip) {
-		this.mbServerUrl = ip;
-	}
-
-	public String getMBServerUrl() {
-		return mbServerUrl;
-	}
-
 	public boolean getEnableTopologySync() {
 		return enableTopologySync;
 	}
@@ -422,5 +404,13 @@ public class FasterLookUpDataHolder implements Serializable{
 	public void setTopologySyncRunning(boolean isTopologySyncRunning) {
 	    this.isTopologySyncRunning = isTopologySyncRunning;
     }
+
+	public TopologyConfig getTopologyConfig() {
+		return topologyConfig;
+	}
+
+	public void setTopologyConfig(TopologyConfig topologyConfig) {
+		this.topologyConfig = topologyConfig;
+	}
 
 }

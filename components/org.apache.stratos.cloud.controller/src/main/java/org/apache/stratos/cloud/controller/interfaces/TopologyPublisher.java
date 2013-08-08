@@ -16,38 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.interfaces;
+
 /**
- * Holds a property 
+ * All custom implementations of Topology Publisher should extend this abstract class.
  */
-public class Property {
-	
-	private String name;
-	private String value;
-	
-	public Property(){
-		
-	}
-	
-	public Property(String name, String value){
-		this.setName(name);
-		this.setValue(value);
-	}
-
-	public String getName() {
-	    return name;
-    }
-
-	public void setName(String name) {
-	    this.name = name;
-    }
-
-	public String getValue() {
-	    return value;
-    }
-
-	public void setValue(String value) {
-	    this.value = value;
-    }
-
+public abstract class TopologyPublisher {
+    
+    /**
+     * This operation will be called once in order to initialize this publisher.
+     */
+    public abstract void init();
+    
+    /**
+     * When a message is ready to be published to a certain topic, this operation will be called.
+     * @param topicName name of the topic to be published.
+     * @param message message to be published.
+     */
+    public abstract void publish(String topicName, String message);
+    
+    /**
+     * Cron expression which explains the frequency that the topology publishing happens.
+     * @return cron expression
+     */
+    public abstract String getCron();
+    
 }

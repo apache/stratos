@@ -3,6 +3,7 @@ package org.apache.stratos.cloud.controller.internal;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
+import org.apache.stratos.cloud.controller.interfaces.TopologyPublisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
@@ -10,7 +11,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.apache.stratos.cloud.controller.topic.ConfigurationPublisher;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.DeclarativeServiceReferenceHolder;
 
 /**
@@ -32,10 +33,14 @@ public class CloudControllerDSComponent {
 
     protected void activate(ComponentContext context) {
         try {
-        	if (DeclarativeServiceReferenceHolder.getInstance().getConfigPub() == null) {
-        		DeclarativeServiceReferenceHolder.getInstance()
-        		.setConfigPub(new ConfigurationPublisher());
-        	}
+			if (DeclarativeServiceReferenceHolder.getInstance().getConfigPub() == null) {
+				DeclarativeServiceReferenceHolder.getInstance().setConfigPub(
+						(TopologyPublisher) Class.forName(
+								FasterLookUpDataHolder.getInstance()
+										.getTopologyConfig().getClassName())
+								.newInstance());
+				DeclarativeServiceReferenceHolder.getInstance().getConfigPub().init();
+			}
             
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(),

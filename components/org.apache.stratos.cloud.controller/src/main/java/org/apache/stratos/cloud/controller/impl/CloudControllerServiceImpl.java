@@ -123,7 +123,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
 
 				TriggerInfo triggerInfo = new TriggerInfo(
-						dataHolder.getTopologySynchronizerCron());
+						DeclarativeServiceReferenceHolder.getInstance().getConfigPub().getCron());
 				taskInfo = new TaskInfo(
 						CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME,
 						TopologySynchronizerTask.class.getName(),

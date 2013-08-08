@@ -41,9 +41,10 @@
 	</dataPublisher>
 	
 	<topologySync enable="true">
-		<!-- MB server info -->
-		<mbServerUrl>localhost:5672</mbServerUrl>
-		<cron>1 * * * * ? *</cron>
+		<!-- properties related to topology syncher -->
+		<property name="className" value="org.apache.stratos.cloud.controller.ABC"/>
+		<property name="mbServerUrl" value="localhost:5674"/>
+		<property name="cron" value="1 * * * * ? *"/>
 	</topologySync>
 	
 	<!-- Specify the properties that are common to an IaaS here. This element 

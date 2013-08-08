@@ -42,16 +42,17 @@ import org.apache.axiom.om.impl.dom.DOOMAbstractFactory;
 import org.apache.axiom.om.impl.dom.ElementImpl;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.AppType;
 import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.PortMapping;
+import org.apache.stratos.cloud.controller.util.TopologyConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jaxen.JaxenException;
 import org.w3c.dom.Element;
-import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
@@ -329,7 +330,7 @@ public class AxiomXpathParser {
 
 		return null;
 	}
-
+	
 	/**
 	 * 
 	 * @param xpath
@@ -857,10 +858,10 @@ public class AxiomXpathParser {
 
 	}
 
-	private void loadProperties(final OMElement iaasElt, final Map<String, String> propertyMap) {
+	private void loadProperties(final OMElement elt, final Map<String, String> propertyMap) {
 
 		Iterator<?> it =
-		                 iaasElt.getChildrenWithName(new QName(CloudControllerConstants.PROPERTY_ELEMENT));
+		                 elt.getChildrenWithName(new QName(CloudControllerConstants.PROPERTY_ELEMENT));
 
 		while (it.hasNext()) {
 			OMElement prop = (OMElement) it.next();
@@ -1207,26 +1208,17 @@ public class AxiomXpathParser {
 		                                                                            CloudControllerConstants.ENABLE_ATTR)));
 
 		FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+		
 		dataHolder.setEnableTopologySync(isEnable);
 
 		if (isEnable) {
-			// get MB server info
-			OMElement childElement =
-			                         getFirstChildElement(element,
-			                                              CloudControllerConstants.MB_SERVER_ELEMENT);
+			TopologyConfig topologyConfig = new TopologyConfig();
+			// load properties
+			loadProperties(element, topologyConfig.getProperties());
 
-			if (childElement != null) {
-				// set MB server IP
-				dataHolder.setMBServerUrl(childElement.getText());
-			}
-
-			// set cron
-			childElement = getFirstChildElement(element, CloudControllerConstants.CRON_ELEMENT);
-			if (childElement != null) {
-				dataHolder.setTopologySynchronizerCron(childElement.getText());
-			}
-
+			dataHolder.setTopologyConfig(topologyConfig);
 		}
+		
 
 	}
 
