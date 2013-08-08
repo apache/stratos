@@ -25,7 +25,7 @@
         <description>
             Admin service for ADC activities
         </description>
-        <parameter name="ServiceClass">org.wso2.carbon.cartridge.agent.service.CartridgeAgentService
+        <parameter name="ServiceClass">org.apache.stratos.cartridge.agent.service.CartridgeAgentService
         </parameter>
         <parameter name="enableMTOM">true</parameter>
         <parameter name="adminService" locked="true">false</parameter>
