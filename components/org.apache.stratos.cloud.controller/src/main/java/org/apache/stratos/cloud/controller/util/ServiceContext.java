@@ -134,15 +134,6 @@ public class ServiceContext implements Serializable{
 	public void setIaasContextMap(Map<String, IaasContext> map){
 		iaasCtxts = map;
 	}
-	
-//	public byte[] getPayload() {
-//    	return payload;
-//    }
-//
-//	public void setPayload(byte[] payload) {
-//    	this.payload = payload;
-//    }
-
 
 	public String getPayloadFile() {
 	    return payloadFilePath;

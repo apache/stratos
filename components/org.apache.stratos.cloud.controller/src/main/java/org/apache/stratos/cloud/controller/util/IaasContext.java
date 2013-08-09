@@ -38,8 +38,16 @@ public class IaasContext implements Serializable{
 	
 	private List<String> nodeIds;
 	
+	/**
+	 * Key - node id
+	 * Value - public ip
+	 */
 	private Map<String, String> nodeToPublicIp;
 	
+	/**
+	 * Key - node id
+	 * Value - NodeMetadata object which has information on this node.
+	 */
 	private transient Map<String, NodeMetadata> nodes;
 	
 	private List<String> toBeRemovedNodeIds;
