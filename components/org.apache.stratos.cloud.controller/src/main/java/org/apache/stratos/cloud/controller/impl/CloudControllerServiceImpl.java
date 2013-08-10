@@ -383,7 +383,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 							.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
 
 					// acquire the lock
-					lock.tryLock();
+					lock.lock();
 
 					try {
 						// reset ip
