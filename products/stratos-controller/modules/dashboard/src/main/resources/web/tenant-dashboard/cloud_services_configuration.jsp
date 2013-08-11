@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 --%>
-<%@ page import="org.wso2.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
+<%@ page import="org.apache.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
 <%@ page import="org.apache.stratos.manager.dashboard.stub.xsd.CloudService" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
@@ -26,7 +26,7 @@
 <%@ page import="org.apache.stratos.common.constants.StratosConstants" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="org.wso2.stratos.manager.dashboard.ui.utils.Util" %>
+<%@ page import="org.apache.stratos.manager.dashboard.ui.utils.Util" %>
 <%@ page import="org.wso2.carbon.utils.multitenancy.MultitenantConstants" %>
 
 
@@ -57,7 +57,7 @@
 <fmt:bundle basename="org.apache.stratos.manager.dashboard.ui.i18n.Resources">
 <carbon:jsi18n
         resourceBundle="org.apache.stratos.manager.dashboard.ui.i18n.JSResources"
-        request="<%=request%>" namespace="org.wso2.stratos.manager.dashboard.ui"/>
+        request="<%=request%>" namespace="org.apache.stratos.manager.dashboard.ui"/>
 
 <div id="middle">
 <h2><fmt:message key="activate.your.cloud.services"/></h2>

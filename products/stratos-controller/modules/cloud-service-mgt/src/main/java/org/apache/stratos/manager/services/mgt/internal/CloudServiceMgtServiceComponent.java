@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 
 /**
- * @scr.component name="org.wso2.stratos.manager.services.mgt"
+ * @scr.component name="org.apache.stratos.manager.services.mgt"
  * immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"

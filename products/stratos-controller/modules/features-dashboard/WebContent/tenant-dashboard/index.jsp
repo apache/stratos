@@ -16,18 +16,18 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-<%@ page import="org.wso2.stratos.manager.feature.dashbord.ui.beans.Data"%>
-<%@ page import="org.wso2.stratos.manager.feature.dashbord.ui.beans.Service"%>
-<%@ page import="org.wso2.stratos.manager.feature.dashbord.ui.beans.Link"%>
-<%@ page import="org.wso2.stratos.manager.feature.dashbord.ui.beans.Story"%>
-<%@ page import="org.wso2.stratos.manager.feature.dashbord.ui.utils.Utils"%>
+<%@ page import="org.apache.stratos.manager.feature.dashbord.ui.beans.Data"%>
+<%@ page import="org.apache.stratos.manager.feature.dashbord.ui.beans.Service"%>
+<%@ page import="org.apache.stratos.manager.feature.dashbord.ui.beans.Link"%>
+<%@ page import="org.apache.stratos.manager.feature.dashbord.ui.beans.Story"%>
+<%@ page import="org.apache.stratos.manager.feature.dashbord.ui.utils.Utils"%>
 
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Map"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<jsp:useBean id="serviceData" class="org.wso2.stratos.manager.feature.dashbord.ui.beans.Data"
+<jsp:useBean id="serviceData" class="org.apache.stratos.manager.feature.dashbord.ui.beans.Data"
              scope="session"></jsp:useBean>
 <%
 	serviceData = Utils.pupulateDashboardFeatures();
