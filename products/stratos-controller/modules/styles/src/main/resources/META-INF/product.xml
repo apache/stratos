@@ -18,10 +18,10 @@
   -->
 <product xmlns="http://products.wso2.org/carbon">
     <properties>
-       <property name="userforum">http://stackoverflow.com/questions/tagged/wso2</property>
-       <property name="userguide">http://docs.wso2.org/stratos</property>
-       <property name="mailinglist">http://wso2.org/mail</property>
-       <property name="issuetracker">https://wso2.org/jira/browse/SPI</property>
-       <property name="webAdminConsoleTitle">WSO2 Stratos Controller (WSO2 SC)</property>
+       <property name="userforum">http://stratos.incubator.apache.org/community/mailing-lists.html</property>
+       <property name="userguide">http://stratos.incubator.apache.org/index.html</property>
+       <property name="mailinglist">http://stratos.incubator.apache.org/community/mailing-lists.html</property>
+       <property name="issuetracker">https://issues.apache.org/jira/browse/STRATOS</property>
+       <property name="webAdminConsoleTitle">Apache Stratos Controller</property>
     </properties>
 </product>
