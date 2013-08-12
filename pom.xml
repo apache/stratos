@@ -23,15 +23,61 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>13</version>
+    </parent>
+
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
     <version>3.0.0-SNAPSHOT</version>
-    <name>Apache Stratos - Parent Pom</name>
-    <description>Apache Stratos Parent pom hold the properties, plugins which are required to build stratos components,
-        stratos features and products
-    </description>
-    <url>http://apache.org</url>
+    <name>Apache Stratos (incubating) Project</name>
+    <description>Apache Stratos (Incubating) is an open source polyglot Platform as a Service (PaaS) framework</description>
+    <url>http://stratos.incubator.apache.org</url>
+    <inceptionYear>2012</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+    </organization>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://issues.apache.org/jira/browse/STRATOS</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>Developer List</name>
+            <subscribe>dev-subscribe@stratos.incubator.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@stratos.incubator.apache.org</unsubscribe>
+            <post>dev@stratos.incubator.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/incubator-stratos-dev/</archive>
+        </mailingList>
+        <mailingList>
+            <name>Commits List</name>
+            <subscribe>commits-subscribe@stratos.incubator.apache.org</subscribe>
+            <unsubscribe>commits-unsubscribe@stratos.incubator.apache.org</unsubscribe>
+            <archive>http://mail-archives.apache.org/mod_mbox/incubator-stratos-commits/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-stratos.git</connection>
+        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-stratos.git</developerConnection>
+        <url>https://git-wip-us.apache.org/repos/asf?p=incubator-stratos.git</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <modules>
         <module>service-stubs</module>
