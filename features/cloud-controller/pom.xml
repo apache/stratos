@@ -39,9 +39,5 @@
         <module>org.apache.stratos.cloud.controller.feature</module>
     </modules>
 
-    <properties>
-        <wso2carbon.version.cc.mgt>2.1.1</wso2carbon.version.cc.mgt>
-    </properties>
-
 </project>
 
