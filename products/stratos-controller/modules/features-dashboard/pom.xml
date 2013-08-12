@@ -40,12 +40,6 @@
     <properties>
         <CApp.type>web/application</CApp.type>
     </properties>
-    <repositories>
-        <repository>
-            <id>wso2-maven2-repository-1</id>
-            <url>http://dist.wso2.org/maven2</url>
-        </repository>
-    </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>wso2-maven2-repository-1</id>

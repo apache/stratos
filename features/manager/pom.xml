@@ -62,15 +62,6 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <scm>
-        <connection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </connection>
-        <developerConnection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </developerConnection>
-    </scm>
-    
     <properties>
         <stratos.version>2.1.0</stratos.version>
 	<synapse.version>2.1.0-wso2v6</synapse.version>

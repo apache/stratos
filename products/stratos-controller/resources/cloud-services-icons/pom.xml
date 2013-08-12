@@ -28,13 +28,6 @@
     <name>Apache Stratos - Manager Cloud Services Icons</name>
     <description>Apache Stratos - Manager Cloud Services Icons</description>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
     <build>
         <plugins>
             <plugin>
@@ -43,30 +36,24 @@
                 <version>2.1.1</version>
                 <executions>
                     <execution>
-				        <id>war</id>
-				        <phase>package</phase>
-				        <goals>
-					        <goal>war</goal>
-				        </goals>
+			<id>war</id>
+			<phase>package</phase>
+			<goals>
+		            <goal>war</goal>
+			</goals>
                     </execution>
                 </executions>
                 <configuration>
-				    <warName>cloud-services-icons</warName>
-			        <failOnMissingWebXml>false</failOnMissingWebXml>  
-			        <webResources>
-					    <resource>
-					        <directory>.</directory>
-				        </resource>
-		            </webResources>
+		    <warName>cloud-services-icons</warName>
+		    <failOnMissingWebXml>false</failOnMissingWebXml>  
+		    <webResources>
+		        <resource>
+	         	        <directory>.</directory>
+		        </resource>
+	            </webResources>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <organization>
-        <name>WSO2 Inc</name>
-        <url>http://wso2.com</url>
-    </organization>
-
 
 </project>

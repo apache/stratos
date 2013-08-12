@@ -33,13 +33,6 @@
     <url>http://apache.org</url>
     <description>Apache Stratos Controller Parent</description>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
     <modules>
         <module>modules/styles</module>
         <module>modules/cloud-service-mgt</module>
@@ -281,55 +274,6 @@
             </plugin>             
         </plugins>
     </build>
-    <scm>
-        <connection>scm:svn:https://wso2.org/repos/wso2/trunk/wsas/java</connection>
-        <developerConnection>scm:svn:https://wso2.org/repos/wso2/trunk/wsas/java
-        </developerConnection>
-    </scm>
-
-    <repositories>
-        <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
-        <!--moved to nexus
-
-        <repository>
-            <id>wso2-maven2-repository-snapshot</id>
-            <url>http://dist.wso2.org/snapshots/maven2</url>
-        </repository>
-        <repository>
-            <id>m2-snapshot-repository</id>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>wso2-maven2-repository</id>
-            <url>http://dist.wso2.org/maven2</url>
-        </repository>
-        <repository>
-            <id>tomcat-repository</id>
-            <url>http://tomcat.apache.org/dev/dist/m2-repository</url>
-        </repository>
-        <repository>
-            <id>ws-zones-repository</id>
-            <url>http://ws.zones.apache.org/repository2</url>
-        </repository>
-        <!&ndash;&ndash; Others are available from http://repo1.maven.org/maven2 &ndash;&ndash;>
-
-        -->
-    </repositories>
 
     <distributionManagement>
         <repository>
@@ -379,11 +323,6 @@
             </build>
         </profile>
     </profiles>
-
-    <organization>
-        <name>WSO2 Inc</name>
-        <url>http://wso2.com</url>
-    </organization>
 
     <properties>
         <rampart.mar.version>1.6.1-wso2v8</rampart.mar.version>

@@ -35,18 +35,6 @@
     <name>Apache Stratos - Features Aggregator Module</name>
     <url>http://apache.org</url>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
-    <organization>
-        <name>Apache</name>
-        <url>http://apache.org</url>
-    </organization>
-
     <modules>
 	<!-- LB -->
         <module>load-balancer</module>
@@ -77,15 +65,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <scm>
-        <connection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </connection>
-        <developerConnection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </developerConnection>
-    </scm>
 
     <properties>
         <wso2carbon.version>4.1.0</wso2carbon.version>

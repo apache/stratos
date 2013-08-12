@@ -35,36 +35,10 @@
     <url>http://wso2.org/projects/mb/java</url>
     <description>Apache Stratos Cloud Controller</description>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
     <modules>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
     </modules>
-
-    <scm>
-        <connection>scm:svn:http://wso2.org/repos/wso2/trunk/mb/java</connection>
-        <developerConnection>scm:svn:https://wso2.org/repos/wso2/trunk/mb/java</developerConnection>
-        <url>https://wso2.org/repos/wso2/trunk/mb/java/</url>
-    </scm>
-
-    <repositories>
-        <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
-    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
@@ -115,33 +89,6 @@
             </build>
         </profile>
     </profiles>
-
-    <organization>
-        <name>Apache</name>
-        <url>http://apache.org</url>
-    </organization>
-
-    <issueManagement>
-        <system>JIRA</system>
-        <url>https://issues.apache.org/jira/browse/stratos</url>
-    </issueManagement>
-
-    <mailingLists>
-        <mailingList>
-            <name>WSO2 Users' list</name>
-            <post>mailto:user@wso2.org</post>
-            <archive>http://wso2.markmail.org/search/+list:org%2Ewso2%2Euser</archive>
-            <subscribe>mailto:dev-request@wso2.org?subject=subscribe</subscribe>
-            <unsubscribe>mailto:dev-request@wso2.org?subject=unsubscribe</unsubscribe>
-        </mailingList>
-        <mailingList>
-            <name>WSO2 Developers' List</name>
-            <post>mailto:dev@wso2.org</post>
-            <archive>http://wso2.markmail.org/search/+list:org%2Ewso2%2Edev</archive>
-            <subscribe>mailto:user-request@wso2.org?subject=subscribe</subscribe>
-            <unsubscribe>mailto:user-request@wso2.org?subject=unsubscribe</unsubscribe>
-        </mailingList>
-    </mailingLists>
 
     <properties>
         <carbon.version>4.1.0</carbon.version>

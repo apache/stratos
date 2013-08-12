@@ -35,13 +35,6 @@
 	<name>Apache Stratos - Components - Parent Module</name>
 	<url>http://apache.org</url>
 
-	<licenses>
-	    <license>
-	        <name>Apache License Version 2.0</name>
-	        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-	    </license>
-	</licenses>
-
             <modules>
                 <!-- COMMON -->
                 <module>org.apache.stratos.common</module>
@@ -130,14 +123,6 @@
 	            </plugin>
 	        </plugins>
 	    </build>
-    <scm>
-        <connection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </connection>
-        <developerConnection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </developerConnection>
-    </scm>
 
     <dependencyManagement>
         <dependencies>
