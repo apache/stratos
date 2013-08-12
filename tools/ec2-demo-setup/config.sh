@@ -154,7 +154,7 @@ mv $TEMP_CONFIG_DIR/tomcat.xml.tmp $CARTRIDGE_DEFINITIONS/tomcat.xml
 chown ubuntu:ubuntu $CARTRIDGE_DEFINITIONS/tomcat.xml
 
 cp $TEMP_CONFIG_DIR/hosts $TEMP_CONFIG_DIR/hosts.tmp
-echo "$ip   s2demo.s2.apache.org puppetmaster" >> $TEMP_CONFIG_DIR/hosts.tmp
+echo "$ip   stratos.apache.com" >> $TEMP_CONFIG_DIR/hosts.tmp
 echo "$ip   cc.apache.org" >> $TEMP_CONFIG_DIR/hosts.tmp
 echo "$ip   elb.apache.org" >> $TEMP_CONFIG_DIR/hosts.tmp
 echo "$ip   sc.apache.org" >> $TEMP_CONFIG_DIR/hosts.tmp
@@ -165,9 +165,10 @@ cp $TEMP_CONFIG_DIR/cartridge-config.properties $TEMP_CONFIG_DIR/cartridge-confi
 cp $TEMP_CONFIG_DIR/agent.properties $TEMP_CONFIG_DIR/agent.properties.tmp
 
 
-sed -i "s/startos_ip/$ip/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
 sed -i "s@EC2KEYPATH@$EC2_KEY_PATH@g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
 sed -i "s/stratos_hostname/$stratos_hostname/g" $TEMP_CONFIG_DIR/cartridge-config.properties.tmp
+sed -i "s/stratos_ip/$ip/g" $TEMP_CONFIG_DIR/agent.properties.tmp
 
 rm -rf $SERVICE_DEFINITIONS/*
 
