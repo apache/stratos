@@ -32,7 +32,6 @@
     <groupId>org.apache.stratos.elb</groupId>
     <artifactId>elb-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-SNAPSHOT</version>
     <name>Apache Stratos - ELB - Aggregator Module</name>
     <url>http://apache.org</url>
     <description>Apache Stratos Elastic Load Balancer (ELB)</description>
