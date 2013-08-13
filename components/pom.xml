@@ -45,7 +45,6 @@
 		<!-- ADC -->
 		<module>org.apache.stratos.adc.topology.mgt</module>
 		<module>org.apache.stratos.adc.mgt</module>
-		<module>org.apache.stratos.adc.mgt.repository.synchronizer</module>
 		<module>org.apache.stratos.deployment</module>
 		<!-- CLI -->
 		<module>org.apache.stratos.cli</module>
@@ -105,10 +104,6 @@
 	                <artifactId>build-helper-maven-plugin</artifactId>
 	                <version>1.7</version>
 	            </plugin>
-	            <plugin>
-	               <groupId>org.apache.maven.plugins</groupId>
-	               <artifactId>maven-compiler-plugin</artifactId>
-                </plugin>
 	            <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-surefire-plugin</artifactId>
