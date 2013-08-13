@@ -521,8 +521,8 @@
                                     <classpath>
                                         <path refid="h2.classpath"/>
                                     </classpath>
-                                    <fileset file="../../billing-script/billing-h2.sql"/>
-                                    <fileset file="../../billing-script/metering_h2.sql"/>
+                                    <fileset file="../../dbscripts/billing-h2.sql"/>
+                                    <fileset file="../../dbscripts/metering_h2.sql"/>
                                 </sql>
                                 <echo
                                         message="##################### END ########################"/>
@@ -551,7 +551,7 @@
                                     <classpath>
                                         <path refid="h2.classpath"/>
                                     </classpath>
-                                    <fileset file="../../billing-script/s2_h2.sql"/>
+                                    <fileset file="../../dbscripts/s2_h2.sql"/>
                                 </sql>
                                 <echo
                                         message="##################### END ########################"/>

@@ -307,7 +307,7 @@
                    </includes>
                 </fileSet>
 		<fileSet>
-                   <directory>../../billing-script/</directory>
+                   <directory>../../dbscripts/</directory>
                    <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
                 </fileSet>
 		<fileSet>
