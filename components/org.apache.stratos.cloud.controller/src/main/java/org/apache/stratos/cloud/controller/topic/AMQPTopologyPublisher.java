@@ -31,15 +31,17 @@ import org.apache.stratos.cloud.controller.util.TopologyConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class WSO2MBTopologyPublisher extends TopologyPublisher {
+public class AMQPTopologyPublisher extends TopologyPublisher {
 	private TopicPublisher topicPublisher;
 	private TopicSession topicSession;
 	private TopicConnection topicConnection;
 	private TopicConnectionFactory topicConnectionFactory;
 	private String topologySynchronizerCron = CloudControllerConstants.TOPOLOGY_SYNC_CRON;
-	private String mbServerUrl = CloudControllerConstants.MB_SERVER_URL;
+	private String amqpConnectionUrl = CloudControllerConstants.AMQP_CONNECTION_URL;
+	private String amqpInitialContextFactory = CloudControllerConstants.AMQP_INITIAL_CONTEXT_FACTORY;
+	private String amqpTopicConnectionFactory = CloudControllerConstants.AMQP_TOPIC_CONNECTION_FACTORY;
 	private static final Log log = LogFactory
-			.getLog(WSO2MBTopologyPublisher.class);
+			.getLog(AMQPTopologyPublisher.class);
 
 	public void publish(String topicName, String message) {
 		try {
@@ -68,28 +70,37 @@ public class WSO2MBTopologyPublisher extends TopologyPublisher {
 	public void init() {
 		TopologyConfig config = FasterLookUpDataHolder.getInstance()
 				.getTopologyConfig();
-		String cron = config.getProperty(CloudControllerConstants.CRON_ELEMENT);
+		String cron = config.getProperty(CloudControllerConstants.CRON_PROPERTY);
 		topologySynchronizerCron = cron == null ? topologySynchronizerCron
 				: cron;
 
 		String url = config
-				.getProperty(CloudControllerConstants.MB_SERVER_ELEMENT);
-		mbServerUrl = url == null ? mbServerUrl : url;
+				.getProperty(CloudControllerConstants.AMQP_CONNECTION_URL_PROPERTY);
+		amqpConnectionUrl = url == null ? amqpConnectionUrl : url;
 
 		Properties initialContextProperties = new Properties();
-		initialContextProperties.put("java.naming.factory.initial",
-				"org.wso2.andes.jndi.PropertiesFileInitialContextFactory");
 
-		String connectionString = "amqp://admin:admin@clientID/carbon?brokerlist='tcp://"
-				+ mbServerUrl + "'";
+		String initialContextFactory = config
+				.getProperty(CloudControllerConstants.AMQP_INITIAL_CONTEXT_FACTORY_PROPERTY);
+		amqpInitialContextFactory = initialContextFactory == null ? amqpInitialContextFactory
+				: initialContextFactory;
+
+		initialContextProperties.put("java.naming.factory.initial",
+				amqpInitialContextFactory);
+
 		initialContextProperties.put("connectionfactory.qpidConnectionfactory",
-				connectionString);
+				amqpConnectionUrl);
+
+		String connectionFactory = config
+				.getProperty(CloudControllerConstants.AMQP_TOPIC_CONNECTION_FACTORY_PROPERTY);
+		amqpTopicConnectionFactory = connectionFactory == null ? amqpTopicConnectionFactory
+				: connectionFactory;
 
 		try {
 			InitialContext initialContext = new InitialContext(
 					initialContextProperties);
 			topicConnectionFactory = (TopicConnectionFactory) initialContext
-					.lookup("qpidConnectionfactory");
+					.lookup(amqpTopicConnectionFactory);
 
 			// topicConnection.stop();
 			// topicConnection.close();

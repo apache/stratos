@@ -76,7 +76,6 @@ public final class CloudControllerConstants {
     public static final String TOPOLOGY_SYNC_ELEMENT = "topologySync";
     public static final String ENABLE_ATTR = "enable";
     public static final String BAM_SERVER_ELEMENT = "bamServer";
-    public static final String MB_SERVER_ELEMENT = "mbServerUrl";
     public static final String CRON_ELEMENT = "cron";
     public static final String BAM_SERVER_ADMIN_USERNAME_ELEMENT = "adminUserName";
     public static final String BAM_SERVER_ADMIN_PASSWORD_ELEMENT = "adminPassword";
@@ -88,6 +87,7 @@ public final class CloudControllerConstants {
     public static final String PASSWORD_ELEMENT = "password";
     public static final String CLOUD_CONTROLLER_EVENT_STREAM = "org.wso2.stratos.cloud.controller";
     public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM.replaceAll("[/.]", "_");
+    
     
     /**
      * column names
@@ -123,6 +123,11 @@ public final class CloudControllerConstants {
     public static final String TENANT_ID_PROPERTY = "tenant_id";
     public static final String ALIAS_PROPERTY = "alias";
     public static final String AUTO_ASSIGN_IP_PROPERTY = "autoAssignIp";
+    public static final String CRON_PROPERTY = "cron";
+    public static final String AMQP_CONNECTION_URL_PROPERTY = "amqpConnectionUrl";
+    public static final String AMQP_INITIAL_CONTEXT_FACTORY_PROPERTY = "amqpInitialContextFactory";
+    public static final String AMQP_TOPIC_CONNECTION_FACTORY_PROPERTY = "amqpTopicConnectionFactory";
+    
     
     /**
      * XPath expressions
@@ -206,7 +211,9 @@ public final class CloudControllerConstants {
 	public static final String TOPOLOGY_SYNC_CRON = "1 * * * * ? *";
 	public static final String TOPOLOGY_SYNC_TASK_NAME = "TopologySynchronizerTask";
 	public static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK";
-	public static final String MB_SERVER_URL = "localhost:5672";
+	public static final String AMQP_CONNECTION_URL = "amqp://admin:admin@clientID/carbon?brokerlist='tcp://localhost:5672'";
+	public static final String AMQP_INITIAL_CONTEXT_FACTORY = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
+	public static final String AMQP_TOPIC_CONNECTION_FACTORY = "qpidConnectionfactory";
     
 	/**
 	 * Persistence
