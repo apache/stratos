@@ -40,17 +40,17 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-           <groupId>org.jclouds</groupId>
+           <groupId>org.apache.jclouds</groupId>
            <artifactId>jclouds-core</artifactId>
            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-           <groupId>org.jclouds</groupId>
+           <groupId>org.apache.jclouds</groupId>
            <artifactId>jclouds-compute</artifactId>
            <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.driver</groupId>
+           <groupId>org.apache.jclouds.driver</groupId>
            <artifactId>jclouds-bouncycastle</artifactId>
            <version>${jclouds.version}</version>
            <exclusions>
@@ -61,56 +61,57 @@
            </exclusions>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.driver</groupId>
+           <groupId>org.apache.jclouds.driver</groupId>
            <artifactId>jclouds-sshj</artifactId>
            <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.driver</groupId>
+           <groupId>org.apache.jclouds.driver</groupId>
            <artifactId>jclouds-log4j</artifactId>
            <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.driver</groupId>
+           <groupId>org.apache.jclouds.driver</groupId>
            <artifactId>jclouds-enterprise</artifactId>
            <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.api</groupId>
+           <groupId>org.apache.jclouds.api</groupId>
            <artifactId>ec2</artifactId>
-           <version>${jclouds.wso2.version}</version>
+           <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.provider</groupId>
+           <groupId>org.apache.jclouds.provider</groupId>
            <artifactId>aws-ec2</artifactId>
-           <version>${jclouds.wso2.version}</version>
+           <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>org.jclouds.api</groupId>
+           <groupId>org.apache.jclouds.api</groupId>
            <artifactId>openstack-nova</artifactId>
-           <version>${jclouds.wso2.version}</version>
+           <version>${jclouds.version}</version>
          </dependency>
          
          <dependency>
-           <groupId>org.jclouds.api</groupId>
+           <groupId>org.apache.jclouds.api</groupId>
            <artifactId>openstack-keystone</artifactId>
-           <version>${jclouds.wso2.version}</version>
+           <version>${jclouds.version}</version>
          </dependency>
 
          <dependency>
-          <groupId>org.jclouds</groupId>
+          <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-scriptbuilder</artifactId>
               <version>${jclouds.version}</version>
          </dependency>
          <dependency>
-           <groupId>com.google.guava.wso2</groupId>
-           <artifactId>guava</artifactId>
-           <version>${google.guava.wso2.version}</version>
+           <groupId>org.apache.jclouds.api</groupId>
+           <artifactId>sts</artifactId>
+           <version>${jclouds.version}</version>
          </dependency>
+
          <dependency>
-          <groupId>org.jclouds.common</groupId>
-            <artifactId>aws-common</artifactId>
-              <version>${jclouds.version}</version>
+           <groupId>com.google.guava</groupId>
+           <artifactId>guava</artifactId>
+           <version>14.0.1</version>
          </dependency>
          <dependency>
       	     <groupId>com.jamesmurty.utils.wso2</groupId>
@@ -118,9 +119,9 @@
              <version>0.4.wso2v1</version>
          </dependency>
         <dependency>
-            <groupId>org.jclouds.api</groupId>
+            <groupId>org.apache.jclouds.api</groupId>
             <artifactId>vcloud</artifactId>
-            <version>1.6.0-wso2v1</version>
+            <version>${jclouds.version}</version>
         </dependency>
          <dependency>
            <groupId>com.google.code.gson</groupId>
@@ -161,6 +162,11 @@
            <groupId>org.apache.stratos</groupId>
            <artifactId>org.apache.stratos.cartridge.messages</artifactId>
            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>javax.ws.rs</groupId>
+           <artifactId>jsr311-api</artifactId>
+           <version>1.1.1</version>
          </dependency>
     </dependencies>
 
@@ -215,43 +221,43 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-log4j:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-enterprise:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds:jclouds-core:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds:jclouds-compute:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds.api:ec2:${jclouds.wso2.version}</bundleDef>
-                                <bundleDef>org.jclouds.api:openstack-nova:${jclouds.wso2.version}</bundleDef>
-                                <bundleDef>org.jclouds.api:vcloud:1.6.0-wso2v1</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>
+                                <!--bundleDef>org.apache.jclouds.driver:jclouds-log4j:${jclouds.version}</bundleDef-->
+                                <bundleDef>org.apache.jclouds.driver:jclouds-enterprise:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds:jclouds-core:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds:jclouds-compute:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:ec2:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:openstack-nova:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:vcloud:${jclouds.version}</bundleDef>
                                 <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
-                                <bundleDef>org.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
-                                <bundleDef>org.jclouds.api:openstack-keystone:${jclouds.wso2.version}</bundleDef>
-                                <bundleDef>org.jclouds.provider:aws-ec2:${jclouds.wso2.version}</bundleDef>
-                                <bundleDef>com.google.guava.wso2:guava:${google.guava.wso2.version}</bundleDef>
-                                <bundleDef>org.jclouds.common:aws-common:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.provider:aws-ec2:${jclouds.version}</bundleDef>
+                                <bundleDef>com.google.guava:guava:14.0.1</bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
                                 <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
                                 <bundleDef>com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}</bundleDef>
                                 <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
-                                <bundleDef>org.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.shindig.wso2:shindig:1.1.0.wso2v6</bundleDef>
                                 <bundleDef>org.99soft.guice.wso2:rocoto:6.1.wso2v1</bundleDef>
                                 <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:1.45.wso2v1</bundleDef>
                                 <bundleDef>net.schmizz:sshj:0.8.0</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-joda:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-joda:${jclouds.version}</bundleDef>
                                 <bundleDef>com.jcraft.wso2:jzlib:1.0.7.wso2v1</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-netty:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-netty:${jclouds.version}</bundleDef>
                                 <bundleDef>io.netty:netty:3.3.0.Final</bundleDef>
                                 <bundleDef>commons-io.wso2:commons-io:2.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-api:1.6.4</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12:1.6.4</bundleDef>
-                                <bundleDef>org.jclouds.driver:jclouds-slf4j:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.driver:jclouds-slf4j:${jclouds.version}</bundleDef>
                                 <bundleDef>com.google.common.wso2:google-collect:${google.collect.osgi.version}</bundleDef>
                                 <bundleDef>jdom.wso2:jdom:1.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.json.wso2:json:1.0.0.wso2v1</bundleDef>
                                 <!--bundleDef>org.jaggeryjs:0.9.0.ALPHA2-wso2v2</bundleDef-->
-                                
+                                <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
+                                <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
@@ -267,7 +273,6 @@
             <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.1</version>
                 <executions>
                     <execution>
                         <id>clean resources</id>
@@ -285,9 +290,4 @@
             </plugin-->
         </plugins>
     </build>
-
-    <properties>
-        <jclouds.wso2.version>1.5.0-beta.5.wso2v1</jclouds.wso2.version>
-    </properties>
-
 </project>

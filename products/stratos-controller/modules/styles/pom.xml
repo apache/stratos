@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -27,22 +28,103 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>manager-styles-parent</artifactId>
-    <packaging>pom</packaging>
-    <name>Apache Stratos - Manager Styles Parent</name>
+    <artifactId>org.apache.stratos.manager.styles</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Stratos - Cloud Manager UI styles</name>
     <url>http://apache.org</url>
-    <description>Apache Manager Styles Parent</description>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Import-Package>
+                            org.wso2.carbon.ui,
+                            *;resolution:=optional
+                        </Import-Package>
+                        <Fragment-Host>org.wso2.carbon.ui</Fragment-Host>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>META-INF/product.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>META-INF/product.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
 
-    <modules>
-        <module>product</module>
-	<module>service</module>
-    </modules>
+     <dependencies>
+        
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ui</artifactId>
+            <version>4.1.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.main</artifactId>
+             <version>1.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+             <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.http.servlet</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.http.helper</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.jsp.jasper</artifactId>
+            <version>1.0.1.R33x_v20070816</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>javax.servlet.jsp</artifactId>
+            <version>2.0.0.v200706191603</version>
+        </dependency>
+    </dependencies>
+    <properties>
+         <wso2carbon.version>4.1.0</wso2carbon.version>
+    </properties>
 </project>

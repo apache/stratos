@@ -43,7 +43,6 @@
 	<topologySync enable="true">
 		<!-- properties related to topology syncher -->
 		<property name="className" value="org.apache.stratos.cloud.controller.ABC"/>
-		<property name="mbServerUrl" value="localhost:5674"/>
 		<property name="cron" value="1 * * * * ? *"/>
 	</topologySync>
 	

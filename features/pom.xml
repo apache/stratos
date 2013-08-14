@@ -35,18 +35,6 @@
     <name>Apache Stratos - Features Aggregator Module</name>
     <url>http://apache.org</url>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
-    <organization>
-        <name>Apache</name>
-        <url>http://apache.org</url>
-    </organization>
-
     <modules>
 	<!-- LB -->
         <module>load-balancer</module>
@@ -73,26 +61,15 @@
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-resources-plugin</artifactId>
-               <version>2.5</version>
             </plugin>
         </plugins>
     </build>
-
-    <scm>
-        <connection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </connection>
-        <developerConnection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </developerConnection>
-    </scm>
 
     <properties>
         <wso2carbon.version>4.1.0</wso2carbon.version>
 	<carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1>
 	<carbon.p2.plugin.version>1.5.2</carbon.p2.plugin.version>
 	<synapse.wso2.version>2.1.1-wso2v4</synapse.wso2.version>        
-	<jclouds.version>1.5.0-beta.5</jclouds.version>
 	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
 	<google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
 	<com.google.guice.assistedinject.wso2.version>3.0.wso2v1</com.google.guice.assistedinject.wso2.version>

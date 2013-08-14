@@ -30,8 +30,8 @@ public class TopologyConfig implements Serializable{
 	
 	private static final long serialVersionUID = 4435173744617096911L;
 	
-	// default implementation is WSO2MBTopologyPublisher
-	private String className = "org.apache.stratos.cloud.controller.topic.WSO2MBTopologyPublisher";
+	// default implementation is AMQPTopologyPublisher
+	private String className = "org.apache.stratos.cloud.controller.topic.AMQPTopologyPublisher";
 	
 	/**
      * Key - Value pair.

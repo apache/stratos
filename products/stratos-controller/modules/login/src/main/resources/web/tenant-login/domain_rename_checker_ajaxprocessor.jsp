@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-<%@ page import="org.wso2.stratos.gaas.login.ui.utils.TenantConfigUtil" %><%
+<%@ page import="org.apache.stratos.gaas.login.ui.utils.TenantConfigUtil" %><%
 /* this script is used to alter the old registrants to */
 String domain = request.getParameter("domain");
 

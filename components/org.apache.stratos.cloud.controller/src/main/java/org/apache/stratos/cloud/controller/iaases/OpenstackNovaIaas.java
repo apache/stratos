@@ -22,29 +22,27 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
-import org.jclouds.openstack.nova.v2_0.NovaAsyncClient;
-import org.jclouds.openstack.nova.v2_0.NovaClient;
+import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
-import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPClient;
-import org.jclouds.openstack.nova.v2_0.extensions.KeyPairClient;
-import org.jclouds.rest.InsufficientResourcesException;
-import org.jclouds.rest.RestContext;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
+import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import com.google.common.base.Predicate;
@@ -165,15 +163,11 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("unchecked")
-		RestContext<NovaClient, NovaAsyncClient> restContext = context
-				.unwrap(RestContext.class);
+		NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 
-		KeyPairClient api = restContext.getApi()
-				.getKeyPairExtensionForZone(region).get();
+		KeyPairApi api = novaApi.getKeyPairExtensionForZone(region).get();
 
-		KeyPair keyPair = api
-				.createKeyPairWithPublicKey(keyPairName, publicKey);
+		KeyPair keyPair = api.createWithPublicKey(keyPairName, publicKey);
 
 		if (keyPair != null) {
 
@@ -195,20 +189,17 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("unchecked")
-		RestContext<NovaClient, NovaAsyncClient> restContext = context
-				.unwrap(RestContext.class);
 
-		NovaClient novaClient = restContext.getApi();
+		NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPClient floatingIp = novaClient.getFloatingIPExtensionForZone(
+		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
 				region).get();
 
 		String ip = null;
 		// first try to find an unassigned IP.
 		ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
-				.filter(floatingIp.listFloatingIPs(),
+				.filter(floatingIp.list(),
 						new Predicate<FloatingIP>() {
 
 							@Override
@@ -228,15 +219,13 @@ public class OpenstackNovaIaas extends Iaas {
 
 		// if no unassigned IP is available, we'll try to allocate an IP.
 		if (ip == null || ip.isEmpty()) {
-
-			try {
-				ip = floatingIp.allocate().getIp();
-
-			} catch (InsufficientResourcesException e) {
-				String msg = "Failed to allocate an IP address. All IP addresses are in use.";
-				log.error(msg, e);
-				throw new CloudControllerException(msg, e);
+			FloatingIP allocatedFloatingIP = floatingIp.create();
+			if (allocatedFloatingIP == null) {
+				String msg = "Failed to allocate an IP address.";
+				log.error(msg);
+				throw new CloudControllerException(msg);
 			}
+			ip = allocatedFloatingIP.getIp();
 		}
 
 		// wait till the fixed IP address gets assigned - this is needed before
@@ -269,28 +258,25 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("unchecked")
-		RestContext<NovaClient, NovaAsyncClient> restContext = context
-				.unwrap(RestContext.class);
 
-		NovaClient novaClient = restContext.getApi();
+		NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPClient floatingIpClient = novaClient
+		FloatingIPApi floatingIPApi = novaApi
 				.getFloatingIPExtensionForZone(region).get();
 
-		for (FloatingIP floatingIP : floatingIpClient.listFloatingIPs()) {
+		for (FloatingIP floatingIP : floatingIPApi.list()) {
 			if (floatingIP.getIp().equals(ip)) {
-				floatingIpClient.deallocate(floatingIP.getId());
+				floatingIPApi.delete(floatingIP.getId());
 				break;
 			}
 		}
 
 	}
 
-	private boolean associateIp(FloatingIPClient client, String ip, String id) {
+	private boolean associateIp(FloatingIPApi api, String ip, String id) {
 		try {
-			client.addFloatingIPToServer(ip, id);
+			api.addToServer(ip, id);
 			return true;
 		} catch (RuntimeException ex) {
 			return false;

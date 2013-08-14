@@ -21,9 +21,16 @@ package org.apache.stratos.cloud.controller.iaases;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jclouds.aws.ec2.AWSEC2AsyncClient;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.jclouds.aws.ec2.AWSEC2ApiMetadata;
 import org.jclouds.aws.ec2.AWSEC2Client;
 import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.aws.ec2.domain.RegionNameAndPublicKeyMaterial;
@@ -35,13 +42,6 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
-import org.jclouds.rest.RestContext;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.interfaces.Iaas;
-import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import com.google.common.base.Predicate;
@@ -160,10 +160,7 @@ public class AWSEC2Iaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("unchecked")
-		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context
-				.unwrap(RestContext.class);
-		AWSEC2Client ec2Client = restContext.getApi();
+		AWSEC2Client ec2Client = context.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
 
 		ImportOrReturnExistingKeypair importer = new ImportOrReturnExistingKeypair(
 				ec2Client);
@@ -192,12 +189,9 @@ public class AWSEC2Iaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("unchecked")
-		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context
-				.unwrap(RestContext.class);
-		AWSEC2Client ec2Client = restContext.getApi();
+		AWSEC2Client ec2Client = context.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
+		
 		String ip = null;
 
 		// first try to find an unassigned IP.
@@ -284,10 +278,7 @@ public class AWSEC2Iaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("unchecked")
-		RestContext<AWSEC2Client, AWSEC2AsyncClient> restContext = context
-				.unwrap(RestContext.class);
-		AWSEC2Client ec2Client = restContext.getApi();
+		AWSEC2Client ec2Client = context.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
 		ec2Client.getElasticIPAddressServices().disassociateAddressInRegion(

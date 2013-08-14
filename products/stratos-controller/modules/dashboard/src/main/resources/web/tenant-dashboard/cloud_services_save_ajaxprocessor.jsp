@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-<%@ page import="org.wso2.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
+<%@ page import="org.apache.stratos.manager.dashboard.ui.clients.CloudManagerServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %><%
     String[] activeCloudServiceNames = request.getParameterValues("cloudServices");
 

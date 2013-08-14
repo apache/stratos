@@ -37,49 +37,11 @@
     <url>http://apache.org</url>
     <description>Apache Stratos Agent (S2agent)</description>
 
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
     <modules>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
         <!--<module>modules/integration</module>-->
     </modules>
-
-    <scm>
-        <connection>scm:svn:http://wso2.org/repos/wso2/trunk/carbon/products/lb</connection>
-        <developerConnection>scm:svn:https://wso2.org/repos/wso2/trunk/carbon/products/lb</developerConnection>
-        <url>https://wso2.org/repos/wso2/trunk/carbon/products/lb</url>
-    </scm>
-
-    <repositories>
-        <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
-        <!--moved to nexus
-
-        <repository>
-            <id>wso2-maven2-repository-snapshot</id>
-            <url>http://dist.wso2.org/snapshots/maven2</url>
-        </repository>
-        <repository>
-            <id>wso2-maven2-repository</id>
-            <url>http://dist.wso2.org/maven2</url>
-        </repository>
-
-        -->
-    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
@@ -114,7 +76,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.0-alpha-3</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -129,33 +90,6 @@
             </build>
         </profile>
     </profiles>
-
-    <organization>
-        <name>WSO2 Inc</name>
-        <url>http://wso2.com</url>
-    </organization>
-
-    <issueManagement>
-        <system>JIRA</system>
-        <url>http://wso2.org/jira/browse/LB</url>
-    </issueManagement>
-
-    <mailingLists>
-        <mailingList>
-            <name>WSO2 LB Users' list</name>
-            <post>mailto:lb-user@wso2.org</post>
-            <archive>http://wso2.org/mailarchive/lb-user/</archive>
-            <subscribe>mailto:lb-user-request@wso2.org?subject=subscribe</subscribe>
-            <unsubscribe>mailto:lb-user-request@wso2.org?subject=unsubscribe</unsubscribe>
-        </mailingList>
-        <mailingList>
-            <name>WSO2 LB/Carbon Developers' List</name>
-            <post>mailto:dev@wso2.org</post>
-            <archive>http://wso2.org/mailarchive/dev/</archive>
-            <subscribe>mailto:dev-request@wso2.org?subject=subscribe</subscribe>
-            <unsubscribe>mailto:dev-request@wso2.org?subject=unsubscribe</unsubscribe>
-        </mailingList>
-    </mailingLists>
 
     <dependencyManagement>
         <dependencies>

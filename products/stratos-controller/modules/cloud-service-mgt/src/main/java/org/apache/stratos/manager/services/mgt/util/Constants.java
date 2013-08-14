@@ -20,9 +20,9 @@ package org.apache.stratos.manager.services.mgt.util;
 
 public class Constants {
     public static final String CLOUD_SERVICE_INFO_STORE_PATH =
-            "/repository/components/org.wso2.stratos/cloud-manager/cloud-services";
+            "/repository/components/org.apache.stratos/cloud-manager/cloud-services";
     public static final String CLOUD_SERVICE_ICONS_STORE_PATH =
-            "/repository/components/org.wso2.stratos/cloud-manager/" +
+            "/repository/components/org.apache.stratos/cloud-manager/" +
                     "cloud-services-icons";
 
     public static final String CLOUD_SERVICE_IS_ACTIVE_PROP_KEY = "active";

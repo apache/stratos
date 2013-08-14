@@ -18,75 +18,75 @@
   -->
 <meteringConfig xmlns="http://wso2.com/carbon/multitenancy/metering/config">
     <tasks>
-        <task service="org.wso2.stratos.metering.agent.task.PerRegistryRequestTask">
+        <task service="org.apache.stratos.metering.agent.task.PerRegistryRequestTask">
             <preHandlers>
-                <handler service="org.wso2.stratos.metering.agent.handlers.ValidationInfoRetriever">
+                <handler service="org.apache.stratos.metering.agent.handlers.ValidationInfoRetriever">
                 </handler>
-                <handler service="org.wso2.stratos.metering.agent.handlers.RegistryActionValidator">
+                <handler service="org.apache.stratos.metering.agent.handlers.RegistryActionValidator">
                 </handler>
             </preHandlers>
             <postHandlers>
-                <handler service="org.wso2.stratos.metering.agent.handlers.RemoteTaskInvoker"
+                <handler service="org.apache.stratos.metering.agent.handlers.RemoteTaskInvoker"
                         async="true" frequency="1"><!-- trigger per each request-->
                     <parameter name="taskServiceUrl">https://localhost:9443/services/</parameter>
                     <parameter name="userName">admin</parameter>
                     <parameter name="password">admin</parameter>
-                    <parameter name="taskName">org.wso2.stratos.metering.manager.task.PerRegistryRequestRemoteTask</parameter>
+                    <parameter name="taskName">org.apache.stratos.metering.manager.task.PerRegistryRequestRemoteTask</parameter>
                 </handler>
             </postHandlers>
         </task>
-        <task service="org.wso2.stratos.metering.agent.task.PerUserAddRequestTask">
+        <task service="org.apache.stratos.metering.agent.task.PerUserAddRequestTask">
             <preHandlers>
-                <handler service="org.wso2.stratos.metering.agent.handlers.RemoteTaskInvoker"
+                <handler service="org.apache.stratos.metering.agent.handlers.RemoteTaskInvoker"
                         async="false" frequency="1"><!-- trigger per each request-->
                     <parameter name="taskServiceUrl">https://localhost:9443/services/</parameter>
                     <parameter name="userName">admin</parameter>
                     <parameter name="password">admin</parameter>
-                    <parameter name="taskName">org.wso2.stratos.metering.manager.task.PerUserAddRequestRemoteTask</parameter>
+                    <parameter name="taskName">org.apache.stratos.metering.manager.task.PerUserAddRequestRemoteTask</parameter>
                 </handler>
-                <handler service="org.wso2.stratos.metering.agent.handlers.ValidationInfoRetriever">
+                <handler service="org.apache.stratos.metering.agent.handlers.ValidationInfoRetriever">
                 </handler>
-                <handler service="org.wso2.stratos.metering.agent.handlers.AddUserActionValidator">
+                <handler service="org.apache.stratos.metering.agent.handlers.AddUserActionValidator">
                 </handler>
             </preHandlers>
         </task>
-        <task service="org.wso2.stratos.metering.manager.task.PerRegistryRequestRemoteTask">
+        <task service="org.apache.stratos.metering.manager.task.PerRegistryRequestRemoteTask">
             <postHandlers>
-                <handler service="org.wso2.stratos.metering.agent.handlers.ValidationInfoRetriever">
+                <handler service="org.apache.stratos.metering.agent.handlers.ValidationInfoRetriever">
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.DBContentVolumeRetriever"><!-- trigger per each registry request-->
+                <handler service="org.apache.stratos.metering.manager.handlers.DBContentVolumeRetriever"><!-- trigger per each registry request-->
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.BandwidthDataRetriever" async="true" frequency="5"><!-- trigger per 5 registry request-->
+                <handler service="org.apache.stratos.metering.manager.handlers.BandwidthDataRetriever" async="true" frequency="5"><!-- trigger per 5 registry request-->
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.BandwidthDataStorer">
+                <handler service="org.apache.stratos.metering.manager.handlers.BandwidthDataStorer">
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.BillingDataRetriever"><!-- trigger per each registry request-->
+                <handler service="org.apache.stratos.metering.manager.handlers.BillingDataRetriever"><!-- trigger per each registry request-->
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.RuleInvoker">
+                <handler service="org.apache.stratos.metering.manager.handlers.RuleInvoker">
                     <parameter name="rule-file">restriction-rules.drl</parameter>
                 </handler>
-                <handler service="org.wso2.stratos.metering.agent.handlers.ValidationInfoStorer">
+                <handler service="org.apache.stratos.metering.agent.handlers.ValidationInfoStorer">
                 </handler>
             </postHandlers>
         </task>
-        <task service="org.wso2.stratos.metering.manager.task.PerUserAddRequestRemoteTask">
+        <task service="org.apache.stratos.metering.manager.task.PerUserAddRequestRemoteTask">
             <postHandlers>
-                <handler service="org.wso2.stratos.metering.manager.handlers.UsersCountRetriever"><!-- trigger per each user add request-->
+                <handler service="org.apache.stratos.metering.manager.handlers.UsersCountRetriever"><!-- trigger per each user add request-->
                 </handler>
-                <handler service="org.wso2.stratos.metering.agent.handlers.ValidationInfoRetriever">
+                <handler service="org.apache.stratos.metering.agent.handlers.ValidationInfoRetriever">
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.BillingDataRetriever"><!-- trigger per each user add request-->
+                <handler service="org.apache.stratos.metering.manager.handlers.BillingDataRetriever"><!-- trigger per each user add request-->
                 </handler>
-                <handler service="org.wso2.stratos.metering.manager.handlers.RuleInvoker">
+                <handler service="org.apache.stratos.metering.manager.handlers.RuleInvoker">
                     <parameter name="rule-file">restriction-rules.drl</parameter>
                 </handler>
-                <handler service="org.wso2.stratos.metering.agent.handlers.ValidationInfoStorer">
+                <handler service="org.apache.stratos.metering.agent.handlers.ValidationInfoStorer">
                 </handler>
             </postHandlers>
         </task>
         <!-- to be implemented -->
         <!--
-        <task service="org.wso2.stratos.metering.manager.task.ScheduledTask">
+        <task service="org.apache.stratos.metering.manager.task.ScheduledTask">
             <parameters>
                 <parameter name="period">1Month</parameter>
                 <parameter name="dayToTriggerOn">1</parameter>
@@ -94,7 +94,7 @@
                 <parameter name="timeZone">GMT-8:00</parameter>
             </parameters>
             <hanldlers>
-                <handler service="org.wso2.stratos.metering.manager.handler.RuleInvoker">
+                <handler service="org.apache.stratos.metering.manager.handler.RuleInvoker">
                     <parameter name="rule-file">restriction-rules.drl</parameter>
                 </handler>
             </handlers>

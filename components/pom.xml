@@ -35,13 +35,6 @@
 	<name>Apache Stratos - Components - Parent Module</name>
 	<url>http://apache.org</url>
 
-	<licenses>
-	    <license>
-	        <name>Apache License Version 2.0</name>
-	        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-	    </license>
-	</licenses>
-
             <modules>
                 <!-- COMMON -->
                 <module>org.apache.stratos.common</module>
@@ -52,7 +45,6 @@
 		<!-- ADC -->
 		<module>org.apache.stratos.adc.topology.mgt</module>
 		<module>org.apache.stratos.adc.mgt</module>
-		<module>org.apache.stratos.adc.mgt.repository.synchronizer</module>
 		<module>org.apache.stratos.deployment</module>
 		<!-- CLI -->
 		<module>org.apache.stratos.cli</module>
@@ -61,7 +53,6 @@
 		<module>org.apache.stratos.lb.endpoint</module>
 		<module>org.apache.stratos.lb.agent</module>
 		<module>org.apache.stratos.mediator.autoscale</module>
-           	<module>org.apache.stratos.autoscaler.service</module>
 		<!-- Tenant Mgt -->
 		<module>org.apache.stratos.register.ui</module>
 		<module>org.apache.stratos.tenant.mgt.core</module>
@@ -115,29 +106,14 @@
 	            </plugin>
 	            <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
-	               <artifactId>maven-compiler-plugin</artifactId>
-	               <version>2.3.2</version>
-	            </plugin>
-	            <plugin>
-	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-surefire-plugin</artifactId>
-	               <version>2.12</version>
 	            </plugin>
 	            <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-resources-plugin</artifactId>
-	               <version>2.5</version>
 	            </plugin>
 	        </plugins>
 	    </build>
-    <scm>
-        <connection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </connection>
-        <developerConnection>
-            scm:svn:https://wso2.org/repos/wso2/trunk/carbon/components
-        </developerConnection>
-    </scm>
 
     <dependencyManagement>
         <dependencies>
@@ -275,7 +251,6 @@
     	<junit.version>4.11</junit.version>
 	<synapse.core.version>2.1.1-wso2v4</synapse.core.version>
     	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
-	<jclouds.version>1.5.0-beta.5</jclouds.version>
     	<carbon.platform.version>4.1.0</carbon.platform.version>
 	<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
         <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
@@ -377,7 +352,7 @@
         <antlr-runtime.orbit.version>3.2.0.wso2v1</antlr-runtime.orbit.version>
         <siddhi.orbit.version>1.0.0.wso2v1</siddhi.orbit.version>
         <gson.version>2.1</gson.version>
-        <jclouds.version>1.5.0-beta.5</jclouds.version-->
+        -->
     </properties>
 
 </project>

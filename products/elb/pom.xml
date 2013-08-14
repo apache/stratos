@@ -32,54 +32,15 @@
     <groupId>org.apache.stratos.elb</groupId>
     <artifactId>elb-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-SNAPSHOT</version>
     <name>Apache Stratos - ELB - Aggregator Module</name>
     <url>http://apache.org</url>
     <description>Apache Stratos Elastic Load Balancer (ELB)</description>
-
-    <licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
 
     <modules>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
         <!--<module>modules/integration</module>-->
     </modules>
-
-    <scm>
-        <connection>scm:svn:http://wso2.org/repos/wso2/trunk/carbon/products/lb</connection>
-        <developerConnection>scm:svn:https://wso2.org/repos/wso2/trunk/carbon/products/lb</developerConnection>
-        <url>https://wso2.org/repos/wso2/trunk/carbon/products/lb</url>
-    </scm>
-
-    <repositories>
-        <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
-        <!--moved to nexus
-
-        <repository>
-            <id>wso2-maven2-repository-snapshot</id>
-            <url>http://dist.wso2.org/snapshots/maven2</url>
-        </repository>
-        <repository>
-            <id>wso2-maven2-repository</id>
-            <url>http://dist.wso2.org/maven2</url>
-        </repository>
-
-        -->
-    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
@@ -114,7 +75,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.0-alpha-3</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -129,33 +89,6 @@
             </build>
         </profile>
     </profiles>
-
-    <organization>
-        <name>Apache</name>
-        <url>http://apache.org</url>
-    </organization>
-
-    <issueManagement>
-        <system>JIRA</system>
-        <url>https://issues.apache.org/jira/browse/stratos</url>
-    </issueManagement>
-
-    <mailingLists>
-        <mailingList>
-            <name>Apache Stratos Developer Mailing List</name>
-            <post>mailto://dev@stratos.incubator.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-stratos-dev/</archive>
-            <subscribe>mailto:dev-subscribe@stratos.incubator.apache.org?subject=subscribe</subscribe>
-            <unsubscribe>mailto:dev-unsubscribe@stratos.incubator.apache.org?subject=unsubscribe</unsubscribe>
-        </mailingList>
-        <mailingList>
-            <name>Apache Stratos Commit Mailing List</name>
-            <post></post>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-stratos-commits/</archive>
-            <subscribe>mailto:commits-subscribe@stratos.incubator.apache.org?subject=subscribe</subscribe>
-            <unsubscribe>mailto:commits-unsubscribe@stratos.incubator.apache.org?subject=unsubscribe</unsubscribe>
-        </mailingList>
-    </mailingLists>
 
     <dependencyManagement>
         <dependencies>

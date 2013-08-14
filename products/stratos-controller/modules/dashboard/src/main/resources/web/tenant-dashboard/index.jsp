@@ -54,7 +54,7 @@
 <fmt:bundle basename="org.apache.stratos.manager.dashboard.ui.i18n.Resources">
     <carbon:jsi18n
             resourceBundle="org.apache.stratos.manager.dashboard.ui.i18n.JSResources"
-            request="<%=request%>" namespace="org.wso2.stratos.manager.dashboard.ui"/>
+            request="<%=request%>" namespace="org.apache.stratos.manager.dashboard.ui"/>
 
     <div id="middle">
         <h2><fmt:message key="cloud.services"/></h2>
