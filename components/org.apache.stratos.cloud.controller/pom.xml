@@ -107,8 +107,8 @@
                         	  !org.apache.commons.logging,
                             org.apache.commons.logging; version=0.0.0,
                             org.wso2.carbon.utils.*,
-                            <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
-                            org.jclouds*;version="${jclouds.version}",-->
+                            org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
+                            org.jclouds*;version="${jclouds.version}",
                             *; resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
