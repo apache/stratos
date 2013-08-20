@@ -1,0 +1,198 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------
+#
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
+#
+# ----------------------------------------------------------------------------
+#
+#  Server configuration script for Apache Stratos
+# ----------------------------------------------------------------------------
+#
+#  Configure below parameters to install Apache Stratos using ../setup.sh.
+#  General configuration parameters are mandatory and other sections are optional. Configure each section on each node where
+#  Stratos product is installed.
+#
+# ----------------------------------------------------------------------------
+
+
+# General configuration
+# ----------------------------------------------------------------------------
+export setup_path= #Folder path containing stratos_setup
+export stratos_pack_path= #Folder path containing stratos packages 
+export stratos_path= #Folder which stratos will be installed
+
+export resource_path=$setup_path/resources
+export script_path=$setup_path/scripts
+export log_path=/var/log/apache-stratos
+export hostip="ip" #Machine ip on which setup script run
+export host_user="" #A host user account for stratos. If not provided deafult is assumed stratos. If no account #named stratos exist it will be created.
+export mysql_connector_jar=$stratos_pack_path/"mysql-connector-java-5.1.25.jar" #mysql connector jar file name
+
+
+# SC configuration
+# ----------------------------------------------------------------------------
+export sc_path=$stratos_path/"apache-stratos-sc-3.0.0-SNAPSHOT"
+export sc_pack=$stratos_pack_path/"apache-stratos-sc-3.0.0-SNAPSHOT.zip"
+#export lib_path="/opt/lib"
+#export script_path="/opt/scripts"
+#export resource_path="/opt/resources"
+
+export stratos2_domain="stratos.apache.org"
+
+export userstore_db_hostname="stratos.apache.org"
+export userstore_db_schema="userstore"
+export userstore_db_port="3306"
+export userstore_db_user="root"
+export userstore_db_pass="mysql"
+
+export s_foundation_db_hostname="stratos.apache.org"
+export s_foundation_db_schema="stratos_foundation"
+export s_foundation_db_port="3306"
+export s_foundation_db_user="root"
+export s_foundation_db_pass="mysql"
+
+export sc_https_port="9445"
+export sc_http_port="9765"
+export sc_port_offset=2
+export sc_hostname="stratos.apache.org"
+export elb_ip=$hostip
+export cassandra_port="9163"
+export sc_ip=$hostip
+export agent_ip=$hostip
+
+
+# Billing configuration
+# ----------------------------------------------------------------------------
+
+#export billing_db_hostanme="stratos.apache.org"
+#export billing_db_username="root"
+#export billing_db_password="root"
+#export billing_db_port="3306"
+#export billing_db_schema="billing"
+
+
+# Git repo cofiguration. This will be needed only if you need to setup an internal git repo.
+# ----------------------------------------------------------------------------
+export git_user="git"
+export email="git@stratos.apache.org"
+export git_hostname="stratos.apache.org"
+export git_ip=$hostip
+export axis2c_path="axis2c-1.6.2"
+export axis2c_pack="axis2-1.6.2-bin.zip"
+
+
+# CC configuration
+# ----------------------------------------------------------------------------
+
+export cc_path=$stratos_path/"apache-stratos-cc-3.0.0-SNAPSHOT"
+export cc_pack=$stratos_pack_path/"apache-stratos-cc-3.0.0-SNAPSHOT.zip"
+
+export cc_https_port="9444"
+export mb_listen_port="5673"
+export cc_port_offset=1
+export cc_hostname="stratos.apache.org"
+export mb_cassandra_host="localhost"
+export mb_cassandra_port="9161"
+
+
+# ELB configuration
+# ----------------------------------------------------------------------------
+
+export elb_path=$stratos_path/"apache-stratos-elb-3.0.0-SNAPSHOT"
+export elb_pack=$stratos_pack_path/"apache-stratos-elb-3.0.0-SNAPSHOT.zip"
+export elb_hostname="stratos.apache.org"
+export enable_autoscaler=true
+export enable_embedded_autoscaler=false
+export elb_port_offset=0
+export elb_port="9443"
+
+
+# Agent configuration
+# ----------------------------------------------------------------------------
+
+export agent_path=$stratos_path/"apache-stratos-agent-3.0.0-SNAPSHOT"
+export agent_pack=$stratos_pack_path/"apache-stratos-agent-3.0.0-SNAPSHOT.zip"
+export agent_clustering_port="4025"
+export agent_hostname="stratos.apache.org"
+export agent_http_port="9767"
+export agent_https_port="9447"
+export agent_port_offset=4
+
+
+# BAM configuration
+# ----------------------------------------------------------------------------
+#export bam_port_offset=3
+#export bam_port="9446"
+#export bam_ip=$hostip
+#export bam_reciever_port="7614"
+#export bam_reciever_secured_port="7714"
+#export bam_hostname="stratos.apache.org"
+#export bam_path="wso2bam-2.3.0"
+#export bam_pack="wso2bam-2.3.0.zip"
+
+
+# IaaS Providers
+# ----------------------------------------------------------------------------
+# EC2
+#export ec2_provider_enable=false
+#export ec2_identity=""
+#export ec2_credential=""
+#export ec2_keypair=""
+#export ec2_scaleup_order=1
+#export ec2_scaledown_order=2
+#export ec2_availability_zone="us-east-1c"
+#export ec2_security_groups="manager,cep,mb,default"
+#export ec2_instance_type="m1.large"
+#export ec2_image_id=""
+
+# Openstack
+export openstack_provider_enable=true
+export openstack_identity="stratos:stratos" # Openstack project name:Openstack login user
+export openstack_credential="password" # Openstack login password
+export openstack_tenant="stratos" # openstack project name
+export openstack_project_id=$openstack_tenant
+export openstack_jclouds_endpoint="http://10.100.0.30:5000/"
+export openstack_scaleup_order=2
+export openstack_scaledown_order=3
+
+export openstack_keypair_name="key-pair-name" #Name of the openstack key pair. The name should match
+#<property name="keyPair" value="key-pair-name"/> under Openstack provider in cartridge xml files
+
+export openstack_image_id="RegionOne/" #No need to change this as of now
+export nova_region="RegionOne"
+export openstack_instance_type_tiny="RegionOne\/1"
+export openstack_instance_type_small="RegionOne\/2"
+export openstack_security_group="security-group-name"
+export php_cartridge_image_id=""
+export mysql_cartridge_image_id=""
+export tomcat_cartridge_image_id=""
+
+
+# Cassandra configuration
+# ----------------------------------------------------------------------------
+export cassandra_port1=9160
+export cassandra_port2=7000
+
+# Hadoop configuration
+# ----------------------------------------------------------------------------
+export hadoop_port1=5140
+export hadoop_port2=9000
+
+export sc_cluster_port="5001"
+export elb_cluster_port="4000"
+
