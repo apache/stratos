@@ -20,10 +20,10 @@
 #
 # ----------------------------------------------------------------------------
 #
-# This script is for cleaning the host machine where one or more of the Stratos servers are run.
-# Make sure the user is running as root.
+#  This script is for cleaning the host machine where one or more of the Stratos servers are run.
 # ----------------------------------------------------------------------------
 
+source "./conf/setup.conf"
 
 if [ "$UID" -ne "0" ]; then
 	echo ; echo "  You must be root to run $0.  (Try running 'sudo bash' first.)" ; echo 
@@ -38,19 +38,13 @@ function help {
     echo ""
 }
 
-while getopts a:b:c:d: opts
+while getopts a:b: opts
 do
   case $opts in
     a)
-        hostname=${OPTARG}
-        ;;
-    b)
-        host_user=${OPTARG}
-        ;;
-    c)
         mysql_user=${OPTARG}
         ;;
-    d)
+    b)
         mysql_pass=${OPTARG}
         ;;
     *)
@@ -63,50 +57,46 @@ done
 function helpclean {
     echo ""
     echo "usage:"
-    echo "clean.sh -a<hostname> -b<stratos username> -c<mysql username> -d<mysql password>"
+    echo "clean.sh -a<mysql username> -b<mysql password>"
     echo ""
 }
 
 function clean_validate {
-
-if [[ ( -z $hostname || -z $host_user || -z $mysql_user || -z $mysql_pass ) ]]; then
-    helpclean
-    exit 1
-fi
+    if [[ ( -z $mysql_user || -z $mysql_pass ) ]]; then
+        helpclean
+        exit 1
+    fi
+    if [ -z $stratos_path ]; then
+        echo "stratos_path is not set"
+        exit 1
+    fi
+    if [ -z $log_path ]; then
+        echo "log_path is not set"
+        exit 1
+    fi
 }
 
 clean_validate
 
-if [[ -d /home/git ]]; then
-    deluser git
-    rm -fr /home/git
+read -p "Please confirm that you want to remove stratos databases, installed content and logs [y/n] " answer
+if [[ $answer != y ]] ; then
+    exit 1
 fi
-mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS stratos_foundation;"
-mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS userstore;"
-#mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS billing;"
 
+echo 'Stopping all java processes'
 killall java
+echo 'Waiting for applications to exit'
 sleep 15
+
+echo 'Removing stratos_foundation database'
+mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS stratos_foundation;"
+
+echo 'Removing userstore database'
+mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS userstore;"
+
+echo 'Removing stratos content'
 rm -rf $stratos_path/*
+
+echo 'Removing logs'
 rm -rf $log_path/*
-#rm -f /home/$host_user/.ssh/id_rsa
-
-#remove contents of upload folder
-if [[ -d /home/$host_user/upload ]]; then
-    rm -f /home/$host_user/upload/*
-fi
-
-#clean /etc/hosts
-KEYWORD='git.'
-if grep -Fxq "$KEYWORD" /etc/hosts
-then
-    cat /etc/hosts | grep -v "$KEYWORD" > /tmp/hosts
-    mv /tmp/hosts /etc/hosts
-fi
-
-#if grep -Fxq "$hostname" /etc/hosts
-#then
-#    cat /etc/hosts | grep -v "$hostname" > /tmp/hosts
-#    mv /tmp/hosts /etc/hosts
-#fi
 

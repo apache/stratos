@@ -29,7 +29,7 @@ set -e
 SLEEP=60
 
 source "./conf/setup.conf"
-export LOG=$log_path/stratos.log
+export LOG=$log_path/stratos-setup.log
 
 cc="false"
 elb="false"
@@ -119,7 +119,7 @@ function helpsetup {
 }
 
 echo "user provided in conf/setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
-echo "If you want to continue with the $host_user just press enter to continue"
+echo "If you want to continue with $host_user just press enter to continue"
 read username
 if [[ $username != "" ]]; then
     host_user=$username
@@ -807,6 +807,13 @@ fi
 
 if [[ $demo = "ec2" ]]; then
     ./ec2-cartridge-setup.sh
+fi
+
+echo "Apache Stratos setup has successfully completed"
+
+read -p "Do you want to start the servers [y/n]? " answer
+if [[ $answer != y ]] ; then
+    exit 1
 fi
 
 # Starting the servers

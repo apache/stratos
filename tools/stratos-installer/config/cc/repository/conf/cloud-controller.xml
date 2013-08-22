@@ -43,8 +43,8 @@
 
     	<topologySync enable="true">
 		<!-- MB server info -->
-		<mbServerUrl>MB_HOSTNAME:MB_LISTEN_PORT</mbServerUrl>
-		<cron>1 * * * * ? *</cron>
+		<property name="mbServerUrl" value="MB_HOSTNAME:MB_LISTEN_PORT" />
+		<property name="cron" value="1 * * * * ? *" />
 	</topologySync>	
 
         <!-- Specify the properties that are common to an IaaS here. This element 
