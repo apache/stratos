@@ -94,8 +94,30 @@ mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS stratos_foundatio
 echo 'Removing userstore database'
 mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS userstore;"
 
-echo 'Removing stratos content'
-rm -rf $stratos_path/*
+if [[ -d $stratos_path/scripts ]]; then
+   echo 'Removing scripts'
+   rm -rf $stratos_path/scripts
+fi
+
+if [[ -d $cc_path ]]; then
+   echo 'Removing CC'
+   rm -rf $cc_path
+fi
+
+if [[ -d $sc_path ]]; then
+   echo 'Removing SC'
+   rm -rf $sc_path
+fi
+
+if [[ -d $elb_path ]]; then
+   echo 'Removing ELB'
+   rm -rf $elb_path
+fi
+
+if [[ -d $agent_path ]]; then
+   echo 'Removing Agent'
+   rm -rf $agent_path
+fi
 
 echo 'Removing logs'
 rm -rf $log_path/*

@@ -151,8 +151,8 @@ fi
 if [[ -z $sc_hostname ]]; then
     sc_hostname=$hostname
 fi
-if [[ -z $s_foundation_db_hostname ]]; then
-    s_foundation_db_hostname=$hostname
+if [[ -z $stratos_foundation_db_hostname ]]; then
+    stratos_foundation_db_hostname=$hostname
 fi
 if [[ -z $agent_hostname ]]; then
     agent_hostname=$hostname
@@ -200,7 +200,7 @@ if [[ $sc = "true" ]]; then
 
     fi
 
-    if [[ ( -z $email|| -z $s_foundation_db_user || -z $s_foundation_db_pass || -z $hostname
+    if [[ ( -z $email|| -z $stratos_foundation_db_user || -z $stratos_foundation_db_pass || -z $hostname
         || -z $sc_path ) ]]; then
         helpsetup
         exit 1
@@ -359,16 +359,16 @@ if [[ $sc = "true" ]]; then
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@SC_HOSTNAME:SC_HTTPS_PORT@$sc_ip:$sc_https_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@s_foundation_db_HOSTNAME:s_foundation_db_PORT@$s_foundation_db_hostname:$s_foundation_db_port@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_HOSTNAME:STRATOS_FOUNDATION_DB_PORT@$stratos_foundation_db_hostname:$stratos_foundation_db_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@s_foundation_db_USER@$s_foundation_db_user@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_USER@$stratos_foundation_db_user@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@s_foundation_db_PASS@$s_foundation_db_pass@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_PASS@$stratos_foundation_db_pass@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@s_foundation_db_SCHEMA@$s_foundation_db_schema@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_SCHEMA@$stratos_foundation_db_schema@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@CC_HOSTNAME:MB_LISTEN_PORT@$cc_hostname:$mb_listen_port@g" > repository/conf/cartridge-config.properties
@@ -442,12 +442,12 @@ if [[ $sc = "true" ]]; then
     # -----------------------------------------------
     echo "Create and configure MySql Databases" >> $LOG
 
-    echo "Create userstore database"
+    echo "Creating userstore database"
     mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/userstore.sql
     #mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/registry.sql   #registry schema is only for AF
     
-    echo "Create stratos_foundation database"
-    mysql -u$s_foundation_db_user -p$s_foundation_db_pass < $resource_path/stratos_foundation.sql
+    echo "Creating stratos_foundation database"
+    mysql -u$stratos_foundation_db_user -p$stratos_foundation_db_pass < $resource_path/stratos_foundation.sql
 
     #mysql -u$billing_db_username -p$billing_db_password < $resource_path/billing-mysql.sql
 
@@ -809,6 +809,9 @@ if [[ $demo = "ec2" ]]; then
     ./ec2-cartridge-setup.sh
 fi
 
+echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
+chown $host_user:$host_user $stratos_path -R
+
 echo "Apache Stratos setup has successfully completed"
 
 read -p "Do you want to start the servers [y/n]? " answer
@@ -821,8 +824,6 @@ fi
 echo "Starting the servers" >> $LOG
 #Starting the servers in the following order is recommended
 #mb, cc, elb, is, agent, sc
-
-chown $host_user:$host_user -R $stratos_path/*
 
 echo "Starting up servers. This may take time. Look at $LOG file for server startup details"
 

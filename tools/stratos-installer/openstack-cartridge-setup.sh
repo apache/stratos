@@ -83,7 +83,7 @@ cp -f repository/deployment/server/cartridges/mysql.xml repository/deployment/se
 cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_tiny\"/>@g" > repository/deployment/server/cartridges/mysql.xml
 
 cp -f repository/deployment/server/cartridges/mysql.xml repository/deployment/server/cartridges/mysql.xml.orig
-cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"securityGroup\" value=\"*.*\"/>@<property name=\"securityGroup\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/mysql.xml
+cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/mysql.xml
 
 cp -f repository/deployment/server/cartridges/mysql.xml repository/deployment/server/cartridges/mysql.xml.orig
 cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$nova_region/$mysql_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/mysql.xml
@@ -109,7 +109,7 @@ cp -f repository/deployment/server/cartridges/php.xml repository/deployment/serv
 cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_tiny\"/>@g" > repository/deployment/server/cartridges/php.xml
 
 cp -f repository/deployment/server/cartridges/php.xml repository/deployment/server/cartridges/php.xml.orig
-cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"securityGroup\" value=\"*.*\"/>@<property name=\"securityGroup\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/php.xml
+cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/php.xml
 
 #cp -f repository/deployment/server/cartridges/php.xml repository/deployment/server/cartridges/php.xml.orig
 #cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$nova_region/$php_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/php.xml
