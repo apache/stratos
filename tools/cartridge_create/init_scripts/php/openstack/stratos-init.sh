@@ -19,7 +19,12 @@
 #  under the License.
 
 # ----------------------------------------------------------------------------
-export LOG=/var/log/wso2-cartridge.log
+
+# This script will be called from /etc/rc.local when the cartridge
+# instance is spawned. It will initiate all the tasks that needs to 
+# be run to bring the cartridge instance to operational state.
+
+export LOG=/var/log/stratos-cartridge.log
 instance_path=/var/lib/cloud/instance
 PUBLIC_IP=""
 KEY=`uuidgen`
@@ -102,7 +107,7 @@ echo "Logging sys variables .. PUBLIC_IP:${PUBLIC_IP}, HOST_NAME:${HOST_NAME}, K
 
 mkdir -p  /etc/agent/conf
 
-echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.carbon.wso2.org\">
+echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.stratos.apache.org\">
   <soapenv:Header/>
   <soapenv:Body>
      <agen:register>
@@ -175,9 +180,9 @@ if [ -d \"${APP_PATH}/.git\" ]; then
     curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @/opt/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
    sed '1,5d' /tmp/git.xml > /tmp/git1.xml
    sed '2d' /tmp/git1.xml > /tmp/git.xml
-   username=\`xml_grep 'ax211:userName' /tmp/git.xml --text_only\`
-   password=\`xml_grep 'ax211:password' /tmp/git.xml --text_only\`
-   repo=\`xml_grep 'ax211:url' /tmp/git.xml --text_only\`
+   username=\`xml_grep 'ax29:userName' /tmp/git.xml --text_only\`
+   password=\`xml_grep 'ax29:password' /tmp/git.xml --text_only\`
+   repo=\`xml_grep 'ax29:url' /tmp/git.xml --text_only\`
    rm /tmp/git1.xml
    rm /tmp/git.xml
    url=\`echo \$repo |sed 's/http.*\/\///g' |sed 's/\:.*//g' |sed 's/\/.*//g'\`
@@ -198,9 +203,9 @@ else
    curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @/opt/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
    sed '1,5d' /tmp/git.xml > /tmp/git1.xml
    sed '2d' /tmp/git1.xml > /tmp/git.xml
-   username=\`xml_grep 'ax211:userName' /tmp/git.xml --text_only\`
-   password=\`xml_grep 'ax211:password' /tmp/git.xml --text_only\`
-   repo=\`xml_grep 'ax211:url' /tmp/git.xml --text_only\`
+   username=\`xml_grep 'ax29:userName' /tmp/git.xml --text_only\`
+   password=\`xml_grep 'ax29:password' /tmp/git.xml --text_only\`
+   repo=\`xml_grep 'ax29:url' /tmp/git.xml --text_only\`
    rm /tmp/git1.xml
    rm /tmp/git.xml
    url=\`echo \$repo |sed 's/http.*\/\///g' |sed 's/\:.*//g' |sed 's/\/.*//g'\`
@@ -236,7 +241,7 @@ thriftPort:     ${BAM_PORT}
 #cartridge configs
 cartridgeAlias:  ${SERVICE}
 tenantName:      ${HOST_NAME}
-tenantId::      ${TENANT_ID}
+tenantId:      ${TENANT_ID}
 localIP:         ${PUBLIC_IP}" > /opt/cartridge_data_publisher_1.0.2/conf/data_publisher.conf
 
 
