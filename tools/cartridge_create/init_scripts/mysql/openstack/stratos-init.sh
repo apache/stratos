@@ -19,7 +19,12 @@
 #  under the License.
 
 # ----------------------------------------------------------------------------
-export LOG=/var/log/wso2-cartridge.log
+
+# This script will be called from /etc/rc.local when the cartridge
+# instance is spawned. It will initiate all the tasks that needs to 
+# be run to bring the cartridge instance to operational state.
+
+export LOG=/var/log/stratos-cartridge.log
 instance_path=/var/lib/cloud/instance
 PUBLIC_IP=""
 KEY=`uuidgen`
@@ -95,13 +100,25 @@ do
     export ${i}
 done
 
-#MYSQL_PASSWORD
+cp -f ${instance_path}/payload/ssl-cert-snakeoil.pem /etc/ssl/certs/ssl-cert-snakeoil.pem
+cp -f ${instance_path}/payload/ssl-cert-snakeoil.key /etc/ssl/private/ssl-cert-snakeoil.key
+
+echo "Setting MySQL root password" >> $LOG
+if [[ (-n ${MYSQL_PASSWORD} ) ]]; then
+       mysqladmin -u root password "${MYSQL_PASSWORD}"
+       mysql -uroot -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'   IDENTIFIED BY '${MYSQL_PASSWORD}' WITH GRANT OPTION;flush privileges;"
+       echo "MySQL root password set" >> $LOG
+fi
+
+/etc/init.d/apache2 restart
+
+
 echo "Logging sys variables .. PUBLIC_IP:${PUBLIC_IP}, HOST_NAME:${HOST_NAME}, KEY:${KEY}, PORTS=${PORTS} , BAM:${BAM_IP}, GITREPO:${GIT_REPO}" >> $LOG
 
 
 mkdir -p  /etc/agent/conf
 
-echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.carbon.wso2.org\">
+echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://service.agent.cartridge.stratos.apache.org\">
   <soapenv:Header/>
   <soapenv:Body>
      <agen:register>
@@ -139,6 +156,10 @@ echo "          <remoteHost>${PUBLIC_IP}</remoteHost>
 
 echo "Sending register request to Cartridge agent service" >> $LOG
 
-curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/agent/conf/request.xml --silent --output /dev/null "$CARTRIDGE_AGENT_EPR"
+curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/agent/conf/request.xml --silent --output /dev/null "$CARTRIDGE_AGENT_EPR" --insecure
 
+
+sleep 5
+
+/etc/init.d/apache2 restart
 # ========================== // End of script ===========================================================
