@@ -51,11 +51,6 @@ if [ ! -d ${instance_path}/payload ]; then
         echo "export" ${i} >> /home/ubuntu/.bashrc
     done
     source /home/ubuntu/.bashrc
-    # Write a cronjob to execute wso2-cartridge-init.sh periodically until public ip is assigned
-    #crontab -l > ./mycron
-    #echo "*/${CRON_DURATION} * * * * /opt/wso2-cartridge-init.sh > /var/log/wso2-cartridge-init.log" >> ./mycron
-    #crontab ./mycron
-    #rm ./mycron
 
 fi
 
@@ -77,7 +72,6 @@ if [[ -z ${files} ]]; then
           sleep $SLEEP_DURATION
       else
           echo "Public ip assigned" >> $LOG
-          #crontab -r
           break
       fi
     done
@@ -94,7 +88,6 @@ if [[ -z ${files} ]]; then
 
 else 
    PUBLIC_IP="$files"
-   #crontab -r
 fi
 
 
@@ -102,6 +95,16 @@ for i in `/usr/bin/ruby /opt/get-launch-params.rb`
 do
     export ${i}
 done
+
+
+cp -f ${instance_path}/payload/ssl-cert-snakeoil.pem /etc/ssl/certs/ssl-cert-snakeoil.pem
+cp -f ${instance_path}/payload/ssl-cert-snakeoil.key /etc/ssl/private/ssl-cert-snakeoil.key
+echo "Restarting apache..." >> $LOG
+
+/etc/init.d/apache2 restart
+
+echo "Apache restarted..." >> $LOG
+
 
 echo "Logging sys variables .. PUBLIC_IP:${PUBLIC_IP}, HOST_NAME:${HOST_NAME}, KEY:${KEY}, PORTS=${PORTS}, BAM:${BAM_IP}, GITREPO:${GIT_REPO}" >> $LOG
 
@@ -117,7 +120,7 @@ echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope
            <hostName>${HOST_NAME}</hostName>
            <key>${KEY}</key>
           <maxInstanceCount>${MAX}</maxInstanceCount>
-      <maxRequestsPerSecond>${MAX_REQUESTS_PER_SEC}</maxRequestsPerSecond>
+	  <maxRequestsPerSecond>${MAX_REQUESTS_PER_SEC}</maxRequestsPerSecond>
           <minInstanceCount>${MIN}</minInstanceCount> " > /etc/agent/conf/request.xml
 
 IFS='|' read -ra PT <<< "${PORTS}"
@@ -132,7 +135,7 @@ done
 
 echo "          <remoteHost>${PUBLIC_IP}</remoteHost>
            <service>${SERVICE}</service>
-       <remoteHost>${PUBLIC_IP}</remoteHost>
+	   <remoteHost>${PUBLIC_IP}</remoteHost>
            <roundsToAverage>${ROUNDS_TO_AVERAGE}</roundsToAverage>
            <scaleDownFactor>${SCALE_DOWN_FACTOR}</scaleDownFactor>
            <tenantRange>${TENANT_RANGE}</tenantRange>
@@ -158,17 +161,8 @@ echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope
    </soapenv:Body>
 </soapenv:Envelope>" > /opt/repoinforequest.xml
 
-cp -f ${instance_path}/payload/ssl-cert-snakeoil.pem /etc/ssl/certs/ssl-cert-snakeoil.pem
-cp -f ${instance_path}/payload/ssl-cert-snakeoil.key /etc/ssl/private/ssl-cert-snakeoil.key
+echo "Repoinfo request created " >> $LOG
 
-
-echo "Sending register request to Cartridge agent service" >> $LOG
-
-curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/agent/conf/request.xml -k --silent --output /dev/null "${CARTRIDGE_AGENT_EPR}"
-
-sleep 5
-
-/etc/init.d/apache2 restart
 
 echo "Git repo sync" >> $LOG
 
@@ -190,13 +184,14 @@ if [ -d \"${APP_PATH}/.git\" ]; then
    sudo echo \"machine \${url} login \${username} password \${password}\" > /root/.netrc
    chmod 600 ~/.netrc
    sudo chmod 600 /root/.netrc
+   git config --global --bool --add http.sslVerify false
    sudo git pull
    rm ~/.netrc
    sudo rm /root/.netrc
 
     sudo chown -R www-data:www-data ${APP_PATH}/www
     if [ -f \"${APP_PATH}/sql/alter.sql\" ]; then
-        mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/alter.sql
+    	mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/alter.sql
     fi
 else
     sudo rm -f ${APP_PATH}/index.html
@@ -213,9 +208,11 @@ else
    sudo echo \"machine \${url} login \${username} password \${password}\" > /root/.netrc
    chmod 600 ~/.netrc
    sudo chmod 600 /root/.netrc
+   git config --global --bool --add http.sslVerify false
    sudo git clone \${repo} ${APP_PATH}
    rm ~/.netrc
    sudo rm /root/.netrc
+ 
 
     if [ -f \"${APP_PATH}/sql/init.sql\" ]; then
         mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/init.sql
@@ -232,8 +229,50 @@ else
 fi" > /opt/git.sh
 echo "File created.." >> $LOG
 chmod 755 /opt/git.sh
+
+
+
+while true
+do
+var=`nc -z localhost 80; echo $?`;
+if [ $var -eq 0 ]
+   then
+       echo "port 80 is available" >> $LOG
+       break
+   else
+       echo "port 80 is not available" >> $LOG
+   fi
+   sleep 1
+done
+
+
+while true
+do
+var=`nc -z localhost 443; echo $?`;
+if [ $var -eq 0 ]
+   then
+       echo "port 443 is available" >> $LOG
+       break
+   else
+       echo "port 443 is not available" >> $LOG
+   fi
+   sleep 1
+done
+
+
+
+echo "Sending register request to Cartridge agent service" >> $LOG
+
+curl -X POST -H "Content-Type: text/xml" -H "SOAPAction: urn:register" -d @/etc/agent/conf/request.xml -k --silent --output /dev/null "${CARTRIDGE_AGENT_EPR}"
+
+echo "Registered cartridge..." >> $LOG
+
 echo "running git clone........" >> $LOG
 su - ubuntu /opt/git.sh
+
+
+echo "setting up logging conf" >> $LOG
+
 
 echo "host:     ${BAM_IP}
 thriftPort:     ${BAM_PORT}
