@@ -293,6 +293,7 @@ do
     -Djava.security.egd=file:/dev/./urandom \
     -Dfile.encoding=UTF8 \
     -Dloadbalancer.conf=file:repository/conf/loadbalancer.conf \
+    -Dmb.server.ip=MB_HOSTNAME:MB_LISTEN_PORT \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done

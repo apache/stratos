@@ -42,18 +42,18 @@ enable_internal_git=false
 
 function help {
     echo ""
-    echo "demo means you will setup a demo server of S2 in a single physical machine which has Openstack installed."
-    echo "This demo server include all S2 related packs."
+    echo "demo means you will setup a demo server of stratos in a single physical machine."
+    echo "This demo server include all stratos products."
     echo "usage:"
-    echo "setup.sh -u<host user name> -d<demo> -p\"<product list>\""
+    echo "setup.sh -u<host username> -d<demo> -p\"<product list>\""
     echo "eg."
-    echo "sudo JAVA_HOME=/opt/jdk1.6.0_24 ./setup.sh -dopenstack -p\"cc elb\""
-    echo "sudo JAVA_HOME=/opt/jdk1.6.0_24 ./setup.sh -dopenstack -p\"all\""
+    echo "sudo JAVA_HOME=<java-home> ./setup.sh -dopenstack -p\"cc elb\""
+    echo "sudo JAVA_HOME=<java-home> ./setup.sh -dopenstack -p\"all\""
     echo ""
     echo "-d: <demo name> whether you need to run demo for ec2 or openstack. The value is one of ec2|openstack. By default no demo is setup"
     echo "-p: <product list> Give one or more of the servers to be setup in this machine. The available servers are"
-    echo "-g: <enable_internal_git true|false> Whether enable internal git repo for Stratos2. Default is false"
     echo "    cc, elb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
+    echo "-g: <enable_internal_git true|false> Whether enable internal git repo for Stratos2. Default is false"
     echo ""
 }
 
@@ -337,7 +337,7 @@ if [[ $sc = "true" ]]; then
 
     echo "Set mb hostname and mb port in bin/stratos.sh." >> $LOG
     cp -f ./bin/stratos.sh bin/stratos.sh.orig
-    cat bin/stratos.sh.orig | sed -e "s@CC_HOSTNAME:MB_LISTEN_PORT@$cc_hostname:$mb_listen_port@g" > bin/stratos.sh
+    cat bin/stratos.sh.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > bin/stratos.sh
 
     echo "Change CC hostname in repository/conf/cartridge-config.properties" >> $LOG
 
@@ -371,7 +371,7 @@ if [[ $sc = "true" ]]; then
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_SCHEMA@$stratos_foundation_db_schema@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CC_HOSTNAME:MB_LISTEN_PORT@$cc_hostname:$mb_listen_port@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@ELB_IP@$elb_ip@g" > repository/conf/cartridge-config.properties
@@ -534,10 +534,10 @@ if [[ $cc = "true" ]]; then
 #                </iaasProvider>
 #        </iaasProviders>
 
-   echo "Set openstack provider specific info on repository/conf/cloud-controller.xml" >> $LOG
 
    if [[ $ec2_provider_enable = "true" ]]; then
-
+       echo "Set EC2 provider specific info in repository/conf/cloud-controller.xml" >> $LOG
+       
        cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
        cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
 
@@ -576,20 +576,11 @@ if [[ $cc = "true" ]]; then
 
        cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
        cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_HOSTNAME@$cc_hostname@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_LISTEN_PORT@$mb_listen_port@g" > repository/conf/cloud-controller.xml
-
    fi
 
-    
-   echo "Set EC2 provider specific info on repository/conf/cloud-controller.xml" >> $LOG
-
    if [[ $openstack_provider_enable = "true" ]]; then
-
+       echo "Set OpenStack provider specific info in repository/conf/cloud-controller.xml" >> $LOG
+       
        cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
        cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
        
@@ -619,18 +610,10 @@ if [[ $cc = "true" ]]; then
 
        cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
        cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
-
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_HOSTNAME@$cc_hostname@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_LISTEN_PORT@$mb_listen_port@g" > repository/conf/cloud-controller.xml
-
    fi
 
     cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-    cat repository/conf/cloud-controller.xml.orig | sed -e "s@CC_HOSTNAME:MB_LISTEN_PORT@$cc_hostname:$mb_listen_port@g" > repository/conf/cloud-controller.xml
+    cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/cloud-controller.xml
 
     echo "In repository/conf/carbon.xml"
     cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
@@ -687,7 +670,7 @@ if [[ $elb = "true" ]]; then
     cat repository/conf/loadbalancer.conf.orig | sed -e "s@ENABLE_EMBEDDED_AUTOSCALER@$enable_embedded_autoscaler@g" > repository/conf/loadbalancer.conf
 
     cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$cc_hostname:$mb_listen_port@g" > repository/conf/loadbalancer.conf
+    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/loadbalancer.conf
 
     echo "Set hostname of the machine where elb run, in repository/conf/axis2/axis2.xml" >> $LOG
     #<!--parameter name="localMemberHost">ELB_HOSTNAME</parameter-->
