@@ -131,7 +131,7 @@
         <opencsv.version>1.8</opencsv.version>
         <poi.version>3.0-FINAL</poi.version>
         <carbon.version>4.1.0</carbon.version>
-        <carbon.kernel.version>4.1.0</carbon.kernel.version>
+        <carbon.kernel.version>4.1.0.stratos</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.2</carbon.p2.plugin.version>
 	<stratos2.platform.patch.version>2.1.1</stratos2.platform.patch.version>
         <synapse.version>2.1.1-wso2v4</synapse.version>

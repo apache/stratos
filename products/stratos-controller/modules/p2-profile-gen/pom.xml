@@ -52,7 +52,7 @@
                                 <artifactItem>
                                     <groupId>org.wso2.carbon</groupId>
                                     <artifactId>wso2carbon-core</artifactId>
-                                    <version>${wso2carbon.version}</version>
+                                    <version>${carbon.kernel.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target</outputDirectory>
@@ -157,7 +157,7 @@
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.transport.mgt.server.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.common.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.server.feature:${carbon.version}</featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.reporting.server.feature:${carbon.version}</featureArtifactDef>
+				    <!--featureArtifactDef>org.wso2.carbon:org.wso2.carbon.reporting.server.feature:${carbon.version}</featureArtifactDef-->
 				    <!--  end BAM features -->
 				    <!-- GApp SSO features -->
 
@@ -362,10 +362,10 @@
 				    <id>org.wso2.carbon.rule.service.server.feature.group</id>
 				    <version>${carbon.version}</version>
 				</feature>
-				<feature>
+				<!--feature>
 				    <id>org.wso2.carbon.reporting.server.feature.group</id>
 				    <version>${carbon.version}</version>
-				</feature>
+				</feature-->
 				<feature>
 				    <id>org.apache.stratos.tenant.activity.server.feature.group</id>
 				    <version>${project.version}</version>
