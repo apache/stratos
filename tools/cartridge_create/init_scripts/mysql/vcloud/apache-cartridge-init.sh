@@ -19,7 +19,7 @@
 #  under the License.
 
 # ----------------------------------------------------------------------------
-export LOG=/var/log/wso2-cartridge.log
+export LOG=/var/log/apache-cartridge.log
 instance_path=/var/lib/cloud/instance
 PUBLIC_IP=""
 KEY=`uuidgen`
@@ -43,9 +43,9 @@ SLEEP_DURATION=30
 #        echo "export" ${i} >> /home/ubuntu/.bashrc
 #    done
 #    source /home/ubuntu/.bashrc
-    # Write a cronjob to execute wso2-openstack-init.sh periodically until public ip is assigned
+    # Write a cronjob to execute apache-openstack-init.sh periodically until public ip is assigned
     #crontab -l > ./mycron
-    #echo "*/${CRON_DURATION} * * * * /opt/wso2-openstack-init.sh > /var/log/wso2-openstack-init.log" >> ./mycron
+    #echo "*/${CRON_DURATION} * * * * /opt/apache-openstack-init.sh > /var/log/apache-openstack-init.log" >> ./mycron
     #crontab ./mycron
     #rm ./mycron
 
@@ -109,7 +109,7 @@ done
 echo "Logging sys variables .. PUBLIC_IP:${PUBLIC_IP}, HOST_NAME:${HOST_NAME}, KEY:${KEY}, PORTS=${PORTS} , BAM:${BAM_IP}, GITREPO:${GIT_REPO}" >> $LOG
 
 
-echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://agent.cartridge.carbon.wso2.org\">
+echo "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:agen=\"http://agent.cartridge.stratos.apache.org\">
   <soapenv:Header/>
   <soapenv:Body>
      <agen:register>
