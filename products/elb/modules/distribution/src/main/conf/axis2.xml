@@ -330,7 +330,7 @@
                 <Password>wso2carbon</Password>
             </TrustStore>
         </parameter>
-        <parameter name="HostnameVerifier">AllowAll</parameter-->
+        <parameter name="HostnameVerifier">AllowAll</parameter>
             <!--supports Strict|AllowAll|DefaultAndLocalhost or the default if none specified -->
     </transportSender>
 
