@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.integration.framework</artifactId>
-            <version>${carbon.kernel.version}</version>
+            <version>${carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.integration.core</artifactId>
-            <version>${carbon.kernel.version}</version>
+            <version>${carbon.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
@@ -156,7 +156,7 @@
         <dependency>
         	<groupId>org.wso2.carbon</groupId>
         	<artifactId>SecVerifier</artifactId>
-        	<version>${carbon.kernel.version}</version>
+        	<version>${carbon.version}</version>
         	<type>aar</type>
         </dependency>
     </dependencies>
