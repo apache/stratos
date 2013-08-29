@@ -1,0 +1,45 @@
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+    <cartridges>
+
+        <!-- You can have 1..n cartridge elements. -->
+        <cartridge type="tomcat" host="tomcat.STRATOS_DOMAIN" provider="apache" version="7" multiTenant="false">
+            <!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
+                 specified under iaasProvider child elements of cartridge element. -->
+
+            <displayName>TOMCAT</displayName>
+            <description>TOMCAT Cartridge</description>
+            <!-- A cartridge element should add a reference to an existing IaaS provider (specified
+                 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+                 Provider (which should have a unique "type" attribute. -->
+            <iaasProvider type="openstack" >
+                <imageId>RegionOne/9701eb18-d7e1-4a53-a2bf-a519899d451c</imageId>
+                <property name="keyPair" value="manula_openstack"/>
+                <property name="instanceType" value="RegionOne/2"/>
+                <property name="securityGroups" value="im-security-group1"/>
+                <!--<property name="payload" value="resources/as.txt"/>-->
+            </iaasProvider>
+            <!--<iaasProvider type="ec2" >
+                <imageId>us-east-1/ami-ef49e786</imageId>           
+                <property name="keyPair" value="aa"/>
+                <property name="securityGroups" value="default"/>
+                <property name="instanceType" value="m1.large"/>
+                <property name="payload" value="resources/as-ec2.txt"/>
+            </iaasProvider>-->
+            <deployment baseDir="/var/lib/tomcat7/webapps">
+                <dir>www=copy#app#files#here</dir>
+                <dir>simplesamlphp=copy#saml#libraries#here</dir>
+		<dir>sql=copy#saml#libraries#here</dir>
+            </deployment>
+	   <portMapping>
+               <http port="8080" proxyPort="8280"/>
+               <https port="8443" proxyPort="8243"/>
+           </portMapping>
+            <!--<appTypes>
+                <property name="axis2services" isBothmapping="false"/>
+                <property name="webapps" isBothmapping="true"/>
+                <property name="jaxwebapps" isBothmapping="true"/>
+                <property name="jaggeryapps" isBothmapping="true"/>
+            </appTypes>-->
+        </cartridge>
+
+    </cartridges>
