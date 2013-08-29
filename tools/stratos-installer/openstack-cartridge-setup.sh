@@ -120,4 +120,28 @@ cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<imageId>*.
 cp -f repository/deployment/server/cartridges/php.xml repository/deployment/server/cartridges/php.xml.orig
 cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos2_domain@g" > repository/deployment/server/cartridges/php.xml
 
+echo "Updating repository/deployment/server/cartridges/tomcat.xml" | tee $LOG
+# <iaasProvider type="openstack" >
+#    <imageId>RegionOne/9701eb18-d7e1-4a53-a2bf-a519899d451c</imageId>
+#    <property name="keyPair" value="manula_openstack"/>
+#    <property name="instanceType" value="RegionOne/2"/>
+#    <property name="securityGroups" value="im-security-group1"/>
+#    <!--<property name="payload" value="resources/as.txt"/>-->
+# </iaasProvider>
+
+cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
+cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$openstack_keypair_name\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
+
+cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
+cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_tiny\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
+
+cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
+cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
+
+cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
+cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$nova_region/$tomcat_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/tomcat.xml
+
+cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
+cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos2_domain@g" > repository/deployment/server/cartridges/tomcat.xml
+
 popd # cc_path
