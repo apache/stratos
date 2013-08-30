@@ -1,0 +1,49 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<component xmlns="http://products.wso2.org/carbon">
+        <!-- sample menu configuration -->
+    <menus>
+        <menu>
+            <id>logs_menu</id>
+            <i18n-key>logsmenutext</i18n-key>
+            <i18n-bundle>org.apache.stratos.logging.view.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>monitor_menu</parent-menu>
+            <link>../log-view/index.jsp</link>
+            <region>region4</region>
+            <order>10</order>
+            <style-class>monitor</style-class>
+            <icon>../log-view/images/script_gear.gif</icon>
+            <require-permission>/permission/admin/monitor/logging</require-permission>
+            <!--require-super-tenant>true</require-super-tenant-->
+        </menu>
+         <menu>
+            <id>app_log_menu</id>
+            <i18n-key>applogsmenutext</i18n-key>
+            <i18n-bundle>org.apache.stratos.logging.view.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>monitor_menu</parent-menu>
+            <link>../log-view/application_log_viewer.jsp</link>
+            <region>region4</region>
+            <order>3</order>
+            <style-class>monitor</style-class>
+            <icon>../log-view/images/script_gear.gif</icon>
+            <require-permission>/permission/admin/monitor/logging</require-permission>
+          
+        </menu>
+    </menus>
+</component>

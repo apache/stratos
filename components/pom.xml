@@ -95,6 +95,8 @@
 		<!-- Theme mgt -->
 		<module>org.apache.stratos.theme.mgt.ui</module>
 		<module>org.apache.stratos.theme.mgt</module>
+		<!--Logging mgt-->
+                <module>org.apache.stratos.logging.view.ui</module>
 	    </modules>
 	    
 	    <build>

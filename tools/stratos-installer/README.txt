@@ -53,7 +53,7 @@ How to install
 9. Run setup.sh as root to install.
 
     E.g -
-    sudo JAVA_HOME=<java-home-path> ./setup.sh -p"<product-list>"
+    sudo ./setup.sh -p"<product-list>"
     <product-list> could be defined as "cc sc elb agent" or any other combination according to the deployment configuration.
 
     If you need to clean the setup

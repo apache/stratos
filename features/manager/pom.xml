@@ -47,6 +47,7 @@
 	<module>status-monitor</module>
 	<module>tenant-activity</module>
 	<module>cartridge-mgt</module>
+	<module>logging-mgt</module>
     </modules>
 
     <distributionManagement>

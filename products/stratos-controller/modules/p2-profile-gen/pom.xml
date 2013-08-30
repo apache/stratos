@@ -100,7 +100,6 @@
                             <publishArtifactRepository>true</publishArtifactRepository>
                             <featureArtifacts>
 				<!--**************************************************Manager features start*********************************************-->
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.logging.mgt.feature:4.1.1</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.databridge.datapublisher.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.ntask.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.coordination.core.feature:${carbon.version}</featureArtifactDef>
@@ -135,6 +134,9 @@
 				    <featuredArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.rule.service.server.feature:${carbon.version}
 				    </featuredArtifactDef>
+				    <featureArtifactDef>
+                                       org.apache.stratos:org.apache.stratos.logging.mgt.feature:${project.version}
+                                    </featureArtifactDef>
 				    <!--featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.billing.ui.feature:${stratos.component.version}
 				    </featureArtifactDef-->
@@ -235,8 +237,8 @@
 				    <version>${stratos.component.version}</version>
 				</feature>
 				<feature>
-				    <id>org.wso2.carbon.logging.mgt.feature.group</id>
-				    <version>4.1.1</version>
+                                    <id>org.apache.stratos.logging.mgt.feature.group</id>
+                                    <version>${project.version}</version>
 				</feature>
 				<feature>
 				    <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
