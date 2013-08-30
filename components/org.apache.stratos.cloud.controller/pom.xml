@@ -96,6 +96,12 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.lb.common</artifactId>
             <version>${project.version}</version>
+		    <exclusions>
+		        <exclusion>
+		            <groupId>com.google.guava.wso2</groupId>
+		            <artifactId>guava</artifactId>
+		        </exclusion>
+		    </exclusions>
         </dependency>
 
 
@@ -114,7 +120,7 @@
             <artifactId>guava</artifactId>
         </exclusion>
     </exclusions>
-
+	
 </dependency>
 	<dependency>
 	    <groupId>com.google.guava</groupId>
