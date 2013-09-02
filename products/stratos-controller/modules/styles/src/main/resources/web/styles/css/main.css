@@ -53,9 +53,9 @@ div#header-div div.middle-ad {
 }
 
 div#header-div div.right-logo {
-	background-image:url("../images/right-logo.gif");
+	/*background-image:url("../images/right-logo.gif");
 	background-position:right top;
-	background-repeat:no-repeat;
+	background-repeat:no-repeat;*/
 	color:#B6D8F2;
 	font-size:0;
 	height:31px;
