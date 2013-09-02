@@ -1,0 +1,777 @@
+Apache Stratos
+Copyright 2013 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Abdera Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+Portions of Abdera were orginally developed by
+International Business Machines Corporation and are
+licensed to the Apache Software Foundation under the
+"Software Grant and Corporate Contribution License Agreement",
+informally known as the "Abdera CLA".
+
+This software's test suite contains data files derived from the
+Universal Feed Parser, Copyright (c) 2002-2005, Mark Pilgrim.
+
+This software's extensions module contains a JSON writer for Atom XML
+that utilizes a JSON parser, Copyright (c) 2002, json.org. The code was 
+licensed using Apache License by the author Douglas Crockford and made 
+available at http://json.org/java/apache.zip We have included portions 
+of the code in the extensions module.
+
+===============================================================================
+Annogen Notice:
+
+This software consists of voluntary contributions made by many
+individuals on behalf of the Apache Software Foundation and was
+originally based on software copyright (c) 2000-2004 BEA Systems 
+Inc., <http://www.bea.com/>. For more information on the Apache 
+Software Foundation, please see <http://www.apache.org/>.
+
+===============================================================================
+Apache Ant Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+   This product includes also software developed by :
+     - the W3C consortium (http://www.w3c.org) ,
+     - the SAX project (http://www.saxproject.org)
+
+   Please read the different LICENSE files present in the root directory of
+   this distribution.
+
+   The names "Ant" and  "Apache Software Foundation"  must not be used to
+   endorse  or promote  products derived  from this  software without prior
+   written permission. For written permission, please contact
+   apache@apache.org.
+
+===============================================================================
+Apache ZooKeeper Notice:
+
+Apache ZooKeeper
+Copyright 2009 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Axiom Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+Portions Copyright 2006 International Business Machines Corp.
+	
+Please read the different LICENSE files present in the licenses directory of
+this distribution.
+
+===============================================================================
+Apache Axis2 Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+Portions Copyright 2006 International Business Machines Corp.
+Portions Copyright 2005-2007 WSO2, Inc.
+
+This product also includes schemas and specification developed by:
+- the W3C consortium (http://www.w3c.org)
+
+This product also includes WS-* schemas developed by International
+Business Machines Corporation, Microsoft Corporation, BEA Systems, 
+TIBCO Software, SAP AG, Sonic Software, and VeriSign
+
+This product also includes a WSDL developed by salesforce.com
+- Copyright 1999-2006 salesforce.com, inc.
+
+Portions of the included xmlbeans library were originally based on the following:
+- software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+Please read the different LICENSE files present in the lib directory of
+this distribution.
+
+
+===============================================================================
+Apache BSF Notice:
+
+Copyright (c) 2005 - 2007 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+*----------------------------------------------------------------------*
+* BSF3 was developed according to the JSR-223 specs, but has not yet   *
+* been tested via the JSR-223 TCK. BSF can therefore not be considered *
+* a compatible implementation of JSR-223.                              *
+*----------------------------------------------------------------------*
+
+The Apache BSF binary distribution includes software distributed under the
+BSD License. See the LICENSE file for details.
+
+COPYRIGHT NOTICES
+
+* The Apache BSF binary includes script engines under the following copyright:
+   Copyright (c) 2006, Sun Microsystems, Inc.
+
+===============================================================================
+Apache Commons Codec Notice:
+
+Apache Commons Codec
+Copyright 2002-2011 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+--------------------------------------------------------------------------------
+src/test/org/apache/commons/codec/language/DoubleMetaphoneTest.java contains 
+test data from http://aspell.sourceforge.net/test/batch0.tab.
+
+Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org). Verbatim copying
+and distribution of this entire article is permitted in any medium,
+provided this notice is preserved.
+--------------------------------------------------------------------------------
+
+===============================================================================
+Apache Commons Collections Notice:
+
+Apache Commons Collections
+Copyright 2001-2008 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Commons Pool Notice:
+
+Apache Commons Pool
+Copyright 1999-2009 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Commons IO Notice:
+
+Apache Commons IO
+Copyright 2001-2008 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Commons FileUpload Notice:
+
+Apache Commons FileUpload
+Copyright 2002-2008 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Commons HttpClient Notice:
+
+Apache Jakarta HttpClient
+Copyright 1999-2007 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Commons DBCP Notice:
+
+Apache Commons DBCP
+Copyright 2001-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Commons Lang Notice:
+
+Apache Commons Lang
+Copyright 2001-2011 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software from the Spring Framework,
+under the Apache License 2.0 (see: StringUtils.containsWhitespace())
+
+===============================================================================
+Compass Framework Notice:
+
+   This product includes software developed by
+   the Apache Software Foundation (http://www.apache.org).
+
+   This product also includes software developed by
+   Clinton Begin (http://www.ibatis.com).
+
+   The end-user documentation included with a redistribution, if any,
+   must include the following acknowledgement:
+
+     "This product includes software developed by Compass
+      Project (http://www.opensymphony.com/compass)."
+
+   Alternately, this acknowledgement may appear in the software itself,
+   if and wherever such third-party acknowledgements normally appear.
+
+   The names "Compass" and "Compass Framework" must not be used to
+   endorse or promote products derived from this software without
+   prior written permission. For written permission, please contact
+   Shay Banon (kimchy@mac.com).
+
+===============================================================================
+Apache Jclouds Notice:
+
+jclouds
+Copyright 2009-2012 jclouds, Inc.
+
+This product includes software developed at
+jclouds, Inc. (http://www.jclouds.org/).
+
+This product includes Common Annotations (JSR 250, https://jsr250.dev.java.net/)
+distributed under the CDDL Version 1.0 license.
+
+This product includes Jersey (https://jersey.dev.java.net/)
+distributed under the CDDL Version 1.0 license.
+
+This product includes net.oauth.core 
+distributed under the Apache Software License, Version 2.0.
+
+This product includes Gson (http://code.google.com/p/google-gson)
+distributed under the Apache Software License, Version 2.0.
+
+This product includes Guice (http://code.google.com/p/google-guice)
+distributed under the Apache Software License, Version 2.0.
+
+This product includes Guava (http://code.google.com/p/guava-libraries)
+distributed under the Apache Software License, Version 2.0.
+
+org.jclouds.util.Suppliers2 and Suppliers2Test contain pieces of Guava's Suppliers
+distributed under the Apache Software License, Version 2.0.
+(c) 2010 Google Inc.
+
+This product includes BouncyCastle (http://www.bouncycastle.org/licence.html)
+distributed with the following notice:
+  "Copyright (c) 2000 - 2011 The Legion Of The Bouncy Castle (http://www.bouncycastle.org)
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+
+This product includes findbugs jsr305 (http://code.google.com/p/findbugs)
+distributed under the GNU Lesser GPL License, Version 3.0.
+
+This product includes aopalliance (http://aopalliance.sourceforge.net/)
+distributed in the Public Domain
+
+This product includes software developed at Hewlett-Packard
+Copyright (c) 2011-2012 Hewlett-Packard Development Company, L.P
+
+This product includes software developed at Cloudsoft
+Copyright (c) 2011-2012 Cloudsoft Corporation, Ltd.
+
+This product includes software developed at MuleSoft
+Copyright (c) 2012 MuleSoft Inc.
+
+===============================================================================
+Apache Geronimo Notice:
+
+Apache Geronimo
+Copyright 2003-2009 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache HttpComponents Client Notice:
+
+Apache HttpComponents Client
+Copyright 1999-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+This project contains annotations derived from JCIP-ANNOTATIONS
+Copyright (c) 2005 Brian Goetz and Tim Peierls. See http://www.jcip.net
+
+===============================================================================
+Apache HttpComponents Core Notice:
+
+Apache HttpComponents Core - HttpCore
+Copyright 2006-2009 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Thrift Notice:
+
+Apache Thrift
+Copyright 2006-2010 The Apache Software Foundation.
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Neethi Notice:
+
+Apache Neethi
+Copyright 2004-2012 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+
+This product is tested with testcases developed at W3C under the license:
+http://www.w3.org/Consortium/Legal/2002/copyright-documents-20021231
+The source distribution of this product includes those testcases.
+
+
+===============================================================================
+sshj Notice:
+
+sshj - SSHv2 library for Java
+Copyright 2010-2012 sshj contributors
+
+This product includes code derived from software developed at 
+The Apache Software Foundation (http://www.apache.org/):
+
+- Apache MINA SSHD
+- Apache Commons-Net
+
+
+// Apache Mina SSHD notice
+
+   =========================================================================
+   ==  NOTICE file for use with the Apache License, Version 2.0,          ==
+   ==  in this case for the SSHD distribution.                            ==
+   =========================================================================
+
+   This product contains software developped by JCraft,Inc. and subject to
+   the following license:
+
+Copyright (c) 2002,2003,2004,2005,2006,2007,2008 Atsuhiko Yamanaka, JCraft,Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in
+     the documentation and/or other materials provided with the distribution.
+
+  3. The names of the authors may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--------------------------------------------------------------------------------
+Copyright (c) 2000 - 2006 The Legion Of The Bouncy Castle (http://www.bouncycastle.org)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in the
+Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+===============================================================================
+Jcloud Openstack Notice:
+
+jcloud openstack-nova api
+Copyright 2009-2013 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+jclouds OpenStack Components Core
+Copyright 2009-2013 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+jcloud openstack-keystone api
+Copyright 2009-2013 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Felix Notice:
+
+Apache Felix
+Copyright 2006 The Apache Software Foundation
+3	
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Tomcat Notice:
+
+Apache Tomcat
+Copyright 1999-2013 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+The Windows Installer is built with the Nullsoft
+Scriptable Install System (NSIS), which is
+open source software.  The original software and
+related information is available at
+http://nsis.sourceforge.net.
+
+Java compilation software for JSP pages is provided by Eclipse,
+which is open source software.  The original software and
+related information is available at
+http://www.eclipse.org.
+
+For the bayeux implementation
+The org.apache.cometd.bayeux API is derivative work originating at the Dojo Foundation
+* Copyright 2007-2008 Guy Molinari
+* Copyright 2007-2008 Filip Hanik
+* Copyright 2007 Dojo Foundation
+* Copyright 2007 Mort Bay Consulting Pty. Ltd.
+
+The original XML Schemas for Java EE Deployment Descriptors:
+ - javaee_5.xsd
+ - javaee_web_services_1_2.xsd
+ - javaee_web_services_client_1_2.xsd
+ - javaee_6.xsd
+ - javaee_web_services_1_3.xsd
+ - javaee_web_services_client_1_3.xsd
+ - jsp_2_2.xsd
+ - web-app_3_0.xsd
+ - web-common_3_0.xsd
+ - web-fragment_3_0.xsd
+ - javaee_7.xsd
+ - javaee_web_services_1_4.xsd
+ - javaee_web_services_client_1_4.xsd
+ - jsp_2_3.xsd
+ - web-app_3_1.xsd
+ - web-common_3_1.xsd
+ - web-fragment_3_1.xsd
+
+may be obtained from:
+http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/index.html
+
+===============================================================================
+Netty Notice:
+
+                            The Netty Project
+                            =================
+
+Please visit the Netty web site for more information:
+
+  * http://netty.io/
+
+Copyright 2011 The Netty Project
+
+The Netty Project licenses this file to you under the Apache License,
+version 2.0 (the "License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at:
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.
+
+Also, please refer to each LICENSE.<component>.txt file, which is located in
+the 'license' directory of the distribution file, for the license terms of the
+components that this product depends on.
+
+-------------------------------------------------------------------------------
+This product contains the extensions to Java Collections Framework which has
+been derived from the works by JSR-166 EG, Doug Lea, and Jason T. Greene:
+
+  * LICENSE:
+    * license/LICENSE.jsr166y.txt (Public Domain)
+  * HOMEPAGE:
+    * http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/
+    * http://viewvc.jboss.org/cgi-bin/viewvc.cgi/jbosscache/experimental/jsr166/
+
+This product contains a modified version of Robert Harder's Public Domain
+Base64 Encoder and Decoder, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.base64.txt (Public Domain)
+  * HOMEPAGE:
+    * http://iharder.sourceforge.net/current/java/base64/
+
+This product contains a modified portion of 'Webbit', an event based  
+WebSocket and HTTP server, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.webbit.txt (BSD License)
+  * HOMEPAGE:
+    * https://github.com/joewalnes/webbit
+
+This product contains a modified portion of 'Caliper', Google's micro-
+benchmarking framework, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.caliper.txt (Apache License 2.0)
+  * HOMEPAGE:
+    * http://code.google.com/p/caliper/
+
+This product contains a modified portion of 'SLF4J', a simple logging
+facade for Java, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.slf4j.txt (MIT License)
+  * HOMEPAGE:
+    * http://www.slf4j.org/
+
+This product contains a modified portion of 'ArrayDeque', written by Josh
+Bloch of Google, Inc:
+
+  * LICENSE:
+    * license/LICENSE.deque.txt (Public Domain)
+
+This product optionally depends on 'JZlib', a re-implementation of zlib in
+pure Java, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.jzlib.txt (BSD style License)
+  * HOMEPAGE:
+    * http://www.jcraft.com/jzlib/
+
+This product optionally depends on 'Protocol Buffers', Google's data
+interchange format, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.protobuf.txt (New BSD License)
+  * HOMEPAGE:
+    * http://code.google.com/p/protobuf/
+
+This product optionally depends on 'JBoss Marshalling', an alternative Java
+serialization API, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.jboss-marshalling.txt (GNU LGPL 2.1)
+  * HOMEPAGE:
+    * http://www.jboss.org/jbossmarshalling
+
+This product optionally depends on 'Apache Commons Logging', a logging
+framework, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.commons-logging.txt (Apache License 2.0)
+  * HOMEPAGE:
+    * http://commons.apache.org/logging/
+
+This product optionally depends on 'Apache Log4J', a logging framework, which
+can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.log4j.txt (Apache License 2.0)
+  * HOMEPAGE:
+    * http://logging.apache.org/log4j/
+
+This product optionally depends on 'Snappy', a compression library produced
+by Google Inc, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.snappy.txt (New BSD License)
+  * HOMEPAGE:
+    * http://code.google.com/p/snappy/
+
+===============================================================================
+Apache POI Notice:
+
+Apache POI
+Copyright 2009 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+This product contains the DOM4J library (http://www.dom4j.org).
+Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
+
+This product contains parts that were originally based on software from BEA.
+Copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+This product contains W3C XML Schema documents. Copyright 2001-2003 (c)
+World Wide Web Consortium (Massachusetts Institute of Technology, European
+Research Consortium for Informatics and Mathematics, Keio University)
+
+This product contains the Piccolo XML Parser for Java
+(http://piccolo.sourceforge.net/). Copyright 2002 Yuval Oren.
+
+This product contains the chunks_parse_cmds.tbl file from the vsdump program.
+Copyright (C) 2006-2007 Valek Filippov (frob@df.ru)
+
+===============================================================================
+Rocoto Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+===============================================================================
+Apache Shindig Notice:
+
+Apache Shindig
+Copyright 2008 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+-----------------------------------------------------------
+This product includes software (Gadget Server, Gadget Container)
+originally developed by Google Inc. (http://code.google.com/) and licensed
+to the ASF as initial contribution for Shindig.
+
+This distribution includes cryptographic software.  The country in
+which you currently reside may have restrictions on the import,
+possession, use, and/or re-export to another country, of
+encryption software.  BEFORE using any encryption software, please
+check your country's laws, regulations and policies concerning the
+import, possession, or use, and re-export of encryption software, to
+see if this is permitted.  See <http://www.wassenaar.org/> for more
+information.
+
+The U.S. Government Department of Commerce, Bureau of Industry and
+Security (BIS), has classified this software as Export Commodity
+Control Number (ECCN) 5D002.C.1, which includes information security
+software using or performing cryptographic functions with asymmetric
+algorithms.  The form and manner of this Apache Software Foundation
+distribution makes it eligible for export under the License Exception
+ENC Technology Software Unrestricted (TSU) exception (see the BIS
+Export Administration Regulations, Section 740.13) for both object
+code and source code.
+
+The following provides more details on the included cryptographic
+software:
+
+    Apache Shindig interfaces with the Java JCE APIs to provide
+    encryption of messages using the AES standard.
+
+    Apache Shindig PHP interfaces with the mcrypt API
+    <http://mcrypt.sourceforge.net/> to provide encryption
+    of messages using the AES standard.
+
+===============================================================================
+STS Notice:
+
+STS is written by a number of authors who retain their various copyrights.
+Please check individual source files to find their associated copyright
+holders. The following should be a list of all copyright holders.  All
+such code is licensed under the Apache license version 2.0.
+
+Copyright 2011-2013 Colin Scott
+Copyright 2011-2013 Andreas Wundsam
+Copyright 2012-2013 Sam Whitlock
+Copyright 2012-2013 Andrew Or
+Copyright 2012-2013 Eugene Huang
+Copyright 2012-2012 Kyriakos Zarifis
+
+STS depends on libraries in the carp branch of POX, which is also
+licensed under Apache. POX can be found at: https://github.com/noxrepo/pox
+
+STS also optionally loads the hassel network invariant checking
+library as a git submodule, which is licensed under GPLv2 with a FOSS exception.
+In loose terms this means that the GPL header is not "viral" for open source
+projects such as this one. For further information see
+http://tinyurl.com/nupxdwl and http://tinyurl.com/owdygo2
+
+===============================================================================
+Apache Tiles Notice:
+
+Apache Tiles
+Copyright 1999-2009 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+The binary distribution contains software developed by:
+SpringSource: http://www.springsource.com/
+
+The Java 1.4-compatible distribution contains software developed by:
+Retrotranslator (http://retrotranslator.sourceforge.net/).
+
+===============================================================================
+Apache Woden Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+   This product also includes software developed by :
+   
+  - IBM Corporation (http://www.ibm.com),
+      WSDL4J was the initial code contribution for the Apache Woden
+      project and some of the WSDL4J design and code has been reused.
+  - The W3C Consortium (http://www.w3c.org),
+      Common W3C XML Schema and DTD files are packaged with Apache Woden.
+
+Please read the different LICENSE files present in the root directory of
+this distribution.
+
+===============================================================================
+Apache WebServices Notice:
+
+Apache WebServices - WSS4J
+Copyright 2004-2013 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software Copyright University of Southampton IT
+Innovation Centre, 2006 (http://www.it-innovation.soton.ac.uk).
+
+===============================================================================
+Apache XmlBeans Notice:
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+Portions of this software were originally based on the following:
+  - software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+Aside from contributions to the Apache XMLBeans project, this
+software also includes:
+
+ - one or more source files from the Apache Xerces-J and Apache Axis
+   products, Copyright (c) 1999-2003 Apache Software Foundation
+
+ - W3C XML Schema documents Copyright 2001-2003 (c) World Wide Web
+   Consortium (Massachusetts Institute of Technology, European Research
+   Consortium for Informatics and Mathematics, Keio University)
+
+ - resolver.jar from Apache Xml Commons project,
+   Copyright (c) 2001-2003 Apache Software Foundation
+
+ - Piccolo XML Parser for Java from http://piccolo.sourceforge.net/,
+   Copyright 2002 Yuval Oren under the terms of the Apache Software License 2.0
+
+
