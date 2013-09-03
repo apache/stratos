@@ -29,7 +29,7 @@
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/*.sh</exclude>
-                <exclude>**/wso2server.bat</exclude>
+		<exclude>**/wso2server.bat</exclude>
                 <exclude>**/axis2services/sample01.aar</exclude>
                 <exclude>**/axis2services/echo/**</exclude>
                 <exclude>**/axis2services/version/**</exclude>
@@ -74,9 +74,9 @@
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/daemon.sh</exclude>
-                <exclude>**/stratos.bat</exclude>
-		<exclude>**/stratos.sh</exclude>
-		 <exclude>**/log4j.properties</exclude>
+		<exclude>**/log4j.properties</exclude>
+		<exclude>**/wso2server.sh</exclude>
+		<exclude>**/wso2server.bat</exclude>
             </excludes>
             <includes>
                 <include>**/*.sh</include>
