@@ -7,9 +7,6 @@ The Apache Software Foundation (http://www.apache.org/).
 ===============================================================================
 Apache Abdera Notice:
 
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
 Portions of Abdera were orginally developed by
 International Business Machines Corporation and are
 licensed to the Apache Software Foundation under the
@@ -37,9 +34,6 @@ Software Foundation, please see <http://www.apache.org/>.
 ===============================================================================
 Apache Ant Notice:
 
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
    This product includes also software developed by :
      - the W3C consortium (http://www.w3c.org) ,
      - the SAX project (http://www.saxproject.org)
@@ -53,19 +47,8 @@ The Apache Software Foundation (http://www.apache.org/).
    apache@apache.org.
 
 ===============================================================================
-Apache ZooKeeper Notice:
-
-Apache ZooKeeper
-Copyright 2009 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
 Apache Axiom Notice:
 
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
 Portions Copyright 2006 International Business Machines Corp.
 	
 Please read the different LICENSE files present in the licenses directory of
@@ -74,8 +57,6 @@ this distribution.
 ===============================================================================
 Apache Axis2 Notice:
 
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
 Portions Copyright 2006 International Business Machines Corp.
 Portions Copyright 2005-2007 WSO2, Inc.
 
@@ -99,11 +80,6 @@ this distribution.
 ===============================================================================
 Apache BSF Notice:
 
-Copyright (c) 2005 - 2007 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
 *----------------------------------------------------------------------*
 * BSF3 was developed according to the JSR-223 specs, but has not yet   *
 * been tested via the JSR-223 TCK. BSF can therefore not be considered *
@@ -121,12 +97,6 @@ COPYRIGHT NOTICES
 ===============================================================================
 Apache Commons Codec Notice:
 
-Apache Commons Codec
-Copyright 2002-2011 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
 --------------------------------------------------------------------------------
 src/test/org/apache/commons/codec/language/DoubleMetaphoneTest.java contains 
 test data from http://aspell.sourceforge.net/test/batch0.tab.
@@ -137,76 +107,13 @@ provided this notice is preserved.
 --------------------------------------------------------------------------------
 
 ===============================================================================
-Apache Commons Collections Notice:
-
-Apache Commons Collections
-Copyright 2001-2008 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Commons Pool Notice:
-
-Apache Commons Pool
-Copyright 1999-2009 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Commons IO Notice:
-
-Apache Commons IO
-Copyright 2001-2008 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Commons FileUpload Notice:
-
-Apache Commons FileUpload
-Copyright 2002-2008 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Commons HttpClient Notice:
-
-Apache Jakarta HttpClient
-Copyright 1999-2007 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Commons DBCP Notice:
-
-Apache Commons DBCP
-Copyright 2001-2010 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
 Apache Commons Lang Notice:
-
-Apache Commons Lang
-Copyright 2001-2011 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
 
 This product includes software from the Spring Framework,
 under the Apache License 2.0 (see: StringUtils.containsWhitespace())
 
 ===============================================================================
 Compass Framework Notice:
-
-   This product includes software developed by
-   the Apache Software Foundation (http://www.apache.org).
 
    This product also includes software developed by
    Clinton Begin (http://www.ibatis.com).
@@ -282,58 +189,17 @@ This product includes software developed at MuleSoft
 Copyright (c) 2012 MuleSoft Inc.
 
 ===============================================================================
-Apache Geronimo Notice:
-
-Apache Geronimo
-Copyright 2003-2009 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
 Apache HttpComponents Client Notice:
-
-Apache HttpComponents Client
-Copyright 1999-2010 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
 
 This project contains annotations derived from JCIP-ANNOTATIONS
 Copyright (c) 2005 Brian Goetz and Tim Peierls. See http://www.jcip.net
 
 ===============================================================================
-Apache HttpComponents Core Notice:
-
-Apache HttpComponents Core - HttpCore
-Copyright 2006-2009 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Thrift Notice:
-
-Apache Thrift
-Copyright 2006-2010 The Apache Software Foundation.
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
 Apache Neethi Notice:
-
-Apache Neethi
-Copyright 2004-2012 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
 
 This product is tested with testcases developed at W3C under the license:
 http://www.w3.org/Consortium/Legal/2002/copyright-documents-20021231
 The source distribution of this product includes those testcases.
-
 
 ===============================================================================
 sshj Notice:
@@ -405,43 +271,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ===============================================================================
-Jcloud Openstack Notice:
-
-jcloud openstack-nova api
-Copyright 2009-2013 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-jclouds OpenStack Components Core
-Copyright 2009-2013 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-jcloud openstack-keystone api
-Copyright 2009-2013 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
-Apache Felix Notice:
-
-Apache Felix
-Copyright 2006 The Apache Software Foundation
-3	
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
 Apache Tomcat Notice:
-
-Apache Tomcat
-Copyright 1999-2013 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
 
 The Windows Installer is built with the Nullsoft
 Scriptable Install System (NSIS), which is
@@ -610,12 +440,6 @@ by Google Inc, which can be obtained at:
 ===============================================================================
 Apache POI Notice:
 
-Apache POI
-Copyright 2009 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
 This product contains the DOM4J library (http://www.dom4j.org).
 Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
 
@@ -633,19 +457,7 @@ This product contains the chunks_parse_cmds.tbl file from the vsdump program.
 Copyright (C) 2006-2007 Valek Filippov (frob@df.ru)
 
 ===============================================================================
-Rocoto Notice:
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-
-===============================================================================
 Apache Shindig Notice:
-
-Apache Shindig
-Copyright 2008 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
 
 -----------------------------------------------------------
 This product includes software (Gadget Server, Gadget Container)
