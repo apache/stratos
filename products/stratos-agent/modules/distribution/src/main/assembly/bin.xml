@@ -150,7 +150,7 @@
             <filtered>true</filtered>
         </file>
 	<file>
-            <source>src/main/license/LICENSE.txt</source>
+            <source>src/main/license/LICENSE</source>
             <outputDirectory>apache-stratos-agent-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
