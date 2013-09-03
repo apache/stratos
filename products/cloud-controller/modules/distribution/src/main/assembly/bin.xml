@@ -34,7 +34,8 @@
                 <exclude>**/services/sample01.aar</exclude>
                 <exclude>**/repository/services/version/**</exclude>
                 <exclude>**/version.txt</exclude>
-                <exclude>**/LICENSE.txt</exclude>
+                <exclude>**/LICENSE</exclude>
+		<exclude>**/NOTICE</exclude>
                 <exclude>**/stratos.bat</exclude>
 		<exclude>**/launch.ini</exclude>
                 <exclude>**/README.txt</exclude>
@@ -266,7 +267,13 @@
             <filtered>true</filtered>
         </file>
         <file>
-            <source>../../LICENSE.txt</source>
+            <source>src/main/license/LICENSE</source>
+            <outputDirectory>apache-stratos-cc-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+	<file>
+            <source>src/main/notice/NOTICE</source>
             <outputDirectory>apache-stratos-cc-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>

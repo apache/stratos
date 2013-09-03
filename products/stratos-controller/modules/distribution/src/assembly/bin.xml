@@ -37,6 +37,7 @@
                 <exclude>**/version.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/LICENSE.txt</exclude>
+               <exclude>**/NOTICE</exclude>
                 <exclude>**/release-notes.html</exclude>
                 <exclude>**/carbon.xml</exclude>
                 <exclude>**/README*</exclude>
@@ -392,6 +393,12 @@
         <file>
             <source>../../conf/samples-desc.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/notice/NOTICE</source>
+            <outputDirectory>apache-stratos-sc-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
