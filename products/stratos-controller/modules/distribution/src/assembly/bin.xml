@@ -402,6 +402,12 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
+	 <file>
+            <source>src/main/license/LICENSE</source>
+            <outputDirectory>apache-stratos-sc-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
         <file>
             <source>../../conf/datasources.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
