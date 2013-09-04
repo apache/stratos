@@ -50,16 +50,20 @@ How to install
 
 8. Update ./conf/setup.conf and configure parameters. 
 
-9. Run setup.sh as root to install.
+9. Start a message broker for communication of Cloud Controller and other products,here we show how to use WSO2 MB for this. Download WSO2 MB from http://wso2.com/products/message-broker/ and extract into prefered location. Let's say the extracted directory is WSO2MB_HOME. Then find portoffset value at WSO2MB_HOME/repository/conf/carbon.xml and set it to 5.
+Start the MB server with wso2server.sh script at WSO2MB_HOME/bin.
+E.g. ./wso2server.sh
+
+10. Run setup.sh as root to install.
 
     E.g -
-    sudo ./setup.sh -p"<product-list>"
-    <product-list> could be defined as "cc sc elb agent" or any other combination according to the deployment configuration.
+    sudo ./setup.sh -p<product-list>
+    <product-list> could be defined as "cc sc elb agent" or any other combination according to the deployment configuration. Use '-pall' to start all at once.
 
     If you need to clean the setup
     clean.sh
     E.g. -
-    sudo ./clean.sh -a<host-name> -b<host-username> -c<mysql-username> -d<mysql-password>
+    sudo ./clean.sh -a<mysql-username> -b<mysql-password>
 
 ---------------------------------------------------------------------------
 Thanks for using Apache Stratos

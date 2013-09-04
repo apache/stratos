@@ -80,7 +80,7 @@ cp -f repository/deployment/server/cartridges/mysql.xml repository/deployment/se
 cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$openstack_keypair_name\"/>@g" > repository/deployment/server/cartridges/mysql.xml
 
 cp -f repository/deployment/server/cartridges/mysql.xml repository/deployment/server/cartridges/mysql.xml.orig
-cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_tiny\"/>@g" > repository/deployment/server/cartridges/mysql.xml
+cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_small\"/>@g" > repository/deployment/server/cartridges/mysql.xml
 
 cp -f repository/deployment/server/cartridges/mysql.xml repository/deployment/server/cartridges/mysql.xml.orig
 cat repository/deployment/server/cartridges/mysql.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/mysql.xml
@@ -106,7 +106,7 @@ cp -f repository/deployment/server/cartridges/php.xml repository/deployment/serv
 cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$openstack_keypair_name\"/>@g" > repository/deployment/server/cartridges/php.xml
 
 cp -f repository/deployment/server/cartridges/php.xml repository/deployment/server/cartridges/php.xml.orig
-cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_tiny\"/>@g" > repository/deployment/server/cartridges/php.xml
+cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_small\"/>@g" > repository/deployment/server/cartridges/php.xml
 
 cp -f repository/deployment/server/cartridges/php.xml repository/deployment/server/cartridges/php.xml.orig
 cat repository/deployment/server/cartridges/php.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/php.xml
@@ -133,7 +133,7 @@ cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/s
 cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$openstack_keypair_name\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
 
 cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
-cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_tiny\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
+cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$openstack_instance_type_small\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
 
 cp -f repository/deployment/server/cartridges/tomcat.xml repository/deployment/server/cartridges/tomcat.xml.orig
 cat repository/deployment/server/cartridges/tomcat.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$openstack_security_group\"/>@g" > repository/deployment/server/cartridges/tomcat.xml
