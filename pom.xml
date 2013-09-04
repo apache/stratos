@@ -123,6 +123,7 @@
                                 <exclude>**/.classpath</exclude>
                                 <exclude>**/.git/**/*</exclude>
                             </excludes>
+			    <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
                         <executions>
                             <execution>
