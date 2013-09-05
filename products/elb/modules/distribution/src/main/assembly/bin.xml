@@ -39,7 +39,7 @@
                 <exclude>**/version.txt</exclude>
                 <exclude>**/stratos.bat</exclude>
                 <exclude>**/README.txt</exclude>
-                <exclude>**/LICENSE.txt</exclude>
+                <exclude>**/LICENSE</exclude>
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/release-notes.html</exclude>
                 <exclude>**/carbon.xml</exclude>
@@ -253,7 +253,13 @@
         </file>
                                                                 
         <file>
-            <source>../../LICENSE.txt</source>
+            <source>src/main/license/LICENSE</source>
+            <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/notice/NOTICE</source>
             <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>

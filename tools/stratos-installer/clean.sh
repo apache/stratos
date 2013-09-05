@@ -34,7 +34,7 @@ function help {
     echo ""
     echo "Clean the host machine where one or more of the Stratos2 servers are run."
     echo "usage:"
-    echo "clean.sh -a<hostname> -b<stratos username> -c<mysql username> -d<mysql password>"
+    echo "clean.sh -a<mysql username> -b<mysql password>"
     echo ""
 }
 

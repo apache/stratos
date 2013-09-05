@@ -1,39 +1,31 @@
 <!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
     <cartridges>
-
         <!-- You can have 1..n cartridge elements. -->
-        <cartridge type="php" host="php.STRATOS_DOMAIN" provider="zend-provider" version="5.5" multiTenant="false">
+        <cartridge type="tomcat" host="tomcat.stratos.apache.org" provider="apache" version="7" multiTenant="false">
             <!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
                  specified under iaasProvider child elements of cartridge element. -->
 
-            <displayName>PHP</displayName>
-            <description>PHP Cartridge</description>
+            <displayName>Openstack Tomcat</displayName>
+            <description>Openstack Tomcat Cartridge</description>
             <!-- A cartridge element should add a reference to an existing IaaS provider (specified
                  in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
                  Provider (which should have a unique "type" attribute. -->
             <iaasProvider type="openstack" >
-                <imageId>nova/0687ca81-b778-47c4-929b-1edd63469419</imageId>
-                <property name="keyPair" value="stratos-demo"/>
-                <property name="instanceType" value="nova/1"/>
-                <property name="securityGroups" value="default"/>
-                <!--<property name="payload" value="resources/as.txt"/>-->
+                <imageId>region/image-id</imageId>
+                <property name="keyPair" value="key-pait"/>
+                <property name="instanceType" value="instance-type"/>
+                <property name="securityGroups" value="security-groups"/>
+                <!--<property name="payload" value="payload-file-path"/>-->
             </iaasProvider>
-            <!--<iaasProvider type="ec2" >
-                <imageId>us-east-1/ami-ef49e786</imageId>           
-                <property name="keyPair" value="aa"/>
-                <property name="securityGroups" value="default"/>
-                <property name="instanceType" value="m1.large"/>
-                <property name="payload" value="resources/as-ec2.txt"/>
-            </iaasProvider>-->
-            <deployment baseDir="/var/www">
+            <deployment baseDir="/var/lib/tomcat7/webapps">
                 <dir>www=copy#app#files#here</dir>
                 <dir>simplesamlphp=copy#saml#libraries#here</dir>
 		<dir>sql=copy#saml#libraries#here</dir>
             </deployment>
-	   <portMapping>
-               <http port="80" proxyPort="8280"/>
-               <https port="443" proxyPort="8243"/>
-           </portMapping>
+            <portMapping>
+               <http port="8080" proxyPort="8280"/>
+               <https port="8443" proxyPort="8243"/>
+            </portMapping>
             <!--<appTypes>
                 <property name="axis2services" isBothmapping="false"/>
                 <property name="webapps" isBothmapping="true"/>
@@ -41,5 +33,4 @@
                 <property name="jaggeryapps" isBothmapping="true"/>
             </appTypes>-->
         </cartridge>
-
     </cartridges>

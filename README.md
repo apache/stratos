@@ -1,0 +1,88 @@
+Apache Stratos
+==============
+Apache Stratos is a PaaS foundation that supports polyglot environments including PHP, MySQL, and 
+can be extended to support many more. Apache Stratos is also the foundation for multiple flavors of PaaSes, 
+such as Application PaaS (aPaaS), Integration PaaS (iPaaS), or Data PaaS (dPaaS). Stratos is licensed under the Apache License,
+Version 2.0
+
+Features
+--------
+* Artifact Distribution Coordinator (ADC)
+Takes complete applications and breaks it into per-instance components that are then loaded into instances.
+Supports external Git and GitHub repositories.
+
+* Pluggable architecture support for adding new Cartridges	
+A Cartridge is a package of code or configuration that plugs into Apache Stratos to offer a new PaaS service. While, it is also a VM image plus configuration.
+If needed, a tenant can seamlessly add his or her own Cartridges to Apache Stratos.
+Single tenant and multi-tenant Cartridges supported.
+
+* Support for Cartridges	 
+Support for PHP, Tomcat and MySQL Cartridges.
+
+* Elastic Load Balancer (ELB) with Cartridge support Load monitoring
+Makes auto-scaling decisions. Receives load events from various places.
+Sends requests for load up or load down to the Cloud Controller.
+Accepts dynamic cluster domain registrations.
+Accepts static cluster domain registrations at start-up.
+
+* Multiple IaaS support	Production support is provided for AWS EC2, while experimental support is provided for Openstack and vClouds IaaS providers. However, theoretically support can be  provided for any IaaS that jclouds supports. Go to http://www.jclouds.org/ for more information on jclouds.
+
+* Policy based autoscaling into different IaaSes	
+Used to automatically spawn instances.
+The current default implementation considers, the number of requests in-flight as the basis for making auto scaling decisions.
+In the default algorithm the paradigm “scale up early and scale down slowly” is followed.
+
+* Cloud Controller (CC)	
+CC leverages jclouds' APIs and provides a generic interface to communicate with different IaaSes. 
+
+* Topology Synchronization	
+The service topology is maintained in CC and shared across the Apache Stratos components both periodically and on change basis.
+
+* Git based deployment synchronizer	
+Allows users to use their own Git repository to sync artifacts with a service instance.
+
+* Stratos Controller UI	
+Used by tenants to manage subscriptions.
+The Stratos Controller GUI can be used to carryout the following actions: 
+Register a Tenant.
+View list of available Cartridges.
+View list of subscribed Cartridges.
+Subscribe to a Cartridge.
+Unsubscribe from a Cartridge.
+Connect to a data Cartridge while subscribing to a Cartridge.
+View subscribed Cartridge detailed information.
+View list of auto-scaling policies available.
+Add domain mapping.
+Remove domain mapping.
+Synchronize repository.
+Monitor logs of Cartridge instances in EC2.
+
+* Interactive CLI Tool	
+Used by tenants to manage subscriptions.
+All the functions that can be carried out in the UI can be carried out via the CLI with the exception of tenant registering and monitoring logs of Cartridge instances.
+
+* Custom domain mapping support	
+Tenants can add their own domain for a Cartridge, using the domain mapping functionality.
+
+Downloads
+---------
+* release notes: 
+* installation guide: https://cwiki.apache.org/confluence/display/STRATOS/Deployment+Guide
+* maven repo: 
+* snapshot repo: 
+
+Resources
+---------
+* Project page: http://stratos.incubator.apache.org/ 
+* Documentation: https://cwiki.apache.org/confluence/display/STRATOS/Index 
+* Dev group: dev@stratos.incubator.apache.org
+* Issue Tracker: https://issues.apache.org/jira/browse/stratos 
+* Twitter: http://twitter.com/ApacheStratos
+* Facebook: https://www.facebook.com/apache.stratos
+
+License
+-------
+Copyright (C) 2009-2013 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0
+                                                          

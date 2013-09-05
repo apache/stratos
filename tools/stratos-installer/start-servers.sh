@@ -95,16 +95,16 @@ if [[ -z $product_list || $product_list = "" ]]; then
     exit 1
 fi
 
-if [[ $bam = "true" ]]; then
-
-    echo ${bam_path}
-
-    echo "Starting BAM server ..." >> $LOG
-    nohup ${bam_path}/bin/stratos.sh -DportOffset=$bam_port_offset &
-    echo "BAM server started" >> $LOG
-    sleep $SLEEP
-
-fi
+#if [[ $bam = "true" ]]; then
+#
+#    echo ${bam_path}
+#
+#    echo "Starting BAM server ..." >> $LOG
+#    nohup ${bam_path}/bin/stratos.sh -DportOffset=$bam_port_offset &
+#    echo "BAM server started" >> $LOG
+#    sleep $SLEEP
+#
+#fi
 
 if [[ $cc = "true" ]]; then
     echo ${cc_path}
