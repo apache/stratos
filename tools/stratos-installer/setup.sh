@@ -36,41 +36,31 @@ elb="false"
 agent="false"
 sc="false"
 #bam="false"
-demo="openstack"
 product_list="cc;elb;agent;sc"
 enable_internal_git=false
 
 function help {
     echo ""
-    echo "demo means you will setup a demo server of stratos in a single physical machine."
-    echo "This demo server include all stratos products."
-    echo "usage:"
-    echo "setup.sh -u<host username> -d<demo> -p\"<product list>\""
-    echo "eg."
-    echo "sudo JAVA_HOME=<java-home> ./setup.sh -dopenstack -p\"cc elb\""
-    echo "sudo JAVA_HOME=<java-home> ./setup.sh -dopenstack -p\"all\""
+    echo "Usage:"
+    echo "setup.sh -u<host username> -p\"<product list>\""
+    echo "Example:"
+    echo "sudo ./setup.sh -p \"cc elb\""
+    echo "sudo ./setup.sh -p \"all\""
     echo ""
-    echo "-d: <demo name> whether you need to run demo for ec2 or openstack. The value is one of ec2|openstack. By default no demo is setup"
-    echo "-p: <product list> Give one or more of the servers to be setup in this machine. The available servers are"
-    echo "    cc, elb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
+    echo "-p: <product list> Apache Stratos products to be installed on this node. Provide one or more names of the servers."
+    echo "    The available servers are cc, elb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
     echo "-g: <enable_internal_git true|false> Whether enable internal git repo for Stratos2. Default is false"
     echo ""
 }
 
-while getopts p:d:g: opts
+while getopts p:g: opts
 do
   case $opts in
     p)
         product_list=${OPTARG}
-        echo $product_list
-        ;;
-    d)
-        demo=${OPTARG}
-        echo $demo
         ;;
     g)
         enable_internal_git=${OPTARG}
-        echo $enable_internal_git
         ;;
     *)
         help
@@ -78,6 +68,7 @@ do
         ;;
   esac
 done
+
 
 arr=$(echo $product_list | tr " " "\n")
 
@@ -137,124 +128,120 @@ export $enable_internal_git
 export $host_user
 export hostname=`hostname -f`
 
-function setup_validate {
-    
+function setup_validate {    
+    if [[ -z $hostname ]]; then
+        echo "Set up the hostname of the node"
+        exit 1
+    fi
 
-if [[ -z $hostname ]]; then
-    echo "Set up the hostname of the node"
-    exit 1
-fi
+    if [[ -z $userstore_db_hostname ]]; then
+        userstore_db_hostname=""
+    fi
+    if [[ -z $sc_hostname ]]; then
+        sc_hostname=$hostname
+    fi
+    if [[ -z $stratos_foundation_db_hostname ]]; then
+        stratos_foundation_db_hostname=$hostname
+    fi
+    if [[ -z $agent_hostname ]]; then
+        agent_hostname=$hostname
+    fi
+    if [[ -z $cc_hostname ]]; then
+        cc_hostname=$hostname
+    fi
+    if [[ -z $git_hostname ]]; then
+        git_hostname=$hostname
+    fi
+    if [[ -z $nova_controller_hostname ]]; then
+        nova_controller_hostname=$hostname
+    fi
+    if [[ -z $bam_hostname ]]; then
+        bam_hostname=$hostname
+    fi
+    if [[ -z $elb_hostname ]]; then
+        elb_hostname=$hostname
+    fi
 
-if [[ -z $userstore_db_hostname ]]; then
-    userstore_db_hostname=""
-fi
-if [[ -z $sc_hostname ]]; then
-    sc_hostname=$hostname
-fi
-if [[ -z $stratos_foundation_db_hostname ]]; then
-    stratos_foundation_db_hostname=$hostname
-fi
-if [[ -z $agent_hostname ]]; then
-    agent_hostname=$hostname
-fi
-if [[ -z $cc_hostname ]]; then
-    cc_hostname=$hostname
-fi
-if [[ -z $git_hostname ]]; then
-    git_hostname=$hostname
-fi
-if [[ -z $nova_controller_hostname ]]; then
-    nova_controller_hostname=$hostname
-fi
-if [[ -z $bam_hostname ]]; then
-    bam_hostname=$hostname
-fi
-if [[ -z $elb_hostname ]]; then
-   elb_hostname=$hostname
-fi
-
-
-if [[ ( -z $hostip ) ]]; then
-    hostip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
     if [[ ( -z $hostip ) ]]; then
-        helpsetup
-        exit 1
-    fi
-fi
-
-if [[ -z $git_ip ]]; then
-    git_ip=$hostip
-fi
-
-if [[ $sc = "true" ]]; then
-
-    if [[ $enable_internal_git = "true" ]]; then
-        if [[ -z $git_user ]]; then
-            echo "Please specify the git user, because it will be needed to create an internal git repo"
+        hostip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+        if [[ ( -z $hostip ) ]]; then
+            helpsetup
+            exit 1
         fi
-        if [[ -z $axis2c_path ]]; then
-            echo "Please specify the path to Axis2/C binary, because it will be needed to create an internal git repo"
+    fi
+
+    if [[ -z $git_ip ]]; then
+        git_ip=$hostip
+    fi
+
+    if [[ $sc = "true" ]]; then
+        if [[ $enable_internal_git = "true" ]]; then
+            if [[ -z $git_user ]]; then
+                echo "Please specify the git user, because it will be needed to create an internal git repo"
+            fi
+            if [[ -z $axis2c_path ]]; then
+                echo "Please specify the path to Axis2/C binary, because it will be needed to create an internal git repo"
+            fi
+
+            echo "$hostip    git.$stratos_domain" >> /etc/hosts
         fi
-
-        echo "$hostip    git.$stratos2_domain" >> /etc/hosts
-
+        if [[ ( -z $email|| -z $stratos_foundation_db_user || -z $stratos_foundation_db_pass || -z $hostname
+            || -z $sc_path ) ]]; then
+            helpsetup
+            exit 1
+        fi
     fi
 
-    if [[ ( -z $email|| -z $stratos_foundation_db_user || -z $stratos_foundation_db_pass || -z $hostname
-        || -z $sc_path ) ]]; then
-        helpsetup
-        exit 1
+    if [[ $cc = "true" ]]; then
+        if [[ ( -z $hostname || -z $cc_path ) ]]; then
+            helpsetup
+            exit 1
+        fi
     fi
-fi
 
-if [[ $cc = "true" ]]; then
-    if [[ ( -z $hostname || -z $cc_path ) ]]; then
-        helpsetup
-        exit 1
+    if [[ $elb = "true" ]]; then
+        if [[ ( -z $hostname || -z $elb_path ) ]]; then
+            helpsetup
+            exit 1
+        fi
     fi
-fi
 
-if [[ $elb = "true" ]]; then
-    if [[ ( -z $hostname || -z $elb_path ) ]]; then
-        helpsetup
-        exit 1
+    if [[ $agent = "true" ]]; then
+        if [[ ( -z $hostname || -z $agent_path ) ]]; then
+            helpsetup
+            exit 1
+        fi
     fi
-fi
 
-if [[ $agent = "true" ]]; then
-    if [[ ( -z $hostname || -z $agent_path ) ]]; then
-        helpsetup
-        exit 1
-    fi
-fi
-
-if [[ ! -f $mysql_connector_jar ]]; then
-    echo "Please copy the mysql connector jar into the same folder as this command(stratos2 release pack folder) and update conf/setup.conf file"
-    exit 1
-fi
-
-if [[ ! -d $JAVA_HOME ]]; then
-    echo "Please set the JAVA_HOME environment variable for the running user"
-    exit 1
-fi
-export JAVA_HOME=$JAVA_HOME
-
-
-if [[ $openstack_provider_enable = "true" ]]; then
-    if [[ ( -z $openstack_identity || -z $openstack_credential || -z $openstack_jclouds_endpoint ) ]]; then
-        helpsetup
+    if [[ ! -f $mysql_connector_jar ]]; then
+        echo "Please copy the mysql connector jar into the same folder as this command(stratos2 release pack folder) and update conf/setup.conf file"
         exit 1
     fi
 
-fi
-
-if [[ $ec2_provider_enable = "true" ]]; then
-    if [[ ( -z $ec2_identity || -z $ec2_credential || -z $ec2_keypair ) ]]; then
-        helpsetup
+    if [[ ! -d $JAVA_HOME ]]; then
+        echo "Please set the JAVA_HOME environment variable for the running user"
         exit 1
     fi
-fi
+    export JAVA_HOME=$JAVA_HOME
 
+    if [[ $ec2_provider_enabled = "false" && $openstack_provider_enabled = "false" ]]; then
+        echo "Please enable at least one of the IaaS providers in conf/setup.conf file"
+        exit 1
+    fi
+
+    if [[ $openstack_provider_enabled = "true" ]]; then
+        if [[ ( -z $openstack_identity || -z $openstack_credential || -z $openstack_jclouds_endpoint ) ]]; then
+            echo "Please set openstack configuration information in conf/setup.conf file"
+            exit 1
+        fi
+    fi
+
+    if [[ $ec2_provider_enabled = "true" ]]; then
+        if [[ ( -z $ec2_identity || -z $ec2_credential || -z $ec2_keypair_name ) ]]; then
+            echo "Please set ec2 configuration information in conf/setup.conf file"
+            exit 1
+        fi
+    fi
 }
 
 setup_validate
@@ -348,7 +335,7 @@ if [[ $sc = "true" ]]; then
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@AGENT_HOSTNAME:AGENT_PORT@$agent_ip:$agent_https_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_DOMAIN@$stratos2_domain@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/conf/cartridge-config.properties
 
     if [[ $enable_internal_git = "true" ]]; then
         cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
@@ -458,14 +445,14 @@ if [[ $sc = "true" ]]; then
     echo "bind Namespaces" >> $LOG
     #apt-get install bind9 zip
     #Copy the /db.stratos.com file into /etc/bind. Edit it as necessary
-    #cp -f ./resources/db.stratos.com $resource_path/db.$stratos2_domain
+    #cp -f ./resources/db.stratos.com $resource_path/db.$stratos_domain
     #echo "Set ELb Hostname in /etc/bind/db.stratos.com" >> $LOG
-    #cat $resource_path/db.$stratos2_domain | sed -e "s@SC_HOSTNAME@$sc_hostname@g" | sed -e "s@ELB_IP@$elb_ip@g" | sed -e "s@STRATOS_DOMAIN@$stratos2_domain@g" > /etc/bind/db.$stratos2_domain
+    #cat $resource_path/db.$stratos_domain | sed -e "s@SC_HOSTNAME@$sc_hostname@g" | sed -e "s@ELB_IP@$elb_ip@g" | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > /etc/bind/db.$stratos_domain
 
     #echo "Add the following content to /etc/bind/named.conf.local" >> $LOG
-    #echo "zone \"$stratos2_domain\" {" >> /etc/bind/named.conf.local
+    #echo "zone \"$stratos_domain\" {" >> /etc/bind/named.conf.local
     #echo "      type master;" >> /etc/bind/named.conf.local
-    #echo "      file \"/etc/bind/db.$stratos2_domain\";" >> /etc/bind/named.conf.local
+    #echo "      file \"/etc/bind/db.$stratos_domain\";" >> /etc/bind/named.conf.local
     #echo "};" >> /etc/bind/named.conf.local
 
     #Copy https://svn.wso2.org/repos/wso2/scratch/hosting/build/tropos/resources/append_zone_file.sh into /opt/scripts folder
@@ -499,119 +486,50 @@ if [[ $cc = "true" ]]; then
     #cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
     #End MB specific file copying
 
+
+    # Setup IaaS providers
+    # ------------------------------------------------
+    # <iaasProviders>
+    # <!--iaasProvider type="ec2" name="ec2 specific details">
+    #      <className>org.wso2.carbon.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
+    #      <provider>aws-ec2</provider>
+    #      <identity svns:secretAlias="elastic.scaler.openstack.identity">dhsaghfdal</identity>
+    #      <credential svns:secretAlias="elastic.scaler.openstack.credential">jdkjaskd</credential>
+    #      <scaleUpOrder>1</scaleUpOrder>
+    #      <scaleDownOrder>2</scaleDownOrder>
+    #      <property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
+    #      <property name="availabilityZone" value="us-east-1c"/>
+    #      <property name="securityGroups" value="manager,cep,mb,default"/>
+    #      <property name="instanceType" value="m1.large"/>
+    #      <property name="keyPair" value="nirmal-key"/>
+    #      <imageId>us-east-1/ami-52409a3b</imageId>
+    # </iaasProvider-->
+    #      
+    # <iaasProvider type="openstack" name="openstack specific details">
+    #      <className>org.wso2.carbon.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+    #      <provider>openstack-nova</provider>
+    #      <identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
+    #      <credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
+    #      <property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
+    #      <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
+    #      <property name="jclouds.api-version" value="2.0/" />
+    #      <scaleUpOrder>2</scaleUpOrder>
+    #      <scaleDownOrder>3</scaleDownOrder>
+    #      <property name="X" value="x" />
+    #      <property name="Y" value="y" />
+    #      <imageId>nova/dab37f0e-cf6f-4812-86fc-733acf22d5e6</imageId>
+    # </iaasProvider>
+    # </iaasProviders>
+
+    if [[ $ec2_provider_enabled = true ]]; then
+        ./ec2.sh
+    fi
+    if [[ $openstack_provider_enabled = true ]]; then
+        ./openstack.sh
+    fi
+
     pushd $cc_path
-
-# Setup IaaS providers
-# ------------------------------------------------
-#        <iaasProviders>
-#        <!--iaasProvider type="ec2" name="ec2 specific details">
-#            <className>org.wso2.carbon.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
-#                        <provider>aws-ec2</provider>
-#                        <identity svns:secretAlias="elastic.scaler.openstack.identity">dhsaghfdal</identity>
-#                        <credential svns:secretAlias="elastic.scaler.openstack.credential">jdkjaskd</credential>
-#                        <scaleUpOrder>1</scaleUpOrder>
-#                        <scaleDownOrder>2</scaleDownOrder>
-#                        <property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
-#            <property name="availabilityZone" value="us-east-1c"/>
-#                        <property name="securityGroups" value="manager,cep,mb,default"/>
-#            <property name="instanceType" value="m1.large"/>
-#            <property name="keyPair" value="nirmal-key"/>
-#                        <imageId>us-east-1/ami-52409a3b</imageId>
-#                </iaasProvider-->
-#                <iaasProvider type="openstack" name="openstack specific details">
-#            <className>org.wso2.carbon.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
-#                        <provider>openstack-nova</provider>
-#                        <identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
-#                        <credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
-#                        <property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
-#            <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
-#                        <property name="jclouds.api-version" value="2.0/" />
-#                        <scaleUpOrder>2</scaleUpOrder>
-#                        <scaleDownOrder>3</scaleDownOrder>
-#                        <property name="X" value="x" />
-#                        <property name="Y" value="y" />
-#                        <imageId>nova/dab37f0e-cf6f-4812-86fc-733acf22d5e6</imageId>
-#                </iaasProvider>
-#        </iaasProviders>
-
-
-   if [[ $ec2_provider_enable = "true" ]]; then
-       echo "Set EC2 provider specific info in repository/conf/cloud-controller.xml" >> $LOG
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_IDENTITY@$ec2_identity@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_CREDENTIAL@$ec2_credential@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SCALEUP_ORDER@$ec2_scaleup_order@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SCALEDOWN_ORDER@$ec2_scaledown_order@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_AVAILABILITY@$ec2_availability_zone@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SECURITY_GROUPS@$ec2_security_groups@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_INSTANCE_TYPE@$ec2_instance_type@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_KEYPAIR@$ec2_keypair@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_IMAGE_ID@$ec2_image_id@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_END@@g" > repository/conf/cloud-controller.xml
-   
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_START@!--@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
-   fi
-
-   if [[ $openstack_provider_enable = "true" ]]; then
-       echo "Set OpenStack provider specific info in repository/conf/cloud-controller.xml" >> $LOG
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_IDENTITY@$openstack_identity@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_CREDENTIAL@$openstack_credential@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_ENDPOINT@$openstack_jclouds_endpoint@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_SCALEUP_ORDER@$openstack_scaleup_order@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_SCALEDOWN_ORDER@$openstack_scaledown_order@g" > repository/conf/cloud-controller.xml
-       
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_IMAGE_ID@$openstack_image_id@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_START@!--@g" > repository/conf/cloud-controller.xml
-
-       cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-       cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
-   fi
-
+    
     cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
     cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/cloud-controller.xml
 
@@ -782,14 +700,14 @@ if [[ $bam = "true" ]]; then
  popd #bam_path
 fi
 
+
 # Configure cartridges
 # ---------------------------------------------------------
-if [[ $demo = "openstack" ]]; then
-   ./openstack-cartridge-setup.sh
+if [[ "$openstack_provider_enabled" = "true" ]]; then
+    ./openstack-cartridge.sh
 fi
-
-if [[ $demo = "ec2" ]]; then
-    ./ec2-cartridge-setup.sh
+if [[ "$ec2_provider_enabled" = "true" ]]; then
+    ./ec2-cartridge.sh
 fi
 
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
@@ -801,6 +719,7 @@ read -p "Do you want to start the servers [y/n]? " answer
 if [[ $answer != y ]] ; then
     exit 1
 fi
+
 
 # Starting the servers
 # ---------------------------------------------------------

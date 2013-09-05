@@ -298,14 +298,18 @@ synapse-nhttp-transport_2.1.1.wso2v4.jar, synapse-samples_2.1.1.wso2v4.jar, syna
 synapse-tasks_2.1.1.wso2v5.jar, tiles-jsp_2.0.5.wso2v1.jar, tomcat_7.0.34.wso2v1.jar, tomcat-ha_7.0.34.wso2v1.jar,
 tribes_7.0.28.wso2v1.jar, vcloud_1.6.1.incubating.jar, woden_1.0.0.M8-wso2v1.jar, XmlSchema_1.4.7.wso2v2.jar,
 wso2-uri-templates_1.6.2.jar, wss4j_1.5.11.wso2v5.jar, xkms_2.4.0.wso2v1.jar, xmlbeans_2.3.0.wso2v1.jar,
-editarea
+editarea,
+ajax,
+breadcrumbs.js,
+ajaxtags,
+customControls.js,
+excanvas
 
 =============================================================================== 
 The following components are Licensed under BSD license
 =============================================================================== 
 
-For antlr_3.2.0.wso2v1.jar, antlr-runtime_3.2.0.wso2v1.jar, yui
-
+For antlr_3.2.0.wso2v1.jar, antlr-runtime_3.2.0.wso2v1.jar, yui, dhtmlHistory.js, yui_2.7.0b, TaskNode, overlibmws
 For Containing Project URL(s): http://www.antlr.org/
 
 Copyright (c) 2010 Terence Parr
@@ -613,9 +617,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
 The following components are licensed under MIT license
 =============================================================================== 
 
-For hector-core_1.1.0.wso2v1.jar, slf4j.api_1.6.1.jar, slf4j.api_1.6.4.jar , 
-slf4j.log4j12_1.6.1.jar	, slf4j.log4j12_1.6.4.jar, highlighter
-
+For hector-core_1.1.0.wso2v1.jar, slf4j.api_1.6.1.jar, slf4j.api_1.6.4.jar, slf4j.log4j12_1.6.1.jar, slf4j.log4j12_1.6.4.jar, highlighter, Prototype-1.5.0, prototype-1.6, jquery.ui.widget.min.js, Jquery-ui-min, jquery-ui-1.6.custom.min, jquery-1.2.6.min, jquery.cookie, jquery.cookie.js, jquery.flot.js, jquery.form.js, jquery.js, jquery.ui.core.min.js, jquery.cookie.js, jquery.flot.js, jquery.form.js, jquery.js, jquery.ui.core.min.js, jquery.ui.tabs.min.js, jquery.ui.widget.min.js, jquery.validate.js, jquery-1.5.2.min.js, jquery-ui-1.8.11.custom.min.js, dhtmlHistory.js, Scriptaculous-1.7.0
 
 For Containing Project URL(s): http://prettyprint.me/prettyprint.me/index.html
 
