@@ -26,6 +26,8 @@ CARTRIDGE_DEFINITIONS=/opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/deploymen
 SERVICE_DEFINITIONS=/opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/deployment/server/services
 PAYLOADS=/opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/resources/payload
 SC_CONF_MT=/opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/conf/multitenancy
+MYSQL_JAR=/opt/mysql-connector-java-5.1.25.jar
+MYSQL_COPY_PATH=/opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/components/lib
 
 # Make sure the user is running as root.
 if [ "$UID" -ne "0" ]; then
@@ -186,6 +188,9 @@ cp $TEMP_CONFIG_DIR/features-dashboard.xml $TEMP_CONFIG_DIR/features-dashboard.x
 sed -i "s/S2DOMAIN/$DOMAIN/g" $TEMP_CONFIG_DIR/features-dashboard.xml.tmp
 mv $TEMP_CONFIG_DIR/features-dashboard.xml.tmp $SC_CONF_MT/features-dashboard.xml
 chown ubuntu:ubuntu $SC_CONF_MT/features-dashboard.xml
+
+echo "Copying mysql connector jar" >> $LOG
+cp -f $MYSQL_JAR $MYSQL_COPY_PATH
 
 echo "You have successfully configured Apache Stratos!!"
 
