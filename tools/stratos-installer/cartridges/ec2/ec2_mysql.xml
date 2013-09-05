@@ -1,0 +1,36 @@
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+    <cartridges>
+        <!-- You can have 1..n cartridge elements. -->
+        <cartridge type="mysql" host="mysql.STRATOS_DOMAIN" provider="data" version="5.5" multiTenant="false">
+            <!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
+                 specified under iaasProvider child elements of cartridge element. -->
+
+            <displayName>EC2 MySQL</displayName>
+            <description>EC2 MySQL Cartridge</description>
+            <!-- A cartridge element should add a reference to an existing IaaS provider (specified
+                 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+                 Provider (which should have a unique "type" attribute. -->
+            <iaasProvider type="ec2" >
+                <imageId>region/imageid</imageId>           
+                <property name="keyPair" value="key-pair"/>
+                <property name="instanceType" value="instance-type"/>
+                <property name="securityGroups" value="security-groups"/>
+            </iaasProvider>
+            <deployment baseDir="/var/www">
+                <dir>public=copy#app#files#here</dir>
+                <dir>simplesamlphp=copy#saml#libraries#here</dir>
+            </deployment>
+	   <portMapping>
+               <http port="80" proxyPort="8280"/>
+               <https port="443" proxyPort="8243"/>
+           </portMapping>
+           <property name="sshPort" value="22"/>
+           <property name="dataPort" value="3306"/>
+            <!--<appTypes>
+                <property name="axis2services" isBothmapping="false"/>
+                <property name="webapps" isBothmapping="true"/>
+                <property name="jaxwebapps" isBothmapping="true"/>
+                <property name="jaggeryapps" isBothmapping="true"/>
+            </appTypes>-->
+        </cartridge>
+    </cartridges>

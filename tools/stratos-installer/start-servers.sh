@@ -78,7 +78,7 @@ do
         elb="true"
         agent="true"
         sc="true"
-#        bam="true"
+        bam="true"
     fi
     if [[ $x = "demo" ]]; then
         demo="true"
@@ -86,7 +86,7 @@ do
         elb="true"
         agent="true"
         sc="true"
-#	bam="true"
+	bam="true"
     fi
 done
 product_list=`echo $product_list | sed 's/^ *//g' | sed 's/ *$//g'`
@@ -96,14 +96,14 @@ if [[ -z $product_list || $product_list = "" ]]; then
 fi
 
 #if [[ $bam = "true" ]]; then
-
+#
 #    echo ${bam_path}
-
+#
 #    echo "Starting BAM server ..." >> $LOG
 #    nohup ${bam_path}/bin/stratos.sh -DportOffset=$bam_port_offset &
 #    echo "BAM server started" >> $LOG
 #    sleep $SLEEP
-
+#
 #fi
 
 if [[ $cc = "true" ]]; then
