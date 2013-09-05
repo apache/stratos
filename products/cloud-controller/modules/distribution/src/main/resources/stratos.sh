@@ -268,7 +268,6 @@ do
      -XX:HeapDumpPath=repository/logs/heap-dump.hprof \
      -XX:ErrorFile=repository/logs/hs_err_pid.log \
      -XX:OnError="nohup ./stratos.sh &" \
-     -javaagent:"$CARBON_HOME/repository/components/plugins/jamm_0.2.5.wso2v2.jar" \
     $JAVA_OPTS \
     -DandesConfig=qpid-config.xml \
     -Ddisable.cassandra.server.startup=true \
