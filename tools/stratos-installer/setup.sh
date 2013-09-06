@@ -42,14 +42,15 @@ enable_internal_git=false
 function help {
     echo ""
     echo "Usage:"
-    echo "setup.sh -u<host username> -p\"<product list>\""
+    echo "setup.sh -u <host username> -p \"<product list>\""
     echo "Example:"
     echo "sudo ./setup.sh -p \"cc elb\""
     echo "sudo ./setup.sh -p \"all\""
     echo ""
+    echo "-u: <host username> The login user of the host."
     echo "-p: <product list> Apache Stratos products to be installed on this node. Provide one or more names of the servers."
     echo "    The available servers are cc, elb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
-    echo "-g: <enable_internal_git true|false> Whether enable internal git repo for Stratos2. Default is false"
+    echo "-g: <enable_internal_git> true|false Whether enable internal git repo for Stratos2. Default is false"
     echo ""
 }
 
