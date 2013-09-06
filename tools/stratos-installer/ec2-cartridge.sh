@@ -54,7 +54,7 @@ fi
 
 
 pushd $cc_path
-echo "Updating repository/deployment/server/cartridges/ec2_mysql.xml" | tee $LOG
+echo "Updating repository/deployment/server/cartridges/ec2-mysql.xml" | tee $LOG
 # <iaasProvider type="openstack" >
 #    <imageId>nova/d6e5dbe9-f781-460d-b554-23a133a887cd</imageId>
 #    <property name="keyPair" value="stratos-demo"/>
@@ -64,23 +64,23 @@ echo "Updating repository/deployment/server/cartridges/ec2_mysql.xml" | tee $LOG
 # </iaasProvider>
  
 
-cp -f repository/deployment/server/cartridges/ec2_mysql.xml repository/deployment/server/cartridges/ec2_mysql.xml.orig
-cat repository/deployment/server/cartridges/ec2_mysql.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$ec2_keypair_name\"/>@g" > repository/deployment/server/cartridges/ec2_mysql.xml
+cp -f repository/deployment/server/cartridges/ec2-mysql.xml repository/deployment/server/cartridges/ec2-mysql.xml.orig
+cat repository/deployment/server/cartridges/ec2-mysql.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$ec2_keypair_name\"/>@g" > repository/deployment/server/cartridges/ec2-mysql.xml
 
-cp -f repository/deployment/server/cartridges/ec2_mysql.xml repository/deployment/server/cartridges/ec2_mysql.xml.orig
-cat repository/deployment/server/cartridges/ec2_mysql.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$ec2_instance_type\"/>@g" > repository/deployment/server/cartridges/ec2_mysql.xml
+cp -f repository/deployment/server/cartridges/ec2-mysql.xml repository/deployment/server/cartridges/ec2-mysql.xml.orig
+cat repository/deployment/server/cartridges/ec2-mysql.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$ec2_instance_type\"/>@g" > repository/deployment/server/cartridges/ec2-mysql.xml
 
-cp -f repository/deployment/server/cartridges/ec2_mysql.xml repository/deployment/server/cartridges/ec2_mysql.xml.orig
-cat repository/deployment/server/cartridges/ec2_mysql.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$ec2_security_groups\"/>@g" > repository/deployment/server/cartridges/ec2_mysql.xml
+cp -f repository/deployment/server/cartridges/ec2-mysql.xml repository/deployment/server/cartridges/ec2-mysql.xml.orig
+cat repository/deployment/server/cartridges/ec2-mysql.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$ec2_security_groups\"/>@g" > repository/deployment/server/cartridges/ec2-mysql.xml
 
-cp -f repository/deployment/server/cartridges/ec2_mysql.xml repository/deployment/server/cartridges/ec2_mysql.xml.orig
-cat repository/deployment/server/cartridges/ec2_mysql.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$ec2_region/$ec2_mysql_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/ec2_mysql.xml
+cp -f repository/deployment/server/cartridges/ec2-mysql.xml repository/deployment/server/cartridges/ec2-mysql.xml.orig
+cat repository/deployment/server/cartridges/ec2-mysql.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$ec2_region/$ec2_mysql_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/ec2-mysql.xml
 
-cp -f repository/deployment/server/cartridges/ec2_mysql.xml repository/deployment/server/cartridges/ec2_mysql.xml.orig
-cat repository/deployment/server/cartridges/ec2_mysql.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/deployment/server/cartridges/ec2_mysql.xml
+cp -f repository/deployment/server/cartridges/ec2-mysql.xml repository/deployment/server/cartridges/ec2-mysql.xml.orig
+cat repository/deployment/server/cartridges/ec2-mysql.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/deployment/server/cartridges/ec2-mysql.xml
 
 
-echo "Updating repository/deployment/server/cartridges/ec2_php.xml" | tee $LOG
+echo "Updating repository/deployment/server/cartridges/ec2-php.xml" | tee $LOG
 # <iaasProvider type="openstack" >
 #     <imageId>nova/250cd0bb-96a3-4ce8-bec8-7f9c1efea1e6</imageId>
 #     <property name="keyPair" value="stratos-demo"/>
@@ -89,23 +89,23 @@ echo "Updating repository/deployment/server/cartridges/ec2_php.xml" | tee $LOG
 #     <!--<property name="payload" value="resources/as.txt"/>-->
 # </iaasProvider>
 
-cp -f repository/deployment/server/cartridges/ec2_php.xml repository/deployment/server/cartridges/ec2_php.xml.orig
-cat repository/deployment/server/cartridges/ec2_php.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$ec2_keypair_name\"/>@g" > repository/deployment/server/cartridges/ec2_php.xml
+cp -f repository/deployment/server/cartridges/ec2-php.xml repository/deployment/server/cartridges/ec2-php.xml.orig
+cat repository/deployment/server/cartridges/ec2-php.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$ec2_keypair_name\"/>@g" > repository/deployment/server/cartridges/ec2-php.xml
 
-cp -f repository/deployment/server/cartridges/ec2_php.xml repository/deployment/server/cartridges/ec2_php.xml.orig
-cat repository/deployment/server/cartridges/ec2_php.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$ec2_instance_type\"/>@g" > repository/deployment/server/cartridges/ec2_php.xml
+cp -f repository/deployment/server/cartridges/ec2-php.xml repository/deployment/server/cartridges/ec2-php.xml.orig
+cat repository/deployment/server/cartridges/ec2-php.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$ec2_instance_type\"/>@g" > repository/deployment/server/cartridges/ec2-php.xml
 
-cp -f repository/deployment/server/cartridges/ec2_php.xml repository/deployment/server/cartridges/ec2_php.xml.orig
-cat repository/deployment/server/cartridges/ec2_php.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$ec2_security_groups\"/>@g" > repository/deployment/server/cartridges/ec2_php.xml
+cp -f repository/deployment/server/cartridges/ec2-php.xml repository/deployment/server/cartridges/ec2-php.xml.orig
+cat repository/deployment/server/cartridges/ec2-php.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$ec2_security_groups\"/>@g" > repository/deployment/server/cartridges/ec2-php.xml
 
-cp -f repository/deployment/server/cartridges/ec2_php.xml repository/deployment/server/cartridges/ec2_php.xml.orig
-cat repository/deployment/server/cartridges/ec2_php.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$ec2_region/$ec2_php_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/ec2_php.xml
+cp -f repository/deployment/server/cartridges/ec2-php.xml repository/deployment/server/cartridges/ec2-php.xml.orig
+cat repository/deployment/server/cartridges/ec2-php.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$ec2_region/$ec2_php_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/ec2-php.xml
 
-cp -f repository/deployment/server/cartridges/ec2_php.xml repository/deployment/server/cartridges/ec2_php.xml.orig
-cat repository/deployment/server/cartridges/ec2_php.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/deployment/server/cartridges/ec2_php.xml
+cp -f repository/deployment/server/cartridges/ec2-php.xml repository/deployment/server/cartridges/ec2-php.xml.orig
+cat repository/deployment/server/cartridges/ec2-php.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/deployment/server/cartridges/ec2-php.xml
 
 
-echo "Updating repository/deployment/server/cartridges/ec2_tomcat.xml" | tee $LOG
+echo "Updating repository/deployment/server/cartridges/ec2-tomcat.xml" | tee $LOG
 # <iaasProvider type="openstack" >
 #    <imageId>RegionOne/9701eb18-d7e1-4a53-a2bf-a519899d451c</imageId>
 #    <property name="keyPair" value="manula_openstack"/>
@@ -114,19 +114,19 @@ echo "Updating repository/deployment/server/cartridges/ec2_tomcat.xml" | tee $LO
 #    <!--<property name="payload" value="resources/as.txt"/>-->
 # </iaasProvider>
 
-cp -f repository/deployment/server/cartridges/ec2_tomcat.xml repository/deployment/server/cartridges/ec2_tomcat.xml.orig
-cat repository/deployment/server/cartridges/ec2_tomcat.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$ec2_keypair_name\"/>@g" > repository/deployment/server/cartridges/ec2_tomcat.xml
+cp -f repository/deployment/server/cartridges/ec2-tomcat.xml repository/deployment/server/cartridges/ec2-tomcat.xml.orig
+cat repository/deployment/server/cartridges/ec2-tomcat.xml.orig | sed -e "s@<property name=\"keyPair\" value=\"*.*\"/>@<property name=\"keyPair\" value=\"$ec2_keypair_name\"/>@g" > repository/deployment/server/cartridges/ec2-tomcat.xml
 
-cp -f repository/deployment/server/cartridges/ec2_tomcat.xml repository/deployment/server/cartridges/ec2_tomcat.xml.orig
-cat repository/deployment/server/cartridges/ec2_tomcat.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$ec2_instance_type\"/>@g" > repository/deployment/server/cartridges/ec2_tomcat.xml
+cp -f repository/deployment/server/cartridges/ec2-tomcat.xml repository/deployment/server/cartridges/ec2-tomcat.xml.orig
+cat repository/deployment/server/cartridges/ec2-tomcat.xml.orig | sed -e "s@<property name=\"instanceType\" value=\"*.*\"/>@<property name=\"instanceType\" value=\"$ec2_instance_type\"/>@g" > repository/deployment/server/cartridges/ec2-tomcat.xml
 
-cp -f repository/deployment/server/cartridges/ec2_tomcat.xml repository/deployment/server/cartridges/ec2_tomcat.xml.orig
-cat repository/deployment/server/cartridges/ec2_tomcat.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$ec2_security_groups\"/>@g" > repository/deployment/server/cartridges/ec2_tomcat.xml
+cp -f repository/deployment/server/cartridges/ec2-tomcat.xml repository/deployment/server/cartridges/ec2-tomcat.xml.orig
+cat repository/deployment/server/cartridges/ec2-tomcat.xml.orig | sed -e "s@<property name=\"securityGroups\" value=\"*.*\"/>@<property name=\"securityGroups\" value=\"$ec2_security_groups\"/>@g" > repository/deployment/server/cartridges/ec2-tomcat.xml
 
-cp -f repository/deployment/server/cartridges/ec2_tomcat.xml repository/deployment/server/cartridges/ec2_tomcat.xml.orig
-cat repository/deployment/server/cartridges/ec2_tomcat.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$ec2_region/$ec2_tomcat_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/ec2_tomcat.xml
+cp -f repository/deployment/server/cartridges/ec2-tomcat.xml repository/deployment/server/cartridges/ec2-tomcat.xml.orig
+cat repository/deployment/server/cartridges/ec2-tomcat.xml.orig | sed -e "s@<imageId>*.*</imageId>@<imageId>$ec2_region/$ec2_tomcat_cartridge_image_id</imageId>@g" > repository/deployment/server/cartridges/ec2-tomcat.xml
 
-cp -f repository/deployment/server/cartridges/ec2_tomcat.xml repository/deployment/server/cartridges/ec2_tomcat.xml.orig
-cat repository/deployment/server/cartridges/ec2_tomcat.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/deployment/server/cartridges/ec2_tomcat.xml
+cp -f repository/deployment/server/cartridges/ec2-tomcat.xml repository/deployment/server/cartridges/ec2-tomcat.xml.orig
+cat repository/deployment/server/cartridges/ec2-tomcat.xml.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/deployment/server/cartridges/ec2-tomcat.xml
 
 popd # cc_path 

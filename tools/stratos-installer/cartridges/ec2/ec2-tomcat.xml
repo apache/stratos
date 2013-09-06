@@ -1,7 +1,7 @@
 <!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
     <cartridges>
         <!-- You can have 1..n cartridge elements. -->
-        <cartridge type="tomcat" host="tomcat.stratos.apache.org" provider="apache" version="7" multiTenant="false">
+        <cartridge type="tomcat" host="tomcat.STRATOS_DOMAIN" provider="apache" version="7" multiTenant="false">
             <!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
                  specified under iaasProvider child elements of cartridge element. -->
 
