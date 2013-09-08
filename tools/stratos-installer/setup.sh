@@ -104,6 +104,10 @@ if [[ -z $product_list || $product_list = "" ]]; then
     exit 1
 fi
 
+if [[ $ec2_provider_enabled = "true" ]]; then
+    ./ec2-user-data.sh
+fi
+
 function helpsetup {
     echo ""
     echo "Set up the environment variables correctly in conf/setup.conf"

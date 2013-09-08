@@ -58,7 +58,7 @@
                         <credential svns:secretAlias="elastic.scaler.openstack.credential">EC2_CREDENTIAL</credential>
                         <scaleUpOrder>EC2_SCALEUP_ORDER</scaleUpOrder>
                         <scaleDownOrder>EC2_SCALEDOWN_ORDER</scaleDownOrder>
-                        <property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
+                        <property name="jclouds.ec2.ami-query" value="owner-id=EC2_OWNER_ID;state=available;image-type=machine"/>
                         <property name="availabilityZone" value="EC2_AVAILABILITY_ZONE"/>
                         <property name="securityGroups" value="EC2_SECURITY_GROUPS"/>
                         <property name="instanceType" value="EC2_INSTANCE_TYPE"/>
