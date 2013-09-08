@@ -371,6 +371,9 @@ if [[ $sc = "true" ]]; then
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@BAM_PORT@$bam_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@KEYPAIR_PATH@$keypair_path@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@SCRIPT_PATH@$script_path@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
