@@ -37,8 +37,12 @@ How to Install
    cp incubator-stratos/products/elb/modules/distribution/target/apache-stratos-elb-<version>.zip <stratos-pack-path>   
    cp incubator-stratos/products/stratos-agent/distribution/target/apache-stratos-agent-<version>.zip <stratos-pack-path>
 
-4. Download WSO2 Message Broker binary distribution from http://wso2.com and copy it to stratos-pack-path. Here you could use any preferred 
-   message broker product which supports AMPQ.
+4. Download WSO2 Message Broker binary distribution from http://wso2.com/products/message-broker/ and copy it to stratos-pack-path. Here you could use any preferred 
+   message broker product which supports AMQP.
+   Message broker is used for communication of Cloud Controller and other products,here we show how to use WSO2 MB for this.
+   Let's say the extracted directory is WSO2MB_HOME. Then find portoffset value at WSO2MB_HOME/repository/conf/carbon.xml and set it to 5.
+   Start the MB server with wso2server.sh script at WSO2MB_HOME/bin.
+	E.g. ./wso2server.sh
 
 5. Extract WSO2 Message Broker distribution to desired path (this will be identified as stratos-path) and set it's port offset 
    in repository/conf/carbon.xml to 5. This will set the actual port to 5677. 
