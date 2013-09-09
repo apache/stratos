@@ -104,6 +104,10 @@ if [[ -z $product_list || $product_list = "" ]]; then
     exit 1
 fi
 
+if [[ $ec2_provider_enabled = "true" ]]; then
+    ./ec2-user-data.sh
+fi
+
 function helpsetup {
     echo ""
     echo "Set up the environment variables correctly in conf/setup.conf"
@@ -369,6 +373,9 @@ if [[ $sc = "true" ]]; then
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@BAM_PORT@$bam_port@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@KEYPAIR_PATH@$keypair_path@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@SCRIPT_PATH@$script_path@g" > repository/conf/cartridge-config.properties

@@ -55,6 +55,9 @@ cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SCALEDOWN_ORDER@$ec2_scaledown_order@g" > repository/conf/cloud-controller.xml
        
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_OWNER_ID@$ec2_owner_id@g" > repository/conf/cloud-controller.xml
+
+cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_AVAILABILITY_ZONE@$ec2_availability_zone@g" > repository/conf/cloud-controller.xml
        
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
