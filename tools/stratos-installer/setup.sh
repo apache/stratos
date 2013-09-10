@@ -485,12 +485,12 @@ if [[ $cc = "true" ]]; then
         mkdir -p $cc_path/repository/resources/payload
     fi
 
-    cp -f ./config/cc/bin/stratos.sh $cc_path/bin/
+    #cp -f ./config/cc/bin/stratos.sh $cc_path/bin/
     cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/
     cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
 
     #MB specific file copying
-    cp -f ./config/cc/repository/conf/advanced/qpid-virtualhosts.xml $cc_path/repository/conf/advanced/
+    #cp -f ./config/cc/repository/conf/advanced/qpid-virtualhosts.xml $cc_path/repository/conf/advanced/
     #cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
     #End MB specific file copying
 
@@ -552,12 +552,12 @@ if [[ $cc = "true" ]]; then
 
     # Setup MB
     # -------------------------------------------------------------
-    echo "Setup MB" >> $LOG
-    echo "Set settings in cc/repository/conf/advanced/qpid-virtualhosts.xml" >> $LOG
-    cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
-    cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_HOST@$mb_cassandra_host@g" > repository/conf/advanced/qpid-virtualhosts.xml
-    cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
-    cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_PORT@$mb_cassandra_port@g" > repository/conf/advanced/qpid-virtualhosts.xml
+    #echo "Setup MB" >> $LOG
+    #echo "Set settings in cc/repository/conf/advanced/qpid-virtualhosts.xml" >> $LOG
+    #cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
+    #cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_HOST@$mb_cassandra_host@g" > repository/conf/advanced/qpid-virtualhosts.xml
+    #cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
+    #cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_PORT@$mb_cassandra_port@g" > repository/conf/advanced/qpid-virtualhosts.xml
 
     echo "Set settings in cc/repository/conf/carbon.xml" >> $LOG
     cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
@@ -576,7 +576,7 @@ fi
 if [[ $elb = "true" ]]; then
     echo "Setup ELB" >> $LOG
     echo "Configuring the ELB"
-    cp -f ./config/elb/bin/stratos.sh $elb_path/bin/
+    #cp -f ./config/elb/bin/stratos.sh $elb_path/bin/
     cp -f ./config/elb/repository/conf/loadbalancer.conf $elb_path/repository/conf/
     cp -f ./config/elb/repository/conf/axis2/axis2.xml $elb_path/repository/conf/axis2/
     cp -f ./config/elb/repository/conf/datasources/master-datasources.xml $elb_path/repository/conf/datasources/
