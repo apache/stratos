@@ -51,8 +51,21 @@
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <includes>
                 <include>README.txt</include>
-		<include>LICENSE.txt</include>
             </includes>
         </fileSet>
     </fileSets>
+    <files>
+  	<file>
+            <source>src/main/notice/NOTICE</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+	 <file>
+            <source>src/main/license/LICENSE</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+    </files>
 </assembly>
