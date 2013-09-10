@@ -250,7 +250,7 @@ public class CommandLineService {
 			
 			Cartridge[] singleTenantCatridges = stub.getAvailableCartridges(false);
 
-			if (multiTenantCatridges == null) {
+			if (singleTenantCatridges == null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("No single-tenant cartridges available");
 				}
