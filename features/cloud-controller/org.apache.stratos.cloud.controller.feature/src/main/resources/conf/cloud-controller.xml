@@ -22,11 +22,11 @@
 	<svns:secureVault
 		provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
 
-    <dataPublisher enable="false">
+    	<dataPublisher enable="false">
 		<!-- BAM Server Info - default values are 'admin' and 'admin' 
 			 Optional element. -->
 		<bamServer>
-            <!-- BAM server URL should be specified in carbon.xml -->
+            	<!-- BAM server URL should be specified in carbon.xml -->
 			<adminUserName>admin</adminUserName>
 			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
 		</bamServer>
@@ -41,7 +41,7 @@
 		</cassandraInfo-->
 	</dataPublisher>
 
-    <topologySync enable="true">
+    	<topologySync enable="true">
 		<!-- MB server info -->
 		<mbServerUrl>localhost:5674</mbServerUrl>
 		<cron>1 * * * * ? *</cron>
@@ -51,27 +51,27 @@
 		is not necessary [0..1]. But you can use this section to avoid specifying 
 		same property over and over again. -->
 	<iaasProviders>
-        <!--iaasProvider type="ec2" name="ec2 specific details">
-            <className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
+        	<!--iaasProvider type="ec2" name="ec2 specific details">
+            		<className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
 			<provider>aws-ec2</provider>
-			<identity svns:secretAlias="elastic.scaler.openstack.identity">dhsaghfdal</identity>
-			<credential svns:secretAlias="elastic.scaler.openstack.credential">jdkjaskd</credential>
+			<identity svns:secretAlias="cloud.controller.ec2.identity">dhsaghfdal</identity>
+			<credential svns:secretAlias="cloud.controller.ec2.credential">jdkjaskd</credential>
 			<scaleUpOrder>1</scaleUpOrder>
 			<scaleDownOrder>2</scaleDownOrder>
 			<property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
-            <property name="availabilityZone" value="us-east-1c"/>
+            		<property name="availabilityZone" value="us-east-1c"/>
 			<property name="securityGroups" value="manager,cep,mb,default"/>
-            <property name="instanceType" value="m1.large"/>
-            <property name="keyPair" value="nirmal-key"/>
+            		<property name="instanceType" value="m1.large"/>
+            		<property name="keyPair" value="nirmal-key"/>
 			<imageId>us-east-1/ami-52409a3b</imageId>
 		</iaasProvider-->
 		<iaasProvider type="openstack" name="openstack specific details">
-            <className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+            		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
 			<provider>openstack-nova</provider>
 			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
 			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
 			<property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
-            <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
+           		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
 			<property name="jclouds.api-version" value="2.0/" />
 			<scaleUpOrder>2</scaleUpOrder>
 			<scaleDownOrder>3</scaleDownOrder>
