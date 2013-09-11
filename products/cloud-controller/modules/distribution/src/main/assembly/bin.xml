@@ -42,6 +42,8 @@
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/release-notes.html</exclude>
                 <exclude>**/carbon.xml</exclude>
+                <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
+                <exclude>**/repository/conf/security/cipher-text.properties</exclude>
                 <exclude>**/repository/components/**</exclude>
             </excludes>
         </fileSet>
@@ -87,11 +89,8 @@
             <outputDirectory>apache-stratos-cc-${pom.version}/samples/services</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/advanced/
-            </directory>
-            <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/advanced
-            </outputDirectory>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/advanced/</directory>
+            <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/advanced</outputDirectory>
             <includes>
                 <include>**/qpid-config.xml</include>
                 <include>**/qpid-jmxremote.access</include>
@@ -250,11 +249,18 @@
         </file>
         <file>
             <source>src/main/conf/cipher-text.properties</source>
-            <outputDirectory>apache-stratos-cc-${pom.version}/lib</outputDirectory>
+            <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/security/</outputDirectory>
             <destName>cipher-text.properties</destName>
             <filtered>true</filtered>
         </file>
-         <file>
+       <file>
+            <source>src/main/conf/cipher-tool.properties</source>
+            <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/security</outputDirectory>
+            <destName>cipher-tool.properties</destName>
+            <filtered>true</filtered>
+        </file>
+
+	  <file>
             <source>src/main/resources/stratos.bat</source>
             <outputDirectory>apache-stratos-cc-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
