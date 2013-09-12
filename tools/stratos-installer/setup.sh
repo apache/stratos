@@ -175,6 +175,23 @@ function setup_validate {
         fi
     fi
 
+    if [[ ( -z $elb_ip ) ]]; then
+        elb_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+        if [[ ( -z elb_ip ) ]]; then
+            helpsetup
+            exit 1
+        fi
+    fi
+
+    if [[ ( -z $agent_ip ) ]]; then
+        agent_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+        if [[ ( -z $agent_ip ) ]]; then
+            helpsetup
+            exit 1
+        fi
+    fi
+
+
     if [[ -z $git_ip ]]; then
         git_ip=$hostip
     fi
