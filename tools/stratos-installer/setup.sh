@@ -758,12 +758,12 @@ chown -R $host_user.$host_user $log_path
 chmod -R 777 $log_path
 
 export setup_dir=$PWD
-su - $host_user -c "export JAVA_HOME=$JAVA_HOME;source $setup_dir/conf/setup.conf;$setup_dir/start-servers.sh -p$product_list >> $LOG"
+su - $host_user -c "source $setup_dir/conf/setup.conf;$setup_dir/start-servers.sh -p$product_list >> $LOG"
 
 echo "Servers started. Please look at $LOG file for server startup details"
 if [[ $sc == "true" ]]; then
     echo "**************************************************************"
-    echo "Management Console : https://$HOSTNAME:$sc_https_port/"
+    echo "Management Console : https://$stratos_domain:$sc_https_port/"
     echo "**************************************************************"
 fi
 
