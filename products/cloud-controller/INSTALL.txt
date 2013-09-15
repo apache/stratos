@@ -1,4 +1,4 @@
-Installing  Apache Stratos Cloud Controller Server (CC) 3.0.0-SNAPSHOT
+Installing  Apache Stratos Cloud Controller Server (CC) 3.0.0-incubating
 ===================================================================
 
 1. The directory containing this INSTALL.txt file will be the root and it will be

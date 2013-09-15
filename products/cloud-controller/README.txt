@@ -1,8 +1,8 @@
 ================================================================================
-                        Apache Stratos Cloud Controller 3.0.0-SNAPSHOT
+                        Apache Stratos Cloud Controller 3.0.0-incubating
 ================================================================================
 
-Welcome to the Apache Stratos CC 3.0.0-SNAPSHOT release.
+Welcome to the Apache Stratos CC 3.0.0-incubating release.
 
 Apache Stratos Cloud Controller plays a vital role in Stratos 2.0 and is open source and freely
 distributed. Apache Stratos CC is available under the Apache Software License v2.0.
@@ -68,7 +68,7 @@ For more details see
 Installation & Running
 ==================================
 
-1. Extract the apache-stratos-cc-3.0.0-SNAPSHOT.zip and go to the extracted directory
+1. Extract the apache-stratos-cc-3.0.0-incubating.zip and go to the extracted directory
 2. Run the stratos.sh or stratos.bat as appropriate
 3. Point your favourite browser to
 
@@ -81,7 +81,7 @@ Installation & Running
 
    
 
-Apache Stratos CC 3.0.0-SNAPSHOT distribution directory structure
+Apache Stratos CC 3.0.0-incubating distribution directory structure
 =============================================
 
 	CARBON_HOME

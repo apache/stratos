@@ -22,12 +22,12 @@
 
 export LOG=/var/log/stratos.log
 export TEMP_CONFIG_DIR=/opt/tempconfigs
-CARTRIDGE_DEFINITIONS=/opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/deployment/server/cartridges
-SERVICE_DEFINITIONS=/opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/deployment/server/services
-PAYLOADS=/opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/resources/payload
-SC_CONF_MT=/opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/conf/multitenancy
+CARTRIDGE_DEFINITIONS=/opt/apache-stratos-cc-3.0.0-incubating/repository/deployment/server/cartridges
+SERVICE_DEFINITIONS=/opt/apache-stratos-cc-3.0.0-incubating/repository/deployment/server/services
+PAYLOADS=/opt/apache-stratos-cc-3.0.0-incubating/repository/resources/payload
+SC_CONF_MT=/opt/apache-stratos-sc-3.0.0-incubating/repository/conf/multitenancy
 MYSQL_JAR=/opt/mysql-connector-java-5.1.25.jar
-MYSQL_COPY_PATH=/opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/components/lib
+MYSQL_COPY_PATH=/opt/apache-stratos-sc-3.0.0-incubating/repository/components/lib
 
 # Make sure the user is running as root.
 if [ "$UID" -ne "0" ]; then
@@ -134,8 +134,8 @@ sed -i "s/OWNERID/$OWNER_ID/g" $TEMP_CONFIG_DIR/cloud-controller.xml.tmp
 sed -i "s/AVAILABILITYZONE/$AVAILABILITY_ZONE/g" $TEMP_CONFIG_DIR/cloud-controller.xml.tmp
 sed -i "s/SECURITYGROUP/$SECURITY_GROUP/g" $TEMP_CONFIG_DIR/cloud-controller.xml.tmp
 sed -i "s/KEYPAIR/$KEY_PAIR_NAME/g" $TEMP_CONFIG_DIR/cloud-controller.xml.tmp
-mv $TEMP_CONFIG_DIR/cloud-controller.xml.tmp /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/conf/cloud-controller.xml
-chown ubuntu:ubuntu /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/conf/cloud-controller.xml
+mv $TEMP_CONFIG_DIR/cloud-controller.xml.tmp /opt/apache-stratos-cc-3.0.0-incubating/repository/conf/cloud-controller.xml
+chown ubuntu:ubuntu /opt/apache-stratos-cc-3.0.0-incubating/repository/conf/cloud-controller.xml
 
 rm -rf $CARTRIDGE_DEFINITIONS/*
 
@@ -178,10 +178,10 @@ cp $TEMP_CONFIG_DIR/stratosreponotifier.groovy $TEMP_CONFIG_DIR/stratosreponotif
 sed -i "s/stratos_hostname/$stratos_hostname/g" $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp
 mv $TEMP_CONFIG_DIR/stratosreponotifier.groovy.tmp /opt/GitBlit/data/groovy/stratosreponotifier.groovy
 
-mv $TEMP_CONFIG_DIR/cartridge-config.properties.tmp /opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/conf/cartridge-config.properties
-chown ubuntu:ubuntu /opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/conf/cartridge-config.properties
-mv $TEMP_CONFIG_DIR/agent.properties.tmp /opt/apache-stratos-agent-3.0.0-SNAPSHOT/repository/conf/agent.properties
-chown ubuntu:ubuntu /opt/apache-stratos-agent-3.0.0-SNAPSHOT/repository/conf/agent.properties
+mv $TEMP_CONFIG_DIR/cartridge-config.properties.tmp /opt/apache-stratos-sc-3.0.0-incubating/repository/conf/cartridge-config.properties
+chown ubuntu:ubuntu /opt/apache-stratos-sc-3.0.0-incubating/repository/conf/cartridge-config.properties
+mv $TEMP_CONFIG_DIR/agent.properties.tmp /opt/apache-stratos-agent-3.0.0-incubating/repository/conf/agent.properties
+chown ubuntu:ubuntu /opt/apache-stratos-agent-3.0.0-incubating/repository/conf/agent.properties
 
 echo "Setting up domain in features dashboard" >> $LOG
 cp $TEMP_CONFIG_DIR/features-dashboard.xml $TEMP_CONFIG_DIR/features-dashboard.xml.tmp

@@ -32,5 +32,5 @@ if "%STRATOS_CLI_HOME%"=="" set STRATOS_CLI_HOME=%CD%
 
 cd %STRATOS_CLI_HOME%
 
-java -jar "org.apache.stratos.cli-3.0.0-SNAPSHOT-Tool.jar" %*
+java -jar "org.apache.stratos.cli-3.0.0-incubating-Tool.jar" %*
 
