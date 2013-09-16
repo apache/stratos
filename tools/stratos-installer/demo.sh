@@ -146,12 +146,39 @@ cat conf/setup.conf.orig | sed -e "s@export ec2_availability_zone=\"*.*\"@export
 cp -f conf/setup.conf conf/setup.conf.orig
 cat conf/setup.conf.orig | sed -e "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECURITY_GROUP\"@g" > conf/setup.conf
 
-
-# Mapping domain/host names for each product
+# Updating conf/setup.conf with relevent data
 # ----------------------------------------------------------------------------
 
 ip=`facter ipaddress`
 echo "Setting private ip addresses $ip" >> $LOG
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export hostip=\"*.*\"@export hostip=\"$ip\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export host_user=\"*.*\"@export host_user=\"ubuntu\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export userstore_db_pass=\"*.*\"@export userstore_db_pass=\"root\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export stratos_foundation_db_pass=\"*.*\"@export stratos_foundation_db_pass=\"root\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export elb_ip=\"*.*\"@export elb_ip=\"$ip\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export agent_ip=\"*.*\"@export agent_ip=\"$ip\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export ec2_provider_enabled=false@export ec2_provider_enabled=true@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export openstack_provider_enabled=true@export openstack_provider_enabled=false@g" > conf/setup.conf
+
+
+# Mapping domain/host names for each product
+# ----------------------------------------------------------------------------
 
 cp -f /etc/hosts hosts.tmp
 
