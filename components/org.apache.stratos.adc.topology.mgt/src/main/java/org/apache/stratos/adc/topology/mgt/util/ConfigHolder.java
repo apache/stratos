@@ -38,7 +38,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- *
+ * Singleton data holder
  */
 public class ConfigHolder {
 
@@ -54,13 +54,9 @@ public class ConfigHolder {
     private BlockingQueue sharedTopologyDiffQueue = new LinkedBlockingQueue();
     private String previousMessage;
     private Map<String, List<ServiceConfiguration>> serviceNameToServiceConfigurations;
-//    private DependencyManagementService dependencyManager;
     private LoadBalancerConfigurationService lbConfigService;
+
     
-
-//    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServices =
-//            new HashMap<Integer, SynapseEnvironmentService>();
-
     public RealmService getRealmService() {
         return realmService;
     }
@@ -108,14 +104,6 @@ public class ConfigHolder {
         this.configRegistry = configRegistry;
     }
 
-////    public DependencyManagementService getDependencyManager() {
-////        return dependencyManager;
-////    }
-//
-//    public void setDependencyManager(DependencyManagementService dependencyManager) {
-//        this.dependencyManager = dependencyManager;
-//    }
-
     private void assertNull(String name, Object object) throws TopologyMgtException {
         if (object == null) {
             String message = name + " reference in the proxy admin config holder is null";
@@ -131,23 +119,6 @@ public class ConfigHolder {
     public void setGovernanceRegistry(UserRegistry governanceRegistry) {
         this.governanceRegistry = governanceRegistry;
     }
-
-//    public SynapseEnvironmentService getSynapseEnvironmentService(int id) {
-//        return synapseEnvironmentServices.get(id);
-//    }
-//
-//    public void addSynapseEnvironmentService(int id,
-//                                             SynapseEnvironmentService synapseEnvironmentService) {
-//        synapseEnvironmentServices.put(id, synapseEnvironmentService);
-//    }
-//
-//    public void removeSynapseEnvironmentService(int id) {
-//        synapseEnvironmentServices.remove(id);
-//    }
-//
-//    public Map<Integer, SynapseEnvironmentService> getSynapseEnvironmentServices() {
-//        return synapseEnvironmentServices;
-//    }
 
     public ConfigurationContext getConfigCtxt() {
         return configCtxt;
@@ -197,4 +168,5 @@ public class ConfigHolder {
 	public void setPreviousMessage(String previousMessage) {
 	    this.previousMessage = previousMessage;
     }
+
 }

@@ -1,9 +1,10 @@
 package org.apache.stratos.cloud.controller.internal;
 
+import java.util.List;
+
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
-import org.apache.stratos.cloud.controller.interfaces.TopologyPublisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
@@ -12,7 +13,9 @@ import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.DeclarativeServiceReferenceHolder;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
+import org.apache.stratos.lb.common.mb.publish.TopicPublisher;
 
 /**
  * Registering Cloud Controller Service.
@@ -30,16 +33,23 @@ import org.apache.stratos.cloud.controller.util.DeclarativeServiceReferenceHolde
 public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
+    private static final FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     protected void activate(ComponentContext context) {
         try {
-			if (DeclarativeServiceReferenceHolder.getInstance().getConfigPub() == null) {
-				DeclarativeServiceReferenceHolder.getInstance().setConfigPub(
-						(TopologyPublisher) Class.forName(
-								FasterLookUpDataHolder.getInstance()
-										.getTopologyConfig().getClassName())
-								.newInstance());
-				DeclarativeServiceReferenceHolder.getInstance().getConfigPub().init();
+        	// get all the topics - comma separated list
+        	String topicsString = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.TOPICS_PROPERTY);
+        	
+        	if(topicsString == null || topicsString.isEmpty()) {
+        		topicsString = CloudControllerConstants.TOPOLOGY_TOPIC_NAME;
+        	} 
+        	
+        	String[] topics = topicsString.split(",");
+        	
+        	// initialize the topic publishers
+        	for (String topic : topics) {
+				
+        		dataHolder.addTopicPublisher(new TopicPublisher(topic));
 			}
             
             BundleContext bundleContext = context.getBundleContext();
@@ -57,14 +67,14 @@ public class CloudControllerDSComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting the Task Service");
         }
-        DeclarativeServiceReferenceHolder.getInstance().setTaskService(taskService);
+        ServiceReferenceHolder.getInstance().setTaskService(taskService);
     }
 
     protected void unsetTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting the Task Service");
         }
-        DeclarativeServiceReferenceHolder.getInstance().setTaskService(null);
+        ServiceReferenceHolder.getInstance().setTaskService(null);
     }
     
 	protected void setRegistryService(RegistryService registryService) {
@@ -72,7 +82,7 @@ public class CloudControllerDSComponent {
 			log.debug("Setting the Registry Service");
 		}
 		try {
-	        DeclarativeServiceReferenceHolder.getInstance()
+	        ServiceReferenceHolder.getInstance()
 	                                             .setRegistry(registryService.getGovernanceSystemRegistry());
         } catch (RegistryException e) {
         	String msg = "Failed when retrieving Governance System Registry.";
@@ -85,6 +95,14 @@ public class CloudControllerDSComponent {
 		if (log.isDebugEnabled()) {
             log.debug("Unsetting the Registry Service");
         }
-        DeclarativeServiceReferenceHolder.getInstance().setRegistry(null);
+        ServiceReferenceHolder.getInstance().setRegistry(null);
+	}
+	
+	protected void deactivate(ComponentContext ctx) {
+
+		List<TopicPublisher> publishers = dataHolder.getAllTopicPublishers();
+		for (TopicPublisher topicPublisher : publishers) {
+			topicPublisher.close();
+		}
 	}
 }

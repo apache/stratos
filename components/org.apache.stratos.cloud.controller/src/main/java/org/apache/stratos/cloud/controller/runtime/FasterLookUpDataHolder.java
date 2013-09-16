@@ -36,6 +36,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.apache.stratos.cloud.controller.util.TopologyConfig;
+import org.apache.stratos.lb.common.mb.publish.TopicPublisher;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -107,6 +108,12 @@ public class FasterLookUpDataHolder implements Serializable{
 	 * This map will be used to track the running instances count in each IaaS
 	 */
 	private Map<String, Integer> iaasToActiveInstanceCountMap = new HashMap<String, Integer>();
+	
+	/**
+     * Key - name of the topic
+     * Value - corresponding TopicPublisher 
+     */
+    private transient Map<String, TopicPublisher> topicToPublisherMap = new HashMap<String, TopicPublisher>();
 	
 	private transient DataPublisher dataPublisher;
 	private String streamId;
@@ -433,5 +440,17 @@ public class FasterLookUpDataHolder implements Serializable{
 	public void setTopologyConfig(TopologyConfig topologyConfig) {
 		this.topologyConfig = topologyConfig;
 	}
+	
+	public TopicPublisher getTopicPublisher(String topic){
+    	return topicToPublisherMap.get(topic);
+    }
+	
+	public List<TopicPublisher> getAllTopicPublishers() {
+		return new ArrayList<TopicPublisher>(topicToPublisherMap.values());
+	}
+	
+    public void addTopicPublisher(TopicPublisher publisher) {
+        topicToPublisherMap.put(publisher.getTopicName(), publisher);
+    }
 
 }

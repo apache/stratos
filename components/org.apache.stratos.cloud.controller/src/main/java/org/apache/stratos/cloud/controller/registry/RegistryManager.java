@@ -4,7 +4,7 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.persist.Serializer;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.DeclarativeServiceReferenceHolder;
+import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
@@ -22,7 +22,7 @@ public class RegistryManager {
 	
 	public static RegistryManager getInstance() {
 
-		registryService = DeclarativeServiceReferenceHolder.getInstance().getRegistry();
+		registryService = ServiceReferenceHolder.getInstance().getRegistry();
 				
 		if (registryManager == null) {
 			synchronized(RegistryManager.class){

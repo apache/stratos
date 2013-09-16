@@ -21,32 +21,27 @@ package org.apache.stratos.cloud.controller.util;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.apache.stratos.cloud.controller.interfaces.TopologyPublisher;
+import org.apache.stratos.lb.common.mb.publish.TopicPublisher;
 
 /**
  * Singleton class to hold all the service references.
  */
-public class DeclarativeServiceReferenceHolder {
+public class ServiceReferenceHolder {
 
-    private static DeclarativeServiceReferenceHolder instance;
+    private static ServiceReferenceHolder instance;
     private TaskService taskService;
-    private TopologyPublisher configPub;
     private Registry registry;
     
-    private DeclarativeServiceReferenceHolder() {
+    private ServiceReferenceHolder() {
     }
 
-    public static DeclarativeServiceReferenceHolder getInstance() {
+    public static ServiceReferenceHolder getInstance() {
         if (instance == null) {
-            instance = new DeclarativeServiceReferenceHolder();
+            instance = new ServiceReferenceHolder();
         }
         return instance;
     }
     
-    public TopologyPublisher getConfigPub(){
-    	return configPub;
-    }
-
     public TaskService getTaskService() {
         return taskService;
     }
@@ -55,10 +50,6 @@ public class DeclarativeServiceReferenceHolder {
         this.taskService = taskService;
     }
     
-    public void setConfigPub(TopologyPublisher configPub) {
-        this.configPub = configPub;
-    }
-
 	public void setRegistry(UserRegistry governanceSystemRegistry) {
 		registry = governanceSystemRegistry;
     }

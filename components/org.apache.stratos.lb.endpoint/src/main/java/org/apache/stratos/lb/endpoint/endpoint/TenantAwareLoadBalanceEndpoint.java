@@ -87,8 +87,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private boolean initialized;
 
     private String algorithm;
-        private String configuration;
-        private String failOver;
+    private String configuration;
+    private String failOver;
 
     @Override
     public void init(SynapseEnvironment synapseEnvironment) {
@@ -311,7 +311,10 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
 
         TenantDynamicLoadBalanceFaultHandlerImpl faultHandler = new TenantDynamicLoadBalanceFaultHandlerImpl();
-        log.debug("************* Actual Host: "+actualHost +" ****** Target Host: "+targetHost);
+		if (log.isDebugEnabled()) {
+			log.debug("Actual Host: " + actualHost + " - Target Host: " + targetHost);
+		}
+        
         faultHandler.setHost(actualHost != null ? actualHost : targetHost);
 
         if (sessionInformation != null && currentMember != null) {
@@ -340,7 +343,10 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
                     actualHost = domainMapping.getActualHost();
                     
-                    log.debug("************* Actual Host: "+actualHost +" ****** Target Host: "+targetHost);
+					if (log.isDebugEnabled()) {
+						log.debug("Actual Host: " + actualHost + " - Target Host: " + targetHost);
+					}
+                    
                     faultHandler.setHost(actualHost != null ? actualHost : targetHost);
 
                     if(containsPort){
@@ -440,7 +446,9 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         };
 
         public void setHost(String host) {
-            log.debug("Setting host name: "+host);
+			if (log.isDebugEnabled()) {
+				log.debug("Setting host name: " + host);
+			}
             this.host = host;
         }
 

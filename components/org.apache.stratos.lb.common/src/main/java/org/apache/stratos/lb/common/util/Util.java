@@ -16,29 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.interfaces;
+package org.apache.stratos.lb.common.util;
 
-/**
- * All custom implementations of Topology Publisher should extend this abstract class.
- */
-public abstract class TopologyPublisher {
-    
-    /**
-     * This operation will be called once in order to initialize this publisher.
-     */
-    public abstract void init();
-    
-    /**
-     * When a message is ready to be published to a certain topic, this operation will be called.
-     * @param topicName name of the topic to be published.
-     * @param message message to be published.
-     */
-    public abstract void publish(String topicName, String message);
-    
-    /**
-     * Cron expression which explains the frequency that the topology publishing happens.
-     * @return cron expression
-     */
-    public abstract String getCron();
-    
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class Util {
+	private static final Log log = LogFactory.getLog(Util.class);
+
+	public static Properties getProperties(String filePath) {
+		Properties props = new Properties();
+		InputStream is = null;
+
+		// load properties from a properties file
+		try {
+			File f = new File(filePath);
+			is = new FileInputStream(f);
+			props.load(is);
+		} catch (Exception e) {
+			log.error("Failed to load properties from file: " + filePath, e);
+		} finally {
+			try {
+				is.close();
+			} catch (IOException ignore) {
+			}
+		}
+
+		return props;
+	}
+
 }

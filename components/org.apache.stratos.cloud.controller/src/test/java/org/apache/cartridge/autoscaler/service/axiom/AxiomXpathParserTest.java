@@ -59,7 +59,6 @@ public class AxiomXpathParserTest extends TestCase {
     public void testTopologySynchParser() {
 		parser.setTopologySyncRelatedData();
 		assertNotNull(FasterLookUpDataHolder.getInstance().getTopologyConfig());
-		assertEquals("org.apache.stratos.cloud.controller.ABC", FasterLookUpDataHolder.getInstance().getTopologyConfig().getClassName());
 		assertEquals("1 * * * * ? *", FasterLookUpDataHolder.getInstance().getTopologyConfig().getProperty("cron"));
 	}
 

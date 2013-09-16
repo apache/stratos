@@ -119,6 +119,7 @@ public final class CloudControllerConstants {
      * Properties
      */
     public static final String REGION_PROPERTY = "region";
+    public static final String TOPICS_PROPERTY = "topics";
     public static final String PUBLIC_IP_PROPERTY = "public_ip";
     public static final String TENANT_ID_PROPERTY = "tenant_id";
     public static final String ALIAS_PROPERTY = "alias";
@@ -207,7 +208,7 @@ public final class CloudControllerConstants {
      * Topology sync related constants
      */
     public static final String TOPOLOGY_FILE_PATH = CarbonUtils.getCarbonConfigDirPath()+File.separator+"service-topology.conf";
-    public static final String TOPIC_NAME = "cloud-controller-topology";
+    public static final String TOPOLOGY_TOPIC_NAME = "cloud-controller-topology";
 	public static final String TOPOLOGY_SYNC_CRON = "1 * * * * ? *";
 	public static final String TOPOLOGY_SYNC_TASK_NAME = "TopologySynchronizerTask";
 	public static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK";

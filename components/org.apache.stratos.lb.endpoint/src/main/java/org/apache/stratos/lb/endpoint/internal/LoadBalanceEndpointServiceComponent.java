@@ -25,7 +25,7 @@ import org.apache.stratos.lb.endpoint.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.lb.endpoint.builder.TopologySyncher;
 import org.apache.stratos.lb.endpoint.cluster.manager.ClusterDomainManagerImpl;
 import org.apache.stratos.lb.endpoint.endpoint.TenantAwareLoadBalanceEndpoint;
-import org.apache.stratos.lb.endpoint.subscriber.TopologySubscriber;
+import org.apache.stratos.lb.endpoint.subscriber.TopologyListener;
 import org.apache.stratos.lb.endpoint.util.ConfigHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +51,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.apache.stratos.lb.common.mb.subscribe.TopicSubscriber;
 import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
 import org.apache.stratos.lb.endpoint.EndpointDeployer;
 import org.apache.stratos.lb.endpoint.util.TopologyConstants;
@@ -62,336 +63,374 @@ import java.util.Set;
 /**
  * @scr.component name="org.apache.stratos.lbr.endpoint" immediate="true"
  * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- * @scr.reference name="synapse.config.service"
- * interface="org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
- * cardinality="1..1" policy="dynamic" bind="setSynapseConfigurationService"
- * unbind="unsetSynapseConfigurationService"
- * @scr.reference name="synapse.env.service"
- * interface="org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService"
- * cardinality="1..n" policy="dynamic" bind="setSynapseEnvironmentService"
- * unbind="unsetSynapseEnvironmentService"
+ *                interface="org.wso2.carbon.utils.ConfigurationContextService"
+ *                cardinality="1..1" policy="dynamic"
+ *                bind="setConfigurationContextService"
+ *                unbind="unsetConfigurationContextService"
+ * @scr.reference name="synapse.config.service" interface=
+ *                "org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
+ *                cardinality="1..1" policy="dynamic"
+ *                bind="setSynapseConfigurationService"
+ *                unbind="unsetSynapseConfigurationService"
+ * @scr.reference name="synapse.env.service" interface=
+ *                "org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService"
+ *                cardinality="1..n" policy="dynamic"
+ *                bind="setSynapseEnvironmentService"
+ *                unbind="unsetSynapseEnvironmentService"
  * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic"
- * bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="dependency.mgt.service"
- * interface="org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService"
- * cardinality="0..1" policy="dynamic"
- * bind="setDependencyManager" unbind="unsetDependencyManager"
- * @scr.reference name="synapse.registrations.service"
- * interface="org.wso2.carbon.mediation.initializer.services.SynapseRegistrationsService"
- * cardinality="1..n" policy="dynamic" bind="setSynapseRegistrationsService"
- * unbind="unsetSynapseRegistrationsService"
+ *                interface="org.wso2.carbon.registry.core.service.RegistryService"
+ *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
+ *                unbind="unsetRegistryService"
+ * @scr.reference name="dependency.mgt.service" interface=
+ *                "org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService"
+ *                cardinality="0..1" policy="dynamic"
+ *                bind="setDependencyManager" unbind="unsetDependencyManager"
+ * @scr.reference name="synapse.registrations.service" interface=
+ *                "org.wso2.carbon.mediation.initializer.services.SynapseRegistrationsService"
+ *                cardinality="1..n" policy="dynamic"
+ *                bind="setSynapseRegistrationsService"
+ *                unbind="unsetSynapseRegistrationsService"
  * @scr.reference name="user.realmservice.default"
- * interface="org.wso2.carbon.user.core.service.RealmService"
- * cardinality="1..1" policy="dynamic" bind="setRealmService"
- * unbind="unsetRealmService"
- * @scr.reference name="org.apache.stratos.lb.common"
- * interface="org.apache.stratos.lb.common.service.LoadBalancerConfigurationService"
- * cardinality="1..1" policy="dynamic" bind="setLoadBalancerConfigurationService"
- * unbind="unsetLoadBalancerConfigurationService"
+ *                interface="org.wso2.carbon.user.core.service.RealmService"
+ *                cardinality="1..1" policy="dynamic" bind="setRealmService"
+ *                unbind="unsetRealmService"
+ * @scr.reference name="org.apache.stratos.lb.common" interface=
+ *                "org.apache.stratos.lb.common.service.LoadBalancerConfigurationService"
+ *                cardinality="1..1" policy="dynamic"
+ *                bind="setLoadBalancerConfigurationService"
+ *                unbind="unsetLoadBalancerConfigurationService"
  */
-@SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
+@SuppressWarnings({ "UnusedDeclaration", "JavaDoc" })
 public class LoadBalanceEndpointServiceComponent {
 
-    private static final Log log = LogFactory.getLog(LoadBalanceEndpointServiceComponent.class);
+	private static final Log log = LogFactory
+			.getLog(LoadBalanceEndpointServiceComponent.class);
 
-    private boolean activated = false;
+	private boolean activated = false;
 
-    protected void activate(ComponentContext ctxt) {
-        try {
-            SynapseEnvironmentService synEnvService =
-                                                      ConfigHolder.getInstance()
-                                                                  .getSynapseEnvironmentService(MultitenantConstants.SUPER_TENANT_ID);
+	protected void activate(ComponentContext ctxt) {
+		try {
+			SynapseEnvironmentService synEnvService = ConfigHolder
+					.getInstance().getSynapseEnvironmentService(
+							MultitenantConstants.SUPER_TENANT_ID);
 
-            registerDeployer(ConfigHolder.getInstance().getAxisConfiguration(),
-                             synEnvService.getSynapseEnvironment());
+			registerDeployer(ConfigHolder.getInstance().getAxisConfiguration(),
+					synEnvService.getSynapseEnvironment());
 
-			      if (ConfigHolder.getInstance().getConfigCtxt() != null) {
-				      ConfigHolder
-						    .getInstance()
-						    .getConfigCtxt()
-						    .setNonReplicableProperty(
+			if (ConfigHolder.getInstance().getConfigCtxt() != null) {
+				ConfigHolder
+						.getInstance()
+						.getConfigCtxt()
+						.setNonReplicableProperty(
 								CreateClusterDomainMessage.CLUSTER_DOMAIN_MANAGER,
 								new ClusterDomainManagerImpl());
-				        log.debug("Setting property Cluster Domain MANAGER ... ");
+				log.debug("Setting property Cluster Domain MANAGER ... ");
 
-		  	    }
+			}
+
+			SynapseEnvironment synapseEnv = synEnvService
+					.getSynapseEnvironment();
+
+			/* Registering Tenant Aware Load Balance Endpoint */
+
+			// get the main sequence mediator
+			SequenceMediator mainSequence = (SequenceMediator) synapseEnv
+					.getSynapseConfiguration().getSequence("main");
+
+			boolean successfullyRegistered = false;
+
+			// iterate through its child mediators
+			for (Mediator child : mainSequence.getList()) {
+
+				// find the InMediator
+				if (child instanceof InMediator) {
+
+					for (Mediator inChild : ((InMediator) child).getList()) {
+
+						// find the SendMediator
+						if (inChild instanceof SendMediator) {
+
+							SendMediator sendMediator = (SendMediator) inChild;
+
+							/* add Tenant Aware LB endpoint */
+
+							TenantAwareLoadBalanceEndpoint tenantAwareEp = new TenantAwareLoadBalanceEndpoint();
+
+							tenantAwareEp.init(synapseEnv);
+
+							sendMediator.setEndpoint(tenantAwareEp);
+
+							successfullyRegistered = true;
+
+							if (log.isDebugEnabled()) {
+								log.debug("Added Tenant Aware Endpoint: "
+										+ sendMediator.getEndpoint().getName()
+										+ "" + " to Send Mediator.");
+							}
+						}
+					}
+				}
+			}
+
+			if (!successfullyRegistered) {
+				String msg = "Failed to register Tenant Aware Load Balance Endpoint in Send Mediator.";
+				log.fatal(msg);
+				throw new TenantAwareLoadBalanceEndpointException(msg);
+			}
+
+			if (log.isDebugEnabled()) {
+				log.debug("Endpoint Admin bundle is activated ");
+			}
+
+			// start consumer
+			// initialize TopologyBuilder Consumer
+			Thread topologyConsumer = new Thread(new TopologySyncher(
+					ConfigHolder.getInstance().getSharedTopologyDiffQueue()));
+			// start consumer
+			topologyConsumer.start();
+
+			// subscribes to the topic
+			TopicSubscriber tSubscriber = new TopicSubscriber(
+					TopologyConstants.TOPIC_NAME);
+			tSubscriber.setMessageListener(new TopologyListener());
 			
-            SynapseEnvironment synapseEnv = synEnvService.getSynapseEnvironment();
+			Thread subscriber = new Thread(tSubscriber);
+			subscriber.start();
 
-            /* Registering Tenant Aware Load Balance Endpoint */
+			activated = true;
+		} catch (Throwable e) {
+			log.error("Failed to activate Endpoint Admin bundle ", e);
+		}
+	}
 
-            // get the main sequence mediator
-            SequenceMediator mainSequence =
-                                            (SequenceMediator) synapseEnv.getSynapseConfiguration()
-                                                                         .getSequence("main");
+	protected void deactivate(ComponentContext context) {
+		try {
+			Set<Map.Entry<Integer, SynapseEnvironmentService>> entrySet = ConfigHolder
+					.getInstance().getSynapseEnvironmentServices().entrySet();
+			for (Map.Entry<Integer, SynapseEnvironmentService> entry : entrySet) {
+				unregisterDeployer(entry.getValue().getConfigurationContext()
+						.getAxisConfiguration(), entry.getValue()
+						.getSynapseEnvironment());
+			}
+		} catch (Exception e) {
+			log.warn("Couldn't remove the EndpointDeployer");
+		}
+	}
 
-            boolean successfullyRegistered = false;
-            
-            // iterate through its child mediators
-            for (Mediator child : mainSequence.getList()) {
+	/**
+	 * Un-registers the Endpoint deployer.
+	 * 
+	 * @param axisConfig
+	 *            AxisConfiguration to which this deployer belongs
+	 * @param synapseEnvironment
+	 *            SynapseEnvironment to which this deployer belongs
+	 */
+	private void unregisterDeployer(AxisConfiguration axisConfig,
+			SynapseEnvironment synapseEnvironment)
+			throws TenantAwareLoadBalanceEndpointException {
+		if (axisConfig != null) {
+			DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig
+					.getConfigurator();
+			String synapseConfigPath = ServiceBusUtils
+					.getSynapseConfigAbsPath(synapseEnvironment
+							.getServerContextInformation());
+			String endpointDirPath = synapseConfigPath + File.separator
+					+ MultiXMLConfigurationBuilder.ENDPOINTS_DIR;
+			deploymentEngine.removeDeployer(endpointDirPath,
+					ServiceBusConstants.ARTIFACT_EXTENSION);
+		}
+	}
 
-                // find the InMediator
-                if (child instanceof InMediator) {
-                    
-                    for(Mediator inChild : ((InMediator)child).getList()){
-                        
-                        // find the SendMediator
-                        if (inChild instanceof SendMediator) {
-                            
-                            SendMediator sendMediator = (SendMediator) inChild;
-                            
-                            /* add Tenant Aware LB endpoint */
-                            
-                            TenantAwareLoadBalanceEndpoint tenantAwareEp = new TenantAwareLoadBalanceEndpoint();
+	/**
+	 * Registers the Endpoint deployer.
+	 * 
+	 * @param axisConfig
+	 *            AxisConfiguration to which this deployer belongs
+	 * @param synapseEnvironment
+	 *            SynapseEnvironment to which this deployer belongs
+	 */
+	private void registerDeployer(AxisConfiguration axisConfig,
+			SynapseEnvironment synapseEnvironment)
+			throws TenantAwareLoadBalanceEndpointException {
+		SynapseConfiguration synCfg = synapseEnvironment
+				.getSynapseConfiguration();
+		DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig
+				.getConfigurator();
+		SynapseArtifactDeploymentStore deploymentStore = synCfg
+				.getArtifactDeploymentStore();
 
-                            tenantAwareEp.init(synapseEnv);
-                            
-                            sendMediator.setEndpoint(tenantAwareEp);
-                            
-                            successfullyRegistered = true;
+		String synapseConfigPath = ServiceBusUtils
+				.getSynapseConfigAbsPath(synapseEnvironment
+						.getServerContextInformation());
+		String endpointDirPath = synapseConfigPath + File.separator
+				+ MultiXMLConfigurationBuilder.ENDPOINTS_DIR;
 
-                            if (log.isDebugEnabled()) {
-                                log.debug("Added Tenant Aware Endpoint: " +
-                                          sendMediator.getEndpoint().getName() + "" +
-                                          " to Send Mediator.");
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if(!successfullyRegistered){
-                String msg = "Failed to register Tenant Aware Load Balance Endpoint in Send Mediator.";
-                log.fatal(msg);
-                throw new TenantAwareLoadBalanceEndpointException(msg);
-            }
+		for (Endpoint ep : synCfg.getDefinedEndpoints().values()) {
+			if (ep.getFileName() != null) {
+				deploymentStore.addRestoredArtifact(endpointDirPath
+						+ File.separator + ep.getFileName());
+			}
+		}
+		deploymentEngine.addDeployer(new EndpointDeployer(), endpointDirPath,
+				ServiceBusConstants.ARTIFACT_EXTENSION);
+	}
 
-            if (log.isDebugEnabled()) {
-                log.debug("Endpoint Admin bundle is activated ");
-            }
-            
-            if (ConfigHolder.getInstance().getLbConfig().getLoadBalancerConfig().getMbServerUrl() != null) {
+	protected void setConfigurationContextService(
+			ConfigurationContextService cfgCtxService) {
+		ConfigHolder.getInstance().setAxisConfiguration(
+				cfgCtxService.getServerConfigContext().getAxisConfiguration());
+		ConfigHolder.getInstance().setConfigCtxt(
+				cfgCtxService.getServerConfigContext());
+	}
 
-                // start consumer
-                // initialize TopologyBuilder Consumer
-                Thread topologyConsumer =
-                    new Thread(new TopologySyncher(ConfigHolder.getInstance().getSharedTopologyDiffQueue()));
-                // start consumer
-                topologyConsumer.start();
+	protected void unsetConfigurationContextService(
+			ConfigurationContextService cfgCtxService) {
+		ConfigHolder.getInstance().setAxisConfiguration(null);
+		ConfigHolder.getInstance().setConfigCtxt(null);
+	}
 
-                TopologySubscriber.subscribe(TopologyConstants.TOPIC_NAME);
+	protected void setSynapseConfigurationService(
+			SynapseConfigurationService synapseConfigurationService) {
 
-            }
-            activated = true;
-        } catch (Throwable e) {
-            log.error("Failed to activate Endpoint Admin bundle ", e);
-        }
-    }
+		ConfigHolder.getInstance().setSynapseConfiguration(
+				synapseConfigurationService.getSynapseConfiguration());
+	}
 
-    protected void deactivate(ComponentContext context) {
-        try {
-            Set<Map.Entry<Integer, SynapseEnvironmentService>> entrySet =
-                    ConfigHolder.getInstance().getSynapseEnvironmentServices().entrySet();
-            for (Map.Entry<Integer, SynapseEnvironmentService> entry : entrySet) {
-                unregisterDeployer(
-                        entry.getValue().getConfigurationContext().getAxisConfiguration(),
-                        entry.getValue().getSynapseEnvironment());
-            }
-        } catch (Exception e) {
-            log.warn("Couldn't remove the EndpointDeployer");
-        }
-    }
+	protected void unsetSynapseConfigurationService(
+			SynapseConfigurationService synapseConfigurationService) {
 
-    /**
-     * Un-registers the Endpoint deployer.
-     *
-     * @param axisConfig         AxisConfiguration to which this deployer belongs
-     * @param synapseEnvironment SynapseEnvironment to which this deployer belongs
-     */
-    private void unregisterDeployer(AxisConfiguration axisConfig, SynapseEnvironment synapseEnvironment)
-            throws TenantAwareLoadBalanceEndpointException {
-        if (axisConfig != null) {
-            DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
-            String synapseConfigPath = ServiceBusUtils.getSynapseConfigAbsPath(
-                    synapseEnvironment.getServerContextInformation());
-            String endpointDirPath = synapseConfigPath
-                    + File.separator + MultiXMLConfigurationBuilder.ENDPOINTS_DIR;
-            deploymentEngine.removeDeployer(
-                    endpointDirPath, ServiceBusConstants.ARTIFACT_EXTENSION);
-        }
-    }
+		ConfigHolder.getInstance().setSynapseConfiguration(null);
+	}
 
-    /**
-     * Registers the Endpoint deployer.
-     *
-     * @param axisConfig         AxisConfiguration to which this deployer belongs
-     * @param synapseEnvironment SynapseEnvironment to which this deployer belongs
-     */
-    private void registerDeployer(AxisConfiguration axisConfig, SynapseEnvironment synapseEnvironment)
-            throws TenantAwareLoadBalanceEndpointException {
-        SynapseConfiguration synCfg = synapseEnvironment.getSynapseConfiguration();
-        DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
-        SynapseArtifactDeploymentStore deploymentStore = synCfg.getArtifactDeploymentStore();
+	/**
+	 * Here we receive an event about the creation of a SynapseEnvironment. If
+	 * this is SuperTenant we have to wait until all the other constraints are
+	 * met and actual initialization is done in the activate method. Otherwise
+	 * we have to do the activation here.
+	 * 
+	 * @param synapseEnvironmentService
+	 *            SynapseEnvironmentService which contains information about the
+	 *            new Synapse Instance
+	 */
+	protected void setSynapseEnvironmentService(
+			SynapseEnvironmentService synapseEnvironmentService) {
+		boolean alreadyCreated = ConfigHolder.getInstance()
+				.getSynapseEnvironmentServices()
+				.containsKey(synapseEnvironmentService.getTenantId());
 
-        String synapseConfigPath = ServiceBusUtils.getSynapseConfigAbsPath(
-                synapseEnvironment.getServerContextInformation());
-        String endpointDirPath = synapseConfigPath
-                + File.separator + MultiXMLConfigurationBuilder.ENDPOINTS_DIR;
+		ConfigHolder.getInstance().addSynapseEnvironmentService(
+				synapseEnvironmentService.getTenantId(),
+				synapseEnvironmentService);
+		if (activated) {
+			if (!alreadyCreated) {
+				try {
+					registerDeployer(synapseEnvironmentService
+							.getConfigurationContext().getAxisConfiguration(),
+							synapseEnvironmentService.getSynapseEnvironment());
+					if (log.isDebugEnabled()) {
+						log.debug("Endpoint Admin bundle is activated ");
+					}
+				} catch (Throwable e) {
+					log.error("Failed to activate Endpoint Admin bundle ", e);
+				}
+			}
+		}
+	}
 
-        for (Endpoint ep : synCfg.getDefinedEndpoints().values()) {
-            if (ep.getFileName() != null) {
-                deploymentStore.addRestoredArtifact(
-                        endpointDirPath + File.separator + ep.getFileName());
-            }
-        }
-        deploymentEngine.addDeployer(
-                new EndpointDeployer(), endpointDirPath, ServiceBusConstants.ARTIFACT_EXTENSION);
-    }
+	/**
+	 * Here we receive an event about Destroying a SynapseEnvironment. This can
+	 * be the super tenant destruction or a tenant destruction.
+	 * 
+	 * @param synapseEnvironmentService
+	 *            synapseEnvironment
+	 */
+	protected void unsetSynapseEnvironmentService(
+			SynapseEnvironmentService synapseEnvironmentService) {
+		ConfigHolder.getInstance().removeSynapseEnvironmentService(
+				synapseEnvironmentService.getTenantId());
+	}
 
-    protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
-        ConfigHolder.getInstance().setAxisConfiguration(
-                cfgCtxService.getServerConfigContext().getAxisConfiguration());
-        ConfigHolder.getInstance().setConfigCtxt(cfgCtxService.getServerConfigContext());
-    }
+	protected void setRegistryService(RegistryService regService) {
+		if (log.isDebugEnabled()) {
+			log.debug("RegistryService bound to the endpoint component");
+		}
+		try {
+			ConfigHolder.getInstance().setConfigRegistry(
+					regService.getConfigSystemRegistry());
+			ConfigHolder.getInstance().setGovernanceRegistry(
+					regService.getGovernanceSystemRegistry());
+		} catch (RegistryException e) {
+			log.error("Couldn't retrieve the registry from the registry service");
+		}
+	}
 
-    protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
-        ConfigHolder.getInstance().setAxisConfiguration(null);
-        ConfigHolder.getInstance().setConfigCtxt(null);
-    }
+	protected void unsetRegistryService(RegistryService regService) {
+		if (log.isDebugEnabled()) {
+			log.debug("RegistryService unbound from the endpoint component");
+		}
+		ConfigHolder.getInstance().setConfigRegistry(null);
+	}
 
-    protected void setSynapseConfigurationService(
-            SynapseConfigurationService synapseConfigurationService) {
+	protected void setDependencyManager(
+			DependencyManagementService dependencyMgr) {
+		if (log.isDebugEnabled()) {
+			log.debug("Dependency management service bound to the endpoint component");
+		}
+		ConfigHolder.getInstance().setDependencyManager(dependencyMgr);
+	}
 
-        ConfigHolder.getInstance().setSynapseConfiguration(
-                synapseConfigurationService.getSynapseConfiguration());
-    }
+	protected void unsetDependencyManager(
+			DependencyManagementService dependencyMgr) {
+		if (log.isDebugEnabled()) {
+			log.debug("Dependency management service unbound from the endpoint component");
+		}
+		ConfigHolder.getInstance().setDependencyManager(null);
+	}
 
-    protected void unsetSynapseConfigurationService(
-            SynapseConfigurationService synapseConfigurationService) {
+	protected void setSynapseRegistrationsService(
+			SynapseRegistrationsService synapseRegistrationsService) {
 
-        ConfigHolder.getInstance().setSynapseConfiguration(null);
-    }
+	}
 
-    /**
-     * Here we receive an event about the creation of a SynapseEnvironment. If this is
-     * SuperTenant we have to wait until all the other constraints are met and actual
-     * initialization is done in the activate method. Otherwise we have to do the activation here.
-     *
-     * @param synapseEnvironmentService SynapseEnvironmentService which contains information
-     *                                  about the new Synapse Instance
-     */
-    protected void setSynapseEnvironmentService(
-            SynapseEnvironmentService synapseEnvironmentService) {
-        boolean alreadyCreated = ConfigHolder.getInstance().getSynapseEnvironmentServices().
-                containsKey(synapseEnvironmentService.getTenantId());
+	protected void unsetSynapseRegistrationsService(
+			SynapseRegistrationsService synapseRegistrationsService) {
+		int tenantId = synapseRegistrationsService.getTenantId();
+		if (ConfigHolder.getInstance().getSynapseEnvironmentServices()
+				.containsKey(tenantId)) {
+			SynapseEnvironment env = ConfigHolder.getInstance()
+					.getSynapseEnvironmentService(tenantId)
+					.getSynapseEnvironment();
 
-        ConfigHolder.getInstance().addSynapseEnvironmentService(
-                synapseEnvironmentService.getTenantId(),
-                synapseEnvironmentService);
-        if (activated) {
-            if (!alreadyCreated) {
-                try {
-                    registerDeployer(synapseEnvironmentService.getConfigurationContext().getAxisConfiguration(),
-                            synapseEnvironmentService.getSynapseEnvironment());
-                    if (log.isDebugEnabled()) {
-                        log.debug("Endpoint Admin bundle is activated ");
-                    }
-                } catch (Throwable e) {
-                    log.error("Failed to activate Endpoint Admin bundle ", e);
-                }
-            }
-        }
-    }
+			ConfigHolder.getInstance().removeSynapseEnvironmentService(
+					synapseRegistrationsService.getTenantId());
 
-    /**
-     * Here we receive an event about Destroying a SynapseEnvironment. This can be the super tenant
-     * destruction or a tenant destruction.
-     *
-     * @param synapseEnvironmentService synapseEnvironment
-     */
-    protected void unsetSynapseEnvironmentService(
-            SynapseEnvironmentService synapseEnvironmentService) {
-        ConfigHolder.getInstance().removeSynapseEnvironmentService(
-                synapseEnvironmentService.getTenantId());
-    }
+			AxisConfiguration axisConfig = synapseRegistrationsService
+					.getConfigurationContext().getAxisConfiguration();
+			if (axisConfig != null) {
+				try {
+					unregisterDeployer(axisConfig, env);
+				} catch (Exception e) {
+					log.warn("Couldn't remove the EndpointDeployer");
+				}
+			}
+		}
+	}
 
-    protected void setRegistryService(RegistryService regService) {
-        if (log.isDebugEnabled()) {
-            log.debug("RegistryService bound to the endpoint component");
-        }
-        try {
-            ConfigHolder.getInstance().setConfigRegistry(regService.getConfigSystemRegistry());
-            ConfigHolder.getInstance().setGovernanceRegistry(regService.getGovernanceSystemRegistry());
-        } catch (RegistryException e) {
-            log.error("Couldn't retrieve the registry from the registry service");
-        }
-    }
+	protected void setRealmService(RealmService realmService) {
+		ConfigHolder.getInstance().setRealmService(realmService);
+	}
 
-    protected void unsetRegistryService(RegistryService regService) {
-        if (log.isDebugEnabled()) {
-            log.debug("RegistryService unbound from the endpoint component");
-        }
-        ConfigHolder.getInstance().setConfigRegistry(null);
-    }
+	protected void unsetRealmService(RealmService realmService) {
+		ConfigHolder.getInstance().setRealmService(null);
+	}
 
-    protected void setDependencyManager(DependencyManagementService dependencyMgr) {
-        if (log.isDebugEnabled()) {
-            log.debug("Dependency management service bound to the endpoint component");
-        }
-        ConfigHolder.getInstance().setDependencyManager(dependencyMgr);
-    }
+	protected void setLoadBalancerConfigurationService(
+			LoadBalancerConfigurationService lbConfigSer) {
+		ConfigHolder.getInstance().setLbConfigService(lbConfigSer);
+	}
 
-    protected void unsetDependencyManager(DependencyManagementService dependencyMgr) {
-        if (log.isDebugEnabled()) {
-            log.debug("Dependency management service unbound from the endpoint component");
-        }
-        ConfigHolder.getInstance().setDependencyManager(null);
-    }
-
-    protected void setSynapseRegistrationsService(
-            SynapseRegistrationsService synapseRegistrationsService) {
-
-    }
-
-    protected void unsetSynapseRegistrationsService(
-            SynapseRegistrationsService synapseRegistrationsService) {
-        int tenantId = synapseRegistrationsService.getTenantId();
-        if (ConfigHolder.getInstance().getSynapseEnvironmentServices().containsKey(tenantId)) {
-            SynapseEnvironment env = ConfigHolder.getInstance().
-                    getSynapseEnvironmentService(tenantId).getSynapseEnvironment();
-
-            ConfigHolder.getInstance().removeSynapseEnvironmentService(
-                    synapseRegistrationsService.getTenantId());
-
-            AxisConfiguration axisConfig = synapseRegistrationsService.getConfigurationContext().
-                    getAxisConfiguration();
-            if (axisConfig != null) {
-                try {
-                    unregisterDeployer(axisConfig, env);
-                } catch (Exception e) {
-                    log.warn("Couldn't remove the EndpointDeployer");
-                }
-            }
-        }
-    }
-
-    protected void setRealmService(RealmService realmService) {
-        ConfigHolder.getInstance().setRealmService(realmService);
-    }
-
-    protected void unsetRealmService(RealmService realmService) {
-        ConfigHolder.getInstance().setRealmService(null);
-    }
-    
-    protected void setLoadBalancerConfigurationService(LoadBalancerConfigurationService lbConfigSer){
-        ConfigHolder.getInstance().setLbConfigService(lbConfigSer);
-    }
-    
-    protected void unsetLoadBalancerConfigurationService(LoadBalancerConfigurationService lbConfigSer){
-        ConfigHolder.getInstance().setLbConfigService(null);
-    }
+	protected void unsetLoadBalancerConfigurationService(
+			LoadBalancerConfigurationService lbConfigSer) {
+		ConfigHolder.getInstance().setLbConfigService(null);
+	}
 }

@@ -56,49 +56,41 @@ public class TopologySyncher implements Runnable {
     }
 
     @Override
-    public void run() {
-        // grab the lb configuration instance
-        LoadBalancerConfiguration lbconfig = LoadBalancerConfiguration.getInstance();
+	public void run() {
+		// grab the lb configuration instance
+		LoadBalancerConfiguration lbconfig = LoadBalancerConfiguration
+				.getInstance();
 
-        // FIXME Currently there has to be at least one dummy cluster defined in the loadbalancer
-        // conf
-        // in order to proper initialization of TribesClusteringAgent.
-        generateGroupMgtAgents(lbconfig);
+		// FIXME Currently there has to be at least one dummy cluster defined in
+		// the loadbalancer
+		// conf
+		// in order to proper initialization of TribesClusteringAgent.
+		generateGroupMgtAgents(lbconfig);
 
-        // this thread should run for ever, untill terminated.
-        while (true) {
-            try {
+		// this thread should run for ever, untill terminated.
+		while (true) {
+			try {
 
-                // grabs a message or waits till the queue is non-empty
-                String message = sharedQueue.take();
-//                ConfigHolder data = ConfigHolder.getInstance();
+				// grabs a message or waits till the queue is non-empty
+				String message = sharedQueue.take();
 
-                // this message needs attention only if it's not same as the previous message and
-                // not null of course.
-//                if (data.getPreviousMsg() == null || !data.getPreviousMsg().equals(message)) {
+				// build the nginx format of this message, and get the Node
+				// object
+				Node topologyNode = NodeBuilder.buildNode(message);
 
-                    // reset the previous message
-//                    data.setPreviousMsg(message);
+				// create new service configurations
+				List<ServiceConfiguration> currentServiceConfigs = lbconfig
+						.createServicesConfig(topologyNode);
 
-                    // build the nginx format of this message, and get the Node object
-                    Node topologyNode = NodeBuilder.buildNode(message);
+				generateGroupMgtAgents(lbconfig);
 
-                    // reset service configurations
-//                    lbconfig.resetData();
-                    // create new service configurations
-                    List<ServiceConfiguration> currentServiceConfigs = lbconfig.createServicesConfig(topologyNode);
-                    
-                    generateGroupMgtAgents(lbconfig);
-                    
-                    removeGroupMgtAgents(lbconfig, currentServiceConfigs);
+				removeGroupMgtAgents(lbconfig, currentServiceConfigs);
 
-//                }
+			} catch (InterruptedException ignore) {
+			}
+		}
 
-            } catch (InterruptedException ignore) {
-            }
-        }
-
-    }
+	}
 
     private void removeGroupMgtAgents(LoadBalancerConfiguration lbConfig, List<ServiceConfiguration> currentServiceConfigs) {
 

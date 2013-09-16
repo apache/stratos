@@ -12,8 +12,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.lb.common.conf.structure.Node;
 import org.apache.stratos.lb.common.conf.structure.NodeBuilder;
 import org.apache.stratos.lb.common.conf.util.Constants;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.DeclarativeServiceReferenceHolder;
+import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
 
 /**
@@ -25,13 +26,15 @@ public class TopologyBuilder implements Runnable {
     private BlockingQueue<List<ServiceContext>> sharedQueue;
 	private static File topologyFile, backup;
 	private static final Log log = LogFactory.getLog(TopologyBuilder.class);
-	private static DeclarativeServiceReferenceHolder data = DeclarativeServiceReferenceHolder.getInstance();
+	private static FasterLookUpDataHolder data = FasterLookUpDataHolder.getInstance();
+	private static String topic;
 	
 	public TopologyBuilder(BlockingQueue<List<ServiceContext>> queue){
 		
 		sharedQueue = queue;
 		topologyFile = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH);
 		backup = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH+".back");
+		topic = CloudControllerConstants.TOPOLOGY_TOPIC_NAME;
 		
 	}
 	
@@ -104,7 +107,7 @@ public class TopologyBuilder implements Runnable {
             			FileUtils.writeStringToFile(topologyFile, currentNode.toString());
             			
             			// publish to the topic - to sync immediately
-            	        data.getConfigPub().publish(CloudControllerConstants.TOPIC_NAME, currentNode.toString());
+            	        data.getTopicPublisher(topic).publish(currentNode.toString());
 
                     }
             	}
@@ -176,7 +179,7 @@ public class TopologyBuilder implements Runnable {
         FileUtils.writeStringToFile(topologyFile, currentNode.toString());
         
         // publish to the topic - to sync immediately
-        data.getConfigPub().publish(CloudControllerConstants.TOPIC_NAME, currentNode.toString());
+        data.getTopicPublisher(topic).publish(currentNode.toString());
         
         } catch (IOException e) {
             log.error(e.getMessage(), e);

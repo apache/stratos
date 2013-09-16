@@ -30,9 +30,6 @@ public class TopologyConfig implements Serializable{
 	
 	private static final long serialVersionUID = 4435173744617096911L;
 	
-	// default implementation is AMQPTopologyPublisher
-	private String className = "org.apache.stratos.cloud.controller.topic.AMQPTopologyPublisher";
-	
 	/**
      * Key - Value pair.
      */
@@ -58,15 +55,5 @@ public class TopologyConfig implements Serializable{
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
-
-	public String getClassName() {
-		// try to get the class name from a property
-		String temp = getProperty(CloudControllerConstants.CLASS_NAME_ELEMENT);
-		return temp == null ? className : temp;
-	}
-
-	public void setClassName(String className) {
-		this.className = className;
-	}
 
 }

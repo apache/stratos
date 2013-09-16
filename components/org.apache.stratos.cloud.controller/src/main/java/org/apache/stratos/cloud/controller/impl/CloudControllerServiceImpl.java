@@ -62,11 +62,11 @@ import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.DeclarativeServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.IaasContext;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
+import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 
 import com.google.common.collect.Lists;
 
@@ -88,7 +88,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		acquireData();
 
 		// gets the task service
-		TaskService taskService = DeclarativeServiceReferenceHolder
+		TaskService taskService = ServiceReferenceHolder
 				.getInstance().getTaskService();
 
 		if (dataHolder.getEnableBAMDataPublisher()) {
@@ -121,9 +121,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 				tm = taskService
 						.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
+				
+				String cron = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.CRON_ELEMENT);
 
-				TriggerInfo triggerInfo = new TriggerInfo(
-						DeclarativeServiceReferenceHolder.getInstance().getConfigPub().getCron());
+				cron = ( cron == null ? CloudControllerConstants.PUB_CRON_EXPRESSION : cron ); 
+				
+				TriggerInfo triggerInfo = new TriggerInfo(cron);
 				taskInfo = new TaskInfo(
 						CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME,
 						TopologySynchronizerTask.class.getName(),
