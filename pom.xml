@@ -122,6 +122,18 @@
                                 <exclude>**/.project</exclude>
                                 <exclude>**/.classpath</exclude>
                                 <exclude>**/.git/**/*</exclude>
+                                <exclude>**/edit_area/**/*</exclude>
+                                <exclude>**/editarea/**/*</exclude>
+                                <exclude>**/jquery/**/*</exclude>
+                                <exclude>**/jquery*</exclude>
+                                <exclude>**/*.iml</exclude>
+                                <exclude>**/*.iws</exclude>
+                                <exclude>**/*.ipr</exclude>
+                                <exclude>**/.gitignore</exclude>
+                                <exclude>**/payload/launch-params</exclude>
+                                <exclude>**/*.key</exclude>
+				<exclude>**/instrumentation.txt</exclude>
+				<exclude>**/zoo.cfg</exclude>
                             </excludes>
 			    <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
