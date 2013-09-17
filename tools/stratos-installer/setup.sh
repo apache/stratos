@@ -110,7 +110,7 @@ function helpsetup {
     echo ""
 }
 
-echo "user provided in conf/setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
+echo "user provided in conf/setup.conf is $host_user. If you want to provide some other username please specify it at the prompt."
 echo "If you want to continue with $host_user just press enter to continue"
 read username
 if [[ $username != "" ]]; then

@@ -26,7 +26,7 @@
 set -e
 
 source "./conf/setup.conf"
-SLEEP=100
+SLEEP=40
 export LOG=$log_path/stratos-ec2-user-data.log
 
 # Make sure the user is running as root.
@@ -146,6 +146,7 @@ cat conf/setup.conf.orig | sed -e "s@export ec2_availability_zone=\"*.*\"@export
 cp -f conf/setup.conf conf/setup.conf.orig
 cat conf/setup.conf.orig | sed -e "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECURITY_GROUP\"@g" > conf/setup.conf
 
+
 # Updating conf/setup.conf with relevent data
 # ----------------------------------------------------------------------------
 
@@ -176,6 +177,7 @@ cat conf/setup.conf.orig | sed -e "s@export ec2_provider_enabled=false@export ec
 cp -f conf/setup.conf conf/setup.conf.orig
 cat conf/setup.conf.orig | sed -e "s@export openstack_provider_enabled=true@export openstack_provider_enabled=false@g" > conf/setup.conf
 
+rm -f conf/setup.conf.orig
 
 # Mapping domain/host names for each product
 # ----------------------------------------------------------------------------
