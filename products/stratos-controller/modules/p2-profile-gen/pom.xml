@@ -131,9 +131,9 @@
 				    <!--featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.billing.server.feature:2.1.3
 				    </featureArtifactDef-->
-				    <featuredArtifactDef>
+				    <!--featuredArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.rule.service.server.feature:${carbon.version}
-				    </featuredArtifactDef>
+				    </featuredArtifactDef-->
 				    <featureArtifactDef>
                                        org.apache.stratos:org.apache.stratos.logging.mgt.feature:${project.version}
                                     </featureArtifactDef>
@@ -360,10 +360,10 @@
 				    <id>org.wso2.carbon.billing.ui.feature.group</id>
 				    <version>${stratos.component.version}</version>
 				</feature-->
-				<feature>
+				<!--feature>
 				    <id>org.wso2.carbon.rule.service.server.feature.group</id>
 				    <version>${carbon.version}</version>
-				</feature>
+				</feature-->
 				<!--feature>
 				    <id>org.wso2.carbon.reporting.server.feature.group</id>
 				    <version>${carbon.version}</version>

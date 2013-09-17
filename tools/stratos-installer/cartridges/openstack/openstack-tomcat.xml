@@ -1,0 +1,55 @@
+<!--
+  -  Licensed to the Apache Software Foundation (ASF) under one
+  -  or more contributor license agreements.  See the NOTICE file
+  -  distributed with this work for additional information
+  -  regarding copyright ownership.  The ASF licenses this file
+  -  to you under the Apache License, Version 2.0 (the
+  -  "License"); you may not use this file except in compliance
+  -  with the License.  You may obtain a copy of the License at
+  -
+  -      http://www.apache.org/licenses/LICENSE-2.0
+  -
+  -  Unless required by applicable law or agreed to in writing,
+  -  software distributed under the License is distributed on an
+  -  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  -  KIND, either express or implied.  See the License for the
+  -  specific language governing permissions and limitations
+  -  under the License.
+-->
+
+<!-- Use below section to specify properties that are needed in order to start Cartridges.  -->
+    <cartridges>
+        <!-- You can have 1..n cartridge elements. -->
+        <cartridge type="tomcat" host="tomcat.stratos.apache.org" provider="apache" version="7" multiTenant="false">
+            <!-- cartridge element can have 0..n properties, and they'll be overwritten by the properties
+                 specified under iaasProvider child elements of cartridge element. -->
+
+            <displayName>Openstack Tomcat</displayName>
+            <description>Openstack Tomcat Cartridge</description>
+            <!-- A cartridge element should add a reference to an existing IaaS provider (specified
+                 in the above &lt;iaasProviders&gt; section) or it can create a completely new IaaS
+                 Provider (which should have a unique "type" attribute. -->
+            <iaasProvider type="openstack" >
+                <imageId>region/image-id</imageId>
+                <property name="keyPair" value="key-pait"/>
+                <property name="instanceType" value="instance-type"/>
+                <property name="securityGroups" value="security-groups"/>
+                <!--<property name="payload" value="payload-file-path"/>-->
+            </iaasProvider>
+            <deployment baseDir="/var/lib/tomcat7/webapps">
+                <dir>www=copy#app#files#here</dir>
+                <dir>simplesamlphp=copy#saml#libraries#here</dir>
+		<dir>sql=copy#saml#libraries#here</dir>
+            </deployment>
+            <portMapping>
+               <http port="8080" proxyPort="8280"/>
+               <https port="8443" proxyPort="8243"/>
+            </portMapping>
+            <!--<appTypes>
+                <property name="axis2services" isBothmapping="false"/>
+                <property name="webapps" isBothmapping="true"/>
+                <property name="jaxwebapps" isBothmapping="true"/>
+                <property name="jaggeryapps" isBothmapping="true"/>
+            </appTypes>-->
+        </cartridge>
+    </cartridges>

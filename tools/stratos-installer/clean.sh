@@ -34,17 +34,17 @@ function help {
     echo ""
     echo "Clean the host machine where one or more of the Stratos2 servers are run."
     echo "usage:"
-    echo "clean.sh -a<hostname> -b<stratos username> -c<mysql username> -d<mysql password>"
+    echo "clean.sh -u <mysql username> -p <mysql password>"
     echo ""
 }
 
-while getopts a:b: opts
+while getopts u:p: opts
 do
   case $opts in
-    a)
+    u)
         mysql_user=${OPTARG}
         ;;
-    b)
+    p)
         mysql_pass=${OPTARG}
         ;;
     *)
@@ -57,7 +57,7 @@ done
 function helpclean {
     echo ""
     echo "usage:"
-    echo "clean.sh -a<mysql username> -b<mysql password>"
+    echo "clean.sh -u <mysql username> -p <mysql password>"
     echo ""
 }
 
@@ -78,7 +78,7 @@ function clean_validate {
 
 clean_validate
 
-read -p "Please confirm that you want to remove stratos databases, installed content and logs [y/n] " answer
+read -p "Please confirm that you want to remove stratos databases, servers and logs [y/n] " answer
 if [[ $answer != y ]] ; then
     exit 1
 fi
