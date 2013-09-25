@@ -19,9 +19,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-controller-parent</artifactId>
+        <version>3.0.0-incubating</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.manager</groupId>
     <artifactId>cloud-services-icons</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
