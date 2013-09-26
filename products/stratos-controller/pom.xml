@@ -43,7 +43,6 @@
         <module>modules/features-dashboard</module>
         <module>resources/cloud-services-icons</module>
         <module>modules/distribution</module>
-        <module>modules/integration</module>
     </modules>
 
     <dependencyManagement>

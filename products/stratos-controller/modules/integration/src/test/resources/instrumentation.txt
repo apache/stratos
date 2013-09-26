@@ -1,2 +1,0 @@
-org.apache.stratos.tenant.mgt_
-org.apache.stratos.tenant.mgt.core_
