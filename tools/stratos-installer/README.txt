@@ -1,19 +1,19 @@
 Apahe Stratos version 3.0.0
----------------------------------
+-----------------------------
 
 5th September 2013
 Welcome to the Apache Stratos 3.0.0
 
 
 Important
-----------------------------------------
+-----------
 
 Apache Stratos could be installed on a single node or on multiple nodes. When installing on
 multiple nodes copy stratos_installer to each node and update configuration parameters in conf/setup.conf file accordingly.
 
 
 How to Install
-----------------------------------------
+----------------
 
 1. Install following prerequisites:
 
@@ -80,6 +80,7 @@ How to Install
 
     If you need to clean the setup run bellow command:
     sudo ./clean.sh -u <mysql-username> -p <mysql-password>
+
 
 ---------------------------------------------------------------------------
 Thanks for using Apache Stratos
