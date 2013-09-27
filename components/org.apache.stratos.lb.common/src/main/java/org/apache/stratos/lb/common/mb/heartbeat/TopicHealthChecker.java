@@ -32,12 +32,17 @@ import org.apache.stratos.lb.common.mb.connect.TopicConnector;
 public class TopicHealthChecker implements Runnable{
     
     private static final Log log = LogFactory.getLog(TopicHealthChecker.class);
+    private String topicName;
 
+    public TopicHealthChecker(String topic) {
+    	setTopicName(topic);
+	}
+    
     @Override
 	public void run() {
 		log.info("Topic Health Checker is running... ");
 
-		TopicConnector testConnector = new TopicConnector();
+		TopicConnector testConnector = new TopicConnector(getTopicName());
 		while (true) {
 			try {
 				// health checker runs in every 30s
@@ -63,6 +68,14 @@ public class TopicHealthChecker implements Runnable{
 
 		}
 
+	}
+
+	public String getTopicName() {
+		return topicName;
+	}
+
+	public void setTopicName(String topicName) {
+		this.topicName = topicName;
 	}
 
 }

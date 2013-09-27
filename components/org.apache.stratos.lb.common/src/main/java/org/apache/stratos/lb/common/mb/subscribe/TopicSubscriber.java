@@ -91,7 +91,7 @@ public class TopicSubscriber implements Runnable {
 						e);
 			} finally {
 				// start the health checker
-				Thread healthChecker = new Thread(new TopicHealthChecker());
+				Thread healthChecker = new Thread(new TopicHealthChecker(topicName));
 				healthChecker.start();
 				try {
 					// waits till the thread finishes.
