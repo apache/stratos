@@ -24,10 +24,12 @@ import java.io.File;
 
 import javax.jms.JMSException;
 import javax.jms.QueueSession;
+import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 import javax.naming.InitialContext;
+
 import org.apache.stratos.lb.common.util.Util;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -40,11 +42,14 @@ import org.wso2.carbon.utils.CarbonUtils;
  */
 public class TopicConnector {
 	
-	TopicConnection topicConnection;
-	String jndiPropFileDir = CarbonUtils.getCarbonConfigDirPath();
+	private TopicConnection topicConnection;
+	private String jndiPropFileDir = CarbonUtils.getCarbonConfigDirPath();
+	private String topicName;
+	private Topic topic;
 
-	public TopicConnector() {
+	public TopicConnector(String topic) {
 		jndiPropFileDir = System.getProperty("jndi.properties.dir");
+		topicName = topic;
 	}
 
 	public void init() throws Exception {
@@ -55,6 +60,7 @@ public class TopicConnector {
 		TopicConnectionFactory connFactory = (TopicConnectionFactory) ctx
 				.lookup("topicConnectionfactory");
 		topicConnection = connFactory.createTopicConnection();
+		setTopic((Topic) ctx.lookup(topicName));
 		topicConnection.start();
 
 	}
@@ -77,5 +83,21 @@ public class TopicConnector {
 			return;
 		}
 		topicConnection.close();
+	}
+
+	public String getTopicName() {
+		return topicName;
+	}
+
+	public void setTopicName(String topicName) {
+		this.topicName = topicName;
+	}
+
+	public Topic getTopic() {
+		return topic;
+	}
+
+	public void setTopic(Topic topic) {
+		this.topic = topic;
 	}
 }
