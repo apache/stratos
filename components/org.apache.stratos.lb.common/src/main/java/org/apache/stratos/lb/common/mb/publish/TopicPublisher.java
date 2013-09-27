@@ -46,7 +46,7 @@ public class TopicPublisher {
 	 */
 	public TopicPublisher(String aTopicName) {
 		topicName = aTopicName;
-		connector = new TopicConnector();
+		connector = new TopicConnector(aTopicName);
 	}
 
 	/**
@@ -68,9 +68,15 @@ public class TopicPublisher {
 		
 		// closes all sessions/connections
 		try {
-			topicPublisher.close();
-			topicSession.close();
-			connector.close();
+			if (topicPublisher != null) {
+				topicPublisher.close();
+			}
+			if (topicSession != null) {
+				topicSession.close();
+			}
+			if (connector != null) {
+				connector.close();
+			}
 		} catch (JMSException ignore) {
 		}
 	}
@@ -91,8 +97,8 @@ public class TopicPublisher {
 		connector.init();
 		// get a session
 		topicSession = connector.newSession();
-		Topic topic;
-		topic = topicSession.createTopic(topicName);
+		Topic topic = connector.getTopic();
+//		topic = topicSession.createTopic(topicName);
 		topicPublisher = topicSession.createPublisher(topic);
 	}
 	

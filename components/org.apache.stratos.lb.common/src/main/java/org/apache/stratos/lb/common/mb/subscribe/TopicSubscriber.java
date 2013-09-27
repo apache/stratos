@@ -48,7 +48,7 @@ public class TopicSubscriber implements Runnable {
 	 */
 	public TopicSubscriber(String aTopicName) {
 		topicName = aTopicName;
-		connector = new TopicConnector();
+		connector = new TopicConnector(aTopicName);
 	}
 
 	private void doSubscribe() throws Exception, JMSException {
@@ -56,8 +56,9 @@ public class TopicSubscriber implements Runnable {
 		connector.init();
 		// get a session
 		topicSession = connector.newSession();
-		Topic topic;
-		topic = topicSession.createTopic(topicName);
+		Topic topic = connector.getTopic();
+		//since dynamic topic creation is not supported by most of the brokers
+//		topic = topicSession.createTopic(topicName);
 		topicSubscriber = topicSession.createSubscriber(topic);
 
 		topicSubscriber.setMessageListener(messageListener);
@@ -100,9 +101,15 @@ public class TopicSubscriber implements Runnable {
 				// health checker failed
 				// closes all sessions/connections
 				try {
-					topicSubscriber.close();
-					topicSession.close();
-					connector.close();
+					if (topicSubscriber != null) {
+						topicSubscriber.close();
+					}
+					if (topicSession != null) {
+						topicSession.close();
+					}
+					if (connector != null) {
+						connector.close();
+					}
 				} catch (JMSException ignore) {
 				}
 			}
