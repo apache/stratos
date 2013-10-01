@@ -396,7 +396,7 @@
                             <id>attach-sources</id>
                             <phase>verify</phase>
                             <goals>
-                                <goal>jar-no-fork</goal>
+                                <goal>jar</goal>
                             </goals>
                         </execution>
                     </executions>
@@ -409,7 +409,24 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                 </plugin>
-            </plugins>
+          <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-remote-resources-plugin</artifactId>
+        	    <executions>
+              		<execution>
+                	<goals>
+                  		<goal>process</goal>
+                	</goals>
+                	<configuration>
+	            		<resourceBundles>
+					<resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+					<resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+               			</resourceBundles>
+                	</configuration>
+              	   	 </execution>
+            	    </executions>
+          </plugin>
+	</plugins>
         </pluginManagement>
     </build>
 

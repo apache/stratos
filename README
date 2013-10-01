@@ -67,7 +67,7 @@ Tenants can add their own domain for a Cartridge, using the domain mapping funct
 
 Downloads
 ---------
-* release notes: 
+* release notes: https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12314521&version=12324964
 * installation guide: https://cwiki.apache.org/confluence/display/STRATOS/Deployment+Guide
 * maven repo: 
 * snapshot repo: 
