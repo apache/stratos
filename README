@@ -4,6 +4,7 @@ Apache Stratos is a PaaS foundation that supports polyglot environments includin
 can be extended to support many more. Apache Stratos is also the foundation for multiple flavors of PaaSes, 
 such as Application PaaS (aPaaS), Integration PaaS (iPaaS), or Data PaaS (dPaaS). Stratos is licensed under the Apache License,
 Version 2.0
+Thia directory contains complete source of all the Apache Stratos products(Strotos Controller, Cloud Controller, Cartridge Agent, Stratos CLI, and Stratos ELB).
 
 Features
 --------
