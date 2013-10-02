@@ -18,7 +18,7 @@
   ~ under the License.
   -->
 <assembly>
-    <!--id>bin</id-->
+    <id>bin</id>
     <formats>
         <format>zip</format>
     </formats>

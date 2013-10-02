@@ -621,6 +621,7 @@
                                     <descriptors>
                                         <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
                                     </descriptors>
+				    <appendAssemblyId>false</appendAssemblyId>
                                 </configuration>
                             </execution>
                         </executions>
