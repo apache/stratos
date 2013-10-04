@@ -112,6 +112,7 @@ public class AWSEC2Iaas extends Iaas {
 					.placementGroup(iaas.getProperty("availabilityZone"));
 		}
 
+        // security group names
 		if (iaas.getProperty("securityGroups") != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
@@ -120,6 +121,16 @@ public class AWSEC2Iaas extends Iaas {
 									CloudControllerConstants.ENTRY_SEPARATOR));
 
 		}
+
+        // security group ids
+        if (iaas.getProperty("securityGroupIds") != null) {
+            template.getOptions()
+                    .as(AWSEC2TemplateOptions.class)
+                    .securityGroupIds(iaas.getProperty("securityGroupIds")
+                                        .split(CloudControllerConstants.ENTRY_SEPARATOR));
+
+        }
+
 
 		if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
 			template.getOptions()
