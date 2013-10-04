@@ -284,6 +284,7 @@ do
     -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
     -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
     -Dconf.location="$CARBON_HOME/repository/conf"\
+    -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
     -Dcom.atomikos.icatch.hide_init_file_path=true \
     -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true \

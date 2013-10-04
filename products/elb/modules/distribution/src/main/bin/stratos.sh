@@ -289,6 +289,7 @@ exec "$JAVACMD" \
         -Djava.util.logging.config.file="$CARBON_HOME/lib/log4j.properties" \
         -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
         -Dconf.location="$CARBON_HOME/repository/conf" \
+        -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
         -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
         -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
         -Dcom.atomikos.icatch.hide_init_file_path=true \
