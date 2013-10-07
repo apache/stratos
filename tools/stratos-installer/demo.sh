@@ -184,12 +184,12 @@ rm -f conf/setup.conf.orig
 
 cp -f /etc/hosts hosts.tmp
 
-echo "$ip stratos.apache.org        # stratos domain"	>> hosts.tmp
-echo "$ip mb.stratos.apache.org     # message broker hostname"	>> hosts.tmp
-echo "$ip cc.stratos.apache.org     # cloud controller hostname"	>> hosts.tmp
-echo "$ip sc.stratos.apache.org     # stratos controller hostname"	>> hosts.tmp
-echo "$ip elb.stratos.apache.org    # elastic load balancer hostname"	>> hosts.tmp
-echo "$ip agent.stratos.apache.org  # agent hostname"	>> hosts.tmp
+echo "$ip $DOMAIN # stratos domain" >> hosts.tmp
+echo "$ip mb.$DOMAIN # message broker hostname"	>> hosts.tmp
+echo "$ip cc.$DOMAIN # cloud controller hostname" >> hosts.tmp
+echo "$ip sc.$DOMAIN # stratos controller hostname" >> hosts.tmp
+echo "$ip elb.$DOMAIN # elastic load balancer hostname"	>> hosts.tmp
+echo "$ip agent.$DOMAIN # agent hostname" >> hosts.tmp
 
 mv -f ./hosts.tmp /etc/hosts
 
