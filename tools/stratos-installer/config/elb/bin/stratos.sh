@@ -276,6 +276,7 @@ exec "$JAVACMD" \
         -XX:ErrorFile=repository/logs/hs_err_pid.log \
         -XX:OnError="nohup ./stratos.sh &" \
         $JAVA_OPTS \
+        -DapplyPatches \
         -Dcarbon.pid=$$ \
         -Dcom.sun.management.jmxremote \
         -Dwso2.loadbalancer=true \

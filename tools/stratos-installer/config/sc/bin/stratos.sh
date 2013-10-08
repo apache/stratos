@@ -272,6 +272,7 @@ do
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
     $JAVA_OPTS \
+    -DapplyPatches \
     -Dcom.sun.management.jmxremote \
     -classpath "$CARBON_CLASSPATH" \
     -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
