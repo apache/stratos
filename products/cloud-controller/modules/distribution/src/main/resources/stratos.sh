@@ -269,6 +269,7 @@ do
      -XX:ErrorFile=repository/logs/hs_err_pid.log \
      -XX:OnError="nohup ./stratos.sh &" \
     $JAVA_OPTS \
+    -DapplyPatches \
     -DandesConfig=qpid-config.xml \
     -Ddisable.cassandra.server.startup=true \
     -Dcom.sun.management.jmxremote \
