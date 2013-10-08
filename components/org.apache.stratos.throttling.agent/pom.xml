@@ -55,6 +55,7 @@
                             org.apache.stratos.throttling.agent.*,
                         </Export-Package>
                         <Private-Package>
+                            !org.apache.stratos.throttling.agent.client,
                             org.apache.stratos.throttling.agent.*,
                         </Private-Package>
                         <Import-Package>
