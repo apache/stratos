@@ -160,6 +160,9 @@ cp -f conf/setup.conf conf/setup.conf.orig
 cat conf/setup.conf.orig | sed -e "s@export host_user=\"*.*\"@export host_user=\"ubuntu\"@g" > conf/setup.conf
 
 cp -f conf/setup.conf conf/setup.conf.orig
+cat conf/setup.conf.orig | sed -e "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" > conf/setup.conf
+
+cp -f conf/setup.conf conf/setup.conf.orig
 cat conf/setup.conf.orig | sed -e "s@export userstore_db_pass=\"*.*\"@export userstore_db_pass=\"root\"@g" > conf/setup.conf
 
 cp -f conf/setup.conf conf/setup.conf.orig
