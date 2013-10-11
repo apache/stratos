@@ -36,7 +36,7 @@
     <name>Apache Stratos (incubating) Project</name>
     <description>Apache Stratos (Incubating) is an open source polyglot Platform as a Service (PaaS) framework</description>
     <url>http://stratos.incubator.apache.org</url>
-    <inceptionYear>2012</inceptionYear>
+    <inceptionYear>2013</inceptionYear>
 
     <licenses>
         <license>
@@ -424,6 +424,13 @@
                             </goals>
                         </execution>
                     </executions>
+                     <configuration>
+                            <excludes>
+                                <exclude>**/target/**/*</exclude>
+                                <exclude>**/.gitignore</exclude>
+                                <exclude>**/.git/**/*</exclude>
+                            </excludes>
+                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
