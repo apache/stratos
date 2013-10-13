@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -17,24 +16,13 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-features-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-    </parent>
-
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>autoscaler-feature</artifactId>
-    <packaging>pom</packaging>
-    <name>Apache Stratos - Autoscaler Module</name>
-    <url>http://apache.org</url>
-
-    <modules>
-        <module>org.apache.stratos.mediator.autoscale.feature</module>
-        <module>org.apache.stratos.autoscaler.feature</module>
-    </modules>
-</project>
-
+<product xmlns="http://products.wso2.org/carbon">
+    <properties>
+       <property name="userforum">http://wso2.org/forum/187</property>
+       <property name="userguide">http://docs.wso2.org/wiki/display/ESB470/Enterprise+Service+Bus+Documentation</property>
+       <property name="mailinglist">http://wso2.org/mail</property>
+       <property name="issuetracker">https://wso2.org/jira/browse/ESBJAVA</property>
+       <property name="collapsedmenus">region1_configure_menu,region3_registry_menu,region4_monitor_menu,region5_tools_menu</property>
+       <property name="webAdminConsoleTitle">WSO2 Enterprise Service Bus (WSO2 ESB)</property>
+    </properties>
+</product>

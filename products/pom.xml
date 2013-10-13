@@ -35,6 +35,7 @@
     <url>http://apache.org</url>
 
     <modules>
+        <module>autoscaler</module>
         <module>cloud-controller</module>
         <module>elb</module>
         <module>stratos-agent</module>
