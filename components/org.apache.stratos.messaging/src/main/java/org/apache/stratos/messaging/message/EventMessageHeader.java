@@ -16,34 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.messaging.message;
 
-import com.google.gson.Gson;
-
 /**
- * Represents a message that would traverse through Stratos
- * @author nirmal
- *
+ * Event message header definition.
  */
-public class JsonMessage {
-	
-	private Object object;
+public class EventMessageHeader {
+    private String eventClassName;
 
-	public JsonMessage(Object obj) {
-		object = obj;
-	}
+    public EventMessageHeader(String eventClassName) {
+        this.eventClassName = eventClassName;
+    }
 
-	public JsonMessage(String text, Class type) {
-		Gson gson = new Gson();
-		object = gson.fromJson(text, type);
-	}
+    public String getEventClassName() {
+        return eventClassName;
+    }
 
-	public Object getObject() {
-		return this.object;
-	}
-
-	public String getText() {
-		Gson gson = new Gson();
-		return gson.toJson(object);
-	}
+    public void setEventClassName(String eventClassName) {
+        this.eventClassName = eventClassName;
+    }
 }
