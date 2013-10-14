@@ -29,7 +29,7 @@ import java.util.Properties;
  * Defines a member node in a cluster.
  */
 public class Member implements Serializable {
-    private Cluster cluster;
+    private String memberId;
     private String hostName;
     private String cloud;
     private String region;
@@ -41,12 +41,12 @@ public class Member implements Serializable {
         this.portMap = new HashMap<String, Port>();
     }
 
-    public Cluster getCluster() {
-        return cluster;
+    public String getMemberId() {
+        return memberId;
     }
 
-    public void setCluster(Cluster cluster) {
-        this.cluster = cluster;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 
     public String getHostName() {

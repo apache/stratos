@@ -31,23 +31,23 @@ import java.util.Map;
  * Defines a cluster of a service.
  */
 public class Cluster implements Serializable {
-    private Service service;
+    private String clusterId;
     private String domainName;
     private String tenantRange;
     private String cartridgeType;
-    // Key: Member.hostName
+    // Key: Member.memberId
     private Map<String, Member> members;
 
     public Cluster() {
         this.members = new HashMap<String, Member>();
     }
 
-    public Service getService() {
-        return service;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public String getDomainName() {
@@ -80,19 +80,19 @@ public class Cluster implements Serializable {
     }
 
     public void addMember(Member member) {
-        members.put(member.getHostName(), member);
+        members.put(member.getMemberId(), member);
     }
 
     public void removeMember(Member member) {
-        members.remove(member.getHostName());
+        members.remove(member.getMemberId());
     }
 
-    public void removeMember(String hostName) {
-        members.remove(hostName);
+    public void removeMember(String memberId) {
+        members.remove(memberId);
     }
 
-    public Member getMember(String hostName) {
-        return members.get(hostName);
+    public Member getMember(String memberId) {
+        return members.get(memberId);
     }
 }
 
