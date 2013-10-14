@@ -25,22 +25,22 @@ import java.util.*;
  * Defines a service in the topology. A service represents a cartridge type.
  */
 public class Service {
-    private String serviceId;
+    private String serviceName;
     private String domainName;
-    private String name;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterMap;
+    private Properties properties;
 
     public Service() {
         this.clusterMap = new HashMap<String, Cluster>();
     }
 
-    public String getServiceId() {
-        return serviceId;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public String getDomainName() {
@@ -49,14 +49,6 @@ public class Service {
 
     public void setDomainName(String domainName) {
         this.domainName = domainName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Collection<Cluster> getClusterMap() {
@@ -76,10 +68,18 @@ public class Service {
     }
 
     public boolean clusterExists(Cluster cluster) {
-        return this.clusterMap.containsKey(cluster.getDomainName());
+        return this.clusterMap.containsKey(cluster.getClusterId());
     }
 
     public Cluster getCluster(String clusterId) {
         return this.clusterMap.get(clusterId);
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

@@ -31,8 +31,6 @@ import java.util.Properties;
 public class Member implements Serializable {
     private String memberId;
     private String hostName;
-    private String cloud;
-    private String region;
     private MemberStatus status;
     private Map<String, Port> portMap;
     private Properties properties;
@@ -57,22 +55,6 @@ public class Member implements Serializable {
         this.hostName = hostName;
     }
 
-    public String getCloud() {
-        return cloud;
-    }
-
-    public void setCloud(String cloud) {
-        this.cloud = cloud;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
     public MemberStatus getStatus() {
         return status;
     }
@@ -82,7 +64,7 @@ public class Member implements Serializable {
     }
 
     public boolean isActive() {
-        return (this.status == MemberStatus.Active);
+        return (this.status == MemberStatus.Activated);
     }
 
     public Collection<Port> getPorts() {
@@ -90,7 +72,7 @@ public class Member implements Serializable {
     }
 
     public void addPort(Port port) {
-        this.portMap.put(port.getName(), port);
+        this.portMap.put(port.getProtocol(), port);
     }
 
     public void addPorts(Collection<Port> ports) {
@@ -100,19 +82,19 @@ public class Member implements Serializable {
     }
 
     public void removePort(Port port) {
-        this.portMap.remove(port.getName());
+        this.portMap.remove(port.getProtocol());
     }
 
-    public void removePort(String portName) {
-        this.portMap.remove(portName);
+    public void removePort(String protocol) {
+        this.portMap.remove(protocol);
     }
 
     public boolean portExists(Port port) {
-        return this.portMap.containsKey(port.getName());
+        return this.portMap.containsKey(port.getProtocol());
     }
 
-    public Port getPort(String portName) {
-        return this.portMap.get(portName);
+    public Port getPort(String protocol) {
+        return this.portMap.get(protocol);
     }
 
     public Properties getProperties() {

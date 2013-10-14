@@ -19,41 +19,37 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import java.util.Properties;
+
 /**
- * Defines an application port.
+ * Defines a zone in IaaS cloud region.
  */
-public class Port {
-    private String protocol;
-    private int value;
-    private int proxy;
+public class Zone {
+    private String zoneId;
+    private String zoneName;
+    private Properties properties;
 
-    public Port(String protocol, int value, int proxy) {
-        setProtocol(protocol);
-        setValue(value);
-        setProxy(proxy);
+    public String getZoneId() {
+        return zoneId;
     }
 
-    public String getProtocol() {
-        return protocol;
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
     }
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
+    public String getZoneName() {
+        return zoneName;
     }
 
-    public int getValue() {
-        return value;
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public Properties getProperties() {
+        return properties;
     }
 
-    public int getProxy() {
-        return proxy;
-    }
-
-    public void setProxy(int proxy) {
-        this.proxy = proxy;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

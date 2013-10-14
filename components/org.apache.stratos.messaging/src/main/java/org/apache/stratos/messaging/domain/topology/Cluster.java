@@ -22,24 +22,23 @@ package org.apache.stratos.messaging.domain.topology;
 import org.apache.stratos.messaging.util.Util;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Defines a cluster of a service.
  */
 public class Cluster implements Serializable {
     private String clusterId;
-    private String domainName;
     private String tenantRange;
-    private String cartridgeType;
+    private Cloud cloud;
+    private Region region;
+    private Zone zone;
     // Key: Member.memberId
-    private Map<String, Member> members;
+    private Map<String, Member> memberMap;
+    private Properties properties;
 
     public Cluster() {
-        this.members = new HashMap<String, Member>();
+        this.memberMap = new HashMap<String, Member>();
     }
 
     public String getClusterId() {
@@ -48,14 +47,6 @@ public class Cluster implements Serializable {
 
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
-    }
-
-    public String getDomainName() {
-        return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
     }
 
     public String getTenantRange() {
@@ -67,32 +58,32 @@ public class Cluster implements Serializable {
         this.tenantRange = tenantRange;
     }
 
-    public String getCartridgeType() {
-        return cartridgeType;
-    }
-
-    public void setCartridgeType(String cartridgeType) {
-        this.cartridgeType = cartridgeType;
-    }
-
-    public Map<String, Member> getMembers() {
-        return members;
+    public Collection<Member> getMembers() {
+        return memberMap.values();
     }
 
     public void addMember(Member member) {
-        members.put(member.getMemberId(), member);
+        memberMap.put(member.getMemberId(), member);
     }
 
     public void removeMember(Member member) {
-        members.remove(member.getMemberId());
+        memberMap.remove(member.getMemberId());
     }
 
     public void removeMember(String memberId) {
-        members.remove(memberId);
+        memberMap.remove(memberId);
     }
 
     public Member getMember(String memberId) {
-        return members.get(memberId);
+        return memberMap.get(memberId);
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }
 

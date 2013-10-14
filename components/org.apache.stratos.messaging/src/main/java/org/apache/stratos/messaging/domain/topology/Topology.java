@@ -26,7 +26,7 @@ import java.util.*;
  * Defines a topology of serviceMap in Stratos.
  */
 public class Topology implements Serializable {
-    // Key: Service.serviceId
+    // Key: Service.serviceName
     private Map<String, Service> serviceMap;
 
     public Topology() {
@@ -38,7 +38,7 @@ public class Topology implements Serializable {
     }
 
     public void addService(Service service) {
-        this.serviceMap.put(service.getServiceId(), service);
+        this.serviceMap.put(service.getServiceName(), service);
     }
 
     public void addServices(Collection<Service> services) {
@@ -51,15 +51,15 @@ public class Topology implements Serializable {
         this.serviceMap.remove(service.getDomainName());
     }
 
-    public void removeService(String serviceId) {
-        this.serviceMap.remove(serviceId);
+    public void removeService(String serviceName) {
+        this.serviceMap.remove(serviceName);
     }
 
     public boolean serviceExists(Service service) {
         return this.serviceMap.containsKey(service.getDomainName());
     }
 
-    public Service getService(String serviceId) {
-        return this.serviceMap.get(serviceId);
+    public Service getService(String serviceName) {
+        return this.serviceMap.get(serviceName);
     }
 }
