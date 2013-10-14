@@ -38,6 +38,10 @@
             <modules>
                 <!-- COMMON -->
                 <module>org.apache.stratos.common</module>
+
+		<!-- Autoscaler -->
+                <module>org.apache.stratos.autoscaler</module>
+
 		<!-- CC -->
 		<module>org.apache.stratos.cloud.controller</module>
 		<module>org.apache.stratos.cartridge.messages</module>
