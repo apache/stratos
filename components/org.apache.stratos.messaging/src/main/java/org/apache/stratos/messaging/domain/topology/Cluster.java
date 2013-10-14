@@ -35,12 +35,10 @@ public class Cluster implements Serializable {
     private String domainName;
     private String tenantRange;
     private String cartridgeType;
-    private Map<String, String> autoScalingParams;
     // Key: Member.hostName
     private Map<String, Member> members;
 
     public Cluster() {
-        this.autoScalingParams = new HashMap<String, String>();
         this.members = new HashMap<String, Member>();
     }
 
@@ -75,10 +73,6 @@ public class Cluster implements Serializable {
 
     public void setCartridgeType(String cartridgeType) {
         this.cartridgeType = cartridgeType;
-    }
-
-    public Map<String, String> getAutoScalingParams() {
-        return autoScalingParams;
     }
 
     public Map<String, Member> getMembers() {
