@@ -380,14 +380,14 @@
         </extensions>
         <plugins>
         <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <useReleaseProfile>false</useReleaseProfile>
-          <goals>deploy</goals>
-          <arguments>-Pdoc -Psrc -Papache-release ${arguments}</arguments>
-        </configuration>
+        	<groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-release-plugin</artifactId>
+	        <version>2.3.2</version>
+	        <configuration>
+	          <useReleaseProfile>false</useReleaseProfile>
+        	  <goals>deploy</goals>
+	          <arguments>-Psrc -Papache-release ${arguments}</arguments>
+	        </configuration>
         </plugin>
             <plugin>
                 <groupId>org.jvnet.maven.incrementalbuild</groupId>
@@ -454,19 +454,6 @@
                           <_include>-osgi.bnd</_include>
                         </instructions>-->
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
