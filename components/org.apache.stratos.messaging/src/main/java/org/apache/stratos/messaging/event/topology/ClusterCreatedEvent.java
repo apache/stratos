@@ -19,32 +19,50 @@
 
 package org.apache.stratos.messaging.event.topology;
 
+import org.apache.stratos.messaging.domain.topology.Cloud;
+import org.apache.stratos.messaging.domain.topology.Region;
+import org.apache.stratos.messaging.domain.topology.Zone;
+import org.apache.stratos.messaging.util.Util;
+
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * This event is fired by Cloud Controller when a cluster is created for a service.
  */
 public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
-    private String serviceDomainName;
-    private String clusterDomainName;
+    private String serviceName;
+    private String clusterId;
+    private String hostName;
     private String tenantRange;
-    private Map<String, String> autoScalingParams;
+    private Cloud cloud;
+    private Region region;
+    private Zone zone;
+    private Properties properties;
 
-    public String getServiceDomainName() {
-        return serviceDomainName;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setServiceDomainName(String serviceDomainName) {
-        this.serviceDomainName = serviceDomainName;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public String getClusterDomainName() {
-        return clusterDomainName;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setClusterDomainName(String clusterDomainName) {
-        this.clusterDomainName = clusterDomainName;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public String getTenantRange() {
@@ -52,14 +70,39 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     }
 
     public void setTenantRange(String tenantRange) {
+        Util.validateTenantRange(tenantRange);
         this.tenantRange = tenantRange;
     }
 
-    public Map<String, String> getAutoScalingParams() {
-        return autoScalingParams;
+    public Cloud getCloud() {
+        return cloud;
     }
 
-    public void setAutoScalingParams(Map<String, String> autoScalingParams) {
-        this.autoScalingParams = autoScalingParams;
+    public void setCloud(Cloud cloud) {
+        this.cloud = cloud;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

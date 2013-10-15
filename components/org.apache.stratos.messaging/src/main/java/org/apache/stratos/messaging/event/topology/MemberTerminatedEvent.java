@@ -22,10 +22,12 @@ package org.apache.stratos.messaging.event.topology;
 import java.io.Serializable;
 
 /**
- * This event is fired by Cloud Controller when a service is removed from a topology.
+ * This event is fired by Cloud Controller when a member is terminated.
  */
-public class ServiceRemovedEvent extends TopologyEvent implements Serializable {
+public class MemberTerminatedEvent extends TopologyEvent implements Serializable {
     private String serviceName;
+    private String clusterId;
+    private String memberId;
 
     public String getServiceName() {
         return serviceName;
@@ -33,5 +35,21 @@ public class ServiceRemovedEvent extends TopologyEvent implements Serializable {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 }

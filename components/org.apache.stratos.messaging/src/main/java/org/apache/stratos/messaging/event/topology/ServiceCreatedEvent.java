@@ -20,27 +20,28 @@
 package org.apache.stratos.messaging.event.topology;
 
 import java.io.Serializable;
+import java.util.Properties;
 
 /**
  * This event is fired by Cloud Controller when a service is added to a topology.
  */
 public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
-    private String serviceDomainName;
-    private String name;
+    private String serviceName;
+    private Properties properties;
 
-    public String getServiceDomainName() {
-        return serviceDomainName;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public void setServiceDomainName(String serviceDomainName) {
-        this.serviceDomainName = serviceDomainName;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Properties getProperties() {
+        return properties;
     }
 
-    public String getName() {
-        return name;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

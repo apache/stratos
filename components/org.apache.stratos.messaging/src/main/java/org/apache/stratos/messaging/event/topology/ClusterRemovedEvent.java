@@ -25,22 +25,22 @@ import java.io.Serializable;
  * This event is fired by Cloud Controller when a cluster is removed from the topology.
  */
 public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
-    private String serviceDomainName;
-    private String clusterDomainName;
+    private String serviceName;
+    private String clusterId;
 
-    public String getServiceDomainName() {
-        return serviceDomainName;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setServiceDomainName(String serviceDomainName) {
-        this.serviceDomainName = serviceDomainName;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public String getClusterDomainName() {
-        return clusterDomainName;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setClusterDomainName(String clusterDomainName) {
-        this.clusterDomainName = clusterDomainName;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 }

@@ -24,34 +24,35 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import java.io.Serializable;
 
 /**
- * This event is fired by Cloud Controller when a member has started it's server and applications are ready to serve the incoming requests.
+ * This event is fired by Cloud Controller when a member has started it's server and
+ * applications are ready to serve the incoming requests.
  */
 public class MemberActivatedEvent extends TopologyEvent implements Serializable {
-    private String serviceDomainName;
-    private String clusterDomainName;
-    private String hostName;
+    private String serviceName;
+    private String clusterId;
+    private String memberId;
 
-    public String getServiceDomainName() {
-        return serviceDomainName;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setServiceDomainName(String serviceDomainName) {
-        this.serviceDomainName = serviceDomainName;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
-    public String getClusterDomainName() {
-        return clusterDomainName;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setClusterDomainName(String clusterDomainName) {
-        this.clusterDomainName = clusterDomainName;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
-    public String getHostName() {
-        return hostName;
+    public String getMemberId() {
+        return memberId;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 }
