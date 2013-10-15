@@ -19,13 +19,12 @@
 
 package org.apache.stratos.adc.mgt.utils;
 
-import java.io.File;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dao.Repository;
 import org.apache.stratos.adc.mgt.service.ApplicationManagementService;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
 
 /**
  * @author wso2

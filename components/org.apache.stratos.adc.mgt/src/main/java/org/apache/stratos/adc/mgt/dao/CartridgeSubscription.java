@@ -19,6 +19,8 @@
 
 package org.apache.stratos.adc.mgt.dao;
 
+import org.apache.stratos.adc.mgt.repository.Repository;
+
 import java.util.List;
 
 public class CartridgeSubscription {

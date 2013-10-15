@@ -22,22 +22,23 @@ package org.apache.stratos.adc.mgt.service;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
-import org.apache.stratos.adc.mgt.dns.DNSManager;
-import org.apache.stratos.adc.mgt.dto.Cartridge;
-import org.apache.stratos.adc.mgt.dto.CartridgeWrapper;
-import org.apache.stratos.adc.mgt.dto.PolicyDefinition;
-import org.apache.stratos.adc.mgt.dto.RepositoryInformation;
-import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
+import org.apache.stratos.adc.mgt.dto.*;
 import org.apache.stratos.adc.mgt.exception.*;
+import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
-import org.apache.stratos.adc.mgt.utils.*;
+import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
+import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 import org.wso2.carbon.utils.DataPaginator;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
@@ -56,6 +57,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 
     private static final Log log = LogFactory.getLog(ApplicationManagementService.class);
     RegistryManager registryManager = new RegistryManager();
+    private CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
 
     PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
     String tenantDomain = carbonContext.getTenantDomain();
@@ -124,13 +126,13 @@ public class ApplicationManagementService extends AbstractAdmin {
 		try {
 			Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);
 
-			String[] availableCartridges = ApplicationManagementUtil.getServiceClient().getRegisteredCartridges();
+			String[] availableCartridges = CloudControllerServiceClient.getServiceClient().getRegisteredCartridges();
 
 			if (availableCartridges != null) {
 				for (String cartridgeType : availableCartridges) {
 					CartridgeInfo cartridgeInfo = null;
 					try {
-						cartridgeInfo = ApplicationManagementUtil.getServiceClient().getCartridgeInfo(cartridgeType);
+						cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
 					} catch (Exception e) {
 						if (log.isWarnEnabled()) {
 							log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
@@ -238,7 +240,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 				for (CartridgeSubscription subscription : subscriptionList) {
 					CartridgeInfo cartridgeInfo = null;
 					try {
-						cartridgeInfo = ApplicationManagementUtil.getServiceClient().getCartridgeInfo(
+						cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(
 								subscription.getCartridge());
 					} catch (Exception e) {
 						if (log.isWarnEnabled()) {
@@ -386,9 +388,44 @@ public class ApplicationManagementService extends AbstractAdmin {
 
 		checkSuperTenant();
 
-		return ApplicationManagementUtil.doSubscribe(cartridgeType, alias, policy, repoURL, privateRepo, repoUsername,
-				repoPassword, dataCartridgeType, dataCartridgeAlias, getUsername(),
-				ApplicationManagementUtil.getTenantId(getConfigContext()), getTenantDomain());
+		//return ApplicationManagementUtil.doSubscribe(cartridgeType, alias, policy, repoURL, privateRepo, repoUsername,
+		//		repoPassword, dataCartridgeType, dataCartridgeAlias, getUsername(),
+		//		ApplicationManagementUtil.getTenantId(getConfigContext()), getTenantDomain());
+
+        CartridgeInstance cartridgeInstance = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
+                alias.trim(), policy, getTenantDomain(), ApplicationManagementUtil.getTenantId(configurationContext),
+                getUsername(), "git", repoURL, privateRepo, repoUsername, repoPassword);
+
+        if(dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
+
+            dataCartridgeAlias = dataCartridgeAlias.trim();
+
+            CartridgeInstance connectingCartridgeInstance = null;
+            try {
+                connectingCartridgeInstance = cartridgeSubsciptionManager.getCartridgeInstance(getTenantDomain(),
+                        dataCartridgeAlias);
+
+            } catch (NotSubscribedException e) {
+                log.error(e.getMessage(), e);
+            }
+            if (connectingCartridgeInstance != null) {
+                try {
+                    cartridgeSubsciptionManager.connectCartridges(tenantDomain, cartridgeInstance,
+                            connectingCartridgeInstance.getAlias());
+
+                } catch (NotSubscribedException e) {
+                    log.error(e.getMessage(), e);
+
+                } catch (AxisFault axisFault) {
+                    log.error(axisFault.getMessage(), axisFault);
+                }
+            } else {
+                log.error("Failed to connect. No cartridge instance found for tenant " +
+                        ApplicationManagementUtil.getTenantId(configurationContext) + " with alias " + alias);
+            }
+        }
+
+        return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeInstance);
 
 	}
 
@@ -399,8 +436,11 @@ public class ApplicationManagementService extends AbstractAdmin {
      * @param alias name of the cartridge to be unsubscribed
      */
     public void unsubscribe(String alias) throws ADCException, NotSubscribedException {
-    	checkSuperTenant();
-        CartridgeSubscription subscription = null;
+
+        checkSuperTenant();
+
+        cartridgeSubsciptionManager.unsubscribeFromCartridge(getTenantDomain(), alias);
+        /*CartridgeSubscription subscription = null;
         
         try {
 			subscription = PersistenceManager.getSubscription(tenantDomain, alias);
@@ -423,16 +463,16 @@ public class ApplicationManagementService extends AbstractAdmin {
             if (log.isDebugEnabled()) {
                 log.debug("Finding cartridge information for " + subscription.getCartridge());
             }
-            CartridgeInfo cartridgeInfo = ApplicationManagementUtil.getServiceClient().getCartridgeInfo(subscription.getCartridge());
+            CartridgeInfo cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(subscription.getCartridge());
             if (log.isDebugEnabled()) {
                 log.debug("Found " + cartridgeInfo.getDisplayName() + " for " + subscription.getCartridge());
             }
             if (!cartridgeInfo.getMultiTenant()) {
                 log.info("Terminating all instances of " + clusterDomain + " " + clusterSubDomain);
-                ApplicationManagementUtil.getServiceClient().terminateAllInstances(clusterDomain, clusterSubDomain);
+                CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterDomain, clusterSubDomain);
                 log.info("All instances terminated.");
                 log.info("Unregistering services...");
-                ApplicationManagementUtil.getServiceClient().unregisterService(clusterDomain, clusterSubDomain);
+                CloudControllerServiceClient.getServiceClient().unregisterService(clusterDomain, clusterSubDomain);
                 log.info("Successfully terminated instances ..");
             } else {
                 if (log.isInfoEnabled()) {
@@ -461,7 +501,7 @@ public class ApplicationManagementService extends AbstractAdmin {
             String msg1 = "Exception occurred :" + e1.getMessage();
             log.error(msg1);
             throw new ADCException("Unsubscribe failed for cartridge " + alias, e1);
-        }
+        }*/
     }
 
 

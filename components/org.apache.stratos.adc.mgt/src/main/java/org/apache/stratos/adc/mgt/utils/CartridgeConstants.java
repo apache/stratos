@@ -57,6 +57,9 @@ public class CartridgeConstants {
 	public static final String FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED = "feature.multitenant.multiplesubscription.enabled";
 	
 	public static final String MYSQL_CARTRIDGE_NAME = "mysql";
+    public static final String PHP_CARTRIDGE_NAME = "php";
+    public static final String TOMCAT_CARTRIDGE_NAME = "tomcat";
+
 	public static final String DEFAULT_SUBDOMAIN = "__$default";
 	public static final String DEFAULT_MGT_SUBDOMAIN = "mgt";
 	public static final String MYSQL_DEFAULT_USER = "root";
