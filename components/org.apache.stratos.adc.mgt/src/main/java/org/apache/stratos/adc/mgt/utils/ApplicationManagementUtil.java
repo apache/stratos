@@ -21,32 +21,7 @@ package org.apache.stratos.adc.mgt.utils;
 */
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
-import org.apache.axis2.AxisFault;
+import com.google.gson.Gson;
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.Member;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
@@ -58,25 +33,21 @@ import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
-import org.apache.stratos.adc.mgt.dao.Repository;
 import org.apache.stratos.adc.mgt.dns.DNSManager;
 import org.apache.stratos.adc.mgt.dto.Cartridge;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.dto.RepositoryInformation;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
-import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
-import org.apache.stratos.adc.mgt.exception.DuplicateCartridgeAliasException;
-import org.apache.stratos.adc.mgt.exception.InvalidCartridgeAliasException;
-import org.apache.stratos.adc.mgt.exception.InvalidRepositoryException;
-import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
-import org.apache.stratos.adc.mgt.exception.PolicyException;
-import org.apache.stratos.adc.mgt.exception.RepositoryCredentialsRequiredException;
-import org.apache.stratos.adc.mgt.exception.RepositoryRequiredException;
-import org.apache.stratos.adc.mgt.exception.RepositoryTransportException;
-import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
+import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
+import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
+import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.util.xsd.Properties;
+import org.apache.stratos.cloud.controller.util.xsd.Property;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -86,16 +57,20 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.xsd.Properties;
-import org.apache.stratos.cloud.controller.util.xsd.Property;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import com.google.gson.Gson;
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * This class contains utility methods used by ApplicationManagementService.
@@ -103,7 +78,7 @@ import com.google.gson.Gson;
 public class ApplicationManagementUtil {
 
     private static Log log = LogFactory.getLog(ApplicationManagementUtil.class);
-    private static volatile CloudControllerServiceClient serviceClient;
+    //private static volatile CloudControllerServiceClient serviceClient;
 
     /**
      * Method used to subscribe to cartridges.
@@ -135,7 +110,7 @@ public class ApplicationManagementUtil {
 		
 		CartridgeInfo cartridgeInfo;
 		try {
-			cartridgeInfo = getServiceClient().getCartridgeInfo(cartridgeType);
+			cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
 		} catch (UnregisteredCartridgeException e) {
 			String message = cartridgeType
 					+ " is not a valid cartridge type. Please try again with a valid cartridge type.";
@@ -340,11 +315,12 @@ public class ApplicationManagementUtil {
             }
         }
 
-        subscription =
+        /*subscription =
                 createCartridgeSubscription(cartridgeInfo, autoScalingPolicy,
                         cartridgeType, cartName, tenantId, tenantDomain,
                         repository, clusterDomain, clusterSubDomain,
                         mgtClusterDomain, mgtClusterSubDomain, dataCartridge);
+        */
 
         try {
 			PersistenceManager.persistSubscription(subscription);
@@ -561,37 +537,30 @@ public class ApplicationManagementUtil {
         return axisConfig.getRepository().getPath() + File.separator + cartridge;
     }
 
-    private static CartridgeSubscription createCartridgeSubscription(CartridgeInfo cartridgeInfo,
-                                                                     Policy policy,
-                                                                     String cartridgeType,
-                                                                     String cartridgeName,
-                                                                     int tenantId,
-                                                                     String tenantDomain,
-                                                                     Repository repository,
-                                                                     String clusterDomain,
-                                                                     String clusterSubDomain,
-                                                                     String mgtClusterDomain,
-                                                                     String mgtClusterSubDomain,
-                                                                     DataCartridge dataCartridge) {
+    public static CartridgeSubscription createCartridgeSubscription(CartridgeInfo cartridgeInfo,
+                                                                    Policy policy,
+                                                                    String cartridgeType,
+                                                                    String cartridgeName,
+                                                                    int tenantId,
+                                                                    String tenantDomain,
+                                                                    Repository repository,
+                                                                    String hostName,
+                                                                    String clusterDomain,
+                                                                    String clusterSubDomain,
+                                                                    String mgtClusterDomain,
+                                                                    String mgtClusterSubDomain,
+                                                                    DataCartridge dataCartridge,
+                                                                    String state) {
 
         CartridgeSubscription cartridgeSubscription = new CartridgeSubscription();
         cartridgeSubscription.setCartridge(cartridgeType);
         cartridgeSubscription.setAlias(cartridgeName);
         cartridgeSubscription.setClusterDomain(clusterDomain);
         cartridgeSubscription.setClusterSubdomain(clusterSubDomain);
-               cartridgeSubscription.setMgtClusterDomain(mgtClusterDomain);
-                cartridgeSubscription.setMgtClusterSubDomain(mgtClusterSubDomain);
-        String hostName = null;
-        if (cartridgeInfo.getMultiTenant()) {
-            hostName = cartridgeInfo.getHostName();
-        } else {
-            hostName = cartridgeName + "." + cartridgeInfo.getHostName();
-        }
+        cartridgeSubscription.setMgtClusterDomain(mgtClusterDomain);
+        cartridgeSubscription.setMgtClusterSubDomain(mgtClusterSubDomain);
         cartridgeSubscription.setHostName(hostName);
-        if (policy != null) {
-        	// Policy can be null for multi-tenant cartridge
-        	cartridgeSubscription.setPolicy(policy.getName());
-        }
+        cartridgeSubscription.setPolicy(policy.getName());
         cartridgeSubscription.setRepository(repository);
         cartridgeSubscription.setPortMappings(createPortMappings(cartridgeInfo));
         cartridgeSubscription.setProvider(cartridgeInfo.getProvider());
@@ -599,7 +568,8 @@ public class ApplicationManagementUtil {
         cartridgeSubscription.setTenantId(tenantId);
         cartridgeSubscription.setTenantDomain(tenantDomain);
         cartridgeSubscription.setBaseDirectory(cartridgeInfo.getBaseDir());
-        cartridgeSubscription.setState("PENDING");
+        //cartridgeSubscription.setState("PENDING");
+        cartridgeSubscription.setState(state);
         return cartridgeSubscription;
     }
 
@@ -619,7 +589,7 @@ public class ApplicationManagementUtil {
         return portMappings;
     }
 
-    public static CloudControllerServiceClient getServiceClient() throws AxisFault {
+    /*public static CloudControllerServiceClient getServiceClient() throws AxisFault {
         if (serviceClient == null) {
             synchronized (CloudControllerServiceClient.class) {
                 if (serviceClient == null) {
@@ -629,7 +599,7 @@ public class ApplicationManagementUtil {
             }
         }
         return serviceClient;
-    }
+    }*/
 
     public static int getTenantId(ConfigurationContext configurationContext) {
         int tenantId = MultitenantUtils.getTenantId(configurationContext);
@@ -639,7 +609,7 @@ public class ApplicationManagementUtil {
         return tenantId;
     }
 
-	private static void validateCartridgeAlias(String alias, String cartridgeType) throws InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException {
+	public static void validateCartridgeAlias(String alias, String cartridgeType) throws InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException {
 		// Do not use quotes in messages, current UI JavaScript does not work if there are quotes
 		// TODO: Fix message display in UI
 		String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
@@ -753,7 +723,7 @@ public class ApplicationManagementUtil {
 		return repositoryInformation;
 	}
 
-    private static String generatePassword() {
+    public static String generatePassword() {
 
         final int PASSWORD_LENGTH = 8;
         StringBuffer sb = new StringBuffer();
@@ -770,7 +740,7 @@ public class ApplicationManagementUtil {
         log.info(" Payload file is deleted. ");
     }
 
-    private static Properties setRegisterServiceProperties(Policy policy, int tenantId, String alias) {
+    public static Properties setRegisterServiceProperties(Policy policy, int tenantId, String alias) {
     	
     	DecimalFormat df = new DecimalFormat("##.##");
         df.setParseBigDecimal(true);
@@ -852,15 +822,15 @@ public class ApplicationManagementUtil {
         return convertedHttpURL;
     }
 
-    private static void addDNSEntry(String alias, String cartridgeType) {
+    public static void addDNSEntry(String alias, String cartridgeType) {
         new DNSManager().addNewSubDomain(alias + "." + cartridgeType, System.getProperty(CartridgeConstants.ELB_IP));
     }
 
-    private static SubscriptionInfo createSubscriptionResponse(CartridgeSubscription cartridgeSubscription, Repository repository) {
+    public static SubscriptionInfo createSubscriptionResponse(CartridgeSubscription cartridgeSubscription, Repository repository) {
     	SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
     	
-        if (repository != null && repository.getRepoName() != null) {
-        	subscriptionInfo.setRepositoryURL(convertRepoURL(repository.getRepoName()));
+        if (repository != null && repository.getUrl() != null) {
+        	subscriptionInfo.setRepositoryURL(convertRepoURL(repository.getUrl()));
         }
         
         subscriptionInfo.setHostname(cartridgeSubscription.getHostName());
@@ -884,9 +854,9 @@ public class ApplicationManagementUtil {
             log.info("External REPO URL is provided as [" + repoURL +
                     "]. Therefore not creating a new repo.");
             //repository.setRepoName(repoURL.substring(0, repoURL.length()-4)); // remove .git part
-            repository.setRepoName(repoURL);
-            repository.setRepoUserName(repoUserName);
-            repository.setRepoUserPassword(repoUserPassword);
+            repository.setUrl(repoURL);
+            repository.setUserName(repoUserName);
+            repository.setPassword(repoUserPassword);
         } else {
 
             //log.info("External REPO URL is not provided. Therefore creating a new repo. Adding to Executor");
@@ -894,8 +864,8 @@ public class ApplicationManagementUtil {
                     + tenantDomain + ", creating an git internal repository");
 
             // for internal repos  internal git server username and password is used.
-            repository.setRepoUserName(System.getProperty(CartridgeConstants.INTERNAL_GIT_USERNAME));
-            repository.setRepoUserPassword(System.getProperty(CartridgeConstants.INTERNAL_GIT_PASSWORD));
+            repository.setUserName(System.getProperty(CartridgeConstants.INTERNAL_GIT_USERNAME));
+            repository.setPassword(System.getProperty(CartridgeConstants.INTERNAL_GIT_PASSWORD));
             /*repoCreationExecutor.execute(new RepositoryCreator(new RepositoryInfoBean(repoURL,
                     cartName,
                     tenantDomain,
@@ -906,12 +876,12 @@ public class ApplicationManagementUtil {
             new RepositoryCreator(new RepositoryInfoBean(repoURL,
                     cartName,
                     tenantDomain,
-                    repository.getRepoUserName(),
-                    repository.getRepoUserPassword(),
+                    repository.getUserName(),
+                    repository.getPassword(),
                     cartridgeInfo.getDeploymentDirs(),
                     cartridgeInfo)).createInternalRepository();
             String repoName = tenantDomain + "/" + cartName;
-            repository.setRepoName("https://" + System.getProperty(CartridgeConstants.GIT_HOST_NAME) + ":8443/git/" + repoName);
+            repository.setUrl("https://" + System.getProperty(CartridgeConstants.GIT_HOST_NAME) + ":8443/git/" + repoName);
 
         }
         return repository;
@@ -943,7 +913,7 @@ public class ApplicationManagementUtil {
         
         CartridgeInfo cartridgeInfo = null;
         try {
-            cartridgeInfo = getServiceClient().getCartridgeInfo(sub.getCartridge());
+            cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(sub.getCartridge());
         } catch (Exception e) {
             throw new ADCException("Cannot get cartridge info: " + sub.getCartridge(), e);
         }
@@ -957,12 +927,12 @@ public class ApplicationManagementUtil {
         return populateCartridgeInfo(cartridgeInfo, sub, ips, tenantDomain);
     }
 
-    private static void registerService(String cartridgeType, String domain, String subDomain,
+    public static void registerService(String cartridgeType, String domain, String subDomain,
                                         DataHandler payload, String tenantRange, String hostName, Properties properties)
             throws ADCException, UnregisteredCartridgeException {
         log.info("Register service..");
         try {
-            getServiceClient().register(domain, subDomain, cartridgeType, payload, tenantRange,
+            CloudControllerServiceClient.getServiceClient().register(domain, subDomain, cartridgeType, payload, tenantRange,
                     hostName, properties);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
@@ -1082,7 +1052,7 @@ public class ApplicationManagementUtil {
         cartridge.setMappedDomain(sub.getMappedDomain());
 
         if (sub.getRepository() != null) {
-            cartridge.setRepoURL(convertRepoURL(sub.getRepository().getRepoName()));
+            cartridge.setRepoURL(convertRepoURL(sub.getRepository().getUrl()));
         }
         return cartridge;
     }

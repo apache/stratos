@@ -18,23 +18,6 @@
  */
 package org.apache.stratos.adc.mgt.utils;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.codec.binary.Base64;
@@ -43,11 +26,19 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
-import org.apache.stratos.adc.mgt.dao.Repository;
 import org.apache.stratos.adc.mgt.dao.RepositoryCredentials;
+import org.apache.stratos.adc.mgt.repository.Repository;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.namespace.QName;
+import java.io.File;
+import java.sql.*;
+import java.util.*;
 
 /**
  * This class is responsible for handling persistence
@@ -191,7 +182,7 @@ public class PersistenceManager {
 				cartridge.setPolicy(resultSet.getString("POLICY"));
 				cartridge.setMappedDomain(resultSet.getString("MAPPED_DOMAIN"));
 				Repository repo = new Repository();
-				repo.setRepoName(resultSet.getString("REPO_NAME"));
+				repo.setUrl(resultSet.getString("REPO_NAME"));
 				cartridge.setRepository(repo);
 				cartridge.setHostName(resultSet.getString("HOSTNAME"));
 				int dataCartridgeId = resultSet.getInt("DATA_CARTRIDGE_ID");
@@ -336,14 +327,14 @@ public class PersistenceManager {
 			// persist repo
 			if (cartridgeSubscription.getRepository() != null) {
 				String encryptedRepoUserPassword = encryptPassword(cartridgeSubscription.getRepository()
-						.getRepoUserPassword());
+						.getPassword());
 				String insertRepo = "INSERT INTO REPOSITORY (REPO_NAME,STATE,REPO_USER_NAME,REPO_USER_PASSWORD)"
 						+ " VALUES (?,?,?,?)";
 
 				insertRepoStmt = con.prepareStatement(insertRepo, Statement.RETURN_GENERATED_KEYS);
-				insertRepoStmt.setString(1, cartridgeSubscription.getRepository().getRepoName());
+				insertRepoStmt.setString(1, cartridgeSubscription.getRepository().getUrl());
 				insertRepoStmt.setString(2, "ACTIVE");
-				insertRepoStmt.setString(3, cartridgeSubscription.getRepository().getRepoUserName());
+				insertRepoStmt.setString(3, cartridgeSubscription.getRepository().getUserName());
 				insertRepoStmt.setString(4, encryptedRepoUserPassword);
 				if (log.isDebugEnabled()) {
 					log.debug("Executing insert: " + insertRepo);
@@ -517,7 +508,7 @@ public class PersistenceManager {
 		String repoName = resultSet.getString("REPO_NAME");
 		if (repoName != null) {
 			Repository repo = new Repository();
-			repo.setRepoName(repoName);
+			repo.setUrl(repoName);
 			cartridgeSubscription.setRepository(repo);
 		}
 
@@ -645,7 +636,45 @@ public class PersistenceManager {
 		return subscriptionList;
 	}
 
-	public static void updateSubscriptionState(int subscriptionId, String state) throws Exception {
+    public static List<CartridgeSubscription> getSubscriptionsForTenant (int tenantId) throws Exception {
+
+        List<CartridgeSubscription> cartridgeSubscriptions = null;
+        Connection con = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            con = StratosDBUtils.getConnection();
+            String sql = "SELECT * FROM CARTRIDGE_SUBSCRIPTION C left join REPOSITORY R on "
+                    + "C.REPO_ID=R.REPO_ID left join DATA_CARTRIDGE D on "
+                    + "D.DATA_CART_ID=C.DATA_CARTRIDGE_ID WHERE TENANT_ID=? AND C.STATE != 'UNSUBSCRIBED'";
+            statement = con.prepareStatement(sql);
+            statement.setInt(1, tenantId);
+            if (log.isDebugEnabled()) {
+                log.debug("Executing query: " + sql);
+            }
+
+            resultSet = statement.executeQuery();
+            cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+            if (resultSet.next()) {
+                CartridgeSubscription cartridgeSubscription = new CartridgeSubscription();
+                populateSubscription(cartridgeSubscription, resultSet);
+                cartridgeSubscriptions.add(cartridgeSubscription);
+            }
+        } catch (Exception s) {
+            String msg = "Error while sql connection :" + s.getMessage();
+            log.error(msg, s);
+            throw s;
+
+        } finally {
+            StratosDBUtils.closeAllConnections(con, statement, resultSet);
+        }
+
+        return cartridgeSubscriptions;
+    }
+
+
+    public static void updateSubscriptionState(int subscriptionId, String state) throws Exception {
 
 		Connection con = null;
 		PreparedStatement statement = null;

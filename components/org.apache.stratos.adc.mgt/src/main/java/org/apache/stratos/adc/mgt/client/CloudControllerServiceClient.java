@@ -19,26 +19,27 @@
 
 package org.apache.stratos.adc.mgt.client;
 
-import java.rmi.RemoteException;
-
-import javax.activation.DataHandler;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 import org.apache.stratos.cloud.controller.util.xsd.Properties;
+
+import javax.activation.DataHandler;
+import java.rmi.RemoteException;
 
 public class CloudControllerServiceClient {
 
 	private CloudControllerServiceStub stub;
 
 	private static final Log log = LogFactory.getLog(CloudControllerServiceClient.class);
+    private static volatile CloudControllerServiceClient serviceClient;
 
 	public CloudControllerServiceClient(String epr) throws AxisFault {
 
@@ -54,6 +55,18 @@ public class CloudControllerServiceClient {
 		}
 
 	}
+
+    public static CloudControllerServiceClient getServiceClient() throws AxisFault {
+        if (serviceClient == null) {
+            synchronized (CloudControllerServiceClient.class) {
+                if (serviceClient == null) {
+                    serviceClient = new CloudControllerServiceClient(
+                            System.getProperty(CartridgeConstants.AUTOSCALER_SERVICE_URL));
+                }
+            }
+        }
+        return serviceClient;
+    }
 
 	public boolean register(String domainName, String subDomain, String cartridgeType,
 	                        DataHandler payload, String tenantRange, String hostName, Properties properties) throws RemoteException, CloudControllerServiceUnregisteredCartridgeExceptionException
