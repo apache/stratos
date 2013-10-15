@@ -98,7 +98,7 @@
             </releases>
         </repository>
     </repositories>
-
+    <!-- START SNIPPET: pedantic-profile -->
     <profiles>
         <profile>
             <id>pedantic</id>
@@ -149,7 +149,8 @@
                 </plugins>
             </build>
         </profile>
-
+    <!-- END SNIPPET: pedantic-profile -->
+    <!-- START SNIPPET: addLicense-profile -->
 	<profile>
             <id>addLicense</id>
             <build>
@@ -304,21 +305,8 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
-
-    <!--distributionManagement>
-        <repository>
-            <id>wso2-maven2-repository</id>
-            <name>WSO2 Maven2 Repository</name>
-            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>wso2-maven2-snapshot-repository</id>
-            <name>WSO2 Maven2 Snapshot Repository</name>
-            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/snapshots/maven2/</url>
-        </snapshotRepository>
-    </distributionManagement-->
-
+    <!-- END SNIPPET: addLicense-profile -->
+</profiles>
     <pluginRepositories>
         <pluginRepository>
             <id>wso2-maven2-repository-1</id>
@@ -360,23 +348,23 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-remote-resources-plugin</artifactId>
-                     <executions>
-                         <execution>
-                         <goals>
-                                 <goal>process</goal>
-                         </goals>
-                         <configuration>
-                                 <resourceBundles>
-                                         <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-remote-resources-plugin</artifactId>
+                    <executions>
+                        <execution>
+                        <goals>
+                                <goal>process</goal>
+                        </goals>
+                        <configuration>
+                                <resourceBundles>
+                                        <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
                                         <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-                                 </resourceBundles>
-                         </configuration>
-                          </execution>
-                     </executions>
-           </plugin>
+                                </resourceBundles>
+                        </configuration>
+                         </execution>
+                    </executions>
+          </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -396,7 +384,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.5</version>
+                    <version>2.3.7</version>
                     <extensions>true</extensions>
                     <configuration>
                         <obrRepository>NONE</obrRepository>
@@ -407,13 +395,28 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                 </plugin>
-            </plugins>
+	        <plugin>
+        	  <groupId>org.apache.maven.plugins</groupId>
+          	  <artifactId>maven-source-plugin</artifactId>
+        	</plugin>
+
+	        <!-- START SNIPPET: release-plugin-configuration -->
+        	<plugin>
+          		<groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-release-plugin</artifactId>
+        	  <version>2.3.2</version>
+	          <configuration>
+        	    <useReleaseProfile>false</useReleaseProfile>
+	            <goals>deploy</goals>
+        	    <arguments>-Papache-release ${arguments}</arguments>
+	          </configuration>
+        	</plugin>
+	</plugins>
         </pluginManagement>
     </build>
 
