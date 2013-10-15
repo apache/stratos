@@ -436,13 +436,6 @@
             <artifactId>bcprov-jdk15</artifactId>
             <version>132</version>
         </dependency>
-
-        <!-- autoscale components -->
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.mediator.autoscale</artifactId>
-            <version>4.0.3</version>
-        </dependency>
         
         <dependency>
             <groupId>org.wso2.carbon</groupId>

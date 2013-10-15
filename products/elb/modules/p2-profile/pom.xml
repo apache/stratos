@@ -165,13 +165,7 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.cloud.controller.feature:${project.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.mediator.autoscale.feature:${project.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${project.version}
+                                    org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.server.feature:${carbon.version}
@@ -255,10 +249,6 @@
                                     <version>${carbon.patch.version.4.1.1}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.apache.stratos.cloud.controller.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
                                     <id>org.wso2.carbon.endpoint.server.feature.group</id>
                                     <version>${carbon.patch.version.4.1.1}</version>
                                 </feature>
@@ -299,11 +289,7 @@
                                     <version>${carbon.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.apache.stratos.mediator.autoscale.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.lb.common.feature.group</id>
+                                    <id>org.apache.stratos.messaging.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
