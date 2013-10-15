@@ -26,7 +26,6 @@ import java.util.*;
  */
 public class Service {
     private String serviceName;
-    private String domainName;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterMap;
     private Properties properties;
@@ -41,14 +40,6 @@ public class Service {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
-    }
-
-    public String getDomainName() {
-        return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
     }
 
     public Collection<Cluster> getClusterMap() {

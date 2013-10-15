@@ -29,6 +29,7 @@ import java.util.*;
  */
 public class Cluster implements Serializable {
     private String clusterId;
+    private String hostName;
     private String tenantRange;
     private Cloud cloud;
     private Region region;
@@ -47,6 +48,14 @@ public class Cluster implements Serializable {
 
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public String getTenantRange() {
