@@ -77,7 +77,6 @@
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
                                 <importFeatureDef>org.apache.synapse.wso2:${synapse.wso2.version}</importFeatureDef>
-                                <importFeatureDef>org.apache.stratos.lb.common:${project.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

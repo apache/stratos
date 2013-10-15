@@ -33,8 +33,7 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>org.apache.stratos.lb.common.feature</module>
-	<module>org.apache.stratos.lb.endpoint.server.feature</module>
+	    <module>org.apache.stratos.lb.endpoint.server.feature</module>
     </modules>
 </project>
 
