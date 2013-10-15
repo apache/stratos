@@ -27,8 +27,11 @@ import java.util.Properties;
 
 /**
  * Defines a member node in a cluster.
+ * Key: serviceName, clusterId, memberId
  */
 public class Member implements Serializable {
+    private String serviceName;
+    private String clusterId;
     private String memberId;
     private String hostName;
     private MemberStatus status;
@@ -37,6 +40,22 @@ public class Member implements Serializable {
 
     public Member() {
         this.portMap = new HashMap<String, Port>();
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public String getMemberId() {

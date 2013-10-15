@@ -23,6 +23,7 @@ import java.util.*;
 
 /**
  * Defines a service in the topology. A service represents a cartridge type.
+ * Key: serviceName
  */
 public class Service {
     private String serviceName;
@@ -58,8 +59,8 @@ public class Service {
         this.clusterMap.remove(clusterId);
     }
 
-    public boolean clusterExists(Cluster cluster) {
-        return this.clusterMap.containsKey(cluster.getClusterId());
+    public boolean clusterExists(String clusterId) {
+        return this.clusterMap.containsKey(clusterId);
     }
 
     public Cluster getCluster(String clusterId) {
