@@ -29,15 +29,17 @@ import org.osgi.service.component.ComponentContext;
  *                immediate="true"
  */
 
-public class AustoscalerServerComponent {
-    private static final Log log = LogFactory.getLog(AustoscalerServerComponent.class);
+public class AutoscalerServerComponent {
+	
+    private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
 
 	protected void activate(ComponentContext componentContext) throws Exception {
 
 		if (log.isInfoEnabled()) {
 			log.info("Autoscaler Server Component activated");
 		}
-
+		EventSubscriber eventSubscriber = new EventSubscriber();
+		eventSubscriber.init();
 	}
 
 }

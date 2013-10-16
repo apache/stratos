@@ -18,6 +18,7 @@
   ~ under the License.
   -->
 <assembly>
+<id>bin</id>
     <formats>
         <format>zip</format>
     </formats>
@@ -208,6 +209,11 @@
             <outputDirectory>apache-stratos-autoscaler-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/jndi.properties</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf</outputDirectory>
+            <destName>jndi.properties</destName>
         </file>
         <file>
             <source>src/main/resources/log4j.properties</source>
