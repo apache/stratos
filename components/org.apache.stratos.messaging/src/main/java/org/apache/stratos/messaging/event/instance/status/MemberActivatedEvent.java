@@ -16,24 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.event.instance.status;
 
-package org.apache.stratos.messaging.event.topology;
-
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.event.topology.TopologyEvent;
 
 import java.io.Serializable;
-import java.util.Properties;
 
 /**
- * This event is fired by Cloud Controller when a cluster is created for a service.
+ * This event is fired by Instance when it has started it's server and
+ * applications are ready to serve the incoming requests.
  */
-public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
+public class MemberActivatedEvent extends TopologyEvent implements Serializable {
     private String serviceName;
     private String clusterId;
-    private String hostName;
-    private String tenantRange;
-
-    private Properties properties;
+    private String memberId;
 
     public String getServiceName() {
         return serviceName;
@@ -51,29 +47,11 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
         this.clusterId = clusterId;
     }
 
-    public String getHostName() {
-        return hostName;
+    public String getMemberId() {
+        return memberId;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
-    public String getTenantRange() {
-        return tenantRange;
-    }
-
-    public void setTenantRange(String tenantRange) {
-        Util.validateTenantRange(tenantRange);
-        this.tenantRange = tenantRange;
-    }
-
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 }

@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * This event is fired by Cloud Controller when a member is started by the IaaS in a given cluster.
+ * This event is fired by Cloud Controller when a agent inside member  is started  successfully in a given cluster.
  */
 public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private String serviceName;
