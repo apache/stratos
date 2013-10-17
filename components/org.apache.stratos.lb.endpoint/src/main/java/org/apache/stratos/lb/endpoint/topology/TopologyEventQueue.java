@@ -16,24 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.lb.endpoint;
+
+package org.apache.stratos.lb.endpoint.topology;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Exception to be thrown from this component.
+ * Implements topology event queue.
  */
-public class TenantAwareLoadBalanceEndpointException extends RuntimeException {
+public class TopologyEventQueue extends LinkedBlockingQueue<String>{
+    private static volatile TopologyEventQueue instance;
 
-    private static final long serialVersionUID = -663839410798538370L;
-
-    public TenantAwareLoadBalanceEndpointException(String msg) {
-        super(msg);
+    private TopologyEventQueue(){
     }
 
-    public TenantAwareLoadBalanceEndpointException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
-
-    public TenantAwareLoadBalanceEndpointException(Throwable cause) {
-        super(cause);
+    public static synchronized TopologyEventQueue getInstance() {
+        if (instance == null) {
+            synchronized (TopologyEventQueue.class){
+                if (instance == null) {
+                    instance = new TopologyEventQueue ();
+                }
+            }
+        }
+        return instance;
     }
 }

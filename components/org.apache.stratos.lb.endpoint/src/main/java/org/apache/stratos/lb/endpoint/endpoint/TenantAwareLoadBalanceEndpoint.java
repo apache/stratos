@@ -1,539 +1,455 @@
-/**
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
-
- *  http://www.apache.org/licenses/LICENSE-2.0
-
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.apache.stratos.lb.endpoint.endpoint;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.clustering.ClusteringAgent;
-import org.apache.axis2.clustering.Member;
-import org.apache.axis2.clustering.management.GroupManagementAgent;
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.stratos.lb.endpoint.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.lb.endpoint.internal.RegistryManager;
-import org.apache.stratos.lb.endpoint.util.ConfigHolder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.protocol.HTTP;
+import org.apache.stratos.lb.endpoint.topology.TopologyManager;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
-import org.apache.synapse.config.xml.endpoints.utils.LoadbalanceAlgorithmFactory;
-import org.apache.synapse.core.LoadBalanceMembershipHandler;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
-import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
+import org.apache.synapse.endpoints.AddressEndpoint;
 import org.apache.synapse.endpoints.DynamicLoadbalanceFaultHandler;
 import org.apache.synapse.endpoints.Endpoint;
-import org.apache.synapse.endpoints.algorithms.LoadbalanceAlgorithm;
+import org.apache.synapse.endpoints.EndpointDefinition;
 import org.apache.synapse.endpoints.dispatch.HttpSessionDispatcher;
-import org.apache.synapse.endpoints.dispatch.SALSessions;
 import org.apache.synapse.endpoints.dispatch.SessionInformation;
 import org.apache.synapse.transport.nhttp.NhttpConstants;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration;
-import org.apache.stratos.lb.common.conf.util.HostContext;
-import org.apache.stratos.lb.common.conf.util.TenantDomainContext;
-import org.apache.stratos.lb.common.group.mgt.SubDomainAwareGroupManagementAgent;
-import org.apache.stratos.lb.common.util.DomainMapping;
-import org.apache.stratos.lb.common.cache.URLMappingCache;
-import org.apache.stratos.lb.endpoint.TenantLoadBalanceMembershipHandler;
 
-public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints.DynamicLoadbalanceEndpoint implements Serializable {
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
-    private static final long serialVersionUID = 1577351815951789938L;
-    private static final Log log = LogFactory.getLog(TenantAwareLoadBalanceEndpoint.class);
-    /**
-     * Axis2 based membership handler which handles members in multiple clustering domains
-     */
-    private TenantLoadBalanceMembershipHandler tlbMembershipHandler;
 
-    /**
-     * Key - host name
-     * Value - {@link HostContext}
-     */
-    private Map<String, HostContext> hostContexts = new HashMap<String, HostContext>();
-
-    private LoadBalancerConfiguration lbConfig;
-
-    /**
-     * keep the size of cache which used to keep hostNames of url mapping.
-     */
-    private URLMappingCache mappingCache;
-    private RegistryManager registryManager;
-    private int sizeOfCache;
-
-    private boolean initialized;
-
-    private String algorithm;
-    private String configuration;
-    private String failOver;
+public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints.LoadbalanceEndpoint implements Serializable {
+    private static final String PORT_MAPPING_PREFIX = "port.mapping.";
+    private HttpSessionDispatcher dispatcher;
 
     @Override
     public void init(SynapseEnvironment synapseEnvironment) {
-        try {
+        super.init(synapseEnvironment);
 
-            lbConfig = ConfigHolder.getInstance().getLbConfig();
-            hostContexts = lbConfig.getHostContextMap();
-            sizeOfCache = lbConfig.getLoadBalancerConfig().getSizeOfCache();
-            mappingCache = URLMappingCache.getInstance(sizeOfCache);
-            setSessionTimeout(lbConfig.getLoadBalancerConfig().getSessionTimeOut());
-            setFailover(lbConfig.getLoadBalancerConfig().getFailOver());
-
-        } catch (Exception e) {
-            String msg = "Failed while reading Load Balancer configuration";
-            log.error(msg, e);
-            throw new TenantAwareLoadBalanceEndpointException(msg, e);
-        }
-
-
-        LoadbalanceAlgorithm algorithm = null;
-        try {
-            OMElement payload = AXIOMUtil.stringToOM(generatePayLoad());
-            algorithm =
-                    LoadbalanceAlgorithmFactory.
-                            createLoadbalanceAlgorithm(payload, null);
-
-        } catch (Exception e) {
-            String msg = "Error While creating Load balance algorithm";
-            log.error(msg, e);
-            throw new SynapseException(msg, e);
-        }
-
-        if (!initialized) {
-            super.init(synapseEnvironment);
-            ConfigurationContext cfgCtx =
-                                          ((Axis2SynapseEnvironment) synapseEnvironment).getAxis2ConfigurationContext();
-            ClusteringAgent clusteringAgent = cfgCtx.getAxisConfiguration().getClusteringAgent();
-            if (clusteringAgent == null) {
-                throw new SynapseException("Axis2 ClusteringAgent not defined in axis2.xml");
-            }
-
-            // Add the Axis2 GroupManagement agents
-            if (hostContexts != null) {
-                // iterate through each host context
-                for (HostContext hostCtxt : hostContexts.values()) {
-                    // each host can has multiple Tenant Contexts, iterate through them
-                    for (TenantDomainContext tenantCtxt : hostCtxt.getTenantDomainContexts()) {
-
-                        String domain = tenantCtxt.getDomain();
-                        String subDomain = tenantCtxt.getSubDomain();
-
-                        if (clusteringAgent.getGroupManagementAgent(domain, subDomain) == null) {
-                            String gmAgentClass = lbConfig.getLoadBalancerConfig().getGroupManagementAgentClass();
-                            GroupManagementAgent groupManagementAgent;
-                            if (gmAgentClass != null) {
-                                try {
-                                    groupManagementAgent = (GroupManagementAgent) Class.forName(gmAgentClass).newInstance();
-                                } catch (Exception e) {
-                                    String msg = "Cannot instantiate GroupManagementAgent. Class: " + gmAgentClass;
-                                    log.error(msg, e);
-                                    throw new TenantAwareLoadBalanceEndpointException(msg, e);
-                                }
-                            } else {
-                                groupManagementAgent = new SubDomainAwareGroupManagementAgent(subDomain);
-                            }
-                            clusteringAgent.addGroupManagementAgent(groupManagementAgent,
-                                                                    domain, subDomain,-1);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Group management agent added to cluster domain: " +
-                                          domain + " and sub domain: " + subDomain);
-                            }
-                        }
-                    }
-                }
-
-                tlbMembershipHandler =
-                                       new TenantLoadBalanceMembershipHandler(hostContexts,
-                                                                              algorithm, cfgCtx,
-                                                                              isClusteringEnabled,
-                                                                              getName());
-
-                // set TenantLoadBalanceMembershipHandler for future reference
-                ConfigHolder.getInstance().setTenantLoadBalanceMembershipHandler(tlbMembershipHandler);
-            }
-
-            // Initialize the SAL Sessions if already has not been initialized.
-            SALSessions salSessions = SALSessions.getInstance();
-            if (!salSessions.isInitialized()) {
-                salSessions.initialize(isClusteringEnabled, cfgCtx);
-            }
-            setSessionAffinity(true);
-            setDispatcher(new HttpSessionDispatcher());
-            initialized = true;
-            log.info("Tenant Aware Load Balance Endpoint is initialized.");
-        }
-
+        setDispatcher(new HttpSessionDispatcher());
     }
 
-    	public void setConfiguration(String paramEle) {
-    	        configuration = paramEle;
-    	}
-
-    	    public void setAlgorithm(String paramEle) {
-    	        this.algorithm = paramEle;
-    	    }
-
-    	    public void setFailOver(String paramEle) {
-    	        this.failOver = paramEle;
-    	    }
-
-
-    public String getName() {
-		return "tlbEndpoint";
-	}
-
-    //TODO remove following hard coded element
-    private String generatePayLoad() {
-        return " <serviceDynamicLoadbalance failover=\"true\"\n" +
-                "                                           algorithm=\"org.apache.synapse.endpoints.algorithms.RoundRobin\"" +
-                //"                                           configuration=\"$system:loadbalancer.xml\"" +
-                "/>";
-    }
-
-    public LoadBalanceMembershipHandler getLbMembershipHandler() {
-        return tlbMembershipHandler;
-    }
-
-
+    @Override
     public void send(MessageContext synCtx) {
-        /*   setCookieHeader(synCtx);     */
-        Member currentMember = null;
+
         SessionInformation sessionInformation = null;
-        String actualHost = null;
-
-        //Gathering required information for domain mapping
-        org.apache.axis2.context.MessageContext axis2MessageContext =
-                                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
-        Map<String, String> transportHeaders = (Map<String, String>) axis2MessageContext.
-                getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
-        String targetHost = transportHeaders.get(HTTP.TARGET_HOST);
-
-        String port = "";
-        boolean containsPort = false;
-        if (targetHost.contains(":")) {
-            containsPort = true;
-            port = targetHost.substring(targetHost.indexOf(':') + 1, targetHost.length());
-            targetHost = targetHost.substring(0, targetHost.indexOf(':'));
-        }
-        //Gathering required information for domain mapping done
-
-        boolean isValidHost = tlbMembershipHandler.isAValidHostName(targetHost);
-        DomainMapping domainMapping = null;
-        if(!isValidHost){
-            //check if the host is valid, if not valid, execute following code to check whether it is a mapped domain
-            domainMapping = mappingCache.getMapping(targetHost);
-            if(domainMapping == null){
-                registryManager = new RegistryManager();
-                domainMapping = registryManager.getMapping(targetHost);
-                mappingCache.addValidMapping(targetHost, domainMapping);
-            }
-            if (domainMapping != null) {
-                actualHost = domainMapping.getActualHost();
-
-                if(containsPort){
-                    transportHeaders.put(HTTP.TARGET_HOST, actualHost + ":" + port);
-                } else {
-                    transportHeaders.put(HTTP.TARGET_HOST, actualHost);
-                }
-                ((Axis2MessageContext) synCtx).getAxis2MessageContext().setProperty("TRANSPORT_HEADERS" , transportHeaders);
-
-            } else {
-                String msg = "Invalid host name : " + targetHost;
-                log.error(msg);
-                throw new SynapseException(msg);
-            }
-        }
-
+        org.apache.axis2.clustering.Member currentMember = null;
         if (isSessionAffinityBasedLB()) {
-            // first check if this session is associated with a session. if so, get the endpoint
-            // associated for that session.
-            sessionInformation =
-                    (SessionInformation) synCtx.getProperty(
-                            SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
 
-            currentMember = (Member) synCtx.getProperty(
+            // Check existing session information
+            sessionInformation = (SessionInformation) synCtx.getProperty(
+                    SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
+
+            currentMember = (org.apache.axis2.clustering.Member) synCtx.getProperty(
                     SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER);
 
             if (sessionInformation == null && currentMember == null) {
                 sessionInformation = dispatcher.getSession(synCtx);
                 if (sessionInformation != null) {
-
                     if (log.isDebugEnabled()) {
                         log.debug("Current session id : " + sessionInformation.getId());
                     }
 
                     currentMember = sessionInformation.getMember();
-                    synCtx.setProperty(
-                            SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER, currentMember);
+                    synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER, currentMember);
                     // This is for reliably recovery any session information if while response is getting ,
                     // session information has been removed by cleaner.
-                    // This will not be a cost as  session information a not heavy data structure
-                    synCtx.setProperty(
-                            SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION, sessionInformation);
+                    // This will not be a cost as session information is not a heavy data structure
+                    synCtx.setProperty(SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION, sessionInformation);
                 }
             }
 
         }
 
-        // Dispatch request the relevant member
-//        String targetHost = getTargetHost(synCtx);
-        ConfigurationContext configCtx =
-                ((Axis2MessageContext) synCtx).getAxis2MessageContext().getConfigurationContext();
-
-        if (tlbMembershipHandler.getConfigurationContext() == null) {
-            tlbMembershipHandler.setConfigurationContext(configCtx);
-        }
-
-        if(tlbMembershipHandler.getClusteringAgent() == null) {
-            tlbMembershipHandler.setConfigurationContext(configCtx);
-        }
-
-        TenantDynamicLoadBalanceFaultHandlerImpl faultHandler = new TenantDynamicLoadBalanceFaultHandlerImpl();
-		if (log.isDebugEnabled()) {
-			log.debug("Actual Host: " + actualHost + " - Target Host: " + targetHost);
-		}
-        
-        faultHandler.setHost(actualHost != null ? actualHost : targetHost);
-
+        TenantAwareLoadBalanceFaultHandler faultHandler = new TenantAwareLoadBalanceFaultHandler();
         if (sessionInformation != null && currentMember != null) {
-            //send message on current session
+            // Send request to the member with the existing session
             sessionInformation.updateExpiryTime();
             sendToApplicationMember(synCtx, currentMember, faultHandler, false);
         } else {
-//            prepare for a new session
-            int tenantId = getTenantId(synCtx);
-            //check if this is a valid host name registered in ELB
-            if(tlbMembershipHandler.isAValidHostName(targetHost)){
-                currentMember = tlbMembershipHandler.getNextApplicationMember(targetHost, tenantId);
-                if (currentMember == null) {
-                    String msg = "No application members available";
-                    log.error(msg);
-                    throw new SynapseException(msg);
+            // Send request to a new member
+            org.apache.axis2.clustering.Member member = findNextMember(synCtx);
+            if(member != null) {
+                sendToApplicationMember(synCtx, member, faultHandler, true);
+            }
+            else {
+                throw new SynapseException(String.format("No application members available to serve the request %s", synCtx.getTo().getAddress()));
+            }
+        }
+    }
+
+    private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
+        try {
+            // Identify cluster by target host
+            TopologyManager.acquireReadLock();
+            String targetHost = extractTargetHost(synCtx);
+            Cluster targetCluster = findNextCluster(targetHost);
+            if(targetCluster != null) {
+                // TODO: Apply algorithm and find next member from the selected cluster
+                if(targetCluster.getMembers().size() > 0) {
+                    Member member = targetCluster.getMembers().iterator().next();
+
+                    // Create Axi2 member object
+                    String transport = extractTransport(synCtx);
+                    Port transportPort = member.getPort(transport);
+                    if(transportPort == null)
+                        throw new SynapseException(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
+
+                    int memberPort = transportPort.getValue();
+                    org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getHostName(), memberPort);
+                    axis2Member.setDomain(member.getHostName());
+                    axis2Member.setActive(true);
+                    return axis2Member;
                 }
-                sendToApplicationMember(synCtx, currentMember, faultHandler, true);
+            }
+            return null;
+        }
+        finally {
+            TopologyManager.releaseReadLock();
+        }
+    }
+
+    private Cluster findNextCluster(String targetHost) {
+        Cluster targetCluster = null;
+        Collection<Service> services = TopologyManager.getTopology().getServices();
+        for (Service service : services) {
+            for (Cluster cluster : service.getClusters()) {
+                if (targetHost.equals(cluster.getHostName())) {
+                    return cluster;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adding the X-Forwarded-For/X-Originating-IP headers to the outgoing message.
+     *
+     * @param synCtx Current message context
+     */
+    protected void setupTransportHeaders(MessageContext synCtx) {
+        Axis2MessageContext axis2smc = (Axis2MessageContext) synCtx;
+        org.apache.axis2.context.MessageContext axis2MessageCtx = axis2smc.getAxis2MessageContext();
+        Object headers = axis2MessageCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+        if (headers != null && headers instanceof Map) {
+            Map headersMap = (Map) headers;
+            String xForwardFor = (String) headersMap.get(NhttpConstants.HEADER_X_FORWARDED_FOR);
+            String remoteHost = (String) axis2MessageCtx.getProperty(org.apache.axis2.context.MessageContext.REMOTE_ADDR);
+
+            if (xForwardFor != null && !"".equals(xForwardFor)) {
+                StringBuilder xForwardedForString = new StringBuilder();
+                xForwardedForString.append(xForwardFor);
+                if (remoteHost != null && !"".equals(remoteHost)) {
+                    xForwardedForString.append(",").append(remoteHost);
+                }
+                headersMap.put(NhttpConstants.HEADER_X_FORWARDED_FOR, xForwardedForString.toString());
             } else {
-                if(domainMapping == null){
-                    registryManager = new RegistryManager();
-                    domainMapping = registryManager.getMapping(targetHost);
-                    mappingCache.addValidMapping(targetHost, domainMapping);
+                headersMap.put(NhttpConstants.HEADER_X_FORWARDED_FOR, remoteHost);
+            }
+
+            //Extracting information of X-Originating-IP
+            if (headersMap.get(NhttpConstants.HEADER_X_ORIGINATING_IP_FORM_1) != null) {
+                headersMap.put(NhttpConstants.HEADER_X_ORIGINATING_IP_FORM_1, headersMap.get(NhttpConstants.HEADER_X_ORIGINATING_IP_FORM_1));
+            } else if (headersMap.get(NhttpConstants.HEADER_X_ORIGINATING_IP_FORM_2) != null) {
+                headersMap.put(NhttpConstants.HEADER_X_ORIGINATING_IP_FORM_2, headersMap.get(NhttpConstants.HEADER_X_ORIGINATING_IP_FORM_2));
+            }
+
+        }
+    }
+
+    private String extractTargetHost(MessageContext synCtx) {
+        org.apache.axis2.context.MessageContext msgCtx =
+                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
+
+        Map headerMap = (Map) msgCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+        String hostName = null;
+        if (headerMap != null) {
+            Object hostObj = headerMap.get(HTTP.TARGET_HOST);
+            hostName = (String) hostObj;
+            if (hostName.contains(":")) {
+                hostName = hostName.substring(0, hostName.indexOf(":"));
+            }
+        }
+        return hostName;
+    }
+
+    private int extractPort(MessageContext synCtx, String transport) {
+        org.apache.axis2.context.MessageContext msgCtx =
+                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
+
+        Map headerMap = (Map) msgCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+        int port = -1;
+        if (headerMap != null) {
+            String hostHeader = (String) headerMap.get(HTTP.TARGET_HOST);
+            int index = hostHeader.indexOf(':');
+            if (index != -1) {
+                port = Integer.parseInt(hostHeader.trim().substring(index + 1));
+            } else {
+                if ("http".equals(transport)) {
+                    port = 80;
+                } else if ("https".equals(transport)) {
+                    port = 443;
                 }
-                if(domainMapping != null) {
+            }
+        }
+        return port;
+    }
 
-                    actualHost = domainMapping.getActualHost();
-                    
-					if (log.isDebugEnabled()) {
-						log.debug("Actual Host: " + actualHost + " - Target Host: " + targetHost);
-					}
-                    
-                    faultHandler.setHost(actualHost != null ? actualHost : targetHost);
+    private String extractTransport(MessageContext synCtx) {
+        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
+        return axis2MessageContext.getTransportIn().getName();
+    }
 
-                    if(containsPort){
-                        transportHeaders.put(HTTP.TARGET_HOST, actualHost + ":" + port);
-                    } else {
-                        transportHeaders.put(HTTP.TARGET_HOST, actualHost);
-                    }
-                    ((Axis2MessageContext) synCtx).getAxis2MessageContext().setProperty("TRANSPORT_HEADERS" , transportHeaders);
+    /**
+     * @param to     get an endpoint to send the information
+     * @param member The member to which an EP has to be created
+     * @param synCtx synapse context
+     * @return the created endpoint
+     */
+    private Endpoint getEndpoint(EndpointReference to, org.apache.axis2.clustering.Member member, MessageContext synCtx) {
+        AddressEndpoint endpoint = new AddressEndpoint();
+        endpoint.setEnableMBeanStats(false);
+        endpoint.setName("DLB:" + member.getHostName() +
+                ":" + member.getPort() + ":" + UUID.randomUUID());
+        EndpointDefinition definition = new EndpointDefinition();
+        definition.setSuspendMaximumDuration(10000);
+        definition.setReplicationDisabled(true);
+        definition.setAddress(to.getAddress());
+        endpoint.setDefinition(definition);
+        endpoint.init((SynapseEnvironment)
+                ((Axis2MessageContext) synCtx).getAxis2MessageContext().
+                        getConfigurationContext().getAxisConfiguration().
+                        getParameterValue(SynapseConstants.SYNAPSE_ENV));
+        return endpoint;
+    }
 
-                    currentMember = tlbMembershipHandler.getNextApplicationMember(actualHost,tenantId);
-                    sendToApplicationMember(synCtx,currentMember,faultHandler,true);
-                }else {
-                    String msg = "Invalid host name : " + targetHost;
-                    log.error(msg);
-                    throw new SynapseException(msg);
+    private EndpointReference getEndpointReferenceAfterURLRewrite(org.apache.axis2.clustering.Member currentMember,
+                                                                  String transport,
+                                                                  String address,
+                                                                  int incomingPort) {
+
+        if (transport.startsWith("https")) {
+            transport = "https";
+        } else if (transport.startsWith("http")) {
+            transport = "http";
+        } else {
+            String msg = "Cannot load balance for non-HTTP/S transport " + transport;
+            log.error(msg);
+            throw new SynapseException(msg);
+        }
+        // URL Rewrite
+        if (transport.startsWith("http") || transport.startsWith("https")) {
+            if (address.startsWith("http://") || address.startsWith("https://")) {
+                try {
+                    String _address = address.indexOf("?") > 0 ? address.substring(address.indexOf("?"), address.length()) : "";
+                    address = new URL(address).getPath() + _address;
+                } catch (MalformedURLException e) {
+                    String msg = "URL " + address + " is malformed";
+                    log.error(msg, e);
+                    throw new SynapseException(msg, e);
                 }
+            }
+
+            int port;
+            Properties memberProperties = currentMember.getProperties();
+            String mappedPort = memberProperties.getProperty(PORT_MAPPING_PREFIX + incomingPort);
+            if (mappedPort != null) {
+                port = Integer.parseInt(mappedPort);
+            } else if (transport.startsWith("https")) {
+                port = currentMember.getHttpsPort();
+            } else {
+                port = currentMember.getHttpPort();
+            }
+
+            String remoteHost = memberProperties.getProperty("remoteHost");
+            String hostName = (remoteHost == null) ? currentMember.getHostName() : remoteHost;
+            return new EndpointReference(transport + "://" + hostName +
+                    ":" + port + address);
+        } else {
+            String msg = "Cannot load balance for non-HTTP/S transport " + transport;
+            log.error(msg);
+            throw new SynapseException(msg);
+        }
+    }
+
+    public boolean isSessionAffinityBasedLB() {
+        return false;
+    }
+
+    /*
+     * Preparing the endpoint sequence for a new session establishment request
+     */
+    private void prepareEndPointSequence(MessageContext synCtx, Endpoint endpoint) {
+
+        Object o = synCtx.getProperty(SynapseConstants.PROP_SAL_ENDPOINT_ENDPOINT_LIST);
+        List<Endpoint> endpointList;
+        if (o instanceof List) {
+            endpointList = (List<Endpoint>) o;
+            endpointList.add(this);
+
+        } else {
+            // this is the first endpoint in the hierarchy. so create the queue and
+            // insert this as the first element.
+            endpointList = new ArrayList<Endpoint>();
+            endpointList.add(this);
+            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_ENDPOINT_LIST, endpointList);
+        }
+
+        // if the next endpoint is not a session affinity one, endpoint sequence ends
+        // here. but we have to add the next endpoint to the list.
+        if (!(endpoint instanceof TenantAwareLoadBalanceEndpoint)) {
+            endpointList.add(endpoint);
+            // Clearing out if there any any session information with current message
+            if (dispatcher.isServerInitiatedSession()) {
+                dispatcher.removeSessionID(synCtx);
             }
         }
     }
 
+    protected void sendToApplicationMember(MessageContext synCtx,
+                                           org.apache.axis2.clustering.Member currentMember,
+                                           DynamicLoadbalanceFaultHandler faultHandler,
+                                           boolean newSession) {
+        //Rewriting the URL
+        org.apache.axis2.context.MessageContext axis2MsgCtx =
+                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
 
-//    public List<HostContext> getHostContexts() {
-//        return Collections.unmodifiableList(hostContexts);
-//    }
+        //Removing the REST_URL_POSTFIX - this is a hack.
+        //In this load balance endpoint we create an endpoint per request by setting the complete url as the address.
+        //If a REST message comes Axis2FlexibleMEPClient append the REST_URL_POSTFIX to the address. Hence endpoint fails
+        //do send the request. e.g.  http://localhost:8080/example/index.html/example/index.html
+        axis2MsgCtx.removeProperty(NhttpConstants.REST_URL_POSTFIX);
 
-    /**
-     * This FaultHandler will try to resend the message to another member if an error occurs
-     * while sending to some member. This is a failover mechanism
-     */
+        String transport = axis2MsgCtx.getTransportIn().getName();
+        String address = synCtx.getTo().getAddress();
+        int incomingPort = extractPort(synCtx, transport);
+        EndpointReference to = getEndpointReferenceAfterURLRewrite(currentMember, transport, address, incomingPort);
+        synCtx.setTo(to);
 
-    /**
-     * @param url to url for target
-     * @return tenantID if tenant id available else 0
-     */
-    private int getTenantId(String url) {
-        String servicesPrefix = "/t/";
-        if (url != null && url.contains(servicesPrefix)) {
-            int domainNameStartIndex =
-                    url.indexOf(servicesPrefix) + servicesPrefix.length();
-            int domainNameEndIndex = url.indexOf('/', domainNameStartIndex);
-            String domainName = url.substring(domainNameStartIndex,
-                    domainNameEndIndex == -1 ? url.length() : domainNameEndIndex);
+        faultHandler.setTo(to);
+        faultHandler.setCurrentMember(currentMember);
+        synCtx.pushFaultHandler(faultHandler);
+        if (isFailover()) {
+            synCtx.getEnvelope().build();
+        }
 
-            // return tenant id if domain name is not null
-            if (domainName != null) {
-                try {
-                    return ConfigHolder.getInstance().getRealmService().getTenantManager().getTenantId(domainName);
-                } catch (org.wso2.carbon.user.api.UserStoreException e) {
-                    log.error("An error occurred while obtaining the tenant id.", e);
-                }
+        Endpoint endpoint = getEndpoint(to, currentMember, synCtx);
+        faultHandler.setCurrentEp(endpoint);
+        if (isSessionAffinityBasedLB() && newSession) {
+            prepareEndPointSequence(synCtx, endpoint);
+            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER, currentMember);
+            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_DISPATCHER, dispatcher);
+            // we should also indicate that this is the first message in the session. so that
+            // onFault(...) method can resend only the failed attempts for the first message.
+            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_FIRST_MESSAGE_IN_SESSION,
+                    Boolean.TRUE);
+        }
+
+        Map<String, String> memberHosts;
+        if ((memberHosts = (Map<String, String>) currentMember.getProperties().get(HttpSessionDispatcher.HOSTS)) == null) {
+            currentMember.getProperties().put(HttpSessionDispatcher.HOSTS,
+                    memberHosts = new HashMap<String, String>());
+        }
+        memberHosts.put(extractTargetHost(synCtx), "true");
+        setupTransportHeaders(synCtx);
+        try {
+            endpoint.send(synCtx);
+        } catch (Exception e) {
+            if (e.getMessage().toLowerCase().contains("io reactor shutdown")) {
+                log.fatal("System cannot continue normal operation. Restarting", e);
+                System.exit(121); // restart
+            } else {
+                throw new SynapseException(e);
             }
         }
-        // return 0 if the domain name is null
-        return 0;
     }
 
-    private int getTenantId(MessageContext synCtx){
-    	String url = synCtx.getTo().toString();
-    	int tenantId = getTenantId(url);
-    	// tenantId = 0 because domain name was null. May be this is the SSO response
-    	if(tenantId == 0 && url.contains(MultitenantConstants.TENANT_DOMAIN+"=")){
-    		// OK,this is the SAML SSO response from the IS
-    		// e.g url = https://localhost:9444/acs?teantDomain=domain
-    		String domainName = url.split("=").clone()[1];
-    		// return tenant id if domain name is not null
-            if (domainName != null) {
-                try {
-                    return ConfigHolder.getInstance().getRealmService().getTenantManager().getTenantId(domainName);
-                } catch (org.wso2.carbon.user.api.UserStoreException e) {
-                    log.error("An error occurred while obtaining the tenant id.", e);
-                }
-            }
-    	}
-    	return tenantId;
+    public void setDispatcher(HttpSessionDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
+    public HttpSessionDispatcher getDispatcher() {
+        return dispatcher;
+    }
 
-    /**
-     * This FaultHandler will try to resend the message to another member if an error occurs
-     * while sending to some member. This is a failover mechanism
-     */
-    private class TenantDynamicLoadBalanceFaultHandlerImpl extends DynamicLoadbalanceFaultHandler {
-
-        private EndpointReference to;
-        private Member currentMember;
+    private class TenantAwareLoadBalanceFaultHandler extends DynamicLoadbalanceFaultHandler {
+        private org.apache.axis2.clustering.Member currentMember;
         private Endpoint currentEp;
-        private String host;
+        private EndpointReference to;
 
-        private static final int MAX_RETRY_COUNT = 5;
-
-        // ThreadLocal variable to keep track of how many times this fault handler has been
-        // called
-        private ThreadLocal<Integer> callCount = new ThreadLocal<Integer>() {
-            protected Integer initialValue() {
-                return 0;
-            }
-        };
-
-        public void setHost(String host) {
-			if (log.isDebugEnabled()) {
-				log.debug("Setting host name: " + host);
-			}
-            this.host = host;
-        }
-
-        public void setCurrentMember(Member currentMember) {
+        @Override
+        public void setCurrentMember(org.apache.axis2.clustering.Member currentMember) {
             this.currentMember = currentMember;
         }
 
+        @Override
+        public void setCurrentEp(Endpoint currentEp) {
+            this.currentEp = currentEp;
+        }
+
+        @Override
         public void setTo(EndpointReference to) {
             this.to = to;
         }
 
-        private TenantDynamicLoadBalanceFaultHandlerImpl() {
-        }
-
+        @Override
         public void onFault(MessageContext synCtx) {
-            if (currentMember == null || to == null) {
-                return;
-            }
-
-            // Prevent infinite retrying to failed members
-            callCount.set(callCount.get() + 1);
-            if (callCount.get() >= MAX_RETRY_COUNT) {
-                log.debug("Retrying to a failed member has stopped.");
-                return;
-            }
-
             //cleanup endpoint if exists
-            if (currentEp != null) {
+            if(currentEp != null){
                 currentEp.destroy();
             }
-            Integer errorCode = (Integer) synCtx.getProperty(SynapseConstants.ERROR_CODE);
-            if (errorCode != null) {
-                if (errorCode.equals(NhttpConstants.CONNECTION_FAILED)) {
-                    currentMember.suspend(10000);     // TODO: Make this configurable.
-                    log.info("Suspended member " + currentMember + " for 10s due to connection failure to that member");
-                }
-                if (errorCode.equals(NhttpConstants.CONNECTION_FAILED) ||
-                        errorCode.equals(NhttpConstants.CONNECT_CANCEL) ||
-                        errorCode.equals(NhttpConstants.CONNECT_TIMEOUT)) {
-                    
-                    if (!synCtx.getFaultStack().isEmpty()) {
-                        synCtx.getFaultStack().pop();
-                    }
-                    // Try to resend to another member
-                    Member newMember = tlbMembershipHandler.getNextApplicationMember(host, getTenantId(synCtx.toString()));
-                    if (newMember == null || newMember.isSuspended()) {
-                        String msg = "No application members available having host name : "+host+
-                                " and tenant id : "+getTenantId(synCtx.toString()+" and which is not suspended.");
-                        log.error(msg);
-                        throw new SynapseException(msg);
-                    }
-                    synCtx.setTo(to);
-                    if (isSessionAffinityBasedLB()) {
-                        // We are sending this message on a new session,
-                        // hence we need to remove previous session information
-                        Set pros = synCtx.getPropertyKeySet();
-                        if (pros != null) {
-                            pros.remove(SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
-                        }
-                    }
-                    try {
-                        Thread.sleep(1000);  // Sleep for sometime before retrying
-                    } catch (InterruptedException ignored) {
-                    }
-                    
-                    if(synCtx == null || to == null) {
-                        return;
-                    }
-                    log.info("Failed over to " + newMember);
-                    sendToApplicationMember(synCtx, newMember, this, true);
-                } else if (errorCode.equals(NhttpConstants.SND_IO_ERROR_SENDING) ||
-                        errorCode.equals(NhttpConstants.CONNECTION_CLOSED)) {
-                    // TODO: Envelope is consumed
-                    String msg = "Error sending request! Connection to host "+host+
-                            " might be closed. Error code: "+errorCode;
-                    log.error(msg);
-                    throw new SynapseException(msg);
+            if (currentMember == null) {
+                return;
+            }
+
+            Stack faultStack = synCtx.getFaultStack();
+            if (faultStack != null && !faultStack.isEmpty()) {
+                faultStack.pop();  // Remove the LoadbalanceFaultHandler
+            }
+
+            currentMember = findNextMember(synCtx);
+            if(currentMember == null){
+                String msg = String.format("No application members available to serve the request %s", synCtx.getTo().getAddress());
+                log.error(msg);
+                throw new SynapseException(msg);
+            }
+            synCtx.setTo(to);
+            if(isSessionAffinityBasedLB()){
+                //We are sending the this message on a new session,
+                // hence we need to remove previous session information
+                Set pros = synCtx.getPropertyKeySet();
+                if (pros != null) {
+                    pros.remove(SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
                 }
             }
-            // We cannot failover since we are using binary relay
-        }
-
-        public void setCurrentEp(Endpoint currentEp) {
-            this.currentEp = currentEp;
+            sendToApplicationMember(synCtx, currentMember, this, true);
         }
     }
 }
-

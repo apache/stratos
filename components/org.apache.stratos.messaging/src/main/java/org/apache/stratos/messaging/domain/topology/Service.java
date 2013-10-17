@@ -43,7 +43,7 @@ public class Service {
         this.serviceName = serviceName;
     }
 
-    public Collection<Cluster> getClusterMap() {
+    public Collection<Cluster> getClusters() {
         return clusterMap.values();
     }
 
