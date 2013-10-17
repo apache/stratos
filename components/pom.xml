@@ -35,13 +35,13 @@
 	<name>Apache Stratos - Components - Parent Module</name>
 	<url>http://apache.org</url>
 
-            <modules>
-                <!-- COMMON -->
-                <module>org.apache.stratos.common</module>
-
+    <modules>
+        <!-- Common -->
+        <module>org.apache.stratos.common</module>
+        <!-- Messaging -->
+        <module>org.apache.stratos.messaging</module>
 		<!-- Autoscaler -->
-                <module>org.apache.stratos.autoscaler</module>
-
+        <module>org.apache.stratos.autoscaler</module>
 		<!-- CC -->
 		<module>org.apache.stratos.cloud.controller</module>
 		<module>org.apache.stratos.cartridge.messages</module>
@@ -53,10 +53,7 @@
 		<!-- CLI -->
 		<module>org.apache.stratos.cli</module>
 		<!-- ELB -->
-		<module>org.apache.stratos.lb.common</module>
 		<module>org.apache.stratos.lb.endpoint</module>
-		<module>org.apache.stratos.lb.agent</module>
-		<module>org.apache.stratos.mediator.autoscale</module>
 		<!-- Tenant Mgt -->
 		<module>org.apache.stratos.register.ui</module>
 		<module>org.apache.stratos.tenant.mgt.core</module>
