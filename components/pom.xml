@@ -55,6 +55,7 @@
 		<module>org.apache.stratos.cli</module>
 		<!-- ELB -->
 		<module>org.apache.stratos.lb.endpoint</module>
+		<module>org.apache.stratos.lb.agent</module>
 		<!-- Tenant Mgt -->
 		<module>org.apache.stratos.register.ui</module>
 		<module>org.apache.stratos.tenant.mgt.core</module>
