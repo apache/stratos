@@ -46,6 +46,7 @@
 		<module>org.apache.stratos.cloud.controller</module>
 		<module>org.apache.stratos.cartridge.messages</module>
 		<module>org.apache.stratos.cartridge.agent</module>
+		<module>org.apache.stratos.mediator.autoscale</module>
 		<!-- ADC -->
 		<module>org.apache.stratos.adc.topology.mgt</module>
 		<module>org.apache.stratos.adc.mgt</module>
