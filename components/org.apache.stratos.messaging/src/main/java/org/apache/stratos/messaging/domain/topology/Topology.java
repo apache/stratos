@@ -51,6 +51,10 @@ public class Topology implements Serializable {
         this.serviceMap.remove(service.getServiceName());
     }
 
+    public void removeService(String serviceName) {
+        this.serviceMap.remove(serviceName);
+    }
+
     public Service getService(String serviceName) {
         return this.serviceMap.get(serviceName);
     }
