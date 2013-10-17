@@ -161,9 +161,6 @@ public class TopologyEventMessageProcessor extends MessageProcessor implements R
                         cluster.setClusterId(event.getClusterId());
                         cluster.setHostName(event.getHostName());
                         cluster.setTenantRange(event.getTenantRange());
-                        cluster.setCloud(event.getCloud());
-                        cluster.setRegion(event.getRegion());
-                        cluster.setZone(event.getZone());
 
                         Service service = TopologyManager.getTopology().getService(event.getServiceName());
                         service.addCluster(cluster);
