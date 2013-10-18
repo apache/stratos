@@ -73,9 +73,12 @@ public class MemberSuspendedEventProcessor implements MessageProcessor {
 
 				// Apply changes to the topology
 				member.setStatus(MemberStatus.Suspended);
-				log.info(String.format("Member %s suspended in cluster %s of service %s",
-				                       event.getMemberId(), event.getClusterId(),
-				                       event.getServiceName()));
+				
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Member %s suspended in cluster %s of service %s",
+					                       event.getMemberId(), event.getClusterId(),
+					                       event.getServiceName()));
+				}
 
 				return true;
 			} else {

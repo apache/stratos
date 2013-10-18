@@ -54,8 +54,9 @@ public class ServiceCreatedEventProcessor implements MessageProcessor {
 				service.setServiceName(event.getServiceName());
 				topology.addService(service);
 
-				if(log.isInfoEnabled())
-				log.info(String.format("Service %s created", event.getServiceName()));
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Service %s created", event.getServiceName()));
+				}
 
 				return true;
 

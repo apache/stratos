@@ -78,7 +78,6 @@ public class TopicPublisher extends MessagePublisher {
 			doPublish(message, headers);
 			
 		} catch (Exception e) {
-			System.out.println("Error while publishing to the topic: " + getName() + e);
 			log.error("Error while publishing to the topic: " + getName(), e);
 			// TODO would it be worth to throw this exception?
 		}

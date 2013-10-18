@@ -74,9 +74,11 @@ public class MemberStartedEventProcessor implements MessageProcessor {
 				member.setStatus(MemberStatus.Starting);
 				cluster.addMember(member);
 
-				log.info(String.format("Member %s started in cluster %s of service %s",
-				                       event.getMemberId(), event.getClusterId(),
-				                       event.getServiceName()));
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Member %s started in cluster %s of service %s",
+					                       event.getMemberId(), event.getClusterId(),
+					                       event.getServiceName()));
+				}
 
 				return true;
 			} else {

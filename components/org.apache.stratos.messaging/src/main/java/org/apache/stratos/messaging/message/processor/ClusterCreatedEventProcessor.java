@@ -64,8 +64,10 @@ public class ClusterCreatedEventProcessor implements MessageProcessor {
 				cluster.setTenantRange(event.getTenantRange());
 
 				service.addCluster(cluster);
-				log.info(String.format("Cluster %s created for service %s", event.getClusterId(),
-				                       event.getServiceName()));
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Cluster %s created for service %s",
+					                       event.getClusterId(), event.getServiceName()));
+				}
 
 				return true;
 

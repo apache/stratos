@@ -52,7 +52,10 @@ public class ServiceRemovedEventProcessor implements MessageProcessor {
 
 				// Apply changes to the topology
 				topology.removeService(service);
-				log.info(String.format("Service %s removed", event.getServiceName()));
+				
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Service %s removed", event.getServiceName()));
+				}
 
 				return true;
 
