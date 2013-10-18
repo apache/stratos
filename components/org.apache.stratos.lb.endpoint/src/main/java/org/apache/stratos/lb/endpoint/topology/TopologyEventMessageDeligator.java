@@ -37,9 +37,9 @@ import org.apache.stratos.messaging.util.Constants;
 /**
  * A thread for processing topology messages and updating the topology data structure.
  */
-public class TopologyEventMessageProcessor implements Runnable {
+public class TopologyEventMessageDeligator implements Runnable {
 
-    private static final Log log = LogFactory.getLog(TopologyEventMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(TopologyEventMessageDeligator.class);
 
     @Override
     public void run() {
