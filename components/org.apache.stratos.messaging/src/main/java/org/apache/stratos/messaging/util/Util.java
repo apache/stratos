@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.message.JsonMessage;
 
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
@@ -85,4 +86,15 @@ public class Util {
         }
         return false;
     }
+    
+    /**
+     * Transform json into an object of given type.
+     * @param json
+     * @param type
+     * @return
+     */
+    public static Object jsonToObject(String json, Class type) {
+        return (new JsonMessage(json, type)).getObject();
+    }
+
 }

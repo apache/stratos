@@ -19,6 +19,9 @@
 
 package org.apache.stratos.messaging.broker.publish;
 
+import java.util.Enumeration;
+import java.util.Properties;
+
 import javax.jms.*;
 
 import org.apache.commons.logging.Log;
@@ -61,15 +64,21 @@ public class TopicPublisher extends MessagePublisher {
 	 */
 	public void publish(Object messageObj) {
 
+		publish(messageObj, null);
+	}
+	
+	public void publish(Object messageObj, Properties headers) {
+		
 		Gson gson = new Gson();
 		String message = gson.toJson(messageObj);
 		if (log.isDebugEnabled()) {
 			log.debug("Message to the topic: " + message);
 		}
 		try {
-			doPublish(message);
-
+			doPublish(message, headers);
+			
 		} catch (Exception e) {
+			System.out.println("Error while publishing to the topic: " + getName() + e);
 			log.error("Error while publishing to the topic: " + getName(), e);
 			// TODO would it be worth to throw this exception?
 		}
@@ -86,10 +95,20 @@ public class TopicPublisher extends MessagePublisher {
 		}
 	}
 
-	private void doPublish(String message) throws Exception, JMSException {
+	private void doPublish(String message, Properties headers) throws Exception, JMSException {
 		setPublisher();
 
 		TextMessage textMessage = topicSession.createTextMessage(message);
+		
+		if (headers != null) {
+			@SuppressWarnings("rawtypes")
+			Enumeration e = headers.propertyNames();
+
+			while (e.hasMoreElements()) {
+				String key = (String) e.nextElement();
+				textMessage.setStringProperty(key, headers.getProperty(key));
+			}
+		}
 
 		topicPublisher.publish(textMessage);
 	}

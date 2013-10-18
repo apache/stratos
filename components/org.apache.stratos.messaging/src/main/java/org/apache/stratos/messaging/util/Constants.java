@@ -22,4 +22,5 @@ public class Constants {
 	
 	public static final String TOPOLOGY_TOPIC = "topology-topic";
     public static final String TENANT_RANGE_DELIMITER = "-";
+    public static final String EVENT_NAME = "event-name";
 }
