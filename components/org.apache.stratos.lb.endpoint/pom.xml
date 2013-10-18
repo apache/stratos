@@ -95,12 +95,11 @@
                         <Export-Package>
                             org.apache.stratos.lb.endpoint.endpoint,
                             org.apache.stratos.lb.endpoint,
-                            org.apache.stratos.lb.endpoint.util,
+                            org.apache.stratos.lb.endpoint.topology,
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.lb.endpoint.endpoint,
                             !org.apache.stratos.lb.endpoint,
-                            org.apache.stratos.lb.common.*; version=${project.version},
                             org.wso2.carbon.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>
