@@ -54,6 +54,9 @@
 
        <!-- <Cartridge Agent> -->
 	<module>cartridge-agent</module>
+	<module>messaging</module>
+
+
     </modules>
 
     <build>
