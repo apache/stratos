@@ -40,7 +40,7 @@ public class TopologyEventMessageReceiver implements MessageListener {
                     log.debug("Message received: " + ((TextMessage) message).getText());
                 }
                 // Add received message to the queue
-                TopologyEventQueue.getInstance().add(receivedMessage.getText());
+                TopologyEventQueue.getInstance().add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);
