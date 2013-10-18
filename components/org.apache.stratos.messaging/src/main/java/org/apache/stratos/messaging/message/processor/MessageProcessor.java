@@ -26,7 +26,18 @@ import org.apache.stratos.messaging.domain.topology.Topology;
  */
 public interface MessageProcessor {
     
+	/**
+	 * Link a message processor and its successor, if there's any.
+	 * @param nextProcessor
+	 */
 	public abstract void setNext(MessageProcessor nextProcessor);
 
+	/**
+	 * Message processing and delegating logic.
+	 * @param type type of the message. 
+	 * @param message real message body.
+	 * @param topology Topology that will get updated.
+	 * @return whether the processing was successful or not.
+	 */
 	public abstract boolean process(String type, String message, Topology topology);
 }
