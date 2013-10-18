@@ -23,7 +23,7 @@ import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.lb.endpoint.LoadBalancerContext;
 import org.apache.stratos.lb.endpoint.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.lb.endpoint.topology.TopologyEventMessageDeligator;
+import org.apache.stratos.lb.endpoint.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.lb.endpoint.endpoint.TenantAwareLoadBalanceEndpoint;
 import org.apache.stratos.lb.endpoint.topology.TopologyEventMessageReceiver;
 import org.apache.commons.logging.Log;
@@ -158,7 +158,7 @@ public class LoadBalanceEndpointServiceComponent {
             }
 
             // Start topology message receiver thread
-            Thread receiverThread = new Thread(new TopologyEventMessageDeligator());
+            Thread receiverThread = new Thread(new TopologyEventMessageDelegator());
             receiverThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Topology message processor thread started");
