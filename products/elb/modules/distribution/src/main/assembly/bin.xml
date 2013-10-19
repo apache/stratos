@@ -192,10 +192,6 @@
             <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/etc</outputDirectory>
         </file>
         <file>
-            <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/cloud-controller.xml</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/</outputDirectory>
-        </file>
-        <file>
             <source>src/main/conf/user-mgt.xml</source>
             <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
             <destName>user-mgt.xml</destName>

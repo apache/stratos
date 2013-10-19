@@ -16,27 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.messaging.event.topology;
-
-import java.io.Serializable;
+package org.apache.stratos.messaging.event.depsync;
 
 /**
- * This event is fired by Cloud Controller when a member is terminated.
+ * this event is fired to a cluster when a artifacts notification received from the git repository.
  */
-public class MemberTerminatedEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = -7899511757547631157L;
-	private String serviceName;
+
+public class ArtifactsUpdatedEvent {
     private String clusterId;
-    private String memberId;
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+    private String status;
 
     public String getClusterId() {
         return clusterId;
@@ -46,11 +34,11 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
         this.clusterId = clusterId;
     }
 
-    public String getMemberId() {
-        return memberId;
+    public String getStatus() {
+        return status;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

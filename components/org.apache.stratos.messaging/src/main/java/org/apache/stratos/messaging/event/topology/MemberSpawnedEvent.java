@@ -16,19 +16,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.stratos.messaging.event.topology;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.domain.topology.Cloud;
+import org.apache.stratos.messaging.domain.topology.Region;
+import org.apache.stratos.messaging.domain.topology.Zone;
 
 /**
- * This event is fired by Cloud Controller when a member is terminated.
+ * This event is fired by Cloud Controller when a member is spawned by the IaaS in a given cluster.
  */
-public class MemberTerminatedEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = -7899511757547631157L;
-	private String serviceName;
+public class MemberSpawnedEvent {
+    private Cloud cloud;
+    private Region region;
+    private Zone zone;
+    private String serviceName;
     private String clusterId;
     private String memberId;
+
+    public Cloud getCloud() {
+        return cloud;
+    }
+
+    public void setCloud(Cloud cloud) {
+        this.cloud = cloud;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
 
     public String getServiceName() {
         return serviceName;

@@ -17,24 +17,30 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.lb.endpoint.topology;
 
-import org.apache.stratos.messaging.domain.topology.Topology;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import java.io.Serializable;
+import javax.jms.TextMessage;
 
 /**
- *
+ * Implements topology event queue.
  */
-public class CompleteTopologyEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = 8580862188444892004L;
-	private Topology topology;
+public class TopologyEventQueue extends LinkedBlockingQueue<TextMessage>{
+    private static volatile TopologyEventQueue instance;
 
-    public Topology getTopology() {
-        return topology;
+    private TopologyEventQueue(){
     }
 
-    public void setTopology(Topology topology) {
-        this.topology = topology;
+    public static synchronized TopologyEventQueue getInstance() {
+        if (instance == null) {
+            synchronized (TopologyEventQueue.class){
+                if (instance == null) {
+                    instance = new TopologyEventQueue ();
+                }
+            }
+        }
+        return instance;
     }
 }

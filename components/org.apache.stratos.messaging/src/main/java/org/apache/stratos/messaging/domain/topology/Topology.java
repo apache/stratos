@@ -48,18 +48,18 @@ public class Topology implements Serializable {
     }
 
     public void removeService(Service service) {
-        this.serviceMap.remove(service.getDomainName());
+        this.serviceMap.remove(service.getServiceName());
     }
 
     public void removeService(String serviceName) {
         this.serviceMap.remove(serviceName);
     }
 
-    public boolean serviceExists(Service service) {
-        return this.serviceMap.containsKey(service.getDomainName());
-    }
-
     public Service getService(String serviceName) {
         return this.serviceMap.get(serviceName);
+    }
+
+    public boolean serviceExists(String serviceName) {
+        return this.serviceMap.containsKey(serviceName);
     }
 }

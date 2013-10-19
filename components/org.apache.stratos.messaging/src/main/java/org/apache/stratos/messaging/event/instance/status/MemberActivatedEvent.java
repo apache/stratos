@@ -16,23 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.messaging.message;
+package org.apache.stratos.messaging.event.instance.status;
 
 import org.apache.stratos.messaging.event.topology.TopologyEvent;
 
 import java.io.Serializable;
 
 /**
- * Cloud Controller sends this message containing the topology event when a modification is done to the topology.
+ * This event is fired by Instance when it has started it's server and
+ * applications are ready to serve the incoming requests.
  */
-public class TopologyEventMessage extends EventMessage implements Serializable {
+public class MemberActivatedEvent extends TopologyEvent implements Serializable {
+    private String serviceName;
+    private String clusterId;
+    private String memberId;
 
-    public TopologyEventMessage(TopologyEvent event) {
-        super(event);
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public TopologyEvent getTopologyEvent() throws ClassNotFoundException {
-        return (TopologyEvent) super.getEvent();
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 }

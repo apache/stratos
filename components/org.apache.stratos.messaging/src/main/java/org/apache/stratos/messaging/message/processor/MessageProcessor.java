@@ -17,23 +17,27 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message;
+package org.apache.stratos.messaging.message.processor;
+
+import org.apache.stratos.messaging.domain.topology.Topology;
 
 /**
- * Event message header definition.
+ * Message processor interface. Every Message Processor should implement this.
  */
-public class EventMessageHeader {
-    private String eventClassName;
+public interface MessageProcessor {
+    
+	/**
+	 * Link a message processor and its successor, if there's any.
+	 * @param nextProcessor
+	 */
+	public abstract void setNext(MessageProcessor nextProcessor);
 
-    public EventMessageHeader(String eventClassName) {
-        this.eventClassName = eventClassName;
-    }
-
-    public String getEventClassName() {
-        return eventClassName;
-    }
-
-    public void setEventClassName(String eventClassName) {
-        this.eventClassName = eventClassName;
-    }
+	/**
+	 * Message processing and delegating logic.
+	 * @param type type of the message. 
+	 * @param message real message body.
+	 * @param topology Topology that will get updated.
+	 * @return whether the processing was successful or not.
+	 */
+	public abstract boolean process(String type, String message, Topology topology);
 }

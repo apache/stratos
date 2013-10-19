@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.event.instance.status;
 
-package org.apache.stratos.messaging.domain.topology;
+
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.event.topology.TopologyEvent;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -26,20 +30,18 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Defines a member node in a cluster.
- * Key: serviceName, clusterId, memberId
+ * This event is fired by Instance when it is started by the IaaS in a given cluster.
  */
-public class Member implements Serializable {
-    private static final long serialVersionUID = 4179661867903664661L;
-	private String serviceName;
+public class MemberStartedEvent extends TopologyEvent implements Serializable {
+    private String serviceName;
     private String clusterId;
     private String memberId;
+    private String hostName;
     private MemberStatus status;
-    private String memberIp;
     private Map<String, Port> portMap;
     private Properties properties;
 
-    public Member() {
+    public MemberStartedEvent() {
         this.portMap = new HashMap<String, Port>();
     }
 
@@ -67,16 +69,20 @@ public class Member implements Serializable {
         this.memberId = memberId;
     }
 
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
     public MemberStatus getStatus() {
         return status;
     }
 
     public void setStatus(MemberStatus status) {
         this.status = status;
-    }
-
-    public boolean isActive() {
-        return (this.status == MemberStatus.Activated);
     }
 
     public Collection<Port> getPorts() {
@@ -87,26 +93,20 @@ public class Member implements Serializable {
         this.portMap.put(port.getProtocol(), port);
     }
 
-    public void addPorts(Collection<Port> ports) {
-        for(Port port: ports) {
-            addPort(port);
-        }
-    }
-
     public void removePort(Port port) {
         this.portMap.remove(port.getProtocol());
     }
 
-    public void removePort(String protocol) {
-        this.portMap.remove(protocol);
+    public void removePort(String portName) {
+        this.portMap.remove(portName);
     }
 
     public boolean portExists(Port port) {
         return this.portMap.containsKey(port.getProtocol());
     }
 
-    public Port getPort(String protocol) {
-        return this.portMap.get(protocol);
+    public Port getPort(String portName) {
+        return this.portMap.get(portName);
     }
 
     public Properties getProperties() {
@@ -116,13 +116,4 @@ public class Member implements Serializable {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
-
-	public String getMemberIp() {
-	    return memberIp;
-    }
-
-	public void setMemberIp(String memberIp) {
-	    this.memberIp = memberIp;
-    }
 }
-

@@ -26,8 +26,10 @@ import java.util.*;
 
 /**
  * Defines a cluster of a service.
+ * Key: serviceName, clusterId
  */
 public class Cluster implements Serializable {
+    private String serviceName;
     private String clusterId;
     private String hostName;
     private String tenantRange;
@@ -40,6 +42,14 @@ public class Cluster implements Serializable {
 
     public Cluster() {
         this.memberMap = new HashMap<String, Member>();
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public String getClusterId() {
@@ -67,6 +77,30 @@ public class Cluster implements Serializable {
         this.tenantRange = tenantRange;
     }
 
+    public Cloud getCloud() {
+        return cloud;
+    }
+
+    public void setCloud(Cloud cloud) {
+        this.cloud = cloud;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
+
     public Collection<Member> getMembers() {
         return memberMap.values();
     }
@@ -79,12 +113,12 @@ public class Cluster implements Serializable {
         memberMap.remove(member.getMemberId());
     }
 
-    public void removeMember(String memberId) {
-        memberMap.remove(memberId);
-    }
-
     public Member getMember(String memberId) {
         return memberMap.get(memberId);
+    }
+
+    public boolean memberExists(String memberId) {
+        return this.memberMap.containsKey(memberId);
     }
 
     public Properties getProperties() {

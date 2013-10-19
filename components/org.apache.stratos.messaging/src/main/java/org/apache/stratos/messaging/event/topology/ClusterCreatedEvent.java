@@ -19,26 +19,21 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Cloud;
-import org.apache.stratos.messaging.domain.topology.Region;
-import org.apache.stratos.messaging.domain.topology.Zone;
 import org.apache.stratos.messaging.util.Util;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Properties;
 
 /**
  * This event is fired by Cloud Controller when a cluster is created for a service.
  */
 public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = 2080623816272047762L;
+	private String serviceName;
     private String clusterId;
     private String hostName;
     private String tenantRange;
-    private Cloud cloud;
-    private Region region;
-    private Zone zone;
+
     private Properties properties;
 
     public String getServiceName() {
@@ -74,29 +69,6 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
         this.tenantRange = tenantRange;
     }
 
-    public Cloud getCloud() {
-        return cloud;
-    }
-
-    public void setCloud(Cloud cloud) {
-        this.cloud = cloud;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public Zone getZone() {
-        return zone;
-    }
-
-    public void setZone(Zone zone) {
-        this.zone = zone;
-    }
 
     public Properties getProperties() {
         return properties;
