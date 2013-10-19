@@ -123,8 +123,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                         throw new SynapseException(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
 
                     int memberPort = transportPort.getValue();
-                    org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getHostName(), memberPort);
-                    axis2Member.setDomain(member.getHostName());
+                    org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getMemberIp(), memberPort);
+                    axis2Member.setDomain(member.getClusterId());
                     axis2Member.setActive(true);
                     return axis2Member;
                 }
