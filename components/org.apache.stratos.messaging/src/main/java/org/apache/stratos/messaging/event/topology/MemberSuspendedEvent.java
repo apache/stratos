@@ -19,15 +19,14 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Member;
-
 import java.io.Serializable;
 
 /**
  * This event is fired by Cloud Controller when a member is suspended.
  */
 public class MemberSuspendedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = -6374918444978329986L;
+	private String serviceName;
     private String clusterId;
     private String memberId;
 

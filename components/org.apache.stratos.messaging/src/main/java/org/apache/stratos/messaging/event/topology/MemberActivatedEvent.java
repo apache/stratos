@@ -19,8 +19,6 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Member;
-
 import java.io.Serializable;
 
 /**
@@ -28,7 +26,8 @@ import java.io.Serializable;
  * applications are ready to serve the incoming requests.
  */
 public class MemberActivatedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = 5493702477320416932L;
+	private String serviceName;
     private String clusterId;
     private String memberId;
 

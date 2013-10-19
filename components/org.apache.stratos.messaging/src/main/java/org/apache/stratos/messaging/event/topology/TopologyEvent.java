@@ -27,4 +27,6 @@ import java.io.Serializable;
  * Represents all topology events.
  */
 public abstract class TopologyEvent extends Event implements Serializable {
+
+    private static final long serialVersionUID = -3279032168352271675L;
 }

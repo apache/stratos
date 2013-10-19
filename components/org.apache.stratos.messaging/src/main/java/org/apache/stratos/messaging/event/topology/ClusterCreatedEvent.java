@@ -28,7 +28,8 @@ import java.util.Properties;
  * This event is fired by Cloud Controller when a cluster is created for a service.
  */
 public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = 2080623816272047762L;
+	private String serviceName;
     private String clusterId;
     private String hostName;
     private String tenantRange;

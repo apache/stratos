@@ -32,7 +32,8 @@ import java.util.Properties;
  * This event is fired by Cloud Controller when a agent inside member  is started  successfully in a given cluster.
  */
 public class MemberStartedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = -2207722159444875880L;
+	private String serviceName;
     private String clusterId;
     private String memberId;
     private String hostName;

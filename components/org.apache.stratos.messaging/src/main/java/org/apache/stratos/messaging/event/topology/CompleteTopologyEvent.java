@@ -27,7 +27,8 @@ import java.io.Serializable;
  *
  */
 public class CompleteTopologyEvent extends TopologyEvent implements Serializable {
-    private Topology topology;
+    private static final long serialVersionUID = 8580862188444892004L;
+	private Topology topology;
 
     public Topology getTopology() {
         return topology;
