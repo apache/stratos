@@ -21,6 +21,8 @@ package org.apache.stratos.lb.endpoint.endpoint;
 
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.http.protocol.HTTP;
+import org.apache.stratos.lb.endpoint.RequestProcessor;
+import org.apache.stratos.lb.endpoint.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.lb.endpoint.topology.TopologyManager;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -47,12 +49,16 @@ import java.util.*;
 
 public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints.LoadbalanceEndpoint implements Serializable {
     private static final String PORT_MAPPING_PREFIX = "port.mapping.";
+
+    private RequestProcessor requestProcessor;
     private HttpSessionDispatcher dispatcher;
+    private boolean sessionAffinityEnabled;
 
     @Override
     public void init(SynapseEnvironment synapseEnvironment) {
         super.init(synapseEnvironment);
 
+        requestProcessor = new RequestProcessor(LoadBalanceAlgorithmFactory.createAlgorithm());
         setDispatcher(new HttpSessionDispatcher());
     }
 
@@ -94,10 +100,12 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             sessionInformation.updateExpiryTime();
             sendToApplicationMember(synCtx, currentMember, faultHandler, false);
         } else {
-            // Send request to a new member
-            org.apache.axis2.clustering.Member member = findNextMember(synCtx);
-            if(member != null) {
-                sendToApplicationMember(synCtx, member, faultHandler, true);
+            // No existing session found
+            // Find next member
+            org.apache.axis2.clustering.Member axis2Member = findNextMember(synCtx);
+            if(axis2Member != null) {
+                // Send request to member
+                sendToApplicationMember(synCtx, axis2Member, faultHandler, true);
             }
             else {
                 throw new SynapseException(String.format("No application members available to serve the request %s", synCtx.getTo().getAddress()));
@@ -105,49 +113,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
     }
 
-    private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
-        try {
-            // Identify cluster by target host
-            TopologyManager.acquireReadLock();
-            String targetHost = extractTargetHost(synCtx);
-            Cluster targetCluster = findNextCluster(targetHost);
-            if(targetCluster != null) {
-                // TODO: Apply algorithm and find next member from the selected cluster
-                if(targetCluster.getMembers().size() > 0) {
-                    Member member = targetCluster.getMembers().iterator().next();
-
-                    // Create Axi2 member object
-                    String transport = extractTransport(synCtx);
-                    Port transportPort = member.getPort(transport);
-                    if(transportPort == null)
-                        throw new SynapseException(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
-
-                    int memberPort = transportPort.getValue();
-                    org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getHostName(), memberPort);
-                    axis2Member.setDomain(member.getHostName());
-                    axis2Member.setActive(true);
-                    return axis2Member;
-                }
-            }
-            return null;
-        }
-        finally {
-            TopologyManager.releaseReadLock();
-        }
-    }
-
-    private Cluster findNextCluster(String targetHost) {
-        Cluster targetCluster = null;
-        Collection<Service> services = TopologyManager.getTopology().getServices();
-        for (Service service : services) {
-            for (Cluster cluster : service.getClusters()) {
-                if (targetHost.equals(cluster.getHostName())) {
-                    return cluster;
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * Adding the X-Forwarded-For/X-Originating-IP headers to the outgoing message.
@@ -182,6 +147,23 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             }
 
         }
+    }
+
+    private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
+        String targetHost = extractTargetHost(synCtx);
+        Member member = requestProcessor.findNextMember(targetHost);
+
+        // Create Axi2 member object
+        String transport = extractTransport(synCtx);
+        Port transportPort = member.getPort(transport);
+        if(transportPort == null)
+            throw new RuntimeException(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
+
+        int memberPort = transportPort.getValue();
+        org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getHostName(), memberPort);
+        axis2Member.setDomain(member.getHostName());
+        axis2Member.setActive(true);
+        return axis2Member;
     }
 
     private String extractTargetHost(MessageContext synCtx) {
@@ -300,7 +282,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     }
 
     public boolean isSessionAffinityBasedLB() {
-        return false;
+        return sessionAffinityEnabled;
     }
 
     /*
