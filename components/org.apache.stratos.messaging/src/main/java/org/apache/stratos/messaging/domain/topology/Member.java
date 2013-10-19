@@ -34,7 +34,6 @@ public class Member implements Serializable {
 	private String serviceName;
     private String clusterId;
     private String memberId;
-    private String hostName;
     private MemberStatus status;
     private String memberIp;
     private Map<String, Port> portMap;
@@ -66,14 +65,6 @@ public class Member implements Serializable {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
     }
 
     public MemberStatus getStatus() {

@@ -70,7 +70,6 @@ public class MemberStartedEventProcessor implements MessageProcessor {
 				member.setServiceName(event.getServiceName());
 				member.setClusterId(event.getClusterId());
 				member.setMemberId(event.getMemberId());
-				member.setHostName(event.getHostName());
 				member.setStatus(MemberStatus.Starting);
 				cluster.addMember(member);
 
