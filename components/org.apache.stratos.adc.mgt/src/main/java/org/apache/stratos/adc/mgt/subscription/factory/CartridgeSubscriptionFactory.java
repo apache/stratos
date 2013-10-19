@@ -17,49 +17,49 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance.factory;
+package org.apache.stratos.adc.mgt.subscription.factory;
 
 import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
-import org.apache.stratos.adc.mgt.instance.DataCartridgeInstance;
-import org.apache.stratos.adc.mgt.instance.MultiTenantCartridgeInstance;
-import org.apache.stratos.adc.mgt.instance.SingleTenantCartridgeInstance;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.DataCartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.MultiTenantCartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 
-public class CartridgeInstanceFactory {
+public class CartridgeSubscriptionFactory {
 
     /**
-     * Returns the relevant CartridgeInstance object for the given criteria
+     * Returns the relevant CartridgeSubscription object for the given criteria
      *
-     * @param cartridgeInfo CartridgeInfo instance
-     * @return CartridgeInstance instance
-     * @throws ADCException if no matching criteria is there to create a CartridgeInstance object
+     * @param cartridgeInfo CartridgeInfo subscription
+     * @return CartridgeSubscription subscription
+     * @throws ADCException if no matching criteria is there to create a CartridgeSubscription object
      */
-    public static CartridgeInstance getCartridgeInstance (CartridgeInfo cartridgeInfo)
+    public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo)
             throws ADCException {
 
-        CartridgeInstance cartridgeInstance = null;
+        CartridgeSubscription cartridgeSubscription = null;
         if(cartridgeInfo.getMultiTenant()) {
-            cartridgeInstance = new MultiTenantCartridgeInstance(cartridgeInfo);
+            cartridgeSubscription = new MultiTenantCartridgeSubscription(cartridgeInfo);
 
         } else {
             if(cartridgeInfo.getType().equals(CartridgeConstants.MYSQL_CARTRIDGE_NAME)) {
-                cartridgeInstance = new DataCartridgeInstance(cartridgeInfo);
+                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo);
             }
             else if (cartridgeInfo.getType().equals(CartridgeConstants.PHP_CARTRIDGE_NAME)) {
-                cartridgeInstance = new SingleTenantCartridgeInstance(cartridgeInfo);
+                cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
             }
             else if (cartridgeInfo.getType().equals(CartridgeConstants.TOMCAT_CARTRIDGE_NAME)) {
-                cartridgeInstance = new SingleTenantCartridgeInstance(cartridgeInfo);
+                cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
             }
         }
 
-        if(cartridgeInstance == null) {
-            throw new ADCException("Unable to find matching CartridgeInstance for "
+        if(cartridgeSubscription == null) {
+            throw new ADCException("Unable to create a CartridgeSubscription subscription for "
                     + cartridgeInfo);
         }
 
-        return cartridgeInstance;
+        return cartridgeSubscription;
     }
 }

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance.cache;
+package org.apache.stratos.adc.mgt.subscription.cache;
 
 public class CartridgeInstanceCacheKey {
 

@@ -17,9 +17,9 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance;
+package org.apache.stratos.adc.mgt.subscription;
 
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
@@ -32,13 +32,13 @@ import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 
 import java.util.Properties;
 
-public class DataCartridgeInstance extends SingleTenantCartridgeInstance {
+public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription {
 
     protected String host;
     protected String username;
     protected String password;
 
-    public DataCartridgeInstance(CartridgeInfo cartridgeInfo) {
+    public DataCartridgeSubscription(CartridgeInfo cartridgeInfo) {
 
         super(cartridgeInfo);
         this.host = "localhost";
@@ -47,14 +47,14 @@ public class DataCartridgeInstance extends SingleTenantCartridgeInstance {
     }
 
     @Override
-    public void subscribe(Subscriber subscriber, String alias, Policy autoscalingPolicy, Repository repository)
+    public void createSubscription(Subscriber subscriber, String alias, Policy autoscalingPolicy, Repository repository)
 
             throws InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, ADCException, RepositoryCredentialsRequiredException,
             RepositoryTransportException, UnregisteredCartridgeException, AlreadySubscribedException,
             RepositoryRequiredException, InvalidRepositoryException, PolicyException {
 
-        super.subscribe(subscriber, alias, autoscalingPolicy, repository);
+        super.createSubscription(subscriber, alias, autoscalingPolicy, repository);
     }
 
     public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
@@ -75,7 +75,7 @@ public class DataCartridgeInstance extends SingleTenantCartridgeInstance {
         return payloadArg;
     }
 
-    public CartridgeSubscription registerSubscription(Properties payloadProperties)
+    public CartridgeSubscriptionInfo registerSubscription(Properties payloadProperties)
             throws ADCException, UnregisteredCartridgeException {
 
         ApplicationManagementUtil.registerService(getType(),

@@ -260,12 +260,12 @@ public class PolicyHolder {
 
 		// Create a SchemaFactory capable of understanding WXS schemas.
 
-		// Load a WXS schema, represented by a Schema instance.
+		// Load a WXS schema, represented by a Schema subscription.
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Source source = new StreamSource(schemaFile);
 
 		// Create a Validator object, which can be used to validate
-		// an instance document.
+		// an subscription document.
 		Schema schema = factory.newSchema(source);
 		Validator validator = schema.newValidator();
 

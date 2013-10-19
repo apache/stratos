@@ -19,6 +19,7 @@
 
 package org.apache.stratos.adc.mgt.payload;
 
+import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 
@@ -41,23 +42,27 @@ public class NonCarbonPayload extends Payload {
         payloadBuilder.append("CARTRIDGE_AGENT_EPR=" + System.getProperty(CartridgeConstants.CARTRIDGE_AGENT_EPR));
         payloadBuilder.append(",");
         payloadBuilder.append("APP_PATH=" + payloadArg.getCartridgeInfo().getBaseDir());
-        payloadBuilder.append(",");
 
         //port mapping specific
-        payloadBuilder.append(createPortMappingPayloadString(payloadArg.getCartridgeInfo()));
-        payloadBuilder.append(",");
+        if(payloadArg.getCartridgeInfo() != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append(createPortMappingPayloadString(payloadArg.getCartridgeInfo()));
+        }
 
         //git repository specific
-        payloadBuilder.append("GIT_REPO=" + getRepositoryUrlParam(payloadArg));
         payloadBuilder.append(",");
+        payloadBuilder.append("GIT_REPO=" + getRepositoryUrlParam(payloadArg));
 
         //BAM specific
+        payloadBuilder.append(",");
         payloadBuilder.append("BAM_IP=" + System.getProperty(CartridgeConstants.BAM_IP));
         payloadBuilder.append(",");
         payloadBuilder.append("BAM_PORT=" + System.getProperty(CartridgeConstants.BAM_PORT));
 
         //Autoscale policy specific
-        payloadBuilder.append(getAutoscalingParams(payloadArg));
+        if(payloadArg.getPolicy() != null) {
+            payloadBuilder.append(getAutoscalingParams(payloadArg.getPolicy()));
+        }
     }
 
     private String createPortMappingPayloadString(CartridgeInfo cartridgeInfo) {
@@ -95,26 +100,27 @@ public class NonCarbonPayload extends Payload {
         return gitRepoURL;
     }
 
-    private String getAutoscalingParams (PayloadArg arg) {
+    private String getAutoscalingParams (Policy policy) {
 
         DecimalFormat df = new DecimalFormat("##.##");
         df.setParseBigDecimal(true);
 
         StringBuilder autoscalingPayloadBuilder = new StringBuilder();
+
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("MIN=" + arg.getPolicy().getMinAppInstances());
+        autoscalingPayloadBuilder.append("MIN=" + policy.getMinAppInstances());
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("MAX=" + arg.getPolicy().getMaxAppInstances());
+        autoscalingPayloadBuilder.append("MAX=" + policy.getMaxAppInstances());
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("ALARMING_LOWER_RATE=" + arg.getPolicy().getAlarmingLowerRate());
+        autoscalingPayloadBuilder.append("ALARMING_LOWER_RATE=" + policy.getAlarmingLowerRate());
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("ALARMING_UPPER_RATE=" + arg.getPolicy().getAlarmingUpperRate());
+        autoscalingPayloadBuilder.append("ALARMING_UPPER_RATE=" + policy.getAlarmingUpperRate());
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("MAX_REQUESTS_PER_SEC=" + arg.getPolicy().getMaxRequestsPerSecond());
+        autoscalingPayloadBuilder.append("MAX_REQUESTS_PER_SEC=" + policy.getMaxRequestsPerSecond());
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("ROUNDS_TO_AVERAGE=" + arg.getPolicy().getRoundsToAverage());
+        autoscalingPayloadBuilder.append("ROUNDS_TO_AVERAGE=" + policy.getRoundsToAverage());
         autoscalingPayloadBuilder.append(",");
-        autoscalingPayloadBuilder.append("SCALE_DOWN_FACTOR=" + arg.getPolicy().getScaleDownFactor());
+        autoscalingPayloadBuilder.append("SCALE_DOWN_FACTOR=" + policy.getScaleDownFactor());
 
         return autoscalingPayloadBuilder.toString();
     }

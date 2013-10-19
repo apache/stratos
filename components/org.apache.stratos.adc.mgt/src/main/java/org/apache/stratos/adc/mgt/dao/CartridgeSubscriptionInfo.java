@@ -23,7 +23,7 @@ import org.apache.stratos.adc.mgt.repository.Repository;
 
 import java.util.List;
 
-public class CartridgeSubscription {
+public class CartridgeSubscriptionInfo {
 
 	private int subscriptionId;
 	private int tenantId;

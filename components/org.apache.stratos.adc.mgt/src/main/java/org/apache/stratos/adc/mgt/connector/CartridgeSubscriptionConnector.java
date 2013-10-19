@@ -20,23 +20,26 @@
 package org.apache.stratos.adc.mgt.connector;
 
 import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
 import java.util.Properties;
 
-public abstract class CartridgeInstanceConnector {
+public abstract class CartridgeSubscriptionConnector {
 
     /**
-     * Connects two cartridge instances
+     * Connects two CartridgeSubscription instances
      *
-     * @param cartridgeInstance CartridgeInstance instance
-     * @param connectingCartridgeInstance CartridgeInstance instance that is connecting with cartridgeInstance
+     * @param cartridgeSubscription CartridgeSubscription subscription
+     * @param connectingCartridgeSubscription CartridgeSubscription subscription that is connecting with cartridgeSubscription
      *
      * @return Custom properties for the connection as a key value set
      * @throws ADCException in case of an error
      */
-    public abstract Properties createConnection (CartridgeInstance cartridgeInstance,
-                                                 CartridgeInstance connectingCartridgeInstance) throws ADCException;
-    public abstract Properties teminateConnection (CartridgeInstance cartridgeInstance,
-                                                   CartridgeInstance connectedCartridgeInstance) throws ADCException;
+    public abstract Properties createConnection (CartridgeSubscription cartridgeSubscription,
+                                                 CartridgeSubscription connectingCartridgeSubscription)
+            throws ADCException;
+
+    public abstract Properties teminateConnection (CartridgeSubscription cartridgeSubscription,
+                                                   CartridgeSubscription connectedCartridgeSubscription)
+            throws ADCException;
 }

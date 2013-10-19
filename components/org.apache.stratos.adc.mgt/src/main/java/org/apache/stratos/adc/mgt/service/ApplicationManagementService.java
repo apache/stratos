@@ -24,10 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dto.*;
 import org.apache.stratos.adc.mgt.exception.*;
-import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
@@ -173,12 +173,12 @@ public class ApplicationManagementService extends AbstractAdmin {
 					
 					if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
 						// If the cartridge is multi-tenant. We should not let users
-						// subscribe twice.
+						// createSubscription twice.
 						if (PersistenceManager.isAlreadySubscribed(cartridgeType,
 								ApplicationManagementUtil.getTenantId(getConfigContext()))) {
 							if (log.isDebugEnabled()) {
 								log.debug("Already subscribed to " + cartridgeType
-										+ ". This multi-tenant cartridge will not be available to subscribe");
+										+ ". This multi-tenant cartridge will not be available to createSubscription");
 							}
 							cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
 						}
@@ -233,11 +233,11 @@ public class ApplicationManagementService extends AbstractAdmin {
 		try {
 			Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);
 
-			List<CartridgeSubscription> subscriptionList = PersistenceManager
+			List<CartridgeSubscriptionInfo> subscriptionList = PersistenceManager
 					.retrieveSubscribedCartridges(ApplicationManagementUtil.getTenantId(getConfigContext()));
 
 			if (subscriptionList != null && !subscriptionList.isEmpty()) {
-				for (CartridgeSubscription subscription : subscriptionList) {
+				for (CartridgeSubscriptionInfo subscription : subscriptionList) {
 					CartridgeInfo cartridgeInfo = null;
 					try {
 						cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(
@@ -317,7 +317,7 @@ public class ApplicationManagementService extends AbstractAdmin {
         return true;
     }
 
-    private boolean cartridgeMatches(CartridgeInfo cartridgeInfo, CartridgeSubscription cartridgeSubscription, Pattern pattern) {
+    private boolean cartridgeMatches(CartridgeInfo cartridgeInfo, CartridgeSubscriptionInfo cartridgeSubscriptionInfo, Pattern pattern) {
         if (pattern != null) {
             boolean matches = false;
             if (cartridgeInfo.getDisplayName() != null) {
@@ -326,11 +326,11 @@ public class ApplicationManagementService extends AbstractAdmin {
             if (!matches && cartridgeInfo.getDescription() != null) {
                 matches = pattern.matcher(cartridgeInfo.getDescription().toLowerCase()).find();
             }
-            if (!matches && cartridgeSubscription.getCartridge() != null) {
-                matches = pattern.matcher(cartridgeSubscription.getCartridge().toLowerCase()).find();
+            if (!matches && cartridgeSubscriptionInfo.getCartridge() != null) {
+                matches = pattern.matcher(cartridgeSubscriptionInfo.getCartridge().toLowerCase()).find();
             }
-            if (!matches && cartridgeSubscription.getAlias() != null) {
-                matches = pattern.matcher(cartridgeSubscription.getAlias().toLowerCase()).find();
+            if (!matches && cartridgeSubscriptionInfo.getAlias() != null) {
+                matches = pattern.matcher(cartridgeSubscriptionInfo.getAlias().toLowerCase()).find();
             }
             return matches;
         }
@@ -344,17 +344,17 @@ public class ApplicationManagementService extends AbstractAdmin {
 
     public String[] getSubscribedCartridgeAliases() throws AxisFault {
         try {
-            List<CartridgeSubscription> subscriptionList = PersistenceManager
+            List<CartridgeSubscriptionInfo> subscriptionList = PersistenceManager
                     .retrieveSubscribedCartridges(ApplicationManagementUtil.getTenantId(getConfigContext()));
             List<String> subscribedAliases = new ArrayList<String>();
-            for (CartridgeSubscription cartridgeSubscription : subscriptionList) {
+            for (CartridgeSubscriptionInfo cartridgeSubscriptionInfo : subscriptionList) {
 
-                if(cartridgeSubscription.getProvider().equalsIgnoreCase(CartridgeConstants.PROVIDER_NAME_WSO2) &&
-                        getCartridgeInfo(cartridgeSubscription.getAlias()).isMultiTenant()) {
+                if(cartridgeSubscriptionInfo.getProvider().equalsIgnoreCase(CartridgeConstants.PROVIDER_NAME_WSO2) &&
+                        getCartridgeInfo(cartridgeSubscriptionInfo.getAlias()).isMultiTenant()) {
 
-                    subscribedAliases.add(cartridgeSubscription.getCartridge());
+                    subscribedAliases.add(cartridgeSubscriptionInfo.getCartridge());
                 } else {
-                    subscribedAliases.add(cartridgeSubscription.getAlias());
+                    subscribedAliases.add(cartridgeSubscriptionInfo.getAlias());
                 }
             }
             if(subscribedAliases.size() == 0) {
@@ -392,7 +392,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 		//		repoPassword, dataCartridgeType, dataCartridgeAlias, getUsername(),
 		//		ApplicationManagementUtil.getTenantId(getConfigContext()), getTenantDomain());
 
-        CartridgeInstance cartridgeInstance = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
+        CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
                 alias.trim(), policy, getTenantDomain(), ApplicationManagementUtil.getTenantId(configurationContext),
                 getUsername(), "git", repoURL, privateRepo, repoUsername, repoPassword);
 
@@ -400,18 +400,18 @@ public class ApplicationManagementService extends AbstractAdmin {
 
             dataCartridgeAlias = dataCartridgeAlias.trim();
 
-            CartridgeInstance connectingCartridgeInstance = null;
+            CartridgeSubscription connectingCartridgeSubscription = null;
             try {
-                connectingCartridgeInstance = cartridgeSubsciptionManager.getCartridgeInstance(getTenantDomain(),
+                connectingCartridgeSubscription = cartridgeSubsciptionManager.getCartridgeSubscription(getTenantDomain(),
                         dataCartridgeAlias);
 
             } catch (NotSubscribedException e) {
                 log.error(e.getMessage(), e);
             }
-            if (connectingCartridgeInstance != null) {
+            if (connectingCartridgeSubscription != null) {
                 try {
-                    cartridgeSubsciptionManager.connectCartridges(tenantDomain, cartridgeInstance,
-                            connectingCartridgeInstance.getAlias());
+                    cartridgeSubsciptionManager.connectCartridges(tenantDomain, cartridgeSubscription,
+                            connectingCartridgeSubscription.getAlias());
 
                 } catch (NotSubscribedException e) {
                     log.error(e.getMessage(), e);
@@ -420,12 +420,12 @@ public class ApplicationManagementService extends AbstractAdmin {
                     log.error(axisFault.getMessage(), axisFault);
                 }
             } else {
-                log.error("Failed to connect. No cartridge instance found for tenant " +
+                log.error("Failed to connect. No cartridge subscription found for tenant " +
                         ApplicationManagementUtil.getTenantId(configurationContext) + " with alias " + alias);
             }
         }
 
-        return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeInstance);
+        return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
 
 	}
 
@@ -440,7 +440,7 @@ public class ApplicationManagementService extends AbstractAdmin {
         checkSuperTenant();
 
         cartridgeSubsciptionManager.unsubscribeFromCartridge(getTenantDomain(), alias);
-        /*CartridgeSubscription subscription = null;
+        /*CartridgeSubscriptionInfo subscription = null;
         
         try {
 			subscription = PersistenceManager.getSubscription(tenantDomain, alias);
@@ -512,7 +512,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 		//			System.out.println("\nOwn domain should include a '.' ");
 		//		}
 
-        CartridgeSubscription subscription = null;
+        CartridgeSubscriptionInfo subscription = null;
         String actualHost = null;
         
         try {
@@ -557,7 +557,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 
     public void removeDomainMapping(String cartridgeAlias) throws ADCException, NotSubscribedException {
     	checkSuperTenant();
-        CartridgeSubscription subscription = null;
+        CartridgeSubscriptionInfo subscription = null;
         String actualHost = null;
         
         try {
@@ -592,7 +592,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 
 	public void synchronizeRepository(String cartridgeAlias) throws ADCException, NotSubscribedException {
 		checkSuperTenant();
-        CartridgeSubscription subscription = null;
+        CartridgeSubscriptionInfo subscription = null;
         
         // Validating subscription
         try {

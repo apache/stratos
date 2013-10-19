@@ -66,7 +66,7 @@ public class RepositoryCreator implements Runnable {
 		}
 	}
 
-    //Creating the internal repo in the same thread as subscribe()
+    //Creating the internal repo in the same thread as createSubscription()
     public void createInternalRepository () throws Exception {
 
         if (repoInfoBean != null) {

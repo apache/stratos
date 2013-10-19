@@ -34,6 +34,7 @@ public class CartridgeConstants {
 	public static final String ACTIVE = "ACTIVE";
 	public static final String NOT_READY = "NOT-READY";
 	public static final String SUBSCRIBED = "SUBSCRIBED";
+    public static final String UNSUBSCRIBED = "UNSUBSCRIBED";
 
 	public static final String DB_DATASOURCE = "adc.datasource";
 	public static final String DB_URL = "adc.jdbc.url";

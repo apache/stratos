@@ -49,9 +49,9 @@ public abstract class Payload {
     }
 
     /**
-     * Pupulates the Payload instance with relevant parameters and values given in PayloadArg instance
+     * Pupulates the Payload subscription with relevant parameters and values given in PayloadArg subscription
      *
-     * @param payloadArg PayloadArg instance with relevant values
+     * @param payloadArg PayloadArg subscription with relevant values
      */
     public void populatePayload(PayloadArg payloadArg) {
 
@@ -65,8 +65,10 @@ public abstract class Payload {
         payloadBuilder.append("TENANT_CONTEXT=" + payloadArg.getTenantDomain());
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_ALIAS=" + payloadArg.getCartridgeAlias());
-        payloadBuilder.append(",");
-        payloadBuilder.append("SERVICE=" + payloadArg.getCartridgeInfo().getType());
+        if(payloadArg.getCartridgeInfo() != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("SERVICE=" + payloadArg.getCartridgeInfo().getType());
+        }
 
         //add the user defined payload String (if any)
         //this should be of the format <key_1>=<value_1>,<key_2>=<value_2>,....<key_n>=<value_n>
@@ -99,7 +101,7 @@ public abstract class Payload {
     /**
      * Create the actual payload in the file system
      *
-     * @return DataHandler instance with payload
+     * @return DataHandler subscription with payload
      * @throws ADCException in case of an error
      */
     public DataHandler createPayload () throws ADCException {
@@ -187,7 +189,7 @@ public abstract class Payload {
      *
      * @param dir Name of directory
      * @param fileName Name of file to add
-     * @param zos ZipOutputStream instance to write
+     * @param zos ZipOutputStream subscription to write
      * @throws ADCException in an error
      */
     private void addToZipFile(String dir, String fileName, ZipOutputStream zos) throws ADCException {

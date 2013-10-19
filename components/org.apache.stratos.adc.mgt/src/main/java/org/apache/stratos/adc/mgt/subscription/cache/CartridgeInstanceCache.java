@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance.cache;
+package org.apache.stratos.adc.mgt.subscription.cache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
 import java.util.List;
 import java.util.Map;
@@ -32,15 +32,15 @@ public class CartridgeInstanceCache {
 
     private static final Log log = LogFactory.getLog(CartridgeInstanceCache.class);
 
-    private Map<CartridgeInstanceCacheKey, CartridgeInstance> cartridgeInstanceKeyToCartridgeInstance;
-    private final Map<Integer, List<CartridgeInstance>> tenantIdToCartridgeInstance;
+    private Map<CartridgeInstanceCacheKey, CartridgeSubscription> cartridgeInstanceKeyToCartridgeInstance;
+    private final Map<Integer, List<CartridgeSubscription>> tenantIdToCartridgeInstance;
 
     private static CartridgeInstanceCache cartridgeInstanceCache;
 
     private CartridgeInstanceCache() {
         cartridgeInstanceKeyToCartridgeInstance = new ConcurrentHashMap<CartridgeInstanceCacheKey,
-                CartridgeInstance>();
-        tenantIdToCartridgeInstance = new ConcurrentHashMap<Integer, List<CartridgeInstance>>();
+                CartridgeSubscription>();
+        tenantIdToCartridgeInstance = new ConcurrentHashMap<Integer, List<CartridgeSubscription>>();
     }
 
     public static CartridgeInstanceCache getCartridgeInstanceCache()  {
@@ -55,41 +55,41 @@ public class CartridgeInstanceCache {
         return cartridgeInstanceCache;
     }
 
-    public void addCartridgeInstances (int tenantId, List<CartridgeInstance> cartridgeInstances) {
+    public void addCartridgeInstances (int tenantId, List<CartridgeSubscription> cartridgeSubscriptions) {
 
-        //tenantIdToCartridgeInstance.put(tenantId, cartridgeInstances);
-        for(CartridgeInstance cartridgeInstance : cartridgeInstances) {
-            addCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeInstance.getAlias()),
-                    cartridgeInstance);
+        //tenantIdToCartridgeInstance.put(tenantId, cartridgeSubscriptions);
+        for(CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+            addCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeSubscription.getAlias()),
+                    cartridgeSubscription);
         }
     }
 
     public void addCartridgeInstance(CartridgeInstanceCacheKey cartridgeInstanceCacheKey,
-                                     CartridgeInstance cartridgeInstance) {
+                                     CartridgeSubscription cartridgeSubscription) {
 
-        cartridgeInstanceKeyToCartridgeInstance.put(cartridgeInstanceCacheKey, cartridgeInstance);
+        cartridgeInstanceKeyToCartridgeInstance.put(cartridgeInstanceCacheKey, cartridgeSubscription);
 
-        List<CartridgeInstance> cartridgeInstances = tenantIdToCartridgeInstance.get(cartridgeInstanceCacheKey.
+        List<CartridgeSubscription> cartridgeSubscriptions = tenantIdToCartridgeInstance.get(cartridgeInstanceCacheKey.
                 getTenantId());
-        if(cartridgeInstances != null) {
-            cartridgeInstances.add(cartridgeInstance);
+        if(cartridgeSubscriptions != null) {
+            cartridgeSubscriptions.add(cartridgeSubscription);
         }
         else {
-            cartridgeInstances = new Vector<CartridgeInstance>();
-            cartridgeInstances.add(cartridgeInstance);
-            tenantIdToCartridgeInstance.put(cartridgeInstanceCacheKey.getTenantId(), cartridgeInstances);
+            cartridgeSubscriptions = new Vector<CartridgeSubscription>();
+            cartridgeSubscriptions.add(cartridgeSubscription);
+            tenantIdToCartridgeInstance.put(cartridgeInstanceCacheKey.getTenantId(), cartridgeSubscriptions);
         }
 
-        log.info("Added tenant " + cartridgeInstanceCacheKey.getTenantId() + "'s cartridge instance with alias " +
+        log.info("Added tenant " + cartridgeInstanceCacheKey.getTenantId() + "'s cartridge subscription with alias " +
                 cartridgeInstanceCacheKey.getCartridgeInstanceAlias() + " to the cache");
     }
 
-    public CartridgeInstance getCartridgeInstance (CartridgeInstanceCacheKey cartridgeInstanceCacheKey) {
+    public CartridgeSubscription getCartridgeInstance (CartridgeInstanceCacheKey cartridgeInstanceCacheKey) {
 
         return cartridgeInstanceKeyToCartridgeInstance.get(cartridgeInstanceCacheKey);
     }
 
-    public List<CartridgeInstance> getCartridgeInstances (int tenantId) {
+    public List<CartridgeSubscription> getCartridgeInstances (int tenantId) {
 
         return tenantIdToCartridgeInstance.get(tenantId);
     }
@@ -101,9 +101,9 @@ public class CartridgeInstanceCache {
 
     public void removeCartridgeInstances (int tenantId) {
 
-        List<CartridgeInstance> cartridgeInstances = tenantIdToCartridgeInstance.get(tenantId);
-        for (CartridgeInstance cartridgeInstance : cartridgeInstances) {
-            removeCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeInstance.getAlias()));
+        List<CartridgeSubscription> cartridgeSubscriptions = tenantIdToCartridgeInstance.get(tenantId);
+        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+            removeCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeSubscription.getAlias()));
         }
     }
 
@@ -112,7 +112,7 @@ public class CartridgeInstanceCache {
         if (cartridgeInstanceKeyToCartridgeInstance.remove(cartridgeInstanceCacheKey) != null &&
         tenantIdToCartridgeInstance.remove(cartridgeInstanceCacheKey.getTenantId()) != null) {
 
-            log.info("Removed tenant " + cartridgeInstanceCacheKey.getTenantId() + "'s cartridge instance with alias " +
+            log.info("Removed tenant " + cartridgeInstanceCacheKey.getTenantId() + "'s cartridge subscription with alias " +
                     cartridgeInstanceCacheKey.getCartridgeInstanceAlias() + " from the cache");
         }
     }
