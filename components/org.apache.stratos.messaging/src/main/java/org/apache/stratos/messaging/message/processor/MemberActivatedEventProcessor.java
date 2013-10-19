@@ -72,6 +72,8 @@ public class MemberActivatedEventProcessor implements MessageProcessor {
 				}
 
 				// Apply changes to the topology
+				member.addPorts(event.getPorts());
+				member.setMemberIp(event.getMemberIp());
 				member.setStatus(MemberStatus.Activated);
 				
 				if (log.isInfoEnabled()) {

@@ -38,12 +38,7 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private String memberId;
     private String hostName;
     private MemberStatus status;
-    private Map<String, Port> portMap;
     private Properties properties;
-
-    public MemberStartedEvent() {
-        this.portMap = new HashMap<String, Port>();
-    }
 
     public String getServiceName() {
         return serviceName;
@@ -83,30 +78,6 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 
     public void setStatus(MemberStatus status) {
         this.status = status;
-    }
-
-    public Collection<Port> getPorts() {
-        return portMap.values();
-    }
-
-    public void addPort(Port port) {
-        this.portMap.put(port.getProtocol(), port);
-    }
-
-    public void removePort(Port port) {
-        this.portMap.remove(port.getProtocol());
-    }
-
-    public void removePort(String portName) {
-        this.portMap.remove(portName);
-    }
-
-    public boolean portExists(Port port) {
-        return this.portMap.containsKey(port.getProtocol());
-    }
-
-    public Port getPort(String portName) {
-        return this.portMap.get(portName);
     }
 
     public Properties getProperties() {
