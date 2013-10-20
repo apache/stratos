@@ -87,6 +87,7 @@ public class WSO2CEPStatsObserver implements Observer{
     		}
     		
     	}
+    	stats = null;
     }
     
     private static Event eventObject(Object[] correlationData, Object[] metaData,

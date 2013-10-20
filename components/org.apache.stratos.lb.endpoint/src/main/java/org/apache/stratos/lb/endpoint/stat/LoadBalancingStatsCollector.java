@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.lb.endpoint.stat;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -99,7 +100,7 @@ public class LoadBalancingStatsCollector extends Observable{
 	                Thread.sleep(15000);
                 } catch (InterruptedException ignore) {
                 }
-				LoadBalancingStatsCollector.getInstance().notifyObservers(clusterIdToRequestInflightCountMap);
+				LoadBalancingStatsCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
 			}
 	        
         }

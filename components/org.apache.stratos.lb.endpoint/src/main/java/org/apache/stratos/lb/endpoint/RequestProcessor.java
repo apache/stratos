@@ -30,6 +30,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -64,6 +65,7 @@ public class RequestProcessor {
                     algorithmContext = new AlgorithmContext(cluster.getServiceName(), cluster.getClusterId());
                     clusterContext.setAlgorithmContext(algorithmContext);
                 }
+                algorithm.setMembers(new ArrayList<Member>(cluster.getMembers()));
                 return algorithm.getNextMember(algorithmContext);
             }
             return null;
