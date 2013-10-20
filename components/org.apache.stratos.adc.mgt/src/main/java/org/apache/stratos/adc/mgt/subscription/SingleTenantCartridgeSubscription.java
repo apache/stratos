@@ -17,13 +17,13 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance;
+package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
@@ -35,29 +35,29 @@ import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 
 import java.util.Properties;
 
-public class SingleTenantCartridgeInstance extends CartridgeInstance {
+public class SingleTenantCartridgeSubscription extends CartridgeSubscription {
 
-    private static Log log = LogFactory.getLog(SingleTenantCartridgeInstance.class);
+    private static Log log = LogFactory.getLog(SingleTenantCartridgeSubscription.class);
 
 
-    public SingleTenantCartridgeInstance(CartridgeInfo cartridgeInfo) {
+    public SingleTenantCartridgeSubscription(CartridgeInfo cartridgeInfo) {
         super(cartridgeInfo);
     }
 
     @Override
-    public void subscribe(Subscriber subscriber, String alias, Policy autoscalingPolicy,
-                                           Repository repository) throws
+    public void createSubscription(Subscriber subscriber, String alias, Policy autoscalingPolicy,
+                                   Repository repository) throws
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException,
             RepositoryCredentialsRequiredException, RepositoryTransportException, UnregisteredCartridgeException,
             AlreadySubscribedException, RepositoryRequiredException, InvalidRepositoryException, PolicyException {
 
-        super.subscribe(subscriber, alias, autoscalingPolicy, repository);
+        super.createSubscription(subscriber, alias, autoscalingPolicy, repository);
         setClusterDomain(alias + "." + getHostName() + "." + getType() + ".domain");
         setHostName(alias + "." + getHostName());
     }
 
     @Override
-    public CartridgeSubscription registerSubscription(Properties payloadProperties)
+    public CartridgeSubscriptionInfo registerSubscription(Properties payloadProperties)
             throws ADCException, UnregisteredCartridgeException {
 
         ApplicationManagementUtil.registerService(getType(),
@@ -77,19 +77,19 @@ public class SingleTenantCartridgeInstance extends CartridgeInstance {
     }
 
     @Override
-    public void unsubscribe() throws ADCException, NotSubscribedException {
+    public void removeSubscription() throws ADCException, NotSubscribedException {
 
         try {
             CloudControllerServiceClient.getServiceClient().terminateAllInstances(getClusterDomain(),
                     getClusterSubDomain());
 
         } catch (AxisFault e) {
-            String errorMsg = "Error in terminating cartridge instance, alias " + getAlias();
+            String errorMsg = "Error in terminating cartridge subscription, alias " + getAlias();
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
 
         } catch (Exception e) {
-            String errorMsg = "Error in terminating cartridge instance, alias " + getAlias();
+            String errorMsg = "Error in terminating cartridge subscription, alias " + getAlias();
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }

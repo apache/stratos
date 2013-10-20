@@ -21,27 +21,27 @@ package org.apache.stratos.adc.mgt.connector.data;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.connector.CartridgeInstanceConnector;
+import org.apache.stratos.adc.mgt.connector.CartridgeSubscriptionConnector;
 import org.apache.stratos.adc.mgt.dto.Cartridge;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
-import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
 import java.util.Properties;
 
-public class DataCartridgeInstanceConnector extends CartridgeInstanceConnector {
+public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionConnector {
 
-    private static Log log = LogFactory.getLog(DataCartridgeInstanceConnector.class);
+    private static Log log = LogFactory.getLog(DataCartridgeSubscriptionConnector.class);
 
     @Override
-    public Properties createConnection(CartridgeInstance cartridgeInstance,
-                                       CartridgeInstance connectingCartridgeInstance) throws ADCException {
+    public Properties createConnection(CartridgeSubscription cartridgeSubscription,
+                                       CartridgeSubscription connectingCartridgeSubscription) throws ADCException {
 
         //TODO: change the logic to do with topology information
         log.info("Retrieving cartridge information for connecting ... alias : " +
-                connectingCartridgeInstance.getAlias() + ", Type: " + connectingCartridgeInstance.getType());
+                connectingCartridgeSubscription.getAlias() + ", Type: " + connectingCartridgeSubscription.getType());
 
         Properties connectionProperties = new Properties();
 
@@ -52,8 +52,8 @@ public class DataCartridgeInstanceConnector extends CartridgeInstanceConnector {
             Cartridge cartridge = null;
             try {
                 cartridge = ApplicationManagementUtil.getCartridgeInfo(
-                        connectingCartridgeInstance.getAlias(),
-                        connectingCartridgeInstance.getSubscriber().getTenantDomain());
+                        connectingCartridgeSubscription.getAlias(),
+                        connectingCartridgeSubscription.getSubscriber().getTenantDomain());
 
             } catch (NotSubscribedException e) {
                 // This cannot happen here.
@@ -68,14 +68,14 @@ public class DataCartridgeInstanceConnector extends CartridgeInstanceConnector {
                     connectionProperties.setProperty("MYSQL_HOST", cartridge.getIp());
                     connectionProperties.setProperty("MYSQL_USER", cartridge.getDbUserName());
                     connectionProperties.setProperty("MYSQL_PASSWORD", cartridge.getPassword());
-                    log.info("Connection information retrieved for " + cartridgeInstance + " and " +
-                            connectingCartridgeInstance);
+                    log.info("Connection information retrieved for " + cartridgeSubscription + " and " +
+                            connectingCartridgeSubscription);
                     break;
                 }
             }
 
             if(attempts == maxAttempts) {
-                String errorMsg = "Failed to connect " + cartridgeInstance + " and " + connectingCartridgeInstance;
+                String errorMsg = "Failed to connect " + cartridgeSubscription + " and " + connectingCartridgeSubscription;
                 log.error(errorMsg);
                 throw  new ADCException(errorMsg);
             }
@@ -85,8 +85,8 @@ public class DataCartridgeInstanceConnector extends CartridgeInstanceConnector {
     }
 
     @Override
-    public Properties teminateConnection(CartridgeInstance cartridgeInstance,
-                                         CartridgeInstance connectedCartridgeInstance) throws ADCException {
+    public Properties teminateConnection(CartridgeSubscription cartridgeSubscription,
+                                         CartridgeSubscription connectedCartridgeSubscription) throws ADCException {
         return null;
     }
 }

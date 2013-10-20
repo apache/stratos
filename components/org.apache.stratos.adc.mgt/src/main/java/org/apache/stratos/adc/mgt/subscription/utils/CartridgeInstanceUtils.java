@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance.utils;
+package org.apache.stratos.adc.mgt.subscription.utils;
 
 public class CartridgeInstanceUtils {
     /*
@@ -64,7 +64,7 @@ public class CartridgeInstanceUtils {
 
     }
 
-    public static CartridgeSubscription createCartridgeSubscription(CartridgeInfo cartridgeInfo,
+    public static CartridgeSubscriptionInfo createCartridgeSubscription(CartridgeInfo cartridgeInfo,
                                                                      Policy policy,
                                                                      String cartridgeType,
                                                                      String cartridgeAlias,
@@ -78,7 +78,7 @@ public class CartridgeInstanceUtils {
                                                                      String mgtClusterSubDomain,
                                                                      DataCartridge dataCartridge) {
 
-        CartridgeSubscription cartridgeSubscription = new CartridgeSubscription();
+        CartridgeSubscriptionInfo cartridgeSubscription = new CartridgeSubscriptionInfo();
         cartridgeSubscription.setCartridge(cartridgeType);
         cartridgeSubscription.setAlias(cartridgeAlias);
         cartridgeSubscription.setClusterDomain(clusterDomain);
@@ -118,7 +118,7 @@ public class CartridgeInstanceUtils {
         new DNSManager().addNewSubDomain(alias + "." + cartridgeType, System.getProperty(CartridgeConstants.ELB_IP));
     }
 
-    public static SubscriptionInfo createSubscriptionResponse(CartridgeSubscription cartridgeSubscription, Repository repository) {
+    public static SubscriptionInfo createSubscriptionResponse(CartridgeSubscriptionInfo cartridgeSubscription, Repository repository) {
         SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
 
         if (repository != null && repository.getUrl() != null) {

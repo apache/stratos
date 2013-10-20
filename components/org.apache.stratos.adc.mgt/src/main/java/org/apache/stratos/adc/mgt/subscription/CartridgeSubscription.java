@@ -17,12 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance;
+package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dns.DNSManager;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
@@ -40,10 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public abstract class CartridgeInstance {
+public abstract class CartridgeSubscription {
 
-    private static Log log = LogFactory.getLog(CartridgeInstance.class);
+    private static Log log = LogFactory.getLog(CartridgeSubscription.class);
 
+    private int subscriptionId;
     private String type;
     private String alias;
     private String clusterDomain;
@@ -56,17 +57,16 @@ public abstract class CartridgeInstance {
     private Repository repository;
     private CartridgeInfo cartridgeInfo;
     private Payload payload;
+    private String subscriptionStatus;
     private String mappedDomain;
-    private List<String> connectedCartridgeAliases;
-    //TODO:fixme : to be removed after designing the new DB schema
-    private int subscriptionId;
+    private List<String> connectedSubscriptionAliases;
 
     /**
      * Constructor
      *
-     * @param cartridgeInfo CartridgeInfo instance
+     * @param cartridgeInfo CartridgeInfo subscription
      */
-    public CartridgeInstance (CartridgeInfo cartridgeInfo) {
+    public CartridgeSubscription(CartridgeInfo cartridgeInfo) {
 
         this.setCartridgeInfo(cartridgeInfo);
         this.setType(cartridgeInfo.getType());
@@ -75,16 +75,17 @@ public abstract class CartridgeInstance {
         this.setMgtClusterDomain("");
         this.setMgtClusterSubDomain(CartridgeConstants.DEFAULT_MGT_SUBDOMAIN);
         this.setHostName(cartridgeInfo.getHostName());
-        this.connectedCartridgeAliases = new ArrayList<String>();
+        this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
+        this.connectedSubscriptionAliases = new ArrayList<String>();
     }
 
     /**
-     * Subscribes to this cartridge instance
+     * Subscribes to this cartridge subscription
      *
-     * @param subscriber Subscriber instance
-     * @param alias Alias of the cartridge instance
+     * @param subscriber Subscriber subscription
+     * @param alias Alias of the cartridge subscription
      * @param autoscalingPolicy Auto scaling policy
-     * @param repository Relevenat Repository instance
+     * @param repository Relevenat Repository subscription
      *
      * @throws ADCException
      * @throws PolicyException
@@ -97,8 +98,8 @@ public abstract class CartridgeInstance {
      * @throws InvalidRepositoryException
      * @throws RepositoryTransportException
      */
-    public void subscribe (Subscriber subscriber, String alias, Policy autoscalingPolicy,
-                                    Repository repository)
+    public void createSubscription (Subscriber subscriber, String alias, Policy autoscalingPolicy,
+                                   Repository repository)
             throws ADCException, PolicyException, UnregisteredCartridgeException, InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
@@ -110,23 +111,23 @@ public abstract class CartridgeInstance {
     }
 
     /**
-     * Unsubscribe from this cartridge instance
+     * Unsubscribe from this cartridge subscription
      *
      * @throws ADCException
      * @throws NotSubscribedException
      */
-    public abstract void unsubscribe () throws ADCException, NotSubscribedException;
+    public abstract void removeSubscription() throws ADCException, NotSubscribedException;
 
     /**
      * Registers the subscription
      *
      * @param properties Any additional properties needed
      *
-     * @return CartridgeSubscription instance populated with relevant data
+     * @return CartridgeSubscriptionInfo subscription populated with relevant data
      * @throws ADCException
      * @throws UnregisteredCartridgeException
      */
-    public abstract CartridgeSubscription registerSubscription(Properties properties)
+    public abstract CartridgeSubscriptionInfo registerSubscription(Properties properties)
             throws ADCException, UnregisteredCartridgeException;
 
     /**
@@ -135,22 +136,22 @@ public abstract class CartridgeInstance {
      * @param connectingCartridgeAlias Alias of connecting cartridge
      */
     public void connect (String connectingCartridgeAlias) {
-        connectedCartridgeAliases.add(connectingCartridgeAlias);
+        connectedSubscriptionAliases.add(connectingCartridgeAlias);
     }
 
     /**
-     * Disconnect from the cartridge instance given by disconnectingCartridgeAlias
+     * Disconnect from the cartridge subscription given by disconnectingCartridgeAlias
      *
-     * @param disconnectingCartridgeAlias Alias of the cartridge instance to disconnect
+     * @param disconnectingCartridgeAlias Alias of the cartridge subscription to disconnect
      */
     public void disconnect (String disconnectingCartridgeAlias) {
-        connectedCartridgeAliases.remove(disconnectingCartridgeAlias);
+        connectedSubscriptionAliases.remove(disconnectingCartridgeAlias);
     }
 
     /**
-     * Creates the relevant payload parameters for this cartridge instance
+     * Creates the relevant payload parameters for this cartridge subscription
      *
-     * @return PayloadArg instance
+     * @return PayloadArg subscription
      * @throws ADCException in an errpr
      */
     public PayloadArg createPayloadParameters() throws ADCException {
@@ -168,18 +169,18 @@ public abstract class CartridgeInstance {
     }
 
     /**
-     * Manages the repository for the cartridge instance
+     * Manages the repository for the cartridge subscription
      *
      * @param repoURL Repository URL
      * @param repoUserName Repository Username
      * @param repoUserPassword Repository password
      * @param privateRepo public/private repository
-     * @param cartridgeAlias Alias of the cartridge instance
-     * @param cartridgeInfo CartridgeInfo instance
+     * @param cartridgeAlias Alias of the cartridge subscription
+     * @param cartridgeInfo CartridgeInfo subscription
      * @param tenantDomain Domain of the tenant
      *
      * @return Repository populated with relevant information or null of not repository is relevant to this cartridge
-     * instance
+     * subscription
      * @throws ADCException
      * @throws RepositoryRequiredException
      * @throws RepositoryCredentialsRequiredException
@@ -285,6 +286,8 @@ public abstract class CartridgeInstance {
             String errorMsg = "Error in updating state to INACTIVE";
             log.error(errorMsg, e);
         }
+
+        this.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
     }
 
     public String getType() {
@@ -303,8 +306,8 @@ public abstract class CartridgeInstance {
         return repository;
     }
 
-    public List<String> getConnectedCartridgeAliases () {
-        return connectedCartridgeAliases;
+    public List<String> getConnectedSubscriptionAliases() {
+        return connectedSubscriptionAliases;
     }
 
     public CartridgeInfo getCartridgeInfo() {
@@ -401,5 +404,13 @@ public abstract class CartridgeInstance {
 
     public void setMappedDomain(String mappedDomain) {
         this.mappedDomain = mappedDomain;
+    }
+
+    public String getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    public void setSubscriptionStatus(String subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
 }

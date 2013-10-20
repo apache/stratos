@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.mgt.instance;
+package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
@@ -37,29 +37,29 @@ import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 
 import java.util.Properties;
 
-public class MultiTenantCartridgeInstance extends CartridgeInstance {
+public class MultiTenantCartridgeSubscription extends CartridgeSubscription {
 
-    private static Log log = LogFactory.getLog(MultiTenantCartridgeInstance.class);
+    private static Log log = LogFactory.getLog(MultiTenantCartridgeSubscription.class);
 
-    public MultiTenantCartridgeInstance(CartridgeInfo cartridgeInfo) {
+    public MultiTenantCartridgeSubscription(CartridgeInfo cartridgeInfo) {
         super(cartridgeInfo);
     }
 
     @Override
-    public void subscribe(Subscriber subscriber, String alias, Policy autoscalingPolicy, Repository repository)
+    public void createSubscription(Subscriber subscriber, String alias, Policy autoscalingPolicy, Repository repository)
 
             throws InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, ADCException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, RepositoryTransportException, UnregisteredCartridgeException,
             InvalidRepositoryException, RepositoryRequiredException, PolicyException {
 
-        super.subscribe(subscriber, alias, autoscalingPolicy, repository);
+        super.createSubscription(subscriber, alias, autoscalingPolicy, repository);
 
         boolean allowMultipleSubscription = Boolean.
                 valueOf(System.getProperty(CartridgeConstants.FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED));
 
         if (!allowMultipleSubscription) {
-            // If the cartridge is multi-tenant. We should not let users subscribe twice.
+            // If the cartridge is multi-tenant. We should not let users createSubscription twice.
             boolean subscribed;
             try {
                 subscribed = PersistenceManager.isAlreadySubscribed(getType(), subscriber.getTenantId());
@@ -72,7 +72,7 @@ public class MultiTenantCartridgeInstance extends CartridgeInstance {
 
             if (subscribed) {
                 String msg = "Already subscribed to " + getType()
-                        + ". This multi-tenant cartridge will not be available to subscribe";
+                        + ". This multi-tenant cartridge will not be available to createSubscription";
                 if (log.isDebugEnabled()) {
                     log.debug(msg);
                 }
@@ -107,7 +107,7 @@ public class MultiTenantCartridgeInstance extends CartridgeInstance {
     }
 
     @Override
-    public void unsubscribe() throws ADCException, NotSubscribedException {
+    public void removeSubscription() throws ADCException, NotSubscribedException {
 
         log.info("Cartridge with alias " + getAlias() + ", and type " + getType() +
                 " is a multi-tenant cartridge and therefore will not terminate all instances and " +
@@ -117,7 +117,7 @@ public class MultiTenantCartridgeInstance extends CartridgeInstance {
     }
 
     @Override
-    public CartridgeSubscription registerSubscription(Properties properties) {
+    public CartridgeSubscriptionInfo registerSubscription(Properties properties) {
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

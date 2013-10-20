@@ -19,23 +19,23 @@
 
 package org.apache.stratos.adc.mgt.connector;
 
-import org.apache.stratos.adc.mgt.connector.data.DataCartridgeInstanceConnector;
+import org.apache.stratos.adc.mgt.connector.data.DataCartridgeSubscriptionConnector;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 
-public class CartridgeInstanceConnectorFactory {
+public class CartridgeSubscriptionConnectorFactory {
 
-    public static CartridgeInstanceConnector getCartridgeInstanceConnector (String type) throws ADCException {
+    public static CartridgeSubscriptionConnector getCartridgeInstanceConnector (String type) throws ADCException {
 
-        CartridgeInstanceConnector cartridgeInstanceConnector = null;
+        CartridgeSubscriptionConnector cartridgeSubscriptionConnector = null;
 
         if(type.equals("mysql")) {
-            cartridgeInstanceConnector = new DataCartridgeInstanceConnector();
+            cartridgeSubscriptionConnector = new DataCartridgeSubscriptionConnector();
         }
 
-        if(cartridgeInstanceConnector == null) {
-            throw new ADCException("Unable to find matching CartridgeInstanceConnector for " + type);
+        if(cartridgeSubscriptionConnector == null) {
+            throw new ADCException("Unable to find matching CartridgeSubscriptionConnector for " + type);
         }
 
-        return cartridgeInstanceConnector;
+        return cartridgeSubscriptionConnector;
     }
 }

@@ -29,12 +29,12 @@ public class PayloadFactory {
 	private static Log log = LogFactory.getLog(PayloadFactory.class);
 
     /**
-     * Creates and returns a Payload instance
+     * Creates and returns a Payload subscription
      *
      * @param cartridgeProvider Cartridge provider
      * @param cartridgeType Cartridge type
      * @param payloadFilePath Location to create the payload
-     * @return Payload instance
+     * @return Payload subscription
      * @throws ADCException if no matching criteria is found to create a payload
      */
 	public static Payload getPayloadInstance (String cartridgeProvider, String cartridgeType, String payloadFilePath)

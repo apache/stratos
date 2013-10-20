@@ -20,12 +20,7 @@
 package org.apache.stratos.messaging.event.topology;
 
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Port;
-
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,7 +31,6 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 	private String serviceName;
     private String clusterId;
     private String memberId;
-    private String hostName;
     private MemberStatus status;
     private Properties properties;
 
@@ -62,14 +56,6 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
     }
 
     public MemberStatus getStatus() {

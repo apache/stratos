@@ -21,16 +21,16 @@ package org.apache.stratos.adc.mgt.test;
 
 import junit.framework.TestCase;
 import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.instance.CartridgeInstance;
-import org.apache.stratos.adc.mgt.instance.factory.CartridgeInstanceFactory;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 
-public class CartridgeInstanceTest extends TestCase {
+public class CartridgeSubscriptionTest extends TestCase {
 
-    private CartridgeInstance getCartridgeInstance (CartridgeInfo cartridgeInfo) {
+    private CartridgeSubscription getCartridgeInstance (CartridgeInfo cartridgeInfo) {
 
         try {
-            return CartridgeInstanceFactory.getCartridgeInstance(cartridgeInfo);
+            return CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
 
         } catch (ADCException e) {
             throw new RuntimeException(e);
