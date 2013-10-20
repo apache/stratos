@@ -58,8 +58,7 @@ public class ClusterCreatedEventProcessor implements MessageProcessor {
 				}
 
 				// Apply changes to the topology
-				Cluster cluster = new Cluster();
-				cluster.setClusterId(event.getClusterId());
+				Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId());
 				cluster.setHostName(event.getHostName());
 				cluster.setTenantRange(event.getTenantRange());
 

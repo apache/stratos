@@ -66,10 +66,7 @@ public class MemberStartedEventProcessor implements MessageProcessor {
 				}
 
 				// Apply changes to the topology
-				Member member = new Member();
-				member.setServiceName(event.getServiceName());
-				member.setClusterId(event.getClusterId());
-				member.setMemberId(event.getMemberId());
+				Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId());
 				member.setStatus(MemberStatus.Starting);
 				cluster.addMember(member);
 

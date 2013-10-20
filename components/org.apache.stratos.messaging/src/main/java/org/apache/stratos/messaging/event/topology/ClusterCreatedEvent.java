@@ -33,23 +33,19 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private String clusterId;
     private String hostName;
     private String tenantRange;
-
     private Properties properties;
+
+    public ClusterCreatedEvent(String serviceName, String clusterId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+    }
 
     public String getServiceName() {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getClusterId() {
         return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
     }
 
     public String getHostName() {

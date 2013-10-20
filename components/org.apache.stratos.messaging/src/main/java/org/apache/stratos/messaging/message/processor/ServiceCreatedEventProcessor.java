@@ -50,8 +50,7 @@ public class ServiceCreatedEventProcessor implements MessageProcessor {
 				}
 
 				// Apply changes to the topology
-				Service service = new Service();
-				service.setServiceName(event.getServiceName());
+				Service service = new Service(event.getServiceName());
 				topology.addService(service);
 
 				if (log.isInfoEnabled()) {

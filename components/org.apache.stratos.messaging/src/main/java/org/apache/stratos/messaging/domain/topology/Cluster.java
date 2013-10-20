@@ -40,7 +40,9 @@ public class Cluster implements Serializable {
     private Map<String, Member> memberMap;
     private Properties properties;
 
-    public Cluster() {
+    public Cluster(String serviceName, String clusterId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
         this.memberMap = new HashMap<String, Member>();
     }
 
@@ -48,16 +50,8 @@ public class Cluster implements Serializable {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getClusterId() {
         return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
     }
 
     public String getHostName() {
