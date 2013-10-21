@@ -22,15 +22,7 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.processor.ClusterCreatedEventProcessor;
-import org.apache.stratos.messaging.message.processor.ClusterRemovedEventProcessor;
-import org.apache.stratos.messaging.message.processor.CompleteTopologyEventProcessor;
-import org.apache.stratos.messaging.message.processor.MemberActivatedEventProcessor;
-import org.apache.stratos.messaging.message.processor.MemberStartedEventProcessor;
-import org.apache.stratos.messaging.message.processor.MemberSuspendedEventProcessor;
-import org.apache.stratos.messaging.message.processor.MemberTerminatedEventProcessor;
-import org.apache.stratos.messaging.message.processor.ServiceCreatedEventProcessor;
-import org.apache.stratos.messaging.message.processor.ServiceRemovedEventProcessor;
+import org.apache.stratos.messaging.message.processor.*;
 import org.apache.stratos.messaging.util.Constants;
 
 
@@ -51,7 +43,7 @@ public class TopologyEventMessageDelegator implements Runnable {
                 TextMessage message = TopologyEventQueue.getInstance().take();
                 
                 // retrieve the header
-                String type = message.getStringProperty(Constants.EVENT_NAME);
+                String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
                 // retrieve the actual message
                 String json = message.getText();
                 
@@ -71,10 +63,11 @@ public class TopologyEventMessageDelegator implements Runnable {
         ServiceRemovedEventProcessor processor2 = new ServiceRemovedEventProcessor();
         ClusterCreatedEventProcessor processor3 = new ClusterCreatedEventProcessor();
         ClusterRemovedEventProcessor processor4 = new ClusterRemovedEventProcessor();
-        MemberStartedEventProcessor processor5 = new MemberStartedEventProcessor();
-        MemberActivatedEventProcessor processor6 = new MemberActivatedEventProcessor();
-        MemberSuspendedEventProcessor processor7 = new MemberSuspendedEventProcessor();
-        MemberTerminatedEventProcessor processor8 = new MemberTerminatedEventProcessor();
+        InstanceSpawnedEventProcessor processor5 = new InstanceSpawnedEventProcessor();
+        MemberStartedEventProcessor processor6 = new MemberStartedEventProcessor();
+        MemberActivatedEventProcessor processor7 = new MemberActivatedEventProcessor();
+        MemberSuspendedEventProcessor processor8 = new MemberSuspendedEventProcessor();
+        MemberTerminatedEventProcessor processor9 = new MemberTerminatedEventProcessor();
         
         // link all the relevant processors in the required order
         processor1.setNext(processor2);
@@ -84,13 +77,14 @@ public class TopologyEventMessageDelegator implements Runnable {
         processor5.setNext(processor6);
         processor6.setNext(processor7);
         processor7.setNext(processor8);
+        processor8.setNext(processor9);
         
         while (true) {
 			try {
 				TextMessage message = TopologyEventQueue.getInstance().take();
 
 				// retrieve the header
-				String type = message.getStringProperty(Constants.EVENT_NAME);
+				String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
 				// retrieve the actual message
 				String json = message.getText();
 
@@ -106,8 +100,9 @@ public class TopologyEventMessageDelegator implements Runnable {
 				}
 
 			} catch (Exception e) {
-            	log.error("Failed to retrieve the topology event message.", e);
-            	throw new RuntimeException("Failed to retrieve the topology event message.", e);
+                String error = "Failed to retrieve the topology event message.";
+            	log.error(error, e);
+            	throw new RuntimeException(error, e);
             }
         }
     }
