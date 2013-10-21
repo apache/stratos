@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Zone;
 /**
  * This event is fired by Cloud Controller when a member is spawned by the IaaS in a given cluster.
  */
-public class MemberSpawnedEvent {
+public class InstanceSpawnedEvent {
     private Cloud cloud;
     private Region region;
     private Zone zone;
@@ -33,7 +33,7 @@ public class MemberSpawnedEvent {
     private String clusterId;
     private String memberId;
 
-    public MemberSpawnedEvent(String serviceName, String clusterId, String memberId) {
+    public InstanceSpawnedEvent(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.memberId = memberId;
