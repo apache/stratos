@@ -38,8 +38,7 @@ public class AutoscalerServerComponent {
 		if (log.isInfoEnabled()) {
 			log.info("Autoscaler Server Component activated");
 		}
-		EventSubscriber eventSubscriber = new EventSubscriber();
-		eventSubscriber.init();
+
 	}
 
 }
