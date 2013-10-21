@@ -22,10 +22,13 @@ import org.apache.stratos.messaging.domain.topology.Cloud;
 import org.apache.stratos.messaging.domain.topology.Region;
 import org.apache.stratos.messaging.domain.topology.Zone;
 
+import java.io.Serializable;
+
 /**
  * This event is fired by Cloud Controller when a member is spawned by the IaaS in a given cluster.
  */
-public class InstanceSpawnedEvent {
+public class InstanceSpawnedEvent extends TopologyEvent implements Serializable {
+    private static final long serialVersionUID = 2672909702971355178L;
     private Cloud cloud;
     private Region region;
     private Zone zone;
