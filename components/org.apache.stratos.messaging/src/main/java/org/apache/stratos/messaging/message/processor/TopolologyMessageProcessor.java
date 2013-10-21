@@ -24,13 +24,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 /**
  * Message processor interface. Every Message Processor should implement this.
  */
-public interface MessageProcessor {
+public interface TopolologyMessageProcessor {
     
 	/**
 	 * Link a message processor and its successor, if there's any.
 	 * @param nextProcessor
 	 */
-	public abstract void setNext(MessageProcessor nextProcessor);
+	public abstract void setNext(TopolologyMessageProcessor nextProcessor);
 
 	/**
 	 * Message processing and delegating logic.
