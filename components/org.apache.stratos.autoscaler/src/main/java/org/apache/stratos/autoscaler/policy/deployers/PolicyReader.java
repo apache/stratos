@@ -73,7 +73,15 @@ public class PolicyReader  {
 			StAXOMBuilder builder = new StAXOMBuilder(parser);
 			OMElement docEle = builder.getDocumentElement();
 			if("AutoscalePolicy".equalsIgnoreCase(docEle.getLocalName())){
-				policy.setName(docEle.getAttributeValue(new QName("name")));
+				policy.setId(docEle.getAttributeValue(new QName("id")));
+				OMElement displayNameEle = docEle.getFirstChildWithName(new QName("displayName"));
+				if(displayNameEle!=null){
+					policy.setDisplayName(displayNameEle.getText());
+				}
+				OMElement descriptionEle = docEle.getFirstChildWithName(new QName("description"));
+				if(descriptionEle!=null){
+					policy.setDescription(descriptionEle.getText());
+				}
 				
 				//LoadThresholds
 				OMElement loadThresholdsEle = docEle.getFirstChildWithName(new QName("LoadThresholds"));

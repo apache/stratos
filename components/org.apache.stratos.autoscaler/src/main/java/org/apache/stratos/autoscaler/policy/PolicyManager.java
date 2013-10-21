@@ -52,13 +52,13 @@ public class PolicyManager {
     }
     
 	public void addPolicy(AutoscalePolicy policy) throws InvalidPolicyException {
-		if (!policyListMap.containsKey(policy.getName())) {
+		if (!policyListMap.containsKey(policy.getId())) {
 			if(log.isDebugEnabled()){
-				log.debug("Adding policy :" + policy.getName());
+				log.debug("Adding policy :" + policy.getId());
 			}
-			policyListMap.put(policy.getName(), policy);
+			policyListMap.put(policy.getId(), policy);
 		} else {
-			throw new InvalidPolicyException("Specified service [" + policy.getName()
+			throw new InvalidPolicyException("Specified service [" + policy.getId()
 					+ "] already exists");
 		}
 	}
