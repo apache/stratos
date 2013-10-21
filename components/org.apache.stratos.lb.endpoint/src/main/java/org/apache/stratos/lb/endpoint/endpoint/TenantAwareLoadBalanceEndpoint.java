@@ -154,6 +154,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
         String targetHost = extractTargetHost(synCtx);
         Member member = requestProcessor.findNextMember(targetHost);
+        if(member == null)
+            return null;
 
         // Create Axi2 member object
         String transport = extractTransport(synCtx);
