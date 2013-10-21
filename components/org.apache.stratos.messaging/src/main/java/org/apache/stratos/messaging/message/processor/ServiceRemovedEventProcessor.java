@@ -25,13 +25,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceRemovedEventProcessor implements TopolologyMessageProcessor {
+public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(ServiceRemovedEventProcessor.class);
-	private TopolologyMessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(TopolologyMessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 

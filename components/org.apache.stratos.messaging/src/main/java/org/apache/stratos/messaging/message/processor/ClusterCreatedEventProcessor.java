@@ -26,13 +26,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterCreatedEventProcessor implements TopolologyMessageProcessor {
+public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
-	private TopolologyMessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(TopolologyMessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 
