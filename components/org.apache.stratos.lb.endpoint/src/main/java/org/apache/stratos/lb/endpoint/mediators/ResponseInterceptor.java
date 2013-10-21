@@ -34,12 +34,9 @@ import org.apache.synapse.mediators.AbstractMediator;
 public class ResponseInterceptor extends AbstractMediator implements ManagedLifecycle {
 
     public boolean mediate(MessageContext synCtx) {
-
-        log.debug("Mediation started ....... " + ResponseInterceptor.class.getName());
-
-        ConfigurationContext configCtx =
-            ((Axis2MessageContext) synCtx).getAxis2MessageContext().getConfigurationContext();
-
+        if(log.isDebugEnabled()) {
+            log.debug("Mediation started " + ResponseInterceptor.class.getName());
+        }
         String clusterId = (String) synCtx.getProperty(Constants.CLUSTER_ID);
         LoadBalancingStatsCollector.getInstance().decrementRequestInflightCount(clusterId);
         return true;
@@ -47,11 +44,15 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
 
     @Override
     public void destroy() {
-        log.debug("ResponseInterceptor mediator destroyed...");
+        if(log.isDebugEnabled()) {
+            log.debug("ResponseInterceptor mediator destroyed");
+        }
     }
 
     @Override
     public void init(SynapseEnvironment arg0) {
-        log.debug("ResponseInterceptor mediator started...");
+        if(log.isDebugEnabled()) {
+            log.debug("ResponseInterceptor mediator initiated");
+        }
     }
 }
