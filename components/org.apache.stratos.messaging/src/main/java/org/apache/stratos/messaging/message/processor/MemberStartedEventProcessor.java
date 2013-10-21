@@ -43,9 +43,8 @@ public class MemberStartedEventProcessor implements MessageProcessor {
 		try {
 			if (MemberStartedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberStartedEvent event =
-				                           (MemberStartedEvent) Util.jsonToObject(message,
-				                                                                  MemberStartedEvent.class);
+				MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(message, MemberStartedEvent.class);
+
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
@@ -58,8 +57,7 @@ public class MemberStartedEventProcessor implements MessageProcessor {
 					                                         event.getClusterId()));
 				}
 				if (cluster.memberExists(event.getMemberId())) {
-					throw new RuntimeException(
-					                           String.format("Member %s already exist in cluster %s of service %s",
+					throw new RuntimeException(String.format("Member %s already exist in cluster %s of service %s",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
@@ -88,13 +86,10 @@ public class MemberStartedEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
-
 }

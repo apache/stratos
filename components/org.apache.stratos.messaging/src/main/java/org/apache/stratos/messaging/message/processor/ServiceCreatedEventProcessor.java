@@ -40,13 +40,11 @@ public class ServiceCreatedEventProcessor implements MessageProcessor {
 		try {
 			if (ServiceCreatedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				ServiceCreatedEvent event =
-				                            (ServiceCreatedEvent) Util.jsonToObject(message,
-				                                                                    ServiceCreatedEvent.class);
+				ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
+
 				// Validate event against the existing topology
 				if (topology.serviceExists(event.getServiceName())) {
-					throw new RuntimeException(String.format("Service %s already exists",
-					                                         event.getServiceName()));
+					throw new RuntimeException(String.format("Service %s already exists", event.getServiceName()));
 				}
 
 				// Apply changes to the topology
@@ -70,13 +68,10 @@ public class ServiceCreatedEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
-
 }

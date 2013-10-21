@@ -43,11 +43,9 @@ public class MemberSuspendedEventProcessor implements MessageProcessor {
 		try {
 			if (MemberSuspendedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberSuspendedEvent event =
-				                             (MemberSuspendedEvent) Util.jsonToObject(message,
-				                                                                      MemberSuspendedEvent.class);
-				// Validate event against the existing topology
+				MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
 
+				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
 					throw new RuntimeException(String.format("Service %s does not exist",
@@ -64,8 +62,7 @@ public class MemberSuspendedEventProcessor implements MessageProcessor {
 					                                         event.getMemberId()));
 				}
 				if (member.getStatus() == MemberStatus.Suspended) {
-					throw new RuntimeException(
-					                           String.format("Member %s of cluster %s of service %s is already suspended",
+					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already suspended",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
@@ -92,13 +89,10 @@ public class MemberSuspendedEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
-
 }

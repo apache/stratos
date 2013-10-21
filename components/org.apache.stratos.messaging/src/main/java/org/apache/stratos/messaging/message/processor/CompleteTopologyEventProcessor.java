@@ -39,9 +39,7 @@ public class CompleteTopologyEventProcessor implements MessageProcessor {
 		try {
 			if (CompleteTopologyEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				CompleteTopologyEvent event =
-				                              (CompleteTopologyEvent) Util.jsonToObject(message,
-				                                                                        CompleteTopologyEvent.class);
+				CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
 				topology.addServices(event.getTopology().getServices());
 				log.info("Topology initialized.");
 
@@ -57,12 +55,10 @@ public class CompleteTopologyEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
 

@@ -43,29 +43,23 @@ public class MemberTerminatedEventProcessor implements MessageProcessor {
 		try {
 			if (MemberTerminatedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberTerminatedEvent event =
-				                              (MemberTerminatedEvent) Util.jsonToObject(message,
-				                                                                        MemberTerminatedEvent.class);
-				// Validate event against the existing topology
+				MemberTerminatedEvent event = (MemberTerminatedEvent) Util.jsonToObject(message, MemberTerminatedEvent.class);
 
+				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
+					throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
 				}
 				Cluster cluster = service.getCluster(event.getClusterId());
 				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist",
-					                                         event.getClusterId()));
+					throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
 				}
 				Member member = cluster.getMember(event.getMemberId());
 				if (member == null) {
-					throw new RuntimeException(String.format("Member %s does not exist",
-					                                         event.getMemberId()));
+					throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
 				}
 				if (member.getStatus() == MemberStatus.Terminated) {
-					throw new RuntimeException(
-					                           String.format("Member %s of cluster %s of service %s is already terminated",
+					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already terminated",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
@@ -93,12 +87,10 @@ public class MemberTerminatedEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
 
