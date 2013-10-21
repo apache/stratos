@@ -31,16 +31,13 @@ public class Service {
     private Map<String, Cluster> clusterMap;
     private Properties properties;
 
-    public Service() {
+    public Service(String serviceName) {
+        this.serviceName = serviceName;
         this.clusterMap = new HashMap<String, Cluster>();
     }
 
     public String getServiceName() {
         return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
     }
 
     public Collection<Cluster> getClusters() {

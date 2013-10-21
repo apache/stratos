@@ -30,7 +30,7 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
 import org.apache.stratos.adc.mgt.dns.DNSManager;
@@ -81,7 +81,7 @@ public class ApplicationManagementUtil {
     //private static volatile CloudControllerServiceClient serviceClient;
 
     /**
-     * Method used to subscribe to cartridges.
+     * Method used to createSubscription to cartridges.
      */
 	public static SubscriptionInfo doSubscribe(String cartridgeType, String alias, String policy, String repoURL,
 			boolean privateRepo, String repoUsername, String repoPassword, String dataCartridgeType,
@@ -94,7 +94,7 @@ public class ApplicationManagementUtil {
         String clusterSubDomain = CartridgeConstants.DEFAULT_SUBDOMAIN;
         String mgtClusterDomain = "";
         String mgtClusterSubDomain = CartridgeConstants.DEFAULT_MGT_SUBDOMAIN;
-        CartridgeSubscription subscription = null;
+        CartridgeSubscriptionInfo subscription = null;
         String mysqlPassword = null;
         Repository repository = null;
         DataCartridge dataCartridge = null;
@@ -265,7 +265,7 @@ public class ApplicationManagementUtil {
 
 				if (!allowMultipleSubscription) {
 					// If the cartridge is multi-tenant. We should not let users
-					// subscribe twice.
+					// createSubscription twice.
 					boolean subscribed;
 					try {
 						subscribed = PersistenceManager.isAlreadySubscribed(cartridgeType, tenantId);
@@ -278,7 +278,7 @@ public class ApplicationManagementUtil {
 					
 					if (subscribed) {
 						String msg = "Already subscribed to " + cartridgeType
-								+ ". This multi-tenant cartridge will not be available to subscribe";
+								+ ". This multi-tenant cartridge will not be available to createSubscription";
 						if (log.isDebugEnabled()) {
 							log.debug(msg);
 						}
@@ -537,7 +537,7 @@ public class ApplicationManagementUtil {
         return axisConfig.getRepository().getPath() + File.separator + cartridge;
     }
 
-    public static CartridgeSubscription createCartridgeSubscription(CartridgeInfo cartridgeInfo,
+    public static CartridgeSubscriptionInfo createCartridgeSubscription(CartridgeInfo cartridgeInfo,
                                                                     Policy policy,
                                                                     String cartridgeType,
                                                                     String cartridgeName,
@@ -552,25 +552,25 @@ public class ApplicationManagementUtil {
                                                                     DataCartridge dataCartridge,
                                                                     String state) {
 
-        CartridgeSubscription cartridgeSubscription = new CartridgeSubscription();
-        cartridgeSubscription.setCartridge(cartridgeType);
-        cartridgeSubscription.setAlias(cartridgeName);
-        cartridgeSubscription.setClusterDomain(clusterDomain);
-        cartridgeSubscription.setClusterSubdomain(clusterSubDomain);
-        cartridgeSubscription.setMgtClusterDomain(mgtClusterDomain);
-        cartridgeSubscription.setMgtClusterSubDomain(mgtClusterSubDomain);
-        cartridgeSubscription.setHostName(hostName);
-        cartridgeSubscription.setPolicy(policy.getName());
-        cartridgeSubscription.setRepository(repository);
-        cartridgeSubscription.setPortMappings(createPortMappings(cartridgeInfo));
-        cartridgeSubscription.setProvider(cartridgeInfo.getProvider());
-        cartridgeSubscription.setDataCartridge(dataCartridge);
-        cartridgeSubscription.setTenantId(tenantId);
-        cartridgeSubscription.setTenantDomain(tenantDomain);
-        cartridgeSubscription.setBaseDirectory(cartridgeInfo.getBaseDir());
-        //cartridgeSubscription.setState("PENDING");
-        cartridgeSubscription.setState(state);
-        return cartridgeSubscription;
+        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
+        cartridgeSubscriptionInfo.setCartridge(cartridgeType);
+        cartridgeSubscriptionInfo.setAlias(cartridgeName);
+        cartridgeSubscriptionInfo.setClusterDomain(clusterDomain);
+        cartridgeSubscriptionInfo.setClusterSubdomain(clusterSubDomain);
+        cartridgeSubscriptionInfo.setMgtClusterDomain(mgtClusterDomain);
+        cartridgeSubscriptionInfo.setMgtClusterSubDomain(mgtClusterSubDomain);
+        cartridgeSubscriptionInfo.setHostName(hostName);
+        cartridgeSubscriptionInfo.setPolicy(policy.getName());
+        cartridgeSubscriptionInfo.setRepository(repository);
+        cartridgeSubscriptionInfo.setPortMappings(createPortMappings(cartridgeInfo));
+        cartridgeSubscriptionInfo.setProvider(cartridgeInfo.getProvider());
+        cartridgeSubscriptionInfo.setDataCartridge(dataCartridge);
+        cartridgeSubscriptionInfo.setTenantId(tenantId);
+        cartridgeSubscriptionInfo.setTenantDomain(tenantDomain);
+        cartridgeSubscriptionInfo.setBaseDirectory(cartridgeInfo.getBaseDir());
+        //cartridgeSubscriptionInfo.setState("PENDING");
+        cartridgeSubscriptionInfo.setState(state);
+        return cartridgeSubscriptionInfo;
     }
 
 
@@ -826,14 +826,14 @@ public class ApplicationManagementUtil {
         new DNSManager().addNewSubDomain(alias + "." + cartridgeType, System.getProperty(CartridgeConstants.ELB_IP));
     }
 
-    public static SubscriptionInfo createSubscriptionResponse(CartridgeSubscription cartridgeSubscription, Repository repository) {
+    public static SubscriptionInfo createSubscriptionResponse(CartridgeSubscriptionInfo cartridgeSubscriptionInfo, Repository repository) {
     	SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
     	
         if (repository != null && repository.getUrl() != null) {
         	subscriptionInfo.setRepositoryURL(convertRepoURL(repository.getUrl()));
         }
         
-        subscriptionInfo.setHostname(cartridgeSubscription.getHostName());
+        subscriptionInfo.setHostname(cartridgeSubscriptionInfo.getHostName());
         
         return subscriptionInfo;
     }
@@ -895,7 +895,7 @@ public class ApplicationManagementUtil {
             throw new ADCException("Alias you provided is empty.");
         }
 
-        CartridgeSubscription sub;
+        CartridgeSubscriptionInfo sub;
         try {
             sub = PersistenceManager.getSubscription(tenantDomain, alias);
         } catch (Exception e) {
@@ -944,7 +944,7 @@ public class ApplicationManagementUtil {
         }
     }
 
-    public static Cartridge populateCartridgeInfo(CartridgeInfo cartridgeInfo, CartridgeSubscription sub, String[] ips, String tenantDomain) throws ADCException {
+    public static Cartridge populateCartridgeInfo(CartridgeInfo cartridgeInfo, CartridgeSubscriptionInfo sub, String[] ips, String tenantDomain) throws ADCException {
     	Cartridge cartridge = new Cartridge();
         if (ips != null && ips.length > 0) {
 			if (log.isDebugEnabled()) {

@@ -30,15 +30,19 @@ import java.util.Properties;
  * Key: serviceName, clusterId, memberId
  */
 public class Member implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = 4179661867903664661L;
+	private String serviceName;
     private String clusterId;
     private String memberId;
-    private String hostName;
     private MemberStatus status;
+    private String memberIp;
     private Map<String, Port> portMap;
     private Properties properties;
 
-    public Member() {
+    public Member(String serviceName, String clusterId, String memberId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.memberId = memberId;
         this.portMap = new HashMap<String, Port>();
     }
 
@@ -46,32 +50,12 @@ public class Member implements Serializable {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public String getMemberId() {
         return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
     }
 
     public MemberStatus getStatus() {
@@ -122,6 +106,14 @@ public class Member implements Serializable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+	public String getMemberIp() {
+	    return memberIp;
+    }
+
+	public void setMemberIp(String memberIp) {
+	    this.memberIp = memberIp;
     }
 }
 

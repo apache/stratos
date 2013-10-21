@@ -28,7 +28,7 @@ import org.apache.axis2.clustering.ClusteringFault;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
@@ -47,7 +47,7 @@ public class RepoNotificationService {
 		log.info("Updating repository of tenant : " + tenantDomain + " , cartridge: " +
 				cartridgeAlias);
 
-		CartridgeSubscription subscription = null;
+		CartridgeSubscriptionInfo subscription = null;
 		try {
 			subscription = PersistenceManager.getSubscription(tenantDomain, cartridgeAlias);
 		} catch (Exception e) {
@@ -77,13 +77,13 @@ public class RepoNotificationService {
 	public void synchronize(String repositoryURL) throws Exception {
 
 		log.info(" repository URL received : " + repositoryURL);
-		List<CartridgeSubscription> subscription = PersistenceManager.getSubscription(repositoryURL);
-		for (CartridgeSubscription cartridgeSubscription : subscription) {			
-			handleRepoSynch(cartridgeSubscription);   
+		List<CartridgeSubscriptionInfo> subscription = PersistenceManager.getSubscription(repositoryURL);
+		for (CartridgeSubscriptionInfo cartridgeSubscriptionInfo : subscription) {
+			handleRepoSynch(cartridgeSubscriptionInfo);
         }
 	}
 
-	private void handleRepoSynch(CartridgeSubscription subscription) throws Exception {
+	private void handleRepoSynch(CartridgeSubscriptionInfo subscription) throws Exception {
 		if (subscription == null) {
 			throw new Exception("Cannot synchronize repository. subscription is null");
 		}
@@ -107,7 +107,7 @@ public class RepoNotificationService {
 		} else {
 
 			// Query DB and get all the IP s for this tenant 
-			// Invoke update-instance script
+			// Invoke update-subscription script
 			
 			String appPath = subscription.getBaseDirectory();
 			String cartridgePrivateKey = System.getProperty(CartridgeConstants.CARTRIDGE_KEY);
@@ -136,10 +136,10 @@ public class RepoNotificationService {
 					for (String instanceIp : activeIpArray) {
 						String command =
 						                 CarbonUtils.getCarbonHome() + File.separator + "bin" +
-						                         File.separator + "update-instance.sh " +
+						                         File.separator + "update-subscription.sh " +
 						                         instanceIp + " " + appPath + " " +
 						                         cartridgePrivateKey + " /";
-						log.info("Update instance command.... " + command);
+						log.info("Update subscription command.... " + command);
 						Process proc = Runtime.getRuntime().exec(command);
 						proc.waitFor();
 					}

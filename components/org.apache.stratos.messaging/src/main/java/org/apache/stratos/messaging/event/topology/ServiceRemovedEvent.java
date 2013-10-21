@@ -25,7 +25,8 @@ import java.io.Serializable;
  * This event is fired by Cloud Controller when a service is removed from a topology.
  */
 public class ServiceRemovedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = -4835613174531768139L;
+	private String serviceName;
 
     public String getServiceName() {
         return serviceName;

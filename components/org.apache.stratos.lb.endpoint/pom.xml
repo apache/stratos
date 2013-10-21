@@ -74,6 +74,33 @@
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.databridge.commons.thrift</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        
+		<dependency>
+		  <groupId>org.apache.thrift</groupId>
+		  <artifactId>libthrift</artifactId>
+		  <version>0.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<version>1.6</version>
+		</dependency>
+        
     </dependencies>
 
     <build>
@@ -95,12 +122,11 @@
                         <Export-Package>
                             org.apache.stratos.lb.endpoint.endpoint,
                             org.apache.stratos.lb.endpoint,
-                            org.apache.stratos.lb.endpoint.util,
+                            org.apache.stratos.lb.endpoint.topology,
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.lb.endpoint.endpoint,
                             !org.apache.stratos.lb.endpoint,
-                            org.apache.stratos.lb.common.*; version=${project.version},
                             org.wso2.carbon.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>

@@ -19,40 +19,73 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Member;
-
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.stratos.messaging.domain.topology.Port;
 
 /**
  * This event is fired by Cloud Controller when a member has started it's server and
  * applications are ready to serve the incoming requests.
  */
 public class MemberActivatedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = 5493702477320416932L;
+	private String serviceName;
     private String clusterId;
     private String memberId;
+    private Map<String, Port> portMap;
+    private String memberIp;
 
+    public MemberActivatedEvent(String serviceName, String clusterId, String memberId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.memberId = memberId;
+    	this.portMap = new HashMap<String, Port>();
+    }
+    
     public String getServiceName() {
         return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public String getMemberId() {
         return memberId;
     }
+    
+    public Collection<Port> getPorts() {
+        return portMap.values();
+    }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public void addPort(Port port) {
+        this.portMap.put(port.getProtocol(), port);
+    }
+
+    public void removePort(Port port) {
+        this.portMap.remove(port.getProtocol());
+    }
+
+    public void removePort(String portName) {
+        this.portMap.remove(portName);
+    }
+
+    public boolean portExists(Port port) {
+        return this.portMap.containsKey(port.getProtocol());
+    }
+
+    public Port getPort(String portName) {
+        return this.portMap.get(portName);
+    }
+
+	public String getMemberIp() {
+	    return memberIp;
+    }
+
+	public void setMemberIp(String memberIp) {
+	    this.memberIp = memberIp;
     }
 }

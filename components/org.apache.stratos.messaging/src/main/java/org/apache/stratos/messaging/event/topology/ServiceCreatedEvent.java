@@ -26,10 +26,11 @@ import java.util.Properties;
  * This event is fired by Cloud Controller when a service is added to a topology.
  */
 public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = 3480876570877127669L;
+	private String serviceName;
     private Properties properties;
 
-    public void setServiceName(String serviceName) {
+    public ServiceCreatedEvent(String serviceName) {
         this.serviceName = serviceName;
     }
 

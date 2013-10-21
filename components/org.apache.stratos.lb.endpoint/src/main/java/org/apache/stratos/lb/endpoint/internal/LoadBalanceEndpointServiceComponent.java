@@ -23,7 +23,8 @@ import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.lb.endpoint.LoadBalancerContext;
 import org.apache.stratos.lb.endpoint.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.lb.endpoint.topology.TopologyEventMessageProcessor;
+import org.apache.stratos.lb.endpoint.mediators.ResponseInterceptor;
+import org.apache.stratos.lb.endpoint.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.lb.endpoint.endpoint.TenantAwareLoadBalanceEndpoint;
 import org.apache.stratos.lb.endpoint.topology.TopologyEventMessageReceiver;
 import org.apache.commons.logging.Log;
@@ -39,6 +40,7 @@ import org.apache.synapse.endpoints.Endpoint;
 import org.apache.synapse.mediators.base.SequenceMediator;
 import org.apache.synapse.mediators.builtin.SendMediator;
 import org.apache.synapse.mediators.filters.InMediator;
+import org.apache.synapse.mediators.filters.OutMediator;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
 import org.wso2.carbon.mediation.initializer.ServiceBusConstants;
@@ -140,6 +142,26 @@ public class LoadBalanceEndpointServiceComponent {
                         }
                     }
                 }
+                
+                // find the OutMediator
+                if (child instanceof OutMediator) {
+
+                    OutMediator outSequence = (OutMediator) child;
+
+                    // if the first child of OutMediator isn't an ResponseInterceptor
+                    if (!(outSequence.getList().get(0) instanceof ResponseInterceptor)) {
+
+                        // we gonna add it!
+                        outSequence.getList().add(0, new ResponseInterceptor());
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Added Mediator: " + outSequence.getChild(0) + "" +
+                                    " to OutMediator. Number of child mediators in OutMediator" +
+                                    " is " + outSequence.getList().size() + ".");
+                        }
+
+                    }
+                }
             }
 
             if (!successfullyRegistered) {
@@ -158,7 +180,7 @@ public class LoadBalanceEndpointServiceComponent {
             }
 
             // Start topology message receiver thread
-            Thread receiverThread = new Thread(new TopologyEventMessageProcessor());
+            Thread receiverThread = new Thread(new TopologyEventMessageDelegator());
             receiverThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Topology message processor thread started");

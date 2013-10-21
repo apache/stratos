@@ -23,7 +23,7 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
 import org.apache.stratos.adc.mgt.dao.RepositoryCredentials;
@@ -150,9 +150,9 @@ public class PersistenceManager {
 		}
 	}
 
-	public static List<CartridgeSubscription> retrieveSubscribedCartridges(int tenantId) throws Exception {
+	public static List<CartridgeSubscriptionInfo> retrieveSubscribedCartridges(int tenantId) throws Exception {
 
-		List<CartridgeSubscription> subscribedCartridgeList = new ArrayList<CartridgeSubscription>();
+		List<CartridgeSubscriptionInfo> subscribedCartridgeList = new ArrayList<CartridgeSubscriptionInfo>();
 		Connection con = null;
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -172,7 +172,7 @@ public class PersistenceManager {
 			}
 			resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				CartridgeSubscription cartridge = new CartridgeSubscription();
+				CartridgeSubscriptionInfo cartridge = new CartridgeSubscriptionInfo();
 				cartridge.setAlias(resultSet.getString("ALIAS"));
 				cartridge.setCartridge(resultSet.getString("CARTRIDGE"));
 				cartridge.setState(resultSet.getString("STATE"));
@@ -309,7 +309,7 @@ public class PersistenceManager {
 		return aliasAlreadyTaken;
 	}
 
-	public static int persistSubscription(CartridgeSubscription cartridgeSubscription) throws Exception {
+	public static int persistSubscription(CartridgeSubscriptionInfo cartridgeSubscriptionInfo) throws Exception {
 
 		int cartridgeSubscriptionId = 0;
 		int repoId = 0;
@@ -325,16 +325,16 @@ public class PersistenceManager {
 		try {
 			con = StratosDBUtils.getConnection();
 			// persist repo
-			if (cartridgeSubscription.getRepository() != null) {
-				String encryptedRepoUserPassword = encryptPassword(cartridgeSubscription.getRepository()
+			if (cartridgeSubscriptionInfo.getRepository() != null) {
+				String encryptedRepoUserPassword = encryptPassword(cartridgeSubscriptionInfo.getRepository()
 						.getPassword());
 				String insertRepo = "INSERT INTO REPOSITORY (REPO_NAME,STATE,REPO_USER_NAME,REPO_USER_PASSWORD)"
 						+ " VALUES (?,?,?,?)";
 
 				insertRepoStmt = con.prepareStatement(insertRepo, Statement.RETURN_GENERATED_KEYS);
-				insertRepoStmt.setString(1, cartridgeSubscription.getRepository().getUrl());
+				insertRepoStmt.setString(1, cartridgeSubscriptionInfo.getRepository().getUrl());
 				insertRepoStmt.setString(2, "ACTIVE");
-				insertRepoStmt.setString(3, cartridgeSubscription.getRepository().getUserName());
+				insertRepoStmt.setString(3, cartridgeSubscriptionInfo.getRepository().getUserName());
 				insertRepoStmt.setString(4, encryptedRepoUserPassword);
 				if (log.isDebugEnabled()) {
 					log.debug("Executing insert: " + insertRepo);
@@ -348,13 +348,13 @@ public class PersistenceManager {
 			}
 
 			// persist data cartridge
-			if (cartridgeSubscription.getDataCartridge() != null) {
+			if (cartridgeSubscriptionInfo.getDataCartridge() != null) {
 				String insertDataCartridge = "INSERT INTO DATA_CARTRIDGE (TYPE,USER_NAME,PASSWORD,STATE)"
 						+ " VALUES (?,?,?,?)";
 				insertDataCartStmt = con.prepareStatement(insertDataCartridge, Statement.RETURN_GENERATED_KEYS);
-				insertDataCartStmt.setString(1, cartridgeSubscription.getDataCartridge().getDataCartridgeType());
-				insertDataCartStmt.setString(2, cartridgeSubscription.getDataCartridge().getUserName());
-				insertDataCartStmt.setString(3, cartridgeSubscription.getDataCartridge().getPassword());
+				insertDataCartStmt.setString(1, cartridgeSubscriptionInfo.getDataCartridge().getDataCartridgeType());
+				insertDataCartStmt.setString(2, cartridgeSubscriptionInfo.getDataCartridge().getUserName());
+				insertDataCartStmt.setString(3, cartridgeSubscriptionInfo.getDataCartridge().getPassword());
 				insertDataCartStmt.setString(4, "ACTIVE");
 				if (log.isDebugEnabled()) {
 					log.debug("Executing insert: " + insertDataCartridge);
@@ -373,19 +373,19 @@ public class PersistenceManager {
 					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 			insertSubscriptionStmt = con.prepareStatement(insertSubscription, Statement.RETURN_GENERATED_KEYS);
-			insertSubscriptionStmt.setInt(1, cartridgeSubscription.getTenantId());
-			insertSubscriptionStmt.setString(2, cartridgeSubscription.getCartridge());
-			insertSubscriptionStmt.setString(3, cartridgeSubscription.getProvider());
-			insertSubscriptionStmt.setString(4, cartridgeSubscription.getHostName());
-			insertSubscriptionStmt.setString(5, cartridgeSubscription.getPolicy());
-			insertSubscriptionStmt.setString(6, cartridgeSubscription.getClusterDomain());
-			insertSubscriptionStmt.setString(7, cartridgeSubscription.getClusterSubdomain());
-			insertSubscriptionStmt.setString(8, cartridgeSubscription.getMgtClusterDomain());
-			insertSubscriptionStmt.setString(9, cartridgeSubscription.getMgtClusterSubDomain());
-			insertSubscriptionStmt.setString(10, cartridgeSubscription.getState());
-			insertSubscriptionStmt.setString(11, cartridgeSubscription.getAlias());
-			insertSubscriptionStmt.setString(12, cartridgeSubscription.getTenantDomain());
-			insertSubscriptionStmt.setString(13, cartridgeSubscription.getBaseDirectory());
+			insertSubscriptionStmt.setInt(1, cartridgeSubscriptionInfo.getTenantId());
+			insertSubscriptionStmt.setString(2, cartridgeSubscriptionInfo.getCartridge());
+			insertSubscriptionStmt.setString(3, cartridgeSubscriptionInfo.getProvider());
+			insertSubscriptionStmt.setString(4, cartridgeSubscriptionInfo.getHostName());
+			insertSubscriptionStmt.setString(5, cartridgeSubscriptionInfo.getPolicy());
+			insertSubscriptionStmt.setString(6, cartridgeSubscriptionInfo.getClusterDomain());
+			insertSubscriptionStmt.setString(7, cartridgeSubscriptionInfo.getClusterSubdomain());
+			insertSubscriptionStmt.setString(8, cartridgeSubscriptionInfo.getMgtClusterDomain());
+			insertSubscriptionStmt.setString(9, cartridgeSubscriptionInfo.getMgtClusterSubDomain());
+			insertSubscriptionStmt.setString(10, cartridgeSubscriptionInfo.getState());
+			insertSubscriptionStmt.setString(11, cartridgeSubscriptionInfo.getAlias());
+			insertSubscriptionStmt.setString(12, cartridgeSubscriptionInfo.getTenantDomain());
+			insertSubscriptionStmt.setString(13, cartridgeSubscriptionInfo.getBaseDirectory());
 			insertSubscriptionStmt.setInt(14, repoId);
 			insertSubscriptionStmt.setInt(15, dataCartridgeId);
 			if (log.isDebugEnabled()) {
@@ -397,7 +397,7 @@ public class PersistenceManager {
 				cartridgeSubscriptionId = res.getInt(1);
 			}
 
-			List<PortMapping> portMapping = cartridgeSubscription.getPortMappings();
+			List<PortMapping> portMapping = cartridgeSubscriptionInfo.getPortMappings();
 			// persist port map
 			if (portMapping != null && !portMapping.isEmpty()) {
 				for (PortMapping portMap : portMapping) {
@@ -469,9 +469,9 @@ public class PersistenceManager {
 		return hostName;
 	}
 
-	public static CartridgeSubscription getSubscription(String tenantDomain, String alias) throws Exception {
+	public static CartridgeSubscriptionInfo getSubscription(String tenantDomain, String alias) throws Exception {
 
-		CartridgeSubscription cartridgeSubscription = null;
+		CartridgeSubscriptionInfo cartridgeSubscriptionInfo = null;
 		Connection con = null;
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -489,8 +489,8 @@ public class PersistenceManager {
 			}
 			resultSet = statement.executeQuery();
 			if (resultSet.next()) {
-				cartridgeSubscription = new CartridgeSubscription();
-				populateSubscription(cartridgeSubscription, resultSet);
+				cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
+				populateSubscription(cartridgeSubscriptionInfo, resultSet);
 			}
 		} catch (Exception s) {
 			String msg = "Error while sql connection :" + s.getMessage();
@@ -500,16 +500,16 @@ public class PersistenceManager {
 			StratosDBUtils.closeAllConnections(con, statement, resultSet);
 		}
 
-		return cartridgeSubscription;
+		return cartridgeSubscriptionInfo;
 	}
 
-	private static void populateSubscription(CartridgeSubscription cartridgeSubscription, ResultSet resultSet)
+	private static void populateSubscription(CartridgeSubscriptionInfo cartridgeSubscriptionInfo, ResultSet resultSet)
 			throws Exception {
 		String repoName = resultSet.getString("REPO_NAME");
 		if (repoName != null) {
 			Repository repo = new Repository();
 			repo.setUrl(repoName);
-			cartridgeSubscription.setRepository(repo);
+			cartridgeSubscriptionInfo.setRepository(repo);
 		}
 
 		int dataCartridgeId = resultSet.getInt("DATA_CARTRIDGE_ID");
@@ -518,24 +518,24 @@ public class PersistenceManager {
 			dataCartridge.setDataCartridgeType(resultSet.getString("TYPE"));
 			dataCartridge.setPassword(resultSet.getString("PASSWORD"));
 			dataCartridge.setUserName(resultSet.getString("USER_NAME"));
-			cartridgeSubscription.setDataCartridge(dataCartridge);
+			cartridgeSubscriptionInfo.setDataCartridge(dataCartridge);
 		}
-		cartridgeSubscription.setPortMappings(getPortMappings(resultSet.getInt("SUBSCRIPTION_ID")));
-		cartridgeSubscription.setTenantId(resultSet.getInt("TENANT_ID"));
-		cartridgeSubscription.setState(resultSet.getString("STATE"));
-		cartridgeSubscription.setPolicy(resultSet.getString("POLICY"));
-		cartridgeSubscription.setCartridge(resultSet.getString("CARTRIDGE"));
-		cartridgeSubscription.setAlias(resultSet.getString("ALIAS"));
-		cartridgeSubscription.setClusterDomain(resultSet.getString("CLUSTER_DOMAIN"));
-		cartridgeSubscription.setClusterSubdomain(resultSet.getString("CLUSTER_SUBDOMAIN"));
-		cartridgeSubscription.setMgtClusterDomain(resultSet.getString("MGT_DOMAIN"));
-		cartridgeSubscription.setMgtClusterSubDomain(resultSet.getString("MGT_SUBDOMAIN"));
-		cartridgeSubscription.setProvider(resultSet.getString("PROVIDER"));
-		cartridgeSubscription.setHostName(resultSet.getString("HOSTNAME"));
-		cartridgeSubscription.setTenantDomain(resultSet.getString("TENANT_DOMAIN"));
-		cartridgeSubscription.setBaseDirectory(resultSet.getString("BASE_DIR"));
-		cartridgeSubscription.setSubscriptionId(resultSet.getInt("SUBSCRIPTION_ID"));
-		cartridgeSubscription.setMappedDomain(resultSet.getString("MAPPED_DOMAIN"));
+		cartridgeSubscriptionInfo.setPortMappings(getPortMappings(resultSet.getInt("SUBSCRIPTION_ID")));
+		cartridgeSubscriptionInfo.setTenantId(resultSet.getInt("TENANT_ID"));
+		cartridgeSubscriptionInfo.setState(resultSet.getString("STATE"));
+		cartridgeSubscriptionInfo.setPolicy(resultSet.getString("POLICY"));
+		cartridgeSubscriptionInfo.setCartridge(resultSet.getString("CARTRIDGE"));
+		cartridgeSubscriptionInfo.setAlias(resultSet.getString("ALIAS"));
+		cartridgeSubscriptionInfo.setClusterDomain(resultSet.getString("CLUSTER_DOMAIN"));
+		cartridgeSubscriptionInfo.setClusterSubdomain(resultSet.getString("CLUSTER_SUBDOMAIN"));
+		cartridgeSubscriptionInfo.setMgtClusterDomain(resultSet.getString("MGT_DOMAIN"));
+		cartridgeSubscriptionInfo.setMgtClusterSubDomain(resultSet.getString("MGT_SUBDOMAIN"));
+		cartridgeSubscriptionInfo.setProvider(resultSet.getString("PROVIDER"));
+		cartridgeSubscriptionInfo.setHostName(resultSet.getString("HOSTNAME"));
+		cartridgeSubscriptionInfo.setTenantDomain(resultSet.getString("TENANT_DOMAIN"));
+		cartridgeSubscriptionInfo.setBaseDirectory(resultSet.getString("BASE_DIR"));
+		cartridgeSubscriptionInfo.setSubscriptionId(resultSet.getInt("SUBSCRIPTION_ID"));
+		cartridgeSubscriptionInfo.setMappedDomain(resultSet.getString("MAPPED_DOMAIN"));
 	}
 
 	private static List<PortMapping> getPortMappings(int subscriptionId) throws Exception {
@@ -604,9 +604,9 @@ public class PersistenceManager {
 		}
 	}
 
-	public static List<CartridgeSubscription> getSubscription(String repositoryURL) throws Exception {
+	public static List<CartridgeSubscriptionInfo> getSubscription(String repositoryURL) throws Exception {
 
-		List<CartridgeSubscription> subscriptionList = new ArrayList<CartridgeSubscription>();
+		List<CartridgeSubscriptionInfo> subscriptionList = new ArrayList<CartridgeSubscriptionInfo>();
 		Connection con = null;
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -622,9 +622,9 @@ public class PersistenceManager {
 			}
 			resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				CartridgeSubscription cartridgeSubscription = new CartridgeSubscription();
-				populateSubscription(cartridgeSubscription, resultSet);
-				subscriptionList.add(cartridgeSubscription);
+				CartridgeSubscriptionInfo cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
+				populateSubscription(cartridgeSubscriptionInfo, resultSet);
+				subscriptionList.add(cartridgeSubscriptionInfo);
 			}
 		} catch (Exception s) {
 			String msg = "Error while sql connection :" + s.getMessage();
@@ -636,9 +636,9 @@ public class PersistenceManager {
 		return subscriptionList;
 	}
 
-    public static List<CartridgeSubscription> getSubscriptionsForTenant (int tenantId) throws Exception {
+    public static List<CartridgeSubscriptionInfo> getSubscriptionsForTenant (int tenantId) throws Exception {
 
-        List<CartridgeSubscription> cartridgeSubscriptions = null;
+        List<CartridgeSubscriptionInfo> cartridgeSubscriptionInfos = null;
         Connection con = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -655,11 +655,11 @@ public class PersistenceManager {
             }
 
             resultSet = statement.executeQuery();
-            cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+            cartridgeSubscriptionInfos = new ArrayList<CartridgeSubscriptionInfo>();
             if (resultSet.next()) {
-                CartridgeSubscription cartridgeSubscription = new CartridgeSubscription();
-                populateSubscription(cartridgeSubscription, resultSet);
-                cartridgeSubscriptions.add(cartridgeSubscription);
+                CartridgeSubscriptionInfo cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
+                populateSubscription(cartridgeSubscriptionInfo, resultSet);
+                cartridgeSubscriptionInfos.add(cartridgeSubscriptionInfo);
             }
         } catch (Exception s) {
             String msg = "Error while sql connection :" + s.getMessage();
@@ -670,7 +670,7 @@ public class PersistenceManager {
             StratosDBUtils.closeAllConnections(con, statement, resultSet);
         }
 
-        return cartridgeSubscriptions;
+        return cartridgeSubscriptionInfos;
     }
 
 

@@ -25,31 +25,26 @@ import java.io.Serializable;
  * This event is fired by Cloud Controller when a member is terminated.
  */
 public class MemberTerminatedEvent extends TopologyEvent implements Serializable {
-    private String serviceName;
+    private static final long serialVersionUID = -7899511757547631157L;
+	private String serviceName;
     private String clusterId;
     private String memberId;
 
-    public String getServiceName() {
-        return serviceName;
+    public MemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.memberId = memberId;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public String getServiceName() {
+        return serviceName;
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public String getMemberId() {
         return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
     }
 }

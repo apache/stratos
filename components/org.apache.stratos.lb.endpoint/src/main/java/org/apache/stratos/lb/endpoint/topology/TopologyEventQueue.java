@@ -22,10 +22,12 @@ package org.apache.stratos.lb.endpoint.topology;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.jms.TextMessage;
+
 /**
  * Implements topology event queue.
  */
-public class TopologyEventQueue extends LinkedBlockingQueue<String>{
+public class TopologyEventQueue extends LinkedBlockingQueue<TextMessage>{
     private static volatile TopologyEventQueue instance;
 
     private TopologyEventQueue(){

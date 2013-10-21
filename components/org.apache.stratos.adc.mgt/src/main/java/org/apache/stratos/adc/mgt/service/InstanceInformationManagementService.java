@@ -29,7 +29,7 @@ public class InstanceInformationManagementService {
     private static final Log log = LogFactory.getLog(InstanceInformationManagementService.class);
 
     /**
-    * Everytime an instance is started up, this operation is invoked
+    * Everytime an subscription is started up, this operation is invoked
     *            (by the AgentService)
     * @param instanceIp
     * @param tenantId
@@ -52,7 +52,7 @@ public class InstanceInformationManagementService {
       try {
         PersistenceManager.persistCartridgeInstanceInfo(instanceIp, clusterDomain, clusterSubDomain, cartridge, state);
     } catch (Exception e) {
-       log.error("Exception is occurred in updating instance state. Reason, " + e.getMessage());
+       log.error("Exception is occurred in updating subscription state. Reason, " + e.getMessage());
     }
     }
 }

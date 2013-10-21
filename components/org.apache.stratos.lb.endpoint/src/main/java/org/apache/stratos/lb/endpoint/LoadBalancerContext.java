@@ -29,10 +29,9 @@ import org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Defines load balancer context information.
@@ -48,9 +47,16 @@ public class LoadBalancerContext {
     private UserRegistry configRegistry;
     private UserRegistry governanceRegistry;
     private DependencyManagementService dependencyManager;
-    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServices = new HashMap<Integer, SynapseEnvironmentService>();
+    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServices;
+
+    private Map<String, ServiceContext> serviceContextMap;
+    private Map<String, ClusterContext> clusterContextMap;
 
     private LoadBalancerContext() {
+        synapseEnvironmentServices = new HashMap<Integer, SynapseEnvironmentService>();
+
+        serviceContextMap = new HashMap<String, ServiceContext>();
+        clusterContextMap = new HashMap<String, ClusterContext>();
     }
 
     public static synchronized LoadBalancerContext getInstance() {
@@ -129,8 +135,7 @@ public class LoadBalancerContext {
         return synapseEnvironmentServices.get(id);
     }
 
-    public void addSynapseEnvironmentService(int id,
-                                             SynapseEnvironmentService synapseEnvironmentService) {
+    public void addSynapseEnvironmentService(int id, SynapseEnvironmentService synapseEnvironmentService) {
         synapseEnvironmentServices.put(id, synapseEnvironmentService);
     }
 
@@ -148,5 +153,29 @@ public class LoadBalancerContext {
 
     public void setConfigCtxt(ConfigurationContext configCtxt) {
         this.configCtxt = configCtxt;
+    }
+
+    public Collection<ServiceContext> getServiceContexts() {
+        return serviceContextMap.values();
+    }
+
+    public ServiceContext getServiceContext(String serviceName) {
+        return serviceContextMap.get(serviceName);
+    }
+
+    public void addServiceContext(ServiceContext serviceContext) {
+        serviceContextMap.put(serviceContext.getServiceName(), serviceContext);
+    }
+
+    public Collection<ClusterContext> getClusterContexts() {
+        return clusterContextMap.values();
+    }
+
+    public ClusterContext getClusterContext(String clusterId) {
+        return clusterContextMap.get(clusterId);
+    }
+
+    public void addClusterContext(ClusterContext clusterContext) {
+        clusterContextMap.put(clusterContext.getClusterId(), clusterContext);
     }
 }
