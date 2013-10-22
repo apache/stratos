@@ -442,36 +442,9 @@ if [[ $sc = "true" ]]; then
 
     echo "Creating userstore database"
     mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/userstore.sql
-    #mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/registry.sql   #registry schema is only for AF
     
     echo "Creating stratos_foundation database"
     mysql -u$stratos_foundation_db_user -p$stratos_foundation_db_pass < $resource_path/stratos_foundation.sql
-
-    #mysql -u$billing_db_username -p$billing_db_password < $resource_path/billing-mysql.sql
-
-    #mysql -u$billing_db_username -p$billing_db_password < $resource_path/metering_mysql.sql
-
-    #Namespace Binding
-    # -----------------------------------------------
-    echo "bind Namespaces" >> $LOG
-    #apt-get install bind9 zip
-    #Copy the /db.stratos.com file into /etc/bind. Edit it as necessary
-    #cp -f ./resources/db.stratos.com $resource_path/db.$stratos_domain
-    #echo "Set ELb Hostname in /etc/bind/db.stratos.com" >> $LOG
-    #cat $resource_path/db.$stratos_domain | sed -e "s@SC_HOSTNAME@$sc_hostname@g" | sed -e "s@ELB_IP@$elb_ip@g" | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > /etc/bind/db.$stratos_domain
-
-    #echo "Add the following content to /etc/bind/named.conf.local" >> $LOG
-    #echo "zone \"$stratos_domain\" {" >> /etc/bind/named.conf.local
-    #echo "      type master;" >> /etc/bind/named.conf.local
-    #echo "      file \"/etc/bind/db.$stratos_domain\";" >> /etc/bind/named.conf.local
-    #echo "};" >> /etc/bind/named.conf.local
-
-    #Copy https://svn.wso2.org/repos/wso2/scratch/hosting/build/tropos/resources/append_zone_file.sh into /opt/scripts folder
-    if [[ ! -d $stratos_path/scripts ]]; then
-        mkdir -p $stratos_path/scripts
-    fi
-    cp -f ./scripts/add_entry_zone_file.sh $stratos_path/scripts/add_entry_zone_file.sh
-    cp -f ./scripts/remove_entry_zone_file.sh $stratos_path/scripts/remove_entry_zone_file.sh
 
 
     echo "End configuring the SC"
@@ -489,8 +462,8 @@ if [[ $cc = "true" ]]; then
     fi
 
     #cp -f ./config/cc/bin/stratos.sh $cc_path/bin/
-    cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/cloud-controller.conf
-    cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/carbon.xml
+    cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/
+    cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
 
     #MB specific file copying
     #cp -f ./config/cc/repository/conf/advanced/qpid-virtualhosts.xml $cc_path/repository/conf/advanced/
@@ -532,10 +505,10 @@ if [[ $cc = "true" ]]; then
     # </iaasProvider>
     # </iaasProviders>
 
-    if [[ $ec2_provider_enabled = true ]]; then
+    if [[ $ec2_provider_enabled = "true" ]]; then
         ./ec2.sh
     fi
-    if [[ $openstack_provider_enabled = true ]]; then
+    if [[ $openstack_provider_enabled = "true" ]]; then
         ./openstack.sh
     fi
 
@@ -714,10 +687,10 @@ fi
 
 # Configure cartridges
 # ---------------------------------------------------------
-if [[ "$openstack_provider_enabled" = "true" ]]; then
+if [[ $openstack_provider_enabled = "true" ]]; then
     ./openstack-cartridge.sh
 fi
-if [[ "$ec2_provider_enabled" = "true" ]]; then
+if [[ $ec2_provider_enabled = "true" ]]; then
     ./ec2-cartridge.sh
 fi
 
