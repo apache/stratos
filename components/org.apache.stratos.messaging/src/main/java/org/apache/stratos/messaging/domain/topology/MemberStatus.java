@@ -23,5 +23,5 @@ package org.apache.stratos.messaging.domain.topology;
  * Represents status of a member during its lifecycle.
  */
 public enum MemberStatus {
-    Starting, Activated, Suspended, Terminated
+    Created, Starting, Activated, Suspended, Terminated
 }

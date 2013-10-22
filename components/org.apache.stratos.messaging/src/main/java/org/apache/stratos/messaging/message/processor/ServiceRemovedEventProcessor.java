@@ -25,13 +25,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceRemovedEventProcessor implements MessageProcessor {
+public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(ServiceRemovedEventProcessor.class);
-	private MessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(MessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 
@@ -40,9 +40,8 @@ public class ServiceRemovedEventProcessor implements MessageProcessor {
 		try {
 			if (ServiceRemovedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				ServiceRemovedEvent event =
-				                            (ServiceRemovedEvent) Util.jsonToObject(message,
-				                                                                    ServiceRemovedEvent.class);
+				ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
+
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
@@ -56,7 +55,6 @@ public class ServiceRemovedEventProcessor implements MessageProcessor {
 				if (log.isInfoEnabled()) {
 					log.info(String.format("Service %s removed", event.getServiceName()));
 				}
-
 				return true;
 
 			} else {
@@ -75,8 +73,6 @@ public class ServiceRemovedEventProcessor implements MessageProcessor {
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
-
 }

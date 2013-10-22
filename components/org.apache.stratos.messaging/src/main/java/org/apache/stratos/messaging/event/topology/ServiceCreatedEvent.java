@@ -30,7 +30,7 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 	private String serviceName;
     private Properties properties;
 
-    public void setServiceName(String serviceName) {
+    public ServiceCreatedEvent(String serviceName) {
         this.serviceName = serviceName;
     }
 

@@ -172,6 +172,7 @@
 							*;resolution:=optional
                         </Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
+						<Axis2Deployer>PolicyDeployer</Axis2Deployer>
 						<Embed-Dependency>*;scope=compile|runtime;artifactId=!org.wso2.carbon.utils|org.apache.stratos.messaging</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 					</instructions>

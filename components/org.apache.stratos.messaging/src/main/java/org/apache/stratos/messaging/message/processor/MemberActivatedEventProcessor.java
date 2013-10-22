@@ -28,13 +28,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberActivatedEventProcessor implements MessageProcessor {
+public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
-	private MessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(MessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 
@@ -43,29 +43,23 @@ public class MemberActivatedEventProcessor implements MessageProcessor {
 		try {
 			if (MemberActivatedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberActivatedEvent event =
-				                             (MemberActivatedEvent) Util.jsonToObject(message,
-				                                                                      MemberActivatedEvent.class);
-				// Validate event against the existing topology
+				MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
 
+				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
+					throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
 				}
 				Cluster cluster = service.getCluster(event.getClusterId());
 				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist",
-					                                         event.getClusterId()));
+					throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
 				}
 				Member member = cluster.getMember(event.getMemberId());
 				if (member == null) {
-					throw new RuntimeException(String.format("Member %s does not exist",
-					                                         event.getMemberId()));
+					throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
 				}
 				if (member.getStatus() == MemberStatus.Activated) {
-					throw new RuntimeException(
-					                           String.format("Member %s of cluster %s of service %s is already activated",
+					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already activated",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
@@ -94,8 +88,7 @@ public class MemberActivatedEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}

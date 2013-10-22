@@ -38,7 +38,10 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     private Map<String, Port> portMap;
     private String memberIp;
 
-    public MemberActivatedEvent() {
+    public MemberActivatedEvent(String serviceName, String clusterId, String memberId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.memberId = memberId;
     	this.portMap = new HashMap<String, Port>();
     }
     
@@ -46,8 +49,12 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public String getMemberId() {
+        return memberId;
     }
     
     public Collection<Port> getPorts() {
@@ -72,22 +79,6 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     public Port getPort(String portName) {
         return this.portMap.get(portName);
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public String getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
     }
 
 	public String getMemberIp() {

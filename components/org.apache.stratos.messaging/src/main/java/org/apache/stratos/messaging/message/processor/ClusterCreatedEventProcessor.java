@@ -26,13 +26,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterCreatedEventProcessor implements MessageProcessor {
+public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
-	private MessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(MessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 
@@ -41,9 +41,7 @@ public class ClusterCreatedEventProcessor implements MessageProcessor {
 		try {
 			if (ClusterCreatedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				ClusterCreatedEvent event =
-				                            (ClusterCreatedEvent) Util.jsonToObject(message,
-				                                                                    ClusterCreatedEvent.class);
+				ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
@@ -51,15 +49,14 @@ public class ClusterCreatedEventProcessor implements MessageProcessor {
 					                                         event.getServiceName()));
 				}
 				if (service.clusterExists(event.getClusterId())) {
-					throw new RuntimeException(
-					                           String.format("Cluster %s already exists in service %s",
+					throw new RuntimeException(String.format("Cluster %s already exists in service %s",
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
 				}
 
 				// Apply changes to the topology
-				Cluster cluster = new Cluster();
-				cluster.setClusterId(event.getClusterId());
+				Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(),
+                        event.getAutoscalingPolicyName());
 				cluster.setHostName(event.getHostName());
 				cluster.setTenantRange(event.getTenantRange());
 
@@ -82,12 +79,10 @@ public class ClusterCreatedEventProcessor implements MessageProcessor {
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message, topology);
 			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
 				                                         message, type));
 			}
 		}
 		return false;
 	}
-
 }

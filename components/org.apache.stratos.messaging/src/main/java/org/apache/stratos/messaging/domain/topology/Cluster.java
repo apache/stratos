@@ -33,14 +33,22 @@ public class Cluster implements Serializable {
     private String clusterId;
     private String hostName;
     private String tenantRange;
+    private String autoscalePolicyName;
     private Cloud cloud;
     private Region region;
     private Zone zone;
+    private float averageRequestsInFlight;
+    private float requestsInFlightSecondDerivative;
+    private float requestsInFlightGradient;
+
     // Key: Member.memberId
     private Map<String, Member> memberMap;
     private Properties properties;
 
-    public Cluster() {
+    public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.autoscalePolicyName = autoscalePolicyName;
         this.memberMap = new HashMap<String, Member>();
     }
 
@@ -48,16 +56,8 @@ public class Cluster implements Serializable {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getClusterId() {
         return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
     }
 
     public String getHostName() {
@@ -127,6 +127,38 @@ public class Cluster implements Serializable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public String getAutoscalePolicyName() {
+        return autoscalePolicyName;
+    }
+
+    public void setAutoscalePolicyName(String autoscalePolicyName) {
+        this.autoscalePolicyName = autoscalePolicyName;
+    }
+
+    public float getAverageRequestsInFlight() {
+        return averageRequestsInFlight;
+    }
+
+    public void setAverageRequestsInFlight(float averageRequestsInFlight) {
+        this.averageRequestsInFlight = averageRequestsInFlight;
+    }
+
+    public float getRequestsInFlightSecondDerivative() {
+        return requestsInFlightSecondDerivative;
+    }
+
+    public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
+        this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
+    }
+
+    public float getRequestsInFlightGradient() {
+        return requestsInFlightGradient;
+    }
+
+    public void setRequestsInFlightGradient(float requestsInFlightGradient) {
+        this.requestsInFlightGradient = requestsInFlightGradient;
     }
 }
 
