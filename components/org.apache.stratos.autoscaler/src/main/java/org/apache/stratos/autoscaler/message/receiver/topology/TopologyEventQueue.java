@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.client.topology;
+package org.apache.stratos.autoscaler.message.receiver.topology;
 
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;

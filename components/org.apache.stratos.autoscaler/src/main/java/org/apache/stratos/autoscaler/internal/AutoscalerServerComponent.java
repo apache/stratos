@@ -20,7 +20,7 @@ package org.apache.stratos.autoscaler.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.TopicSubscriberManager;
+import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
 import org.osgi.service.component.ComponentContext;
 
@@ -40,17 +40,24 @@ public class AutoscalerServerComponent {
 		if (log.isInfoEnabled()) {
 			log.info("Autoscaler Server Component activated");
 		}
+
+        //Subscribe to all topics
         TopicSubscriberManager topicSubscriberManager = new TopicSubscriberManager();
         topicSubscriberManager.subscribeAllTopics();
         if (log.isDebugEnabled()) {
            log.debug("Topology event message receiver thread started");
         }
+
+        //Start scheduler for running rules
         ExecutorTaskScheduler executor = new ExecutorTaskScheduler();
         executor.start();
-//
+
         if (log.isInfoEnabled()) {
             log.info("Rules executor started");
         }
+
+
+
 
 	}
 

@@ -20,10 +20,9 @@ package org.apache.stratos.autoscaler.message.processor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.topology.TopologyManager;
+import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
 import org.apache.stratos.autoscaler.event.AverageRequestsInFlightEvent;
 import org.apache.stratos.autoscaler.event.SecondDerivativeOfRequestsInFlightEvent;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.util.Util;
 
@@ -51,11 +50,11 @@ public class SecondDerivativeOfRequestInFlightEventProcessor implements HealthSt
 
                 String clusterId = event.getClusterId();
                     //Get all values of services Map from topology
-                for (Service service : ((Map<String, Service>) TopologyManager.getTopology().getServices()).values())
+                for (Service service : ((Map<String, Service>) TopicSubscriberManager.getTopology().getServices()).values())
                 {
                     if(service.clusterExists(clusterId)){
 
-                        ((Map<String, Service>) TopologyManager.getTopology().getServices())
+                        ((Map<String, Service>) TopicSubscriberManager.getTopology().getServices())
                                 .get(service.getServiceName()).getCluster(clusterId)
                                 .setRequestsInFlightSecondDerivative(event.getValue());
                     }

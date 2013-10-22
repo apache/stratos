@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.client.health;
+package org.apache.stratos.autoscaler.message.receiver.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.processor.AverageRequestInFlightEventProcessor;
 import org.apache.stratos.autoscaler.message.processor.GradientOfRequestInFlightEventProcessor;
 import org.apache.stratos.autoscaler.message.processor.SecondDerivativeOfRequestInFlightEventProcessor;
+import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
@@ -62,10 +63,10 @@ public class HealthEventMessageDelegator implements Runnable {
 				}
 
 				try {
-					HealthStatManager.acquireWriteLock();
+					TopicSubscriberManager.acquireWriteLock();
 					processor1.process(type, json);
 				} finally {
-					HealthStatManager.releaseWriteLock();
+					TopicSubscriberManager.releaseWriteLock();
 				}
 
 			} catch (Exception e) {

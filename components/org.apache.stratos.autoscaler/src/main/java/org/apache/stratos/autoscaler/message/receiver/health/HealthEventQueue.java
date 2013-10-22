@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.client.health;
+package org.apache.stratos.autoscaler.message.receiver.health;
 
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
