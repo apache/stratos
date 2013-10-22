@@ -616,14 +616,16 @@ fi
 
 echo 'Updating /etc/hosts file with domain names' 
 cp -f /etc/hosts hosts.tmp 
- 
-echo "$ip $DOMAIN # stratos domain" >> hosts.tmp 
-echo "$ip mb.$DOMAIN # message broker hostname" >> hosts.tmp 
-echo "$ip cc.$DOMAIN # cloud controller hostname" >> hosts.tmp 
-echo "$ip sc.$DOMAIN # stratos controller hostname" >> hosts.tmp 
-echo "$ip elb.$DOMAIN # elastic load balancer hostname" >> hosts.tmp 
-echo "$ip agent.$DOMAIN # agent hostname" >> hosts.tmp 
- 
+
+echo "" >> hosts.tmp 
+echo "# Apache Stratos" >> hosts.tmp 
+echo "$hostip $stratos_domain # stratos domain" >> hosts.tmp 
+echo "$mb_ip mb.$stratos_domain # message broker hostname" >> hosts.tmp 
+echo "$cc_ip cc.$stratos_domain # cloud controller hostname" >> hosts.tmp 
+echo "$sc_ip sc.$stratos_domain # stratos controller hostname" >> hosts.tmp 
+echo "$elb_ip elb.$stratos_domain # elastic load balancer hostname" >> hosts.tmp 
+echo "$agent_ip agent.$stratos_domain # agent hostname" >> hosts.tmp 
+
 mv -f ./hosts.tmp /etc/hosts
 
 # Starting the servers
