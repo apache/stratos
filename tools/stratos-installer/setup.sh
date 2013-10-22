@@ -87,15 +87,11 @@ do
     if [[ $x = "sc" ]]; then
         sc="true"
     fi
-#   if [[ $x = "bam" ]]; then
-#       bam="true"
-#   fi
     if [[ $x = "all" ]]; then
         cc="true"
         elb="true"
         agent="true"
         sc="true"
-#       bam="true"
     fi
 done
 product_list=`echo $product_list | sed 's/^ *//g' | sed 's/ *$//g'`
@@ -197,10 +193,7 @@ function setup_validate {
             if [[ -z $git_user ]]; then
                 echo "Please specify the git user, because it will be needed to create an internal git repo"
             fi
-            if [[ -z $axis2c_path ]]; then
-                echo "Please specify the path to Axis2/C binary, because it will be needed to create an internal git repo"
-            fi
-
+            
             echo "$hostip    git.$stratos_domain" >> /etc/hosts
         fi
         if [[ ( -z $email|| -z $stratos_foundation_db_user || -z $stratos_foundation_db_pass || -z $hostname
@@ -291,9 +284,6 @@ if [[ $sc = "true" ]]; then
     if [[ ! -d $sc_path ]]; then
         unzip $sc_pack -d $stratos_path
     fi
-    #if [[ ! -d $axis2c_path ]]; then
-      #  unzip $axis2c_pack -d $stratos_path
-    #fi
 fi
 if [[ $elb = "true" ]]; then
     if [[ ! -d $elb_path ]]; then
@@ -499,8 +489,8 @@ if [[ $cc = "true" ]]; then
     fi
 
     #cp -f ./config/cc/bin/stratos.sh $cc_path/bin/
-    cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/
-    cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
+    cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/cloud-controller.conf
+    cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/carbon.xml
 
     #MB specific file copying
     #cp -f ./config/cc/repository/conf/advanced/qpid-virtualhosts.xml $cc_path/repository/conf/advanced/
