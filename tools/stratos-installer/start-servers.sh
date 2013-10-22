@@ -27,7 +27,7 @@
 set -e
 product_list=$1
 export LOG=$log_path/stratos.log
-SLEEP=40
+SLEEP=100
 
 if [[ -f ./conf/setup.conf ]]; then
     source "./conf/setup.conf"
@@ -103,7 +103,6 @@ if [[ $cc = "true" ]]; then
     nohup ${cc_path}/bin/stratos.sh -DportOffset=$cc_port_offset &
     echo "CC server started" >> $LOG
     sleep $SLEEP
-    sleep $SLEEP
 fi
 
 if [[ $elb = "true" ]]; then
@@ -124,7 +123,6 @@ if [[ $agent = "true" ]]; then
     sleep $SLEEP
 fi
 
-
 if [[ $sc = "true" ]]; then
     
     echo ${sc_path}
@@ -133,7 +131,5 @@ if [[ $sc = "true" ]]; then
     nohup ${sc_path}/bin/stratos.sh -DportOffset=$sc_port_offset &
     echo "SC server started" >> $LOG
     sleep $SLEEP
-
 fi
-
 
