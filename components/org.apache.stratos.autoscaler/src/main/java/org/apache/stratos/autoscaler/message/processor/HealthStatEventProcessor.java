@@ -16,12 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.util;
 
-public class Constants {
-	
-	public static final String TOPOLOGY_TOPIC = "topology-topic";
-	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
-    public static final String TENANT_RANGE_DELIMITER = "-";
-    public static final String EVENT_CLASS_NAME = "event-class-name";
+package org.apache.stratos.autoscaler.message.processor;
+
+/**
+ * Interface which defined health event processor interface
+ */
+public interface HealthStatEventProcessor {
+
+    public void setNext(HealthStatEventProcessor nextProcessor);
+
+    public boolean process(String type, String message);
+
 }

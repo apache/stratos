@@ -13,14 +13,22 @@ public class TopicSubscriberManager {
     private static final Log log = LogFactory.getLog(TopicSubscriberManager.class);
 
     public void subscribeAllTopics(){
-        TopicSubscriber topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-        topicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
-        Thread subscriberThread = new Thread(topicSubscriber);
-        log.info("777777777777777777777777777777777777777777");
-        subscriberThread.start();
+        TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
+        topologyTopicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+        Thread topologyTopicSubscriberThread = new Thread(topologyTopicSubscriber);
+        topologyTopicSubscriberThread.start();
 
         if (log.isDebugEnabled()) {
            log.debug("Topology event message receiver thread started");
+        }
+
+        TopicSubscriber healthStatTopicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
+        healthStatTopicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+        Thread healthStatTopicSubscriberThread = new Thread(healthStatTopicSubscriber);
+        healthStatTopicSubscriberThread.start();
+
+        if (log.isDebugEnabled()) {
+           log.debug("Health Stat event message receiver thread started");
         }
 
     }

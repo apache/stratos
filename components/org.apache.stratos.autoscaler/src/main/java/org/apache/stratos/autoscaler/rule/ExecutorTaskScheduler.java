@@ -16,12 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.util;
 
-public class Constants {
-	
-	public static final String TOPOLOGY_TOPIC = "topology-topic";
-	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
-    public static final String TENANT_RANGE_DELIMITER = "-";
-    public static final String EVENT_CLASS_NAME = "event-class-name";
+package org.apache.stratos.autoscaler.rule;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * This class is responsible for scheduling the task of evaluating the current details of topology, statistics, and health
+ * status against the rules set(written in Drools)
+ */
+public class ExecutorTaskScheduler {
+    public void start(){
+        final Runnable rulesEvaluator = new Runnable() {
+            public void run() {
+                //TODO call evaluator
+            }
+        };
+        ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
+        //TODO make scheduler values configurable
+        ex.scheduleWithFixedDelay(rulesEvaluator, 5, 5, TimeUnit.SECONDS);
+    }
 }

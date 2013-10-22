@@ -47,8 +47,8 @@ public class TopologyEventMessageDelegator implements Runnable {
                 // retrieve the actual message
                 String json = message.getText();
                 
-                CompleteTopologyEventProcessor processor = new CompleteTopologyEventProcessor();
-                if(processor.process(type, json, TopologyManager.getTopology())) {
+                CompleteTopologyEventProcessor completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
+                if(completeTopologyEventProcessor.process(type, json, TopologyManager.getTopology())) {
                 	break;
                 }
 

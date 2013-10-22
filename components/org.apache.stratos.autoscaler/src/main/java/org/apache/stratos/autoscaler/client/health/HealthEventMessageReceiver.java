@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.client.topology;
+package org.apache.stratos.autoscaler.client.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,9 +26,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-public class TopologyEventMessageReceiver implements MessageListener {
+public class HealthEventMessageReceiver implements MessageListener {
 
-    private static final Log log = LogFactory.getLog(TopologyEventMessageReceiver.class);
+    private static final Log log = LogFactory.getLog(HealthEventMessageReceiver.class);
 
     @Override
     public void onMessage(Message message) {
@@ -40,7 +40,7 @@ public class TopologyEventMessageReceiver implements MessageListener {
                     log.debug("Message received: " + ((TextMessage) message).getText());
                 }
                 // Add received message to the queue
-                TopologyEventQueue.getInstance().add(receivedMessage);
+                HealthEventQueue.getInstance().add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);
