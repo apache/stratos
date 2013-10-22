@@ -182,20 +182,6 @@ cat conf/setup.conf.orig | sed -e "s@export openstack_provider_enabled=true@expo
 
 rm -f conf/setup.conf.orig
 
-# Mapping domain/host names for each product
-# ----------------------------------------------------------------------------
-
-cp -f /etc/hosts hosts.tmp
-
-echo "$ip $DOMAIN # stratos domain" >> hosts.tmp
-echo "$ip mb.$DOMAIN # message broker hostname"	>> hosts.tmp
-echo "$ip cc.$DOMAIN # cloud controller hostname" >> hosts.tmp
-echo "$ip sc.$DOMAIN # stratos controller hostname" >> hosts.tmp
-echo "$ip elb.$DOMAIN # elastic load balancer hostname"	>> hosts.tmp
-echo "$ip agent.$DOMAIN # agent hostname" >> hosts.tmp
-
-mv -f ./hosts.tmp /etc/hosts
-
 
 # Setup and start the MB server
 # ----------------------------------------------------------------------------

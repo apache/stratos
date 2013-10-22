@@ -35,7 +35,6 @@ cc="false"
 elb="false"
 agent="false"
 sc="false"
-#bam="false"
 product_list="cc;elb;agent;sc"
 enable_internal_git=false
 
@@ -151,9 +150,6 @@ function setup_validate {
     fi
     if [[ -z $nova_controller_hostname ]]; then
         nova_controller_hostname=$hostname
-    fi
-    if [[ -z $bam_hostname ]]; then
-        bam_hostname=$hostname
     fi
     if [[ -z $elb_hostname ]]; then
         elb_hostname=$hostname
@@ -301,12 +297,6 @@ if [[ $agent = "true" ]]; then
     fi
 fi
 
-if [[ $bam = "true" ]]; then
-    if [[ ! -d $bam_path ]]; then
-        unzip $bam_pack -d $stratos_path
-    fi
-fi
-
 
 if [[ $sc = "true" ]]; then
     ##
@@ -372,12 +362,6 @@ if [[ $sc = "true" ]]; then
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@ELB_IP@$elb_ip@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@BAM_IP@$bam_ip@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@BAM_PORT@$bam_port@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@KEYPAIR_PATH@$keypair_path@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
@@ -427,12 +411,6 @@ if [[ $sc = "true" ]]; then
     cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
     cat repository/conf/carbon.xml.orig | sed -e "s@SC_PORT_OFFSET@${sc_port_offset}@g" > repository/conf/carbon.xml
     
-    cp -f repository/conf/log4j.properties repository/conf/log4j.properties.orig
-    cat repository/conf/log4j.properties.orig | sed -e "s@BAM_HOSTNAME:BAM_RECEIVER_PORT@$bam_hostname:$bam_reciever_port@g" > repository/conf/log4j.properties
-
-    cp -f repository/conf/etc/logging-config.xml repository/conf/etc/logging-config.xml.orig
-    cat repository/conf/etc/logging-config.xml.orig | sed -e "s@BAM_HOSTNAME:CASSANDRA_PORT@$bam_hostname:$cassandra_port@g" > repository/conf/etc/logging-config.xml
-
     popd # sc_path
 
 
@@ -517,30 +495,11 @@ if [[ $cc = "true" ]]; then
     cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
     cat repository/conf/cloud-controller.xml.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/cloud-controller.xml
 
-    echo "In repository/conf/carbon.xml"
-    cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
-    cat repository/conf/carbon.xml.orig | sed -e "s@BAM_HOSTNAME:BAM_PORT@$bam_hostname:$bam_port@g" > repository/conf/carbon.xml
-
-    #Before starting CC we need to delete
-    #rm ./repository/conf/service-topology.conf
-    #rm ./repository/conf/service-topology.conf.back
-
-
-    # Setup MB
-    # -------------------------------------------------------------
-    #echo "Setup MB" >> $LOG
-    #echo "Set settings in cc/repository/conf/advanced/qpid-virtualhosts.xml" >> $LOG
-    #cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
-    #cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_HOST@$mb_cassandra_host@g" > repository/conf/advanced/qpid-virtualhosts.xml
-    #cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
-    #cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_PORT@$mb_cassandra_port@g" > repository/conf/advanced/qpid-virtualhosts.xml
-
     echo "Set settings in cc/repository/conf/carbon.xml" >> $LOG
     cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
     cat repository/conf/carbon.xml.orig | sed -e "s@CC_PORT_OFFSET@$cc_port_offset@g" > repository/conf/carbon.xml
     #Before starting sc delete rm -rf tmp/ at mb root folder
     rm -rf ./tmp
-
 
     popd #cc_path
     echo "End configuring the Cloud Controller"
@@ -642,49 +601,6 @@ if [[ $agent = "true" ]]; then
 fi
 
 
-# Setup BAM
-# --------------------------------------------------
-if [[ $bam = "true" ]]; then
- echo "Setup BAM" >> $LOG
- echo "Configuring the BAM"
- cp -f ./config/bam/bin/stratos.sh $bam_path/bin/
- cp -f ./config/bam/repository/conf/carbon.xml $bam_path/repository/conf/
- cp -f ./config/bam/repository/conf/etc/cassandra-component.xml $bam_path/repository/conf/etc/
- cp -f ./config/bam/repository/conf/etc/cassandra.yaml $bam_path/repository/conf/etc/
- cp -f ./config/bam/repository/conf/datasources/master-datasources.xml $bam_path/repository/conf/datasources/
- cp -f $mysql_connector_jar $bam_path/repository/components/lib/
-
-  pushd $bam_path
-
-  cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
-  cat repository/conf/carbon.xml.orig | sed -e "s@BAM_PORT_OFFSET@${bam_port_offset}@g" > repository/conf/carbon.xml
-
-  cp -f repository/conf/etc/cassandra.yaml repository/conf/etc/cassandra.yaml.orig
-  cat repository/conf/etc/cassandra.yaml.orig | sed -e "s@BAM_HOSTNAME@${bam_hostname}@g" > repository/conf/etc/cassandra.yaml
-
-  cp -f repository/conf/etc/cassandra-component.xml repository/conf/etc/cassandra-component.xml.orig
-  cat repository/conf/etc/cassandra-component.xml.orig | sed -e "s@BAM_HOSTNAME:CASSANDRA_PORT@$bam_hostname:$cassandra_port@g" > repository/conf/etc/cassandra-component.xml
-
- echo "Change mysql password in repository/conf/datasources/master-datasources.xml" >> $LOG
-    cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
-    cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@BILLING_DB_HOSTNAME@$billing_db_hostanme@g" > repository/conf/datasources/master-datasources.xml
-
-    cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
-    cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@BILLING_DB_PORT@$billing_db_port@g" > repository/conf/datasources/master-datasources.xml
-
-    cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
-    cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@BILLING_DB_SCHEMA@$billing_db_schema@g" > repository/conf/datasources/master-datasources.xml
-
-    cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
-    cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@BILLING_USERNAME@$billing_db_username@g" > repository/conf/datasources/master-datasources.xml
-
-    cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
-    cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@BILLING_PASSWORD@$billing_db_password@g" > repository/conf/datasources/master-datasources.xml
-
- popd #bam_path
-fi
-
-
 # Configure cartridges
 # ---------------------------------------------------------
 if [[ $openstack_provider_enabled = "true" ]]; then
@@ -694,6 +610,24 @@ if [[ $ec2_provider_enabled = "true" ]]; then
     ./ec2-cartridge.sh
 fi
 
+
+# Map domain/host names of each product 
+# ---------------------------------------------------------------------------- 
+
+echo 'Updating /etc/hosts file with domain names' 
+cp -f /etc/hosts hosts.tmp 
+ 
+echo "$ip $DOMAIN # stratos domain" >> hosts.tmp 
+echo "$ip mb.$DOMAIN # message broker hostname" >> hosts.tmp 
+echo "$ip cc.$DOMAIN # cloud controller hostname" >> hosts.tmp 
+echo "$ip sc.$DOMAIN # stratos controller hostname" >> hosts.tmp 
+echo "$ip elb.$DOMAIN # elastic load balancer hostname" >> hosts.tmp 
+echo "$ip agent.$DOMAIN # agent hostname" >> hosts.tmp 
+ 
+mv -f ./hosts.tmp /etc/hosts
+
+# Starting the servers
+# ---------------------------------------------------------
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
 chown $host_user:$host_user $stratos_path -R
 
@@ -704,9 +638,6 @@ if [[ $answer != y ]] ; then
     exit 1
 fi
 
-
-# Starting the servers
-# ---------------------------------------------------------
 echo "Starting the servers" >> $LOG
 #Starting the servers in the following order is recommended
 #mb, cc, elb, is, agent, sc
