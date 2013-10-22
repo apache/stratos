@@ -35,6 +35,8 @@ public class Member implements Serializable {
     private String clusterId;
     private String memberId;
     private MemberStatus status;
+    private float loadAverage;
+    private float memoryConsumption;
     private String memberIp;
     private Map<String, Port> portMap;
     private Properties properties;
@@ -114,6 +116,22 @@ public class Member implements Serializable {
 
 	public void setMemberIp(String memberIp) {
 	    this.memberIp = memberIp;
+    }
+
+    public float getLoadAverage() {
+        return loadAverage;
+    }
+
+    public void setLoadAverage(float loadAverage) {
+        this.loadAverage = loadAverage;
+    }
+
+    public float getMemoryConsumption() {
+        return memoryConsumption;
+    }
+
+    public void setMemoryConsumption(float memoryConsumption) {
+        this.memoryConsumption = memoryConsumption;
     }
 }
 

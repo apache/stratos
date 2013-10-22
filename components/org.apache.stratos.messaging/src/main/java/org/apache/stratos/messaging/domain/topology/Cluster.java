@@ -37,6 +37,10 @@ public class Cluster implements Serializable {
     private Cloud cloud;
     private Region region;
     private Zone zone;
+    private float averageRequestsInFlight;
+    private float requestsInFlightSecondDerivative;
+    private float requestsInFlightGradient;
+
     // Key: Member.memberId
     private Map<String, Member> memberMap;
     private Properties properties;
@@ -131,6 +135,30 @@ public class Cluster implements Serializable {
 
     public void setAutoscalePolicyName(String autoscalePolicyName) {
         this.autoscalePolicyName = autoscalePolicyName;
+    }
+
+    public float getAverageRequestsInFlight() {
+        return averageRequestsInFlight;
+    }
+
+    public void setAverageRequestsInFlight(float averageRequestsInFlight) {
+        this.averageRequestsInFlight = averageRequestsInFlight;
+    }
+
+    public float getRequestsInFlightSecondDerivative() {
+        return requestsInFlightSecondDerivative;
+    }
+
+    public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
+        this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
+    }
+
+    public float getRequestsInFlightGradient() {
+        return requestsInFlightGradient;
+    }
+
+    public void setRequestsInFlightGradient(float requestsInFlightGradient) {
+        this.requestsInFlightGradient = requestsInFlightGradient;
     }
 }
 
