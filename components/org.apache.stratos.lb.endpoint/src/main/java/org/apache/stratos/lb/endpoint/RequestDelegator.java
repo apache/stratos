@@ -27,23 +27,21 @@ import org.apache.stratos.lb.endpoint.algorithm.LoadBalanceAlgorithm;
 import org.apache.stratos.lb.endpoint.topology.TopologyManager;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.synapse.MessageContext;
-import org.apache.synapse.SynapseException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Implements core load balancing logic.
+ * Implements core load balancing logic for identifying the next member
+ * according to the incoming request information.
  */
-public class RequestProcessor {
-    private static final Log log = LogFactory.getLog(RequestProcessor.class);
+public class RequestDelegator {
+    private static final Log log = LogFactory.getLog(RequestDelegator.class);
 
     private LoadBalanceAlgorithm algorithm;
 
-    public RequestProcessor(LoadBalanceAlgorithm algorithm) {
+    public RequestDelegator(LoadBalanceAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
 
@@ -107,5 +105,4 @@ public class RequestProcessor {
         }
         return null;
     }
-
 }

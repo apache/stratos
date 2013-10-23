@@ -22,7 +22,7 @@ package org.apache.stratos.lb.endpoint.endpoint;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.http.protocol.HTTP;
-import org.apache.stratos.lb.endpoint.RequestProcessor;
+import org.apache.stratos.lb.endpoint.RequestDelegator;
 import org.apache.stratos.lb.endpoint.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.lb.endpoint.stat.LoadBalancingStatsCollector;
 import org.apache.stratos.lb.endpoint.util.Constants;
@@ -50,17 +50,26 @@ import java.util.*;
 public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints.LoadbalanceEndpoint implements Serializable {
     private static final String PORT_MAPPING_PREFIX = "port.mapping.";
 
+    /* Request delegator identifies the next member */
+    private RequestDelegator requestDelegator;
+
+    /* Load balance algorithm class name */
     private String algorithmClassName;
-    private long sessionTimeout = -1;
-    private RequestProcessor requestProcessor;
-    private HttpSessionDispatcher dispatcher;
+
+    /* Flag to enable session affinity based load balancing */
     private boolean sessionAffinity;
+
+    /* Dispatcher used for session affinity */
+    private HttpSessionDispatcher dispatcher;
+
+    /* Sessions time out interval */
+    private long sessionTimeout = -1;
 
     @Override
     public void init(SynapseEnvironment synapseEnvironment) {
         super.init(synapseEnvironment);
 
-        requestProcessor = new RequestProcessor(LoadBalanceAlgorithmFactory.createAlgorithm(algorithmClassName));
+        requestDelegator = new RequestDelegator(LoadBalanceAlgorithmFactory.createAlgorithm(algorithmClassName));
         synapseEnvironment.getSynapseConfiguration().setProperty(SynapseConstants.PROP_SAL_ENDPOINT_DEFAULT_SESSION_TIMEOUT, String.valueOf(sessionTimeout));
         setDispatcher(new HttpSessionDispatcher());
     }
@@ -171,7 +180,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
         String targetHost = extractTargetHost(synCtx);
-        Member member = requestProcessor.findNextMember(targetHost);
+        Member member = requestDelegator.findNextMember(targetHost);
         if (member == null)
             return null;
 
