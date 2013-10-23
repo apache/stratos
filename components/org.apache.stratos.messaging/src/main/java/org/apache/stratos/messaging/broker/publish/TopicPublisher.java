@@ -30,6 +30,7 @@ import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.publish.MessagePublisher;
 
 import com.google.gson.Gson;
+import org.apache.stratos.messaging.util.Constants;
 
 /**
  * Any instance who needs to publish data to a topic, should communicate with
@@ -63,8 +64,9 @@ public class TopicPublisher extends MessagePublisher {
 	 * obtained.
 	 */
 	public void publish(Object messageObj) {
-
-		publish(messageObj, null);
+        Properties properties = new Properties();
+        properties.put(Constants.EVENT_CLASS_NAME, messageObj.getClass().getName());
+		publish(messageObj, properties);
 	}
 	
 	public void publish(Object messageObj, Properties headers) {
