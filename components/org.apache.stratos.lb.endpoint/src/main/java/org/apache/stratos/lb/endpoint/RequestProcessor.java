@@ -20,6 +20,8 @@
 package org.apache.stratos.lb.endpoint;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.lb.endpoint.algorithm.AlgorithmContext;
 import org.apache.stratos.lb.endpoint.algorithm.LoadBalanceAlgorithm;
 import org.apache.stratos.lb.endpoint.topology.TopologyManager;
@@ -37,6 +39,8 @@ import java.util.Collection;
  * Implements core load balancing logic.
  */
 public class RequestProcessor {
+    private static final Log log = LogFactory.getLog(RequestProcessor.class);
+
     private LoadBalanceAlgorithm algorithm;
 
     public RequestProcessor(LoadBalanceAlgorithm algorithm) {
@@ -66,7 +70,11 @@ public class RequestProcessor {
                     clusterContext.setAlgorithmContext(algorithmContext);
                 }
                 algorithm.setMembers(new ArrayList<Member>(cluster.getMembers()));
-                return algorithm.getNextMember(algorithmContext);
+                Member member = algorithm.getNextMember(algorithmContext);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Next member found: service: %s cluster id: %s member id: %s", member.getServiceName(), member.getClusterId(), member.getMemberId()));
+                }
+                return member;
             }
             return null;
         }

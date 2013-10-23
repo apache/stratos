@@ -20,16 +20,14 @@
 package org.apache.stratos.lb.endpoint.endpoint;
 
 import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.description.TransportInDescription;
 import org.apache.http.protocol.HTTP;
 import org.apache.stratos.lb.endpoint.RequestProcessor;
 import org.apache.stratos.lb.endpoint.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.lb.endpoint.stat.LoadBalancingStatsCollector;
-import org.apache.stratos.lb.endpoint.topology.TopologyManager;
 import org.apache.stratos.lb.endpoint.util.Constants;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Port;
-import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
@@ -62,6 +60,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
         requestProcessor = new RequestProcessor(LoadBalanceAlgorithmFactory.createAlgorithm());
         setDispatcher(new HttpSessionDispatcher());
+        sessionAffinityEnabled = true;
     }
 
     @Override
@@ -82,7 +81,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 sessionInformation = dispatcher.getSession(synCtx);
                 if (sessionInformation != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Current session id : " + sessionInformation.getId());
+                        log.debug(String.format("Existing session found: %s", sessionInformation.getId()));
                     }
 
                     currentMember = sessionInformation.getMember();
@@ -105,14 +104,32 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             // No existing session found
             // Find next member
             org.apache.axis2.clustering.Member axis2Member = findNextMember(synCtx);
-            if(axis2Member != null) {
+            if (axis2Member != null) {
                 // Send request to member
                 sendToApplicationMember(synCtx, axis2Member, faultHandler, true);
-            }
-            else {
+            } else {
                 throw new SynapseException(String.format("No application members available to serve the request %s", synCtx.getTo().getAddress()));
             }
         }
+    }
+
+    /**
+     * Setup load balancer message context properties to be used by the out block of the main sequence.
+     * These values will be used to update the Location value in the response header.
+     *
+     * @param synCtx
+     */
+    private void setupLoadBalancerContextProperties(MessageContext synCtx) {
+        String lbHostName = extractTargetHost(synCtx);
+        org.apache.axis2.context.MessageContext axis2MsgCtx = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
+        TransportInDescription httpTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn("http");
+        TransportInDescription httpsTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn("https");
+        String lbHttpPort = (String) httpTransportIn.getParameter("port").getValue();
+        String lbHttpsPort = (String) httpsTransportIn.getParameter("port").getValue();
+
+        synCtx.setProperty(Constants.LB_HOST_NAME, lbHostName);
+        synCtx.setProperty(Constants.LB_HTTP_PORT, lbHttpPort);
+        synCtx.setProperty(Constants.LB_HTTPS_PORT, lbHttpsPort);
     }
 
 
@@ -154,19 +171,25 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
         String targetHost = extractTargetHost(synCtx);
         Member member = requestProcessor.findNextMember(targetHost);
-        if(member == null)
+        if (member == null)
             return null;
 
         // Create Axi2 member object
         String transport = extractTransport(synCtx);
         Port transportPort = member.getPort(transport);
-        if(transportPort == null)
+        if (transportPort == null)
             throw new RuntimeException(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
 
         int memberPort = transportPort.getValue();
         org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getMemberIp(), memberPort);
         axis2Member.setDomain(member.getClusterId());
-        axis2Member.setActive(true);
+        Port httpPort = member.getPort("http");
+        if (httpPort != null)
+            axis2Member.setHttpPort(httpPort.getValue());
+        Port httpsPort = member.getPort("https");
+        if (httpsPort != null)
+            axis2Member.setHttpsPort(httpsPort.getValue());
+        axis2Member.setActive(member.isActive());
         return axis2Member;
     }
 
@@ -365,14 +388,17 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
         memberHosts.put(extractTargetHost(synCtx), "true");
         setupTransportHeaders(synCtx);
-        
-		// update stats
-		LoadBalancingStatsCollector.getInstance()
-		                           .incrementRequestInflightCount(currentMember.getDomain());
-		// set the cluster id in the message context
-		synCtx.setProperty(Constants.CLUSTER_ID, currentMember.getDomain());
-        
+        setupLoadBalancerContextProperties(synCtx);
+
+        // Update health stats
+        LoadBalancingStatsCollector.getInstance().incrementRequestInflightCount(currentMember.getDomain());
+        // Set the cluster id in the message context
+        synCtx.setProperty(Constants.CLUSTER_ID, currentMember.getDomain());
+
         try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Sending request to endpoint: %s", to.getAddress()));
+            }
             endpoint.send(synCtx);
         } catch (Exception e) {
             if (e.getMessage().toLowerCase().contains("io reactor shutdown")) {
@@ -415,7 +441,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         @Override
         public void onFault(MessageContext synCtx) {
             //cleanup endpoint if exists
-            if(currentEp != null){
+            if (currentEp != null) {
                 currentEp.destroy();
             }
             if (currentMember == null) {
@@ -428,13 +454,13 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             }
 
             currentMember = findNextMember(synCtx);
-            if(currentMember == null){
+            if (currentMember == null) {
                 String msg = String.format("No application members available to serve the request %s", synCtx.getTo().getAddress());
                 log.error(msg);
                 throw new SynapseException(msg);
             }
             synCtx.setTo(to);
-            if(isSessionAffinityBasedLB()){
+            if (isSessionAffinityBasedLB()) {
                 //We are sending the this message on a new session,
                 // hence we need to remove previous session information
                 Set pros = synCtx.getPropertyKeySet();
