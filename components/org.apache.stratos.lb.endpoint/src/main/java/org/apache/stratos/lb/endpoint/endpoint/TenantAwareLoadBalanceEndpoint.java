@@ -50,17 +50,19 @@ import java.util.*;
 public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints.LoadbalanceEndpoint implements Serializable {
     private static final String PORT_MAPPING_PREFIX = "port.mapping.";
 
+    private String algorithmClassName;
+    private long sessionTimeout = -1;
     private RequestProcessor requestProcessor;
     private HttpSessionDispatcher dispatcher;
-    private boolean sessionAffinityEnabled;
+    private boolean sessionAffinity;
 
     @Override
     public void init(SynapseEnvironment synapseEnvironment) {
         super.init(synapseEnvironment);
 
-        requestProcessor = new RequestProcessor(LoadBalanceAlgorithmFactory.createAlgorithm());
+        requestProcessor = new RequestProcessor(LoadBalanceAlgorithmFactory.createAlgorithm(algorithmClassName));
+        synapseEnvironment.getSynapseConfiguration().setProperty(SynapseConstants.PROP_SAL_ENDPOINT_DEFAULT_SESSION_TIMEOUT, String.valueOf(sessionTimeout));
         setDispatcher(new HttpSessionDispatcher());
-        sessionAffinityEnabled = true;
     }
 
     @Override
@@ -69,7 +71,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         SessionInformation sessionInformation = null;
         org.apache.axis2.clustering.Member currentMember = null;
         if (isSessionAffinityBasedLB()) {
-
             // Check existing session information
             sessionInformation = (SessionInformation) synCtx.getProperty(
                     SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
@@ -308,10 +309,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
     }
 
-    public boolean isSessionAffinityBasedLB() {
-        return sessionAffinityEnabled;
-    }
-
     /*
      * Preparing the endpoint sequence for a new session establishment request
      */
@@ -416,6 +413,30 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     public HttpSessionDispatcher getDispatcher() {
         return dispatcher;
+    }
+
+    public String getAlgorithmClassName() {
+        return algorithmClassName;
+    }
+
+    public void setAlgorithmClassName(String algorithmClassName) {
+        this.algorithmClassName = algorithmClassName;
+    }
+
+    public long getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public void setSessionTimeout(long sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
+
+    public boolean isSessionAffinityBasedLB() {
+        return sessionAffinity;
+    }
+
+    public void setSessionAffinity(boolean sessionAffinity) {
+        this.sessionAffinity = sessionAffinity;
     }
 
     private class TenantAwareLoadBalanceFaultHandler extends DynamicLoadbalanceFaultHandler {

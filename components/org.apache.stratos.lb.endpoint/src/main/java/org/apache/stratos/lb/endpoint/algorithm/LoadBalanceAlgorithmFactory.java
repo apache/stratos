@@ -31,9 +31,7 @@ public class LoadBalanceAlgorithmFactory {
     private static final Log log = LogFactory.getLog(LoadBalanceAlgorithmFactory.class);
 
 
-    public static LoadBalanceAlgorithm createAlgorithm() {
-        // TODO: Read from load balance configuration file
-        String className = "org.apache.stratos.lb.endpoint.algorithm.RoundRobin";
+    public static LoadBalanceAlgorithm createAlgorithm(String className) {
         try {
             Class algorithmClass = Class.forName(className);
             try {
