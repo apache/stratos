@@ -64,9 +64,7 @@ public class TopicPublisher extends MessagePublisher {
 	 * obtained.
 	 */
 	public void publish(Object messageObj) {
-        Properties properties = new Properties();
-        properties.put(Constants.EVENT_CLASS_NAME, messageObj.getClass().getName());
-		publish(messageObj, properties);
+		publish(messageObj, null);
 	}
 	
 	public void publish(Object messageObj, Properties headers) {
