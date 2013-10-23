@@ -124,7 +124,9 @@
 				<featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.cloud.controller.feature:${project.version}
                                 </featureArtifactDef>
-                                
+         			 <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
+                                </featureArtifactDef>        
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.server.feature:${carbon.version}
                                 </featureArtifactDef>
@@ -260,7 +262,11 @@
                                     <id>org.apache.stratos.cloud.controller.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
-                                <feature>
+				<feature>
+                                    <id>org.apache.stratos.messaging.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>                        
+        			<feature>
                                     <id>org.apache.synapse.wso2.feature.group</id>
                                     <version>${synapse.version}</version>
                                 </feature>
