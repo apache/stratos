@@ -17,28 +17,15 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.client.topology;
-
-import javax.jms.TextMessage;
-import java.util.concurrent.LinkedBlockingQueue;
+package org.apache.stratos.autoscaler.message.processor;
 
 /**
- * Implements topology event queue.
+ * Interface which defined health event processor interface
  */
-public class TopologyEventQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile TopologyEventQueue instance;
+public interface HealthStatEventProcessor {
 
-    private TopologyEventQueue(){
-    }
+    public void setNext(HealthStatEventProcessor nextProcessor);
 
-    public static synchronized TopologyEventQueue getInstance() {
-        if (instance == null) {
-            synchronized (TopologyEventQueue.class){
-                if (instance == null) {
-                    instance = new TopologyEventQueue ();
-                }
-            }
-        }
-        return instance;
-    }
+    public boolean process(String type, String message);
+
 }

@@ -37,9 +37,11 @@ import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.util.xsd.Property;
 import org.wso2.carbon.context.CarbonContext;
 
 import java.util.List;
@@ -133,15 +135,39 @@ public class CartridgeSubscriptionManager {
                 " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " + cartridgeType +
                 ", Repo URL: " + repositoryURL + ", Policy: " + autoscalingPolicyName);
 
+        Payload payload = PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(), cartridgeType,
+                "/tmp/" + tenantDomain + "-" + cartridgeAlias + ".zip");
         PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
+
         if (payloadArg != null) {
-
-            Payload payload = PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(), cartridgeType,
-                    "/tmp/" + tenantDomain + "-" + cartridgeAlias + ".zip");
+            //populate the payload
             payload.populatePayload(payloadArg);
-
-            //set the payload to the cartridge subscription
             cartridgeSubscription.setPayload(payload);
+        }
+
+        //get the payload parameters defined in the cartridge definition file for this cartridge type
+        if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
+
+            StringBuilder customPayloadParamsBuilder = new StringBuilder();
+            for(Property property : cartridgeInfo.getProperties()) {
+                //check if a property is related to the payload. Currently this is done by checking if the
+                //property name starts with 'payload_parameter.' suffix. If so the payload param name will
+                //be taken as the substring from the index of '.' to the end of the property name.
+                if(property.getName().startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
+                    String payloadParamName = property.getName();
+                    customPayloadParamsBuilder.append(",");
+                    customPayloadParamsBuilder.append(payloadParamName.
+                            substring(payloadParamName.indexOf(".") + 1));
+                    customPayloadParamsBuilder.append("=");
+                    customPayloadParamsBuilder.append(property.getValue());
+                }
+            }
+            //if valid payload related parameters are found in the cartridge definition file, add them to the payload
+            String customPayloadParamString = customPayloadParamsBuilder.toString();
+            if(!customPayloadParamString.isEmpty()) {
+                payload.populatePayload(customPayloadParamString);
+                cartridgeSubscription.setPayload(payload);
+            }
         }
 
         //CartridgeInstanceCache.getCartridgeInstanceCache().
@@ -154,21 +180,22 @@ public class CartridgeSubscriptionManager {
      * Connects / groups cartridges
      *
      * @param tenantDomain Tenant's domain
-     * @param cartridgeSubscription CartridgeSubscriptionInfo object to which the CartridgeSubscriptionInfo denoted by
-     *                          connectingCartridgeAlias will be connected to
-     * @param connectingCartridgeAlias Alias of the connecting cartridge
+     * @param cartridgeSubscription CartridgeSubscription instance to which the CartridgeSubscription denoted by
+     *                          connectingSubscriptionAlias will be connected to
+     * @param connectingSubscriptionAlias Alias of the connecting cartridge
      *
      * @throws ADCException
      * @throws NotSubscribedException
      * @throws AxisFault
      */
     public void connectCartridges (String tenantDomain, CartridgeSubscription cartridgeSubscription,
-                                   String connectingCartridgeAlias)
+                                   String connectingSubscriptionAlias)
             throws ADCException, NotSubscribedException, AxisFault {
 
         //TODO: retrieve from the cache and connect. For now, new objects are created
 
-        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscription(tenantDomain, connectingCartridgeAlias);
+        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscription(tenantDomain,
+                connectingSubscriptionAlias);
 
         if(cartridgeSubscription == null) {
             String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + ", alias " +
@@ -179,7 +206,7 @@ public class CartridgeSubscriptionManager {
 
         if(connectingCartridgeSubscription == null) {
             String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + ", alias " +
-                    connectingCartridgeAlias + ",  connecting aborted";
+                    connectingSubscriptionAlias + ",  connecting aborted";
             log.error(errorMsg);
             return;
         }
@@ -187,7 +214,7 @@ public class CartridgeSubscriptionManager {
         CartridgeSubscriptionConnector cartridgeSubscriptionConnector = CartridgeSubscriptionConnectorFactory.
                 getCartridgeInstanceConnector(connectingCartridgeSubscription.getType());
 
-        cartridgeSubscription.connect(connectingCartridgeAlias);
+        cartridgeSubscription.connect(connectingSubscriptionAlias);
 
         //PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
 
@@ -204,8 +231,17 @@ public class CartridgeSubscriptionManager {
             connectionParamsBuilder.append(payloadParamEntry.getValue().toString());
         }
 
-        //add additional connection relates parameters to the payload
-        cartridgeSubscription.getPayload().populatePayload(connectionParamsBuilder.toString());
+        //add connection relates parameters to the payload
+        if(cartridgeSubscription.getPayload() != null) {
+            cartridgeSubscription.getPayload().populatePayload(connectionParamsBuilder.toString());
+        } else {
+            //no existing payload
+            Payload payload = PayloadFactory.getPayloadInstance(cartridgeSubscription.getCartridgeInfo().getProvider(),
+                    cartridgeSubscription.getType(), "/tmp/" + tenantDomain + "-" + cartridgeSubscription.getAlias() +
+                    ".zip");
+            payload.populatePayload(connectionParamsBuilder.toString());
+            cartridgeSubscription.setPayload(payload);
+        }
 
         /*
         payloadArg.setUserDefinedPayload(connectionParamsBuilder.toString());

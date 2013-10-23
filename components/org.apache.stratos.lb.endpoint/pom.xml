@@ -123,6 +123,7 @@
                             org.apache.stratos.lb.endpoint.endpoint,
                             org.apache.stratos.lb.endpoint,
                             org.apache.stratos.lb.endpoint.topology,
+                            org.apache.stratos.lb.endpoint.mediators,
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.lb.endpoint.endpoint,

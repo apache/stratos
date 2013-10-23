@@ -21,4 +21,7 @@ package org.apache.stratos.lb.endpoint.util;
 public class Constants {
 
 	public static final String CLUSTER_ID = "cluster_id";
+    public static final String LB_HOST_NAME = "LB_HOST_NAME";
+    public static final String LB_HTTP_PORT = "LB_HTTP_PORT";
+    public static final String LB_HTTPS_PORT = "LB_HTTPS_PORT";
 }

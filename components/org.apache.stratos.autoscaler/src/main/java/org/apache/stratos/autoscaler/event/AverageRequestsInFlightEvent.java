@@ -16,12 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.util;
 
-public class Constants {
-	
-	public static final String TOPOLOGY_TOPIC = "topology-topic";
-	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
-    public static final String TENANT_RANGE_DELIMITER = "-";
-    public static final String EVENT_CLASS_NAME = "event-class-name";
+package org.apache.stratos.autoscaler.event;
+
+import java.io.Serializable;
+
+/**
+ *  This event is fired by Event processing engine to send average of requests in flight
+ */
+public class AverageRequestsInFlightEvent implements Serializable {
+
+
+    private String clusterId;
+    private float value;
+
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public float getValue() {
+        return value;
+    }
+
+    public void setValue(float value) {
+        this.value = value;
+    }
 }

@@ -81,9 +81,6 @@ public abstract class Payload {
         }
     }
 
-    //
-    //
-
     /**
      * Add the user defined payload String (if any). This should be of the format
      * <key_1>=<value_1>,<key_2>=<value_2>,....<key_n>=<value_n>
@@ -92,10 +89,22 @@ public abstract class Payload {
      */
     public void populatePayload (String payloadString) {
 
-        if(!payloadBuilder.toString().endsWith(",")) {
-            payloadBuilder.append(",");
+        if(payloadBuilder.toString().isEmpty()) {
+            if(payloadString.startsWith(",")) {
+                payloadBuilder.append(payloadString.substring(1));
+            }
+        } else {
+            if(!payloadBuilder.toString().endsWith(",") && !payloadString.startsWith(",")) {
+                payloadBuilder.append(",");
+                payloadBuilder.append(payloadString);
+            }
+            else if (payloadBuilder.toString().endsWith(",") && payloadString.startsWith(",")) {
+                payloadBuilder.append(payloadString.substring(1));
+            }
+            else {
+                payloadBuilder.append(payloadString);
+            }
         }
-        payloadBuilder.append(payloadString);
     }
 
     /**

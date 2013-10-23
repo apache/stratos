@@ -40,23 +40,31 @@ public class PolicyDeployer extends AbstractDeployer {
 	 private static final Log log = LogFactory.getLog(PolicyDeployer.class);
 	 
 	 private static String fileExt="xml"; //default
+	 private static String deployDirectory=null;
 
 	@Override
 	public void init(ConfigurationContext context) {
-		// nothing to do
-
+		if(deployDirectory!=null){
+			File deployDir = new File(new File(context.getAxisConfiguration().getRepository().getPath()),deployDirectory);
+			if(!deployDir.exists()){
+				//create policies deployment directory if not exist 
+				try {
+					deployDir.mkdirs();
+				} catch (Exception e) {
+					log.error("Unable to create policies deployment directory", e);
+				}
+			}
+		}
 	}
 
 	@Override
 	public void setDirectory(String dir) {
-		// nothing to do
-
+		deployDirectory = dir;
 	}
 
 	@Override
 	public void setExtension(String ext) {
 		fileExt = ext;
-
 	}
 	
 	@Override
@@ -70,7 +78,7 @@ public class PolicyDeployer extends AbstractDeployer {
 			PolicyReader reader = new PolicyReader(policyFile);
 			
 			AutoscalePolicy policy = reader.read();
-			PolicyManager.getInstance().addPolicy(policy);
+			PolicyManager.getInstance().addPolicy(policyFile,policy);
 
 			log.info("Successfully deployed the policy specified at "
 					+ deploymentFileData.getAbsolutePath());
@@ -90,7 +98,7 @@ public class PolicyDeployer extends AbstractDeployer {
 		File policyFile = new File(fileName);
 		String policyName = policyFile.getName().replaceAll("." + fileExt + "$", "");
 		try {
-			PolicyManager.getInstance().removePolicy(policyName);
+			PolicyManager.getInstance().removePolicy(policyFile);
 			log.info("Successfully undeployed the policy specified at " + fileName);
 		} catch (InvalidPolicyException e) {
 			log.error("unable to remove policy " + policyName , e);

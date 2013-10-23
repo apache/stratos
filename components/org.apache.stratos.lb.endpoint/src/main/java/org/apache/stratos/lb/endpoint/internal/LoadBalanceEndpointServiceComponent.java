@@ -96,79 +96,17 @@ import java.util.Set;
  */
 @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
 public class LoadBalanceEndpointServiceComponent {
-
-    private static final Log log = LogFactory
-            .getLog(LoadBalanceEndpointServiceComponent.class);
+    private static final Log log = LogFactory.getLog(LoadBalanceEndpointServiceComponent.class);
 
     private boolean activated = false;
 
     protected void activate(ComponentContext ctxt) {
         try {
+            // Register endpoint deployer
             SynapseEnvironmentService synEnvService = LoadBalancerContext.getInstance().getSynapseEnvironmentService(
                     MultitenantConstants.SUPER_TENANT_ID);
-
             registerDeployer(LoadBalancerContext.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
-
-            SynapseEnvironment synapseEnv = synEnvService
-                    .getSynapseEnvironment();
-
-			// Registering Tenant Aware Load Balance Endpoint
-            // get the main sequence mediator
-            SequenceMediator mainSequence = (SequenceMediator) synapseEnv
-                    .getSynapseConfiguration().getSequence("main");
-
-            boolean successfullyRegistered = false;
-
-            // iterate through its child mediators
-            for (Mediator child : mainSequence.getList()) {
-                // find the InMediator
-                if (child instanceof InMediator) {
-                    for (Mediator inChild : ((InMediator) child).getList()) {
-                        // find the SendMediator
-                        if (inChild instanceof SendMediator) {
-                            SendMediator sendMediator = (SendMediator) inChild;
-
-							// TODO: Load the endpoint dynamically from the configuration
-                            TenantAwareLoadBalanceEndpoint endpoint = new TenantAwareLoadBalanceEndpoint();
-                            endpoint.init(synapseEnv);
-                            sendMediator.setEndpoint(endpoint);
-                            successfullyRegistered = true;
-
-                            if (log.isDebugEnabled()) {
-                                log.debug("Added Tenant Aware Endpoint: " + sendMediator.getEndpoint().getName()
-                                        + "" + " to Send Mediator.");
-                            }
-                        }
-                    }
-                }
-                
-                // find the OutMediator
-                if (child instanceof OutMediator) {
-
-                    OutMediator outSequence = (OutMediator) child;
-
-                    // if the first child of OutMediator isn't an ResponseInterceptor
-                    if (!(outSequence.getList().get(0) instanceof ResponseInterceptor)) {
-
-                        // we gonna add it!
-                        outSequence.getList().add(0, new ResponseInterceptor());
-
-                        if (log.isDebugEnabled()) {
-                            log.debug("Added Mediator: " + outSequence.getChild(0) + "" +
-                                    " to OutMediator. Number of child mediators in OutMediator" +
-                                    " is " + outSequence.getList().size() + ".");
-                        }
-
-                    }
-                }
-            }
-
-            if (!successfullyRegistered) {
-                String msg = "Failed to register Tenant Aware Load Balance Endpoint in Send Mediator.";
-                log.fatal(msg);
-                throw new TenantAwareLoadBalanceEndpointException(msg);
-            }
 
             // Start topic subscriber thread
             TopicSubscriber topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);

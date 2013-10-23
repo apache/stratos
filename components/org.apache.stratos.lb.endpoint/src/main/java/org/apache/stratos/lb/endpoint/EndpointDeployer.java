@@ -44,7 +44,9 @@ public class EndpointDeployer extends org.apache.synapse.deployers.EndpointDeplo
     public String deploySynapseArtifact(OMElement artifactConfig, String fileName,
                                         Properties properties) {
         String epName = super.deploySynapseArtifact(artifactConfig, fileName, properties);
-        mpm.saveItemToRegistry(epName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        if(mpm != null) {
+            mpm.saveItemToRegistry(epName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        }
         return epName;
     }
 
@@ -53,19 +55,25 @@ public class EndpointDeployer extends org.apache.synapse.deployers.EndpointDeplo
                                         String existingArtifactName, Properties properties) {
         String epName = super.updateSynapseArtifact(
                 artifactConfig, fileName, existingArtifactName, properties);
-        mpm.saveItemToRegistry(epName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        if(mpm != null) {
+            mpm.saveItemToRegistry(epName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        }
         return epName;
     }
 
     @Override
     public void undeploySynapseArtifact(String artifactName) {
         super.undeploySynapseArtifact(artifactName);
-        mpm.deleteItemFromRegistry(artifactName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        if(mpm != null) {
+            mpm.deleteItemFromRegistry(artifactName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        }
     }
 
     @Override
     public void restoreSynapseArtifact(String artifactName) {
         super.restoreSynapseArtifact(artifactName);
-        mpm.saveItemToRegistry(artifactName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        if(mpm != null) {
+            mpm.saveItemToRegistry(artifactName, ServiceBusConstants.ITEM_TYPE_ENDPOINT);
+        }
     }
 }

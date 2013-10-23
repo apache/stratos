@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.client.topology;
+package org.apache.stratos.autoscaler.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
 import org.apache.stratos.messaging.message.processor.*;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -47,8 +48,8 @@ public class TopologyEventMessageDelegator implements Runnable {
                 // retrieve the actual message
                 String json = message.getText();
                 
-                CompleteTopologyEventProcessor processor = new CompleteTopologyEventProcessor();
-                if(processor.process(type, json, TopologyManager.getTopology())) {
+                CompleteTopologyEventProcessor completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
+                if(completeTopologyEventProcessor.process(type, json, TopicSubscriberManager.getTopology())) {
                 	break;
                 }
 
@@ -93,10 +94,10 @@ public class TopologyEventMessageDelegator implements Runnable {
 				}
 
 				try {
-					TopologyManager.acquireWriteLock();
-					processor1.process(type, json, TopologyManager.getTopology());
+					TopicSubscriberManager.acquireWriteLock();
+					processor1.process(type, json, TopicSubscriberManager.getTopology());
 				} finally {
-					TopologyManager.releaseWriteLock();
+					TopicSubscriberManager.releaseWriteLock();
 				}
 
 			} catch (Exception e) {
