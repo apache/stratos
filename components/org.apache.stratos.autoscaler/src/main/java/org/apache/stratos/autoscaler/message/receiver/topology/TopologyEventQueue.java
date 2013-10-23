@@ -16,12 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.util;
 
-public class Constants {
-	
-	public static final String TOPOLOGY_TOPIC = "topology-topic";
-	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
-    public static final String TENANT_RANGE_DELIMITER = "-";
-    public static final String EVENT_CLASS_NAME = "event-class-name";
+package org.apache.stratos.autoscaler.message.receiver.topology;
+
+import javax.jms.TextMessage;
+import java.util.concurrent.LinkedBlockingQueue;
+
+/**
+ * Implements topology event queue.
+ */
+public class TopologyEventQueue extends LinkedBlockingQueue<TextMessage>{
+    private static volatile TopologyEventQueue instance;
+
+    private TopologyEventQueue(){
+    }
+
+    public static synchronized TopologyEventQueue getInstance() {
+        if (instance == null) {
+            synchronized (TopologyEventQueue.class){
+                if (instance == null) {
+                    instance = new TopologyEventQueue ();
+                }
+            }
+        }
+        return instance;
+    }
 }

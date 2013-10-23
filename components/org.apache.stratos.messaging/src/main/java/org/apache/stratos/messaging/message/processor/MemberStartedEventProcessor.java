@@ -28,13 +28,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberStartedEventProcessor implements MessageProcessor {
+public class MemberStartedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(MemberStartedEventProcessor.class);
-	private MessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(MessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 

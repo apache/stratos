@@ -74,6 +74,8 @@ public class CartridgeConstants {
 	public static final String INTERNAL_GIT_USERNAME = "internal.repo.username";
 	public static final String INTERNAL_GIT_PASSWORD = "internal.repo.password";
 
+    public static final String CUSTOM_PAYLOAD_PARAM_NAME_PREFIX = "payload_parameter.";
+
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";
 		public static final String HOSTINFO = "hostinfo/";

@@ -16,6 +16,12 @@
   #  specific language governing permissions and limitations
   #  under the License.
   -->
-<serviceGroup>
-
-</serviceGroup>
+<component xmlns="http://products.wso2.org/carbon">
+    <deployers>
+        <deployer>
+            <directory>policies</directory>
+            <extension>xml</extension>
+            <class>org.apache.stratos.autoscaler.policy.deployers.PolicyDeployer</class>
+        </deployer>
+    </deployers>
+</component>

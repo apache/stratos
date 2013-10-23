@@ -25,13 +25,13 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterRemovedEventProcessor implements MessageProcessor {
+public class ClusterRemovedEventProcessor implements TopologyMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(ClusterRemovedEventProcessor.class);
-	private MessageProcessor nextMsgProcessor;
+	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
-	public void setNext(MessageProcessor nextProcessor) {
+	public void setNext(TopologyMessageProcessor nextProcessor) {
 		nextMsgProcessor = nextProcessor;
 	}
 

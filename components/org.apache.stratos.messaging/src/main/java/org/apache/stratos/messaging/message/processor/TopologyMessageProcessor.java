@@ -16,12 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.util;
 
-public class Constants {
-	
-	public static final String TOPOLOGY_TOPIC = "topology-topic";
-	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
-    public static final String TENANT_RANGE_DELIMITER = "-";
-    public static final String EVENT_CLASS_NAME = "event-class-name";
+package org.apache.stratos.messaging.message.processor;
+
+import org.apache.stratos.messaging.domain.topology.Topology;
+
+/**
+ * Message processor interface. Every Message Processor should implement this.
+ */
+public interface TopologyMessageProcessor {
+    
+	/**
+	 * Link a message processor and its successor, if there's any.
+	 * @param nextProcessor
+	 */
+	public abstract void setNext(TopologyMessageProcessor nextProcessor);
+
+	/**
+	 * Message processing and delegating logic.
+	 * @param type type of the message. 
+	 * @param message real message body.
+	 * @param topology Topology that will get updated.
+	 * @return whether the processing was successful or not.
+	 */
+	public abstract boolean process(String type, String message, Topology topology);
 }

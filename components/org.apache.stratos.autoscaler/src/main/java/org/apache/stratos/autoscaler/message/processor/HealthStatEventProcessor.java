@@ -17,27 +17,15 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.processor;
-
-import org.apache.stratos.messaging.domain.topology.Topology;
+package org.apache.stratos.autoscaler.message.processor;
 
 /**
- * Message processor interface. Every Message Processor should implement this.
+ * Interface which defined health event processor interface
  */
-public interface MessageProcessor {
-    
-	/**
-	 * Link a message processor and its successor, if there's any.
-	 * @param nextProcessor
-	 */
-	public abstract void setNext(MessageProcessor nextProcessor);
+public interface HealthStatEventProcessor {
 
-	/**
-	 * Message processing and delegating logic.
-	 * @param type type of the message. 
-	 * @param message real message body.
-	 * @param topology Topology that will get updated.
-	 * @return whether the processing was successful or not.
-	 */
-	public abstract boolean process(String type, String message, Topology topology);
+    public void setNext(HealthStatEventProcessor nextProcessor);
+
+    public boolean process(String type, String message);
+
 }
