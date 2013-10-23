@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.util;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.apache.stratos.lb.common.mb.publish.TopicPublisher;
 
 /**
  * Singleton class to hold all the service references.

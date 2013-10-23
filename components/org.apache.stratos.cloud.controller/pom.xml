@@ -98,18 +98,12 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
 	    </dependency>
-
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.lb.common</artifactId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
-		    <exclusions>
-		        <exclusion>
-		            <groupId>com.google.guava.wso2</groupId>
-		            <artifactId>guava</artifactId>
-		        </exclusion>
-		    </exclusions>
         </dependency>
+
 
 
 <dependency>
@@ -264,6 +258,7 @@
            <artifactId>org.wso2.carbon.cartridge.messages</artifactId>
            <version>2.1.1</version>
          </dependency>
+
          <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>

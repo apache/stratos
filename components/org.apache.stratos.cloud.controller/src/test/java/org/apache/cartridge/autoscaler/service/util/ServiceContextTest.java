@@ -36,15 +36,11 @@ public class ServiceContextTest extends TestCase {
         ctxt.setProperty("public_ip", null);
     }
 
-    public final void testPropertiesToNginx() throws Exception {
-    	assertEquals(true, ctxt.propertiesToNginx().contains("min_app_instances 2;\n"));
-    	assertEquals(true, ctxt.propertiesToNginx().contains("max_app_instances 5;\n"));
-    	assertEquals(true, ctxt.propertiesToNginx().contains("public_ip ;\n"));
-    }
-    
+
     public final void testPropertiesToXml() throws Exception {
-    	System.out.println(ctxt.propertiesToXml());
-    	assertEquals(true, ctxt.propertiesToXml().contains("name=\"min_app_instances\" value=\"2\""));
+        System.out.println(ctxt.propertiesToXml());
+        assertEquals(true, ctxt.propertiesToXml().contains("name=\"min_app_instances\" value=\"2\""));
+
     }
    
 }

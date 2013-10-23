@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
-import java.io.File;
-
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
 
 public final class CloudControllerConstants {
 
@@ -208,7 +208,7 @@ public final class CloudControllerConstants {
      * Topology sync related constants
      */
     public static final String TOPOLOGY_FILE_PATH = CarbonUtils.getCarbonConfigDirPath()+File.separator+"service-topology.conf";
-    public static final String TOPOLOGY_TOPIC_NAME = "cloud-controller-topology";
+    public static final String TOPOLOGY_TOPIC_NAME = "topology-topic";
 	public static final String TOPOLOGY_SYNC_CRON = "1 * * * * ? *";
 	public static final String TOPOLOGY_SYNC_TASK_NAME = "TopologySynchronizerTask";
 	public static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK";

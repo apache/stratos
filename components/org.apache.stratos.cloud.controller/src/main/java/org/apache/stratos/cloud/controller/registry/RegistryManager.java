@@ -81,8 +81,7 @@ public class RegistryManager {
      */
 	public void persist(FasterLookUpDataHolder dataObj) throws RegistryException {
 		try {
-
-			registryService.beginTransaction();
+            registryService.beginTransaction();
 			
 			Resource nodeResource = registryService.newResource();
 

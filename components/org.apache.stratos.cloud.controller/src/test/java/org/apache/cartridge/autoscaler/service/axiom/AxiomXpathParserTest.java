@@ -18,14 +18,13 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
-import java.io.File;
-import java.util.List;
-
+import junit.framework.TestCase;
 import org.apache.axiom.om.OMNode;
 import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 
-import junit.framework.TestCase;
+import java.io.File;
+import java.util.List;
 
 public class AxiomXpathParserTest extends TestCase {
     AxiomXpathParser parser;
@@ -46,7 +45,6 @@ public class AxiomXpathParserTest extends TestCase {
         assertEquals(1, list.size());
         parser.setIaasProvidersList();
         assertEquals(1, FasterLookUpDataHolder.getInstance().getIaasProviders().size());
-        assertEquals(5, FasterLookUpDataHolder.getInstance().getIaasProviders().get(0).getMaxInstanceLimit());
     }
     
     public void testDataPublisherConfig() {

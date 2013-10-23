@@ -18,14 +18,14 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.jclouds.compute.ComputeService;
+import org.jclouds.compute.domain.Template;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.stratos.cloud.controller.interfaces.Iaas;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.domain.Template;
 
 /**
  * This is the basic data structure which holds an IaaS specific details.
@@ -36,9 +36,14 @@ public class IaasProvider implements Serializable{
     private static final long serialVersionUID = -940288190885166118L;
 
 	/**
-     * Unique id to identify this IaaS provider.
+     * IaaS provider + Region should be unique for a IaasProvider.
      */
     private String type;
+
+    /**
+     * Partition the IaaS using different region
+     */
+    private String region;
     
     /**
      * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.interfaces.Iaas}
@@ -260,5 +265,12 @@ public class IaasProvider implements Serializable{
 	    this.maxInstanceLimit = maxInstanceLimit;
     }
 
-    
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 }

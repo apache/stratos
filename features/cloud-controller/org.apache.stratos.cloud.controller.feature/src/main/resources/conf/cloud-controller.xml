@@ -73,8 +73,6 @@
 			<property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
            		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
 			<property name="jclouds.api-version" value="2.0/" />
-			<scaleUpOrder>2</scaleUpOrder>
-			<scaleDownOrder>3</scaleDownOrder>
 			<property name="X" value="x" />
 			<property name="Y" value="y" />
 			<imageId>nova/dab37f0e-cf6f-4812-86fc-733acf22d5e6</imageId>

@@ -62,9 +62,6 @@
 			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
 			<property name="jclouds.endpoint" value="http://172.17.0.1:5000/" />
 			<property name="jclouds.api-version" value="2.0/" />
-			<scaleUpOrder>1</scaleUpOrder>
-			<scaleDownOrder>2</scaleDownOrder>
-			<maxInstanceLimit>5</maxInstanceLimit>
 			<property name="region" value="x" />
 			<property name="Y" value="y" />
 			<imageId>tempLXC</imageId>

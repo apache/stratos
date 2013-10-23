@@ -18,57 +18,41 @@
  */
 package org.apache.stratos.cloud.controller.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.stratos.cloud.controller.consumers.TopologyBuilder;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
-import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.Cartridge;
-import org.apache.stratos.cloud.controller.util.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.Properties;
-import org.apache.stratos.cloud.controller.util.Property;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
+import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
+import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
+import org.apache.stratos.cloud.controller.persist.Deserializer;
+import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
+import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.cloud.controller.util.*;
+import org.apache.stratos.cloud.controller.util.Properties;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadata.Status;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.internal.NodeMetadataImpl;
-import org.apache.stratos.lb.common.conf.util.Constants;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
-import org.apache.stratos.cloud.controller.persist.Deserializer;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.IaasContext;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
-import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
@@ -150,9 +134,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	private void startTopologyBuilder() {
-		// initialize TopologyBuilder Consumer
-		Thread topologyBuilder = new Thread(new TopologyBuilder(
-				dataHolder.getSharedTopologyDiffQueue()));
+		// initialize TopologyEventMessageProcessor Consumer
+		Thread topologyBuilder = new Thread(new TopologyEventMessageDelegator());
 		// start consumer
 		topologyBuilder.start();
 	}
@@ -283,27 +266,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 	}
 
-	@Override
-	public String startInstance(String domainName, String subDomainName) {
+    @Override
+	public String startInstance(String clusterId, LocationScope locationScope) {
 
 		ComputeService computeService;
 		Template template;
-		String ip = "";
+		String ip;
+        String cloud = locationScope.getCloud();
+        String region = locationScope.getRegion();
 		final Lock lock = new ReentrantLock();
 
-		// check for sub domain
-		subDomainName = checkSubDomain(subDomainName);
 
-		log.info("Starting new instance of domain : " + domainName
-				+ " and sub domain : " + subDomainName);
+		log.info("Starting new instance of domain : " + clusterId);
 
 		// get the subjected ServiceContext
 		ServiceContext serviceCtxt = dataHolder
-				.getServiceContext(domainName, subDomainName);
+				.getServiceContextFromDomain(clusterId);
 
 		if (serviceCtxt == null) {
-			String msg = "Not a registered service: domain - " + domainName
-					+ ", sub domain - " + subDomainName;
+			String msg = "Not a registered service: domain - " + clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
@@ -315,7 +296,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		if (serviceCtxt.getCartridge() == null) {
 			String msg = "There's no registered Cartridge found. Domain - "
-					+ domainName + ", sub domain - " + subDomainName;
+					+ clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
@@ -327,171 +308,173 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new CloudControllerException(msg);
 		}
 
-		// sort the IaasProviders according to scale up order
-		Collections.sort(serviceCtxt.getCartridge().getIaases(),
-				IaasProviderComparator.ascending(IaasProviderComparator
-						.getComparator(IaasProviderComparator.SCALE_UP_SORT)));
 
 		for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
 
-			IaasContext ctxt = null;
-			if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
-				ctxt = serviceCtxt.addIaasContext(iaas.getType());
-			}
+            if(cloud == null) {
+                String msg = "There's no IaaS provided for the cluster: "
+					+ clusterId + " to start an instance";
+                log.fatal(msg);
+                throw new CloudControllerException(msg);
+            }
 
-			if (iaas.getMaxInstanceLimit() > dataHolder.getActiveInstanceCount(iaas.getType())) {
-				try {
+            if(region == null) {
+                log.info("Region is not provided. Hence the default region is taken into the spawning a new instance");
+            }
+            //checking for the cloud and the region
+            //TODO adding more locations and retrieve it from the request received
+            if(iaas.getName().equals(cloud) && (region == null || iaas.getRegion().equals(region))) {
+                IaasContext ctxt;
+                if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
+                    ctxt = serviceCtxt.addIaasContext(iaas.getType());
+                }
+                try {
+                    //generating the Unique member ID...
+                    String memberID = generateMemberId(clusterId);
+                    //have to add memberID to the payload
+                    iaas.getIaas().setDynamicPayload(iaas);
 
-					iaas.getIaas().setDynamicPayload(iaas);
+                    // get the ComputeService
+                    computeService = iaas.getComputeService();
 
-					// get the ComputeService
-					computeService = iaas.getComputeService();
+                    // corresponding Template
+                    template = iaas.getTemplate();
 
-					// corresponding Template
-					template = iaas.getTemplate();
+                    if (template == null) {
+                        String msg = "Failed to start an instance in "
+                                + iaas.getType()
+                                + ". Reason : Template is null. You have not specify a matching service "
+                                + "element in the configuration file of Autoscaler.\n Hence, will try to "
+                                + "start in another IaaS if available.";
+                        log.error(msg);
+                        continue;
+                    }
 
-					if (template == null) {
-						String msg = "Failed to start an instance in "
-								+ iaas.getType()
-								+ ". Reason : Template is null. You have not specify a matching service "
-								+ "element in the configuration file of Autoscaler.\n Hence, will try to "
-								+ "start in another IaaS if available.";
-						log.error(msg);
-						continue;
-					}
+                    // set instance name as the host name
+                    // template.getOptions().userMetadata("Name",
+                    // serviceCtxt.getHostName());
+                    // template.getOptions().as(TemplateOptions.class).userMetadata("Name",
+                    // serviceCtxt.getHostName());
 
-					// set instance name as the host name
-					// template.getOptions().userMetadata("Name",
-					// serviceCtxt.getHostName());
-					// template.getOptions().as(TemplateOptions.class).userMetadata("Name",
-					// serviceCtxt.getHostName());
+                    // generate the group id from domain name and sub domain
+                    // name.
+                    // Should have lower-case ASCII letters, numbers, or dashes.
+                    // Should have a length between 3-15
+                    String str = clusterId.substring(0, 10);
+                    String group = str.replaceAll("[^a-z0-9-]", "");
 
-					// generate the group id from domain name and sub domain
-					// name.
-					// Should have lower-case ASCII letters, numbers, or dashes.
-					// Should have a length between 3-15
-					String str = domainName.concat("-" + subDomainName)
-							.substring(0, 10);
-					String group = str.replaceAll("[^a-z0-9-]", "");
+                    NodeMetadata node;
 
-					NodeMetadata node;
+                    // create and start a node
+                    Set<? extends NodeMetadata> nodes = computeService
+                            .createNodesInGroup(group, 1, template);
 
-					// create and start a node
-					Set<? extends NodeMetadata> nodes = computeService
-							.createNodesInGroup(group, 1, template);
+                    node = nodes.iterator().next();
 
-					node = nodes.iterator().next();
+                    String autoAssignIpProp = iaas
+                            .getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
 
-					String autoAssignIpProp = iaas
-							.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
+                    // acquire the lock
+                    lock.lock();
 
-					// acquire the lock
-					lock.lock();
+                    try {
+                        // reset ip
+                        ip = "";
+                        // default behavior is autoIpAssign=false
+                        if (autoAssignIpProp == null
+                                || (autoAssignIpProp != null && autoAssignIpProp
+                                        .equals("false"))) {
+                            // allocate an IP address - manual IP assigning mode
+                            ip = iaas.getIaas().associateAddress(iaas, node);
+                        }
 
-					try {
-						// reset ip
-						ip = "";
-						// default behavior is autoIpAssign=false
-						if (autoAssignIpProp == null
-								|| (autoAssignIpProp != null && autoAssignIpProp
-										.equals("false"))) {
-							// allocate an IP address - manual IP assigning mode
-							ip = iaas.getIaas().associateAddress(iaas, node);
-						}
+                        if (ip.isEmpty()
+                                && node.getPublicAddresses() != null
+                                && node.getPublicAddresses().iterator()
+                                        .hasNext()) {
+                            ip = node.getPublicAddresses().iterator().next();
+                        }
 
-						if (ip.isEmpty()
-								&& node.getPublicAddresses() != null
-								&& node.getPublicAddresses().iterator()
-										.hasNext()) {
-							ip = node.getPublicAddresses().iterator().next();
-						}
+                        // if not public IP is assigned, we're using private IP
+                        if (ip.isEmpty()
+                                && node.getPrivateAddresses() != null
+                                && node.getPrivateAddresses().iterator()
+                                        .hasNext()) {
+                            ip = node.getPrivateAddresses().iterator().next();
+                        }
 
-						// if not public IP is assigned, we're using private IP
-						if (ip.isEmpty()
-								&& node.getPrivateAddresses() != null
-								&& node.getPrivateAddresses().iterator()
-										.hasNext()) {
-							ip = node.getPrivateAddresses().iterator().next();
-						}
+                        if (node.getId() == null) {
+                            String msg = "Node id of the starting instance is null.\n"
+                                    + node.toString();
+                            log.fatal(msg);
+                            throw new CloudControllerException(msg);
+                        }
 
-						if (node.getId() == null) {
-							String msg = "Node id of the starting instance is null.\n"
-									+ node.toString();
-							log.fatal(msg);
-							throw new CloudControllerException(msg);
-						}
+                        // add node ID
+                        ctxt.addNodeId(node.getId());
+                        ctxt.addNodeToPublicIp(node.getId(), ip);
 
-						// add node ID
-						ctxt.addNodeId(node.getId());
-						ctxt.addNodeToPublicIp(node.getId(), ip);
+                        // to faster look up
+                        dataHolder.addNodeId(
+                                node.getId(), serviceCtxt);
 
-						// to faster look up
-						dataHolder.addNodeId(
-								node.getId(), serviceCtxt);
+                        serviceCtxt.getCartridge().setLastlyUsedIaas(iaas);
 
-						serviceCtxt.getCartridge().setLastlyUsedIaas(iaas);
+                        // add this ip to the topology
+                        appendToPublicIpProperty(ip, serviceCtxt);
 
-						// add this ip to the topology
-						appendToPublicIpProperty(ip, serviceCtxt);
+                        dataHolder.updateActiveInstanceCount(iaas.getType(), 1);
 
-						dataHolder.updateActiveInstanceCount(iaas.getType(), 1);
+                        // persist in registry
+                        persist();
 
-						// persist in registry
-						persist();
+                        // trigger topology
+                        TopologyBuilder.handleMemberSpawned(memberID, serviceCtxt.getCartridgeType(), clusterId,
+                                 node.getId(), locationScope);
 
-						// trigger topology consumers
-						List<ServiceContext> list = new ArrayList<ServiceContext>();
-						list.add(serviceCtxt);
-						try {
-							dataHolder.getSharedTopologyDiffQueue().put(list);
+                        //update the topology with the newly spawned member
+                        // publish data
+                        CartridgeInstanceDataPublisherTask.publish();
+                        if (log.isDebugEnabled()) {
+                            log.debug("Node details: \n" + node.toString()
+                                    + "\n***************\n");
+                        }
 
-							// publish data
-							CartridgeInstanceDataPublisherTask.publish();
-						} catch (InterruptedException ignore) {
-						}
+                        log.info("Instance is successfully starting up in IaaS "
+                                + iaas.getType()
+                                + ".\tIP Address(public/private): "
+                                + ip
+                                + "\tNode Id: " + node.getId());
 
-						if (log.isDebugEnabled()) {
-							log.debug("Node details: \n" + node.toString()
-									+ "\n***************\n");
-						}
+                        return ip;
 
-						log.info("Instance is successfully starting up in IaaS "
-								+ iaas.getType()
-								+ ".\tIP Address(public/private): "
-								+ ip
-								+ "\tNode Id: " + node.getId());
+                    } finally {
+                        // release the lock
+                        lock.unlock();
+                    }
 
-						return ip;
-
-					} finally {
-						// release the lock
-						lock.unlock();
-					}
-
-				} catch (Exception e) {
-					log.warn(
-							"Failed to start an instance in "
-									+ iaas.getType()
-									+ ". Hence, will try to start in another IaaS if available.",
-							e);
-					continue;
-				}
-			} else {
-				log.warn("Max instance limit is reached in the IaaS "
-						+ iaas.getType() + " : Max instance limit: "
-						+ iaas.getMaxInstanceLimit());
-			}
-
-		}
-
-		log.error("Failed to start an instance, in any available IaaS: "
-				+ domainName + " and sub domain : " + subDomainName);
-
-		return null;
+                    } catch (Exception e) {
+                        log.warn(
+                                "Failed to start an instance in "
+                                        + iaas.getType()
+                                        + ". Hence, will try to start in another IaaS if available.",
+                                e);
+                    }
+            }
+            else {
+                if(region != null) {
+                   log.error("Failed to start an instance, in any IaaS: " + cloud +
+                           " of the region: " + region +  "for the cluster: "
+				            + clusterId);
+                }
+            }
+        }
+        return null;
 
 	}
 
-	/**
+
+    /**
 	 * Appends this ip to the Service Context's
 	 * {@link CloudControllerConstants#PUBLIC_IP_PROPERTY}
 	 * 
@@ -525,6 +508,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 	}
 
+    private String generateMemberId(String clusterId) {
+        UUID memberId = UUID.randomUUID();
+         return clusterId + memberId.toString();
+    }
+
 	private Cartridge loadCartridge(String cartridgeType, byte[] payload,
 			List<Cartridge> cartridges) {
 
@@ -541,19 +529,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public boolean terminateInstance(String domainName, String subDomainName) {
+	public boolean terminateInstance(String clusterId, LocationScope locationScope) {
 
-		subDomainName = checkSubDomain(subDomainName);
-
-		log.info("Starting to terminate an instance of domain : " + domainName
-				+ " and sub domain : " + subDomainName);
+         String cloud = locationScope.getCloud();
+        String region = locationScope.getRegion();
+		log.info("Starting to terminate an instance of domain : " + clusterId);
 
 		ServiceContext serviceCtxt = dataHolder
-				.getServiceContext(domainName, subDomainName);
+				.getServiceContextFromDomain(clusterId);
 
 		if (serviceCtxt == null) {
-			String msg = "Not a registered service: domain - " + domainName
-					+ ", sub domain - " + subDomainName;
+			String msg = "Not a registered service: domain - " + clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
@@ -568,58 +554,55 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// if still, Cartridge is null
 		if (serviceCtxt.getCartridge() == null) {
 			String msg = "There's no registered Cartridge found. Domain - "
-					+ domainName + ", sub domain - " + subDomainName;
+					+ clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
 
-		// sort the IaasProviders according to scale down order
-		Collections
-				.sort(serviceCtxt.getCartridge().getIaases(),
-						IaasProviderComparator.ascending(IaasProviderComparator
-								.getComparator(IaasProviderComparator.SCALE_DOWN_SORT)));
-
-		// traverse in scale down order
-		for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
+        for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
 
 			String msg = "Failed to terminate an instance in "
 					+ iaas.getType()
 					+ ". Hence, will try to terminate an instance in another IaaS if possible.";
+            //TODO adding more locations and retrieve it from the request received
+            if(iaas.getName().equals(cloud) && (region == null || iaas.getRegion().equals(region))) {
+                String nodeId = null;
 
-			String nodeId = null;
+                IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
 
-			IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
+                // terminate the last instance first
+                for (String id : Lists.reverse(ctxt.getNodeIds())) {
+                    if (id != null) {
+                        nodeId = id;
+                        break;
+                    }
+                }
 
-			// terminate the last instance first
-			for (String id : Lists.reverse(ctxt.getNodeIds())) {
-				if (id != null) {
-					nodeId = id;
-					break;
-				}
-			}
+                // if no matching node id can be found.
+                if (nodeId == null) {
 
-			// if no matching node id can be found.
-			if (nodeId == null) {
+                    log.warn(msg
+                            + " : Reason- No matching instance found for domain: "
+                            + clusterId
+                            + ".");
+                    continue;
+                }
 
-				log.warn(msg
-						+ " : Reason- No matching instance found for domain: "
-						+ domainName + " and sub domain: " + subDomainName
-						+ ".");
-				continue;
-			}
+                // terminate it!
+                terminate(iaas, ctxt, nodeId);
 
-			// terminate it!
-			terminate(iaas, ctxt, nodeId);
+                // log information
+                logTermination(nodeId, ctxt, serviceCtxt);
+            }
 
-			// log information
-			logTermination(nodeId, ctxt, serviceCtxt);
+
 
 			return true;
 
 		}
 
 		log.info("Termination of an instance which is belong to domain '"
-				+ domainName + "' and sub domain '" + subDomainName
+				+ clusterId
 				+ "' , failed! Reason: No matching "
 				+ "running instance found in any available IaaS.");
 
@@ -627,21 +610,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	}
 
-	@Override
-	public boolean terminateLastlySpawnedInstance(String domainName,
-			String subDomainName) {
+    @Override
+    public boolean terminateInstance(String instanceId) {
+        //TODO
+        return false;
+    }
 
-		subDomainName = checkSubDomain(subDomainName);
-
-		log.info("Starting to terminate the last instance spawned, of domain : "
-				+ domainName + " and sub domain : " + subDomainName);
+    @Override
+	public boolean terminateLastlySpawnedInstance(String clusterId) {
+        log.info("Starting to terminate the last instance spawned, of domain : "
+				+ clusterId);
 
 		ServiceContext serviceCtxt = dataHolder
-				.getServiceContext(domainName, subDomainName);
+				.getServiceContextFromDomain(clusterId);
 
 		if (serviceCtxt == null) {
-			String msg = "Not a registered service: domain - " + domainName
-					+ ", sub domain - " + subDomainName;
+			String msg = "Not a registered service: domain - " + clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
@@ -655,7 +639,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		if (serviceCtxt.getCartridge() == null) {
 			String msg = "There's no registered Cartridge found. Domain - "
-					+ domainName + ", sub domain - " + subDomainName;
+					+ clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
@@ -671,7 +655,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			String nodeId = null;
 			IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
 
-			int i = 0;
+			int i;
 			for (i = ctxt.getNodeIds().size() - 1; i >= 0; i--) {
 				String id = ctxt.getNodeIds().get(i);
 				if (id != null) {
@@ -694,8 +678,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 
 		log.info("Termination of an instance which is belong to domain '"
-				+ domainName + "' and sub domain '" + subDomainName
-				+ "' , failed! Reason: No matching "
+				+ clusterId + ", failed! Reason: No matching "
 				+ "running instance found in lastly used IaaS.");
 
 		return false;
@@ -703,21 +686,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public boolean terminateAllInstances(String domainName, String subDomainName) {
+	public boolean terminateAllInstances(String clusterId) {
 
 		boolean isAtLeastOneTerminated = false;
 
-		subDomainName = checkSubDomain(subDomainName);
 
 		log.info("Starting to terminate all instances of domain : "
-				+ domainName + " and sub domain : " + subDomainName);
+				+ clusterId);
 
 		ServiceContext serviceCtxt = dataHolder
-				.getServiceContext(domainName, subDomainName);
+				.getServiceContextFromDomain(clusterId);
 
 		if (serviceCtxt == null) {
-			String msg = "Not a registered service: domain - " + domainName
-					+ ", sub domain - " + subDomainName;
+			String msg = "Not a registered service: domain - " + clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
@@ -731,19 +712,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		if (serviceCtxt.getCartridge() == null) {
 			String msg = "There's no registered Cartridge found. Domain - "
-					+ domainName + ", sub domain - " + subDomainName;
+					+ clusterId;
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
 
-		// sort the IaasProviders according to scale down order
-		Collections
-				.sort(serviceCtxt.getCartridge().getIaases(),
-						IaasProviderComparator.ascending(IaasProviderComparator
-								.getComparator(IaasProviderComparator.SCALE_DOWN_SORT)));
-
-		// traverse in scale down order
-		for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
+        for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
 
 			IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
 
@@ -772,22 +746,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 
 		log.info("Termination of an instance which is belong to domain '"
-				+ domainName + "' and sub domain '" + subDomainName
-				+ "' , failed! Reason: No matching "
+				+ clusterId + "', failed! Reason: No matching "
 				+ "running instance found in lastly used IaaS.");
 
 		return false;
 
 	}
 
-	public int getPendingInstanceCount(String domainName, String subDomainName) {
-
-		subDomainName = checkSubDomain(subDomainName);
-
-		int pendingInstanceCount = 0;
+	public int getPendingInstanceCount(String clusterId) {
+        int pendingInstanceCount = 0;
 
 		ServiceContext subjectedSerCtxt = dataHolder
-				.getServiceContext(domainName, subDomainName);
+				.getServiceContextFromDomain(clusterId);
 
 		if (subjectedSerCtxt != null
 				&& subjectedSerCtxt.getCartridgeType() != null) {
@@ -808,7 +778,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 				ComputeService computeService = iaas.getComputeService();
 
-				IaasContext ctxt = null;
+				IaasContext ctxt;
 				if ((ctxt = subjectedSerCtxt.getIaasContext(iaas.getType())) == null) {
 					ctxt = subjectedSerCtxt.addIaasContext(iaas.getType());
 				}
@@ -819,39 +789,35 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 				if (nodeIds.isEmpty()) {
 					log.debug("Zero nodes spawned in the IaaS "
-							+ iaas.getType() + " of domain: " + domainName
-							+ " and sub domain: " + subDomainName);
+							+ iaas.getType() + " of domain: " + clusterId);
 					continue;
 				}
 
 				// get all the nodes spawned by this IaasContext
 				Set<? extends ComputeMetadata> set = computeService.listNodes();
 
-				Iterator<? extends ComputeMetadata> iterator = set.iterator();
+                // traverse through all nodes of this ComputeService object
+                for (ComputeMetadata aSet : set) {
+                    NodeMetadataImpl nodeMetadata = (NodeMetadataImpl) aSet;
 
-				// traverse through all nodes of this ComputeService object
-				while (iterator.hasNext()) {
-					NodeMetadataImpl nodeMetadata = (NodeMetadataImpl) iterator
-							.next();
+                    // if this node belongs to the requested domain
+                    if (nodeIds.contains(nodeMetadata.getId())) {
 
-					// if this node belongs to the requested domain
-					if (nodeIds.contains(nodeMetadata.getId())) {
+                        // get the status of the node
+                        Status nodeStatus = nodeMetadata.getStatus();
 
-						// get the status of the node
-						Status nodeStatus = nodeMetadata.getStatus();
+                        // count nodes that are in pending state
+                        if (nodeStatus.equals(Status.PENDING)) {
+                            pendingInstanceCount++;
+                        }
+                    }
 
-						// count nodes that are in pending state
-						if (nodeStatus.equals(Status.PENDING)) {
-							pendingInstanceCount++;
-						}
-					}
-
-				}
+                }
 			}
 		}
 
-		log.debug("Pending instance count of domain '" + domainName
-				+ "' and sub domain '" + subDomainName + "' is "
+		log.debug("Pending instance count of domain '" + clusterId
+				+ " is "
 				+ pendingInstanceCount);
 
 		return pendingInstanceCount;
@@ -860,7 +826,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	/**
 	 * A helper method to terminate an instance.
-	 */
+     * @param iaasTemp
+     * @param ctxt
+     * @param nodeId
+     * @return will return the IaaSProvider
+     */
 	private IaasProvider terminate(IaasProvider iaasTemp, IaasContext ctxt,
 			String nodeId) {
 
@@ -879,7 +849,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		// release allocated IP address
 		if (autoAssignIpProp == null
-				|| (autoAssignIpProp != null && autoAssignIpProp
+				|| (autoAssignIpProp
 						.equals("false"))) {
 			// allocate an IP address - manual IP assigning mode
 			iaasTemp.getIaas().releaseAddress(iaasTemp,
@@ -916,6 +886,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// add this ip to the topology
 		serviceCtxt.setProperty(ipProp, newIpStr.length() == 0 ? "" : newIpStr
 				.substring(0, newIpStr.length() - 1).toString());
+        //updating the topology
+        TopologyBuilder.handleMemberTerminated(serviceCtxt.getCartridgeType(), serviceCtxt.getClusterId(), nodeId);
 
 		// remove the reference
 		ctxt.removeNodeIdToPublicIp(nodeId);
@@ -923,13 +895,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// persist
 		persist();
 
-		// trigger topology consumers
-		List<ServiceContext> list = new ArrayList<ServiceContext>();
-		list.add(serviceCtxt);
-		try {
-			dataHolder.getSharedTopologyDiffQueue().put(list);
-		} catch (InterruptedException ignore) {
-		}
+		//handle the termination event
+
 
 	}
 
@@ -976,17 +943,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public boolean registerService(String domain, String subDomain,
+	public boolean registerService(String clusterId,
 			String tenantRange, String cartridgeType, String hostName,
-			Properties properties, byte[] payload)
+			Properties properties, byte[] payload, String autoScalerPolicyName)
 			throws UnregisteredCartridgeException {
 
 		// create a ServiceContext dynamically
 		ServiceContext newServiceCtxt = new ServiceContext();
-		newServiceCtxt.setDomainName(domain);
-		newServiceCtxt.setSubDomainName(subDomain);
+		newServiceCtxt.setClusterId(clusterId);
+		//newServiceCtxt.setSubDomainName(subDomain);
 		newServiceCtxt.setTenantRange(tenantRange);
 		newServiceCtxt.setHostName(hostName);
+        newServiceCtxt.setAutoScalerPolicyName(autoScalerPolicyName);
 
 		if (properties != null && properties.getProperties() != null) {
 			// add properties
@@ -1019,7 +987,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 			// write payload file
 			try {
-				String uniqueName = domain + "-" + subDomain + ".txt";
+				String uniqueName = clusterId + ".txt";
 				FileUtils.forceMkdir(new File(
 						CloudControllerConstants.PAYLOAD_DIR));
 				File payloadFile = new File(
@@ -1028,40 +996,29 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				newServiceCtxt.setPayloadFile(payloadFile.getPath());
 
 			} catch (IOException e) {
-				String msg = "Failed while persisting the payload of domain : "
-						+ domain + ", sub domain : " + subDomain;
+				String msg = "Failed while persisting the payload of clusterId : "
+						+ clusterId;
 				log.error(msg, e);
 				throw new CloudControllerException(msg, e);
 			}
 
 		} else {
 			log.debug("Payload is null or empty for :\n "
-					+ newServiceCtxt.toNode().toString());
+					+ newServiceCtxt);
 		}
 
 		// persist
-		try {
-			String uniqueName = domain + "-" + subDomain + "-"
-					+ UUID.randomUUID() + ".xml";
-			FileUtils.writeStringToFile(new File(
-					CloudControllerConstants.SERVICES_DIR + uniqueName),
-					newServiceCtxt.toXml());
-		} catch (IOException e) {
-			String msg = "Failed while persisting the service configuration - domain : "
-					+ domain
-					+ ", sub domain : "
-					+ subDomain
-					+ ", tenant range: "
-					+ tenantRange
-					+ ", cartridge type: "
-					+ cartridgeType;
-			log.error(msg, e);
-			throw new CloudControllerException(msg, e);
-		}
+        String uniqueName = clusterId + "-"
+                + UUID.randomUUID() + ".xml";
+        try {
+            FileUtils.writeStringToFile(new File(CloudControllerConstants.SERVICES_DIR + uniqueName),
+                                            newServiceCtxt.toXml());
+        } catch (IOException e) {
+            //TODO
+        }
 
-		log.info("Service successfully registered! Domain - " + domain
-				+ ", Sub domain - " + newServiceCtxt.getSubDomainName()
-				+ ", Cartridge type - " + cartridgeType);
+        log.info("Service successfully registered! Domain - " + clusterId
+                + ", Cartridge type - " + cartridgeType);
 
 		return true;
 	}
@@ -1087,7 +1044,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		return cartridgeTypes;
 	}
 
-	private String checkSubDomain(String subDomainName) {
+	/*private String checkSubDomain(String subDomainName) {
 		// if sub domain is null, we assume it as default one.
 		if (subDomainName == null || "null".equalsIgnoreCase(subDomainName)) {
 			subDomainName = Constants.DEFAULT_SUB_DOMAIN;
@@ -1096,7 +1053,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 
 		return subDomainName;
-	}
+	}*/
 
 	@Override
 	public CartridgeInfo getCartridgeInfo(String cartridgeType)
@@ -1116,20 +1073,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		throw new UnregisteredCartridgeException(msg);
 	}
 
-	@Override
-	public boolean unregisterService(String domain, String subDomain)
+    @Override
+	public boolean unregisterService(String clusterId)
 			throws UnregisteredServiceException {
 
-		subDomain = checkSubDomain(subDomain);
+		//subDomain = checkSubDomain(subDomain);
 
 		// find the service context
 		ServiceContext subjectedSerCtxt = dataHolder
-				.getServiceContext(domain, subDomain);
+				.getServiceContextFromDomain(clusterId);
 
 		if (subjectedSerCtxt == null) {
 			throw new UnregisteredServiceException(
-					"No registered service found for domain: " + domain
-							+ " - sub domain: " + subDomain);
+					"No registered service found for domain: " + clusterId);
 		}
 
 		// get the service definition file.

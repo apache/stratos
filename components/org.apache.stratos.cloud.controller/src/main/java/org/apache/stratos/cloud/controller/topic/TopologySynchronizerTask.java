@@ -18,24 +18,17 @@
  */
 package org.apache.stratos.cloud.controller.topic;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.topology.TopologyEventSender;
 import org.wso2.carbon.ntask.core.Task;
 
+import java.util.Map;
+
 public class TopologySynchronizerTask implements Task{
-    
     private static final Log log = LogFactory.getLog(TopologySynchronizerTask.class);
-    private static FasterLookUpDataHolder data = FasterLookUpDataHolder.getInstance();
-    private File topologyFile;
-    
+
     @Override
     public void execute() {
     	if(FasterLookUpDataHolder.getInstance().isTopologySyncRunning()||
@@ -44,18 +37,13 @@ public class TopologySynchronizerTask implements Task{
             return;
         }
     	
-    	log.debug("TopologySynchronizerTask ... ");
+        if (log.isDebugEnabled()) {
+            log.debug("TopologySynchronizerTask ...");
+        }
         
     	// publish to the topic 
-		try {
-			if (topologyFile.exists()) {
-				data.getTopicPublisher(CloudControllerConstants.TOPOLOGY_TOPIC_NAME).publish(FileUtils.readFileToString(topologyFile));
-			}
-		} catch (IOException e) {
-        	String msg = "Failed when publishing to the topic "+CloudControllerConstants.TOPOLOGY_TOPIC_NAME+
-        			" - Reason : Failed while reading topology from "+topologyFile.getAbsolutePath();
-        	log.error(msg, e);
-        	throw new CloudControllerException(msg, e);
+        if (FasterLookUpDataHolder.getInstance().getTopology() != null) {
+            TopologyEventSender.sendCompleteTopologyEvent(FasterLookUpDataHolder.getInstance().getTopology());
         }
     }
     
@@ -67,9 +55,6 @@ public class TopologySynchronizerTask implements Task{
 			log.debug("Topology Sync is disabled.");
 			return;
 		}
-    	
-    	topologyFile = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH);
-        
     }
 
     @Override
