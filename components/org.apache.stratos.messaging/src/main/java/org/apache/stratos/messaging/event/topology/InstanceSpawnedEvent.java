@@ -35,11 +35,13 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
     private String serviceName;
     private String clusterId;
     private String memberId;
+    private String iaasNodeId;
 
-    public InstanceSpawnedEvent(String serviceName, String clusterId, String memberId) {
+    public InstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String iaasNodeId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.memberId = memberId;
+        this.iaasNodeId = iaasNodeId;
     }
 
     public Cloud getCloud() {
@@ -76,5 +78,13 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     public String getMemberId() {
         return memberId;
+    }
+
+    public String getIaasNodeId() {
+        return iaasNodeId;
+    }
+
+    public void setIaasNodeId(String iaasNodeId) {
+        this.iaasNodeId = iaasNodeId;
     }
 }
