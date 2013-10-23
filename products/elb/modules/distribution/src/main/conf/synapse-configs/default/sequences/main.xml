@@ -26,10 +26,11 @@
         <send>
 	          <endpoint name="tenantAwareLBEndpoint">
                 <class name ="org.apache.stratos.lb.endpoint.endpoint.TenantAwareLoadBalanceEndpoint">
-                     <!-- parameter name="algorithm"> org.apache.synapse.endpoints.algorithms.RoundRobin</parameter>
-                     <parameter name="configuration">$system:loadbalancer.conf</parameter>
+                     <parameter name="algorithmClassName">org.apache.stratos.lb.endpoint.algorithm.RoundRobin</parameter>
                      <parameter name="failover">true</parameter>
-                     <parameter name="sessionTimeout">900000</parameter-->
+                     <parameter name="sessionAffinity">true</parameter>
+                     <parameter name="sessionTimeout">900000</parameter>
+                     <!-- parameter name="configuration">$system:loadbalancer.conf</parameter -->
   	            </class>
  	          </endpoint>
         </send>
