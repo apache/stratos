@@ -18,26 +18,25 @@
  */
 package org.apache.stratos.cloud.controller.jcloud;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Module;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.jclouds.ContextBuilder;
+import org.jclouds.compute.ComputeServiceContext;
+import org.jclouds.enterprise.config.EnterpriseConfigurationModule;
+import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
+import org.jclouds.sshj.config.SshjSshClientModule;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.synapse.SynapseException;
-import org.jclouds.ContextBuilder;
-import org.jclouds.compute.ComputeServiceContext;
-import org.jclouds.enterprise.config.EnterpriseConfigurationModule;
-import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
-import org.jclouds.sshj.config.SshjSshClientModule;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Module;
 
 /**
  * This class is responsible for creating a JClouds specific ComputeService object.
@@ -163,7 +162,7 @@ public class ComputeServiceBuilderUtil {
      */
     private static void handleException(String msg) {
         log.error(msg);
-        throw new SynapseException(msg);
+        throw new CloudControllerException(msg);
     }
 
     /**
@@ -176,7 +175,8 @@ public class ComputeServiceBuilderUtil {
      */
     private static void handleException(String msg, Exception e) {
         log.error(msg, e);
-        throw new SynapseException(msg, e);
+        throw new CloudControllerException(msg, e);
+
     }
     
     

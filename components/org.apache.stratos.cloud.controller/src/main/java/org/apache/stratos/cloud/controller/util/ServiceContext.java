@@ -18,17 +18,13 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.stratos.lb.common.conf.structure.Node;
-import org.apache.stratos.lb.common.conf.structure.NodeBuilder;
-import org.apache.stratos.lb.common.conf.util.Constants;
 
 /**
  * We keep information regarding a service (i.e. a cartridge instance)
@@ -38,14 +34,14 @@ public class ServiceContext implements Serializable{
 
     private static final long serialVersionUID = -6740964802890082678L;
     private File file;
-	private String domainName;
-    private String subDomainName = Constants.DEFAULT_SUB_DOMAIN;
+	private String clusterId;
     private String tenantRange;
     private String hostName;
     private String payloadFilePath;
     private String cartridgeType;
     private Cartridge cartridge;
     private byte[] payload;
+    private String autoScalerPolicyName;
     /**
      * Key - Value pair.
      */
@@ -60,13 +56,13 @@ public class ServiceContext implements Serializable{
     	return iaasCtxts;
     }
 
-	public String getDomainName() {
-        return domainName;
+	public String getClusterId() {
+        return clusterId;
     }
     
-    public boolean setDomainName(String domainName) {
+    public boolean setClusterId(String domainName) {
         if (!"".equals(domainName)) {
-            this.domainName = domainName;
+            this.clusterId = domainName;
             return true;
         }
         
@@ -94,16 +90,6 @@ public class ServiceContext implements Serializable{
         this.properties = properties;
     }
     
-    public String getSubDomainName() {
-        return subDomainName;
-    }
-
-    public void setSubDomainName(String subDomainName) {
-        if(subDomainName == null || "".equals(subDomainName)){
-            return;
-        }
-        this.subDomainName = subDomainName;
-    }
 
     public Cartridge getCartridge() {
         return cartridge;
@@ -169,18 +155,24 @@ public class ServiceContext implements Serializable{
 	public void setPayload(byte[] payload) {
 	    this.payload = payload;
     }
+
+	public File getFile() {
+		return file;
+	}
 	
-	public String toXml() {
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+    public String toXml() {
 		String str =
-				payloadFilePath == null ? "<service domain=\"" + domainName +
-				                        "\" subDomain=\"" + subDomainName +
+				payloadFilePath == null ? "<service domain=\"" + clusterId +
 				                        "\" tenantRange=\"" + tenantRange + "\">\n" +
 				                        "\t<cartridge type=\"" + cartridgeType +
 				                        "\"/>\n" + "\t<host>" + hostName +
 				                        "</host>\n" + "</service>"
-				                        
-		                                    : "<service domain=\"" + domainName +
-		                                    "\" subDomain=\"" + subDomainName +
+
+		                                    : "<service domain=\"" + clusterId +
 		                                    "\" tenantRange=\"" + tenantRange + "\">\n" +
 		                                    "\t<cartridge type=\"" + cartridgeType +
 		                                    "\"/>\n"  + "\t<host>" + hostName +
@@ -190,53 +182,11 @@ public class ServiceContext implements Serializable{
 		                                    "</service>";
 		return str;
 	}
-	
-	public Node toNode() {
-		Node node = new Node();
-		node.setName(cartridgeType);
-		String sbrace = Constants.NGINX_NODE_START_BRACE;
-		String ebrace = Constants.NGINX_NODE_END_BRACE;
-		String delimiter = Constants.NGINX_LINE_DELIMITER;
-		String newLine = "\n";
-		String nginx = 
-				Constants.DOMAIN_ELEMENT+sbrace+newLine+
-				domainName+sbrace+newLine+
-				Constants.HOSTS_ELEMENT+" "+hostName+delimiter+newLine+
-				Constants.SUB_DOMAIN_ELEMENT+" "+subDomainName+delimiter+newLine+
-				Constants.TENANT_RANGE_ELEMENT+" "+tenantRange+delimiter+newLine+
-				propertiesToNginx()+
-				ebrace+newLine+
-				ebrace+newLine;
-		
-		return NodeBuilder.buildNode(node, nginx);
-		
-	}
-	
-	/**
-	 * Had to made this public in order to access from a test case.
-	 * @return
-	 */
-	public String propertiesToNginx() {
+
+    public String propertiesToXml() {
 		StringBuilder builder = new StringBuilder("");
-		for (Iterator<Entry<String, String>> iterator = getProperties().entrySet().iterator(); iterator.hasNext();) {
-			Map.Entry<String, String> prop = (Map.Entry<String, String>) iterator.next();
-
-			String key = prop.getKey();
-			String value = prop.getValue();
-			if (key != null) {
-				builder.append(key + " " + (value == null ? "" : value) +
-				               Constants.NGINX_LINE_DELIMITER + "\n");
-			}
-
-		}
-
-		return builder.toString();
-	}
-	
-	public String propertiesToXml() {
-		StringBuilder builder = new StringBuilder("");
-		for (Iterator<Entry<String, String>> iterator = getProperties().entrySet().iterator(); iterator.hasNext();) {
-			Map.Entry<String, String> prop = (Map.Entry<String, String>) iterator.next();
+		for (Iterator<Map.Entry<String, String>> iterator = getProperties().entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry<String, String> prop = iterator.next();
 
 			String key = prop.getKey();
 			String value = prop.getValue();
@@ -249,27 +199,24 @@ public class ServiceContext implements Serializable{
 		return builder.toString();
 	}
 	
-	public File getFile() {
-		return file;
-	}
-	
-	public void setFile(File file) {
-		this.file = file;
-	}
-	
 	public boolean equals(Object obj) {
 		if (obj instanceof ServiceContext) {
-			return this.domainName.equals(((ServiceContext) obj).getDomainName()) &&
-			       this.subDomainName.equals(((ServiceContext) obj).getSubDomainName());
+			return this.clusterId.equals(((ServiceContext) obj).getClusterId());
 		}
 		return false;
 	}
     
     public int hashCode() {
         return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-            append(domainName).
-            append(subDomainName).
-            toHashCode();
+            append(clusterId).
+                toHashCode();
     }
 
+    public String getAutoScalerPolicyName() {
+        return autoScalerPolicyName;
+    }
+
+    public void setAutoScalerPolicyName(String autoScalerPolicyName) {
+        this.autoScalerPolicyName = autoScalerPolicyName;
+    }
 }

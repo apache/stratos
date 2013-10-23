@@ -21,22 +21,23 @@ package org.apache.stratos.cloud.controller.internal;
 */
 
 
-import java.util.List;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
-import org.apache.stratos.lb.common.mb.publish.TopicPublisher;
+
+import java.util.List;
 
 /**
  * Registering Cloud Controller Service.
@@ -70,7 +71,7 @@ public class CloudControllerDSComponent {
         	// initialize the topic publishers
         	for (String topic : topics) {
 				
-        		dataHolder.addTopicPublisher(new TopicPublisher(topic));
+        		dataHolder.addEventPublisher(new EventPublisher(topic), topic);
 			}
             
             BundleContext bundleContext = context.getBundleContext();
@@ -121,8 +122,8 @@ public class CloudControllerDSComponent {
 	
 	protected void deactivate(ComponentContext ctx) {
 
-		List<TopicPublisher> publishers = dataHolder.getAllTopicPublishers();
-		for (TopicPublisher topicPublisher : publishers) {
+		List<EventPublisher> publishers = dataHolder.getAllEventPublishers();
+		for (EventPublisher topicPublisher : publishers) {
 			topicPublisher.close();
 		}
 	}

@@ -80,8 +80,7 @@ public class SingleTenantCartridgeSubscription extends CartridgeSubscription {
     public void removeSubscription() throws ADCException, NotSubscribedException {
 
         try {
-            CloudControllerServiceClient.getServiceClient().terminateAllInstances(getClusterDomain(),
-                    getClusterSubDomain());
+            CloudControllerServiceClient.getServiceClient().terminateAllInstances(getClusterDomain());
 
         } catch (AxisFault e) {
             String errorMsg = "Error in terminating cartridge subscription, alias " + getAlias();
@@ -97,8 +96,7 @@ public class SingleTenantCartridgeSubscription extends CartridgeSubscription {
         log.info("Terminated all instances of " + getClusterDomain() + " " + getClusterSubDomain());
 
         try {
-            CloudControllerServiceClient.getServiceClient().unregisterService(getClusterDomain(),
-                    getClusterSubDomain());
+            CloudControllerServiceClient.getServiceClient().unregisterService(getClusterDomain());
 
         } catch (Exception e) {
             String errorMsg = "Error in unregistering service cluster with domain " + getClusterDomain() +

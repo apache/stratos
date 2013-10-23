@@ -18,15 +18,14 @@
  */
 package org.apache.stratos.cloud.controller.publisher;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.MapDifference.ValueDifference;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.*;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -38,18 +37,9 @@ import org.wso2.carbon.databridge.agent.thrift.conf.AgentConfiguration;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.databridge.commons.exception.NoStreamDefinitionExistException;
 import org.wso2.carbon.ntask.core.Task;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.CartridgeInstanceData;
-import org.apache.stratos.cloud.controller.util.IaasContext;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.MapDifference.ValueDifference;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 public class CartridgeInstanceDataPublisherTask implements Task{
     
@@ -301,8 +291,7 @@ public class CartridgeInstanceDataPublisherTask implements Task{
         CartridgeInstanceData instanceData = new CartridgeInstanceData();
         instanceData.setNodeId(key);
         instanceData.setStatus(val);
-        instanceData.setDomain(serviceCtxt.getDomainName());
-        instanceData.setSubDomain(serviceCtxt.getSubDomainName());
+        instanceData.setDomain(serviceCtxt.getClusterId());
         instanceData.setAlias("".equals(serviceCtxt.getProperty(CloudControllerConstants.ALIAS_PROPERTY))
             ? "NULL"
                 : serviceCtxt.getProperty(CloudControllerConstants.ALIAS_PROPERTY));
@@ -343,9 +332,7 @@ public class CartridgeInstanceDataPublisherTask implements Task{
             instanceData.setType(serviceCtxt.getCartridge().getType());
         } else {
             log.warn("Cartridge is null for Service Context : (domain: " +
-                serviceCtxt.getDomainName() +
-                    ", sub domain: " +
-                    serviceCtxt.getSubDomainName() +
+                serviceCtxt.getClusterId() +
                     ")");
         }
         
@@ -441,7 +428,7 @@ public class CartridgeInstanceDataPublisherTask implements Task{
             Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
             String key = entry.getKey();
             String val = entry.getValue();
-            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContext(key);
+            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContextFromNodeId(key);
             
             log.debug("------ Node id: "+key+" --- node status: "+val+" -------- ctxt: "+ctxt);
             
@@ -461,7 +448,7 @@ public class CartridgeInstanceDataPublisherTask implements Task{
             
             String key = entry.getKey();
             String newState = entry.getValue().leftValue();
-            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContext(key);
+            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContextFromNodeId(key);
             
             log.debug("------- Node id: "+key+" --- node status: "+newState+" -------- ctxt: "+ctxt);
             

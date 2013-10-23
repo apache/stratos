@@ -18,6 +18,11 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,25 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.xml.stream.XMLStreamException;
-
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class CloudControllerUtil {
 	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
-
-	public static OMElement serviceCtxtToOMElement(ServiceContext ctxt) throws XMLStreamException{
-		String xml;
-		
-		xml = ctxt.toXml();
-		
-		return AXIOMUtil.stringToOM(xml);
-	}
 
 	public static byte[] getBytesFromFile(String path) {
 

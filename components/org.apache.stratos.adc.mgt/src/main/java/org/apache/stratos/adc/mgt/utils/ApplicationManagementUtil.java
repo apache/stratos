@@ -932,8 +932,8 @@ public class ApplicationManagementUtil {
             throws ADCException, UnregisteredCartridgeException {
         log.info("Register service..");
         try {
-            CloudControllerServiceClient.getServiceClient().register(domain, subDomain, cartridgeType, payload, tenantRange,
-                    hostName, properties);
+            CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload, tenantRange,
+                    hostName, properties, "economy");
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);

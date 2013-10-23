@@ -18,23 +18,23 @@
  */
 package org.apache.stratos.cloud.controller.deployers;
 
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.deployment.AbstractDeployer;
+import org.apache.axis2.deployment.DeploymentException;
+import org.apache.axis2.deployment.repository.util.DeploymentFileData;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
+import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.ServiceContext;
+import org.wso2.carbon.utils.CarbonUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.deployment.AbstractDeployer;
-import org.apache.axis2.deployment.DeploymentException;
-import org.apache.axis2.deployment.repository.util.DeploymentFileData;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
-import org.apache.stratos.cloud.controller.consumers.TopologyBuilder;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.utils.CarbonUtils;
 
 /**
  * All the {@link org.apache.stratos.cloud.controller.util.Cartridge}s will get deployed / undeployed / updated via this class.
@@ -89,12 +89,9 @@ public class ServiceDeployer extends AbstractDeployer{
         // deploy
         List<ServiceContext> services = parser.getServiceContexts();
         
-        // notify consumer by adding the diff
-        try {
-	        serviceContextLookUpStructure.getSharedTopologyDiffQueue().put(services);
-        } catch (InterruptedException ignore) {
-        }
-        
+        // notify consumer by adding services
+        TopologyBuilder.handleClusterCreated(services);
+
         // update map
         fileToServiceContextListMap.put(deploymentFileData.getAbsolutePath(), new ArrayList<ServiceContext>(services));
         
@@ -141,10 +138,9 @@ public class ServiceDeployer extends AbstractDeployer{
             // remove 'em all
             for (ServiceContext ctxt : fileToServiceContextListMap.get(file)) {
                 serviceContextLookUpStructure.removeServiceContext(ctxt);
+                TopologyBuilder.handleClusterRemoved(ctxt);
                 // remove from the topology
-                TopologyBuilder.removeTopologyAndPublish(ctxt);
             }
-            
             log.info("Successfully undeployed the Service definition specified at "+file);
         }
         

@@ -18,11 +18,11 @@
  */
 package org.apache.stratos.cloud.controller.interfaces;
 
+import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
 import org.apache.stratos.cloud.controller.util.CartridgeInfo;
+import org.apache.stratos.cloud.controller.util.LocationScope;
 import org.apache.stratos.cloud.controller.util.Properties;
-import org.apache.stratos.lb.common.conf.util.Constants;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 
 /**
  * This Interface provides a way to communicate with underline
@@ -38,11 +38,9 @@ public interface CloudControllerService {
      * present service cluster, if there is any. A service cluster is uniquely identified by its
      * domain and sub domain combination.
      * </p>
-     * @param domain
+     * @param clusterId
      *            service cluster domain
-     * @param subDomain
-     *            service cluster sub domain
-     * @param tenantRange 
+     * @param tenantRange
      * 			  tenant range eg: '1-10' or '2'
      * @param cartridgeType
      *            cartridge type of the new service. This should be an already registered cartridge
@@ -60,76 +58,75 @@ public interface CloudControllerService {
      *             when the cartridge type requested by this service is
      *             not a registered one.
      */
-    public boolean registerService(String domain, String subDomain, String tenantRange, String cartridgeType,
-        String hostName, Properties properties, byte[] payload) throws UnregisteredCartridgeException;
+    public boolean registerService(String clusterId, String tenantRange, String cartridgeType,
+        String hostName, Properties properties, byte[] payload, String autoScalerPolicyName) throws UnregisteredCartridgeException;
 
     /**
      * Calling this method will result in an instance startup, which is belong
-     * to the provided service domain. Also note that the instance that is starting up
-     * belongs to the group whose name is derived from its service domain, replacing <i>.</i>
+     * to the provided Cluster ID. Also note that the instance that is starting up
+     * belongs to the group whose name is derived from its Cluster ID, replacing <i>.</i>
      * by a hyphen (<i>-</i>).
      * 
-     * @param domainName
-     *            service clustering domain of the instance to be started up.
-     * @param subDomainName
-     *            service clustering sub domain of the instance to be started up.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
+     * @param clusterId
+     *            cluster ID of the instance to be started up.
+     * @param locationScope
+     *            It contains the region, zone, network and host of a IaaS where
+     *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstance(String domainName, String subDomainName);
+    public String startInstance(String clusterId, LocationScope locationScope);
     
     /**
      * Calling this method will result in termination of an instance which is belong
-     * to the provided service domain and sub domain.
+     * to the provided cluster Id and the location scope..
      * 
-     * @param domainName
-     *            service domain of the instance to be terminated.
-     * @param sudDomainName
-     *            service clustering sub domain of the instance to be terminated.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
+     * @param clusterId
+     *            cluster ID of the instance to be terminated.
+     * @param locationScope
+     *            It contains the region, zone, network and host of a IaaS where
+     *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstance(String domainName, String subDomainName);
+    public boolean terminateInstance(String clusterId, LocationScope locationScope);
+
+     /**
+     * Calling this method will result in termination of an instance which is belong
+     * to the provided instance Id.
+     *
+     * @param instanceId
+     *            instance Id of the instance to be terminated.
+     * @return whether an instance terminated successfully or not.
+     */
+    public boolean terminateInstance(String instanceId);
 
     /**
      * Calling this method will result in termination of all instances belong
-     * to the provided service domain and sub domain.
+     * to the provided cluster ID.
      * 
-     * @param domainName
-     *            service domain of the instance to be terminated.
-     * @param sudDomainName
-     *            service clustering sub domain of the instances to be terminated.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
+     * @param clusterId
+     *            cluster ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateAllInstances(String domainName, String subDomainName);
+    public boolean terminateAllInstances(String clusterId);
 
     
     /**
      * Calling this method will result in termination of the lastly spawned instance which is
-     * belong to the provided service domain and sub domain.
+     * belong to the provided clusterID.
      * 
-     * @param domainName
+     * @param clusterId
      *            service domain of the instance to be terminated.
-     * @param sudDomainName
-     *            service clustering sub domain of the instance to be terminated.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
      * @return whether the termination is successful or not.
      */
-    public boolean terminateLastlySpawnedInstance(String domainName, String subDomainName);
+    public boolean terminateLastlySpawnedInstance(String clusterId);
 
     /**
      * Unregister the service cluster which represents by this domain and sub domain.
-     * @param domain service cluster domain
-     * @param subDomain service cluster sub domain
+     * @param clusterId service cluster domain
      * @return whether the unregistration was successful or not.
      * @throws org.apache.stratos.cloud.controller.exception.UnregisteredServiceException if the service cluster requested is not a registered one.
      */
-    public boolean unregisterService(String domain, String subDomain) throws UnregisteredServiceException;
+    public boolean unregisterService(String clusterId) throws UnregisteredServiceException;
     
     /**
      * This method will return the information regarding the given cartridge, if present.
@@ -146,16 +143,12 @@ public interface CloudControllerService {
      * Calling this method will result in returning the pending instances
      * count of a particular domain.
      * 
-     * @param domainName
+     * @param clusterId
      *            service cluster domain
-     * @param sudDomainName
-     *            service clustering sub domain of the instance to be started up.
-     *            If this is null, the default value will be used. Default value is
-     *            {@link Constants}.DEFAULT_SUB_DOMAIN.
      * @return number of pending instances for this domain. If no instances of this
      *         domain is present, this will return zero.
      */
-    public int getPendingInstanceCount(String domainName, String subDomainName);
+    public int getPendingInstanceCount(String clusterId);
 
     /**
      * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.util.Cartridge}s

@@ -18,11 +18,23 @@
  */
 package org.apache.stratos.cloud.controller.axiom;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNode;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.impl.dom.DOOMAbstractFactory;
+import org.apache.axiom.om.impl.dom.ElementImpl;
+import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.*;
+import org.jaxen.JaxenException;
+import org.w3c.dom.Element;
+import org.wso2.securevault.SecretResolver;
+import org.wso2.securevault.SecretResolverFactory;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -33,31 +45,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNode;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.om.impl.dom.DOOMAbstractFactory;
-import org.apache.axiom.om.impl.dom.ElementImpl;
-import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.AppType;
-import org.apache.stratos.cloud.controller.util.Cartridge;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.PortMapping;
-import org.apache.stratos.cloud.controller.util.TopologyConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jaxen.JaxenException;
-import org.w3c.dom.Element;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
-import org.wso2.securevault.SecretResolver;
-import org.wso2.securevault.SecretResolverFactory;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is parsing configuration files using Axiom Xpath.
@@ -73,7 +65,7 @@ public class AxiomXpathParser {
 	}
 
 	/**
-     * @param cartridgeElement Cartridges section as a {@link String}
+     * @param cartridgeElementString Cartridges section as a {@link String}
      * @param aCartridge {@link org.apache.stratos.cloud.controller.util.Cartridge} instance.
      * @param appTypesNodes nodes of App types.
      */
@@ -409,10 +401,10 @@ public class AxiomXpathParser {
 
 			// load other elements
 			loadClassName(iaas, iaasElt);
-			loadMaxInstanceLimit(iaas, iaasElt);
+//			loadMaxInstanceLimit(iaas, iaasElt);
 			loadProperties(iaasElt, iaas.getProperties());
 			loadTemplate(iaas, iaasElt);
-			loadScalingOrders(iaas, iaasElt);
+//			loadScalingOrders(iaas, iaasElt);
 			loadProvider(iaas, iaasElt);
 			loadIdentity(iaas, iaasElt);
 			loadCredentials(iaas, iaasElt, xpath);
@@ -470,7 +462,7 @@ public class AxiomXpathParser {
 	}
 
 	/**
-     * @param cartridgeElement Cartridges section as a {@link String}
+     * @param cartridgeElementString Cartridges section as a {@link String}
      * @param aCartridge {@link Cartridge} instance.
      * @param portMappingNodes nodes of port mapping elements
      */
@@ -581,16 +573,10 @@ public class AxiomXpathParser {
 					}
 
 					// set domain name
-					serviceCtxt.setDomainName(node.getAttribute(new QName(
-					                                                      CloudControllerConstants.SERVICE_DOMAIN_ATTR))
-					                              .getAttributeValue());
-
-					// set sub domain
-					serviceCtxt.setSubDomainName(node.getAttribute(new QName(
-					                                                         CloudControllerConstants.SERVICE_SUB_DOMAIN_ATTR))
-					                                 .getAttributeValue());
-
-					// set tenant range
+					serviceCtxt.setClusterId(node.getAttribute(new QName(
+                            CloudControllerConstants.SERVICE_DOMAIN_ATTR))
+                            .getAttributeValue());
+					                              // set tenant range
 					serviceCtxt.setTenantRange(node.getAttribute(new QName(
 					                                                       CloudControllerConstants.SERVICE_TENANT_RANGE_ATTR))
 					                               .getAttributeValue());
@@ -908,6 +894,7 @@ public class AxiomXpathParser {
 
 	}
 
+	/* Have to handle at the autoscaler level...
 	private void loadScalingOrders(final IaasProvider iaas, final OMElement iaasElt) {
 		// set scale up order
 		Iterator<?> it =
@@ -971,7 +958,7 @@ public class AxiomXpathParser {
 			handleException(msg);
 		}
 
-	}
+	}*/
 
 	private void loadTemplate(final IaasProvider iaas, final OMElement iaasElt) {
 
@@ -1127,7 +1114,7 @@ public class AxiomXpathParser {
 	}
 
 	/**
-     * @param cartridgeElement Cartridges section as a {@link String}
+     * @param cartridgeElementString Cartridges section as a {@link String}
      * @param aCartridge {@link Cartridge} instance.
      * @param deploymentNodes list of deployment directory nodes
      */

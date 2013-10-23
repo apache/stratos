@@ -68,32 +68,25 @@ public class CloudControllerServiceClient {
         return serviceClient;
     }
 
-	public boolean register(String domainName, String subDomain, String cartridgeType,
-	                        DataHandler payload, String tenantRange, String hostName, Properties properties) throws RemoteException, CloudControllerServiceUnregisteredCartridgeExceptionException
+	public boolean register(String clusterId, String cartridgeType,
+	                        DataHandler payload, String tenantRange,
+                            String hostName, Properties properties,
+                            String autoscalorPolicyName) throws RemoteException, CloudControllerServiceUnregisteredCartridgeExceptionException
 	                                                                                  {		
-		return stub.registerService(domainName, subDomain, tenantRange, cartridgeType, hostName,
-		                            properties, payload);
+		return stub.registerService(clusterId, tenantRange, cartridgeType, hostName,
+		                            properties, payload, autoscalorPolicyName);
 
 	}
 
-	public String startInstance(String domain, String subDomain) throws Exception {
-		return stub.startInstance(domain, subDomain);
-	}
-
-	public boolean terminateAllInstances(String domain, String subDomain) throws Exception {
-		return stub.terminateAllInstances(domain, subDomain);
+    public boolean terminateAllInstances(String clusterId) throws Exception {
+		return stub.terminateAllInstances(clusterId);
 	}
 
 	public String[] getRegisteredCartridges() throws Exception {
 		return stub.getRegisteredCartridges();
 	}
 
-	public boolean createKeyPair(String cartridge, String keyPairName, String publicKey)
-	                                                                                    throws Exception {
-		return stub.createKeyPairFromPublicKey(cartridge, keyPairName, publicKey);
-	}
-
-	public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException, Exception {
+    public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException, Exception {
 		try {
 			return stub.getCartridgeInfo(cartridgeType);
 		} catch (RemoteException e) {
@@ -103,8 +96,8 @@ public class CloudControllerServiceClient {
 		}
 	}
 	
-	public boolean unregisterService(String domain, String subDomain) throws Exception {
-	    return stub.unregisterService(domain, subDomain);
+	public boolean unregisterService(String clusterId) throws Exception {
+	    return stub.unregisterService(clusterId);
 	}
 
 }

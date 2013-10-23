@@ -18,25 +18,18 @@
  */
 package org.apache.stratos.cloud.controller.runtime;
 
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.util.*;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
+
+import javax.jms.TextMessage;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.Cartridge;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
-import org.apache.stratos.cloud.controller.util.TopologyConfig;
-import org.apache.stratos.lb.common.mb.publish.TopicPublisher;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -53,12 +46,9 @@ public class FasterLookUpDataHolder implements Serializable{
 	 * Map of maps.
 	 * Map 1:
 	 * Key - domain
-	 * Value - is another map
-	 * Map 2:
-	 * key - sub domain
 	 * value - {@link ServiceContext}
 	 */
-	private Map<String, Map<String, ServiceContext>> serviceCtxts;
+	private Map<String, ServiceContext> serviceCtxts;
 	
 	/**
 	 * To make data retrieval from registry faster.
@@ -111,16 +101,17 @@ public class FasterLookUpDataHolder implements Serializable{
 	
 	/**
      * Key - name of the topic
-     * Value - corresponding TopicPublisher 
+     * Value - corresponding EventPublisher
      */
-    private transient Map<String, TopicPublisher> topicToPublisherMap = new HashMap<String, TopicPublisher>();
-	
+    private transient Map<String, EventPublisher> topicToPublisherMap = new HashMap<String, EventPublisher>();
+
 	private transient DataPublisher dataPublisher;
 	private String streamId;
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
+    private Topology topology;
 
-	private BlockingQueue<List<ServiceContext>> sharedTopologyDiffQueue = new LinkedBlockingQueue<List<ServiceContext>>();
+	private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
 
 	public static FasterLookUpDataHolder getInstance() {
 
@@ -152,7 +143,7 @@ public class FasterLookUpDataHolder implements Serializable{
 	private FasterLookUpDataHolder() {
 
 		serviceCtxtList = new ArrayList<ServiceContext>();
-		serviceCtxts = new ConcurrentHashMap<String, Map<String, ServiceContext>>();
+		serviceCtxts = new ConcurrentHashMap<String,ServiceContext>();
 		nodeIdToServiceCtxt = new LinkedHashMap<String, ServiceContext>();
 		cartridges = new ArrayList<Cartridge>();
 
@@ -164,11 +155,11 @@ public class FasterLookUpDataHolder implements Serializable{
 			return;
 		}
 
-		String domain = ctx.getDomainName();
-		String subDomain = ctx.getSubDomainName();
+		String domain = ctx.getClusterId();
 
-		if (domain != null && subDomain != null) {
-			addToServiceCtxts(domain, subDomain, ctx);
+
+		if (domain != null) {
+			addToServiceCtxts(domain, ctx);
 		}
 
 	}
@@ -179,13 +170,11 @@ public class FasterLookUpDataHolder implements Serializable{
 			return;
 		}
 
-		String domain = ctxt.getDomainName();
-		String subDomain = ctxt.getSubDomainName();
+		String domain = ctxt.getClusterId();
 
-		if (domain != null && subDomain != null) {
+		if (domain != null) {
 			if (serviceCtxts.containsKey(domain)) {
-				Map<String, ServiceContext> subDomainMap = serviceCtxts.get(domain);
-				subDomainMap.remove(subDomain);
+                serviceCtxts.remove(ctxt);
 			}
 		}
 		
@@ -193,15 +182,15 @@ public class FasterLookUpDataHolder implements Serializable{
 
 	}
 
-	public ServiceContext getServiceContext(String domain, String subDomain) {
+	public ServiceContext getServiceContextFromDomain(String domain) {
 
 		if (serviceCtxts.get(domain) != null) {
-			return serviceCtxts.get(domain).get(subDomain);
+			return serviceCtxts.get(domain);
 		}
 		return null;
 	}
 
-	public ServiceContext getServiceContext(String nodeId) {
+	public ServiceContext getServiceContextFromNodeId(String nodeId) {
 
 		return nodeIdToServiceCtxt.get(nodeId);
 	}
@@ -210,7 +199,7 @@ public class FasterLookUpDataHolder implements Serializable{
 		return CloudControllerUtil.getKeysFromValue(nodeIdToServiceCtxt, ctxt);
 	}
 
-	public Map<String, Map<String, ServiceContext>> getServiceContexts() {
+	public Map<String, ServiceContext> getServiceContexts() {
 		return serviceCtxts;
 	}
 
@@ -230,21 +219,9 @@ public class FasterLookUpDataHolder implements Serializable{
 		return nodeIdToServiceCtxt;
 	}
 
-	private void addToServiceCtxts(String domainName, String subDomainName, ServiceContext ctxt) {
-
-		Map<String, ServiceContext> map;
-
-		if (serviceCtxts.get(domainName) == null) {
-			map = new HashMap<String, ServiceContext>();
-
-		} else {
-			map = serviceCtxts.get(domainName);
-		}
-
-		map.put(subDomainName, ctxt);
-		serviceCtxts.put(domainName, map);
-		
-		serviceCtxtList.add(ctxt);
+	private void addToServiceCtxts(String domainName, ServiceContext ctxt) {
+        serviceCtxts.put(domainName, ctxt);
+        serviceCtxtList.add(ctxt);
 
 	}
 
@@ -409,11 +386,11 @@ public class FasterLookUpDataHolder implements Serializable{
 		this.isPublisherRunning = isPublisherRunning;
 	}
 
-	public BlockingQueue<List<ServiceContext>> getSharedTopologyDiffQueue() {
+	public BlockingQueue<TextMessage> getSharedTopologyDiffQueue() {
 		return sharedTopologyDiffQueue;
 	}
 
-	public void setSharedTopologyDiffQueue(BlockingQueue<List<ServiceContext>> sharedTopologyDiffQueue) {
+	public void setSharedTopologyDiffQueue(BlockingQueue<TextMessage> sharedTopologyDiffQueue) {
 		this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
 	}
 
@@ -441,16 +418,23 @@ public class FasterLookUpDataHolder implements Serializable{
 		this.topologyConfig = topologyConfig;
 	}
 	
-	public TopicPublisher getTopicPublisher(String topic){
+	public EventPublisher getEventPublisher(String topic){
     	return topicToPublisherMap.get(topic);
     }
 	
-	public List<TopicPublisher> getAllTopicPublishers() {
-		return new ArrayList<TopicPublisher>(topicToPublisherMap.values());
+	public List<EventPublisher> getAllEventPublishers() {
+		return new ArrayList<EventPublisher>(topicToPublisherMap.values());
 	}
 	
-    public void addTopicPublisher(TopicPublisher publisher) {
-        topicToPublisherMap.put(publisher.getTopicName(), publisher);
+    public void addEventPublisher(EventPublisher publisher, String topicName) {
+        topicToPublisherMap.put(topicName, publisher);
     }
 
+    public Topology getTopology() {
+        return topology;
+    }
+
+    public void setTopology(Topology topology) {
+        this.topology = topology;
+    }
 }
