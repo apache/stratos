@@ -93,6 +93,9 @@ public abstract class Payload {
             if(payloadString.startsWith(",")) {
                 payloadBuilder.append(payloadString.substring(1));
             }
+            else {
+                payloadBuilder.append(payloadString);
+            }
         } else {
             if(!payloadBuilder.toString().endsWith(",") && !payloadString.startsWith(",")) {
                 payloadBuilder.append(",");
