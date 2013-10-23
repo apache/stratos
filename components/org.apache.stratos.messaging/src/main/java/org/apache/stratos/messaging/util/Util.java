@@ -18,15 +18,15 @@
  */
 package org.apache.stratos.messaging.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.message.JsonMessage;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.JsonMessage;
 
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
@@ -61,17 +61,22 @@ public class Util {
     public static void validateTenantRange(String tenantRange) {
         boolean valid = false;
         if(tenantRange != null) {
-            String[] array = tenantRange.split(Constants.TENANT_RANGE_DELIMITER);
-            if(array.length == 2) {
-                // Integer-Integer
-                if(isNumber(array[0]) && (isNumber(array[1]))){
-                    valid = true;
-                }
-                // Integer-*
-                else if(isNumber(array[0]) && "*".equals(array[1])) {
-                    valid = true;
+            if(tenantRange.equals("*")) {
+                valid = true;
+            } else {
+               String[] array = tenantRange.split(Constants.TENANT_RANGE_DELIMITER);
+                if(array.length == 2) {
+                    // Integer-Integer
+                    if(isNumber(array[0]) && (isNumber(array[1]))){
+                        valid = true;
+                    }
+                    // Integer-*
+                    else if(isNumber(array[0]) && "*".equals(array[1])) {
+                        valid = true;
+                    }
                 }
             }
+
         }
         if(!valid)
             throw new RuntimeException(String.format("Tenant range %s is not valid", tenantRange));
