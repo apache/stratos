@@ -1,0 +1,1 @@
+curl -v -u admin:admin http://localhost:9763/stratos/admin/tenant/list
