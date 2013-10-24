@@ -40,9 +40,6 @@ public class AutoscalerServerComponent {
 		if (log.isInfoEnabled()) {
 			log.info("Autoscaler Server Component activated");
 		}
-        if (!AutoscalerStarterThread.getInstance().isStarted()){
-            AutoscalerStarterThread.getInstance().run();
-        }
 	}
 
 
