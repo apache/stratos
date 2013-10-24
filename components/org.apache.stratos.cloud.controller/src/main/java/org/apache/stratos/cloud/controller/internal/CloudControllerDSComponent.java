@@ -27,10 +27,11 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.topology.TopologyListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -73,6 +74,12 @@ public class CloudControllerDSComponent {
 				
         		dataHolder.addEventPublisher(new EventPublisher(topic), topic);
 			}
+
+            //initialting the subscriber
+            TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
+            subscriber.setMessageListener(new TopologyListener());
+            Thread tsubscriber = new Thread(subscriber);
+			tsubscriber.start();
             
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(),

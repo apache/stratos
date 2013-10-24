@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventSender;
+import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.wso2.carbon.ntask.core.Task;
 
 import java.util.Map;
@@ -42,8 +43,8 @@ public class TopologySynchronizerTask implements Task{
         }
         
     	// publish to the topic 
-        if (FasterLookUpDataHolder.getInstance().getTopology() != null) {
-            TopologyEventSender.sendCompleteTopologyEvent(FasterLookUpDataHolder.getInstance().getTopology());
+        if (TopologyManager.getInstance().getTopology() != null) {
+            TopologyEventSender.sendCompleteTopologyEvent(TopologyManager.getInstance().getTopology());
         }
     }
     

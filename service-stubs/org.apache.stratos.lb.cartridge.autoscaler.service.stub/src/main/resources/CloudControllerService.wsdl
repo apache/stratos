@@ -64,7 +64,7 @@
             <xs:element name="terminateInstances">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="noOfInstances" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="noOfInstances" type="xs:int"/>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
                     </xs:sequence>

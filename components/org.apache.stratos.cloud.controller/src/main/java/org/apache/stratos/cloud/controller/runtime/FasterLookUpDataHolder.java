@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.runtime;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
 
 import javax.jms.TextMessage;
@@ -75,6 +74,7 @@ public class FasterLookUpDataHolder implements Serializable{
 	 */
 	private List<IaasProvider> iaasProviders;
 
+
 	private String serializationDir;
 	private boolean enableBAMDataPublisher;
 	private boolean enableTopologySync;
@@ -109,7 +109,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	private String streamId;
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
-    private Topology topology;
 
 	private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
 
@@ -428,13 +427,5 @@ public class FasterLookUpDataHolder implements Serializable{
 	
     public void addEventPublisher(EventPublisher publisher, String topicName) {
         topicToPublisherMap.put(topicName, publisher);
-    }
-
-    public Topology getTopology() {
-        return topology;
-    }
-
-    public void setTopology(Topology topology) {
-        this.topology = topology;
     }
 }

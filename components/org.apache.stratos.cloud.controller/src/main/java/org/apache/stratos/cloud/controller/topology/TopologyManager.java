@@ -23,7 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.messaging.domain.topology.Topology;
 
@@ -37,67 +36,77 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
 
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-    private static File topologyFile = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH);
-	private static File backup = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH + ".back");
+    private  volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+    private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+    private File topologyFile = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH);
+	private File backup = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH + ".back");
+    private volatile Topology topology;
+    private static TopologyManager instance;
 
-    public static void acquireReadLock() {
+    private TopologyManager() {
+    }
+
+    public static TopologyManager getInstance() {
+        if (instance == null) {
+            instance = new TopologyManager();
+        }
+        return instance;
+    }
+
+    public void acquireReadLock() {
         readLock.lock();
     }
 
-    public static void releaseReadLock() {
+    public void releaseReadLock() {
         readLock.unlock();
     }
 
-    public static void acquireWriteLock() {
+    public void acquireWriteLock() {
         writeLock.lock();
     }
 
-    public static void releaseWriteLock() {
+    public void releaseWriteLock() {
         writeLock.unlock();
     }
 
-    public static synchronized Topology getTopology() {
-        Topology topology;
+    public synchronized Topology getTopology() {
         String currentContent = null;
         synchronized (TopologyManager.class) {
-            topology = FasterLookUpDataHolder.getInstance().getTopology();
-            if(topology == null) {
+            if(this.topology == null) {
                 //need to initialize the topology
-                if(topologyFile.exists()) {
+                if(this.topologyFile.exists()) {
                     try {
-                        currentContent = FileUtils.readFileToString(topologyFile);
+                        currentContent = FileUtils.readFileToString(this.topologyFile);
                         Gson gson = new Gson();
-                        topology = gson.fromJson(currentContent, Topology.class);
+                        this.topology = gson.fromJson(currentContent, Topology.class);
                     } catch (IOException e) {
                         log.error(e.getMessage());
                         throw new CloudControllerException(e.getMessage(), e);
                     }
                 } else {
-                    topology = new Topology();
+                    this.topology = new Topology();
                 }
             }
         }
         if(log.isDebugEnabled()) {
             log.debug("The current topology is: " + currentContent);
         }
-        return topology;
+        return this.topology;
     }
 
-    public static synchronized void updateTopology(Topology topology) {
+    public synchronized void updateTopology(Topology topology) {
         synchronized (TopologyManager.class) {
-            FasterLookUpDataHolder.getInstance().setTopology(topology);
-            if (topologyFile.exists()) {
-                backup.delete();
-                topologyFile.renameTo(backup);
+             this.topology = topology;
+            if (this.topologyFile.exists()) {
+                this.backup.delete();
+                this.topologyFile.renameTo(backup);
             }
             Gson gson = new Gson();
             String message = gson.toJson(topology);
             // overwrite the topology file
             try {
-                FileUtils.writeStringToFile(topologyFile, message);
+                FileUtils.writeStringToFile(this.topologyFile, message);
                 if(log.isDebugEnabled()) {
                     log.debug("The updated topology is: " + message);
                 }
@@ -107,6 +116,10 @@ public class TopologyManager {
             }
         }
 
+    }
+
+    public void setTopology(Topology topology) {
+        this.topology = topology;
     }
 }
 

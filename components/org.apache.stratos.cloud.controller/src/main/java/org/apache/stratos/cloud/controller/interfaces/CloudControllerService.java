@@ -119,7 +119,7 @@ public interface CloudControllerService {
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstances(String noOfInstances, String clusterId, LocationScope locationScope);
+    public boolean terminateInstances(int noOfInstances, String clusterId, LocationScope locationScope);
 
      /**
      * Calling this method will result in termination of an instance which is belong

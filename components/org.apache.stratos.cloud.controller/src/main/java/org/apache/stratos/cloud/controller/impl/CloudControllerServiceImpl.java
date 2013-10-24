@@ -323,7 +323,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             //checking for the cloud and the region
             //TODO adding more locations and retrieve it from the request received
-            if(iaas.getName().equals(cloud) && (region == null || iaas.getRegion().equals(region))) {
+            if(iaas.getType().equals(cloud) && (region == null || region == "" || iaas.getRegion().equals(region))) {
                 IaasContext ctxt;
                 if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
                     ctxt = serviceCtxt.addIaasContext(iaas.getType());
@@ -617,7 +617,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-    public boolean terminateInstances(String noOfInstances, String clusterId, LocationScope locationScope) {
+    public boolean terminateInstances(int noOfInstances, String clusterId, LocationScope locationScope) {
         log.info("vvvvvvvvvvvvvvvvv");
         return false;  //TODO
     }

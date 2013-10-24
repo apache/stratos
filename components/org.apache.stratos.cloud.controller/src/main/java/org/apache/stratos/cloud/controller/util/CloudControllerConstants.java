@@ -128,6 +128,7 @@ public final class CloudControllerConstants {
     public static final String AMQP_CONNECTION_URL_PROPERTY = "amqpConnectionUrl";
     public static final String AMQP_INITIAL_CONTEXT_FACTORY_PROPERTY = "amqpInitialContextFactory";
     public static final String AMQP_TOPIC_CONNECTION_FACTORY_PROPERTY = "amqpTopicConnectionFactory";
+    public static final String INSTANCE_TOPIC = "instance-status";
     
     
     /**
