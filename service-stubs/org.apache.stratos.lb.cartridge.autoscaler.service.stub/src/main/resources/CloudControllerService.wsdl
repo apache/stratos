@@ -33,6 +33,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="terminateUnhealthyInstances">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instancesToBeTerminated" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateUnhealthyInstancesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="terminateLastlySpawnedInstance">
                 <xs:complexType>
                     <xs:sequence>
@@ -47,10 +61,27 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="terminateInstances">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="noOfInstances" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstancesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="terminateInstance">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instancesToBeTerminated" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -75,12 +106,27 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="startInstance">
+            <xs:element name="startInstances">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
                         <xs:element minOccurs="0" name="noOfInstancesToBeSpawned" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstancesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -217,6 +263,12 @@
     <wsdl:message name="getPendingInstanceCountResponse">
         <wsdl:part name="parameters" element="ns:getPendingInstanceCountResponse"/>
     </wsdl:message>
+    <wsdl:message name="terminateUnhealthyInstancesRequest">
+        <wsdl:part name="parameters" element="ns:terminateUnhealthyInstances"/>
+    </wsdl:message>
+    <wsdl:message name="terminateUnhealthyInstancesResponse">
+        <wsdl:part name="parameters" element="ns:terminateUnhealthyInstancesResponse"/>
+    </wsdl:message>
     <wsdl:message name="terminateInstanceRequest">
         <wsdl:part name="parameters" element="ns:terminateInstance"/>
     </wsdl:message>
@@ -259,11 +311,23 @@
     <wsdl:message name="getRegisteredCartridgesResponse">
         <wsdl:part name="parameters" element="ns:getRegisteredCartridgesResponse"/>
     </wsdl:message>
+    <wsdl:message name="startInstancesRequest">
+        <wsdl:part name="parameters" element="ns:startInstances"/>
+    </wsdl:message>
+    <wsdl:message name="startInstancesResponse">
+        <wsdl:part name="parameters" element="ns:startInstancesResponse"/>
+    </wsdl:message>
     <wsdl:message name="startInstanceRequest">
         <wsdl:part name="parameters" element="ns:startInstance"/>
     </wsdl:message>
     <wsdl:message name="startInstanceResponse">
         <wsdl:part name="parameters" element="ns:startInstanceResponse"/>
+    </wsdl:message>
+    <wsdl:message name="terminateInstancesRequest">
+        <wsdl:part name="parameters" element="ns:terminateInstances"/>
+    </wsdl:message>
+    <wsdl:message name="terminateInstancesResponse">
+        <wsdl:part name="parameters" element="ns:terminateInstancesResponse"/>
     </wsdl:message>
     <wsdl:message name="terminateLastlySpawnedInstanceRequest">
         <wsdl:part name="parameters" element="ns:terminateLastlySpawnedInstance"/>
@@ -275,6 +339,10 @@
         <wsdl:operation name="getPendingInstanceCount">
             <wsdl:input message="ns:getPendingInstanceCountRequest" wsaw:Action="urn:getPendingInstanceCount"/>
             <wsdl:output message="ns:getPendingInstanceCountResponse" wsaw:Action="urn:getPendingInstanceCountResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="terminateUnhealthyInstances">
+            <wsdl:input message="ns:terminateUnhealthyInstancesRequest" wsaw:Action="urn:terminateUnhealthyInstances"/>
+            <wsdl:output message="ns:terminateUnhealthyInstancesResponse" wsaw:Action="urn:terminateUnhealthyInstancesResponse"/>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"/>
@@ -303,9 +371,17 @@
             <wsdl:input message="ns:getRegisteredCartridgesRequest" wsaw:Action="urn:getRegisteredCartridges"/>
             <wsdl:output message="ns:getRegisteredCartridgesResponse" wsaw:Action="urn:getRegisteredCartridgesResponse"/>
         </wsdl:operation>
+        <wsdl:operation name="startInstances">
+            <wsdl:input message="ns:startInstancesRequest" wsaw:Action="urn:startInstances"/>
+            <wsdl:output message="ns:startInstancesResponse" wsaw:Action="urn:startInstancesResponse"/>
+        </wsdl:operation>
         <wsdl:operation name="startInstance">
             <wsdl:input message="ns:startInstanceRequest" wsaw:Action="urn:startInstance"/>
             <wsdl:output message="ns:startInstanceResponse" wsaw:Action="urn:startInstanceResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="terminateInstances">
+            <wsdl:input message="ns:terminateInstancesRequest" wsaw:Action="urn:terminateInstances"/>
+            <wsdl:output message="ns:terminateInstancesResponse" wsaw:Action="urn:terminateInstancesResponse"/>
         </wsdl:operation>
         <wsdl:operation name="terminateLastlySpawnedInstance">
             <wsdl:input message="ns:terminateLastlySpawnedInstanceRequest" wsaw:Action="urn:terminateLastlySpawnedInstance"/>
@@ -316,6 +392,15 @@
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <wsdl:operation name="getPendingInstanceCount">
             <soap:operation soapAction="urn:getPendingInstanceCount" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="terminateUnhealthyInstances">
+            <soap:operation soapAction="urn:terminateUnhealthyInstances" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -377,8 +462,26 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="startInstances">
+            <soap:operation soapAction="urn:startInstances" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <soap:operation soapAction="urn:getRegisteredCartridges" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="terminateInstances">
+            <soap:operation soapAction="urn:terminateInstances" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -409,6 +512,15 @@
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <wsdl:operation name="getPendingInstanceCount">
             <soap12:operation soapAction="urn:getPendingInstanceCount" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="terminateUnhealthyInstances">
+            <soap12:operation soapAction="urn:terminateUnhealthyInstances" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -470,8 +582,26 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="startInstances">
+            <soap12:operation soapAction="urn:startInstances" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <soap12:operation soapAction="urn:getRegisteredCartridges" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="terminateInstances">
+            <soap12:operation soapAction="urn:terminateInstances" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -502,6 +632,15 @@
         <http:binding verb="POST"/>
         <wsdl:operation name="getPendingInstanceCount">
             <http:operation location="getPendingInstanceCount"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="terminateUnhealthyInstances">
+            <http:operation location="terminateUnhealthyInstances"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -554,8 +693,26 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="startInstances">
+            <http:operation location="startInstances"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <http:operation location="getRegisteredCartridges"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="terminateInstances">
+            <http:operation location="terminateInstances"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
