@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,15 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.message.processor;
+package org.apache.stratos.autoscaler.algorithm;
+
+import org.apache.stratos.autoscaler.policy.model.Partition;
 
 /**
- * Interface which defined health event processor interface
+ *
  */
-public interface HealthStatEventProcessor {
-
-    public void setNext(HealthStatEventProcessor nextProcessor);
-
-    public boolean process(String type, String message);
-
+public interface AutoscaleAlgorithm {
+    public Partition getNextScaleUpPartition(String clusterId);
+    public Partition getNextScaleDownPartition(String clusterId);
 }

@@ -55,8 +55,7 @@ public class RoundRobin implements LoadBalanceAlgorithm {
                 currentMemberIndex = 0;
             }
             int index = members.size();
-            do {
-                current = members.get(currentMemberIndex);
+            do {                                                                   current = members.get(currentMemberIndex);
                 if (currentMemberIndex == members.size() - 1) {
                     currentMemberIndex = 0;
                 } else {
