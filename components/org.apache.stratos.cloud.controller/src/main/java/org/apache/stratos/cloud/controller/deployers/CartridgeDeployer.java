@@ -100,9 +100,7 @@ public class CartridgeDeployer extends AbstractDeployer{
             f.renameTo(new File(deploymentFileData.getAbsolutePath()+".back"));
             log.error(msg, e);
             throw new DeploymentException(msg, e);
-		} 
-        
-        
+		}
     }
     
     private void validateCartridge(AxiomXpathParser parser) throws Exception {
