@@ -474,7 +474,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-    public String startInstance(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned) {
+    public String startInstances(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned) {
+        log.info("aaaaaaaaaaaaaaaaaaaaaaaa");
         //TODO
         return null;
     }
@@ -616,12 +617,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-    public boolean terminateInstance(String noOfInstances, String clusterId, LocationScope locationScope) {
+    public boolean terminateInstances(String noOfInstances, String clusterId, LocationScope locationScope) {
+        log.info("vvvvvvvvvvvvvvvvv");
         return false;  //TODO
     }
 
     @Override
-    public boolean terminateInstance(List<String> instancesToBeTerminated) {
+    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated) {
+        log.info("vvvvvvvvvvdddvvvvvvv");
         return false;  //TODO
     }
 

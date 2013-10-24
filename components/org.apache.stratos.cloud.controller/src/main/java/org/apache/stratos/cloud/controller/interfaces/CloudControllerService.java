@@ -91,7 +91,7 @@ public interface CloudControllerService {
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstance(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned);
+    public String startInstances(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned);
     
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -119,7 +119,7 @@ public interface CloudControllerService {
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstance(String noOfInstances, String clusterId, LocationScope locationScope);
+    public boolean terminateInstances(String noOfInstances, String clusterId, LocationScope locationScope);
 
      /**
      * Calling this method will result in termination of an instance which is belong
@@ -129,7 +129,7 @@ public interface CloudControllerService {
      *            list of instance Ids to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstance(List<String> instancesToBeTerminated);
+    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated);
 
     /**
      * Calling this method will result in termination of all instances belong
