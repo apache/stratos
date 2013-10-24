@@ -19,9 +19,11 @@
 package org.apache.stratos.messaging.util;
 
 public class Constants {
-	
-	public static final String TOPOLOGY_TOPIC = "topology-topic";
+	/* Message broker topic names */
+	public static final String TOPOLOGY_TOPIC = "topology";
 	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
+    public static final String INSTANCE_STATUS_TOPIC = "instance-status";
+
     public static final String TENANT_RANGE_DELIMITER = "-";
     public static final String EVENT_CLASS_NAME = "event-class-name";
 }
