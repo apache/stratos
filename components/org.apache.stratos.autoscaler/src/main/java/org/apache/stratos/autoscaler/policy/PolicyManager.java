@@ -127,7 +127,7 @@ public class PolicyManager {
 	 * @param id
 	 * @return
 	 */
-	public AutoscalePolicy Policy(String id) {
+	public AutoscalePolicy getPolicy(String id) {
 		return policyListMap.get(id);
 	}
 

@@ -26,6 +26,7 @@ public class Partition {
 
 	private int partitionMax;
 	private int partitionMin;
+	private String id;
 	private String iaas;
 	private String zone;
 
@@ -108,5 +109,29 @@ public class Partition {
     public void setZone(String value) {
         this.zone = value;
     }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+	public String getId() {
+		return id;
+	}
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+	public void setId(String id) {
+		this.id = id;
+	}
 
 }

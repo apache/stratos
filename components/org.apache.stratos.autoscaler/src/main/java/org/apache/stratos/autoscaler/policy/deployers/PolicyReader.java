@@ -90,25 +90,25 @@ public class PolicyReader  {
 				//RequestsInFlight
 				OMElement reqInFlightEle = loadThresholdsEle.getFirstChildWithName(new QName("RequestsInFlight"));
 				RequestsInFlight reqInFlight = new RequestsInFlight();
-				reqInFlight.setUpperLimit(Integer.valueOf(readValueAttr(reqInFlightEle,"UpperLimit")));
-				reqInFlight.setLowerLimit(Integer.valueOf(readValueAttr(reqInFlightEle,"LowerLimit")));
-				reqInFlight.setIdealGraidient(Integer.valueOf(readValueAttr(reqInFlightEle,"IdealGraidient")));
+				reqInFlight.setAverage(Float.valueOf(readValueAttr(reqInFlightEle,"Average")));
+				reqInFlight.setGradient(Float.valueOf(readValueAttr(reqInFlightEle,"Gradient")));
+				reqInFlight.setSecondDerivative(Float.valueOf(readValueAttr(reqInFlightEle,"SecondDerivative")));
 				loadThresholds.setRequestsInFlight(reqInFlight);
 				
 				//MemoryConsumption
 				OMElement memConsumptionEle = loadThresholdsEle.getFirstChildWithName(new QName("MemoryConsumption"));
 				MemoryConsumption memConsumption = new MemoryConsumption();
-				memConsumption.setUpperLimit(Integer.valueOf(readValueAttr(memConsumptionEle,"UpperLimit")));
-				memConsumption.setLowerLimit(Integer.valueOf(readValueAttr(memConsumptionEle,"LowerLimit")));
-				memConsumption.setIdealGraidient(Integer.valueOf(readValueAttr(memConsumptionEle,"IdealGraidient")));
+				memConsumption.setAverage(Float.valueOf(readValueAttr(memConsumptionEle,"Average")));
+				memConsumption.setGradient(Float.valueOf(readValueAttr(memConsumptionEle,"Gradient")));
+				memConsumption.setSecondDerivative(Float.valueOf(readValueAttr(memConsumptionEle,"SecondDerivative")));
 				loadThresholds.setMemoryConsumption(memConsumption);
 				
 				//LoadAverage
 				OMElement loadAvrEle = loadThresholdsEle.getFirstChildWithName(new QName("LoadAverage"));
 				LoadAverage loadAvr = new LoadAverage();
-				loadAvr.setUpperLimit(Integer.valueOf(readValueAttr(loadAvrEle,"UpperLimit")));
-				loadAvr.setLowerLimit(Integer.valueOf(readValueAttr(loadAvrEle,"LowerLimit")));
-				loadAvr.setIdealGraidient(Integer.valueOf(readValueAttr(loadAvrEle,"IdealGraidient")));
+				loadAvr.setAverage(Float.valueOf(readValueAttr(loadAvrEle,"Average")));
+				loadAvr.setGradient(Float.valueOf(readValueAttr(loadAvrEle,"Gradient")));
+				loadAvr.setSecondDerivative(Float.valueOf(readValueAttr(loadAvrEle,"SecondDerivative")));
 				loadThresholds.setLoadAverage(loadAvr);
 				
 				policy.setLoadThresholds(loadThresholds);
@@ -128,6 +128,7 @@ public class PolicyReader  {
 						Partition partition = new Partition();
 						partition.setIaas(partitionEle.getAttributeValue(new QName("iaas")));
 						partition.setZone(partitionEle.getAttributeValue(new QName("zone")));
+						partition.setId(partitionEle.getAttributeValue(new QName("id")));
 						partition.setPartitionMax(Integer.valueOf(readValue(partitionEle, "PartitionMax")));
 						partition.setPartitionMin(Integer.valueOf(readValue(partitionEle, "PartitionMin")));
 						haPolicy.getPartition().add(partition);
