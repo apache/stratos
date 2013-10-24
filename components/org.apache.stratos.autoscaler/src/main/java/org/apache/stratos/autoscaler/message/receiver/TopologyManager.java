@@ -12,8 +12,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * This class will initiate all the subscriber to topics
  */
-public class TopicSubscriberManager {
-    private static final Log log = LogFactory.getLog(TopicSubscriberManager.class);
+public class TopologyManager {
+    private static final Log log = LogFactory.getLog(TopologyManager.class);
     private static volatile Topology topology;
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
@@ -37,7 +37,7 @@ public class TopicSubscriberManager {
 
     public static synchronized Topology getTopology() {
         if (topology == null) {
-            synchronized (TopicSubscriberManager.class){
+            synchronized (TopologyManager.class){
                 if (topology == null) {
                     topology = new Topology();
                 }

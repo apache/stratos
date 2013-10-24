@@ -16,21 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.message.processor;
+package org.apache.stratos.autoscaler.event.processor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterContext;
+import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
 import org.apache.stratos.autoscaler.event.AverageRequestsInFlightEvent;
-import org.apache.stratos.autoscaler.event.SecondDerivativeOfRequestsInFlightEvent;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.Map;
 
-public class SecondDerivativeOfRequestInFlightEventProcessor implements HealthStatEventProcessor {
+public class AverageRequestInFlightEventProcessor implements HealthStatEventProcessor {
 
-	private static final Log log = LogFactory.getLog(SecondDerivativeOfRequestInFlightEventProcessor.class);
+	private static final Log log = LogFactory.getLog(AverageRequestInFlightEventProcessor.class);
 	private HealthStatEventProcessor nextMsgProcessor;
 
 	@Override
@@ -44,37 +45,46 @@ public class SecondDerivativeOfRequestInFlightEventProcessor implements HealthSt
 			if (AverageRequestsInFlightEvent.class.getName().equals(type)) {
 
 				// Parse complete message and build event
-                SecondDerivativeOfRequestsInFlightEvent event
-                        = (SecondDerivativeOfRequestsInFlightEvent) Util.jsonToObject(message,
-                        SecondDerivativeOfRequestsInFlightEvent.class);
+                AverageRequestsInFlightEvent event = (AverageRequestsInFlightEvent) Util.jsonToObject(message,
+                        AverageRequestsInFlightEvent.class);
 
                 String clusterId = event.getClusterId();
-                    //Get all values of services Map from topology
-                for (Service service : ((Map<String, Service>) TopicSubscriberManager.getTopology().getServices()).values())
-                {
+                //Get all values of services Map from topology
+                for (Service service : ((Map<String, Service>) TopologyManager.getTopology().getServices()).values()){
+
                     if(service.clusterExists(clusterId)){
 
-                        ((Map<String, Service>) TopicSubscriberManager.getTopology().getServices())
-                                .get(service.getServiceName()).getCluster(clusterId)
-                                .setRequestsInFlightSecondDerivative(event.getValue());
+                        AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+                        if(!autoscalerContext.clusterExists(clusterId)){
+
+                            ClusterContext clusterContext = new ClusterContext(clusterId, service.getServiceName());
+                            autoscalerContext.addClusterContext(clusterContext);
+                        }
+                        autoscalerContext.getClusterContext(clusterId).setAverageRequestsInFlight(event.getValue());
+                        break;
                     }
                 }
 
 				return true;
 
 			} else {
+
 				if (nextMsgProcessor != null) {
+
 					// ask the next processor to take care of the message.
 					return nextMsgProcessor.process(type, message);
 				}
 			}
 		} catch (Exception e) {
+
 			if (nextMsgProcessor != null) {
+
 				// ask the next processor to take care of the message.
 				return nextMsgProcessor.process(type, message);
 			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
+
+				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the" +
+                        " available processors.", message, type));
 			}
 		}
 		return false;

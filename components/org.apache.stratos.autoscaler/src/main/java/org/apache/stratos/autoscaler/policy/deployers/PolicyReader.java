@@ -131,7 +131,7 @@ public class PolicyReader  {
 						partition.setId(partitionEle.getAttributeValue(new QName("id")));
 						partition.setPartitionMax(Integer.valueOf(readValue(partitionEle, "PartitionMax")));
 						partition.setPartitionMin(Integer.valueOf(readValue(partitionEle, "PartitionMin")));
-						haPolicy.getPartition().add(partition);
+						haPolicy.getPartitions().add(partition);
 					}
 				}
 				

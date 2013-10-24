@@ -20,7 +20,7 @@ package org.apache.stratos.autoscaler.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
+import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
 import org.apache.stratos.messaging.message.processor.*;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -49,7 +49,7 @@ public class TopologyEventMessageDelegator implements Runnable {
                 String json = message.getText();
                 
                 CompleteTopologyEventProcessor completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
-                if(completeTopologyEventProcessor.process(type, json, TopicSubscriberManager.getTopology())) {
+                if(completeTopologyEventProcessor.process(type, json, TopologyManager.getTopology())) {
                 	break;
                 }
 
@@ -94,10 +94,10 @@ public class TopologyEventMessageDelegator implements Runnable {
 				}
 
 				try {
-					TopicSubscriberManager.acquireWriteLock();
-					processor1.process(type, json, TopicSubscriberManager.getTopology());
+					TopologyManager.acquireWriteLock();
+					processor1.process(type, json, TopologyManager.getTopology());
 				} finally {
-					TopicSubscriberManager.releaseWriteLock();
+					TopologyManager.releaseWriteLock();
 				}
 
 			} catch (Exception e) {
