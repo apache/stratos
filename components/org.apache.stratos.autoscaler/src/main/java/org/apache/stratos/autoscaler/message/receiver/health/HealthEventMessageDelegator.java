@@ -20,10 +20,10 @@ package org.apache.stratos.autoscaler.message.receiver.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.message.processor.AverageRequestInFlightEventProcessor;
-import org.apache.stratos.autoscaler.message.processor.GradientOfRequestInFlightEventProcessor;
-import org.apache.stratos.autoscaler.message.processor.SecondDerivativeOfRequestInFlightEventProcessor;
-import org.apache.stratos.autoscaler.message.receiver.TopicSubscriberManager;
+import org.apache.stratos.autoscaler.event.processor.AverageRequestInFlightEventProcessor;
+import org.apache.stratos.autoscaler.event.processor.GradientOfRequestInFlightEventProcessor;
+import org.apache.stratos.autoscaler.event.processor.SecondDerivativeOfRequestInFlightEventProcessor;
+import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
@@ -63,10 +63,10 @@ public class HealthEventMessageDelegator implements Runnable {
 				}
 
 				try {
-					TopicSubscriberManager.acquireWriteLock();
+					TopologyManager.acquireWriteLock();
 					processor1.process(type, json);
 				} finally {
-					TopicSubscriberManager.releaseWriteLock();
+					TopologyManager.releaseWriteLock();
 				}
 
 			} catch (Exception e) {

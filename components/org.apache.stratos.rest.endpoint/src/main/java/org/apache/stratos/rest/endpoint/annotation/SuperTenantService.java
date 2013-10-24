@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,16 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.rest.endpoint.annotation;
 
-package org.apache.stratos.autoscaler.message.processor;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Interface which defined health event processor interface
+ * In Carbon admin authorization framework there are super-tenant only
+ * admin services. We use below annotation to mark such admin services.
  */
-public interface HealthStatEventProcessor {
-
-    public void setNext(HealthStatEventProcessor nextProcessor);
-
-    public boolean process(String type, String message);
-
+@Retention(value = RetentionPolicy.RUNTIME)
+@Target(value = ElementType.METHOD)
+public @interface SuperTenantService {
+    boolean value();
 }

@@ -473,6 +473,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	}
 
+    @Override
+    public String startInstances(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned) {
+        log.info("aaaaaaaaaaaaaaaaaaaaaaaa");
+        //TODO
+        return null;
+    }
 
     /**
 	 * Appends this ip to the Service Context's
@@ -611,9 +617,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-    public boolean terminateInstance(String instanceId) {
-        //TODO
-        return false;
+    public boolean terminateInstances(String noOfInstances, String clusterId, LocationScope locationScope) {
+        log.info("vvvvvvvvvvvvvvvvv");
+        return false;  //TODO
+    }
+
+    @Override
+    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated) {
+        log.info("vvvvvvvvvvdddvvvvvvv");
+        return false;  //TODO
     }
 
     @Override

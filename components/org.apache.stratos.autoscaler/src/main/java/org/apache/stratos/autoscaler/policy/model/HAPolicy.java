@@ -57,7 +57,7 @@ public class HAPolicy {
     /**
      * Gets the value of the partitions.
      */
-    public List<Partition> getPartition() {
+    public List<Partition> getPartitions() {
         if (partitions == null) {
             partitions = new ArrayList<Partition>();
         }

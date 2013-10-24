@@ -24,50 +24,51 @@ package org.apache.stratos.autoscaler.policy.model;
  */
 public class RequestsInFlight {
 
-	private int upperLimit;
-	private int lowerLimit;
-	private int idealGraidient;
+    private float average;
+    private float secondDerivative;
+    private float gradient;
 
     /**
-     * Gets the value of the upperLimit property.    
+     * Gets the value of the average property.   
      */
-    public int getUpperLimit() {
-        return upperLimit;
+    public float getAverage() {
+        return average;
     }
 
     /**
-     * Sets the value of the upperLimit property.
+     * Sets the value of the average property.   
      */
-    public void setUpperLimit(int value) {
-        this.upperLimit = value;
+    public void setAverage(float value) {
+        this.average = value;
     }
 
     /**
-     * Gets the value of the lowerLimit property. 
+     * Gets the value of the second-derivative property. 
      */
-    public int getLowerLimit() {
-        return lowerLimit;
+    public float getSecondDerivative() {
+        return secondDerivative;
     }
 
     /**
-     * Sets the value of the lowerLimit property.
+     * Sets the value of the second-derivative property.   
      */
-    public void setLowerLimit(int value) {
-        this.lowerLimit = value;
+    public void setSecondDerivative(float value) {
+        this.secondDerivative = value;
     }
 
     /**
-     * Gets the value of the idealGraidient property. 
+     * Gets the value of the gradient property. 
      */
-    public int getIdealGraidient() {
-        return idealGraidient;
+    public float getGradient() {
+        return gradient;
     }
 
     /**
-     * Sets the value of the idealGraidient property.
+     * Sets the value of the gradient property.
+     *     
      */
-    public void setIdealGraidient(int value) {
-        this.idealGraidient = value;
+    public void setGradient(float value) {
+        this.gradient = value;
     }
 
 }
