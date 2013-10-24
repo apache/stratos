@@ -35,30 +35,30 @@ public class TopologyBuilder {
 
     public static  void handleServiceCreated(List<Cartridge> cartridgeList) {
         Service service;
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         if(cartridgeList == null) {
             throw new RuntimeException(String.format("Cartridge list is empty"));
         }
         try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
             for(Cartridge cartridge : cartridgeList) {
             if(!topology.serviceExists(cartridge.getType())) {
                 service =  new Service(cartridge.getType());
                 topology.addService(service);
             }
-            TopologyManager.updateTopology(topology);
+            TopologyManager.getInstance().updateTopology(topology);
             }
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendServiceCreateEvent(cartridgeList);
 
     }
 
     public static  void handleServiceRemoved(List<Cartridge> cartridgeList) {
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
             for(Cartridge cartridge : cartridgeList) {
             if(topology.serviceExists(cartridge.getType())) {
                 topology.removeService(cartridge.getType());
@@ -66,15 +66,15 @@ public class TopologyBuilder {
                 throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
             }
             }
-            TopologyManager.updateTopology(topology);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendServiceRemovedEvent(cartridgeList);
     }
 
     public static void handleClusterCreated(List<ServiceContext> serviceContexts) {
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
          Service service;
         for(ServiceContext serviceContext : serviceContexts) {
             service = topology.getService(serviceContext.getCartridgeType());
@@ -108,10 +108,10 @@ public class TopologyBuilder {
                }
             }
             try {
-                TopologyManager.acquireWriteLock();
-                TopologyManager.updateTopology(topology);
+                TopologyManager.getInstance().acquireWriteLock();
+                TopologyManager.getInstance().updateTopology(topology);
             } finally {
-                TopologyManager.releaseWriteLock();
+                TopologyManager.getInstance().releaseWriteLock();
             }
             TopologyEventSender.sendClusterCreatedEvent(serviceContext);
 
@@ -119,7 +119,7 @@ public class TopologyBuilder {
     }
 
     public static void handleClusterRemoved(ServiceContext serviceContext) {
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceContext.getCartridgeType());
         if(service == null) {
             throw new RuntimeException(String.format("Service %s does not exist",
@@ -133,11 +133,11 @@ public class TopologyBuilder {
         }
 
         try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
             service.removeCluster(serviceContext.getClusterId());
-            TopologyManager.updateTopology(topology);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendClusterRemovedEvent(serviceContext);
     }
@@ -145,7 +145,7 @@ public class TopologyBuilder {
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
                                            String iaasNodeId, LocationScope locationScope) {
         //adding the new member to the cluster after it is successfully started in IaaS.
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
         //TODO adding the IaaS scope to the member
@@ -155,19 +155,19 @@ public class TopologyBuilder {
         }
 
         try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
             Member member = new Member(serviceName, clusterId, memberId);
             member.setIaasNodeId(iaasNodeId);
             member.setStatus(MemberStatus.Created);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, iaasNodeId);
 
     }
 
     public static void handleMemberStarted(MemberStartedEvent memberStartedEvent) {
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(memberStartedEvent.getServiceName());
         if (service == null) {
             throw new RuntimeException(String.format("Service %s does not exist",
@@ -186,17 +186,17 @@ public class TopologyBuilder {
                     memberStartedEvent.getMemberId()));
         }
          try {
-             TopologyManager.acquireWriteLock();
+             TopologyManager.getInstance().acquireWriteLock();
              member.setStatus(MemberStatus.Starting);
-             TopologyManager.updateTopology(topology);
+             TopologyManager.getInstance().updateTopology(topology);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendMemberStartedEvent(memberStartedEvent);
     }
 
     public static void handleMemberActivated(MemberActivatedEvent memberActivatedEvent) {
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(memberActivatedEvent.getServiceName());
         Cluster cluster = service.getCluster(memberActivatedEvent.getClusterId());
         Member member = cluster.getMember(memberActivatedEvent.getMemberId());
@@ -217,17 +217,17 @@ public class TopologyBuilder {
         }
 
         try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
             member.setStatus(MemberStatus.Activated);
-            TopologyManager.updateTopology(topology);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendMemberActivatedEvent(memberActivatedEvent);
     }
 
     public static void handleMemberTerminated(String serviceName, String clusterId, String nodeId) {
-        Topology topology = TopologyManager.getTopology();
+        Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
         Member member = cluster.getMemberFromIaasNodeId(nodeId);
@@ -239,11 +239,11 @@ public class TopologyBuilder {
         }
 
         try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
             cluster.removeMember(member);
-            TopologyManager.updateTopology(topology);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
         TopologyEventSender.sendMemberTerminatedEvent(serviceName, clusterId, memberId);
     }
@@ -251,9 +251,9 @@ public class TopologyBuilder {
     public static void handleMemberSuspended() {
        //TODO
          try {
-            TopologyManager.acquireWriteLock();
+            TopologyManager.getInstance().acquireWriteLock();
         } finally {
-            TopologyManager.releaseWriteLock();
+            TopologyManager.getInstance().releaseWriteLock();
         }
     }
 
