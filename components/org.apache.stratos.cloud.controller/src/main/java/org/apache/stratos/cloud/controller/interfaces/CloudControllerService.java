@@ -24,6 +24,8 @@ import org.apache.stratos.cloud.controller.util.CartridgeInfo;
 import org.apache.stratos.cloud.controller.util.LocationScope;
 import org.apache.stratos.cloud.controller.util.Properties;
 
+import java.util.List;
+
 /**
  * This Interface provides a way to communicate with underline
  * Infrastructure which are supported by <i>JClouds</i>.
@@ -75,6 +77,21 @@ public interface CloudControllerService {
      * @return public IP which is associated with the newly started instance.
      */
     public String startInstance(String clusterId, LocationScope locationScope);
+
+    /**
+     * Calling this method will spawn more than one ininstances in the
+      * specified locationScope for the particular cluster
+     *
+     * @param clusterId
+     *            cluster ID of the instance to be started up.
+     * @param noOfInstancesToBeSpawned
+     *            no of instances to be started up.
+     * @param locationScope
+     *            It contains the region, zone, network and host of a IaaS where
+     *            an instance need to be started.
+     * @return public IP which is associated with the newly started instance.
+     */
+    public String startInstance(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned);
     
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -89,15 +106,30 @@ public interface CloudControllerService {
      */
     public boolean terminateInstance(String clusterId, LocationScope locationScope);
 
+    /**
+     * Calling this method will result in termination of an instance which is belong
+     * to the provided cluster Id and the location scope..
+     *
+     * @param noOfInstances
+     *            no of instances to be started up
+     * @param clusterId
+     *            cluster ID of the instance to be terminated.
+     * @param locationScope
+     *            It contains the region, zone, network and host of a IaaS where
+     *            an instance need to be terminated..
+     * @return whether an instance terminated successfully or not.
+     */
+    public boolean terminateInstance(String noOfInstances, String clusterId, LocationScope locationScope);
+
      /**
      * Calling this method will result in termination of an instance which is belong
      * to the provided instance Id.
      *
-     * @param instanceId
-     *            instance Id of the instance to be terminated.
+     * @param instancesToBeTerminated
+     *            list of instance Ids to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstance(String instanceId);
+    public boolean terminateInstance(List<String> instancesToBeTerminated);
 
     /**
      * Calling this method will result in termination of all instances belong
