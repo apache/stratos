@@ -50,7 +50,7 @@
             <xs:element name="terminateInstance">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instancesToBeTerminated" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -80,6 +80,7 @@
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
+                        <xs:element minOccurs="0" name="noOfInstancesToBeSpawned" type="xs:int"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
