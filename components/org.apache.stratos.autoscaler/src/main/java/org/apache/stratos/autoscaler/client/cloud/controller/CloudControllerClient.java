@@ -21,13 +21,6 @@ public class CloudControllerClient {
     private static final Log log = LogFactory.getLog(CloudControllerClient.class);
     private CloudControllerServiceStub stub;
 
-    public void act(String action){
-
-
-        //TODO add real CC call
-        log.info("Call CC to take action : " + action);
-    }
-
     public void spawnInstances(Partition partition, String clusterId, int memberCountToBeIncreased) throws SpawningException {
         //call CC spawnInstances method
 
