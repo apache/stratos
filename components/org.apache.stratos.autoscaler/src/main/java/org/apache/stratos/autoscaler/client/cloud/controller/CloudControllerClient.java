@@ -29,7 +29,7 @@ public class CloudControllerClient {
         locationScope.setRegion(partition.getZone());
 
         try {
-            stub.startInstance(clusterId, locationScope, memberCountToBeIncreased);
+            stub.startInstances(clusterId, locationScope, memberCountToBeIncreased);
         } catch (RemoteException e) {
             throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
         }
@@ -43,7 +43,7 @@ public class CloudControllerClient {
         locationScope.setRegion(partition.getZone());
 
         try {
-            stub.startInstance(clusterId, locationScope, 1);
+            stub.startInstance(clusterId, locationScope);
         } catch (RemoteException e) {
             throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
         }
@@ -58,7 +58,7 @@ public class CloudControllerClient {
         locationScope.setRegion(partition.getZone());
 
         try {
-            stub.terminateAllInstances(clusterId);//TODO change when cloud controller side is fixed
+            stub.terminateInstance(clusterId, locationScope);
         } catch (RemoteException e) {
             throw new TerminationException("Error occurred in cloud controller side while spawning instance", e );
         }
