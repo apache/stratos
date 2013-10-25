@@ -71,9 +71,6 @@ public class TopicPublisher extends MessagePublisher {
 		
 		Gson gson = new Gson();
 		String message = gson.toJson(messageObj);
-		if (log.isDebugEnabled()) {
-			log.debug("Message to the topic: " + message);
-		}
 		try {
 			doPublish(message, headers);
 			
@@ -110,6 +107,9 @@ public class TopicPublisher extends MessagePublisher {
 		}
 
 		topicPublisher.publish(textMessage);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Message published: %s %s", headers.toString(), message));
+        }
 	}
 
 	private void setPublisher() throws Exception, JMSException {
