@@ -16,17 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.adc.topology;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+package org.apache.stratos.messaging.message.receiver.topology;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * Implements functionality for receiving text based event messages from the topology
+ * message broker topic and add them to the event queue.
+ */
 public class TopologyEventMessageReceiver implements MessageListener {
 
     private static final Log log = LogFactory.getLog(TopologyEventMessageReceiver.class);

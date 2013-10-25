@@ -17,30 +17,27 @@
  * under the License.
  */
 
-package org.apache.stratos.lb.endpoint.topology;
+package org.apache.stratos.messaging.message.processor.topology;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.jms.TextMessage;
+import org.apache.stratos.messaging.domain.topology.Topology;
 
 /**
- * Implements topology event queue.
+ * Message processor interface. Every Message Processor should implement this.
  */
-public class TopologyEventQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile TopologyEventQueue instance;
+public interface TopologyMessageProcessor {
+    
+	/**
+	 * Link a message processor and its successor, if there's any.
+	 * @param nextProcessor
+	 */
+	public abstract void setNext(TopologyMessageProcessor nextProcessor);
 
-    private TopologyEventQueue(){
-    }
-
-    public static synchronized TopologyEventQueue getInstance() {
-        if (instance == null) {
-            synchronized (TopologyEventQueue.class){
-                if (instance == null) {
-                    instance = new TopologyEventQueue ();
-                }
-            }
-        }
-        return instance;
-    }
+	/**
+	 * Message processing and delegating logic.
+	 * @param type type of the message. 
+	 * @param message real message body.
+	 * @param topology Topology that will get updated.
+	 * @return whether the processing was successful or not.
+	 */
+	public abstract boolean process(String type, String message, Topology topology);
 }

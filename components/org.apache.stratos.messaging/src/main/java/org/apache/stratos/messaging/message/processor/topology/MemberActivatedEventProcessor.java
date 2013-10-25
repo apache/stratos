@@ -16,17 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class InstanceSpawnedEventProcessor implements TopologyMessageProcessor {
+public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(InstanceSpawnedEventProcessor.class);
+	private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
 	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
@@ -37,35 +41,37 @@ public class InstanceSpawnedEventProcessor implements TopologyMessageProcessor {
 	@Override
 	public boolean process(String type, String message, Topology topology) {
 		try {
-			if (MemberStartedEvent.class.getName().equals(type)) {
+			if (MemberActivatedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(message, MemberStartedEvent.class);
+				MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
 
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
+					throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
 				}
 				Cluster cluster = service.getCluster(event.getClusterId());
 				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist",
-					                                         event.getClusterId()));
+					throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
 				}
-				if (cluster.memberExists(event.getMemberId())) {
-					throw new RuntimeException(String.format("Member %s already exist in cluster %s of service %s",
+				Member member = cluster.getMember(event.getMemberId());
+				if (member == null) {
+					throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
+				}
+				if (member.getStatus() == MemberStatus.Activated) {
+					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already activated",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
 				}
 
 				// Apply changes to the topology
-				Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId());
-				member.setStatus(MemberStatus.Created);
-				cluster.addMember(member);
-
+				member.addPorts(event.getPorts());
+				member.setMemberIp(event.getMemberIp());
+				member.setStatus(MemberStatus.Activated);
+				
 				if (log.isInfoEnabled()) {
-					log.info(String.format("Member %s created in cluster %s of service %s",
+					log.info(String.format("Member %s activated in cluster %s of service %s",
 					                       event.getMemberId(), event.getClusterId(),
 					                       event.getServiceName()));
 				}
@@ -86,6 +92,8 @@ public class InstanceSpawnedEventProcessor implements TopologyMessageProcessor {
 				                                         message, type));
 			}
 		}
+		
 		return false;
 	}
+
 }

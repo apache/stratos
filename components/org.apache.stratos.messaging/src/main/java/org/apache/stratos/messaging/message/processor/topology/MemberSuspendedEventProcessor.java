@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,12 +25,12 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberSuspendedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
+public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
+	private static final Log log = LogFactory.getLog(MemberSuspendedEventProcessor.class);
 	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
@@ -41,37 +41,38 @@ public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
 	@Override
 	public boolean process(String type, String message, Topology topology) {
 		try {
-			if (MemberActivatedEvent.class.getName().equals(type)) {
+			if (MemberSuspendedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
+				MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
 
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
+					throw new RuntimeException(String.format("Service %s does not exist",
+					                                         event.getServiceName()));
 				}
 				Cluster cluster = service.getCluster(event.getClusterId());
 				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
+					throw new RuntimeException(String.format("Cluster %s does not exist",
+					                                         event.getClusterId()));
 				}
 				Member member = cluster.getMember(event.getMemberId());
 				if (member == null) {
-					throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
+					throw new RuntimeException(String.format("Member %s does not exist",
+					                                         event.getMemberId()));
 				}
-				if (member.getStatus() == MemberStatus.Activated) {
-					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already activated",
+				if (member.getStatus() == MemberStatus.Suspended) {
+					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already suspended",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
 				}
 
 				// Apply changes to the topology
-				member.addPorts(event.getPorts());
-				member.setMemberIp(event.getMemberIp());
-				member.setStatus(MemberStatus.Activated);
+				member.setStatus(MemberStatus.Suspended);
 				
 				if (log.isInfoEnabled()) {
-					log.info(String.format("Member %s activated in cluster %s of service %s",
+					log.info(String.format("Member %s suspended in cluster %s of service %s",
 					                       event.getMemberId(), event.getClusterId(),
 					                       event.getServiceName()));
 				}
@@ -92,8 +93,6 @@ public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
 				                                         message, type));
 			}
 		}
-		
 		return false;
 	}
-
 }

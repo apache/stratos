@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.adc.topology;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.processor.*;
-import org.apache.stratos.messaging.util.Constants;
+package org.apache.stratos.messaging.message.receiver.topology;
 
 import javax.jms.TextMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.message.processor.topology.*;
+import org.apache.stratos.messaging.util.Constants;
+
 
 /**
- * A thread for processing topology messages and updating the topology data structure.
+ * Implements the default event processor chain for updating
+ * the topology data structure in topology manager.
  */
 public class TopologyEventMessageDelegator implements Runnable {
 
