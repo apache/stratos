@@ -59,11 +59,11 @@
     			<xs:complexType>
     				<xs:choice maxOccurs="unbounded">
                         <xs:element type="xs:string" name="scaleUpOrder"
-                                    minOccurs="0" maxOccurs="1" />
+    						minOccurs="0" maxOccurs="1" />
                         <xs:element type="xs:string" name="scaleDownOrder"
-                                    minOccurs="0" maxOccurs="1" />
+    						minOccurs="0" maxOccurs="1" />
                         <xs:element type="xs:string" name="maxInstanceLimit"
-                                    minOccurs="0" maxOccurs="1" />
+    						minOccurs="0" maxOccurs="1" />
     					<xs:element type="xs:string" name="imageId"
     						minOccurs="0" maxOccurs="1" />
     					<xs:element name="property"
