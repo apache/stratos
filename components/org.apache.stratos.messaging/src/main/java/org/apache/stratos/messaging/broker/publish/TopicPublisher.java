@@ -108,7 +108,7 @@ public class TopicPublisher extends MessagePublisher {
 
 		topicPublisher.publish(textMessage);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Message published: %s %s", headers.toString(), message));
+            log.debug(String.format("Message published: [topic] %s [header] %s [body] %s", getName(), headers.toString(), message));
         }
 	}
 
