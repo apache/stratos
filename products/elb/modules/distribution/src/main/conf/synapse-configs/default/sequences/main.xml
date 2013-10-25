@@ -29,7 +29,7 @@
                      <parameter name="algorithmClassName">org.apache.stratos.lb.endpoint.algorithm.RoundRobin</parameter>
                      <parameter name="failover">true</parameter>
                      <parameter name="sessionAffinity">true</parameter>
-                     <parameter name="sessionTimeout">900000</parameter>
+                     <parameter name="sessionTimeout">90000</parameter>
                      <!-- parameter name="configuration">$system:loadbalancer.conf</parameter -->
   	            </class>
  	          </endpoint>
