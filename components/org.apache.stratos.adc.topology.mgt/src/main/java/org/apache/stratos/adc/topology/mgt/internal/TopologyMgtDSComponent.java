@@ -21,12 +21,12 @@ package org.apache.stratos.adc.topology.mgt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.adc.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.service.impl.TopologyManagementServiceImpl;
 import org.apache.stratos.adc.topology.mgt.util.ConfigHolder;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

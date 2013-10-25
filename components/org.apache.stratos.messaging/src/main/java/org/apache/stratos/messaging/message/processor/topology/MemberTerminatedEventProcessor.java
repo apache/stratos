@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,12 +25,12 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberStartedEventProcessor implements TopologyMessageProcessor {
+public class MemberTerminatedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(MemberStartedEventProcessor.class);
+	private static final Log log = LogFactory.getLog(MemberTerminatedEventProcessor.class);
 	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
@@ -41,43 +41,41 @@ public class MemberStartedEventProcessor implements TopologyMessageProcessor {
 	@Override
 	public boolean process(String type, String message, Topology topology) {
 		try {
-			if (MemberStartedEvent.class.getName().equals(type)) {
+			if (MemberTerminatedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(message, MemberStartedEvent.class);
+				MemberTerminatedEvent event = (MemberTerminatedEvent) Util.jsonToObject(message, MemberTerminatedEvent.class);
 
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
 				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
+					throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
 				}
 				Cluster cluster = service.getCluster(event.getClusterId());
 				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist",
-					                                         event.getClusterId()));
+					throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
 				}
-                Member member = cluster.getMember(event.getMemberId());
-                if (member == null) {
-                    throw new RuntimeException(String.format("Member %s does not exist",
-                            event.getMemberId()));
-                }
-                if (member.getStatus() == MemberStatus.Starting) {
-                    throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already started",
-                            event.getMemberId(),
-                            event.getClusterId(),
-                            event.getServiceName()));
-                }
+				Member member = cluster.getMember(event.getMemberId());
+				if (member == null) {
+					throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
+				}
+				if (member.getStatus() == MemberStatus.Terminated) {
+					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already terminated",
+					                                         event.getMemberId(),
+					                                         event.getClusterId(),
+					                                         event.getServiceName()));
+				}
 
-                // Apply changes to the topology
-                member.setStatus(MemberStatus.Starting);
-
+				// Apply changes to the topology
+				member.setStatus(MemberStatus.Terminated);
+				
 				if (log.isInfoEnabled()) {
-					log.info(String.format("Member %s started in cluster %s of service %s",
+					log.info(String.format("Member %s terminated in cluster %s of service %s",
 					                       event.getMemberId(), event.getClusterId(),
 					                       event.getServiceName()));
 				}
 
 				return true;
+
 			} else {
 				if (nextMsgProcessor != null) {
 					// ask the next processor to take care of the message.
@@ -95,4 +93,5 @@ public class MemberStartedEventProcessor implements TopologyMessageProcessor {
 		}
 		return false;
 	}
+
 }

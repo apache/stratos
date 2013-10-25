@@ -19,12 +19,12 @@
 
 package org.apache.stratos.adc.topology.mgt.service.impl;
 
-import org.apache.stratos.adc.topology.TopologyManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.ArrayList;
 import java.util.List;

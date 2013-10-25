@@ -16,21 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.MemberSuspendedEvent;
+import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
+public class InstanceSpawnedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(MemberSuspendedEventProcessor.class);
+	private static final Log log = LogFactory.getLog(InstanceSpawnedEventProcessor.class);
 	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
@@ -41,9 +37,9 @@ public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
 	@Override
 	public boolean process(String type, String message, Topology topology) {
 		try {
-			if (MemberSuspendedEvent.class.getName().equals(type)) {
+			if (MemberStartedEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
+				MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(message, MemberStartedEvent.class);
 
 				// Validate event against the existing topology
 				Service service = topology.getService(event.getServiceName());
@@ -56,23 +52,20 @@ public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
 					throw new RuntimeException(String.format("Cluster %s does not exist",
 					                                         event.getClusterId()));
 				}
-				Member member = cluster.getMember(event.getMemberId());
-				if (member == null) {
-					throw new RuntimeException(String.format("Member %s does not exist",
-					                                         event.getMemberId()));
-				}
-				if (member.getStatus() == MemberStatus.Suspended) {
-					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already suspended",
+				if (cluster.memberExists(event.getMemberId())) {
+					throw new RuntimeException(String.format("Member %s already exist in cluster %s of service %s",
 					                                         event.getMemberId(),
 					                                         event.getClusterId(),
 					                                         event.getServiceName()));
 				}
 
 				// Apply changes to the topology
-				member.setStatus(MemberStatus.Suspended);
-				
+				Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId());
+				member.setStatus(MemberStatus.Created);
+				cluster.addMember(member);
+
 				if (log.isInfoEnabled()) {
-					log.info(String.format("Member %s suspended in cluster %s of service %s",
+					log.info(String.format("Member %s created in cluster %s of service %s",
 					                       event.getMemberId(), event.getClusterId(),
 					                       event.getServiceName()));
 				}

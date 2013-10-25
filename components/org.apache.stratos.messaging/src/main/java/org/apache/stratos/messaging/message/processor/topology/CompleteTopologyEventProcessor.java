@@ -16,19 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
+import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
+public class CompleteTopologyEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
+	private static final Log log = LogFactory.getLog(CompleteTopologyEventProcessor.class);
 	private TopologyMessageProcessor nextMsgProcessor;
 
 	@Override
@@ -39,35 +37,13 @@ public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
 	@Override
 	public boolean process(String type, String message, Topology topology) {
 		try {
-			if (ClusterCreatedEvent.class.getName().equals(type)) {
+			if (CompleteTopologyEvent.class.getName().equals(type)) {
 				// Parse complete message and build event
-				ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
-				// Validate event against the existing topology
-				Service service = topology.getService(event.getServiceName());
-				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
-				}
-				if (service.clusterExists(event.getClusterId())) {
-					throw new RuntimeException(String.format("Cluster %s already exists in service %s",
-					                                         event.getClusterId(),
-					                                         event.getServiceName()));
-				}
-
-				// Apply changes to the topology
-				Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(),
-                        event.getAutoscalingPolicyName());
-				cluster.setHostName(event.getHostName());
-				cluster.setTenantRange(event.getTenantRange());
-
-				service.addCluster(cluster);
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Cluster %s created for service %s",
-					                       event.getClusterId(), event.getServiceName()));
-				}
+				CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
+				topology.addServices(event.getTopology().getServices());
+				log.info("Topology initialized.");
 
 				return true;
-
 			} else {
 				if (nextMsgProcessor != null) {
 					// ask the next processor to take care of the message.
@@ -85,4 +61,5 @@ public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
 		}
 		return false;
 	}
+
 }

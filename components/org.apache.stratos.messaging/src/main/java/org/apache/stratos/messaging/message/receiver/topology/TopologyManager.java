@@ -17,12 +17,18 @@
  * under the License.
  */
 
-package org.apache.stratos.adc.topology;
+package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.stratos.messaging.domain.topology.Topology;
-
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ *  A singleton class for managing the topology data structure.
+ *
+ *  Usage:
+ *  Acquire a relevant lock and invoke the getTopology() method inside a try block.
+ *  Once processing is done release the lock using a finally block.
+ */
 public class TopologyManager {
     private static volatile Topology topology;
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();

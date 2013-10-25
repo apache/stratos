@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.message.receiver.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
-import org.apache.stratos.messaging.message.processor.*;
+import org.apache.stratos.messaging.message.processor.topology.*;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
