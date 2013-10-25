@@ -332,7 +332,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     String memberID = generateMemberId(clusterId);
                     //have to add memberID to the payload
                     serviceCtxt.getPayload().append(",");
-                    serviceCtxt.getPayload().append(memberID);
+                    serviceCtxt.getPayload().append("MEMBER_ID=" + memberID);
                     //reloading the payload with memberID
                     reloadPayload(serviceCtxt.getCartridge(), serviceCtxt.generatePayload());
 
