@@ -24,8 +24,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
+import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -118,12 +118,18 @@ public class CartridgeAgent implements Runnable {
     }
 
     private void publishMemberStartedEvent(UserData userData) throws JMSException, NamingException, IOException, InterruptedException {
-        MemberStartedEvent event = new MemberStartedEvent(userData.getServiceName(), userData.getClusterId(), userData.getMemberId());
+        MemberStartedEvent event = new MemberStartedEvent();
+        event.setServiceName(userData.getServiceName());
+        event.setClusterId(userData.getClusterId());
+        event.setMemberId(userData.getMemberId());
         publishEvent(event);
     }
 
     private void publishMemberActivatedEvent(UserData userData) throws JMSException, NamingException, IOException, InterruptedException {
-        MemberActivatedEvent event = new MemberActivatedEvent(userData.getServiceName(), userData.getClusterId(), userData.getMemberId());
+        MemberActivatedEvent event = new MemberActivatedEvent();
+        event.setServiceName(userData.getServiceName());
+        event.setClusterId(userData.getClusterId());
+        event.setMemberId(userData.getMemberId());
         publishEvent(event);
     }
 
