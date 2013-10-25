@@ -20,6 +20,8 @@
 package org.apache.stratos.cartridge.agent;
 
 import com.google.gson.Gson;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -34,6 +36,8 @@ import java.util.Properties;
  * A generic topic publisher.
  */
 public class EventPublisher {
+    private static final Log log = LogFactory.getLog(EventPublisher.class);
+
     private TopicConnection topicConnection;
     private TopicSession topicSession;
     private Topic topic;
@@ -84,23 +88,14 @@ public class EventPublisher {
         publish(json, event.getClass().getName());
     }
 
-    private void publish(Object message, String eventClassName) throws NamingException, JMSException, IOException {
-        // Send message
-        if (message instanceof String) {
+    private void publish(String message, String eventClassName) throws NamingException, JMSException, IOException {
             TextMessage textMessage = topicSession.createTextMessage((String) message);
             textMessage.setStringProperty(Constants.EVENT_CLASS_NAME, eventClassName);
             javax.jms.TopicPublisher topicPublisher = topicSession.createPublisher(topic);
             topicPublisher.publish(textMessage);
 
-            System.out.println("Text message sent: " + (String) message);
-        } else if (message instanceof Serializable) {
-            ObjectMessage objectMessage = topicSession.createObjectMessage((Serializable) message);
-            javax.jms.TopicPublisher topicPublisher = topicSession.createPublisher(topic);
-            topicPublisher.publish(objectMessage);
-
-            System.out.println("Object message sent: " + ((Serializable) message).toString());
-        } else {
-            throw new RuntimeException("Unknown message type");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Message published: [topic] %s [header] %s [body] %s", topicName, eventClassName, message));
         }
     }
 
