@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cartridge.agent;
 
+import com.google.gson.Gson;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
@@ -27,6 +29,9 @@ import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -40,8 +45,30 @@ public class CartridgeAgent implements Runnable {
 
     private UserData userData;
 
-    public CartridgeAgent(UserData userData) {
-        this.userData = userData;
+    public CartridgeAgent(String userDataFilePath) {
+        this.userData = extractUserData(userDataFilePath);
+    }
+
+    private UserData extractUserData(String userDataFilePath) {
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(new File(userDataFilePath));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Could not find user data file");
+        }
+
+        try {
+            String json = IOUtils.toString(fileInputStream, "UTF-8");
+            if(log.isDebugEnabled()){
+                log.debug(String.format("User data json: %s", json));
+            }
+            return new Gson().fromJson(json, UserData.class);
+        } catch (IOException e) {
+            if(log.isErrorEnabled()) {
+                log.error(e);
+            }
+        }
+        throw new RuntimeException("Could not read user data file");
     }
 
     @Override
@@ -65,21 +92,27 @@ public class CartridgeAgent implements Runnable {
 
     private boolean isApplicationActive(UserData userData) {
         try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Trying to connect to application socket: %s %d", userData.getIpAddress(), userData.getPort()));
+            for(int port : userData.getPorts()) {
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Trying to connect to application socket: %s %d", userData.getIpAddress(), port));
+                }
+
+                SocketAddress httpSockaddr = new InetSocketAddress(userData.getIpAddress(), port);
+                Socket socket = new Socket();
+                socket.connect(httpSockaddr, 1000);
+
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Successfully connected to socket: %s %d", userData.getIpAddress(), port));
+                }
             }
-
-            SocketAddress httpSockaddr = new InetSocketAddress(userData.getIpAddress(), userData.getPort());
-            new Socket().connect(httpSockaddr, 1000);
-
             if (log.isInfoEnabled()) {
-                log.info("Successfully connected to socket");
+                log.info("Application is active");
             }
             return true;
         } catch (IOException e) {
         }
         if (log.isInfoEnabled()) {
-            log.info("Socket is not available");
+            log.info("All sockets are still not active");
         }
         return false;
     }
@@ -101,7 +134,7 @@ public class CartridgeAgent implements Runnable {
     }
 
     private void publishEvent(Event event) throws JMSException, NamingException, IOException, InterruptedException {
-        EventPublisher publisher = new EventPublisher(org.apache.stratos.messaging.util.Constants.INSTANCE_STATUS_TOPIC);
+        EventPublisher publisher = new EventPublisher(userData.getMbIpAddress(), userData.getMbPort(), org.apache.stratos.messaging.util.Constants.INSTANCE_STATUS_TOPIC);
         try {
             publisher.connect();
             publisher.publish(event);

@@ -37,16 +37,29 @@ public class EventPublisher {
     private TopicConnection topicConnection;
     private TopicSession topicSession;
     private Topic topic;
+    private String mbIpAddress;
+    private int mbPort;
     private String topicName;
 
-    public EventPublisher(String topicName) {
+    public EventPublisher(String mbIpAddress, int mbPort, String topicName) {
+        this.mbIpAddress = mbIpAddress;
+        this.mbPort = mbPort;
         this.topicName = topicName;
     }
 
     private Properties getProperties() throws IOException {
-        Properties prop = new Properties();
-        prop.load(EventPublisher.class.getClassLoader().getResourceAsStream("jndi.properties"));
-        return prop;
+        Properties properties = new Properties();
+        properties.load(EventPublisher.class.getClassLoader().getResourceAsStream("jndi.properties"));
+
+        // Set message broker ip and port
+        String connectionFactoryName = properties.get("connectionfactoryName").toString();
+        String key = "connectionfactory." + connectionFactoryName;
+        String connectionFactoryStr = (String) properties.get(key);
+        connectionFactoryStr = connectionFactoryStr.replace("MB-IP-ADDRESS", mbIpAddress);
+        connectionFactoryStr = connectionFactoryStr.replace("MB-PORT", String.valueOf(mbPort));
+        properties.setProperty(key, connectionFactoryStr);
+
+        return properties;
     }
 
     public void connect() throws NamingException, JMSException, IOException {

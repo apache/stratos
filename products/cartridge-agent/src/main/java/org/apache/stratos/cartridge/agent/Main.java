@@ -19,8 +19,15 @@
 
 package org.apache.stratos.cartridge.agent;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Cartridge agent main class.
@@ -30,15 +37,8 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            if ((args != null) && (args.length == 5)) {
-                UserData userData = new UserData();
-                userData.setServiceName(args[0]);
-                userData.setClusterId(args[1]);
-                userData.setMemberId(args[2]);
-                userData.setIpAddress(args[3]);
-                userData.setPort(Integer.parseInt(args[4]));
-
-                Runnable runnable = new CartridgeAgent(userData);
+            if ((args != null) && (args.length == 1)) {
+                Runnable runnable = new CartridgeAgent(args[0]);
                 Thread thread = new Thread(runnable);
                 thread.start();
             } else {
@@ -52,7 +52,7 @@ public class Main {
     private static void printInvalidArgs() {
         if (log.isErrorEnabled()) {
             log.error("Arguments are not valid. Cartridge agent could not be started.");
-            log.error("Expected: service-name cluster-id member-id ip-address port");
+            log.error("Expected: user-data-file-path");
         }
     }
 }

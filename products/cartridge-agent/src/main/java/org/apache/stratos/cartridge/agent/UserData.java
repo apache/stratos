@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cartridge.agent;
 
+import java.util.List;
+
 /**
  * User data definition.
  */
@@ -27,7 +29,9 @@ public class UserData {
     private String clusterId;
     private String memberId;
     private String ipAddress;
-    private int port;
+    private List<Integer> ports;
+    private String mbIpAddress;
+    private int mbPort;
 
     public String getServiceName() {
         return serviceName;
@@ -61,11 +65,27 @@ public class UserData {
         this.ipAddress = ipAddress;
     }
 
-    public int getPort() {
-        return port;
+    public List<Integer> getPorts() {
+        return ports;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPorts(List<Integer> ports) {
+        this.ports = ports;
+    }
+
+    public String getMbIpAddress() {
+        return mbIpAddress;
+    }
+
+    public void setMbIpAddress(String mbIpAddress) {
+        this.mbIpAddress = mbIpAddress;
+    }
+
+    public int getMbPort() {
+        return mbPort;
+    }
+
+    public void setMbPort(int mbPort) {
+        this.mbPort = mbPort;
     }
 }
