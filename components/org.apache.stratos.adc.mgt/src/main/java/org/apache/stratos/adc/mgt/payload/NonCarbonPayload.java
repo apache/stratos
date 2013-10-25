@@ -42,6 +42,10 @@ public class NonCarbonPayload extends Payload {
         payloadBuilder.append("CARTRIDGE_AGENT_EPR=" + System.getProperty(CartridgeConstants.CARTRIDGE_AGENT_EPR));
         payloadBuilder.append(",");
         payloadBuilder.append("APP_PATH=" + payloadArg.getCartridgeInfo().getBaseDir());
+        payloadBuilder.append(",");
+        payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
+        payloadBuilder.append(",");
+        payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
 
         //port mapping specific
         if(payloadArg.getCartridgeInfo() != null) {

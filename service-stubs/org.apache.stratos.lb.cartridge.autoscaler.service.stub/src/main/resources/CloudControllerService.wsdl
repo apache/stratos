@@ -152,7 +152,7 @@
                         <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"/>
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>

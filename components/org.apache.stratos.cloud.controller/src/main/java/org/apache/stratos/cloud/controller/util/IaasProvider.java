@@ -235,11 +235,11 @@ public class IaasProvider implements Serializable{
         this.className = className;
     }
 
-    public byte[] getPayload() {
+    public byte [] getPayload() {
         return payload;
     }
 
-    public void setPayload(byte[] payload) {
+    public void setPayload(byte[]payload) {
         this.payload = payload;
     }
 

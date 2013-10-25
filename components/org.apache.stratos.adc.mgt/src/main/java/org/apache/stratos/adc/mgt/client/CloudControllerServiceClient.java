@@ -31,7 +31,6 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregister
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 import org.apache.stratos.cloud.controller.util.xsd.Properties;
 
-import javax.activation.DataHandler;
 import java.rmi.RemoteException;
 
 public class CloudControllerServiceClient {
@@ -69,7 +68,7 @@ public class CloudControllerServiceClient {
     }
 
 	public boolean register(String clusterId, String cartridgeType,
-	                        DataHandler payload, String tenantRange,
+	                        String payload, String tenantRange,
                             String hostName, Properties properties,
                             String autoscalorPolicyName) throws RemoteException, CloudControllerServiceUnregisteredCartridgeExceptionException
 	                                                                                  {		

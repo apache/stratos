@@ -19,9 +19,11 @@
 package org.apache.stratos.cloud.controller.util;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,6 +33,7 @@ import java.util.Map;
  * in this object.
  */
 public class ServiceContext implements Serializable{
+    private static Log log = LogFactory.getLog(ServiceContext.class);
 
     private static final long serialVersionUID = -6740964802890082678L;
     private File file;
@@ -40,7 +43,7 @@ public class ServiceContext implements Serializable{
     private String payloadFilePath;
     private String cartridgeType;
     private Cartridge cartridge;
-    private byte[] payload;
+    private StringBuilder payload;
     private String autoScalerPolicyName;
     /**
      * Key - Value pair.
@@ -148,11 +151,11 @@ public class ServiceContext implements Serializable{
 	    this.cartridgeType = cartridgeType;
     }
 
-	public byte[] getPayload() {
+	public StringBuilder getPayload() {
 	    return payload;
     }
 
-	public void setPayload(byte[] payload) {
+	public void setPayload(StringBuilder payload) {
 	    this.payload = payload;
     }
 
@@ -165,18 +168,11 @@ public class ServiceContext implements Serializable{
 	}
 
     public String toXml() {
-		String str =
-				payloadFilePath == null ? "<service domain=\"" + clusterId +
-				                        "\" tenantRange=\"" + tenantRange + "\">\n" +
-				                        "\t<cartridge type=\"" + cartridgeType +
-				                        "\"/>\n" + "\t<host>" + hostName +
-				                        "</host>\n" + "</service>"
-
-		                                    : "<service domain=\"" + clusterId +
+		String str = "<service domain=\"" + clusterId +
 		                                    "\" tenantRange=\"" + tenantRange + "\">\n" +
 		                                    "\t<cartridge type=\"" + cartridgeType +
 		                                    "\"/>\n"  + "\t<host>" + hostName +
-		                                    "</host>\n" + "\t<payload>" + payloadFilePath +
+		                                    "</host>\n" + "\t<payload>" + payload +
 		                                    "</payload>\n" +
 		                                    propertiesToXml() +
 		                                    "</service>";
@@ -198,6 +194,54 @@ public class ServiceContext implements Serializable{
 
 		return builder.toString();
 	}
+
+    public byte[] generatePayload() {
+        String payloadStringTempFile = "launch-params";
+
+        FileWriter fstream;
+        try {
+            fstream = new FileWriter(payloadStringTempFile);
+
+        } catch (IOException e) {
+            log.error(e.getMessage());
+           throw new CloudControllerException(e.getMessage(), e);
+        }
+        BufferedWriter out = new BufferedWriter(fstream);
+       try {
+            out.write(payload.toString());
+           out.close();
+
+       } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+
+
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(payloadStringTempFile);
+        } catch (FileNotFoundException e) {
+             String msg = "Failed while persisting the payload of clusterId : "
+						+ clusterId;
+				log.error(msg, e);
+				throw new CloudControllerException(msg, e);
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        try {
+            for (int readNum; (readNum = fis.read(buf)) != -1;) {
+                bos.write(buf, 0, readNum);
+            }
+        } catch (IOException ex) {
+            String msg = "Failed while persisting the payload of clusterId : "
+						+ clusterId;
+				log.error(msg, ex);
+				throw new CloudControllerException(msg, ex);
+        }
+        byte[] bytes = bos.toByteArray();
+        return bytes;
+    }
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof ServiceContext) {

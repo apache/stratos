@@ -143,13 +143,13 @@ public class ApplicationManagementUtil {
             dataCartridge.setUserName(CartridgeConstants.MYSQL_DEFAULT_USER);
             clusterDomain = getDynamicClusterDomain(cartridgeType, cartName, cartridgeInfo);
 
-            registerService(cartridgeType,
+            /*egisterService(cartridgeType,
                     clusterDomain,
                     clusterSubDomain,
                     createPayload(cartridgeInfo, cartName, autoScalingPolicy, repoURL, mysqlPassword, "localhost", payloadZipFileName, tenantId, tenantDomain),
                     "*",
                     cartName + "." + cartridgeInfo.getHostName(),
-                    setRegisterServiceProperties(autoScalingPolicy, tenantId,cartName));
+                    setRegisterServiceProperties(autoScalingPolicy, tenantId,cartName));*/
             deletePayloadFile(payloadZipFileName);
         } else {
         	
@@ -198,13 +198,13 @@ public class ApplicationManagementUtil {
                 if (cartridgeInfo.getProvider().equalsIgnoreCase(CartridgeConstants.PROVIDER_NAME_WSO2)) { //carbon cartridge private jet mode
 
                     clusterDomain = getDynamicClusterDomain(cartridgeType, cartName, cartridgeInfo);
-                    registerService(cartridgeType,
+                   /* registerService(cartridgeType,
                             clusterDomain,
                             clusterSubDomain,
                             createCarbonPayload(cartridgeInfo, cartName, alias, payloadZipFileName, tenantDomain, false),
                             Integer.toString(tenantId),
                             cartName + "." + cartridgeInfo.getHostName(),
-                            setRegisterServiceProperties(autoScalingPolicy,tenantId,cartName));
+                            setRegisterServiceProperties(autoScalingPolicy,tenantId,cartName));*/
                     deletePayloadFile(payloadZipFileName);
 
                 } else {
@@ -248,13 +248,13 @@ public class ApplicationManagementUtil {
                         log.info(" MYSQL Cartridge info retrieved ");
                     }
 
-                    registerService(cartridgeType,
+                    /*registerService(cartridgeType,
                             clusterDomain,
                             clusterSubDomain,
                             createPayload(cartridgeInfo, cartName, autoScalingPolicy, repoURL, mySQLPassword,
                                     mySQLHostName, payloadZipFileName, tenantId, tenantDomain), "*",
                             cartName + "." + cartridgeInfo.getHostName(),
-                            setRegisterServiceProperties(autoScalingPolicy,tenantId,cartName));
+                            setRegisterServiceProperties(autoScalingPolicy,tenantId,cartName));*/
                     deletePayloadFile(payloadZipFileName);
                 }
 
@@ -928,11 +928,11 @@ public class ApplicationManagementUtil {
     }
 
     public static void registerService(String cartridgeType, String domain, String subDomain,
-                                        DataHandler payload, String tenantRange, String hostName, Properties properties)
+                                        StringBuilder payload, String tenantRange, String hostName, Properties properties)
             throws ADCException, UnregisteredCartridgeException {
         log.info("Register service..");
         try {
-            CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload, tenantRange,
+            CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
                     hostName, properties, "economy");
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();

@@ -19,6 +19,8 @@
 
 package org.apache.stratos.adc.mgt.payload;
 
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+
 public class DataPayload extends NonCarbonPayload {
 
     public DataPayload(String payloadFilePath) {
@@ -36,5 +38,9 @@ public class DataPayload extends NonCarbonPayload {
         payloadBuilder.append("MYSQL_HOST=" + payloadArg.getDataCartridgeHost());
         payloadBuilder.append(",");
         payloadBuilder.append("MYSQL_PASSWORD=" + payloadArg.getDataCartridgeAdminPassword());
+        payloadBuilder.append(",");
+        payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
+        payloadBuilder.append(",");
+        payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
     }
 }

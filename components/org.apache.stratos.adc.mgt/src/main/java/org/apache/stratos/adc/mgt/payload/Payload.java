@@ -22,11 +22,11 @@ package org.apache.stratos.adc.mgt.payload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -116,7 +116,7 @@ public abstract class Payload {
      * @return DataHandler subscription with payload
      * @throws ADCException in case of an error
      */
-    public DataHandler createPayload () throws ADCException {
+    public StringBuilder createPayload () throws ADCException {
 
         if(payloadBuilder.length() == 0) {
             log.warn("Payload string length is zero. Create payload failed");
@@ -130,70 +130,7 @@ public abstract class Payload {
 
         log.info("** Payload ** " + payloadBuilder.toString());
 
-        String payloadStringTempFile = "launch-params";
-
-        FileWriter fstream = null;
-        try {
-            fstream = new FileWriter(payloadStringTempFile);
-
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ADCException(e.getMessage(), e);
-        }
-        BufferedWriter out = new BufferedWriter(fstream);
-        try {
-            out.write(payloadBuilder.toString());
-            out.close();
-
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ADCException(e.getMessage(), e);
-        }
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(getPayloadFilePath());
-
-        } catch (FileNotFoundException e) {
-            log.error(e.getMessage());
-            throw new ADCException(e.getMessage(), e);
-        }
-
-        ZipOutputStream zos = new ZipOutputStream(fos);
-        addToZipFile(System.getProperty("user.dir"), payloadStringTempFile, zos);
-
-        File folder = new File(CarbonUtils.getCarbonHome() + File.separator
-                + "repository" + File.separator + "resources" + File.separator
-                + "user-data");
-
-        if(folder != null && folder.exists()) {
-            for (File fileEntry : folder.listFiles()) {
-                if (fileEntry != null && !fileEntry.isDirectory()) {
-                    addToZipFile(folder.getPath(), fileEntry.getName(), zos);
-                }
-            }
-        }
-
-        try {
-            zos.close();
-            fos.close();
-
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ADCException(e.getMessage(), e);
-        }
-
-        FileDataSource payloadDataSource;
-        try {
-            payloadDataSource = new FileDataSource(new File(payloadFilePath));
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ADCException(e.getMessage(), e);
-        }
-
-        DataHandler payloadDataHandler = new DataHandler(payloadDataSource);
-        return payloadDataHandler;
+        return payloadBuilder;
     }
 
     /**

@@ -835,7 +835,7 @@ public class AxiomXpathParser {
 			OMElement node = (OMElement) nodes.get(0);
 
 			if (node.getText() != null) {
-				byte[] payload = CloudControllerUtil.getBytesFromFile(node.getText());
+				StringBuilder payload = new StringBuilder(node.getText());
 				serviceCtxt.setPayload(payload);
 
 			}

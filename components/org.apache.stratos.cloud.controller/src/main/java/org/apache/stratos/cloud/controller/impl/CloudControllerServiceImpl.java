@@ -239,7 +239,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 										// load Cartridge
 										ctxt.setCartridge(loadCartridge(
 												ctxt.getCartridgeType(),
-												ctxt.getPayload(),
 												serializedObj.getCartridges()));
 									}
 
@@ -291,7 +290,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		// load Cartridge
 		serviceCtxt.setCartridge(loadCartridge(serviceCtxt.getCartridgeType(),
-				serviceCtxt.getPayload(), dataHolder
+				 dataHolder
 						.getCartridges()));
 
 		if (serviceCtxt.getCartridge() == null) {
@@ -323,7 +322,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             //checking for the cloud and the region
             //TODO adding more locations and retrieve it from the request received
-            if(iaas.getType().equals(cloud) && (region == null || region == "" || iaas.getRegion().equals(region))) {
+            if(iaas.getType().equals(cloud)) {
                 IaasContext ctxt;
                 if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
                     ctxt = serviceCtxt.addIaasContext(iaas.getType());
@@ -332,6 +331,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     //generating the Unique member ID...
                     String memberID = generateMemberId(clusterId);
                     //have to add memberID to the payload
+                    serviceCtxt.getPayload().append(",");
+                    serviceCtxt.getPayload().append(memberID);
+                    //reloading the payload with memberID
+                    reloadPayload(serviceCtxt.getCartridge(), serviceCtxt.generatePayload());
+
                     iaas.getIaas().setDynamicPayload(iaas);
 
                     // get the ComputeService
@@ -519,20 +523,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
          return clusterId + memberId.toString();
     }
 
-	private Cartridge loadCartridge(String cartridgeType, byte[] payload,
+	private Cartridge loadCartridge(String cartridgeType,
 			List<Cartridge> cartridges) {
 
 		for (Cartridge cartridge : cartridges) {
 			if (cartridge.getType().equals(cartridgeType)) {
-				for (IaasProvider iaas : cartridge.getIaases()) {
-					iaas.setPayload(payload);
-				}
-				return cartridge;
+                return cartridge;
 			}
 		}
 
 		return null;
 	}
+
+    private void reloadPayload(Cartridge cartridge, byte[] payload) {
+        for (IaasProvider iaas : cartridge.getIaases()) {
+					iaas.setPayload(payload);
+        }
+
+    }
 
 	@Override
 	public boolean terminateInstance(String clusterId, LocationScope locationScope) {
@@ -553,7 +561,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// load Cartridge, if null
 		if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
-					serviceCtxt.getCartridgeType(), serviceCtxt.getPayload(),
+					serviceCtxt.getCartridgeType(),
 					dataHolder.getCartridges()));
 		}
 
@@ -645,7 +653,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// load Cartridge, if null
 		if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
-					serviceCtxt.getCartridgeType(), serviceCtxt.getPayload(),
+					serviceCtxt.getCartridgeType(),
 					dataHolder.getCartridges()));
 		}
 
@@ -718,7 +726,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// load Cartridge, if null
 		if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
-					serviceCtxt.getCartridgeType(), serviceCtxt.getPayload(),
+					serviceCtxt.getCartridgeType(),
 					dataHolder.getCartridges()));
 		}
 
@@ -776,7 +784,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 			// load cartridge
 			subjectedSerCtxt.setCartridge(loadCartridge(subjectedSerCtxt
-					.getCartridgeType(), subjectedSerCtxt.getPayload(),
+					.getCartridgeType(),
 					dataHolder.getCartridges()));
 
 			if (subjectedSerCtxt.getCartridge() == null) {
@@ -957,7 +965,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	@Override
 	public boolean registerService(String clusterId,
 			String tenantRange, String cartridgeType, String hostName,
-			Properties properties, byte[] payload, String autoScalerPolicyName)
+			Properties properties, String payload, String autoScalerPolicyName)
 			throws UnregisteredCartridgeException {
 
 		// create a ServiceContext dynamically
@@ -967,6 +975,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		newServiceCtxt.setTenantRange(tenantRange);
 		newServiceCtxt.setHostName(hostName);
         newServiceCtxt.setAutoScalerPolicyName(autoScalerPolicyName);
+        newServiceCtxt.setPayload(new StringBuilder(payload));
 
 		if (properties != null && properties.getProperties() != null) {
 			// add properties
@@ -995,7 +1004,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new UnregisteredCartridgeException(msg);
 		}
 
-		if (payload != null && payload.length != 0) {
+/*
 
 			// write payload file
 			try {
@@ -1017,7 +1026,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		} else {
 			log.debug("Payload is null or empty for :\n "
 					+ newServiceCtxt);
-		}
+		}*/
 
 		// persist
         String uniqueName = clusterId + "-"
@@ -1028,7 +1037,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         } catch (IOException e) {
             //TODO
         }
-
         log.info("Service successfully registered! Domain - " + clusterId
                 + ", Cartridge type - " + cartridgeType);
 

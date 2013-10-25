@@ -18,13 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,18 +31,7 @@ import java.util.Map.Entry;
 public class CloudControllerUtil {
 	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
 
-	public static byte[] getBytesFromFile(String path) {
-
-		try {
-	        return FileUtils.readFileToByteArray(new File(path));
-        } catch (IOException e) {
-
-        	handleException("Failed to read the file "+path, e);
-        }
-		return new byte[0];
-    }
-	
-	public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
+    public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
 
 		CartridgeInfo carInfo = new CartridgeInfo();
 		carInfo.setType(cartridge.getType());

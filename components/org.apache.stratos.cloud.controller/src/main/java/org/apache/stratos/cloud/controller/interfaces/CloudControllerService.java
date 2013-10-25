@@ -61,7 +61,7 @@ public interface CloudControllerService {
      *             not a registered one.
      */
     public boolean registerService(String clusterId, String tenantRange, String cartridgeType,
-        String hostName, Properties properties, byte[] payload, String autoScalerPolicyName) throws UnregisteredCartridgeException;
+        String hostName, Properties properties, String payload, String autoScalerPolicyName) throws UnregisteredCartridgeException;
 
     /**
      * Calling this method will result in an instance startup, which is belong
