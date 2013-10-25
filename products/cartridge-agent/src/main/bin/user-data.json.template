@@ -1,0 +1,1 @@
+{"serviceName":"SERVICE_NAME","clusterId":"CLUSTER_ID","memberId":"MEMBER_ID","ipAddress":"HOST_IP_ADDRESS","ports":[PORT_LIST],"mbIpAddress":"MB_IP_ADDRESS","mbPort":MB_PORT}
