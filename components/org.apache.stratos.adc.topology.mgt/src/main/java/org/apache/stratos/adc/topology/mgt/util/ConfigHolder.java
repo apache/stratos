@@ -53,10 +53,7 @@ public class ConfigHolder {
     private TaskService taskService;
     private BlockingQueue sharedTopologyDiffQueue = new LinkedBlockingQueue();
     private String previousMessage;
-    private Map<String, List<ServiceConfiguration>> serviceNameToServiceConfigurations;
-    private LoadBalancerConfigurationService lbConfigService;
 
-    
     public RealmService getRealmService() {
         return realmService;
     }
@@ -128,14 +125,6 @@ public class ConfigHolder {
         this.configCtxt = configCtxt;
     }
     
-    public void setLbConfigService(LoadBalancerConfigurationService lbConfigSer) {
-        this.lbConfigService = lbConfigSer;
-    }
-
-    public LoadBalancerConfiguration getLbConfig() {
-        return (LoadBalancerConfiguration) lbConfigService.getLoadBalancerConfig();
-    }
-    
     public TaskService getTaskService() {
         return taskService;
     }
@@ -151,15 +140,6 @@ public class ConfigHolder {
 	public void setSharedTopologyDiffQueue(BlockingQueue sharedTopologyDiffQueue) {
 	    this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
     }
-
-	public void setServiceConfigs(Map<String, List<ServiceConfiguration>> serviceNameToServiceConfigurations) {
-
-		this.serviceNameToServiceConfigurations = serviceNameToServiceConfigurations;
-    }
-	
-	public Map<String, List<ServiceConfiguration>> getServiceConfigs(){
-		return serviceNameToServiceConfigurations;
-	}
 
 	public String getPreviousMessage() {
 	    return previousMessage;

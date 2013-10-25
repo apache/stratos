@@ -94,6 +94,11 @@
                 <artifactId>geronimo-jms_1.1_spec</artifactId>
                 <version>${orbit.version.geronimo-jms_1.1_spec}</version>
             </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

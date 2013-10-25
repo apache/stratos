@@ -21,28 +21,23 @@ package org.apache.stratos.adc.topology.mgt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.topology.mgt.builder.TopologySyncher;
+import org.apache.stratos.adc.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.adc.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.service.impl.TopologyManagementServiceImpl;
-import org.apache.stratos.adc.topology.mgt.subscriber.TopologyListener;
 import org.apache.stratos.adc.topology.mgt.util.ConfigHolder;
-import org.apache.stratos.adc.topology.mgt.util.TopologyConstants;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.utils.ConfigurationContextService;
-import org.apache.stratos.lb.common.mb.subscribe.TopicSubscriber;
-import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
 import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="topology.mgt.service" immediate="true"
  * @scr.reference name="configuration.context.service"
  * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
  * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- * @scr.reference name="org.apache.stratos.lb.common"
- * interface="org.apache.stratos.lb.common.service.LoadBalancerConfigurationService"
- * cardinality="1..1" policy="dynamic" bind="setLoadBalancerConfigurationService"
- * unbind="unsetLoadBalancerConfigurationService"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
  */
@@ -52,20 +47,21 @@ public class TopologyMgtDSComponent {
 
     protected void activate(ComponentContext ctxt) {
 		try {
-			// start consumer
-			// initialize Topology Consumer
-			Thread topologyConsumer = new Thread(new TopologySyncher(
-					ConfigHolder.getInstance().getSharedTopologyDiffQueue()));
-			// start consumer
-			topologyConsumer.start();
+            // Start topic subscriber thread
+            TopicSubscriber topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
+            topicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+            Thread subscriberThread = new Thread(topicSubscriber);
+            subscriberThread.start();
+            if (log.isDebugEnabled()) {
+                log.debug("Topology event message receiver thread started");
+            }
 
-			// subscribes to the topic
-			TopicSubscriber tSubscriber = new TopicSubscriber(
-					TopologyConstants.TOPIC_NAME);
-			tSubscriber.setMessageListener(new TopologyListener());
-			
-			Thread subscriber = new Thread(tSubscriber);
-			subscriber.start();
+            // Start topology message receiver thread
+            Thread receiverThread = new Thread(new TopologyEventMessageDelegator());
+            receiverThread.start();
+            if (log.isDebugEnabled()) {
+                log.debug("Topology message processor thread started");
+            }
 
 			BundleContext bundleContext = ctxt.getBundleContext();
 			bundleContext.registerService(
@@ -87,14 +83,6 @@ public class TopologyMgtDSComponent {
 
     protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
         ConfigHolder.getInstance().setAxisConfiguration(null);
-    }
-
-    protected void setLoadBalancerConfigurationService(LoadBalancerConfigurationService lbConfigSer){
-        ConfigHolder.getInstance().setLbConfigService(lbConfigSer);
-    }
-    
-    protected void unsetLoadBalancerConfigurationService(LoadBalancerConfigurationService lbConfigSer){
-        ConfigHolder.getInstance().setLbConfigService(null);
     }
     
     protected void setTaskService(TaskService taskService) {
