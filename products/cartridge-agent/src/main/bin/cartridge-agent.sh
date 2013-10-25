@@ -29,6 +29,16 @@ fi
 
 echo "Starting cartridge-agent.sh..." | tee -a $LOG
 
+if [ ! -d ${instance_path}/payload ]; then
+
+    echo "creating payload dir ... " |tee -a $LOG
+    mkdir ${instance_path}/payload
+    echo "payload dir created ... " |tee -a $LOG
+    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/user-data.txt
+    echo "payload copied  ... "  |tee -a $LOG
+fi
+
+
 for i in `/usr/bin/ruby export-launch-params.rb`
 do
     echo "writing user-data parameter $i to user-data.params " | tee -a $LOG

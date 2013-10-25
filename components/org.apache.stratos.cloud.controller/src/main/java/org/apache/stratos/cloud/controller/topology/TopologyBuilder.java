@@ -76,46 +76,45 @@ public class TopologyBuilder {
     public static void handleClusterCreated(List<ServiceContext> serviceContexts) {
         Topology topology = TopologyManager.getInstance().getTopology();
          Service service;
-        for(ServiceContext serviceContext : serviceContexts) {
-            service = topology.getService(serviceContext.getCartridgeType());
-            if(service == null) {
-                service = new Service(serviceContext.getClusterId());
-                Cluster cluster = new Cluster(serviceContext.getCartridgeType(),
-                                              serviceContext.getClusterId(),
-                                              serviceContext.getAutoScalerPolicyName());
-                cluster.setHostName(serviceContext.getHostName());
-                cluster.setTenantRange(serviceContext.getTenantRange());
-                cluster.setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
-                service.addCluster(cluster);
-                topology.addService(service);
-            } else {
-               if (service.clusterExists(serviceContext.getClusterId())) {
-                    //update the cluster
-                    service.getCluster(serviceContext.getClusterId()).
-                                                      setHostName(serviceContext.getHostName());
-                    service.getCluster(serviceContext.getClusterId()).
-                                                      setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
-                    service.getCluster(serviceContext.getClusterId()).
-                                                      setTenantRange(serviceContext.getTenantRange());
-               } else {
+         try {
+             TopologyManager.getInstance().acquireWriteLock();
+             for(ServiceContext serviceContext : serviceContexts) {
+                service = topology.getService(serviceContext.getCartridgeType());
+                if(service == null) {
+                    service = new Service(serviceContext.getClusterId());
                     Cluster cluster = new Cluster(serviceContext.getCartridgeType(),
-                                              serviceContext.getClusterId(),
-                                              serviceContext.getAutoScalerPolicyName());
+                                                  serviceContext.getClusterId(),
+                                                  serviceContext.getAutoScalerPolicyName());
                     cluster.setHostName(serviceContext.getHostName());
                     cluster.setTenantRange(serviceContext.getTenantRange());
                     cluster.setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
                     service.addCluster(cluster);
-               }
-            }
-            try {
-                TopologyManager.getInstance().acquireWriteLock();
-                TopologyManager.getInstance().updateTopology(topology);
-            } finally {
-                TopologyManager.getInstance().releaseWriteLock();
-            }
-            TopologyEventSender.sendClusterCreatedEvent(serviceContext);
-
-        }
+                    topology.addService(service);
+                } else {
+                   if (service.clusterExists(serviceContext.getClusterId())) {
+                        //update the cluster
+                        service.getCluster(serviceContext.getClusterId()).
+                                                          setHostName(serviceContext.getHostName());
+                        service.getCluster(serviceContext.getClusterId()).
+                                                          setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
+                        service.getCluster(serviceContext.getClusterId()).
+                                                          setTenantRange(serviceContext.getTenantRange());
+                   } else {
+                        Cluster cluster = new Cluster(serviceContext.getCartridgeType(),
+                                                  serviceContext.getClusterId(),
+                                                  serviceContext.getAutoScalerPolicyName());
+                        cluster.setHostName(serviceContext.getHostName());
+                        cluster.setTenantRange(serviceContext.getTenantRange());
+                        cluster.setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
+                        service.addCluster(cluster);
+                   }
+                }
+                 TopologyManager.getInstance().updateTopology(topology);
+                 TopologyEventSender.sendClusterCreatedEvent(serviceContext);
+             }
+         } finally {
+             TopologyManager.getInstance().releaseWriteLock();
+         }
     }
 
     public static void handleClusterRemoved(ServiceContext serviceContext) {
@@ -159,6 +158,9 @@ public class TopologyBuilder {
             Member member = new Member(serviceName, clusterId, memberId);
             member.setIaasNodeId(iaasNodeId);
             member.setStatus(MemberStatus.Created);
+            cluster.addMember(member);
+            cluster.addMemberToIaasNodeId(member);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
