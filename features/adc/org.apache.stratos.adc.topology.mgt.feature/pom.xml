@@ -41,9 +41,9 @@
             <artifactId>org.apache.stratos.adc.topology.mgt</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+	<dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.lb.common</artifactId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -72,7 +72,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.topology.mgt:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.lb.common:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

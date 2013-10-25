@@ -159,10 +159,10 @@
            <version>1.7.0.R1-wso2v3</version>
          </dependency>
          <dependency>
-           <groupId>org.apache.stratos</groupId>
-           <artifactId>org.apache.stratos.cartridge.messages</artifactId>
-           <version>${project.version}</version>
-         </dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
          <dependency>
            <groupId>javax.ws.rs</groupId>
            <artifactId>jsr311-api</artifactId>
@@ -264,12 +264,12 @@
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
 				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
-                                <importFeatureDef>org.apache.stratos.lb.common:${project.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.ntask.core:${wso2carbon.version}</importFeatureDef> 
                             </importFeatures>
                         </configuration>
