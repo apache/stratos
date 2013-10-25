@@ -51,4 +51,8 @@ public class AutoscalerContext {
 
         return clusterContextMap.get(clusterId);
     }
+
+	public Map<String, ClusterContext> getClusterContexes() {
+		return clusterContextMap;
+	}
 }

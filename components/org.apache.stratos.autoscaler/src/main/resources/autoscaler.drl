@@ -1,0 +1,171 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one 
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * KIND, either express or implied.  See the License for the 
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.stratos.autoscaler.rule;
+
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterContext;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.Partition;
+import org.apache.stratos.autoscaler.policy.model.HAPolicy;
+import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
+import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.commons.logging.Log;
+
+global org.apache.stratos.autoscaler.policy.PolicyManager $manager;
+global org.apache.stratos.autoscaler.AutoscalerContext $context; 
+global org.apache.commons.logging.Log log;
+global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
+global org.apache.stratos.messaging.domain.topology.Topology $topology;
+
+rule "Minimum Rule"
+dialect "mvel"
+	when
+	$service : Service ()
+	m : Cluster () from  $service.getClusters()
+	$policy : AutoscalePolicy(id == m.autoscalePolicyName ) from $manager.getPolicyList()
+	$partition : Partition () from $policy.getHAPolicy().getPartitions()
+	then
+	String clusterId = m.getClusterId();
+	ClusterContext clusterContext = $context.getClusterContext(m.getClusterId());
+	if(null==clusterContext){
+
+     	clusterContext = new ClusterContext(m.getClusterId(), m.getServiceName()) ;
+        AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(m.getAutoscalePolicyName());
+         
+         for(Partition partition: $policy.getHAPolicy().getPartitions()){
+                clusterContext.addPartitionCount(partition.getId(), 0);
+         }
+         $context.addClusterContext(clusterContext);
+	}
+	
+	int currentMemberCount = clusterContext.getPartitionCount($partition.getId());
+    int partitionMin = $partition.getPartitionMin();
+	
+	if(currentMemberCount < partitionMin) {
+
+        int memberCountToBeIncreased = partitionMin - currentMemberCount;
+        if($evaluator.delegateSpawn($partition,clusterId, memberCountToBeIncreased)){
+        	$context.getClusterContext(m.getClusterId()).increaseMemberCountInPartition($partition.getId(), memberCountToBeIncreased);
+        }
+ 
+	}
+	
+
+end
+
+rule "Autoscaler Rule"
+dialect "mvel"
+	when
+	$service : Service ()
+	m : Cluster () from  $service.getClusters()
+	$policy : AutoscalePolicy(id == m.autoscalePolicyName ) from $manager.getPolicyList()
+	then
+	/*
+	String clusterId = m.getClusterId();
+		
+		ClusterContext clusterContext = $context.getClusterContext(clusterId);
+		
+		if(null==clusterContext){
+
+     	ClusterContext cC = new ClusterContext(m.getClusterId(), m.getServiceName()) ;
+        AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(m.getAutoscalePolicyName());
+         
+         for(Partition partition: $policy.getHAPolicy().getPartitions()){
+                cC.addPartitionCount(partition.getId(), 0);
+         }
+         $context.addClusterContext(cC);
+
+	}
+
+        float lbStatAverage = clusterContext.getAverageRequestsInFlight();
+        float lbStatGradient = clusterContext.getRequestsInFlightGradient();
+        float lbStatSecondDerivative = clusterContext.getRequestsInFlightSecondDerivative();
+
+        LoadThresholds loadThresholds = $manager.getPolicy(m.autoscalePolicyName).getLoadThresholds();
+        float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+        float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+        float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
+
+        String partitionAlgorithm = $manager.getPolicy(m.autoscalePolicyName).getHAPolicy().getPartitionAlgo();
+
+        AutoscaleAlgorithm autoscaleAlgorithm = null;
+        if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
+
+            autoscaleAlgorithm = new RoundRobin();
+        } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
+
+            autoscaleAlgorithm = new OneAfterAnother();
+        }
+
+        if(lbStatAverage > averageLimit && lbStatGradient > gradientLimit){
+
+            int i = 0;
+            Partition partition = autoscaleAlgorithm.getNextScaleUpPartition(clusterId);
+
+            if(lbStatSecondDerivative > secondDerivative){
+                int numberOfInstancesToBeSpawned = 2; // take from a config
+
+                $evaluator.delegateSpawn(partition,clusterId, numberOfInstancesToBeSpawned);
+                //spawnInstances Two
+
+            } else {
+            	int numberOfInstancesToBeSpawned = 1;
+               	$evaluator.delegateSpawn(partition,clusterId, numberOfInstancesToBeSpawned);
+                //spawnInstances one
+            }
+        } else if(lbStatAverage < averageLimit && lbStatGradient < gradientLimit){
+
+            //terminate one
+            Partition partition = autoscaleAlgorithm.getNextScaleDownPartition(clusterId);
+            $evaluator.delegateTerminate(partition,clusterId);
+
+        }
+		*/
+end
+
+
+rule "TerminateAll Rule"
+dialect "mvel"
+	when
+	clusterId : String() from $context.getClusterContexes().keySet()
+	then
+        	boolean clusterAvailable = false;
+        	for (Service service : $topology.getServices()){
+        		if(service.clusterExists(clusterId)){
+        			clusterAvailable = true;
+        		}
+        	}
+        	if(!clusterAvailable){
+        		if($evaluator.delegateTerminateAll(clusterId)){
+        			$context.removeClusterContext(clusterId);
+        		}
+        	}
+
+end

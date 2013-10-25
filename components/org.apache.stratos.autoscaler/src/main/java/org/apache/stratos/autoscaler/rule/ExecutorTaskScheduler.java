@@ -23,19 +23,34 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
+import org.apache.stratos.messaging.domain.topology.Service;
+
 /**
  * This class is responsible for scheduling the task of evaluating the current details of topology, statistics, and health
  * status against the rules set(written in Drools)
  */
 public class ExecutorTaskScheduler {
+	private static final Log log = LogFactory.getLog(ExecutorTaskScheduler.class);
+	
     public void start(){
         final Runnable rulesEvaluator = new Runnable() {
-            public void run() {
-                //TODO call evaluator
-            }
-        };
+			public void run() {
+
+				try {
+					for (Service service : TopologyManager.getTopology().getServices()) {
+						AutoscalerRuleEvaluator.getInstance().evaluate(service);
+					}
+
+				} catch (Exception e) {
+					log.error("Error ", e);
+				}
+			}
+		};
         ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
         //TODO make scheduler values configurable
-        ex.scheduleWithFixedDelay(rulesEvaluator, 5, 5, TimeUnit.SECONDS);
+        ex.scheduleWithFixedDelay(rulesEvaluator, 30, 15, TimeUnit.SECONDS);
     }
 }

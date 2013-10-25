@@ -105,7 +105,10 @@
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.autoscaler.feature:${project.version}
-                                </featureArtifactDef>                                
+                                </featureArtifactDef> 
+                                <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
+                                </featureArtifactDef>                               
                                
                             </featureArtifacts>
                         </configuration>
@@ -132,6 +135,10 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.autoscaler.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.apache.stratos.messaging.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 

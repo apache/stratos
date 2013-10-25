@@ -139,16 +139,19 @@
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.messaging</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
             <version>4.1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.lb.cartridge.autoscaler.service.stub</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 	</dependencies>
 
@@ -178,7 +181,7 @@
                         </Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
 						<Axis2Deployer>PolicyDeployer</Axis2Deployer>
-						<Embed-Dependency>*;scope=compile|runtime;artifactId=!org.wso2.carbon.utils|org.apache.stratos.messaging</Embed-Dependency>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 					</instructions>
 				</configuration>
