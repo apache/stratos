@@ -118,18 +118,12 @@ public class CartridgeAgent implements Runnable {
     }
 
     private void publishMemberStartedEvent(UserData userData) throws JMSException, NamingException, IOException, InterruptedException {
-        MemberStartedEvent event = new MemberStartedEvent();
-        event.setServiceName(userData.getServiceName());
-        event.setClusterId(userData.getClusterId());
-        event.setMemberId(userData.getMemberId());
+        MemberStartedEvent event = new MemberStartedEvent(userData.getServiceName(), userData.getClusterId(), userData.getMemberId());
         publishEvent(event);
     }
 
     private void publishMemberActivatedEvent(UserData userData) throws JMSException, NamingException, IOException, InterruptedException {
-        MemberActivatedEvent event = new MemberActivatedEvent();
-        event.setServiceName(userData.getServiceName());
-        event.setClusterId(userData.getClusterId());
-        event.setMemberId(userData.getMemberId());
+        MemberActivatedEvent event = new MemberActivatedEvent(userData.getServiceName(), userData.getClusterId(), userData.getMemberId());
         publishEvent(event);
     }
 
