@@ -24,8 +24,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
