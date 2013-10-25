@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 public class SpawningException extends Exception {
 
     public SpawningException(String exception, RemoteException message){
-        super(message, exception);
+        super(exception, message);
     }
 
 
