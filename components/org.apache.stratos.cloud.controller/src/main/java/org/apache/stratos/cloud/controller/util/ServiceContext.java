@@ -169,7 +169,8 @@ public class ServiceContext implements Serializable{
 
     public String toXml() {
 		String str = "<service domain=\"" + clusterId +
-		                                    "\" tenantRange=\"" + tenantRange + "\">\n" +
+		                                    "\" tenantRange=\"" + tenantRange + "\" policyName=\"" +
+                                            autoScalerPolicyName + "\">\n" +
 		                                    "\t<cartridge type=\"" + cartridgeType +
 		                                    "\"/>\n"  + "\t<host>" + hostName +
 		                                    "</host>\n" + "\t<payload>" + payload +
