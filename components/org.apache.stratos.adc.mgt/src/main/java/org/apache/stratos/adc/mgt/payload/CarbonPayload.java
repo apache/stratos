@@ -38,11 +38,6 @@ public class CarbonPayload extends Payload {
         payloadBuilder.append("SC_IP=" + System.getProperty(CartridgeConstants.SC_IP));
         payloadBuilder.append(",");
         payloadBuilder.append("MULTITENANT=" + payloadArg.getCartridgeInfo().getMultiTenant());
-        payloadBuilder.append(",");
-        payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
-        payloadBuilder.append(",");
-        payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
-        payloadBuilder.append(",");
-        payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
+
     }
 }
