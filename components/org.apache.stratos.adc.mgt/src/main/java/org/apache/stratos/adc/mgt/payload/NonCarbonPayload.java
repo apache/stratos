@@ -46,6 +46,8 @@ public class NonCarbonPayload extends Payload {
         payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
         payloadBuilder.append(",");
         payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
+        payloadBuilder.append(",");
+        payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
 
         //port mapping specific
         if(payloadArg.getCartridgeInfo() != null) {
@@ -75,9 +77,7 @@ public class NonCarbonPayload extends Payload {
         org.apache.stratos.cloud.controller.util.xsd.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
         for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : portMappings) {
             String port = portMapping.getPort();
-            String protocol = portMapping.getProtocol();
-            String proxyPort = portMapping.getProxyPort();
-            portMapBuilder.append(protocol).append(":").append(port).append(":").append(proxyPort).append("|");
+            portMapBuilder.append(port).append("|");
         }
 
         // remove last "|" character

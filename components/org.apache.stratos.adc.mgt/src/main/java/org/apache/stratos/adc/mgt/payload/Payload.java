@@ -67,7 +67,7 @@ public abstract class Payload {
         payloadBuilder.append("CARTRIDGE_ALIAS=" + payloadArg.getCartridgeAlias());
         if(payloadArg.getCartridgeInfo() != null) {
             payloadBuilder.append(",");
-            payloadBuilder.append("SERVICE=" + payloadArg.getCartridgeInfo().getType());
+            payloadBuilder.append("SERVICE_NAME=" + payloadArg.getCartridgeInfo().getType());
         }
 
         //add the user defined payload String (if any)

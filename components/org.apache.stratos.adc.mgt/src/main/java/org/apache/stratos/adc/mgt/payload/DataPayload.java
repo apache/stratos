@@ -42,5 +42,7 @@ public class DataPayload extends NonCarbonPayload {
         payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
         payloadBuilder.append(",");
         payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
+        payloadBuilder.append(",");
+        payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
     }
 }
