@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
+import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
+import org.apache.stratos.autoscaler.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
 import org.osgi.service.component.ComponentContext;
 
@@ -37,9 +39,42 @@ public class AutoscalerServerComponent {
 
 	protected void activate(ComponentContext componentContext) throws Exception {
 
-		if (log.isInfoEnabled()) {
-			log.info("Autoscaler Server Component activated");
-		}
+		log.info("Autoscaler Server Component activated");
+
+		Thread executorThread = new Thread() {
+			public void run() {
+
+				// Subscribe to all topics
+				TopologyManager topologyManager = new TopologyManager();
+				topologyManager.subscribeAllTopics();
+				if (log.isDebugEnabled()) {
+					log.debug("Topology event message receiver thread started");
+				}
+				TopologyEventMessageDelegator tropologyEventMessageDelegator = new TopologyEventMessageDelegator();
+				Thread tropologyDelegatorThread = new Thread(tropologyEventMessageDelegator);
+				tropologyDelegatorThread.start();
+				
+				if (log.isDebugEnabled()) {
+		               log.debug("Topology message processor thread started");
+		         }
+				
+				HealthEventMessageDelegator healthEventMessageDelegator = new HealthEventMessageDelegator();
+				Thread healthDelegatorThread = new Thread(healthEventMessageDelegator);
+				healthDelegatorThread.start();
+				
+				if (log.isDebugEnabled()) {
+		               log.debug("Health message processor thread started");
+		         }
+
+				// Start scheduler for running rules
+				ExecutorTaskScheduler executor = new ExecutorTaskScheduler();
+				executor.start();
+				log.info("Rules executor started");
+
+			};
+		};
+		executorThread.start();
+		
 	}
 
 
