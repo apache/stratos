@@ -254,12 +254,6 @@
            <version>1.7.0.R1-wso2v3</version>
          </dependency>
          <dependency>
-           <groupId>org.wso2.carbon</groupId>
-           <artifactId>org.wso2.carbon.cartridge.messages</artifactId>
-           <version>2.1.1</version>
-         </dependency>
-
-         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
             <version>4.1.0</version>

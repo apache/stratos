@@ -88,9 +88,8 @@ public class ServiceDeployer extends AbstractDeployer{
         
         // deploy
         List<ServiceContext> services = parser.getServiceContexts();
-        
-        // notify consumer by adding services
-        TopologyBuilder.handleClusterCreated(services);
+
+
 
         // update map
         fileToServiceContextListMap.put(deploymentFileData.getAbsolutePath(), new ArrayList<ServiceContext>(services));
