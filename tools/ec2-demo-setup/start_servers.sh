@@ -22,10 +22,10 @@
 
 SLEEP=60
 LOG=stratos-server.log
-sc_path=/opt/apache-stratos-sc-3.0.0-SNAPSHOT
-cc_path=/opt/apache-stratos-cc-3.0.0-SNAPSHOT
-elb_path=/opt/apache-stratos-elb-3.0.0-SNAPSHOT
-agent_path=/opt/apache-stratos-agent-3.0.0-SNAPSHOT
+sc_path=/opt/apache-stratos-sc-4.0.0-SNAPSHOT
+cc_path=/opt/apache-stratos-cc-4.0.0-SNAPSHOT
+elb_path=/opt/apache-stratos-elb-4.0.0-SNAPSHOT
+agent_path=/opt/apache-stratos-agent-4.0.0-SNAPSHOT
 gitblit_path=/opt/GitBlit
 
 start_servers() {

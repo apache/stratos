@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.stratos.cc</groupId>
         <artifactId>cc-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -193,10 +193,6 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.transports.passthru.feature:${passthru.transport.version}
-                                </featureArtifactDef>
-
-                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.databridge.datapublisher.feature:${carbon.version}
                                 </featureArtifactDef>
 
@@ -306,10 +302,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.relay.server.feature.group</id>
                                     <version>${carbon.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.transports.passthru.feature.group</id>
-                                    <version>${passthru.transport.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>

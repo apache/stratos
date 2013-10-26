@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cloud-controller-feature</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -224,7 +224,6 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cartridge.messages:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller:${project.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>

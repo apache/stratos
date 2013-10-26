@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-products-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -98,7 +98,6 @@
         <stratos.component.version>2.1.0</stratos.component.version>
         <stratos.component.patch.version.2.1.1>2.1.1</stratos.component.patch.version.2.1.1>
         <stratos.component.patch.version.2.1.3>2.1.3</stratos.component.patch.version.2.1.3>
-        <passthru.transport.version>1.0.2</passthru.transport.version>
         <synapse.version>2.1.1-wso2v4</synapse.version>
         <rampart.mar.version>1.6.1-wso2v8</rampart.mar.version>
         <slf4j.wso2.version>1.5.10.wso2v1</slf4j.wso2.version>

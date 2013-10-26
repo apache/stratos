@@ -20,10 +20,10 @@
 #  Unpack packages script for Apache Stratos
 # ----------------------------------------------------------------------------
 
-unzip dist/apache-stratos-agent-3.0.0-SNAPSHOT.zip
-unzip dist/apache-stratos-cc-3.0.0-SNAPSHOT.zip
-unzip dist/apache-stratos-cli-3.0.0-SNAPSHOT.zip
-unzip dist/apache-stratos-elb-3.0.0-SNAPSHOT.zip
-unzip dist/apache-stratos-sc-3.0.0-SNAPSHOT.zip
+unzip dist/apache-stratos-agent-4.0.0-SNAPSHOT.zip
+unzip dist/apache-stratos-cc-4.0.0-SNAPSHOT.zip
+unzip dist/apache-stratos-cli-4.0.0-SNAPSHOT.zip
+unzip dist/apache-stratos-elb-4.0.0-SNAPSHOT.zip
+unzip dist/apache-stratos-sc-4.0.0-SNAPSHOT.zip
 
 

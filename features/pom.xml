@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,9 +36,8 @@
     <url>http://apache.org</url>
 
     <modules>
-	<!-- LB -->
+	<!-- Load Balancer -->
         <module>load-balancer</module>
-	<!--module>tenantaware-load-balancer</module-->
 	
 	<!-- Auto Scaler -->
 	<module>autoscaler</module>
@@ -52,9 +51,8 @@
         <!-- Manager -->
 	<module>manager</module>
 
-       <!-- <Cartridge Agent> -->
-	<module>cartridge-agent</module>
-	<module>messaging</module>
+       <!-- Messaging -->
+       <module>messaging</module>
 
 
     </modules>

@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -38,9 +38,9 @@
         <module>autoscaler</module>
         <module>cloud-controller</module>
         <module>elb</module>
-        <module>stratos-agent</module>
         <module>stratos-cli</module>
         <module>stratos-controller</module>
+        <module>cartridge-agent</module>
     </modules>
 </project>
 

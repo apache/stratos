@@ -38,28 +38,28 @@ mysql -uroot -pg </opt/resources/userstore.sql
 sleep 1;
 
 echo "Cleaning log files... "
-rm -rf /opt/apache-stratos-elb-3.0.0-SNAPSHOT/repository/logs/*
-rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/logs/*
-rm -rf /opt/apache-stratos-agent-3.0.0-SNAPSHOT/repository/logs/*
-rm -rf /opt/apache-stratos-sc-3.0.0-SNAPSHOT/repository/logs/*
+rm -rf /opt/apache-stratos-elb-4.0.0-SNAPSHOT/repository/logs/*
+rm -rf /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/logs/*
+rm -rf /opt/apache-stratos-agent-4.0.0-SNAPSHOT/repository/logs/*
+rm -rf /opt/apache-stratos-sc-4.0.0-SNAPSHOT/repository/logs/*
 
 echo "Cleaning Cartridge Agent's registrants... "
-rm -rf /opt/apache-stratos-agent-3.0.0-SNAPSHOT/registrants/*
+rm -rf /opt/apache-stratos-agent-4.0.0-SNAPSHOT/registrants/*
 
 echo "Removing zookeeper directory... "
-rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/data/*
+rm -rf /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/data/*
 
 echo "Cleaning topology file... "
-rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/conf/service-topology.conf*
+rm -rf /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/conf/service-topology.conf*
 
 echo "Cleaning service definition files... "
-rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/deployment/server/services/*
+rm -rf /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/deployment/server/services/*
 
 echo "Cleaning cartridge definition files..."
-rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/deployment/server/cartridges/*
+rm -rf /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/deployment/server/cartridges/*
 
 echo "Cleaning Cloud Controller's registry... "
-rm -rf /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/database/*
-cp /opt/resources/WSO2CARBON_DB.h2.db /opt/apache-stratos-cc-3.0.0-SNAPSHOT/repository/database/
+rm -rf /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/database/*
+cp /opt/resources/WSO2CARBON_DB.h2.db /opt/apache-stratos-cc-4.0.0-SNAPSHOT/repository/database/
 
 

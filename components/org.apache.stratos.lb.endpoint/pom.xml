@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-components-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -63,11 +63,6 @@
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-kernel</artifactId>
             <version>1.6.1-wso2v9</version>
-        </dependency>
-        <dependency>
-           <groupId>org.apache.stratos</groupId>
-           <artifactId>org.apache.stratos.cartridge.messages</artifactId>
-           <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>

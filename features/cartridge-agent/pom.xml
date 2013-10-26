@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-features-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -35,7 +35,6 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>org.apache.stratos.cartridge.messages.feature</module>
         <module>org.apache.stratos.cartridge.agent.server.feature</module>
 	<module>org.apache.stratos.cartridge.agent.feature</module>
     </modules>
