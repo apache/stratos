@@ -18,7 +18,7 @@
 # under the License.
 # ----------------------------------------------------------------------------
 
-### export-launch-params.rb
+### get-launch-params.rb
 
 # The following script obtains the launch parameters from 
 # the file /tmp/payload/launch-params, then parses out the 

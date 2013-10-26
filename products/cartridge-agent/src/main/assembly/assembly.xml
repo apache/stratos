@@ -30,7 +30,7 @@
             <outputDirectory>/bin</outputDirectory>
             <includes>
                 <include>cartridge-agent.sh</include>
-                <include>export-launch-params.rb</include>
+                <include>get-launch-params.rb</include>
                 <include>user-data.json.template</include>
             </includes>
         </fileSet>

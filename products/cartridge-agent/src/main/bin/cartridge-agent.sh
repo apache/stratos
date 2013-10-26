@@ -23,35 +23,34 @@ log_path=/var/log/apache-stratos
 export LOG=$log_path/cartridge-agent-sh.log
 instance_path=/opt
 
-if [[ ! -d $log_path ]]; then
+if [ ! -d $log_path ]; then
     mkdir -p $log_path
 fi
 
 echo "Starting cartridge-agent.sh..." | tee -a $LOG
 
 if [ ! -d ${instance_path}/payload ]; then
-
-    echo "creating payload dir ... " |tee -a $LOG
+    echo "creating payload dir... " | tee -a $LOG
     mkdir ${instance_path}/payload
-    echo "payload dir created ... " |tee -a $LOG
-    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/user-data.txt
-    echo "payload copied  ... "  |tee -a $LOG
+    echo "payload directory created " | tee -a $LOG
 fi
 
+# Fetch user data from payload
+wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/user-data.txt
+echo "user-data.txt received"  | tee -a $LOG
 
-for i in `/usr/bin/ruby export-launch-params.rb`
+for i in `/usr/bin/ruby get-launch-params.rb`
 do
-    echo "writing user-data parameter $i to user-data.params " | tee -a $LOG
+    echo "writing user-data parameter $i to user-data.params" | tee -a $LOG
     value=`echo "${i}" | sed -e s@=@=\"@g`
     value=$value"\""
     echo "export" $value >> user-data.params
 done
 source user-data.params
-
-echo "launch parameters exported" | tee -a $LOG
+echo "user-data.params exported" | tee -a $LOG
 
 echo "Generating user-data.json..." | tee -a $LOG
-
+# Replace port separator '|' with ','
 PORTS=`echo $PORTS | sed -e s@'|'@,@g`
 
 cp -f user-data.json.template user-data.json.tmp
@@ -78,3 +77,7 @@ class_path=${lib_path}commons-io-2.0.jar:${lib_path}andes-client-0.13.wso2v8.jar
 json_path=`pwd`/user-data.json
 java -cp $class_path org.apache.stratos.cartridge.agent.Main $json_path
 echo "Cartridge Agent started" | tee -a $LOG
+
+#TODO 1. Configure required server components
+#TODO 2. Download application artifacts
+#TODO 3. Deploy application artifacts
