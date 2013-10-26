@@ -1,18 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one 
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
- * KIND, either express or implied.  See the License for the 
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -22,11 +22,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.wso2.carbon.utils.CarbonUtils;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * We keep information regarding a service (i.e. a cartridge instance)
@@ -45,6 +50,7 @@ public class ServiceContext implements Serializable{
     private Cartridge cartridge;
     private StringBuilder payload;
     private String autoScalerPolicyName;
+
     /**
      * Key - Value pair.
      */
@@ -54,7 +60,7 @@ public class ServiceContext implements Serializable{
      * Value - {@link IaasContext} object
      */
     private Map<String, IaasContext> iaasCtxts = new HashMap<String, IaasContext>();
-	
+
     public Map<String, IaasContext> getIaasCtxts() {
     	return iaasCtxts;
     }
@@ -62,26 +68,26 @@ public class ServiceContext implements Serializable{
 	public String getClusterId() {
         return clusterId;
     }
-    
+
     public boolean setClusterId(String domainName) {
         if (!"".equals(domainName)) {
             this.clusterId = domainName;
             return true;
         }
-        
+
         return false;
     }
-    
+
     public void setProperty(String key, String value) {
         properties.put(key, value);
     }
-    
+
     public String getProperty(String key) {
-        
+
         if(properties.containsKey(key)){
             return properties.get(key);
         }
-        
+
         return "";
     }
 
@@ -92,7 +98,7 @@ public class ServiceContext implements Serializable{
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
-    
+
 
     public Cartridge getCartridge() {
         return cartridge;
@@ -109,17 +115,17 @@ public class ServiceContext implements Serializable{
 	public void setTenantRange(String tenantRange) {
 	    this.tenantRange = tenantRange;
     }
-	
+
 	public IaasContext addIaasContext(String iaasType){
 		IaasContext ctxt = new IaasContext(iaasType);
 		iaasCtxts.put(iaasType, ctxt);
 		return ctxt;
 	}
-	
+
 	public IaasContext getIaasContext(String type){
 		return iaasCtxts.get(type);
 	}
-	
+
 	public void setIaasContextMap(Map<String, IaasContext> map){
 		iaasCtxts = map;
 	}
@@ -162,15 +168,14 @@ public class ServiceContext implements Serializable{
 	public File getFile() {
 		return file;
 	}
-	
+
 	public void setFile(File file) {
 		this.file = file;
 	}
 
     public String toXml() {
 		String str = "<service domain=\"" + clusterId +
-		                                    "\" tenantRange=\"" + tenantRange + "\" policyName=\"" +
-                                            autoScalerPolicyName + "\">\n" +
+		                                    "\" tenantRange=\"" + tenantRange + "\" policyName=\"" + autoScalerPolicyName + "\">\n" +
 		                                    "\t<cartridge type=\"" + cartridgeType +
 		                                    "\"/>\n"  + "\t<host>" + hostName +
 		                                    "</host>\n" + "\t<payload>" + payload +
@@ -227,30 +232,113 @@ public class ServiceContext implements Serializable{
 				log.error(msg, e);
 				throw new CloudControllerException(msg, e);
         }
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
+        FileOutputStream fos = null;
         try {
-            for (int readNum; (readNum = fis.read(buf)) != -1;) {
-                bos.write(buf, 0, readNum);
-            }
-        } catch (IOException ex) {
-            String msg = "Failed while persisting the payload of clusterId : "
-						+ clusterId;
-				log.error(msg, ex);
-				throw new CloudControllerException(msg, ex);
+            fos = new FileOutputStream(this.payloadFilePath);
+
+        } catch (FileNotFoundException e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
         }
-        byte[] bytes = bos.toByteArray();
-        return bytes;
+
+        ZipOutputStream zos = new ZipOutputStream(fos);
+        addToZipFile(System.getProperty("user.dir"), payloadStringTempFile, zos);
+
+        File folder = new File(CarbonUtils.getCarbonHome() + File.separator
+               + "repository" + File.separator + "resources" + File.separator
+                + "user-data");
+
+       if(folder != null && folder.exists()) {
+            for (File fileEntry : folder.listFiles()) {
+                if (fileEntry != null && !fileEntry.isDirectory()) {
+                    addToZipFile(folder.getPath(), fileEntry.getName(), zos);
+                }
+            }
+       }
+
+        try {
+            zos.close();
+           fos.close();
+
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+
+        FileDataSource payloadDataSource;
+        DataHandler payloadDataHandler;
+        byte [] payloadData;
+        try {
+            payloadDataSource = new FileDataSource(new File(payloadFilePath));
+            payloadDataHandler = new DataHandler(payloadDataSource);
+            payloadData = (byte[]) payloadDataHandler.getContent();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+        return payloadData;
     }
-	
-	public boolean equals(Object obj) {
+
+      /**
+     * Adds content to a zip file
+     *
+     * @param dir Name of directory
+     * @param fileName Name of file to add
+     * @param zos ZipOutputStream subscription to write
+     * @throws CloudControllerException in an error
+     */
+    private void addToZipFile(String dir, String fileName, ZipOutputStream zos) throws CloudControllerException {
+
+        log.info("Writing '" + fileName + "' to zip file");
+
+        File file = new File(dir + File.separator + fileName);
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(file);
+
+        } catch (FileNotFoundException e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        try {
+            zos.putNextEntry(zipEntry);
+
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+
+        byte[] bytes = new byte[1024];
+        int length;
+
+            try {
+                while ((length = fis.read(bytes)) >= 0) {
+                    zos.write(bytes, 0, length);
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                throw new CloudControllerException(e.getMessage(), e);
+            }
+
+        try {
+            zos.closeEntry();
+            fis.close();
+
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+    }
+
+  	public boolean equals(Object obj) {
 		if (obj instanceof ServiceContext) {
 			return this.clusterId.equals(((ServiceContext) obj).getClusterId());
 		}
 		return false;
 	}
-    
+
     public int hashCode() {
         return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
             append(clusterId).
