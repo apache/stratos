@@ -29,11 +29,7 @@ import org.apache.stratos.autoscaler.policy.model.Partition;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderError;
-import org.drools.builder.KnowledgeBuilderErrors;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
+import org.drools.builder.*;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
@@ -51,27 +47,26 @@ public class AutoscalerRuleEvaluator {
 	
 	private KnowledgeBase kbase;
 	private StatefulKnowledgeSession ksession;
-	 
-	private AutoscalerRuleEvaluator() {
 
-		try {
-			// load up the knowledge base
-			kbase = readKnowledgeBase();
-			ksession = kbase.newStatefulKnowledgeSession();
-			ksession.setGlobal("$context", AutoscalerContext.getInstance());
-			ksession.setGlobal("log", log);
-			ksession.setGlobal("$manager", PolicyManager.getInstance());
-			ksession.setGlobal("$topology", TopologyManager.getTopology());
-			ksession.setGlobal("$evaluator", this);
-		} catch (Throwable t) {
-			log.error("Rule-Evaluator initialization error", t);
-		}
-	}
+	private AutoscalerRuleEvaluator() {
+        try {
+            kbase = readKnowledgeBase();
+        } catch (Exception e) {
+            log.error("Rule evaluate error", e);
+        }
+    }
     
     
     public void evaluate(Service service){
         try {
         	log.info("Evaluating rule for service " + service.getServiceName());
+
+            ksession = kbase.newStatefulKnowledgeSession();
+            ksession.setGlobal("$context", AutoscalerContext.getInstance());
+            ksession.setGlobal("log", log);
+            ksession.setGlobal("$manager", PolicyManager.getInstance());
+            ksession.setGlobal("$topology", TopologyManager.getTopology());
+            ksession.setGlobal("$evaluator", this);
 			ksession.insert(service);
 			ksession.fireAllRules();
 		} catch (Exception e) {
