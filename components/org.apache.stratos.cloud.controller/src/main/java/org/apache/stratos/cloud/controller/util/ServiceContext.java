@@ -24,8 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +43,7 @@ public class ServiceContext implements Serializable{
 	private String clusterId;
     private String tenantRange;
     private String hostName;
-    private String payloadFilePath;
+    private String payloadFilePath = "/tmp/" + CloudControllerConstants.PAYLOAD_NAME + ".zip";
     private String cartridgeType;
     private Cartridge cartridge;
     private StringBuilder payload;
@@ -264,18 +262,31 @@ public class ServiceContext implements Serializable{
             log.error(e.getMessage());
             throw new CloudControllerException(e.getMessage(), e);
         }
-
-        FileDataSource payloadDataSource;
-        DataHandler payloadDataHandler;
-        byte [] payloadData;
+        byte [] payloadData = null;
+        File file = null;
+        FileInputStream fileInputStream = null;
         try {
-            payloadDataSource = new FileDataSource(new File(payloadFilePath));
-            payloadDataHandler = new DataHandler(payloadDataSource);
-            payloadData = (byte[]) payloadDataHandler.getContent();
-        } catch (Exception e) {
-            log.error(e.getMessage());
+            file = new File(payloadFilePath);
+            payloadData = new byte[(int)file.length()];
+            fileInputStream = new FileInputStream(file);
+            try {
+                fileInputStream.read(payloadData);
+            } catch (IOException e) {
+                 log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+            }
+        } catch (FileNotFoundException e) {
+             log.error(e.getMessage());
             throw new CloudControllerException(e.getMessage(), e);
         }
+        try {
+            fileInputStream.close();
+            file.delete();
+        } catch (IOException e) {
+             log.error(e.getMessage());
+            throw new CloudControllerException(e.getMessage(), e);
+        }
+
         return payloadData;
     }
 

@@ -179,7 +179,7 @@ public final class CloudControllerConstants {
     /**
      * Payload related constants
      */
-    public static final String PAYLOAD_FOLDER = "payload";
+    public static final String PAYLOAD_NAME = "payload";
     public static final String ENTRY_SEPARATOR = ",";
     
     /**
@@ -200,10 +200,7 @@ public final class CloudControllerConstants {
 	/**
 	 * Directories
 	 */
-	public static final String PAYLOAD_DIR = CarbonUtils.getCarbonHome() + File.separator +
-	                                         "resources" + File.separator + PAYLOAD_FOLDER +
-	                                         File.separator;
-	public static final String SERVICES_DIR = CarbonUtils.getCarbonRepository() 
+	public static final String SERVICES_DIR = CarbonUtils.getCarbonRepository()
     		+ File.separator + "services"+File.separator;
     
     /**

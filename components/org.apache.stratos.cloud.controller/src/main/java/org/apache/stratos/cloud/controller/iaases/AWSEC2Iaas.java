@@ -18,10 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -42,11 +41,9 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class AWSEC2Iaas extends Iaas {
 
@@ -132,7 +129,7 @@ public class AWSEC2Iaas extends Iaas {
         }
 
 
-		if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
+		/*if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
 					.userData(
@@ -140,7 +137,7 @@ public class AWSEC2Iaas extends Iaas {
 									.getCarbonHome()
 									+ File.separator
 									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
-		}
+		}*/
 
 		if (iaas.getProperty("keyPair") != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)

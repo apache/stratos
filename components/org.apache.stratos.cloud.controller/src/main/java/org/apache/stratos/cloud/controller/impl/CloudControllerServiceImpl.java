@@ -1003,35 +1003,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			log.error(msg);
 			throw new UnregisteredCartridgeException(msg);
 		}
-
-/*
-
-			// write payload file
-			try {
-				String uniqueName = clusterId + ".txt";
-				FileUtils.forceMkdir(new File(
-						CloudControllerConstants.PAYLOAD_DIR));
-				File payloadFile = new File(
-						CloudControllerConstants.PAYLOAD_DIR + uniqueName);
-				FileUtils.writeByteArrayToFile(payloadFile, payload);
-				newServiceCtxt.setPayloadFile(payloadFile.getPath());
-
-			} catch (IOException e) {
-				String msg = "Failed while persisting the payload of clusterId : "
-						+ clusterId;
-				log.error(msg, e);
-				throw new CloudControllerException(msg, e);
-			}
-
-		} else {
-			log.debug("Payload is null or empty for :\n "
-					+ newServiceCtxt);
-		}*/
-
 		// persist
         String uniqueName = clusterId + "-"
                 + UUID.randomUUID() + ".xml";
-        newServiceCtxt.setPayloadFile("/tmp/" + newServiceCtxt.getClusterId() + ".zip");
+        newServiceCtxt.setPayloadFile("/tmp/" + CloudControllerConstants.PAYLOAD_NAME + ".zip");
         newServiceCtxt.generatePayload();
         // notify consumer by adding services
         TopologyBuilder.handleClusterCreated(newServiceCtxt);
@@ -1039,7 +1014,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             FileUtils.writeStringToFile(new File(CloudControllerConstants.SERVICES_DIR + uniqueName),
                                             newServiceCtxt.toXml());
         } catch (IOException e) {
-            //TODO
+            log.error("couldn't write the service definition", e);
+            throw new CloudControllerException("couldn't write the service definition", e);
         }
         log.info("Service successfully registered! Domain - " + clusterId
                 + ", Cartridge type - " + cartridgeType);
