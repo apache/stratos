@@ -581,6 +581,10 @@ public class AxiomXpathParser {
 					                                                       CloudControllerConstants.SERVICE_TENANT_RANGE_ATTR))
 					                               .getAttributeValue());
 
+                    serviceCtxt.setAutoScalerPolicyName(node.getAttribute(new QName(
+					                                                       CloudControllerConstants.POLICY_NAME))
+					                               .getAttributeValue());
+
 					OMNode cartridgeNode =
 					                       getFirstMatchingNode(xpath +
 					                                                    CloudControllerConstants.CARTRIDGE_ELEMENT_XPATH,

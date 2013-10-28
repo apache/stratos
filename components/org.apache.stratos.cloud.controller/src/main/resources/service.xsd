@@ -57,6 +57,7 @@
     					</xs:element>
           	</xs:choice>
           	<xs:attribute type="xs:string" name="domain" />
+              <xs:attribute type="xs:string" name="policyName" />
           	<xs:attribute type="xs:string" name="tenantRange" />
           </xs:complexType>
         </xs:element>

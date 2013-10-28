@@ -73,12 +73,11 @@ public class TopologyBuilder {
         TopologyEventSender.sendServiceRemovedEvent(cartridgeList);
     }
 
-    public static void handleClusterCreated(List<ServiceContext> serviceContexts) {
+    public static void handleClusterCreated(ServiceContext serviceContext) {
         Topology topology = TopologyManager.getInstance().getTopology();
          Service service;
          try {
              TopologyManager.getInstance().acquireWriteLock();
-             for(ServiceContext serviceContext : serviceContexts) {
                 service = topology.getService(serviceContext.getCartridgeType());
                 if(service == null) {
                     service = new Service(serviceContext.getClusterId());
@@ -111,7 +110,7 @@ public class TopologyBuilder {
                 }
                  TopologyManager.getInstance().updateTopology(topology);
                  TopologyEventSender.sendClusterCreatedEvent(serviceContext);
-             }
+
          } finally {
              TopologyManager.getInstance().releaseWriteLock();
          }

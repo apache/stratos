@@ -22,6 +22,7 @@ package org.apache.stratos.adc.mgt.payload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,9 +66,16 @@ public abstract class Payload {
         payloadBuilder.append("TENANT_CONTEXT=" + payloadArg.getTenantDomain());
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_ALIAS=" + payloadArg.getCartridgeAlias());
+        payloadBuilder.append(",");
+        payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
+        payloadBuilder.append(",");
+        payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
+        payloadBuilder.append(",");
+        payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
+
         if(payloadArg.getCartridgeInfo() != null) {
             payloadBuilder.append(",");
-            payloadBuilder.append("SERVICE=" + payloadArg.getCartridgeInfo().getType());
+            payloadBuilder.append("SERVICE_NAME=" + payloadArg.getCartridgeInfo().getType());
         }
 
         //add the user defined payload String (if any)

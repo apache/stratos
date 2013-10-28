@@ -46,7 +46,7 @@ public class TopologyEventMessageDelegator implements Runnable {
 				String json = message.getText();
                 if(MemberActivatedEvent.class.getName().equals(type)) {
                      TopologyBuilder.handleMemberStarted((MemberStartedEvent)Util.
-                                                        jsonToObject(json, MemberActivatedEvent.class));
+                                                        jsonToObject(json, MemberStartedEvent.class));
                 } else if(MemberActivatedEvent.class.getName().equals(type)) {
                      TopologyBuilder.handleMemberActivated((MemberActivatedEvent) Util.
                                                         jsonToObject(json, MemberActivatedEvent.class));

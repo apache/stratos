@@ -933,7 +933,7 @@ public class ApplicationManagementUtil {
         log.info("Register service..");
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
-                    hostName, properties, "economy");
+                    hostName, properties, "economyPolicy");
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);
@@ -970,16 +970,16 @@ public class ApplicationManagementUtil {
 				try {
 					instanceIpMap = PersistenceManager.getCartridgeInstanceInfo(ips, sub.getClusterDomain(),
 							sub.getClusterSubdomain());
-					cartridge.setActiveInstances(Collections.frequency(instanceIpMap.values(),
-							CartridgeConstants.ACTIVE));
-					cartridge.setStatus(checkCartridgeStatus(instanceIpMap));
+					cartridge.setActiveInstances(ips.length);
+					cartridge.setStatus(CartridgeConstants.ACTIVE);
 				} catch (Exception e) {
 					throw new ADCException("Error checking cartridge status");
 				}
 
                 if(cartridgeInfo.getProvider().equalsIgnoreCase(CartridgeConstants.PROVIDER_NAME_WSO2)) {
-
-                    List<Member> members = getMemberInstances(sub.getClusterDomain(), sub.getClusterSubdomain());
+                    cartridge.setActiveInstances(ips.length);
+                    cartridge.setStatus(CartridgeConstants.ACTIVE);
+                    /*List<Member> members = getMemberInstances(sub.getClusterDomain(), sub.getClusterSubdomain());
                     if(members != null) {
                         int activeInstancesCount = 0;
                         for (Member member : members) {
@@ -989,7 +989,7 @@ public class ApplicationManagementUtil {
                             }
                         }
                         cartridge.setActiveInstances(activeInstancesCount);
-                    }
+                    }*/
                 }
 			}
         } else {

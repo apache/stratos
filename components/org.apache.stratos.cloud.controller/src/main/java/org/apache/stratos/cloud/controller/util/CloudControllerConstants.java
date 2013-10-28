@@ -71,6 +71,7 @@ public final class CloudControllerConstants {
     public static final String SERVICE_DOMAIN_ATTR = "domain";
     public static final String SERVICE_SUB_DOMAIN_ATTR = "subDomain";
     public static final String SERVICE_TENANT_RANGE_ATTR = "tenantRange";
+    public static final String POLICY_NAME = "policyName";
     public static final String PAYLOAD_ELEMENT = "payload";
     public static final String DATA_PUBLISHER_ELEMENT = "dataPublisher";
     public static final String TOPOLOGY_SYNC_ELEMENT = "topologySync";

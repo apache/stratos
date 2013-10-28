@@ -1031,6 +1031,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// persist
         String uniqueName = clusterId + "-"
                 + UUID.randomUUID() + ".xml";
+        newServiceCtxt.setPayloadFile("/tmp/" + newServiceCtxt.getClusterId() + ".zip");
+        newServiceCtxt.generatePayload();
+        // notify consumer by adding services
+        TopologyBuilder.handleClusterCreated(newServiceCtxt);
         try {
             FileUtils.writeStringToFile(new File(CloudControllerConstants.SERVICES_DIR + uniqueName),
                                             newServiceCtxt.toXml());
@@ -1102,6 +1106,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// find the service context
 		ServiceContext subjectedSerCtxt = dataHolder
 				.getServiceContextFromDomain(clusterId);
+        TopologyBuilder.handleClusterRemoved(subjectedSerCtxt);
 
 		if (subjectedSerCtxt == null) {
 			throw new UnregisteredServiceException(
