@@ -29,6 +29,7 @@ import java.util.Properties;
  */
 public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2080623816272047762L;
+
 	private String serviceName;
     private String clusterId;
     private String hostName;

@@ -19,20 +19,16 @@
 package org.apache.stratos.messaging.event.instance.status;
 
 
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.event.topology.TopologyEvent;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * This event is fired by cartridge agent when it is started by the IaaS in a given cluster.
  */
 public class MemberStartedEvent extends TopologyEvent implements Serializable {
+    private static final long serialVersionUID = 7447068435627208619L;
+
     private String serviceName;
     private String clusterId;
     private String memberId;

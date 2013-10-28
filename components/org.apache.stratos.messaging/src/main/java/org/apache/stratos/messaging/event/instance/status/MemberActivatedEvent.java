@@ -27,6 +27,8 @@ import java.io.Serializable;
  * applications are ready to serve the incoming requests.
  */
 public class MemberActivatedEvent extends TopologyEvent implements Serializable {
+    private static final long serialVersionUID = 2625412714611885089L;
+
     private String serviceName;
     private String clusterId;
     private String memberId;

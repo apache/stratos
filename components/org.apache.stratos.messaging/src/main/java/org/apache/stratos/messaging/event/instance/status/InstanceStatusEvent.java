@@ -17,15 +17,15 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.event.instance.status;
 
 import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
 
 /**
- * Represents all topology events.
+ * Represents all instance status events.
  */
-public abstract class TopologyEvent extends Event implements Serializable {
-    private static final long serialVersionUID = -3279032168352271675L;
+public abstract class InstanceStatusEvent extends Event implements Serializable {
+    private static final long serialVersionUID = -4790128084271867615L;
 }
