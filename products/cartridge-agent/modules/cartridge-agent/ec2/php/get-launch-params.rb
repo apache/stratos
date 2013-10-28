@@ -1,5 +1,6 @@
 #! /usr/bin/ruby
-# ----------------------------------------------------------------------------
+# --------------------------------------------------------------
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -8,7 +9,7 @@
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
-#  http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
@@ -16,7 +17,8 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-# ----------------------------------------------------------------------------
+#
+# --------------------------------------------------------------
 
 ### get-launch-params.rb
 
@@ -36,7 +38,7 @@ end
 export_stmt = ""
 
 launch_params = get_launch_params(
-  "/opt/payload/user-data.txt")
+  "/opt/apache-stratos-cartridge-agent/payload/launch-params")
 
 if launch_params.length > 0
   instance_params_str = launch_params[0]
@@ -48,5 +50,5 @@ if launch_params.length > 0
   instance_params.each { |param|
     puts export_stmt + param
   }
-end
 
+end

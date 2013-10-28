@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cartridge.agent;
+package org.apache.stratos.cartridge.agent.event.publisher;
 
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
@@ -29,7 +29,6 @@ import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Properties;
 
 /**
@@ -89,12 +88,12 @@ public class EventPublisher {
     }
 
     private void publish(String message, String eventClassName) throws NamingException, JMSException, IOException {
-            TextMessage textMessage = topicSession.createTextMessage((String) message);
-            textMessage.setStringProperty(Constants.EVENT_CLASS_NAME, eventClassName);
-            javax.jms.TopicPublisher topicPublisher = topicSession.createPublisher(topic);
-            topicPublisher.publish(textMessage);
+        TextMessage textMessage = topicSession.createTextMessage((String) message);
+        textMessage.setStringProperty(Constants.EVENT_CLASS_NAME, eventClassName);
+        javax.jms.TopicPublisher topicPublisher = topicSession.createPublisher(topic);
+        topicPublisher.publish(textMessage);
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Message published: [topic] %s [header] %s [body] %s", topicName, eventClassName, message));
         }
     }

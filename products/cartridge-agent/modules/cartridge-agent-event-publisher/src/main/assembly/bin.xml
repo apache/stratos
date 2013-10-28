@@ -28,15 +28,24 @@
         <fileSet>
             <directory>${project.basedir}/src/main/bin</directory>
             <outputDirectory>/bin</outputDirectory>
+            <fileMode>0755</fileMode>
             <includes>
-                <include>cartridge-agent.sh</include>
-                <include>get-launch-params.rb</include>
-                <include>user-data.json.template</include>
+                <include>event-publisher.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/templates</directory>
+            <outputDirectory>/templates</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>member-started-event.json.template</include>
+                <include>member-activated-event.json.template</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>${project.basedir}</directory>
             <outputDirectory>/</outputDirectory>
+            <fileMode>0600</fileMode>
             <includes>
                 <include>README*</include>
                 <include>LICENSE*</include>

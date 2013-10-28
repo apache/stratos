@@ -1,3 +1,5 @@
+#!/bin/bash
+# --------------------------------------------------------------
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -16,12 +18,16 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+# --------------------------------------------------------------
 
-Apache Stratos Cartridge Agent
-------------------------------
 
-How to use:
-1. Extract the cartridge agent binary package to a directory inside the cartridge image.
-2. Read the payload and set following environment variables:
-   $service-name $cluster-id $member-id $ip-address $port
-3. Execute cartridge-agent.sh
+var=`nc -z localhost 80; echo $?`;
+if [ $var -eq 0 ]
+then
+    echo "port 80 is available" > /dev/null 2>&1
+else
+    echo "port 80 is not available" > /dev/null 2>&1
+    /etc/init.d/apache2 restart
+fi
+
+
