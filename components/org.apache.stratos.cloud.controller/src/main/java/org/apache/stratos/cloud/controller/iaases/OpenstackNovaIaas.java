@@ -18,10 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -43,12 +43,9 @@ import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class OpenstackNovaIaas extends Iaas {
 
@@ -123,7 +120,7 @@ public class OpenstackNovaIaas extends Iaas {
 									CloudControllerConstants.ENTRY_SEPARATOR));
 		}
 
-		if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
+		/*if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
 			template.getOptions()
 					.as(NovaTemplateOptions.class)
 					.userData(
@@ -132,7 +129,7 @@ public class OpenstackNovaIaas extends Iaas {
 									+ File.separator
 									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
 		}
-
+*/
 		if (iaas.getProperty("keyPair") != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
 					.keyPairName(iaas.getProperty("keyPair"));
