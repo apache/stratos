@@ -30,20 +30,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * This event is fired by Instance when it is started by the IaaS in a given cluster.
+ * This event is fired by cartridge agent when it is started by the IaaS in a given cluster.
  */
 public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private String serviceName;
     private String clusterId;
     private String memberId;
-    private String hostName;
-    private MemberStatus status;
-    private Map<String, Port> portMap;
-    private Properties properties;
-
-    public MemberStartedEvent() {
-        this.portMap = new HashMap<String, Port>();
-    }
 
     public String getServiceName() {
         return serviceName;
@@ -67,53 +59,5 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
-    public MemberStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(MemberStatus status) {
-        this.status = status;
-    }
-
-    public Collection<Port> getPorts() {
-        return portMap.values();
-    }
-
-    public void addPort(Port port) {
-        this.portMap.put(port.getProtocol(), port);
-    }
-
-    public void removePort(Port port) {
-        this.portMap.remove(port.getProtocol());
-    }
-
-    public void removePort(String portName) {
-        this.portMap.remove(portName);
-    }
-
-    public boolean portExists(Port port) {
-        return this.portMap.containsKey(port.getProtocol());
-    }
-
-    public Port getPort(String portName) {
-        return this.portMap.get(portName);
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
     }
 }
