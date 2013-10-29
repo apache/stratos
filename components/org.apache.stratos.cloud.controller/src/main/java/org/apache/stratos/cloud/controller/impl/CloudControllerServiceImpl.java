@@ -340,9 +340,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                     // get the ComputeService
                     computeService = iaas.getComputeService();
-
-                    // corresponding Template
+                     // corresponding Template
                     template = iaas.getTemplate();
+
 
                     if (template == null) {
                         String msg = "Failed to start an instance in "
@@ -398,7 +398,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                         .hasNext()) {
                             ip = node.getPublicAddresses().iterator().next();
                         }
-
+                         String privateIp = null;
+                        if (node.getPrivateAddresses() != null
+                                && node.getPrivateAddresses().iterator()
+                                        .hasNext()) {
+                            privateIp = node.getPrivateAddresses().iterator().next();
+                        }
+                        log.info("private ip of the instance is: " + privateIp);
                         // if not public IP is assigned, we're using private IP
                         if (ip.isEmpty()
                                 && node.getPrivateAddresses() != null
@@ -434,7 +440,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         // trigger topology
                         TopologyBuilder.handleMemberSpawned(memberID, serviceCtxt.getCartridgeType(), clusterId,
-                                 node.getId(), locationScope);
+                                 node.getId(), locationScope, privateIp);
 
                         //update the topology with the newly spawned member
                         // publish data
@@ -559,11 +565,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 
 		// load Cartridge, if null
-		if (serviceCtxt.getCartridge() == null) {
+		//if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
 					serviceCtxt.getCartridgeType(),
 					dataHolder.getCartridges()));
-		}
+		//}
 
 		// if still, Cartridge is null
 		if (serviceCtxt.getCartridge() == null) {
@@ -579,7 +585,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					+ iaas.getType()
 					+ ". Hence, will try to terminate an instance in another IaaS if possible.";
             //TODO adding more locations and retrieve it from the request received
-            if(iaas.getName().equals(cloud) && (region == null || iaas.getRegion().equals(region))) {
+            if(iaas.getType().equals(cloud)) {
                 String nodeId = null;
 
                 IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
@@ -651,11 +657,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 
 		// load Cartridge, if null
-		if (serviceCtxt.getCartridge() == null) {
+		//if (serviceCtxt.getCartridge() == null) {
 			serviceCtxt.setCartridge(loadCartridge(
 					serviceCtxt.getCartridgeType(),
 					dataHolder.getCartridges()));
-		}
+		//}
 
 		if (serviceCtxt.getCartridge() == null) {
 			String msg = "There's no registered Cartridge found. Domain - "
@@ -724,11 +730,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 
 		// load Cartridge, if null
-		if (serviceCtxt.getCartridge() == null) {
-			serviceCtxt.setCartridge(loadCartridge(
+		serviceCtxt.setCartridge(loadCartridge(
 					serviceCtxt.getCartridgeType(),
 					dataHolder.getCartridges()));
-		}
+		//}
 
 		if (serviceCtxt.getCartridge() == null) {
 			String msg = "There's no registered Cartridge found. Domain - "
@@ -1008,6 +1013,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 + UUID.randomUUID() + ".xml";
         newServiceCtxt.setPayloadFile("/tmp/" + CloudControllerConstants.PAYLOAD_NAME + ".zip");
         newServiceCtxt.generatePayload();
+        dataHolder.addServiceContext(newServiceCtxt);
         // notify consumer by adding services
         TopologyBuilder.handleClusterCreated(newServiceCtxt);
         try {

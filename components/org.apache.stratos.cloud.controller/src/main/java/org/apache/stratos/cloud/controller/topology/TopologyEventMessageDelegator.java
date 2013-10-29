@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -34,17 +33,19 @@ public class TopologyEventMessageDelegator implements Runnable {
      @Override
     public void run() {
 		log.info("Topology event message processor started");
-		log.info("Waiting for the complete topology event message...");
 
         while (true) {
 			try {
-				TextMessage message = FasterLookUpDataHolder.getInstance().getSharedTopologyDiffQueue().take();
+				TextMessage message = TopologyManager.getInstance().getSharedTopologyDiffQueue().take();
 
 				// retrieve the header
 				String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
 				// retrieve the actual message
 				String json = message.getText();
-                if(MemberActivatedEvent.class.getName().equals(type)) {
+
+                log.info(String.format("Event message received from queue: %s", type));
+
+                if(MemberStartedEvent.class.getName().equals(type)) {
                      TopologyBuilder.handleMemberStarted((MemberStartedEvent)Util.
                                                         jsonToObject(json, MemberStartedEvent.class));
                 } else if(MemberActivatedEvent.class.getName().equals(type)) {

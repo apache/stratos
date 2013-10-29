@@ -23,12 +23,9 @@ import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
 
-import javax.jms.TextMessage;
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -110,7 +107,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
 
-	private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
 
 	public static FasterLookUpDataHolder getInstance() {
 
@@ -383,14 +379,6 @@ public class FasterLookUpDataHolder implements Serializable{
 
 	public void setPublisherRunning(boolean isPublisherRunning) {
 		this.isPublisherRunning = isPublisherRunning;
-	}
-
-	public BlockingQueue<TextMessage> getSharedTopologyDiffQueue() {
-		return sharedTopologyDiffQueue;
-	}
-
-	public void setSharedTopologyDiffQueue(BlockingQueue<TextMessage> sharedTopologyDiffQueue) {
-		this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
 	}
 
 	public boolean getEnableTopologySync() {

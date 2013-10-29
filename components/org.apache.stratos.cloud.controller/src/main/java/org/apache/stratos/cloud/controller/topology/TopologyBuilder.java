@@ -18,8 +18,12 @@
  */
 package org.apache.stratos.cloud.controller.topology;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.LocationScope;
+import org.apache.stratos.cloud.controller.util.PortMapping;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
@@ -32,6 +36,8 @@ import java.util.List;
  * and build the complete topology with the events received
  */
 public class TopologyBuilder {
+    private static final Log log = LogFactory.getLog(TopologyBuilder.class);
+
 
     public static  void handleServiceCreated(List<Cartridge> cartridgeList) {
         Service service;
@@ -42,11 +48,11 @@ public class TopologyBuilder {
         try {
             TopologyManager.getInstance().acquireWriteLock();
             for(Cartridge cartridge : cartridgeList) {
-            if(!topology.serviceExists(cartridge.getType())) {
-                service =  new Service(cartridge.getType());
-                topology.addService(service);
-            }
-            TopologyManager.getInstance().updateTopology(topology);
+                if(!topology.serviceExists(cartridge.getType())) {
+                    service =  new Service(cartridge.getType());
+                    topology.addService(service);
+                    TopologyManager.getInstance().updateTopology(topology);
+                }
             }
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
@@ -60,13 +66,19 @@ public class TopologyBuilder {
         try {
             TopologyManager.getInstance().acquireWriteLock();
             for(Cartridge cartridge : cartridgeList) {
-            if(topology.serviceExists(cartridge.getType())) {
-                topology.removeService(cartridge.getType());
-            } else {
-                throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
+                if(topology.getService(cartridge.getType()).getClusters().size() == 0) {
+                    if(topology.serviceExists(cartridge.getType())) {
+                        topology.removeService(cartridge.getType());
+                    } else {
+                        throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
+                    }
+                } else {
+                    log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
+                            + " from the topology");
+                }
+
+                TopologyManager.getInstance().updateTopology(topology);
             }
-            }
-            TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
@@ -141,7 +153,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
-                                           String iaasNodeId, LocationScope locationScope) {
+                                           String iaasNodeId, LocationScope locationScope, String privateIp) {
         //adding the new member to the cluster after it is successfully started in IaaS.
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
@@ -157,6 +169,7 @@ public class TopologyBuilder {
             Member member = new Member(serviceName, clusterId, memberId);
             member.setIaasNodeId(iaasNodeId);
             member.setStatus(MemberStatus.Created);
+            member.setMemberIp(privateIp);
             cluster.addMember(member);
             cluster.addMemberToIaasNodeId(member);
             TopologyManager.getInstance().updateTopology(topology);
@@ -189,6 +202,8 @@ public class TopologyBuilder {
          try {
              TopologyManager.getInstance().acquireWriteLock();
              member.setStatus(MemberStatus.Starting);
+             log.info("member started event adding status started");
+
              TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
@@ -217,14 +232,34 @@ public class TopologyBuilder {
                         memberActivatedEvent.getMemberId()));
         }
 
+        org.apache.stratos.messaging.event.topology.MemberActivatedEvent memberActivatedEventTopology =
+                    new org.apache.stratos.messaging.event.topology.MemberActivatedEvent(memberActivatedEvent.getServiceName(),
+                            memberActivatedEvent.getClusterId(), memberActivatedEvent.getMemberId());
+
         try {
             TopologyManager.getInstance().acquireWriteLock();
             member.setStatus(MemberStatus.Activated);
+            log.info("member started event adding status activated");
+            Cartridge cartridge = FasterLookUpDataHolder.getInstance().
+                                getCartridge(memberActivatedEvent.getServiceName());
+
+            List<PortMapping> portMappings = cartridge.getPortMappings();
+            Port port;
+            //adding ports to the event
+            for(PortMapping portMapping : portMappings) {
+                port = new Port(portMapping.getProtocol(),
+                        Integer.parseInt(portMapping.getPort()),
+                        Integer.parseInt(portMapping.getProxyPort()));
+                member.addPort(port);
+                memberActivatedEventTopology.addPort(port);
+            }
+            memberActivatedEventTopology.setMemberIp(member.getMemberIp());
             TopologyManager.getInstance().updateTopology(topology);
+
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendMemberActivatedEvent(memberActivatedEvent);
+        TopologyEventSender.sendMemberActivatedEvent(memberActivatedEventTopology);
     }
 
     public static void handleMemberTerminated(String serviceName, String clusterId, String nodeId) {
