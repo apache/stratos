@@ -38,7 +38,7 @@ end
 export_stmt = ""
 
 launch_params = get_launch_params(
-  "/opt/payload/launch-params")
+  "/opt/apache-stratos-cartridge-agent/payload/launch-params")
 
 if launch_params.length > 0
   instance_params_str = launch_params[0]
