@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -35,7 +34,7 @@ public class TopologyListener implements MessageListener{
     @Override
     public void onMessage(Message message) {
         TextMessage receivedMessage = (TextMessage) message;
-        FasterLookUpDataHolder.getInstance().getSharedTopologyDiffQueue().add(receivedMessage);
+        TopologyManager.getInstance().getSharedTopologyDiffQueue().add(receivedMessage);
         if(log.isDebugEnabled()) {
             log.debug(message + "received....");
         }

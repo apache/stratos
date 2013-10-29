@@ -26,8 +26,11 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.messaging.domain.topology.Topology;
 
+import javax.jms.TextMessage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -43,6 +46,8 @@ public class TopologyManager {
 	private File backup = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH + ".back");
     private volatile Topology topology;
     private static TopologyManager instance;
+    private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
+
 
     private TopologyManager() {
     }
@@ -80,17 +85,23 @@ public class TopologyManager {
                         currentContent = FileUtils.readFileToString(this.topologyFile);
                         Gson gson = new Gson();
                         this.topology = gson.fromJson(currentContent, Topology.class);
+                        if(log.isDebugEnabled()) {
+                            log.debug("The current topology is: " + currentContent);
+                        }
                     } catch (IOException e) {
                         log.error(e.getMessage());
                         throw new CloudControllerException(e.getMessage(), e);
                     }
                 } else {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Creating new topology");
+                    }
                     this.topology = new Topology();
                 }
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug("The current topology is: " + currentContent);
+            log.debug("The current topology is: " + toJson());
         }
         return this.topology;
     }
@@ -110,7 +121,7 @@ public class TopologyManager {
                 if(log.isDebugEnabled()) {
                     log.debug("The updated topology is: " + message);
                 }
-            } catch (IOException e)     {
+            } catch (IOException e) {
                 log.error(e.getMessage());
                 throw new CloudControllerException(e.getMessage(), e);
             }
@@ -120,6 +131,20 @@ public class TopologyManager {
 
     public void setTopology(Topology topology) {
         this.topology = topology;
+    }
+
+    public String toJson() {
+        Gson gson = new Gson();
+        return  gson.toJson(topology);
+
+    }
+
+    public BlockingQueue<TextMessage> getSharedTopologyDiffQueue() {
+        return sharedTopologyDiffQueue;
+    }
+
+    public void setSharedTopologyDiffQueue(BlockingQueue<TextMessage> sharedTopologyDiffQueue) {
+        this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
     }
 }
 

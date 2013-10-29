@@ -17,7 +17,8 @@ package org.apache.stratos.cloud.controller.topology;
  * specific language governing permissions and limitations
  * under the License.
  */
-import com.google.gson.Gson;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
@@ -32,6 +33,8 @@ import java.util.List;
  * this is to send the relevant events from cloud controller to topology topic
  */
 public class TopologyEventSender {
+    private static final Log log = LogFactory.getLog(TopologyBuilder.class);
+
 
     public static void sendServiceCreateEvent(List<Cartridge> cartridgeList) {
         ServiceCreatedEvent serviceCreatedEvent;
@@ -77,15 +80,15 @@ public class TopologyEventSender {
     }
 
     public static void sendMemberStartedEvent(org.apache.stratos.messaging.event.instance.status.MemberStartedEvent memberStartedEvent) {
-        Gson gson = new Gson();
-        String json = gson.toJson(memberStartedEvent);
-        publishEvent(gson.fromJson(json, MemberStartedEvent.class));
+        log.info("member started event" + MemberStartedEvent.class);
+        MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(memberStartedEvent.getServiceName(),
+                            memberStartedEvent.getClusterId(), memberStartedEvent.getMemberId());
+        publishEvent(memberStartedEventTopology);
     }
 
-     public static void sendMemberActivatedEvent(org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent memberActivatedEvent) {
-        Gson gson = new Gson();
-        String json = gson.toJson(memberActivatedEvent);
-        publishEvent(gson.fromJson(json, org.apache.stratos.messaging.event.topology.MemberActivatedEvent.class));
+     public static void sendMemberActivatedEvent(MemberActivatedEvent memberActivatedEventTopology) {
+         log.info("member activated event" + MemberActivatedEvent.class);
+         publishEvent(memberActivatedEventTopology);
     }
 
     public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
