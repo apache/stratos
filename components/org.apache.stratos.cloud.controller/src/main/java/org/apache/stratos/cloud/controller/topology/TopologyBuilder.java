@@ -63,26 +63,26 @@ public class TopologyBuilder {
 
     public static  void handleServiceRemoved(List<Cartridge> cartridgeList) {
         Topology topology = TopologyManager.getInstance().getTopology();
-        try {
-            TopologyManager.getInstance().acquireWriteLock();
-            for(Cartridge cartridge : cartridgeList) {
-                if(topology.getService(cartridge.getType()).getClusters().size() == 0) {
-                    if(topology.serviceExists(cartridge.getType())) {
-                        topology.removeService(cartridge.getType());
-                    } else {
-                        throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
-                    }
-                } else {
-                    log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
-                            + " from the topology");
-                }
 
-                TopologyManager.getInstance().updateTopology(topology);
+        for(Cartridge cartridge : cartridgeList) {
+            if(topology.getService(cartridge.getType()).getClusters().size() == 0) {
+                if(topology.serviceExists(cartridge.getType())) {
+                    try {
+                        TopologyManager.getInstance().acquireWriteLock();
+                        topology.removeService(cartridge.getType());
+                        TopologyManager.getInstance().updateTopology(topology);
+                    } finally {
+                        TopologyManager.getInstance().releaseWriteLock();
+                    }
+                    TopologyEventSender.sendServiceRemovedEvent(cartridgeList);
+                } else {
+                    throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
+                }
+            } else {
+                log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
+                        + " from the topology");
             }
-        } finally {
-            TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendServiceRemovedEvent(cartridgeList);
     }
 
     public static void handleClusterCreated(ServiceContext serviceContext) {
