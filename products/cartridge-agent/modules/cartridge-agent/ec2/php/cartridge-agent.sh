@@ -77,8 +77,8 @@ event_json_path=`pwd`/member-started-event.json
 pushd $event_publisher_path/bin
 echo "Executing: event-publisher.sh $MB_IP $MB_PORT $event_class_name $event_json_path"
 sh event-publisher.sh $MB_IP $MB_PORT $event_class_name $event_json_path
-popd
 echo "Event published" | tee -a $LOG
+popd
 
 
 # -----------------------------------------------------
@@ -102,6 +102,7 @@ echo "Repoinfo request created " | tee -a $LOG
 echo "Generating git.sh..." | tee -a $LOG
 # If repo is available do a git pull, else clone
 echo "#!/bin/bash
+set -e
 if [ -d \"${APP_PATH}/.git\" ]; then
    cd ${APP_PATH}
     
@@ -119,7 +120,7 @@ if [ -d \"${APP_PATH}/.git\" ]; then
    chmod 600 ~/.netrc
    sudo chmod 600 /root/.netrc
    git config --global --bool --add http.sslVerify false
-   sudo git pull
+   sudo git pull  
    rm ~/.netrc
    sudo rm /root/.netrc
 
@@ -129,7 +130,7 @@ if [ -d \"${APP_PATH}/.git\" ]; then
    fi
 else
    sudo rm -f ${APP_PATH}/index.html
-   curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @/opt/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
+   curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @${instance_path}/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
    sed '1,5d' /tmp/git.xml > /tmp/git1.xml
    sed '2d' /tmp/git1.xml > /tmp/git.xml
    username=\`xml_grep 'ax29:userName' /tmp/git.xml --text_only\`
@@ -143,7 +144,11 @@ else
    chmod 600 ~/.netrc
    sudo chmod 600 /root/.netrc
    git config --global --bool --add http.sslVerify false
-   sudo git clone \${repo} ${APP_PATH}
+   sudo mkdir ${instance_path}/temp_git
+   sudo git clone \${repo} ${instance_path}/temp_git
+   sudo mv ${instance_path}/temp_git/* /var/www
+   sudo mv ${instance_path}/temp_git/.git /var/www
+   sudo rm -rf ${instance_path}/temp_git
    rm ~/.netrc
    sudo rm /root/.netrc
  
@@ -159,7 +164,7 @@ else
    sudo chown -R www-data:www-data ${APP_PATH}/www
     
 fi" > ${instance_path}/git.sh
-echo "File created.." | tee -a $LOG
+echo "git.sh generated" | tee -a $LOG
 chmod 755 ${instance_path}/git.sh
 
 
@@ -209,13 +214,14 @@ event_json_path=`pwd`/member-activated-event.json
 pushd $event_publisher_path/bin
 echo "Executing: event-publisher.sh $MB_IP $MB_PORT $event_class_name $event_json_path"
 sh event-publisher.sh $MB_IP $MB_PORT $event_class_name $event_json_path
-popd
 echo "Event published" | tee -a $LOG
+popd
 
 # -----------------------------------------------------
 # Git clone
 # -----------------------------------------------------
+pushd ${instance_path}
 echo "running git clone..." | tee -a $LOG
-sh ${instance_path}/git.sh
+sudo sh ${instance_path}/git.sh
 echo "git clone done" | tee -a $LOG
 
