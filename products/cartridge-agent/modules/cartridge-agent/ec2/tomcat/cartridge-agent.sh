@@ -162,6 +162,9 @@ else
    sudo mkdir ${instance_path}/temp_git
    echo \"Running git clone...\" | tee -a \$GIT_SH_LOG
    git clone \${repo} ${instance_path}/temp_git
+   sudo cp -r ${instance_path}/temp_git/* $APP_PATH/
+   sudo cp -r ${instance_path}/temp_git/.git $APP_PATH/
+   sudo rm -rf ${instance_path}/temp_git
    
    if [ -f ~/.netrc ]; then
       echo \"Removing ~/.netrc...\" | tee -a \$GIT_SH_LOG
