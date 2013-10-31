@@ -57,9 +57,6 @@ public class TopologyEventMessageDelegator implements Runnable {
                     }
 
                 } catch (Exception e) {
-                    if(log.isErrorEnabled()) {
-                        log.error("Failed to retrieve the full topology.", e);
-                    }
                     throw new RuntimeException("Failed to retrieve the complete topology", e);
                 }
             }
