@@ -20,15 +20,17 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>stratos-products-parent</artifactId>
-        <groupId>org.apache.stratos</groupId>
-        <version>4.0.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <artifactId>apache-stratos-cartridge-agent-event-publisher</artifactId>
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>cartidge-agent</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>cartridge-agent-event-publisher</artifactId>
     <name>Apache Stratos - Cartridge Agent Event Publisher</name>
 
     <repositories>

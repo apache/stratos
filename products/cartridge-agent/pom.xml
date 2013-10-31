@@ -28,7 +28,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>catridge-agent</artifactId>
+    <artifactId>cartidge-agent</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Cartridge Agent</name>
     <url>http://apache.org</url>
