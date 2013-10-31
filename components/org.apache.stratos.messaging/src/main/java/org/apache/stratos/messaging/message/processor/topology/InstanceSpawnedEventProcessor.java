@@ -43,19 +43,19 @@ public class InstanceSpawnedEventProcessor implements TopologyMessageProcessor {
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service %s does not exist",
+                throw new RuntimeException(String.format("Service does not exist: [service] %s",
                         event.getServiceName()));
             }
             Cluster cluster = service.getCluster(event.getClusterId());
             if (cluster == null) {
-                throw new RuntimeException(String.format("Cluster %s does not exist",
-                        event.getClusterId()));
+                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                        event.getServiceName(), event.getClusterId()));
             }
             if (cluster.memberExists(event.getMemberId())) {
-                throw new RuntimeException(String.format("Member %s already exist in cluster %s of service %s",
-                        event.getMemberId(),
+                throw new RuntimeException(String.format("Member already exists: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
                         event.getClusterId(),
-                        event.getServiceName()));
+                        event.getMemberId()));
             }
 
             // Apply changes to the topology
@@ -64,9 +64,10 @@ public class InstanceSpawnedEventProcessor implements TopologyMessageProcessor {
             cluster.addMember(member);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member %s created in cluster %s of service %s",
-                        event.getMemberId(), event.getClusterId(),
-                        event.getServiceName()));
+                log.info(String.format("Member created: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
             }
 
             return true;

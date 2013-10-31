@@ -47,33 +47,36 @@ public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service %s does not exist",
+                throw new RuntimeException(String.format("Service does not exist: [service] %s",
                         event.getServiceName()));
             }
             Cluster cluster = service.getCluster(event.getClusterId());
             if (cluster == null) {
-                throw new RuntimeException(String.format("Cluster %s does not exist",
-                        event.getClusterId()));
+                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                        event.getServiceName(), event.getClusterId()));
             }
             Member member = cluster.getMember(event.getMemberId());
             if (member == null) {
-                throw new RuntimeException(String.format("Member %s does not exist",
+                throw new RuntimeException(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
                         event.getMemberId()));
             }
             if (member.getStatus() == MemberStatus.Suspended) {
-                throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already suspended",
-                        event.getMemberId(),
+                throw new RuntimeException(String.format("Member already suspended: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
                         event.getClusterId(),
-                        event.getServiceName()));
+                        event.getMemberId()));
             }
 
             // Apply changes to the topology
             member.setStatus(MemberStatus.Suspended);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member %s suspended in cluster %s of service %s",
-                        event.getMemberId(), event.getClusterId(),
-                        event.getServiceName()));
+                log.info(String.format("Member suspended: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
             }
 
             return true;

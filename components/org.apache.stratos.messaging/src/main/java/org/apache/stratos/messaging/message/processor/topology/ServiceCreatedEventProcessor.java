@@ -43,7 +43,7 @@ public class ServiceCreatedEventProcessor implements TopologyMessageProcessor {
 
             // Validate event against the existing topology
             if (topology.serviceExists(event.getServiceName())) {
-                throw new RuntimeException(String.format("Service %s already exists", event.getServiceName()));
+                throw new RuntimeException(String.format("Service already created: [service] %s", event.getServiceName()));
             }
 
             // Apply changes to the topology
@@ -51,7 +51,7 @@ public class ServiceCreatedEventProcessor implements TopologyMessageProcessor {
             topology.addService(service);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Service %s created", event.getServiceName()));
+                log.info(String.format("Service created: [service] %s", event.getServiceName()));
             }
 
             return true;

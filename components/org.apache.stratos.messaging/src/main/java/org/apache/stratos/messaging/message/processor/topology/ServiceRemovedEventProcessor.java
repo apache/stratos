@@ -44,7 +44,7 @@ public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service %s does not exist",
+                throw new RuntimeException(String.format("Service does not exist: [service] %s",
                         event.getServiceName()));
             }
 
@@ -52,7 +52,7 @@ public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
             topology.removeService(service);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Service %s removed", event.getServiceName()));
+                log.info(String.format("Service removed: [service] %s", event.getServiceName()));
             }
             return true;
 

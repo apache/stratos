@@ -47,24 +47,34 @@ public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
+                throw new RuntimeException(String.format("Service does not exist: [service] %s", event.getServiceName()));
             }
             Cluster cluster = service.getCluster(event.getClusterId());
             if (cluster == null) {
-                throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
+                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                        event.getServiceName(), event.getClusterId()));
             }
             Member member = cluster.getMember(event.getMemberId());
             if (member == null) {
-                throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
+                throw new RuntimeException(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
             }
             if (member.getStatus() == MemberStatus.Activated) {
-                throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already activated",
-                        event.getMemberId(),
+                throw new RuntimeException(String.format("Member already activated: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
                         event.getClusterId(),
-                        event.getServiceName()));
+                        event.getMemberId()));
+            }
+            if((event.getMemberIp() == null) || event.getMemberIp().isEmpty()) {
+                throw new RuntimeException(String.format("No ip address found in member activated event: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
             }
             if ((event.getPorts() == null) || (event.getPorts().size() == 0)) {
-                throw new RuntimeException(String.format("No ports found in member activated event [service] %s [cluster-id] %s [member-id] %s",
+                throw new RuntimeException(String.format("No ports found in member activated event: [service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId()));
@@ -76,9 +86,10 @@ public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
             member.setStatus(MemberStatus.Activated);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member %s activated in cluster %s of service %s",
-                        event.getMemberId(), event.getClusterId(),
-                        event.getServiceName()));
+                log.info(String.format("Member activated: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
             }
 
             return true;

@@ -40,8 +40,9 @@ public class CompleteTopologyEventProcessor implements TopologyMessageProcessor 
             // Parse complete message and build event
             CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
             topology.addServices(event.getTopology().getServices());
-            log.info("Topology initialized.");
-
+            if (log.isInfoEnabled()) {
+                log.info("Topology initialized");
+            }
             return true;
         } else {
             if (nextMsgProcessor != null) {

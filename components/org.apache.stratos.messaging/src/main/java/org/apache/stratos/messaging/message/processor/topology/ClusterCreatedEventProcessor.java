@@ -44,25 +44,24 @@ public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service %s does not exist",
+                throw new RuntimeException(String.format("Service does not exist: [service] %s",
                         event.getServiceName()));
             }
             if (service.clusterExists(event.getClusterId())) {
-                throw new RuntimeException(String.format("Cluster %s already exists in service %s",
-                        event.getClusterId(),
-                        event.getServiceName()));
+                throw new RuntimeException(String.format("Cluster already exists in service: [service] %s [cluster] %s",
+                        event.getServiceName(),
+                        event.getClusterId()));
             }
 
             // Apply changes to the topology
-            Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(),
-                    event.getAutoscalingPolicyName());
+            Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(), event.getAutoscalingPolicyName());
             cluster.setHostName(event.getHostName());
             cluster.setTenantRange(event.getTenantRange());
 
             service.addCluster(cluster);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster %s created for service %s",
-                        event.getClusterId(), event.getServiceName()));
+                log.info(String.format("Cluster created: [service] %s [cluster] %s",
+                         event.getServiceName(), event.getClusterId()));
             }
 
             return true;
