@@ -86,7 +86,7 @@ echo "Event published" | tee -a $LOG
 # -----------------------------------------------------
 echo "Setting MySQL root password" >> $LOG
 if [[ (-n ${MYSQL_PASSWORD} ) ]]; then
-    mysqladmin -u root password "${MYSQL_PASSWORD}"
+    mysqladmin -uroot -pmysql password "${MYSQL_PASSWORD}"
     mysql -uroot -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}' WITH GRANT OPTION; flush privileges;"
     echo "MySQL root password set" >> $LOG
 fi
@@ -97,6 +97,19 @@ fi
 # -----------------------------------------------------
 while true
 do
+var=`nc -z localhost 3306; echo $?`;
+if [ $var -eq 0 ]
+   then
+       echo "port 3306 is available" | tee -a $LOG
+       break
+   else
+       echo "port 3306 is not available" | tee -a $LOG
+   fi
+   sleep 1
+done
+
+while true
+do
 var=`nc -z localhost 80; echo $?`;
 if [ $var -eq 0 ]
    then
@@ -104,19 +117,6 @@ if [ $var -eq 0 ]
        break
    else
        echo "port 80 is not available" | tee -a $LOG
-   fi
-   sleep 1
-done
-
-while true
-do
-var=`nc -z localhost 443; echo $?`;
-if [ $var -eq 0 ]
-   then
-       echo "port 443 is available" | tee -a $LOG
-       break
-   else
-       echo "port 443 is not available" | tee -a $LOG
    fi
    sleep 1
 done

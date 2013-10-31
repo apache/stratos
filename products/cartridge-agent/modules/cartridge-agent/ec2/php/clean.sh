@@ -8,6 +8,8 @@ echo "Removing launch.params"
 rm -f launch.params 
 echo "Removing git.sh"
 rm -f git.sh 
+echo "Removing temporary git directory"
+rm -rf /opt/temp_git 
 echo "Removing content copied to the web server"
 rm -rf /var/www/* /var/www/.git
 echo "Removing cartridge agent logs"
