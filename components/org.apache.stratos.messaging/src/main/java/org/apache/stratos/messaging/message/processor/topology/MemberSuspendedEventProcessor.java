@@ -30,69 +30,60 @@ import org.apache.stratos.messaging.util.Util;
 
 public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(MemberSuspendedEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(MemberSuspendedEventProcessor.class);
+    private TopologyMessageProcessor nextMsgProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(TopologyMessageProcessor nextProcessor) {
+        nextMsgProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (MemberSuspendedEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
+    @Override
+    public boolean process(String type, String message, Topology topology) {
+        if (MemberSuspendedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
 
-				// Validate event against the existing topology
-				Service service = topology.getService(event.getServiceName());
-				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
-				}
-				Cluster cluster = service.getCluster(event.getClusterId());
-				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist",
-					                                         event.getClusterId()));
-				}
-				Member member = cluster.getMember(event.getMemberId());
-				if (member == null) {
-					throw new RuntimeException(String.format("Member %s does not exist",
-					                                         event.getMemberId()));
-				}
-				if (member.getStatus() == MemberStatus.Suspended) {
-					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already suspended",
-					                                         event.getMemberId(),
-					                                         event.getClusterId(),
-					                                         event.getServiceName()));
-				}
+            // Validate event against the existing topology
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                throw new RuntimeException(String.format("Service %s does not exist",
+                        event.getServiceName()));
+            }
+            Cluster cluster = service.getCluster(event.getClusterId());
+            if (cluster == null) {
+                throw new RuntimeException(String.format("Cluster %s does not exist",
+                        event.getClusterId()));
+            }
+            Member member = cluster.getMember(event.getMemberId());
+            if (member == null) {
+                throw new RuntimeException(String.format("Member %s does not exist",
+                        event.getMemberId()));
+            }
+            if (member.getStatus() == MemberStatus.Suspended) {
+                throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already suspended",
+                        event.getMemberId(),
+                        event.getClusterId(),
+                        event.getServiceName()));
+            }
 
-				// Apply changes to the topology
-				member.setStatus(MemberStatus.Suspended);
-				
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Member %s suspended in cluster %s of service %s",
-					                       event.getMemberId(), event.getClusterId(),
-					                       event.getServiceName()));
-				}
+            // Apply changes to the topology
+            member.setStatus(MemberStatus.Suspended);
 
-				return true;
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		return false;
-	}
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member %s suspended in cluster %s of service %s",
+                        event.getMemberId(), event.getClusterId(),
+                        event.getServiceName()));
+            }
+
+            return true;
+        } else {
+            if (nextMsgProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextMsgProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }

@@ -30,70 +30,65 @@ import org.apache.stratos.messaging.util.Util;
 
 public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
+    private TopologyMessageProcessor nextMsgProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(TopologyMessageProcessor nextProcessor) {
+        nextMsgProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (MemberActivatedEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
+    @Override
+    public boolean process(String type, String message, Topology topology) {
+        if (MemberActivatedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
 
-				// Validate event against the existing topology
-				Service service = topology.getService(event.getServiceName());
-				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
-				}
-				Cluster cluster = service.getCluster(event.getClusterId());
-				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
-				}
-				Member member = cluster.getMember(event.getMemberId());
-				if (member == null) {
-					throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
-				}
-				if (member.getStatus() == MemberStatus.Activated) {
-					throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already activated",
-					                                         event.getMemberId(),
-					                                         event.getClusterId(),
-					                                         event.getServiceName()));
-				}
+            // Validate event against the existing topology
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                throw new RuntimeException(String.format("Service %s does not exist", event.getServiceName()));
+            }
+            Cluster cluster = service.getCluster(event.getClusterId());
+            if (cluster == null) {
+                throw new RuntimeException(String.format("Cluster %s does not exist", event.getClusterId()));
+            }
+            Member member = cluster.getMember(event.getMemberId());
+            if (member == null) {
+                throw new RuntimeException(String.format("Member %s does not exist", event.getMemberId()));
+            }
+            if (member.getStatus() == MemberStatus.Activated) {
+                throw new RuntimeException(String.format("Member %s of cluster %s of service %s is already activated",
+                        event.getMemberId(),
+                        event.getClusterId(),
+                        event.getServiceName()));
+            }
+            if ((event.getPorts() == null) || (event.getPorts().size() == 0)) {
+                throw new RuntimeException(String.format("No ports found in member activated event [service] %s [cluster-id] %s [member-id] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
 
-				// Apply changes to the topology
-				member.addPorts(event.getPorts());
-				member.setMemberIp(event.getMemberIp());
-				member.setStatus(MemberStatus.Activated);
-				
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Member %s activated in cluster %s of service %s",
-					                       event.getMemberId(), event.getClusterId(),
-					                       event.getServiceName()));
-				}
+            // Apply changes to the topology
+            member.addPorts(event.getPorts());
+            member.setMemberIp(event.getMemberIp());
+            member.setStatus(MemberStatus.Activated);
 
-				return true;
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		
-		return false;
-	}
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member %s activated in cluster %s of service %s",
+                        event.getMemberId(), event.getClusterId(),
+                        event.getServiceName()));
+            }
 
+            return true;
+        } else {
+            if (nextMsgProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextMsgProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }

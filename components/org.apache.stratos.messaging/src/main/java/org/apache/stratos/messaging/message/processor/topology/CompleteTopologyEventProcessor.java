@@ -26,40 +26,30 @@ import org.apache.stratos.messaging.util.Util;
 
 public class CompleteTopologyEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(CompleteTopologyEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(CompleteTopologyEventProcessor.class);
+    private TopologyMessageProcessor nextMsgProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(TopologyMessageProcessor nextProcessor) {
+        nextMsgProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (CompleteTopologyEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
-				topology.addServices(event.getTopology().getServices());
-				log.info("Topology initialized.");
+    @Override
+    public boolean process(String type, String message, Topology topology) {
+        if (CompleteTopologyEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
+            topology.addServices(event.getTopology().getServices());
+            log.info("Topology initialized.");
 
-				return true;
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		return false;
-	}
-
+            return true;
+        } else {
+            if (nextMsgProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextMsgProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }

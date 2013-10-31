@@ -27,52 +27,42 @@ import org.apache.stratos.messaging.util.Util;
 
 public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(ServiceRemovedEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(ServiceRemovedEventProcessor.class);
+    private TopologyMessageProcessor nextMsgProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(TopologyMessageProcessor nextProcessor) {
+        nextMsgProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (ServiceRemovedEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
+    @Override
+    public boolean process(String type, String message, Topology topology) {
+        if (ServiceRemovedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
 
-				// Validate event against the existing topology
-				Service service = topology.getService(event.getServiceName());
-				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
-				}
+            // Validate event against the existing topology
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                throw new RuntimeException(String.format("Service %s does not exist",
+                        event.getServiceName()));
+            }
 
-				// Apply changes to the topology
-				topology.removeService(service);
-				
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Service %s removed", event.getServiceName()));
-				}
-				return true;
+            // Apply changes to the topology
+            topology.removeService(service);
 
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(
-				                           String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		return false;
-	}
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Service %s removed", event.getServiceName()));
+            }
+            return true;
+
+        } else {
+            if (nextMsgProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextMsgProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }

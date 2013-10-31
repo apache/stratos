@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.message.receiver.topology;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -30,24 +32,38 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *  Once processing is done release the lock using a finally block.
  */
 public class TopologyManager {
+    private static final Log log = LogFactory.getLog(TopologyManager.class);
+
     private static volatile Topology topology;
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
     public static void acquireReadLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Read lock acquired");
+        }
         readLock.lock();
     }
 
     public static void releaseReadLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Read lock released");
+        }
         readLock.unlock();
     }
 
     public static void acquireWriteLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Write lock acquired");
+        }
         writeLock.lock();
     }
 
     public static void releaseWriteLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Write lock released");
+        }
         writeLock.unlock();
     }
 
@@ -56,6 +72,9 @@ public class TopologyManager {
             synchronized (TopologyManager.class){
                 if (topology == null) {
                     topology = new Topology();
+                    if(log.isDebugEnabled()) {
+                        log.debug("Topology object created");
+                    }
                 }
             }
         }

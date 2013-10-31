@@ -27,51 +27,42 @@ import org.apache.stratos.messaging.util.Util;
 
 public class ServiceCreatedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(ServiceCreatedEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(ServiceCreatedEventProcessor.class);
+    private TopologyMessageProcessor nextMsgProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(TopologyMessageProcessor nextProcessor) {
+        nextMsgProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (ServiceCreatedEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
+    @Override
+    public boolean process(String type, String message, Topology topology) {
+        if (ServiceCreatedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
 
-				// Validate event against the existing topology
-				if (topology.serviceExists(event.getServiceName())) {
-					throw new RuntimeException(String.format("Service %s already exists", event.getServiceName()));
-				}
+            // Validate event against the existing topology
+            if (topology.serviceExists(event.getServiceName())) {
+                throw new RuntimeException(String.format("Service %s already exists", event.getServiceName()));
+            }
 
-				// Apply changes to the topology
-				Service service = new Service(event.getServiceName());
-				topology.addService(service);
+            // Apply changes to the topology
+            Service service = new Service(event.getServiceName());
+            topology.addService(service);
 
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Service %s created", event.getServiceName()));
-				}
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Service %s created", event.getServiceName()));
+            }
 
-				return true;
+            return true;
 
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		return false;
-	}
+        } else {
+            if (nextMsgProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextMsgProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }

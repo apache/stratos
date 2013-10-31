@@ -28,61 +28,52 @@ import org.apache.stratos.messaging.util.Util;
 
 public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
 
-	private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
+    private TopologyMessageProcessor nextMsgProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(TopologyMessageProcessor nextProcessor) {
+        nextMsgProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (ClusterCreatedEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
-				// Validate event against the existing topology
-				Service service = topology.getService(event.getServiceName());
-				if (service == null) {
-					throw new RuntimeException(String.format("Service %s does not exist",
-					                                         event.getServiceName()));
-				}
-				if (service.clusterExists(event.getClusterId())) {
-					throw new RuntimeException(String.format("Cluster %s already exists in service %s",
-					                                         event.getClusterId(),
-					                                         event.getServiceName()));
-				}
+    @Override
+    public boolean process(String type, String message, Topology topology) {
+        if (ClusterCreatedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
+            // Validate event against the existing topology
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                throw new RuntimeException(String.format("Service %s does not exist",
+                        event.getServiceName()));
+            }
+            if (service.clusterExists(event.getClusterId())) {
+                throw new RuntimeException(String.format("Cluster %s already exists in service %s",
+                        event.getClusterId(),
+                        event.getServiceName()));
+            }
 
-				// Apply changes to the topology
-				Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(),
-                        event.getAutoscalingPolicyName());
-				cluster.setHostName(event.getHostName());
-				cluster.setTenantRange(event.getTenantRange());
+            // Apply changes to the topology
+            Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(),
+                    event.getAutoscalingPolicyName());
+            cluster.setHostName(event.getHostName());
+            cluster.setTenantRange(event.getTenantRange());
 
-				service.addCluster(cluster);
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Cluster %s created for service %s",
-					                       event.getClusterId(), event.getServiceName()));
-				}
+            service.addCluster(cluster);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Cluster %s created for service %s",
+                        event.getClusterId(), event.getServiceName()));
+            }
 
-				return true;
+            return true;
 
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		return false;
-	}
+        } else {
+            if (nextMsgProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextMsgProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }
