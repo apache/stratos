@@ -98,6 +98,8 @@
 		<module>org.apache.stratos.theme.mgt</module>
 		<!--Logging mgt-->
                 <module>org.apache.stratos.logging.view.ui</module>
+                <!-- RESTful admin services -->
+                <module>org.apache.stratos.rest.endpoint</module>
 	    </modules>
 	    
 	    <build>
