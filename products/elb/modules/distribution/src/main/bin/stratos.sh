@@ -295,7 +295,7 @@ exec "$JAVACMD" \
         -Dcom.atomikos.icatch.hide_init_file_path=true \
         -Dorg.terracotta.quartz.skipUpdateCheck=true \
         -Dthrift.receiver.ip=localhost \
-        -Dthrift.receiver.port=9446 \
+        -Dthrift.receiver.port=7614 \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 
