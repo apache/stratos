@@ -105,4 +105,8 @@ public class RequestDelegator {
         }
         return null;
     }
+
+    public boolean isTargetHostValid(String targetHost) {
+        return (findCluster(targetHost) != null);
+    }
 }

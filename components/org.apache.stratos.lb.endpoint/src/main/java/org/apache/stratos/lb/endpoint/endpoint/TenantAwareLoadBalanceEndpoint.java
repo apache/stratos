@@ -118,9 +118,15 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 // Send request to member
                 sendToApplicationMember(synCtx, axis2Member, faultHandler, true);
             } else {
-                throw new SynapseException(String.format("No application members available to serve the request %s", synCtx.getTo().getAddress()));
+                throwSynapseException(synCtx, 404, "Active application instances not found");
             }
         }
+    }
+
+    private void throwSynapseException(MessageContext synCtx, int errorCode, String errorMessage) {
+        synCtx.setProperty(SynapseConstants.ERROR_CODE, errorCode);
+        synCtx.setProperty(SynapseConstants.ERROR_MESSAGE, errorMessage);
+        throw new SynapseException(errorMessage);
     }
 
     /**
@@ -180,6 +186,9 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
         String targetHost = extractTargetHost(synCtx);
+        if(!requestDelegator.isTargetHostValid(targetHost)) {
+            throwSynapseException(synCtx, 404, String.format("Unknown host name %s", targetHost));
+        }
         Member member = requestDelegator.findNextMember(targetHost);
         if (member == null)
             return null;
@@ -187,8 +196,12 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         // Create Axi2 member object
         String transport = extractTransport(synCtx);
         Port transportPort = member.getPort(transport);
-        if (transportPort == null)
-            throw new RuntimeException(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
+        if (transportPort == null) {
+            if(log.isErrorEnabled()) {
+                log.error(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
+            }
+            throwSynapseException(synCtx, 500, "Internal server error");
+        }
 
         int memberPort = transportPort.getValue();
         org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getMemberIp(), memberPort);

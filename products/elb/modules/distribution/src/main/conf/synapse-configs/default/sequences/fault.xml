@@ -31,25 +31,11 @@
     <!-- Drops the messages by default if there is a fault -->
     <script language="js"><![CDATA[
         mc.setPayloadXML(
-           <{mc.getProperty("SERVICENAME")}Response xmlns="org.wso2.gateway">
-            <Timestamp>{new Date()}</Timestamp>
-            <Ack>Failure</Ack>
-            <Errors>
-             <ShortMessage>Gateway Error</ShortMessage>
-             <LongMessage>{mc.getProperty("ERROR_MESSAGE")}</LongMessage>
-             <ErrorCode>500</ErrorCode>
-             <SeverityCode>Error</SeverityCode>
-             <ErrorClassification>RequestError</ErrorClassification>
-            </Errors>
-            <ServiceName>{mc.getProperty("SERVICENAME")}</ServiceName>
-            <ResponseCode>{mc.getProperty("HTTP_SC")}</ResponseCode>
-            <ContentType>{mc.getProperty("Content-Type")}</ContentType>
-            <Version>1.5.1</Version>
-           </{mc.getProperty("SERVICENAME")}Response>
+             <body>{mc.getProperty("ERROR_MESSAGE")}</body>
         );
       ]]></script>
     <switch source="get-property('ERROR_CODE')">
-        <case regex="101504">   <!-- TIMEOUT ERROR -->
+        <case regex="101504">
             <property name="HTTP_SC" value="504" scope="axis2"/>
             <sequence key="seq_timeout"/>
         </case>
@@ -61,16 +47,20 @@
             <property name="HTTP_SC" value="503" scope="axis2"/>
             <sequence key="seq_endpoint_down"/>
         </case>
+        <case regex="404">
+            <property name="HTTP_SC" value="404" scope="axis2"/>
+        </case>
         <default>
             <property name="HTTP_SC" value="500" scope="axis2"/>
         </default>
     </switch>
+
     <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
     <header name="To" action="remove"/>
-    <property name="RESPONSE" value="true"/>
-    <property name="messageType" value="text/xml" scope="axis2"/>
-    <property name="ContentType" value="text/xml" scope="axis2"/>
+    <property name="RESPONSE" value="true" scope="default" type="STRING"/>
+    <property name="messageType" value="text/html" scope="axis2"/>
+    <property name="contentType" value="text/html" scope="axis2"/>
 
-    <send/>
+    <send />
 
 </sequence>

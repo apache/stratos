@@ -294,6 +294,8 @@ exec "$JAVACMD" \
         -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
         -Dcom.atomikos.icatch.hide_init_file_path=true \
         -Dorg.terracotta.quartz.skipUpdateCheck=true \
+        -Dthrift.receiver.ip=localhost \
+        -Dthrift.receiver.port=9446 \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 
