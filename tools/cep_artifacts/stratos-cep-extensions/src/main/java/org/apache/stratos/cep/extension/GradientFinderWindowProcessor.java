@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cep.extension.extension;
+package org.apache.stratos.cep.extension;
 
 import org.apache.log4j.Logger;
 import org.wso2.siddhi.core.config.SiddhiContext;
@@ -48,10 +48,10 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@SiddhiExtension(namespace = "stratos", function = "secondDerivative")
-public class SecondDerivativeFinderWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
+@SiddhiExtension(namespace = "stratos", function = "gradient")
+public class GradientFinderWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
 
-    static final Logger log = Logger.getLogger(SecondDerivativeFinderWindowProcessor.class);
+    static final Logger log = Logger.getLogger(GradientFinderWindowProcessor.class);
     private ScheduledExecutorService eventRemoverScheduler;
     private long timeToKeep;
     private int subjectedAttrIndex;
@@ -123,29 +123,12 @@ public class SecondDerivativeFinderWindowProcessor extends WindowProcessor imple
 								window.put(new RemoveEvent(inEvent, -1));
 							}
 							
-							// in order to find second derivative, we need at least 3 events.
-							if (newEventList.size() > 2) {
-
-								InEvent firstDerivative1 =
-								                           gradient(inEvents[0],
-								                                    inEvents[(newEventList.size() / 2) - 1],
-								                                    null)[0];
-								InEvent firstDerivative2 =
-								                           gradient(inEvents[newEventList.size() / 2],
-								                                    inEvents[newEventList.size() - 1],
-								                                    null)[0];
-								InEvent[] secondDerivative =
-								                             gradient(firstDerivative1,
-								                                      firstDerivative2, Type.DOUBLE);
-
-								for (InEvent inEvent : secondDerivative) {
-									window.put(new RemoveEvent(inEvent, -1));
-								}
-								nextProcessor.process(new InListEvent(secondDerivative));
-							} else {
-								log.debug("Insufficient events to calculate second derivative. We need at least 3 events. Current event count: " +
-								          newEventList.size());
-							}
+							InEvent[] gradientEvents = gradient(inEvents[0], inEvents[newEventList.size() - 1]);
+							
+							for (InEvent inEvent : gradientEvents) {
+	                            window.put(new RemoveEvent(inEvent, -1));
+                            }
+							nextProcessor.process(new InListEvent(gradientEvents));
 
 							newEventList.clear();
 						}
@@ -178,21 +161,20 @@ public class SecondDerivativeFinderWindowProcessor extends WindowProcessor imple
      * This function will calculate the linear gradient (per second) of the events received during
      * a specified time period.
      */
-	private InEvent[] gradient(InEvent firstInEvent, InEvent lastInEvent, Type type) {
-		Type attrType = type == null ? subjectedAttrType : type;
+	private InEvent[] gradient(InEvent firstInEvent, InEvent lastInEvent) {
 		double firstVal = 0.0, lastVal = 0.0;
 		// FIXME I'm not sure whether there's some other good way to do correct casting,
 		// based on the type.
-		if (Type.DOUBLE.equals(attrType)) {
+		if (Type.DOUBLE.equals(subjectedAttrType)) {
 			firstVal = (Double) firstInEvent.getData()[subjectedAttrIndex];
 			lastVal = (Double) lastInEvent.getData()[subjectedAttrIndex];
-		} else if (Type.INT.equals(attrType)) {
+		} else if (Type.INT.equals(subjectedAttrType)) {
 			firstVal = (Integer) firstInEvent.getData()[subjectedAttrIndex];
 			lastVal = (Integer) lastInEvent.getData()[subjectedAttrIndex];
-		} else if (Type.LONG.equals(attrType)) {
+		} else if (Type.LONG.equals(subjectedAttrType)) {
 			firstVal = (Long) firstInEvent.getData()[subjectedAttrIndex];
 			lastVal = (Long) lastInEvent.getData()[subjectedAttrIndex];
-		} else if (Type.FLOAT.equals(attrType)) {
+		} else if (Type.FLOAT.equals(subjectedAttrType)) {
 			firstVal = (Float) firstInEvent.getData()[subjectedAttrIndex];
 			lastVal = (Float) lastInEvent.getData()[subjectedAttrIndex];
 		}
@@ -209,7 +191,7 @@ public class SecondDerivativeFinderWindowProcessor extends WindowProcessor imple
 		Object[] data = firstInEvent.getData().clone();
 		data[subjectedAttrIndex] = gradient;
 		InEvent gradientEvent =
-		                        new InEvent(firstInEvent.getStreamId(), t1+((t2-t1)/2),
+		                        new InEvent(firstInEvent.getStreamId(), (t1+t2)/2,
 		                                    data);
 		InEvent[] output = new InEvent[1];
 		output[0] = gradientEvent;
