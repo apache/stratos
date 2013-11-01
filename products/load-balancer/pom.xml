@@ -29,17 +29,16 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.stratos.elb</groupId>
-    <artifactId>elb-parent</artifactId>
+    <groupId>org.apache.stratos.load.balancer</groupId>
+    <artifactId>load-balancer-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - ELB - Aggregator Module</name>
+    <name>Apache Stratos - Load Balancer</name>
     <url>http://apache.org</url>
-    <description>Apache Stratos Elastic Load Balancer (ELB)</description>
+    <description>Apache Stratos Load Balancer</description>
 
     <modules>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
-        <!--<module>modules/integration</module>-->
     </modules>
 
     <pluginRepositories>

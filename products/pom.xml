@@ -37,7 +37,7 @@
     <modules>
         <module>autoscaler</module>
         <module>cloud-controller</module>
-        <module>elb</module>
+        <module>load-balancer</module>
         <module>stratos-cli</module>
         <module>stratos-controller</module>
         <module>cartridge-agent</module>

@@ -25,7 +25,7 @@
     <fileSets>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
-            <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/conf/axis2/axis2.xml</exclude>
@@ -65,7 +65,7 @@
         <!-- Copying p2 profile and osgi bundles-->
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/components</directory>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/components</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components</outputDirectory>
             <excludes>
                 <exclude>**/eclipse.ini</exclude>
                 <exclude>**/*.lock</exclude>
@@ -85,20 +85,20 @@
         </fileSet>
         <fileSet>
             <directory>src/main/conf/synapse-configs</directory>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/deployment/server/synapse-configs
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/synapse-configs
             </outputDirectory>
         </fileSet>
         <fileSet>
             <directory>src/main/cartridges</directory>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/deployment/server/cartridges</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/cartridges</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>src/main/services</directory>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/deployment/server/services</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/services</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/</directory>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/etc</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
             <includes>
                 <include>*.xsd</include>
             </includes>
@@ -108,13 +108,13 @@
     <dependencySets>
         <!-- use the new tool to create a bundles -->
         <dependencySet>
-            <outputDirectory>apache-stratos-elb-${pom.version}/lib/core/WEB-INF/lib</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/lib/core/WEB-INF/lib</outputDirectory>
             <includes>
                 <include>org.wso2.carbon:org.wso2.carbon.mediator.bridge:jar</include>
             </includes>
         </dependencySet>
         <!--dependencySet>
-            <outputDirectory>apache-stratos-elb-${pom.version}/samples/axis2Client/client_repo/modules
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/samples/axis2Client/client_repo/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.axis2:addressing:mar</include>
@@ -125,7 +125,7 @@
             </outputFileNameMapping>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>apache-stratos-elb-${pom.version}/samples/axis2Server/repository/modules
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/samples/axis2Server/repository/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.axis2:addressing:mar</include>
@@ -136,7 +136,7 @@
             </outputFileNameMapping>
         </dependencySet-->
         <dependencySet>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/axis2/client/lib</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/axis2/client/lib</outputDirectory>
             <includes>
                 <include>bouncycastle:bcprov-jdk15:jar</include>
             </includes>
@@ -144,7 +144,7 @@
             </outputFileNameMapping>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/deployment/client/modules
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/client/modules
             </outputDirectory>
             <includes>
                 <include>org.apache.rampart:rampart:mar</include>
@@ -152,7 +152,7 @@
         </dependencySet>
         <!-- MB Client libs -->
         <dependencySet>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/components/dropins</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/dropins</outputDirectory>
             <includes>
                 <include>org.wso2.andes.wso2:andes-client:jar</include>
                 <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
@@ -165,14 +165,14 @@
     <files>
         <file>
             <source>src/main/bin/stratos.sh</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/bin</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/bin</outputDirectory>
             <destName>stratos.sh</destName>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/bin/stratos.bat</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/bin</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/bin</outputDirectory>
             <destName>stratos.bat</destName>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
@@ -181,125 +181,125 @@
             <source>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/event-broker.xml
             </source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/zoo.cfg</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/etc</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/coordination-client-config.xml</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/etc</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
         </file>
         <file>
             <source>src/main/conf/user-mgt.xml</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>user-mgt.xml</destName>
         </file>
         <file>
             <source>src/main/conf/embedded-ldap.xml</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>embedded-ldap.xml</destName>
         </file>
         <file>
             <source>src/main/conf/axis2.xml</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/axis2</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/axis2</outputDirectory>
             <destName>axis2.xml</destName>
         </file>
 	      <file>
             <source>src/main/conf/loadbalancer.conf</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>loadbalancer.conf</destName>
         </file>
         <file>
             <source>src/main/conf/jndi.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>jndi.properties</destName>
         </file>
         <file>
             <source>src/main/conf/log4j.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>log4j.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/conf/synapse.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>synapse.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/conf/cipher-text.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/lib</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/lib</outputDirectory>
             <destName>cipher-text.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/conf/nhttp.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>nhttp.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/conf/passthru-http.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>passthru-http.properties</destName>
             <filtered>true</filtered>
         </file>
         <file>
             <source>src/main/conf/datasources.properties</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>datasources.properties</destName>
             <filtered>true</filtered>
         </file>
                                                                 
         <file>
             <source>src/main/license/LICENSE</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>src/main/notice/NOTICE</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../README.txt</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>../../INSTALL.txt</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <!--file>
             <source>target/wso2carbon-core-${carbon.patch.version}/bin/README.txt</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file-->
         <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/bin/version.txt</source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <!--file>
             <source>target/wso2carbon-core-${carbon.patch.version}/bin/stratos.bat
             </source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
         </file-->
         <file>
             <source>
                 target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml
             </source>
-            <outputDirectory>apache-stratos-elb-${pom.version}/repository/conf/</outputDirectory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
     </files>
