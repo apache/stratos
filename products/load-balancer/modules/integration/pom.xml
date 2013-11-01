@@ -23,15 +23,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>org.apache.stratos.elb</groupId>
-        <artifactId>elb-parent</artifactId>
+        <groupId>org.apache.stratos.load.balancer</groupId>
+        <artifactId>load-balancer-parent</artifactId>
         <version>2.0.5</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>integration</artifactId>
-    <name>Apache Stratos - ELB - Integration Tests</name>
+    <name>Apache Stratos - Load Balancer - Integration Tests</name>
     <packaging>jar</packaging>
 
     <build>
@@ -60,11 +60,11 @@
                     <systemProperties>
                         <maven.test.haltafterfailure>false</maven.test.haltafterfailure>
                         <carbon.zip>
-                            ${basedir}/../distribution/target/apache-stratos-elb-${project.version}.zip
+                            ${basedir}/../distribution/target/apache-stratos-load-balancer-${project.version}.zip
                         </carbon.zip>
                         <sec.verifier.dir>${basedir}/target/security-verifier/</sec.verifier.dir>
                         <samples.dir>${basedir}/../samples/product</samples.dir>
-                        <extracted.dir>apache-stratos-elb-${project.version}</extracted.dir>
+                        <extracted.dir>apache-stratos-load-balancer-${project.version}</extracted.dir>
                         <emma.home>${basedir}/target/emma</emma.home>
                     </systemProperties>
                     <workingDirectory>${basedir}/target</workingDirectory>

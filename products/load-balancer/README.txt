@@ -1,22 +1,22 @@
 ================================================================================
-                        Apache Stratos Elastic Load Balancer 2.0.5
+                        Apache Stratos Load Balancer 2.0.5
 ================================================================================
 
-Welcome to the Apache Stratos Elastic Load Balancer 2.0.5 release
+Welcome to the Apache Stratos Load Balancer 2.0.5 release
 
-Apache Stratos ELB is a lightweight and easy-to-use Open Source Elastic Load Balancer
-(ELB) available under the Apache Software License v2.0. Apache Stratos ELB allows
+Apache Stratos LB is a lightweight and easy-to-use Open Source Load Balancer
+(LB) available under the Apache Software License v2.0. Apache Stratos LB allows
 administrators to simply configure message load balancing, failover routing,
 and auto scaling. The runtime has been designed to be completely
 asynchronous, non-blocking and streaming based on the Apache Synapse core.
 
 This is based on the revolutionary WSO2 Carbon [Middleware a' la carte]
 framework. All the major features have been developed as pluggable Carbon
-components. Apache Stratos Elastic Load Balancer is a compact version doing the load balancing
+components. Apache Stratos Load Balancer is a compact version doing the load balancing
 features of WSO2 Enterprise Service Bus.
 
 
-Key Features of Apache Stratos ELB
+Key Features of Apache Stratos LB
 ======================================
 
 1. Non-blocking HTTP/S transports based on Apache HttpCore for ultra fast
@@ -47,7 +47,7 @@ Installation & Running
 2. Run the stratos.sh or stratos.bat as appropriate
 3. Configure the load balancer to manage the load across the instants to be balanced.
 
-Apache Stratos ELB 2.0.5 distribution directory structure
+Apache Stratos LB 2.0.5 distribution directory structure
 =============================================================
 
     CARBON_HOME
@@ -68,11 +68,11 @@ Apache Stratos ELB 2.0.5 distribution directory structure
     Contains all the database scripts
 
     - lib
-	  Contains the basic set of libraries required to startup ELB
+	  Contains the basic set of libraries required to startup LB
 	  in standalone mode
 
     - repository
-	  The repository where services and modules deployed in Apache Stratos ELB
+	  The repository where services and modules deployed in Apache Stratos LB
 	  are stored. In addition to this, the components directory inside the
 	  repository directory contains the carbon runtime and the user added
 	  jar files including mediators, third party libraries etc. All
@@ -85,16 +85,16 @@ Apache Stratos ELB 2.0.5 distribution directory structure
 
     - LICENSE.txt
 	  Apache License 2.0 and the relevant other licenses under which
-	  Apache Stratos ELB is distributed.
+	  Apache Stratos LB is distributed.
 
     - README.txt
 	  This document.
 
     - INSTALL.txt
-      This document will contain information on installing Apache Stratos ELB
+      This document will contain information on installing Apache Stratos LB
 
     - release-notes.html
-	  Release information for Apache Stratos ELB 2.0.5
+	  Release information for Apache Stratos LB 2.0.5
 
 
 Support

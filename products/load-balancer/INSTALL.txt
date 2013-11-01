@@ -1,7 +1,7 @@
-Installing Apache Stratos Elastic Load Balancer (ELB) 2.0.5
+Installing Apache Stratos Load Balancer (LB) 2.0.5
 ==================================================
 
-Apache Stratos ELB 2.0.5 can be run as a light-weight software load balancer in
+Apache Stratos LB 2.0.5 can be run as a light-weight software load balancer in
 stand-alone mode, that can be configured to balance the load across the services nodes.
 
 Standalone Mode
@@ -11,21 +11,21 @@ Standalone Mode
 
 2. All the shell scripts and .bat files are available in CARBON_HOME/bin folder.
 
-3. To start ELB one can use either stratos.sh in all Unix
+3. To start LB one can use either stratos.sh in all Unix
    systems & stratos.bat file on Windows operating systems.
 
-4. Either of the following commands can be used to start ELB
+4. Either of the following commands can be used to start LB
       i)  ./stratos.sh {console|start|stop|restart|version}
      ii)  stratos.bat {start|stop|version}
 
         Usage: stratos.sh [command] [options] [system-properties]
 
             command:
-                --start		    Start ELB as a Unix daemon in the background
-                --console	    Start ELB as a Unix daemon in the foreground
-                --stop		    Stop the ELB Unix daemon
-                --restart	    Restart the ELB Unix daemon
-                --version	    What version of the ELB server are you running
+                --start		    Start LB as a Unix daemon in the background
+                --console	    Start LB as a Unix daemon in the foreground
+                --stop		    Stop the LB Unix daemon
+                --restart	    Restart the LB Unix daemon
+                --version	    What version of the LB server are you running
             options:
                 --debug <port> 	Start the server in remote debugging mode.
                                 port: The remote debugging port.

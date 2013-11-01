@@ -22,16 +22,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.apache.stratos.elb</groupId>
-        <artifactId>elb-parent</artifactId>
+        <groupId>org.apache.stratos.load.balancer</groupId>
+        <artifactId>load-balancer-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>apache-stratos-elb-p2-profile-gen</artifactId>
+    <artifactId>apache-stratos-load-balancer-p2-profile-gen</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - ELB - P2 Profile Generation</name>
+    <name>Apache Stratos - Load Balancer - P2 Profile Generation</name>
     <url>http://www.apache.org</url>
 
     <build>
