@@ -19,11 +19,13 @@
 
 package org.apache.stratos.common.beans;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 
 /**
  * Bean class for Tenant Information
  */
+@XmlRootElement
 public class TenantInfoBean {
 
     private String admin; //admin's user name

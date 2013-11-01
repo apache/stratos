@@ -194,6 +194,9 @@
 				<featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.cartridge.mgt.ui.feature:${project.version}
                                 </featureArtifactDef>
+				<featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.rest.endpoint.feature:${project.version}
+                                </featureArtifactDef>
 				 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.server.feature:${wso2carbon.version}
                                 </featureArtifactDef>
@@ -378,6 +381,10 @@
                                 </feature>
 				<feature>
                                     <id>org.apache.stratos.cartridge.mgt.ui.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+				<feature>
+                                    <id>org.apache.stratos.rest.endpoint.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
 				 <feature>
