@@ -180,8 +180,8 @@
                 <include>org.apache.rampart:rampart:mar</include>
             </includes>
         </dependencySet>
-	<dependencySet>
-            <outputDirectory>apache-stratos-autoscaler-${pom.version}/client-lib</outputDirectory>
+	    <dependencySet>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/components/dropins</outputDirectory>
             <includes>
                 <include>org.wso2.andes.wso2:andes-client:jar</include>
                 <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
