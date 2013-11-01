@@ -34,7 +34,7 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>modules/cartridge-agent-event-publisher</module>
+        <module>modules/event-publisher</module>
     </modules>
 </project>
 

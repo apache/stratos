@@ -30,8 +30,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>cartridge-agent-event-publisher</artifactId>
-    <name>Apache Stratos - Cartridge Agent Event Publisher</name>
+    <artifactId>apache-stratos-event-publisher</artifactId>
+    <name>Apache Stratos - Event Publisher</name>
 
     <repositories>
         <repository>
