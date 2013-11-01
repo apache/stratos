@@ -37,22 +37,25 @@ public class ClusterContext {
     private float requestsInFlightSecondDerivative;
 
     private float requestsInFlightGradient;
+    
+    private int memberCount;
 
     //This map will keep number of instance count against partitionId
-    private Map<String, Integer> partitionCountMap;
+//    TODO private Map<String, Integer> partitionCountMap;
 
     private int currentPartitionIndex;
 
     private Properties properties;
 
-    private Map<String, MemberContext> memberStatMap;
+    private Map<String, MemberContext> memberContextMap;
 
     public ClusterContext(String clusterId, String serviceId) {
 
         this.clusterId = clusterId;
         this.serviceId = serviceId;
-        memberStatMap = new HashMap<String, MemberContext>();
-        partitionCountMap = new HashMap<String, Integer>();
+        memberContextMap = new HashMap<String, MemberContext>();
+        //TODO partitionCountMap = new HashMap<String, Integer>();
+        memberCount = 0;
     }
 
     public String getClusterId() {
@@ -105,7 +108,7 @@ public class ClusterContext {
      */
     public void addMemberContext(MemberContext memberContext) {
 
-        memberStatMap.put(memberContext.getMemberId(), memberContext);
+        memberContextMap.put(memberContext.getMemberId(), memberContext);
     }
 
     /**
@@ -114,40 +117,49 @@ public class ClusterContext {
      */
     public void removeMemberContext(String memberId){
 
-        memberStatMap.remove(memberId);
+        memberContextMap.remove(memberId);
     }
 
-    public void increaseMemberCountInPartition(String partitionId, int count){
+    public void increaseMemberCount(int count){
+        memberCount += count;
 
-        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) + count);
+    }
+    public void decreaseMemberCount(){
+        memberCount --;
+
     }
 
-    public void decreaseMemberCountInPartition(String partitionId, int count){
+//   TODO public void increaseMemberCountInPartition(String partitionId, int count){
+//
+//        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) + count);
+//    }
+//
+//    public void decreaseMemberCountInPartition(String partitionId, int count){
+//
+//        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
+//    }
+//
+//    public void addPartitionCount(String partitionId, int count){
+//
+//        partitionCountMap.put(partitionId, count);
+//    }
+//
+//    public void removePartitionCount(String partitionId){
+//
+//        partitionCountMap.remove(partitionId);
+//    }
+//
+//    public boolean partitionCountExists(String partitionId){
+//        return partitionCountMap.containsKey(partitionId);
+//    }
+//
+//    public int getPartitionCount(String partitionId){
+//        return partitionCountMap.get(partitionId);
+//    }
 
-        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
-    }
+    public void setMemberContextMap(Map<String, MemberContext> memberContextMap) {
 
-    public void addPartitionCount(String partitionId, int count){
-
-        partitionCountMap.put(partitionId, count);
-    }
-
-    public void removePartitionCount(String partitionId){
-
-        partitionCountMap.remove(partitionId);
-    }
-
-    public boolean partitionCountExists(String partitionId){
-        return partitionCountMap.containsKey(partitionId);
-    }
-
-    public int getPartitionCount(String partitionId){
-        return partitionCountMap.get(partitionId);
-    }
-
-    public void setMemberStatMap(Map<String, MemberContext> memberStatMap) {
-
-        this.memberStatMap = memberStatMap;
+        this.memberContextMap = memberContextMap;
     }
 
     public String getServiceId() {
@@ -160,5 +172,13 @@ public class ClusterContext {
 
     public void setCurrentPartitionIndex(int currentPartitionIndex) {
         this.currentPartitionIndex = currentPartitionIndex;
+    }
+
+    public int getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(int memberCount) {
+        this.memberCount = memberCount;
     }
 }

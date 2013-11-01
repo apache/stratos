@@ -2,6 +2,7 @@ package org.apache.stratos.autoscaler.message.receiver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
 import org.apache.stratos.autoscaler.message.receiver.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -58,7 +59,7 @@ public class TopologyManager {
         }
 
         TopicSubscriber healthStatTopicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
-        healthStatTopicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+        healthStatTopicSubscriber.setMessageListener(new HealthEventMessageReceiver());
         Thread healthStatTopicSubscriberThread = new Thread(healthStatTopicSubscriber);
         healthStatTopicSubscriberThread.start();
 

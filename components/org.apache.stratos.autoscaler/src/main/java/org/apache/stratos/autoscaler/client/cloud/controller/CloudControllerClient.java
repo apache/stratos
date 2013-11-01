@@ -50,20 +50,25 @@ public class CloudControllerClient {
     public void spawnInstances(Partition partition, String clusterId, int memberCountToBeIncreased) throws SpawningException {
         //call CC spawnInstances method
 
+        log.info("Calling CC for spawning instances in cluster " + clusterId);
         LocationScope locationScope = new LocationScope();
         locationScope.setCloud(partition.getIaas());
         locationScope.setRegion(partition.getZone());
 
         try {
-            stub.startInstances(clusterId, locationScope, memberCountToBeIncreased);
+            for(int i =0; i< memberCountToBeIncreased; i++){
+                stub.startInstance(clusterId, locationScope);
+            }
         } catch (RemoteException e) {
-            throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
+            log.error("Error occurred in cloud controller side while spawning instance");
+//            throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
         }
     }
 
     public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
         //call CC spawnInstances method
-                           
+
+        log.info("Calling CC for spawning an instance in cluster " + clusterId);
         LocationScope locationScope = new LocationScope();
         locationScope.setCloud(partition.getIaas());
         locationScope.setRegion(partition.getZone());
@@ -71,14 +76,16 @@ public class CloudControllerClient {
         try {
             stub.startInstance(clusterId, locationScope);
         } catch (RemoteException e) {
-            throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
+
+            log.error("Error occurred in cloud controller side while spawning instance");
+//            throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
         }
     }
 
     public void terminate(Partition partition, String clusterId) throws TerminationException {
         //call CC terminate method
 
-
+        log.info("Calling CC for terminating an instance in cluster " + clusterId);
         LocationScope locationScope = new LocationScope();
         locationScope.setCloud(partition.getIaas());
         locationScope.setRegion(partition.getZone());
@@ -86,19 +93,12 @@ public class CloudControllerClient {
         try {
             stub.terminateInstance(clusterId, locationScope);
         } catch (RemoteException e) {
-            throw new TerminationException("Error occurred in cloud controller side while terminating instance", e );
+
+            log.error("Error occurred in cloud controller side while terminating instance");
+//            throw new TerminationException("Error occurred in cloud controller side while terminating instance", e );
         }
     }
 
-	public void terminateAll(String clusterId) throws TerminationException {
-
-        try {
-            stub.terminateAllInstances(clusterId);
-        } catch (RemoteException e) {
-            throw new TerminationException("Error occurred in cloud controller side while terminating instances", e );
-        }
-		
-	}
 
 
 }

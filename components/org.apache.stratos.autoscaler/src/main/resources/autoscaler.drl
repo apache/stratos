@@ -46,126 +46,144 @@ global org.apache.stratos.messaging.domain.topology.Topology $topology;
 
 rule "Minimum Rule"
 dialect "mvel"
+
 	when
-	$service : Service ()
-	m : Cluster () from  $service.getClusters()
-	$policy : AutoscalePolicy(id == m.autoscalePolicyName ) from $manager.getPolicyList()
-	$partition : Partition () from $policy.getHAPolicy().getPartitions()
+        $service : Service ()
+        cluster : Cluster () from  $service.getClusters()
+        $policy : AutoscalePolicy(id == cluster.autoscalePolicyName ) from $manager.getPolicyList()
+        $partition : Partition () from $policy.getHAPolicy().getPartitions()
+
 	then
-	String clusterId = m.getClusterId();
-	ClusterContext clusterContext = $context.getClusterContext(m.getClusterId());
-	if(null==clusterContext){
+        String clusterId = cluster.getClusterId();
 
-     	clusterContext = new ClusterContext(m.getClusterId(), m.getServiceName()) ;
-        AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(m.getAutoscalePolicyName());
-         
-         for(Partition partition: $policy.getHAPolicy().getPartitions()){
-                clusterContext.addPartitionCount(partition.getId(), 0);
-         }
-         $context.addClusterContext(clusterContext);
-	}
-	
-	int currentMemberCount = clusterContext.getPartitionCount($partition.getId());
-    int partitionMin = $partition.getPartitionMin();
-	
-	if(currentMemberCount < partitionMin) {
+        ClusterContext clusterContext = $context.getClusterContext(clusterId);
 
-        int memberCountToBeIncreased = partitionMin - currentMemberCount;
-        if($evaluator.delegateSpawn($partition,clusterId, memberCountToBeIncreased)){
-        	$context.getClusterContext(m.getClusterId()).increaseMemberCountInPartition($partition.getId(), memberCountToBeIncreased);
+        if(null==clusterContext){
+
+            //get values from policy
+            LoadThresholds loadThresholds = $policy.getLoadThresholds();
+            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+            float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
+
+            clusterContext = new ClusterContext(clusterId, cluster.getServiceName()) ;
+
+            clusterContext.setRequestsInFlightGradient(gradientLimit);
+            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+            clusterContext.setAverageRequestsInFlight(averageLimit);
+
+            AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(cluster.getAutoscalePolicyName());
+
+             //for(Partition partition: $policy.getHAPolicy().getPartitions()){
+             //       clusterContext.addPartitionCount(partition.getId(), 0);
+             //}
+             $context.addClusterContext(clusterContext);
         }
- 
-	}
-	
+
+        //int currentMemberCount = clusterContext.getPartitionCount($partition.getId());
+        int currentMemberCount = clusterContext.getMemberCount();
+        int partitionMin = $partition.getPartitionMembersMin();
+
+        if(currentMemberCount < partitionMin) {
+
+            int memberCountToBeIncreased = partitionMin - currentMemberCount;
+            if($evaluator.delegateSpawn($partition,clusterId, memberCountToBeIncreased)){
+            }
+
+        }
+
 
 end
 
 rule "Autoscaler Rule"
-dialect "mvel"
+    dialect "mvel"
 	when
-	$service : Service ()
-	m : Cluster () from  $service.getClusters()
-	$policy : AutoscalePolicy(id == m.autoscalePolicyName ) from $manager.getPolicyList()
+        $service : Service ()
+        cluster : Cluster () from  $service.getClusters()
+        $policy : AutoscalePolicy(id == cluster.autoscalePolicyName ) from $manager.getPolicyList()
+
 	then
-	/*
-	String clusterId = m.getClusterId();
-		
-		ClusterContext clusterContext = $context.getClusterContext(clusterId);
-		
-		if(null==clusterContext){
 
-     	ClusterContext cC = new ClusterContext(m.getClusterId(), m.getServiceName()) ;
-        AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(m.getAutoscalePolicyName());
-         
-         for(Partition partition: $policy.getHAPolicy().getPartitions()){
-                cC.addPartitionCount(partition.getId(), 0);
-         }
-         $context.addClusterContext(cC);
+	    String clusterId = cluster.getClusterId();
 
-	}
-
-        float lbStatAverage = clusterContext.getAverageRequestsInFlight();
-        float lbStatGradient = clusterContext.getRequestsInFlightGradient();
-        float lbStatSecondDerivative = clusterContext.getRequestsInFlightSecondDerivative();
-
-        LoadThresholds loadThresholds = $manager.getPolicy(m.autoscalePolicyName).getLoadThresholds();
+        LoadThresholds loadThresholds = $policy.getLoadThresholds();
         float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
         float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
         float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
 
-        String partitionAlgorithm = $manager.getPolicy(m.autoscalePolicyName).getHAPolicy().getPartitionAlgo();
+		ClusterContext clusterContext = $context.getClusterContext(clusterId);
 
-        AutoscaleAlgorithm autoscaleAlgorithm = null;
-        if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
+		if(null==clusterContext){
 
-            autoscaleAlgorithm = new RoundRobin();
-        } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
+     	    clusterContext = new ClusterContext(cluster.getClusterId(), cluster.getServiceName()) ;
 
-            autoscaleAlgorithm = new OneAfterAnother();
+
+            clusterContext.setRequestsInFlightGradient(gradientLimit);
+            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+            clusterContext.setAverageRequestsInFlight(averageLimit);
+
+            //for(Partition partition: $policy.getHAPolicy().getPartitions()){
+            //    clusterContext.addPartitionCount(partition.getId(), 0);
+            //}
+            $context.addClusterContext(clusterContext);
+
         }
 
-        if(lbStatAverage > averageLimit && lbStatGradient > gradientLimit){
+        //get current stats from cluster context
+        float lbStatAverage = clusterContext.getAverageRequestsInFlight();
+        float lbStatGradient = clusterContext.getRequestsInFlightGradient();
+        float lbStatSecondDerivative = clusterContext.getRequestsInFlightSecondDerivative();
+
+        //get values from policy
+        LoadThresholds loadThresholds = $manager.getPolicy(cluster.autoscalePolicyName).getLoadThresholds();
+        float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+        float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+        float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative()
+        //String partitionAlgorithm = $manager.getPolicy(cluster.autoscalePolicyName).getHAPolicy().getPartitionAlgo();
+
+
+        //AutoscaleAlgorithm autoscaleAlgorithm = null;
+        //if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
+
+        //    autoscaleAlgorithm = new RoundRobin();
+        //} else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
+
+        //    autoscaleAlgorithm = new OneAfterAnother();
+        //}
+
+            float scaleDownSlowerMarginOfGradient = 1.0;     //TODO get from config
+            float scaleDownSlowerMarginOfSecondDerivative = 0.2;  //TODO get from config
+
+        Partition partition = $policy.getHAPolicy().getPartitions().get(0);
+
+        if(lbStatAverage > averageLimit && lbStatGradient > gradientLimit && lbStatSecondDerivative > secondDerivative){
 
             int i = 0;
-            Partition partition = autoscaleAlgorithm.getNextScaleUpPartition(clusterId);
+            //TODO Partition partition = autoscaleAlgorithm.getScaleUpPartition(clusterId);
 
-            if(lbStatSecondDerivative > secondDerivative){
-                int numberOfInstancesToBeSpawned = 2; // take from a config
+            if(partition != null){
 
-                $evaluator.delegateSpawn(partition,clusterId, numberOfInstancesToBeSpawned);
-                //spawnInstances Two
+                    $evaluator.delegateSpawn(partition,clusterId);
 
-            } else {
-            	int numberOfInstancesToBeSpawned = 1;
-               	$evaluator.delegateSpawn(partition,clusterId, numberOfInstancesToBeSpawned);
-                //spawnInstances one
+                    clusterContext.setRequestsInFlightGradient(gradientLimit);
+                    clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+                    clusterContext.setAverageRequestsInFlight(averageLimit);
+                    //spawnInstances One
+
             }
-        } else if(lbStatAverage < averageLimit && lbStatGradient < gradientLimit){
+        } else if(lbStatAverage < averageLimit  && lbStatGradient < gradientLimit - scaleDownSlowerMarginOfSecondDerivative
+            && lbStatSecondDerivative < secondDerivative - scaleDownSlowerMarginOfSecondDerivative){
 
             //terminate one
-            Partition partition = autoscaleAlgorithm.getNextScaleDownPartition(clusterId);
-            $evaluator.delegateTerminate(partition,clusterId);
+            //TODO Partition partition = autoscaleAlgorithm.getScaleDownPartition(clusterId);
+            if(partition != null){
+                $evaluator.delegateTerminate(partition,clusterId);
 
+                clusterContext.setRequestsInFlightGradient(gradientLimit);
+                clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+                clusterContext.setAverageRequestsInFlight(averageLimit);
+            }
         }
-		*/
-end
 
-
-rule "TerminateAll Rule"
-dialect "mvel"
-	when
-	clusterId : String() from $context.getClusterContexes().keySet()
-	then
-        	boolean clusterAvailable = false;
-        	for (Service service : $topology.getServices()){
-        		if(service.clusterExists(clusterId)){
-        			clusterAvailable = true;
-        		}
-        	}
-        	if(!clusterAvailable){
-        		if($evaluator.delegateTerminateAll(clusterId)){
-        			$context.removeClusterContext(clusterId);
-        		}
-        	}
 
 end

@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -34,7 +35,12 @@ public class TopologyEventMessageReceiver implements MessageListener {
     public void onMessage(Message message) {
         if (message instanceof TextMessage) {
             TextMessage receivedMessage = (TextMessage) message;
-            log.info(receivedMessage);
+            String header = null;
+            try {
+                header = receivedMessage.getStringProperty(Constants.EVENT_CLASS_NAME);
+            } catch (JMSException e) {
+                log.info(e.getMessage());
+            }
             try {
                 if (log.isDebugEnabled()) {
                     log.debug("Message received: " + ((TextMessage) message).getText());

@@ -19,14 +19,16 @@
 
 package org.apache.stratos.autoscaler.rule;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
-import org.apache.stratos.messaging.domain.topology.Service;
 
 /**
  * This class is responsible for scheduling the task of evaluating the current details of topology, statistics, and health
@@ -41,6 +43,19 @@ public class ExecutorTaskScheduler {
 
 				try {
 					for (Service service : TopologyManager.getTopology().getServices()) {
+
+                        //Remove cluster context if its already removed from Topology
+                        for(String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()){
+                            boolean clusterAvailable = false;
+                            for (Cluster cluster: service.getClusters()) {
+                                if(cluster.getClusterId().equals(clusterContextId)){
+                                    clusterAvailable = true;
+                                }
+                            }
+                            if(!clusterAvailable){
+                                AutoscalerContext.getInstance().removeClusterContext(clusterContextId);
+                            }
+                        }
 						AutoscalerRuleEvaluator.getInstance().evaluate(service);
 					}
 

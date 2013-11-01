@@ -29,12 +29,15 @@ public class Partition {
 	private String id;
 	private String iaas;
 	private String zone;
+    private boolean maxReached;
+    private boolean minReached;
+
 
     /**
      * Gets the value of the partitionMax property.
      * 
      */
-    public int getPartitionMax() {
+    public int getPartitionMembersMax() {
         return partitionMax;
     }
 
@@ -50,7 +53,7 @@ public class Partition {
      * Gets the value of the partitionMin property.
      * 
      */
-    public int getPartitionMin() {
+    public int getPartitionMembersMin() {
         return partitionMin;
     }
 

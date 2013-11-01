@@ -18,15 +18,22 @@
  */
 package org.apache.stratos.autoscaler.message.receiver.health;
 
+import com.google.gson.stream.JsonReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.event.processor.AverageRequestInFlightEventProcessor;
-import org.apache.stratos.autoscaler.event.processor.GradientOfRequestInFlightEventProcessor;
-import org.apache.stratos.autoscaler.event.processor.SecondDerivativeOfRequestInFlightEventProcessor;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterContext;
+import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
 
 import javax.jms.TextMessage;
+import java.io.BufferedReader;
+import java.io.StringReader;
 
 
 /**
@@ -35,45 +42,111 @@ import javax.jms.TextMessage;
 public class HealthEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(HealthEventMessageDelegator.class);
-
+    private String eventName;
+    private float value;
+    private String clusterId;
+    
     @Override
     public void run() {
 		log.info("Health stat event message processor started");
-
-        // instantiate all the relevant processors
-        AverageRequestInFlightEventProcessor processor1 = new AverageRequestInFlightEventProcessor();
-        GradientOfRequestInFlightEventProcessor processor2 = new GradientOfRequestInFlightEventProcessor();
-        SecondDerivativeOfRequestInFlightEventProcessor processor3 = new SecondDerivativeOfRequestInFlightEventProcessor();
-
-        // link all the relevant processors in the required order
-        processor1.setNext(processor2);
-        processor2.setNext(processor3);
 
         while (true) {
 			try {
 				TextMessage message = HealthEventQueue.getInstance().take();
 
-				// retrieve the header
-				String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
-				// retrieve the actual message
-				String json = message.getText();
+				String messageText = message.getText();
+				messageText = messageText.substring(messageText.indexOf('>') +1, messageText.lastIndexOf('<'));
 
-				if (log.isDebugEnabled()) {
-					log.debug(String.format("Event message received from queue: %s", type));
-				}
+                setEventValues(messageText);
 
-				try {
-					TopologyManager.acquireWriteLock();
-					processor1.process(type, json);
-				} finally {
-					TopologyManager.releaseWriteLock();
-				}
+                log.info(clusterId);
+                log.info(value);
+                log.info(eventName);
+                for (Service service :  TopologyManager.getTopology().getServices()){
+
+                    if(service.clusterExists(clusterId)){
+
+                        if(!AutoscalerContext.getInstance().clusterExists(clusterId)){
+
+                            Cluster cluster = service.getCluster(clusterId);
+                            AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getPolicy(cluster.getAutoscalePolicyName());
+
+                            ClusterContext clusterContext = new ClusterContext(clusterId, service.getServiceName());
+
+                            LoadThresholds loadThresholds = autoscalePolicy.getLoadThresholds();
+                            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+                            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+                            float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
+
+                            clusterContext.setAverageRequestsInFlight(averageLimit);
+                            clusterContext.setRequestsInFlightGradient(gradientLimit);
+                            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+
+                            AutoscalerContext.getInstance().addClusterContext(clusterContext);
+                        }
+                        break;
+                    }
+                }
+                if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){
+                    AutoscalerContext.getInstance().getClusterContext(clusterId).setAverageRequestsInFlight(value);
+
+                }  else if(Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(eventName)){
+                    AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightGradient(value);
+
+                }  else if(Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(eventName)){
+                    AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightSecondDerivative(value);
+
+                }
 
 			} catch (Exception e) {
-                String error = "Failed to retrieve the topology event message.";
-            	log.error(error, e);
-            	throw new RuntimeException(error, e);
+                String error = "Failed to retrieve the health stat event message.";
+            	log.error(error);
             }
         }
     }
+
+    public void setEventValues(String json) {
+
+        try {
+
+            BufferedReader bufferedReader = new BufferedReader(new StringReader(json));
+            JsonReader reader = new JsonReader(bufferedReader);
+            reader.beginObject();
+
+            if(reader.hasNext()) {
+
+                eventName = reader.nextName();
+                reader.beginObject();
+                if("cluster_id".equals(reader.nextName())) {
+                    
+                    if(reader.hasNext()){
+                        
+                        clusterId = reader.nextString();
+                    }
+                }
+                if(reader.hasNext()) {
+
+                    if ("value".equals(reader.nextName())) {
+
+                        if(reader.hasNext()){
+
+                            String stringValue = reader.nextString();
+                            try {
+
+                                value = Float.parseFloat(stringValue);
+                            } catch (NumberFormatException ex) {
+                            	log.error("Error while converting health stat message value to float", ex);
+                            }
+                        }
+                    }
+                }
+            }
+            reader.close();
+
+        } catch (Exception e) {
+            log.error( "Could not extract message header");
+//            throw new RuntimeException("Could not extract message header", e);
+        }
+    }
+    
 }

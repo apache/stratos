@@ -34,7 +34,6 @@ public class HealthEventMessageReceiver implements MessageListener {
     public void onMessage(Message message) {
         if (message instanceof TextMessage) {
             TextMessage receivedMessage = (TextMessage) message;
-            log.info(receivedMessage);
             try {
                 if (log.isDebugEnabled()) {
                     log.debug("Message received: " + ((TextMessage) message).getText());

@@ -44,6 +44,7 @@ public class AutoscalerRuleEvaluator {
 	
 	private static AutoscalerRuleEvaluator instance = null;
 	private static final String DRL_FILE_NAME = "autoscaler.drl";
+    //TODO move .drl file outside jar
 	
 	private KnowledgeBase kbase;
 	private StatefulKnowledgeSession ksession;
@@ -59,7 +60,6 @@ public class AutoscalerRuleEvaluator {
     
     public void evaluate(Service service){
         try {
-        	log.info("Evaluating rule for service " + service.getServiceName());
 
             ksession = kbase.newStatefulKnowledgeSession();
             ksession.setGlobal("$context", AutoscalerContext.getInstance());
@@ -77,20 +77,20 @@ public class AutoscalerRuleEvaluator {
 	public boolean delegateSpawn(Partition partition, String clusterId) {
 		CloudControllerClient cloudControllerClient = new CloudControllerClient();
 		try {
-			cloudControllerClient.spawnAnInstance(partition, clusterId);
+
+            Partition partition1 = PolicyManager.getInstance().getPolicy("economyPolicy").getHAPolicy().getPartitions().get(0);
+
+            log.info("partition1.getId()   "  + partition1.getId());
+            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
+            log.info("Current member count is " + currentMemberCount );
+
+            if(currentMemberCount < partition.getPartitionMembersMax())       {
+                AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(1);
+    			cloudControllerClient.spawnAnInstance(partition, clusterId);
+            }
+
 		} catch (Throwable e) {
 			log.error("Cannot spawn an instance", e);
-		}
-		return false;
-	}
-	
-	public boolean delegateTerminateAll(String clusterId) {
-		CloudControllerClient cloudControllerClient = new CloudControllerClient();
-		try {
-			cloudControllerClient.terminateAll(clusterId);
-			return true;
-		} catch (Throwable e) {
-			log.error("Cannot terminate instance", e);
 		}
 		return false;
 	}
@@ -98,7 +98,13 @@ public class AutoscalerRuleEvaluator {
 	public boolean delegateTerminate(Partition partition, String clusterId) {
 		CloudControllerClient cloudControllerClient = new CloudControllerClient();
 		try {
-			cloudControllerClient.terminate(partition, clusterId);
+
+            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
+            log.info("Current member count is " + currentMemberCount );
+            if(currentMemberCount > partition.getPartitionMembersMin())       {
+                AutoscalerContext.getInstance().getClusterContext(clusterId).decreaseMemberCount();
+                cloudControllerClient.terminate(partition, clusterId);
+            }
 			return true;
 		} catch (Throwable e) {
 			log.error("Cannot terminate instance", e);
@@ -109,7 +115,13 @@ public class AutoscalerRuleEvaluator {
 	public boolean delegateSpawn(Partition partition, String clusterId, int memberCountToBeIncreased) {
 		CloudControllerClient cloudControllerClient = new CloudControllerClient();
 		try {
-			cloudControllerClient.spawnAnInstance(partition, clusterId);
+            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
+            log.info("Current member count is " + currentMemberCount );
+
+            if(currentMemberCount < partition.getPartitionMembersMax()) {
+                AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(memberCountToBeIncreased);
+                cloudControllerClient.spawnInstances(partition, clusterId, memberCountToBeIncreased);
+            }
 			return true;
 		} catch (Throwable e) {
 			log.error("Cannot spawn an instance", e);
