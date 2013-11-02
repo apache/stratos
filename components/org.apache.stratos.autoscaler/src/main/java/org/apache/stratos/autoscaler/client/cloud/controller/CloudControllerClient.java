@@ -61,12 +61,10 @@ public class CloudControllerClient {
             }
         } catch (RemoteException e) {
             log.error("Error occurred in cloud controller side while spawning instance");
-//            throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
         }
     }
 
     public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
-        //call CC spawnInstances method
 
         log.info("Calling CC for spawning an instance in cluster " + clusterId);
         LocationScope locationScope = new LocationScope();
@@ -78,7 +76,7 @@ public class CloudControllerClient {
         } catch (RemoteException e) {
 
             log.error("Error occurred in cloud controller side while spawning instance");
-//            throw new SpawningException("Error occurred in cloud controller side while spawning instance", e );
+
         }
     }
 
@@ -95,7 +93,7 @@ public class CloudControllerClient {
         } catch (RemoteException e) {
 
             log.error("Error occurred in cloud controller side while terminating instance");
-//            throw new TerminationException("Error occurred in cloud controller side while terminating instance", e );
+
         }
     }
 

@@ -55,7 +55,6 @@ public class HealthEventMessageDelegator implements Runnable {
 				TextMessage message = HealthEventQueue.getInstance().take();
 
 				String messageText = message.getText();
-				messageText = messageText.substring(messageText.indexOf('>') +1, messageText.lastIndexOf('<'));
 
                 setEventValues(messageText);
 

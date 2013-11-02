@@ -42,22 +42,30 @@ public class ExecutorTaskScheduler {
 			public void run() {
 
 				try {
-					for (Service service : TopologyManager.getTopology().getServices()) {
+                    for (Service service : TopologyManager.getTopology().getServices()) {
 
-                        //Remove cluster context if its already removed from Topology
-                        for(String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()){
-                            boolean clusterAvailable = false;
+                        AutoscalerRuleEvaluator.getInstance().evaluate(service);
+                    }
+
+                           //Remove cluster context if its already removed from Topology
+                    for(String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()){
+
+                        boolean clusterAvailable = false;
+                        for (Service service : TopologyManager.getTopology().getServices()) {
+
                             for (Cluster cluster: service.getClusters()) {
+
                                 if(cluster.getClusterId().equals(clusterContextId)){
+
                                     clusterAvailable = true;
                                 }
                             }
-                            if(!clusterAvailable){
-                                AutoscalerContext.getInstance().removeClusterContext(clusterContextId);
-                            }
                         }
-						AutoscalerRuleEvaluator.getInstance().evaluate(service);
-					}
+
+                        if(!clusterAvailable){
+                            AutoscalerContext.getInstance().removeClusterContext(clusterContextId);
+                        }
+                    }
 
 				} catch (Exception e) {
 					log.error("Error ", e);

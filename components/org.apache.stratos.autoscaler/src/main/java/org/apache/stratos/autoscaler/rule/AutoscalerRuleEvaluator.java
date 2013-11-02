@@ -77,12 +77,7 @@ public class AutoscalerRuleEvaluator {
 	public boolean delegateSpawn(Partition partition, String clusterId) {
 		CloudControllerClient cloudControllerClient = new CloudControllerClient();
 		try {
-
-            Partition partition1 = PolicyManager.getInstance().getPolicy("economyPolicy").getHAPolicy().getPartitions().get(0);
-
-            log.info("partition1.getId()   "  + partition1.getId());
             int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
-            log.info("Current member count is " + currentMemberCount );
 
             if(currentMemberCount < partition.getPartitionMembersMax())       {
                 AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(1);
