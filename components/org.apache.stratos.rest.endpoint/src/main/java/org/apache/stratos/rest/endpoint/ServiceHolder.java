@@ -20,6 +20,7 @@ package org.apache.stratos.rest.endpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.TenantBillingService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -38,6 +39,12 @@ public class ServiceHolder {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         RealmService realmService = (RealmService)carbonContext.getOSGiService(RealmService.class);
         return realmService.getTenantManager();
+    }
+
+    public static TenantBillingService getBillingService() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        TenantBillingService tenantBillingService = (TenantBillingService)carbonContext.getOSGiService(TenantBillingService.class);
+        return tenantBillingService;
     }
 
     public static RealmService getRealmService(){
