@@ -38,17 +38,16 @@
 
     <modules>
         <module>common</module>
-	<module>tenant-mgt</module>
-	<module>load-balance-agent</module>
+        <module>tenant-mgt</module>
         <module>gapp</module>
         <module>throttling</module>
         <module>usage</module>
-	<module>deployment</module>
-	<module>status-monitor</module>
-	<module>tenant-activity</module>
-	<module>cartridge-mgt</module>
-	<module>logging-mgt</module>
-	<module>rest-endpoint/org.apache.stratos.rest.endpoint.feature</module>
+        <module>deployment</module>
+        <module>status-monitor</module>
+        <module>tenant-activity</module>
+        <module>cartridge-mgt</module>
+        <module>logging-mgt</module>
+        <module>rest-endpoint/org.apache.stratos.rest.endpoint.feature</module>
     </modules>
 
     <distributionManagement>

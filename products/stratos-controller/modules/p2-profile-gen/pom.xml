@@ -169,9 +169,6 @@
 				    </featureArtifactDef>
 				    <!-- End GApp SSO features -->
 
-				    <featureArtifactDef>org.apache.stratos:org.apache.stratos.lb.agent.server.feature:${project.version}
-				    </featureArtifactDef>
-
 				    <!-- Status Monitor Feature. Uncomment, if you want the manager to be used as a Stratos Status Monitor -->
 				    <!--featureArtifactDef>org.wso2.carbon:org.wso2.carbon.status.monitor.feature:${stratos.version}</featurecomponent.ArtifactDef-->
 
@@ -335,10 +332,6 @@
 				</feature>
 				<!--End GApp SSO features -->
 
-				<feature>
-				    <id>org.apache.stratos.lb.agent.server.feature.group</id>
-				    <version>${project.version}</version>
-				</feature>
 				<feature>
 				    <id>org.apache.stratos.usage.feature.group</id>
 				    <version>${project.version}</version>

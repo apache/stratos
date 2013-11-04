@@ -50,7 +50,6 @@
         <module>org.apache.stratos.adc.instanceinfo.mgt.stub</module>
         <module>org.apache.stratos.tenant.register.gapp.stub</module>
         <module>org.apache.stratos.redirector.servlet.stub</module>
-        <module>org.apache.stratos.lb.agent.stub</module>
         <module>org.apache.stratos.adc.reponotification.service.stub</module>
         <module>org.apache.stratos.adc.repoinformation.service.stub</module>
         <module>org.apache.stratos.adc.topologymgt.service.stub</module>

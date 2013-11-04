@@ -98,12 +98,5 @@
             <artifactId>qpid-client</artifactId>
             <version>0.12.wso2v1</version>
         </dependency>
-
-        <!--dependencies to invoke the load average service-->
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.lb.agent.stub</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
