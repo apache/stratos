@@ -135,7 +135,7 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.lb.common.feature:${project.version}
+                                    org.apache.stratos:org.apache.stratos.load.balancer.common.feature:${project.version}
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
@@ -244,7 +244,7 @@
                                     <version>${carbon.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.apache.stratos.lb.common.feature.group</id>
+                                    <id>org.apache.stratos.load.balancer.common.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>

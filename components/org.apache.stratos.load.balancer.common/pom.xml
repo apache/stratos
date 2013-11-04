@@ -28,77 +28,67 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
-    <artifactId>org.apache.stratos.adc.topology.mgt</artifactId>
+    <artifactId>org.apache.stratos.load.balancer.common</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Topology Management</name>
+    <name>Apache Stratos - Load Balancer - Common</name>
     <url>http://apache.org</url>
     
     <dependencies>
-        <!-- <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.mediation.initializer</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency> -->
-        <!-- <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.mediation.dependency.mgt</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency> -->
-        <dependency>
-            <groupId>org.apache.synapse</groupId>
-            <artifactId>synapse-core</artifactId>
-            <version>${synapse.core.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2</artifactId>
-            <version>1.6.1.wso2v9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-kernel</artifactId>
-            <version>${axis2.kernel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.logging</artifactId>
-	    <version>${wso2carbon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.utils</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency>
-        <dependency>
+    	<dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.google.guava.wso2</groupId>
+	        <artifactId>guava</artifactId>
+            <version>${google.guava.wso2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-core</artifactId>
+            <version>${synapse.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+      		<groupId>org.apache.geronimo.specs</groupId>
+      		<artifactId>geronimo-jms_1.1_spec</artifactId>
+      		<version>1.1</version>
+    	</dependency>
+        <!--dependency>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+          <version>6.3.1</version>
+          <scope>test</scope>
+        </dependency-->
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ntask.core</artifactId>
-	    <version>${wso2carbon.version}</version>
+            <artifactId>org.wso2.carbon.logging</artifactId>
+            <version>${wso2carbon.version}</version>
         </dependency>
-        <dependency>
-                <groupId>org.wso2.andes.wso2</groupId>
-                <artifactId>andes-client</artifactId>
-                <version>0.13.wso2v3</version>
-            </dependency>
-        <dependency>
-                <groupId>org.apache.geronimo.specs.wso2</groupId>
-                <artifactId>geronimo-jms_1.1_spec</artifactId>
-                <version>${orbit.version.geronimo-jms_1.1_spec}</version>
-            </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--dependency>
+        	<groupId>mysql</groupId>
+        	<artifactId>mysql-connector-java</artifactId>
+        	<version>5.1.6</version>
+        </dependency-->
+        <!-- This mysql dependency is required for tests-->
     </dependencies>
 
     <build>
         <plugins>
-
+            <!--plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                  <suiteXmlFiles>
+                    <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                  </suiteXmlFiles>
+                </configuration>
+              </plugin-->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
@@ -112,18 +102,15 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <!-- <Private-Package>
-                        	org.wso2.carbon.stratos.topology.mgt.service.impl.*
-                        </Private-Package> -->
                         <Export-Package>
-                            org.apache.stratos.adc.topology.mgt.subscriber.*,
-                            org.apache.stratos.adc.topology.mgt.service.*,
-                            org.apache.stratos.adc.topology.mgt.group.mgt.*,
-							org.apache.stratos.adc.topology.mgt.serviceobjects.*
+                            org.apache.stratos.load.balancer.common.*,
                         </Export-Package>
+                        <Private-Package>
+                            org.apache.stratos.load.balancer.common.conf.internal;
+                        </Private-Package>
                         <Import-Package>
-                            org.apache.stratos.load.balancer.common.*; version=${project.version},
-                            org.wso2.carbon.registry.core.service; version=1.0.1,
+                            !org.apache.commons.logging,
+                            org.apache.commons.logging; version=0.0.0,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
