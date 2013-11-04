@@ -30,7 +30,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.load.balancer</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Tenant Aware LoadBalance Endpoint</name>
+    <name>Apache Stratos - Load Balancer</name>
     <url>http://apache.org</url>
     
     <dependencies>
