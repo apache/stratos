@@ -29,32 +29,24 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-features-parent</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - Features Aggregator Module</name>
     <url>http://apache.org</url>
 
     <modules>
-	<!-- Load Balancer -->
+        <!-- Load Balancer -->
         <module>load-balancer</module>
-	
-	<!-- Auto Scaler -->
-	<module>autoscaler</module>
-
-	<!-- ADC -->
-	<module>adc</module>
-
-	<!-- Coud Controller -->
-	<module>cloud-controller</module>
-
+        <!-- Auto-Scaler -->
+        <module>autoscaler</module>
+        <!-- Artifact Distribution Coordinator -->
+        <module>adc</module>
+        <!-- Coud Controller -->
+        <module>cloud-controller</module>
         <!-- Manager -->
-	<module>manager</module>
-
-       <!-- Messaging -->
-       <module>messaging</module>
-
-
+        <module>manager</module>
+        <!-- Messaging -->
+        <module>messaging</module>
     </modules>
 
     <build>
