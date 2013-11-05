@@ -16,30 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.load.balancer.common.util;
+package org.apache.stratos.load.balancer.common.internal;
 
-public class DomainMapping {
-    private String mapping;
-    private String actualHost;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.osgi.service.component.ComponentContext;
 
-    public DomainMapping(String mapping) {
-        this.setMapping(mapping);
+/**
+ *
+ */
+public class LoadBalancerCommonServiceComponent {
+
+    private static final Log log = LogFactory.getLog(LoadBalancerCommonServiceComponent.class);
+
+    protected void activate(ComponentContext context) {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug("Load Balancer Common Service bundle activated");
+            }
+        } catch (Exception e) {
+            log.error("Could not activate Load Balancer Common Service bundle", e);
+        }
     }
-
-    public String getActualHost() {
-        return actualHost;
-    }
-
-    public void setActualHost(String actualHost) {
-        this.actualHost = actualHost;
-    }
-
-	public String getMapping() {
-		return mapping;
-	}
-
-	public void setMapping(String mapping) {
-		this.mapping = mapping;
-	}
-
 }
