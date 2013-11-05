@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @scr.component name="org.apache.stratos.lbr.endpoint" immediate="true"
+ * @scr.component name="org.apache.stratos.load.balancer.endpoint" immediate="true"
  * @scr.reference name="configuration.context.service"
  * interface="org.wso2.carbon.utils.ConfigurationContextService"
  * cardinality="1..1" policy="dynamic"
@@ -88,8 +88,8 @@ import java.util.Set;
  * unbind="unsetRealmService"
  */
 @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
-public class LoadBalanceEndpointServiceComponent {
-    private static final Log log = LogFactory.getLog(LoadBalanceEndpointServiceComponent.class);
+public class LoadBalancerServiceComponent {
+    private static final Log log = LogFactory.getLog(LoadBalancerServiceComponent.class);
 
     private boolean activated = false;
 
@@ -119,10 +119,10 @@ public class LoadBalanceEndpointServiceComponent {
 
             activated = true;
             if (log.isDebugEnabled()) {
-                log.debug("LoadBalanceEndpointServiceComponent is activated ");
+                log.debug("LoadBalancerServiceComponent is activated ");
             }
         } catch (Throwable e) {
-            log.error("Failed to activate LoadBalanceEndpointServiceComponent", e);
+            log.error("Failed to activate LoadBalancerServiceComponent", e);
         }
     }
 
