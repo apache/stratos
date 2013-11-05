@@ -38,7 +38,7 @@ public abstract class EventListener implements Observer {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Event received: %s", event.getClass().getName()));
             }
-            eventReceived(event);
+            onEvent(event);
         }
     }
 
@@ -46,5 +46,5 @@ public abstract class EventListener implements Observer {
      * Triggered when an event is received.
      * @param event
      */
-    protected abstract void eventReceived(Event event);
+    protected abstract void onEvent(Event event);
 }
