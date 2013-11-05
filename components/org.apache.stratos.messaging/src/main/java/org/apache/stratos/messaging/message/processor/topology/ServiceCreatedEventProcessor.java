@@ -23,20 +23,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ServiceCreatedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceCreatedEventProcessor implements TopologyMessageProcessor {
+public class ServiceCreatedEventProcessor extends TopologyEventProcessor {
 
     private static final Log log = LogFactory.getLog(ServiceCreatedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextMsgProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
+    public void setNext(MessageProcessor nextProcessor) {
         nextMsgProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean processEvent(String type, String message, Topology topology) {
         if (ServiceCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
@@ -54,6 +55,7 @@ public class ServiceCreatedEventProcessor implements TopologyMessageProcessor {
                 log.info(String.format("Service created: [service] %s", event.getServiceName()));
             }
 
+            notifyEventListeners(event);
             return true;
 
         } else {

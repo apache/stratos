@@ -23,20 +23,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterRemovedEventProcessor implements TopologyMessageProcessor {
+public class ClusterRemovedEventProcessor extends TopologyEventProcessor {
 
     private static final Log log = LogFactory.getLog(ClusterRemovedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextMsgProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
+    public void setNext(MessageProcessor nextProcessor) {
         nextMsgProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean processEvent(String type, String message, Topology topology) {
         if (ClusterRemovedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ClusterRemovedEvent event = (ClusterRemovedEvent) Util.jsonToObject(message, ClusterRemovedEvent.class);
@@ -60,6 +61,7 @@ public class ClusterRemovedEventProcessor implements TopologyMessageProcessor {
                          event.getServiceName(), event.getClusterId()));
             }
 
+            notifyEventListeners(event);
             return true;
 
         } else {

@@ -26,20 +26,21 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberSuspendedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
+public class MemberSuspendedEventProcessor extends TopologyEventProcessor {
 
     private static final Log log = LogFactory.getLog(MemberSuspendedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextMsgProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
+    public void setNext(MessageProcessor nextProcessor) {
         nextMsgProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean processEvent(String type, String message, Topology topology) {
         if (MemberSuspendedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
@@ -79,6 +80,7 @@ public class MemberSuspendedEventProcessor implements TopologyMessageProcessor {
                         event.getMemberId()));
             }
 
+            notifyEventListeners(event);
             return true;
         } else {
             if (nextMsgProcessor != null) {

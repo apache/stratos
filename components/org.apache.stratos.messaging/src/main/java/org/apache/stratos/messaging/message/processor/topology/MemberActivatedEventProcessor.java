@@ -26,20 +26,21 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
+public class MemberActivatedEventProcessor extends TopologyEventProcessor {
 
     private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextMsgProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
+    public void setNext(MessageProcessor nextProcessor) {
         nextMsgProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean processEvent(String type, String message, Topology topology) {
         if (MemberActivatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
@@ -92,6 +93,7 @@ public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
                         event.getMemberId()));
             }
 
+            notifyEventListeners(event);
             return true;
         } else {
             if (nextMsgProcessor != null) {

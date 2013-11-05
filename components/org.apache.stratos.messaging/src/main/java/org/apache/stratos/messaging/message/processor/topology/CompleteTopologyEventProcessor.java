@@ -22,20 +22,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class CompleteTopologyEventProcessor implements TopologyMessageProcessor {
+public class CompleteTopologyEventProcessor extends TopologyEventProcessor {
 
     private static final Log log = LogFactory.getLog(CompleteTopologyEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextMsgProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
+    public void setNext(MessageProcessor nextProcessor) {
         nextMsgProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean processEvent(String type, String message, Topology topology) {
         if (CompleteTopologyEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
@@ -43,6 +44,8 @@ public class CompleteTopologyEventProcessor implements TopologyMessageProcessor 
             if (log.isInfoEnabled()) {
                 log.info("Topology initialized");
             }
+
+            notifyEventListeners(event);
             return true;
         } else {
             if (nextMsgProcessor != null) {

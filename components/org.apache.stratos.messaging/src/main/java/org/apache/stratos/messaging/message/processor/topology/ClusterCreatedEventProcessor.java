@@ -24,20 +24,21 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
+public class ClusterCreatedEventProcessor extends TopologyEventProcessor {
 
     private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextMsgProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
+    public void setNext(MessageProcessor nextProcessor) {
         nextMsgProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean processEvent(String type, String message, Topology topology) {
         if (ClusterCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
@@ -64,6 +65,7 @@ public class ClusterCreatedEventProcessor implements TopologyMessageProcessor {
                          event.getServiceName(), event.getClusterId()));
             }
 
+            notifyEventListeners(event);
             return true;
 
         } else {

@@ -17,27 +17,25 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.processor.topology;
+package org.apache.stratos.messaging.event;
 
-import org.apache.stratos.messaging.domain.topology.Topology;
+import java.util.Observable;
 
 /**
- * Message processor interface. Every Message Processor should implement this.
+ *  Event observable definition.
  */
-public interface TopologyMessageProcessor {
-    
-	/**
-	 * Link a message processor and its successor, if there's any.
-	 * @param nextProcessor
-	 */
-	public abstract void setNext(TopologyMessageProcessor nextProcessor);
+public abstract class EventObservable extends Observable {
 
-	/**
-	 * Message processing and delegating logic.
-	 * @param type type of the message. 
-	 * @param message real message body.
-	 * @param topology Topology that will get updated.
-	 * @return whether the processing was successful or not.
-	 */
-	public abstract boolean process(String type, String message, Topology topology);
+    public void addEventListener(EventListener eventListener) {
+        addObserver(eventListener);
+    }
+
+    public void removeEventListener(EventListener eventListener) {
+        deleteObserver(eventListener);
+    }
+
+    public void notifyEventListeners(Event event) {
+        setChanged();
+        notifyObservers(event);
+    }
 }
