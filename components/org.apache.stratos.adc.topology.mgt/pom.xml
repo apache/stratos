@@ -122,7 +122,6 @@
 							org.apache.stratos.adc.topology.mgt.serviceobjects.*
                         </Export-Package>
                         <Import-Package>
-                            org.apache.stratos.load.balancer.common.*; version=${project.version},
                             org.wso2.carbon.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>
