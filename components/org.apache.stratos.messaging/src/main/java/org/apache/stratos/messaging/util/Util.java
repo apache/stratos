@@ -44,7 +44,9 @@ public class Util {
 			log.error("Failed to load properties from file: " + filePath, e);
 		} finally {
 			try {
-				is.close();
+                if(is != null) {
+				    is.close();
+                }
 			} catch (IOException ignore) {
 			}
 		}
@@ -88,6 +90,7 @@ public class Util {
             return true;
         }
         catch (NumberFormatException e) {
+            // Not a valid number
         }
         return false;
     }

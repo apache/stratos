@@ -26,8 +26,8 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 /**
  * Defines default topology message processor chain.
  */
-public class TopologyMessageProcessorChain extends MessageProcessorChain {
-    private static final Log log = LogFactory.getLog(TopologyMessageProcessorChain.class);
+public class TopologyEventProcessorChain extends MessageProcessorChain {
+    private static final Log log = LogFactory.getLog(TopologyEventProcessorChain.class);
 
     public void initialize() {
         // Add topology event processors

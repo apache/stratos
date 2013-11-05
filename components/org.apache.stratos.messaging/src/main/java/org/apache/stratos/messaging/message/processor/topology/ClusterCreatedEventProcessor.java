@@ -27,21 +27,24 @@ import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ClusterCreatedEventProcessor extends TopologyEventProcessor {
+public class ClusterCreatedEventProcessor extends MessageProcessor {
 
     private static final Log log = LogFactory.getLog(ClusterCreatedEventProcessor.class);
-    private MessageProcessor nextMsgProcessor;
+    private MessageProcessor nextProcessor;
 
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-        nextMsgProcessor = nextProcessor;
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
-    public boolean processEvent(String type, String message, Topology topology) {
+    public boolean process(String type, String message, Object object) {
+        Topology topology = (Topology)object;
+
         if (ClusterCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
+
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
@@ -65,13 +68,14 @@ public class ClusterCreatedEventProcessor extends TopologyEventProcessor {
                          event.getServiceName(), event.getClusterId()));
             }
 
+            // Notify event listeners
             notifyEventListeners(event);
             return true;
 
         } else {
-            if (nextMsgProcessor != null) {
+            if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextMsgProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, topology);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }

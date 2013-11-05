@@ -39,21 +39,21 @@ import org.apache.stratos.messaging.util.Constants;
 public class TopologyEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
-    private CompleteTopologyEventProcessor completeTopologyEventProcessor;
+    private CompleteTopologyEventProcessor completeTopEvMsgProcessor;
     private MessageProcessorChain processorChain;
 
     public TopologyEventMessageDelegator() {
-        this.completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
-        this.processorChain = new TopologyMessageProcessorChain();
+        this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
+        this.processorChain = new TopologyEventProcessorChain();
     }
 
     public TopologyEventMessageDelegator(MessageProcessorChain processorChain) {
-        this.completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
+        this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
         this.processorChain = processorChain;
     }
 
     public void addCompleteTopologyEventListener(EventListener eventListener) {
-        completeTopologyEventProcessor.addEventListener(eventListener);
+        completeTopEvMsgProcessor.addEventListener(eventListener);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class TopologyEventMessageDelegator implements Runnable {
                     // Retrieve the actual message
                     String json = message.getText();
 
-                    if (completeTopologyEventProcessor.process(type, json, TopologyManager.getTopology())) {
+                    if (completeTopEvMsgProcessor.process(type, json, TopologyManager.getTopology())) {
                         break;
                     }
 

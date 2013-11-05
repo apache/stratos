@@ -26,18 +26,20 @@ import org.apache.stratos.messaging.event.topology.ServiceCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceCreatedEventProcessor extends TopologyEventProcessor {
+public class ServiceCreatedEventProcessor extends MessageProcessor {
 
     private static final Log log = LogFactory.getLog(ServiceCreatedEventProcessor.class);
-    private MessageProcessor nextMsgProcessor;
+    private MessageProcessor nextProcessor;
 
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-        nextMsgProcessor = nextProcessor;
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
-    public boolean processEvent(String type, String message, Topology topology) {
+    public boolean process(String type, String message, Object object) {
+        Topology topology = (Topology)object;
+
         if (ServiceCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
@@ -59,9 +61,9 @@ public class ServiceCreatedEventProcessor extends TopologyEventProcessor {
             return true;
 
         } else {
-            if (nextMsgProcessor != null) {
+            if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextMsgProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, topology);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }

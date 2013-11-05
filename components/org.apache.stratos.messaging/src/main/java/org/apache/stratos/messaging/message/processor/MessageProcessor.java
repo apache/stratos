@@ -20,11 +20,12 @@
 package org.apache.stratos.messaging.message.processor;
 
 import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.event.EventObservable;
 
 /**
- * Message processor interface. Every Message Processor should implement this.
+ * Message processor definition.
  */
-public interface MessageProcessor {
+public abstract class MessageProcessor extends EventObservable {
     
 	/**
 	 * Link a message processor and its successor, if there's any.
