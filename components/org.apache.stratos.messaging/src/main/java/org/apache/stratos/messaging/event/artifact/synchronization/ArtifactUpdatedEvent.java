@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.depsync;
+package org.apache.stratos.messaging.event.artifact.synchronization;
 
 /**
- * this event is fired to a cluster when a artifacts notification received from the git repository.
+ * This event is fired to a cluster when an artifact notification received from the git repository.
  */
 
-public class ArtifactsUpdatedEvent {
+public class ArtifactUpdatedEvent {
     private String clusterId;
     private String status;
 
