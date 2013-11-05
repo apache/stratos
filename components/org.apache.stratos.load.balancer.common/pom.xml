@@ -40,55 +40,19 @@
             <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava.wso2</groupId>
-	        <artifactId>guava</artifactId>
-            <version>${google.guava.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.synapse</groupId>
-            <artifactId>synapse-core</artifactId>
-            <version>${synapse.core.version}</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
         </dependency>
         <dependency>
-      		<groupId>org.apache.geronimo.specs</groupId>
-      		<artifactId>geronimo-jms_1.1_spec</artifactId>
-      		<version>1.1</version>
-    	</dependency>
-        <!--dependency>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-          <version>6.3.1</version>
-          <scope>test</scope>
-        </dependency-->
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.logging</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
-        <!--dependency>
-        	<groupId>mysql</groupId>
-        	<artifactId>mysql-connector-java</artifactId>
-        	<version>5.1.6</version>
-        </dependency-->
-        <!-- This mysql dependency is required for tests-->
     </dependencies>
 
     <build>
         <plugins>
-            <!--plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                  <suiteXmlFiles>
-                    <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                  </suiteXmlFiles>
-                </configuration>
-              </plugin-->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
@@ -96,7 +60,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -106,7 +69,7 @@
                             org.apache.stratos.load.balancer.common.*,
                         </Export-Package>
                         <Private-Package>
-                            org.apache.stratos.load.balancer.common.conf.internal;
+                            org.apache.stratos.load.balancer.common.internal;
                         </Private-Package>
                         <Import-Package>
                             !org.apache.commons.logging,
