@@ -75,11 +75,6 @@
             <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.lb.common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ntask.core</artifactId>
 	    <version>${wso2carbon.version}</version>
@@ -127,7 +122,6 @@
 							org.apache.stratos.adc.topology.mgt.serviceobjects.*
                         </Export-Package>
                         <Import-Package>
-                            org.apache.stratos.lb.common.*; version=${project.version},
                             org.wso2.carbon.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>

@@ -141,7 +141,7 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
-                                    org.apache.stratos:org.apache.stratos.lb.endpoint.server.feature:${project.version}
+                                    org.apache.stratos:org.apache.stratos.load.balancer.feature:${project.version}
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
@@ -281,7 +281,7 @@
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.apache.stratos.lb.endpoint.server.feature.group</id>
+                                    <id>org.apache.stratos.load.balancer.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>

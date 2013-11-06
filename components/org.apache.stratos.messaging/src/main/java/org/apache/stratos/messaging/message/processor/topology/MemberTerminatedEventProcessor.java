@@ -26,77 +26,71 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberTerminatedEventProcessor implements TopologyMessageProcessor {
+public class MemberTerminatedEventProcessor extends MessageProcessor {
 
-	private static final Log log = LogFactory.getLog(MemberTerminatedEventProcessor.class);
-	private TopologyMessageProcessor nextMsgProcessor;
+    private static final Log log = LogFactory.getLog(MemberTerminatedEventProcessor.class);
+    private MessageProcessor nextProcessor;
 
-	@Override
-	public void setNext(TopologyMessageProcessor nextProcessor) {
-		nextMsgProcessor = nextProcessor;
-	}
+    @Override
+    public void setNext(MessageProcessor nextProcessor) {
+        this.nextProcessor = nextProcessor;
+    }
 
-	@Override
-	public boolean process(String type, String message, Topology topology) {
-		try {
-			if (MemberTerminatedEvent.class.getName().equals(type)) {
-				// Parse complete message and build event
-				MemberTerminatedEvent event = (MemberTerminatedEvent) Util.jsonToObject(message, MemberTerminatedEvent.class);
+    @Override
+    public boolean process(String type, String message, Object object) {
+        Topology topology = (Topology) object;
 
-				// Validate event against the existing topology
-				Service service = topology.getService(event.getServiceName());
-				if (service == null) {
-					throw new RuntimeException(String.format("Service does not exist: [service] %s", event.getServiceName()));
-				}
-				Cluster cluster = service.getCluster(event.getClusterId());
-				if (cluster == null) {
-					throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
-                            event.getServiceName(), event.getClusterId()));
-				}
-				Member member = cluster.getMember(event.getMemberId());
-				if (member == null) {
-					throw new RuntimeException(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
-                            event.getServiceName(),
-                            event.getClusterId(),
-                            event.getMemberId()));
-				}
-				if (member.getStatus() == MemberStatus.Terminated) {
-					throw new RuntimeException(String.format("Member already terminated: [service] %s [cluster] %s [member] %s",
-                            event.getServiceName(),
-                            event.getClusterId(),
-                            event.getMemberId()));
-				}
+        if (MemberTerminatedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            MemberTerminatedEvent event = (MemberTerminatedEvent) Util.jsonToObject(message, MemberTerminatedEvent.class);
 
-				// Apply changes to the topology
-				member.setStatus(MemberStatus.Terminated);
-				
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Member terminated: [service] %s [cluster] %s [member] %s",
-                            event.getServiceName(),
-                            event.getClusterId(),
-                            event.getMemberId()));
-				}
+            // Validate event against the existing topology
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                throw new RuntimeException(String.format("Service does not exist: [service] %s", event.getServiceName()));
+            }
+            Cluster cluster = service.getCluster(event.getClusterId());
+            if (cluster == null) {
+                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                        event.getServiceName(), event.getClusterId()));
+            }
+            Member member = cluster.getMember(event.getMemberId());
+            if (member == null) {
+                throw new RuntimeException(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
+            if (member.getStatus() == MemberStatus.Terminated) {
+                throw new RuntimeException(String.format("Member already terminated: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
 
-				return true;
+            // Apply changes to the topology
+            member.setStatus(MemberStatus.Terminated);
 
-			} else {
-				if (nextMsgProcessor != null) {
-					// ask the next processor to take care of the message.
-					return nextMsgProcessor.process(type, message, topology);
-				}
-			}
-		} catch (Exception e) {
-			if (nextMsgProcessor != null) {
-				// ask the next processor to take care of the message.
-				return nextMsgProcessor.process(type, message, topology);
-			} else {
-				throw new RuntimeException(String.format("Failed to process the message: %s of type %s using any of the available processors.",
-				                                         message, type));
-			}
-		}
-		return false;
-	}
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member terminated: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
 
+            notifyEventListeners(event);
+            return true;
+
+        } else {
+            if (nextProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
+    }
 }

@@ -22,17 +22,39 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.EventListener;
+import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.topology.*;
 import org.apache.stratos.messaging.util.Constants;
 
 
 /**
- * Implements the default event processor chain for updating
- * the topology data structure in topology manager.
+ * Implements logic for processing topology event messages based on a given
+ * topology process chain.
+ *
+ * Functionality:
+ * - Wait for the complete topology event.
+ * - Process messages using the given message processor chain.
  */
 public class TopologyEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
+    private CompleteTopologyEventProcessor completeTopEvMsgProcessor;
+    private MessageProcessorChain processorChain;
+
+    public TopologyEventMessageDelegator() {
+        this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
+        this.processorChain = new TopologyEventProcessorChain();
+    }
+
+    public TopologyEventMessageDelegator(MessageProcessorChain processorChain) {
+        this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
+        this.processorChain = processorChain;
+    }
+
+    public void addCompleteTopologyEventListener(EventListener eventListener) {
+        completeTopEvMsgProcessor.addEventListener(eventListener);
+    }
 
     @Override
     public void run() {
@@ -45,14 +67,12 @@ public class TopologyEventMessageDelegator implements Runnable {
                 try {
                     // First take the complete topology event
                     TextMessage message = TopologyEventQueue.getInstance().take();
-
-                    // retrieve the header
+                    // Retrieve the header
                     String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
-                    // retrieve the actual message
+                    // Retrieve the actual message
                     String json = message.getText();
 
-                    CompleteTopologyEventProcessor processor = new CompleteTopologyEventProcessor();
-                    if (processor.process(type, json, TopologyManager.getTopology())) {
+                    if (completeTopEvMsgProcessor.process(type, json, TopologyManager.getTopology())) {
                         break;
                     }
 
@@ -60,27 +80,6 @@ public class TopologyEventMessageDelegator implements Runnable {
                     throw new RuntimeException("Failed to retrieve the complete topology", e);
                 }
             }
-
-            // Instantiate all topology event processors
-            ServiceCreatedEventProcessor processor1 = new ServiceCreatedEventProcessor();
-            ServiceRemovedEventProcessor processor2 = new ServiceRemovedEventProcessor();
-            ClusterCreatedEventProcessor processor3 = new ClusterCreatedEventProcessor();
-            ClusterRemovedEventProcessor processor4 = new ClusterRemovedEventProcessor();
-            InstanceSpawnedEventProcessor processor5 = new InstanceSpawnedEventProcessor();
-            MemberStartedEventProcessor processor6 = new MemberStartedEventProcessor();
-            MemberActivatedEventProcessor processor7 = new MemberActivatedEventProcessor();
-            MemberSuspendedEventProcessor processor8 = new MemberSuspendedEventProcessor();
-            MemberTerminatedEventProcessor processor9 = new MemberTerminatedEventProcessor();
-
-            // Link above processors in the required order
-            processor1.setNext(processor2);
-            processor2.setNext(processor3);
-            processor3.setNext(processor4);
-            processor4.setNext(processor5);
-            processor5.setNext(processor6);
-            processor6.setNext(processor7);
-            processor7.setNext(processor8);
-            processor8.setNext(processor9);
 
             while (true) {
                 try {
@@ -97,7 +96,7 @@ public class TopologyEventMessageDelegator implements Runnable {
 
                     try {
                         TopologyManager.acquireWriteLock();
-                        processor1.process(type, json, TopologyManager.getTopology());
+                        processorChain.process(type, json, TopologyManager.getTopology());
                     } finally {
                         TopologyManager.releaseWriteLock();
                     }

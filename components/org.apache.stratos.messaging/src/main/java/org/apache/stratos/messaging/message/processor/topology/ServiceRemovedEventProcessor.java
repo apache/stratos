@@ -23,20 +23,23 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
+public class ServiceRemovedEventProcessor extends MessageProcessor {
 
     private static final Log log = LogFactory.getLog(ServiceRemovedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
-        nextMsgProcessor = nextProcessor;
+    public void setNext(MessageProcessor nextProcessor) {
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean process(String type, String message, Object object) {
+        Topology topology = (Topology)object;
+
         if (ServiceRemovedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
@@ -54,12 +57,15 @@ public class ServiceRemovedEventProcessor implements TopologyMessageProcessor {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Service removed: [service] %s", event.getServiceName()));
             }
+
+            // Notify event listeners
+            notifyEventListeners(event);
             return true;
 
         } else {
-            if (nextMsgProcessor != null) {
+            if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextMsgProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, topology);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }

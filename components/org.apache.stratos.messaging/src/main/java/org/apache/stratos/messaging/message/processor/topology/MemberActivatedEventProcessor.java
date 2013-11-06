@@ -26,20 +26,23 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
+public class MemberActivatedEventProcessor extends MessageProcessor {
 
     private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
-    private TopologyMessageProcessor nextMsgProcessor;
+    private MessageProcessor nextProcessor;
 
     @Override
-    public void setNext(TopologyMessageProcessor nextProcessor) {
-        nextMsgProcessor = nextProcessor;
+    public void setNext(MessageProcessor nextProcessor) {
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
-    public boolean process(String type, String message, Topology topology) {
+    public boolean process(String type, String message, Object object) {
+        Topology topology = (Topology)object;
+
         if (MemberActivatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
@@ -92,11 +95,13 @@ public class MemberActivatedEventProcessor implements TopologyMessageProcessor {
                         event.getMemberId()));
             }
 
+            // Notify event listeners
+            notifyEventListeners(event);
             return true;
         } else {
-            if (nextMsgProcessor != null) {
+            if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextMsgProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, topology);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }

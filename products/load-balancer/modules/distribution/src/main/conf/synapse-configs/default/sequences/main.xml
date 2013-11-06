@@ -25,8 +25,8 @@
         <property name="SERVICE_PREFIX" expression="$axis2:SERVICE_PREFIX"/>
         <send>
 	          <endpoint name="tenantAwareLBEndpoint">
-                <class name ="org.apache.stratos.lb.endpoint.endpoint.TenantAwareLoadBalanceEndpoint">
-                     <parameter name="algorithmClassName">org.apache.stratos.lb.endpoint.algorithm.RoundRobin</parameter>
+                <class name ="org.apache.stratos.load.balancer.endpoint.TenantAwareLoadBalanceEndpoint">
+                     <parameter name="algorithmClassName">org.apache.stratos.load.balancer.algorithm.RoundRobin</parameter>
                      <parameter name="failover">true</parameter>
                      <parameter name="sessionAffinity">true</parameter>
                      <parameter name="sessionTimeout">90000</parameter>
@@ -38,7 +38,7 @@
     </in>
     <out>
         <!-- Add response interceptor mediator -->
-        <class name="org.apache.stratos.lb.endpoint.mediators.ResponseInterceptor">
+        <class name="org.apache.stratos.load.balancer.mediators.ResponseInterceptor">
         </class>
 
         <!-- Updating location value in response header -->

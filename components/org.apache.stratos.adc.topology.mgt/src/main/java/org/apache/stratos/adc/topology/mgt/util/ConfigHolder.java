@@ -25,15 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.topology.mgt.exception.TopologyMgtException;
 import org.apache.synapse.config.SynapseConfiguration;
-import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration;
-import org.apache.stratos.lb.common.conf.LoadBalancerConfiguration.ServiceConfiguration;
-import org.apache.stratos.lb.common.service.LoadBalancerConfigurationService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
