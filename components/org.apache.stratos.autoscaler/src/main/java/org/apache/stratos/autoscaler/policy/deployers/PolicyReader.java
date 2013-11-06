@@ -93,6 +93,8 @@ public class PolicyReader  {
 				reqInFlight.setAverage(Float.valueOf(readValueAttr(reqInFlightEle,"Average")));
 				reqInFlight.setGradient(Float.valueOf(readValueAttr(reqInFlightEle,"Gradient")));
 				reqInFlight.setSecondDerivative(Float.valueOf(readValueAttr(reqInFlightEle,"SecondDerivative")));
+                reqInFlight.setScaleDownMarginOfGradient(Float.valueOf(readValueAttr(reqInFlightEle,"ScaleDownMarginOfGradient")));
+                reqInFlight.setScaleDownMarginOfSecondDerivative(Float.valueOf(readValueAttr(reqInFlightEle,"ScaleDownMarginOfSecondDerivative")));
 				loadThresholds.setRequestsInFlight(reqInFlight);
 				
 				//MemoryConsumption
@@ -101,6 +103,8 @@ public class PolicyReader  {
 				memConsumption.setAverage(Float.valueOf(readValueAttr(memConsumptionEle,"Average")));
 				memConsumption.setGradient(Float.valueOf(readValueAttr(memConsumptionEle,"Gradient")));
 				memConsumption.setSecondDerivative(Float.valueOf(readValueAttr(memConsumptionEle,"SecondDerivative")));
+                memConsumption.setScaleDownMarginOfGradient(Float.valueOf(readValueAttr(memConsumptionEle,"ScaleDownMarginOfGradient")));
+                memConsumption.setScaleDownMarginOfSecondDerivative(Float.valueOf(readValueAttr(memConsumptionEle,"ScaleDownMarginOfSecondDerivative")));
 				loadThresholds.setMemoryConsumption(memConsumption);
 				
 				//LoadAverage
@@ -109,6 +113,8 @@ public class PolicyReader  {
 				loadAvr.setAverage(Float.valueOf(readValueAttr(loadAvrEle,"Average")));
 				loadAvr.setGradient(Float.valueOf(readValueAttr(loadAvrEle,"Gradient")));
 				loadAvr.setSecondDerivative(Float.valueOf(readValueAttr(loadAvrEle,"SecondDerivative")));
+                loadAvr.setScaleDownMarginOfGradient(Float.valueOf(readValueAttr(loadAvrEle,"ScaleDownMarginOfGradient")));
+                loadAvr.setScaleDownMarginOfSecondDerivative(Float.valueOf(readValueAttr(loadAvrEle,"ScaleDownMarginOfSecondDerivative")));
 				loadThresholds.setLoadAverage(loadAvr);
 				
 				policy.setLoadThresholds(loadThresholds);

@@ -27,6 +27,8 @@ public class RequestsInFlight {
     private float average;
     private float secondDerivative;
     private float gradient;
+    private float scaleDownMarginOfGradient;
+    private float scaleDownMarginOfSecondDerivative;
 
     /**
      * Gets the value of the average property.   
@@ -69,6 +71,36 @@ public class RequestsInFlight {
      */
     public void setGradient(float value) {
         this.gradient = value;
+    }
+
+    /**
+     * Gets the value of the scaleDownSlowerMarginOfGradient property.
+     */
+    public float getScaleDownMarginOfGradient() {
+        return scaleDownMarginOfGradient;
+    }
+
+    /**
+     * Sets the value of the scaleDownSlowerMarginOfGradient property.
+     *
+     */
+    public void setScaleDownMarginOfGradient(float scaleDownMarginOfGradient) {
+        this.scaleDownMarginOfGradient = scaleDownMarginOfGradient;
+    }
+
+    /**
+     * Gets the value of the scaleDownSlowerMarginOfSecondDerivative property.
+     */
+    public float getScaleDownMarginOfSecondDerivative() {
+        return scaleDownMarginOfSecondDerivative;
+    }
+
+    /**
+     * Sets the value of the scaleDownSlowerMarginOfSecondDerivative property.
+     *
+     */
+    public void setScaleDownMarginOfSecondDerivative(float scaleDownMarginOfSecondDerivative) {
+        this.scaleDownMarginOfSecondDerivative = scaleDownMarginOfSecondDerivative;
     }
 
 }
