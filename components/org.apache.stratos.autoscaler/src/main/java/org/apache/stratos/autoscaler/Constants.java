@@ -12,6 +12,12 @@ public class Constants {
     public static String AVERAGE_REQUESTS_IN_FLIGHT = "average_requests_in_flight";
     public static String SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT = "second_derivative_of_requests_in_flight";
 
+    //scheduler
+    public static final int SCHEDULE_DEFAULT_INITIAL_DELAY = 30;
+    public static final int SCHEDULE_DEFAULT_PERIOD = 15;
+
+    public static final String AUTOSCALER_CONFIG_FILE_NAME = "autoscaler.xml";
+
 //           public void a(){
 //             Cluster cluster = null;
 ////               log.info("cluster " + clusterId);

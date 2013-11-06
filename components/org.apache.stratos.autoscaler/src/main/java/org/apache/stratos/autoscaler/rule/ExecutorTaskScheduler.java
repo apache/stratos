@@ -19,10 +19,13 @@
 
 package org.apache.stratos.autoscaler.rule;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 
@@ -36,7 +39,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExecutorTaskScheduler {
 	private static final Log log = LogFactory.getLog(ExecutorTaskScheduler.class);
-	
+
+    private static int initialDelay;
+    private static int period;
+
+    public ExecutorTaskScheduler() {
+        XMLConfiguration conf = ConfUtil.getInstance().getConfiguration();
+        initialDelay = conf.getInt("autoscaler.rulesEvaluator.schedule.initialDelay", Constants.SCHEDULE_DEFAULT_INITIAL_DELAY);
+        period = conf.getInt("autoscaler.rulesEvaluator.schedule.period", Constants.SCHEDULE_DEFAULT_PERIOD);
+    }
+
     public void start(){
         final Runnable rulesEvaluator = new Runnable() {
 			public void run() {
@@ -73,7 +85,6 @@ public class ExecutorTaskScheduler {
 			}
 		};
         ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
-        //TODO make scheduler values configurable
-        ex.scheduleWithFixedDelay(rulesEvaluator, 30, 15, TimeUnit.SECONDS);
+        ex.scheduleWithFixedDelay(rulesEvaluator, initialDelay, period, TimeUnit.SECONDS);
     }
 }
