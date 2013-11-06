@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.load.balancer.stat;
+package org.apache.stratos.load.balancer.common.statistics;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.stratos.load.balancer.stat.observers.WSO2CEPStatsObserver;
+import org.apache.stratos.load.balancer.common.statistics.observers.WSO2CEPStatsObserver;
 
 /**
  * This is the load balancing stats collector and any observer can get registered here 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.load.balancer.stat.observers;
+package org.apache.stratos.load.balancer.common.statistics.observers;
 
 import java.io.File;
 import java.util.HashMap;

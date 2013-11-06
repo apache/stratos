@@ -32,7 +32,7 @@
     <packaging>bundle</packaging>
     <name>Apache Stratos - Load Balancer</name>
     <url>http://apache.org</url>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -54,7 +54,7 @@
             <artifactId>org.wso2.carbon.logging</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
             <version>${axis2.wso2.version}</version>
@@ -68,6 +68,16 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.load.balancer.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.9.1</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -84,18 +94,12 @@
             <artifactId>org.wso2.carbon.databridge.commons</artifactId>
             <version>4.2.0</version>
         </dependency>
-        
-		<dependency>
-		  <groupId>org.apache.thrift</groupId>
-		  <artifactId>libthrift</artifactId>
-		  <version>0.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-			<version>1.6</version>
-		</dependency>
-        
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>
