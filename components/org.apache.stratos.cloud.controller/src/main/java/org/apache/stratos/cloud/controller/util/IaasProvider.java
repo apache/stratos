@@ -25,6 +25,7 @@ import org.jclouds.compute.domain.Template;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,10 +41,7 @@ public class IaasProvider implements Serializable{
      */
     private String type;
 
-    /**
-     * Partition the IaaS using different region
-     */
-    private String region;
+    private List<Region>  listOfRegions;
     
     /**
      * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.interfaces.Iaas}
@@ -65,11 +63,7 @@ public class IaasProvider implements Serializable{
      */
     private String image;
     
-    /**
-     * Max instance limit that an IaaS can spawn.
-     */
-    private int maxInstanceLimit = -1;
-    
+
     /**
      * Scale up order and scale down order of the IaaS.
      */
@@ -105,7 +99,6 @@ public class IaasProvider implements Serializable{
     	this.template = anIaasProvider.getTemplate();
     	this.payload = anIaasProvider.getPayload();
     	this.iaas = anIaasProvider.getIaas();
-    	this.maxInstanceLimit = anIaasProvider.getMaxInstanceLimit();
     }
     
     public String getType() {
@@ -257,20 +250,22 @@ public class IaasProvider implements Serializable{
 //    	toBeRemovedNodeIds = new ArrayList<String>();
     }
 
-	public int getMaxInstanceLimit() {
-	    return this.maxInstanceLimit;
+    /**
+     * Partition the IaaS using different region
+     */
+    public List<Region> getListOfRegions() {
+        return listOfRegions;
     }
 
-	public void setMaxInstanceLimit(int maxInstanceLimit) {
-	    this.maxInstanceLimit = maxInstanceLimit;
+    public void setListOfRegions(List<Region> listOfRegions) {
+        this.listOfRegions = listOfRegions;
     }
 
-
-    public String getRegion() {
-        return region;
+    public void addRegion(Region region) {
+        this.listOfRegions.add(region);
     }
 
-    public void setRegion(String region) {
-        this.region = region;
+    public void removeRegion(Region region) {
+        this.listOfRegions.remove(region);
     }
 }

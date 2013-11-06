@@ -798,7 +798,7 @@ public class AxiomXpathParser {
 
 	}
 
-	private void loadMaxInstanceLimit(IaasProvider iaas, final OMElement iaasElt) {
+	/*private void loadMaxInstanceLimit(IaasProvider iaas, final OMElement iaasElt) {
 
 		Iterator<?> it =
 		                 iaasElt.getChildrenWithName(new QName(
@@ -825,7 +825,7 @@ public class AxiomXpathParser {
 			         " Elements other than the first will be neglected.");
 		}
 
-	}
+	}*/
 
 	private void loadPayload(final List<OMNode> nodes, final ServiceContext serviceCtxt) {
 

@@ -23,12 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.jms.TextMessage;
-import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -42,8 +40,6 @@ public class TopologyManager {
     private volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-    private File topologyFile = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH);
-    private File backup = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH + ".back");
     private volatile Topology topology;
     private static TopologyManager instance;
     private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
@@ -106,10 +102,6 @@ public class TopologyManager {
                 throw new CloudControllerException(msg, e);
             }
         }
-    }
-
-    public void setTopology(Topology topology) {
-        this.topology = topology;
     }
 
     public String toJson() {
