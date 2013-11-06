@@ -220,5 +220,7 @@ public final class CloudControllerConstants {
 	 */
 	public static final String CLOUD_CONTROLLER_RESOURCE = "/cloud.controller";
 	public static final String DATA_RESOURCE = "/data";
+    public static final String TOPOLOGY_RESOURCE = "/topology";
+
     
 }

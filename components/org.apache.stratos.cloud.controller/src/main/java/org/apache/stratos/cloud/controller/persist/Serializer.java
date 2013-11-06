@@ -18,16 +18,12 @@
  */
 package org.apache.stratos.cloud.controller.persist;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.messaging.domain.topology.Topology;
+
+import java.io.*;
 
 public class Serializer {
     
@@ -76,6 +72,29 @@ public class Serializer {
     	  
     	  return bos.toByteArray();
     	  
+    	} finally {
+    	  out.close();
+    	  bos.close();
+    	}
+
+    }
+
+     /**
+     * Serialize a {@link org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder} to a byte array.
+     * @param topology
+     * @return byte[]
+     * @throws IOException
+     */
+    public static byte[] serializeToByteArray(Topology topology) throws IOException {
+
+    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	ObjectOutput out = null;
+    	try {
+    	  out = new ObjectOutputStream(bos);
+    	  out.writeObject(topology);
+
+    	  return bos.toByteArray();
+
     	} finally {
     	  out.close();
     	  bos.close();
