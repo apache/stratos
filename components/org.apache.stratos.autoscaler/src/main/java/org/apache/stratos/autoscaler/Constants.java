@@ -18,6 +18,9 @@ public class Constants {
 
     public static final String AUTOSCALER_CONFIG_FILE_NAME = "autoscaler.xml";
 
+    public static final String CLOUD_CONTROLLER_SERVICE_SFX = "services/CloudControllerService";
+    public static final int CLOUD_CONTROLLER_DEFAULT_PORT = 9444;
+
 //           public void a(){
 //             Cluster cluster = null;
 ////               log.info("cluster " + clusterId);

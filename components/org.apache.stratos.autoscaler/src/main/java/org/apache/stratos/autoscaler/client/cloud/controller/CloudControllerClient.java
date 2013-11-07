@@ -19,11 +19,14 @@
 
 package org.apache.stratos.autoscaler.client.cloud.controller;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.Partition;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.util.xsd.LocationScope;
 
@@ -40,8 +43,11 @@ public class CloudControllerClient {
     
     public CloudControllerClient(){
     	try {
-			stub = new CloudControllerServiceStub(
-					"https://localhost:9444/services/CloudControllerService");
+            XMLConfiguration conf = ConfUtil.getInstance().getConfiguration();
+            int port = conf.getInt("autoscaler.cloudController.port", Constants.CLOUD_CONTROLLER_DEFAULT_PORT);
+            String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
+            String epr = "https://" + hostname + ":" + port + "/" + Constants.CLOUD_CONTROLLER_SERVICE_SFX  ;
+            stub = new CloudControllerServiceStub(epr);
 		} catch (Exception e) {
 			log.error("Stub init error", e);
 		}

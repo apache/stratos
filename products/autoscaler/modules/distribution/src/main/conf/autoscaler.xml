@@ -25,5 +25,9 @@
 				<period>15</period>
 			</schedule>
 		</rulesEvaluator>
+		<cloudController>
+			<hostname>localhost</hostname>
+			<port>9444</port>
+		</cloudController>
 	</autoscaler>
 </configuration>

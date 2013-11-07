@@ -215,6 +215,12 @@
             <destName>jndi.properties</destName>
         </file>
         <file>
+            <source>src/main/conf/autoscaler.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
             <source>src/main/resources/log4j.properties</source>
             <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
