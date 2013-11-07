@@ -19,6 +19,9 @@
 
 package org.apache.stratos.adc.mgt.dto;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Cartridge implements Comparable<Cartridge> {
 
     private String displayName;
@@ -196,6 +199,78 @@ public class Cartridge implements Comparable<Cartridge> {
 		}
 		return compare;
 	}
-	
+
+
+    @GET
+    @Path("/cartridge/tenanted/list")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableMultiTenantCartridges() throws ADCException {
+        List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, true, getConfigContext());
+        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    }
+
+    @GET
+    @Path("/cartridge/list")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableSingleTenantCartridges() throws ADCException {
+        List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, false, getConfigContext());
+        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    }
+
+    @GET
+    @Path("/cartridge/list/subscribed")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getSubscribedCartridges() throws ADCException {
+        List<Cartridge> cartridgeList = ServiceUtils.getSubscribedCartridges(null, getConfigContext());
+        // Following is very important when working with axis2
+        return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
+    }
+
+    @POST
+    @Path("/cartridge/subscribe")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) {
+        try {
+            return ServiceUtils.subscribe(cartridgeInfoBean.getCartridgeType(),
+                    cartridgeInfoBean.getAlias(),
+                    cartridgeInfoBean.getPolicy(),
+                    cartridgeInfoBean.getRepoURL(),
+                    cartridgeInfoBean.isPrivateRepo(),
+                    cartridgeInfoBean.getRepoUsername(),
+                    cartridgeInfoBean.getRepoPassword(),
+                    cartridgeInfoBean.getDataCartridgeType(),
+                    cartridgeInfoBean.getDataCartridgeAlias(),
+                    getConfigContext(),
+                    getUsername(),
+                    getTenantDomain());
+        } catch (Exception exception) {
+            log.error(exception);
+            return null;
+        }
+    }
+
+    @POST
+    @Path("/cartridge/unsubscribe")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public void unsubscribe(String alias){
+        try {
+            ServiceUtils.unsubscribe(alias,getTenantDomain());
+        } catch (Exception exception) {
+            log.error(exception);
+        }
+    }
+
+
+
+
 
 }

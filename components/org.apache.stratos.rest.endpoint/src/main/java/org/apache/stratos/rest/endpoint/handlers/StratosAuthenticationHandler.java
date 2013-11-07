@@ -81,6 +81,7 @@ public class StratosAuthenticationHandler implements RequestHandler {
                 PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
                 carbonContext.setTenantDomain(tenantDomain);
                 carbonContext.setTenantId(tenantId);
+                carbonContext.setUsername(username);
                 //populate the secuirtyContext of authenticated user
                 SecurityContext securityContext = new StratosSecurityContext(username);
                 message.put(SecurityContext.class, securityContext);

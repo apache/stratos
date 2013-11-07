@@ -21,6 +21,7 @@ package org.apache.stratos.rest.endpoint.services;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -53,5 +54,11 @@ public class AbstractAdmin {
         }
     }
 
+    protected String getTenantDomain(){
+        return CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+    }
 
+    protected String getUsername(){
+        return CarbonContext.getThreadLocalCarbonContext().getUsername();
+    }
 }

@@ -20,6 +20,9 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.dto.Cartridge;
+import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
+import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
@@ -27,6 +30,7 @@ import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
+import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
@@ -46,6 +50,76 @@ import java.util.List;
 @Path("/admin/")
 public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
+
+
+
+    @GET
+    @Path("/cartridge/tenanted/list")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableMultiTenantCartridges() throws ADCException {
+        List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, true, getConfigContext());
+        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    }
+
+    @GET
+    @Path("/cartridge/list")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableSingleTenantCartridges() throws ADCException {
+        List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, false, getConfigContext());
+        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    }
+
+    @GET
+    @Path("/cartridge/list/subscribed")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getSubscribedCartridges() throws ADCException {
+        List<Cartridge> cartridgeList = ServiceUtils.getSubscribedCartridges(null, getConfigContext());
+        // Following is very important when working with axis2
+        return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
+    }
+
+    @POST
+    @Path("/cartridge/subscribe")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) {
+        try {
+            return ServiceUtils.subscribe(cartridgeInfoBean.getCartridgeType(),
+                    cartridgeInfoBean.getAlias(),
+                    cartridgeInfoBean.getPolicy(),
+                    cartridgeInfoBean.getRepoURL(),
+                    cartridgeInfoBean.isPrivateRepo(),
+                    cartridgeInfoBean.getRepoUsername(),
+                    cartridgeInfoBean.getRepoPassword(),
+                    cartridgeInfoBean.getDataCartridgeType(),
+                    cartridgeInfoBean.getDataCartridgeAlias(),
+                    getConfigContext(),
+                    getUsername(),
+                    getTenantDomain());
+        } catch (Exception exception) {
+            log.error(exception);
+            return null;
+        }
+    }
+
+    @POST
+    @Path("/cartridge/unsubscribe")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public void unsubscribe(String alias){
+        try {
+            ServiceUtils.unsubscribe(alias,getTenantDomain());
+        } catch (Exception exception) {
+            log.error(exception);
+        }
+    }
 
 
 
