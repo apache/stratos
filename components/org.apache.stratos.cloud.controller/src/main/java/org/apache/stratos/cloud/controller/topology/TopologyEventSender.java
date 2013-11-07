@@ -21,8 +21,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.Cartridge;
+import org.apache.stratos.cloud.controller.util.PortMapping;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
@@ -40,6 +42,16 @@ public class TopologyEventSender {
         ServiceCreatedEvent serviceCreatedEvent;
         for(Cartridge cartridge : cartridgeList) {
             serviceCreatedEvent = new ServiceCreatedEvent(cartridge.getType());
+
+            // Add ports to the event
+            Port port;
+            List<PortMapping> portMappings = cartridge.getPortMappings();
+            for(PortMapping portMapping : portMappings) {
+                port = new Port(portMapping.getProtocol(),
+                                Integer.parseInt(portMapping.getPort()),
+                                Integer.parseInt(portMapping.getProxyPort()));
+                serviceCreatedEvent.addPort(port);
+            }
             publishEvent(serviceCreatedEvent);
         }
     }

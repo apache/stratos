@@ -29,11 +29,13 @@ public class Service {
     private String serviceName;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterMap;
+    private Map<String, Port> portMap;
     private Properties properties;
 
     public Service(String serviceName) {
         this.serviceName = serviceName;
         this.clusterMap = new HashMap<String, Cluster>();
+        this.portMap = new HashMap<String, Port>();
     }
 
     public String getServiceName() {
@@ -63,6 +65,37 @@ public class Service {
     public Cluster getCluster(String clusterId) {
         return this.clusterMap.get(clusterId);
     }
+
+    public Collection<Port> getPorts() {
+        return portMap.values();
+    }
+
+    public void addPort(Port port) {
+        this.portMap.put(port.getProtocol(), port);
+    }
+
+    public void addPorts(Collection<Port> ports) {
+        for(Port port: ports) {
+            addPort(port);
+        }
+    }
+
+    public void removePort(Port port) {
+        this.portMap.remove(port.getProtocol());
+    }
+
+    public void removePort(String protocol) {
+        this.portMap.remove(protocol);
+    }
+
+    public boolean portExists(Port port) {
+        return this.portMap.containsKey(port.getProtocol());
+    }
+
+    public Port getPort(String protocol) {
+        return this.portMap.get(protocol);
+    }
+
 
     public Properties getProperties() {
         return properties;

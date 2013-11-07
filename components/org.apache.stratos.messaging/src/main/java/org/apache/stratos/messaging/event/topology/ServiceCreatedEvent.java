@@ -19,7 +19,11 @@
 
 package org.apache.stratos.messaging.event.topology;
 
+import org.apache.stratos.messaging.domain.topology.Port;
+
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -28,6 +32,7 @@ import java.util.Properties;
 public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 3480876570877127669L;
 	private String serviceName;
+    private Map<String, Port> portMap;
     private Properties properties;
 
     public ServiceCreatedEvent(String serviceName) {
@@ -36,6 +41,30 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public Collection<Port> getPorts() {
+        return portMap.values();
+    }
+
+    public void addPort(Port port) {
+        this.portMap.put(port.getProtocol(), port);
+    }
+
+    public void removePort(Port port) {
+        this.portMap.remove(port.getProtocol());
+    }
+
+    public void removePort(String portName) {
+        this.portMap.remove(portName);
+    }
+
+    public boolean portExists(Port port) {
+        return this.portMap.containsKey(port.getProtocol());
+    }
+
+    public Port getPort(String portName) {
+        return this.portMap.get(portName);
     }
 
     public Properties getProperties() {
