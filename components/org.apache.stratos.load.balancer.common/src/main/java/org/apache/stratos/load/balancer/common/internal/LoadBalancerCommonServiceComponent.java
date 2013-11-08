@@ -23,7 +23,9 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 
 /**
- *
+ * @scr.component name="org.apache.stratos.load.balancer.common.internal.LoadBalancerCommonServiceComponent" immediate="true"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
  */
 public class LoadBalancerCommonServiceComponent {
 
