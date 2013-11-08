@@ -21,6 +21,8 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.EventListener;
+import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
@@ -29,19 +31,80 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class TopologyEventProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(TopologyEventProcessorChain.class);
 
+    private ServiceCreatedEventProcessor serviceCreatedEventProcessor;
+    private ServiceRemovedEventProcessor serviceRemovedEventProcessor;
+    private ClusterCreatedEventProcessor clusterCreatedEventProcessor;
+    private ClusterRemovedEventProcessor clusterRemovedEventProcessor;
+    private InstanceSpawnedEventProcessor instanceSpawnedEventProcessor;
+    private MemberStartedEventProcessor memberStartedEventProcessor;
+    private MemberActivatedEventProcessor memberActivatedEventProcessor;
+    private MemberSuspendedEventProcessor memberSuspendedEventProcessor;
+    private MemberTerminatedEventProcessor memberTerminatedEventProcessor;
+
     public void initialize() {
         // Add topology event processors
-        add(new ServiceCreatedEventProcessor());
-        add(new ServiceRemovedEventProcessor());
-        add(new ClusterCreatedEventProcessor());
-        add(new ClusterRemovedEventProcessor());
-        add(new InstanceSpawnedEventProcessor());
-        add(new MemberStartedEventProcessor());
-        add(new MemberActivatedEventProcessor());
-        add(new MemberSuspendedEventProcessor());
-        add(new MemberTerminatedEventProcessor());
+        serviceCreatedEventProcessor = new ServiceCreatedEventProcessor();
+        add(serviceCreatedEventProcessor);
+
+        serviceRemovedEventProcessor = new ServiceRemovedEventProcessor();
+        add(serviceRemovedEventProcessor);
+
+        clusterCreatedEventProcessor = new ClusterCreatedEventProcessor();
+        add(clusterCreatedEventProcessor);
+
+        clusterRemovedEventProcessor = new ClusterRemovedEventProcessor();
+        add(clusterRemovedEventProcessor);
+
+        instanceSpawnedEventProcessor = new InstanceSpawnedEventProcessor();
+        add(instanceSpawnedEventProcessor);
+
+        memberStartedEventProcessor = new MemberStartedEventProcessor();
+        add(memberStartedEventProcessor);
+
+        memberActivatedEventProcessor = new MemberActivatedEventProcessor();
+        add(memberActivatedEventProcessor);
+
+        memberSuspendedEventProcessor = new MemberSuspendedEventProcessor();
+        add(memberSuspendedEventProcessor);
+
+        memberTerminatedEventProcessor = new MemberTerminatedEventProcessor();
+        add(memberTerminatedEventProcessor);
+
         if(log.isDebugEnabled()) {
             log.debug("Topology message processor chain initialized");
+        }
+    }
+
+    public void addEventListener(EventListener eventListener) {
+        if(eventListener instanceof ClusterCreatedEventListener) {
+            clusterCreatedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof ClusterRemovedEventListener) {
+            clusterRemovedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof InstanceSpawnedEventListener) {
+            instanceSpawnedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof MemberActivatedEventListener) {
+            memberActivatedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof MemberStartedEventListener) {
+            memberStartedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof MemberSuspendedEventListener) {
+            memberSuspendedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof MemberTerminatedEventListener) {
+            memberTerminatedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof ServiceCreatedEventListener) {
+            serviceCreatedEventProcessor.addEventListener(eventListener);
+        }
+        else if(eventListener instanceof ServiceRemovedEventListener) {
+            serviceRemovedEventProcessor.addEventListener(eventListener);
+        }
+        else {
+            throw new RuntimeException("Unknown event listener");
         }
     }
 }
