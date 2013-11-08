@@ -18,7 +18,9 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-public class PartitionRemovedEvent {
+import java.io.Serializable;
+
+public class PartitionRemovedEvent extends TopologyEvent implements Serializable {
     private String partitionId;
 
     public PartitionRemovedEvent(String partitionId) {

@@ -18,10 +18,11 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PartitionUpdatedEvent {
+public class PartitionUpdatedEvent extends TopologyEvent implements Serializable {
     private String id;
     private String scope;
     private Map<String, String> properties = new HashMap<String, String>();
