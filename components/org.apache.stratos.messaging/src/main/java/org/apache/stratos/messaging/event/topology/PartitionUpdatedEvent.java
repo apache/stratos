@@ -27,7 +27,7 @@ public class PartitionUpdatedEvent {
     private Map<String, String> properties = new HashMap<String, String>();
     private String oldPartitionId;
 
-    PartitionUpdatedEvent(String id, String scope, String oldId) {
+    public PartitionUpdatedEvent(String id, String scope, String oldId) {
         this.id = id;
         this.scope = scope;
         this.oldPartitionId = oldId;

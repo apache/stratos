@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.event.topology;
 public class PartitionRemovedEvent {
     private String partitionId;
 
-    PartitionRemovedEvent(String partitionId) {
+    public PartitionRemovedEvent(String partitionId) {
         this.partitionId = partitionId;
     }
 

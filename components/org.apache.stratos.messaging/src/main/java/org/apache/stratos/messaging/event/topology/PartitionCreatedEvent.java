@@ -26,7 +26,7 @@ public class PartitionCreatedEvent {
     private String scope;
     private Map<String, String> properties = new HashMap<String, String>();
 
-    PartitionCreatedEvent(String id, String scope) {
+    public PartitionCreatedEvent(String id, String scope) {
         this.id = id;
         this.scope = scope;
     }
