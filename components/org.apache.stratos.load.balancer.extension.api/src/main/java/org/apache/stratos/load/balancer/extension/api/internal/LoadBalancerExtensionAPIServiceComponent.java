@@ -21,11 +21,14 @@ package org.apache.stratos.load.balancer.extension.api.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.extension.api.internal.LoadBalancerExtensionAPIServiceComponent" immediate="true"
  * @scr.reference name="config.context.service"
  * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
+ * policy="dynamic" bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  */
 public class LoadBalancerExtensionAPIServiceComponent {
 
@@ -39,5 +42,11 @@ public class LoadBalancerExtensionAPIServiceComponent {
         } catch (Exception e) {
             log.error("Could not activate Load Balancer Extension API Service bundle", e);
         }
+    }
+
+    protected void setConfigurationContextService(ConfigurationContextService contextService) {
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
     }
 }
