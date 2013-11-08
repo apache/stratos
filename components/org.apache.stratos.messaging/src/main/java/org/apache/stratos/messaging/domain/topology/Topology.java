@@ -34,6 +34,7 @@ public class Topology implements Serializable {
 
     public Topology() {
         this.serviceMap = new HashMap<String, Service>();
+        partitionMap = new HashMap<String, Partition>();
     }
 
     public Collection<Service> getServices() {
