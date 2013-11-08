@@ -35,6 +35,7 @@
 
     <modules>
         <module>modules/event-publisher</module>
+	<module>modules/health-stats</module>
     </modules>
 </project>
 
