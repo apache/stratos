@@ -24,6 +24,7 @@ import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.PortMapping;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.domain.topology.Partition;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
@@ -54,6 +55,29 @@ public class TopologyEventSender {
             }
             publishEvent(serviceCreatedEvent);
         }
+    }
+
+     public static void sendPartitionCreatedEvent(Partition partition) {
+         PartitionCreatedEvent partitionCreatedEvent =
+                 new PartitionCreatedEvent(partition.getId(),
+                                           partition.getScope());
+         partitionCreatedEvent.setProperties(partition.getProperties());
+         publishEvent(partitionCreatedEvent);
+     }
+
+    public static void sendPartitionUpdatedEvent(Partition partition, String oldPartitionId) {
+        PartitionUpdatedEvent partitionUpdatedEvent =
+                new PartitionUpdatedEvent(partition.getId(),
+                                          partition.getScope(),
+                                          oldPartitionId);
+        partitionUpdatedEvent.setProperties(partition.getProperties());
+        publishEvent(partitionUpdatedEvent);
+    }
+
+    public static void sendPartitionRemovedEvent(Partition partition) {
+        PartitionRemovedEvent partitionRemovedEvent =
+                new PartitionRemovedEvent(partition.getId());
+        publishEvent(partitionRemovedEvent);
     }
 
     public static void sendServiceRemovedEvent(List<Cartridge> cartridgeList) {

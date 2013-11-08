@@ -18,20 +18,20 @@
  */
 package org.apache.stratos.cloud.controller.deployers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.AbstractDeployer;
 import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * All the {@link IaasProvider}s will get deployed / undeployed / updated via this class. 
@@ -72,6 +72,7 @@ public class CloudControllerDeployer extends AbstractDeployer{
 
 			// load iaases
 			parser.setIaasProvidersList();
+            parser.setPartitionsList();
 			parser.setDataPublisherRelatedData();
 			parser.setTopologySyncRelatedData();
 

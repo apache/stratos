@@ -31,6 +31,10 @@ public final class CloudControllerConstants {
     public static final String SERIALIZATION_DIR_ELEMENT = "serializationDir";
     public static final String IAAS_PROVIDERS_ELEMENT = "iaasProviders";
     public static final String IAAS_PROVIDER_ELEMENT = "iaasProvider";
+    public static final String PARTITION_ELEMENT = "partition";
+    public static final String PARTITIONS_ELEMENT = "partitions";
+    public static final String REGION_ELEMENT = "region";
+    public static final String ZONE_ELEMENT = "zone";
     public static final String DEPLOYMENT_ELEMENT = "deployment";
     public static final String PORT_MAPPING_ELEMENT = "portMapping";
     public static final String APP_TYPES_ELEMENT = "appTypes";
@@ -60,6 +64,9 @@ public final class CloudControllerConstants {
     public static final String MAX_INSTANCE_LIMIT_ELEMENT = "maxInstanceLimit";
     public static final String PROVIDER_ELEMENT = "provider";
     public static final String IDENTITY_ELEMENT = "identity";
+    public static final String TYPE_ELEMENT = "type";
+    public static final String SCOPE_ELEMENT = "type";
+    public static final String ID_ELEMENT = "id";
     public static final String CREDENTIAL_ELEMENT = "credential";
     public static final String DEFAULT_SERVICE_ELEMENT = "default";
     public static final String SERVICE_ELEMENT = "service";
@@ -137,6 +144,15 @@ public final class CloudControllerConstants {
      */
     public static final String IAAS_PROVIDER_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
      IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT;
+     public static final String PARTITION_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
+     PARTITIONS_ELEMENT+"/"+PARTITION_ELEMENT;
+    public static final String REGION_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
+     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + "/" + REGION_ELEMENT;
+    public static final String ZONE_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
+     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + REGION_ELEMENT + "/" + ZONE_ELEMENT;
+     public static final String HOST_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
+     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + REGION_ELEMENT + "/" + ZONE_ELEMENT
+             + "/" + HOST_ELEMENT ;
     public static final String PROPERTY_ELEMENT_XPATH = "/"+PROPERTY_ELEMENT;
     public static final String IMAGE_ID_ELEMENT_XPATH = "/"+IMAGE_ID_ELEMENT;
     public static final String SCALE_UP_ORDER_ELEMENT_XPATH = "/"+SCALE_UP_ORDER_ELEMENT;
