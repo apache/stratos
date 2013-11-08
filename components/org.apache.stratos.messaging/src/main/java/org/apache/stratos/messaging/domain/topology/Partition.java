@@ -46,4 +46,22 @@ public class Partition {
     public void setScope(String scope) {
         this.scope = scope;
     }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void setProperty(String key, String value) {
+        if (key != null && value != null) {
+            getProperties().put(key, value);
+        }
+    }
+
+    public String getProperty(String key) {
+        return getProperties().get(key);
+    }
 }
