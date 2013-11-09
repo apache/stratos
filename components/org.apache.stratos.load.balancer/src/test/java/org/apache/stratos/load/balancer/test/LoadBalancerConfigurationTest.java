@@ -37,7 +37,7 @@ public class LoadBalancerConfigurationTest extends TestCase {
 
         LoadBalancerConfiguration.setInstance(null);
         File f = new File("src/test/resources/loadbalancer.conf");
-        System.setProperty("loadbalancer.conf", f.getAbsolutePath());
+        System.setProperty("loadbalancer.conf", f.toURI().toString());
         lbConfig = LoadBalancerConfiguration.getInstance();
     }
     
@@ -94,7 +94,7 @@ public class LoadBalancerConfigurationTest extends TestCase {
         /* tests relevant to loadbalancer1.conf file */
         
         File f = new File("src/test/resources/loadbalancer2.conf");
-        System.setProperty("loadbalancer.conf", f.getAbsolutePath());
+        System.setProperty("loadbalancer.conf", f.toURI().toString());
         
         LoadBalancerConfiguration.setInstance(null);
         lbConfig1 = LoadBalancerConfiguration.getInstance();
