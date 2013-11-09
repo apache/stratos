@@ -23,6 +23,7 @@ import org.apache.stratos.messaging.domain.topology.Port;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -37,6 +38,7 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 
     public ServiceCreatedEvent(String serviceName) {
         this.serviceName = serviceName;
+        this.portMap = new HashMap<String, Port>();
     }
 
     public String getServiceName() {

@@ -49,9 +49,8 @@ public class LoadBalancerExtension implements Runnable {
             TopologyReceiver topologyReceiver = new TopologyReceiver(createMessageDelegator());
             Thread thread = new Thread(topologyReceiver);
             thread.start();
-        }
-        catch (Exception e){
-            if(log.isErrorEnabled()) {
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
                 log.error(e);
             }
             loadBalancer.stop();
@@ -71,7 +70,7 @@ public class LoadBalancerExtension implements Runnable {
                 loadBalancer.start();
             }
         });
-        return  messageDelegator;
+        return messageDelegator;
     }
 
     private TopologyEventProcessorChain createEventProcessorChain() {
