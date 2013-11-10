@@ -82,6 +82,7 @@
     <modules>
         <module>service-stubs</module>
         <module>components</module>
+        <module>extensions</module>
         <module>features</module>
         <module>products</module>
     </modules>
