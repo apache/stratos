@@ -42,6 +42,7 @@ import java.io.StringWriter;
  */
 public class HAProxyConfigWriter {
     private static final Log log = LogFactory.getLog(Main.class);
+    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private String templatePath;
     private String templateName;
@@ -64,22 +65,22 @@ public class HAProxyConfigWriter {
                     String frontEndId = cluster.getClusterId() + "-proxy-" + port.getProxy();
                     String backEndId = frontEndId + "-members";
 
-                    sb.append("frontend ").append(frontEndId).append("\n");
-                    sb.append("\tbind ").append(cluster.getHostName()).append(":").append(port.getProxy()).append("\n");
-                    sb.append("\tdefault_backend ").append(backEndId).append("\n");
-                    sb.append("\n");
-                    sb.append("backend ").append(backEndId).append("\n");
+                    sb.append("frontend ").append(frontEndId).append(NEW_LINE);
+                    sb.append("\tbind ").append(cluster.getHostName()).append(":").append(port.getProxy()).append(NEW_LINE);
+                    sb.append("\tdefault_backend ").append(backEndId).append(NEW_LINE);
+                    sb.append(NEW_LINE);
+                    sb.append("backend ").append(backEndId).append(NEW_LINE);
 
                     for (Member member : cluster.getMembers()) {
                         sb.append("\tserver ").append(member.getMemberId()).append(" ")
-                          .append(member.getMemberIp()).append(":").append(port.getValue()).append("\n");
+                          .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
                     }
-                    sb.append("\n");
+                    sb.append(NEW_LINE);
                 }
             }
         }
 
-        // Start the VelocityEngine
+        // Start velocity engine
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, templatePath);
         ve.init();
@@ -87,7 +88,7 @@ public class HAProxyConfigWriter {
         // Open the template
         Template t = ve.getTemplate(templateName);
 
-        // Insert the strings into the template
+        // Insert strings into the template
         VelocityContext context = new VelocityContext();
         context.put("frontend_backend_collection", sb.toString());
 
@@ -102,7 +103,9 @@ public class HAProxyConfigWriter {
             writer.write(configuration);
             writer.close();
 
-            log.info("wrote configuration to file");
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Configuration written to file: %s", confFilePath));
+            }
         } catch (IOException e) {
             if(log.isErrorEnabled()) {
                 log.error("Could not write configuration file", e);

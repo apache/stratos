@@ -40,7 +40,6 @@ public class HAProxy implements LoadBalancer {
 
     private String executableFilePath;
     private String processIdFilePath;
-
     private String templatePath;
     private String templateName;
     private String confFilePath;
