@@ -348,18 +348,6 @@
                         <requireJavaVersion>
                             <version>[1.6,1.8)</version>
                         </requireJavaVersion>
-                        <requireProperty>
-                            <property>java.vendor</property>
-                            <message>JAVA_HOME does not point to a Sun JDK or Oracle JDK.  Only Sun and Oracle JDKs are supported for building Stratos.</message>
-                            <regex>(Sun Microsystems Inc\.|Oracle Corporation)</regex>
-                            <regexMessage>JAVA_HOME does not point to a Sun JDK or Oracle JDK.  Only Sun and Oracle JDKs are supported for building Stratos.</regexMessage>
-                        </requireProperty>
-                        <requireProperty>
-                            <property>java.runtime.name</property>
-                            <message>JAVA_HOME does not point to a Sun JDK or Oracle JDK.  Only Sun and Oracle JDKs are supported for building Stratos.</message>
-                            <regex>Java\(TM\) SE Runtime Environment</regex>
-                            <regexMessage>JAVA_HOME does not point to a Sun JDK or Oracle JDK.  Only Sun and Oracle JDKs are supported for building Stratos.</regexMessage>
-                        </requireProperty>
                     </rules>
                     <fail>true</fail>
                 </configuration>
