@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.messaging.domain.topology.Partition;
+import org.apache.stratos.messaging.domain.topology.Scope;
 import org.jaxen.JaxenException;
 import org.w3c.dom.Element;
 import org.wso2.securevault.SecretResolver;
@@ -473,7 +474,7 @@ public class AxiomXpathParser {
             if (partition == null) {
                 partition = new Partition();
                 partition.setId(id);
-                partition.setScope(type);
+                partition.setScope(Scope.valueOf(type));
                 loadProperties(iaasElt, partition.getProperties());
                 //handle partition created event
                 TopologyBuilder.handlePartitionCreated(partition);
@@ -481,14 +482,14 @@ public class AxiomXpathParser {
             } else {
                 Partition partition1 = new Partition();
                 partition1.setId(id);
-                partition1.setScope(type);
+                partition1.setScope(Scope.valueOf(type));
                 loadProperties(iaasElt, partition1.getProperties());
                 Gson gson = new Gson();
                 String partitionS = gson.toJson(partition);
                 String partition1S = gson.toJson(partition1);
                 if (!partitionS.endsWith(partition1S)) {
                     partition.setId(id);
-                    partition.setScope(type);
+                    partition.setScope(Scope.valueOf(type));
                     loadProperties(iaasElt, partition.getProperties());
                     //handle update partition event
                     TopologyBuilder.handlePartitionUpdated(partition, oldPartition);
