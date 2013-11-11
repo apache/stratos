@@ -24,10 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.message.receiver.TopologyManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,8 +37,8 @@ import java.util.concurrent.TimeUnit;
  * This class is responsible for scheduling the task of evaluating the current details of topology, statistics, and health
  * status against the rules set(written in Drools)
  */
-public class ExecutorTaskScheduler {
-	private static final Log log = LogFactory.getLog(ExecutorTaskScheduler.class);
+public class ExecutorTaskScheduler implements Runnable {
+    private static final Log log = LogFactory.getLog(ExecutorTaskScheduler.class);
 
     private static int initialDelay;
     private static int period;
@@ -49,41 +49,39 @@ public class ExecutorTaskScheduler {
         period = conf.getInt("autoscaler.rulesEvaluator.schedule.period", Constants.SCHEDULE_DEFAULT_PERIOD);
     }
 
-    public void start(){
+    @Override
+    public void run() {
         final Runnable rulesEvaluator = new Runnable() {
-			public void run() {
+            public void run() {
 
-				try {
+                try {
                     for (Service service : TopologyManager.getTopology().getServices()) {
 
                         AutoscalerRuleEvaluator.getInstance().evaluate(service);
                     }
 
-                           //Remove cluster context if its already removed from Topology
-                    for(String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()){
-
+                    // Remove cluster context if its already removed from Topology
+                    for (String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()) {
                         boolean clusterAvailable = false;
                         for (Service service : TopologyManager.getTopology().getServices()) {
-
-                            for (Cluster cluster: service.getClusters()) {
-
-                                if(cluster.getClusterId().equals(clusterContextId)){
+                            for (Cluster cluster : service.getClusters()) {
+                                if (cluster.getClusterId().equals(clusterContextId)) {
 
                                     clusterAvailable = true;
                                 }
                             }
                         }
 
-                        if(!clusterAvailable){
+                        if (!clusterAvailable) {
                             AutoscalerContext.getInstance().removeClusterContext(clusterContextId);
                         }
                     }
 
-				} catch (Exception e) {
-					log.error("Error ", e);
-				}
-			}
-		};
+                } catch (Exception e) {
+                    log.error("Error ", e);
+                }
+            }
+        };
         ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
         ex.scheduleWithFixedDelay(rulesEvaluator, initialDelay, period, TimeUnit.SECONDS);
     }
