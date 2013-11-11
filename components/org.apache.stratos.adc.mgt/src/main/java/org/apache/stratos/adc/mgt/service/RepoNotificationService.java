@@ -30,9 +30,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
+import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.adc.mgt.utils.RepoPasswordMgtUtil;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
 import org.wso2.carbon.core.deployment.SynchronizeGitRepositoryRequest;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -93,63 +97,9 @@ public class RepoNotificationService {
 			createAndSendClusterMessage(subscription.getTenantId(), subscription.getTenantDomain(),
 			                            UUID.randomUUID(), subscription.getClusterDomain(),
 			                            subscription.getClusterSubdomain());
-			//for manager node
-			           /* if (subscription.getMgtClusterSubDomain() != null && !subscription.getMgtClusterSubDomain().isEmpty()) {
-			                createAndSendClusterMessage(subscription.getTenantId(), subscription.getTenantDomain(),
-			                        UUID.randomUUID(), subscription.getMgtClusterDomain(),
-			                        subscription.getMgtClusterSubDomain());
-			            }
-			            else {
-			                if(log.isDebugEnabled())
-			                    log.debug("Manager node cluster information not found, not sending the SynchronizeGitRepositoryRequest");
-			            }*/
-
-		} else {
-
-			// Query DB and get all the IP s for this tenant 
-			// Invoke update-subscription script
 			
-			String appPath = subscription.getBaseDirectory();
-			String cartridgePrivateKey = System.getProperty(CartridgeConstants.CARTRIDGE_KEY);
-			
-			File keyFile = new File(cartridgePrivateKey);
-			if (!keyFile.exists()) {
-				log.error("The key file does not exist! " + cartridgePrivateKey);
-			}
-
-			if (subscription != null) {
-				TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
-
-				
-				if (topologyMgtService == null) {
-					String msg = " Topology Management Service is null ";
-					log.error(msg);
-					throw new Exception(msg);
-				}
-
-				String[] activeIpArray =
-				                         topologyMgtService.getActiveIPs(subscription.getCartridge(),
-				                                                         subscription.getClusterDomain(),
-				                                                         subscription.getClusterSubdomain());
-				try {
-
-					for (String instanceIp : activeIpArray) {
-						String command =
-						                 CarbonUtils.getCarbonHome() + File.separator + "bin" +
-						                         File.separator + "update-subscription.sh " +
-						                         instanceIp + " " + appPath + " " +
-						                         cartridgePrivateKey + " /";
-						log.info("Update subscription command.... " + command);
-						Process proc = Runtime.getRuntime().exec(command);
-						proc.waitFor();
-					}
-
-				} catch (Exception e) {
-					log.error("Exception is occurred in notify update operation. Reason : " +
-					          e.getMessage());
-					throw e;
-				}
-			}
+		} else {						
+			new ArtifactUpdatePublisher(subscription.getRepository(),subscription.getClusterDomain()).publish();;
 		}
 	}
 

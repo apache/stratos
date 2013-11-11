@@ -18,9 +18,16 @@
  */
 package org.apache.stratos.adc.mgt.utils;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.commons.codec.binary.Base64;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
@@ -28,17 +35,6 @@ import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
 import org.apache.stratos.adc.mgt.dao.RepositoryCredentials;
 import org.apache.stratos.adc.mgt.repository.Repository;
-import org.wso2.carbon.utils.CarbonUtils;
-import org.wso2.securevault.SecretResolver;
-import org.wso2.securevault.SecretResolverFactory;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.namespace.QName;
-import java.io.File;
-import java.sql.*;
-import java.util.*;
 
 /**
  * This class is responsible for handling persistence
@@ -266,7 +262,7 @@ public class PersistenceManager {
 				repoCredentials = new RepositoryCredentials();
 				repoCredentials.setUrl(resultSet.getString("REPO_NAME"));
 				repoCredentials.setUserName(resultSet.getString("REPO_USER_NAME"));
-				repoCredentials.setPassword(decryptPassword(resultSet.getString("REPO_USER_PASSWORD")));
+				repoCredentials.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.getString("REPO_USER_PASSWORD")));
 			}
 		} catch (Exception s) {
 			String msg = "Error while sql connection :" + s.getMessage();
@@ -326,7 +322,7 @@ public class PersistenceManager {
 			con = StratosDBUtils.getConnection();
 			// persist repo
 			if (cartridgeSubscriptionInfo.getRepository() != null) {
-				String encryptedRepoUserPassword = encryptPassword(cartridgeSubscriptionInfo.getRepository()
+				String encryptedRepoUserPassword = RepoPasswordMgtUtil.encryptPassword(cartridgeSubscriptionInfo.getRepository()
 						.getPassword());
 				String insertRepo = "INSERT INTO REPOSITORY (REPO_NAME,STATE,REPO_USER_NAME,REPO_USER_PASSWORD)"
 						+ " VALUES (?,?,?,?)";
@@ -506,9 +502,13 @@ public class PersistenceManager {
 	private static void populateSubscription(CartridgeSubscriptionInfo cartridgeSubscriptionInfo, ResultSet resultSet)
 			throws Exception {
 		String repoName = resultSet.getString("REPO_NAME");
+		String repoUserName = resultSet.getString("REPO_USER_NAME");
+		String repoPassword = resultSet.getString("REPO_USER_PASSWORD");
 		if (repoName != null) {
 			Repository repo = new Repository();
 			repo.setUrl(repoName);
+			repo.setUserName(repoUserName);
+			repo.setPassword(repoPassword);
 			cartridgeSubscriptionInfo.setRepository(repo);
 		}
 
@@ -754,43 +754,7 @@ public class PersistenceManager {
 		return instanceIpToStateMap;
 	}
 
-	public static String getSecurityKey() {
-		String securityKey = CartridgeConstants.DEFAULT_SECURITY_KEY;
-		OMElement documentElement = null;
-		File xmlFile = new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf"
-				+ File.separator + CartridgeConstants.SECURITY_KEY_FILE);
-
-		if (xmlFile.exists()) {
-			try {
-				documentElement = new StAXOMBuilder(xmlFile.getPath()).getDocumentElement();
-			} catch (Exception ex) {
-				String msg = "Error occurred when parsing the " + xmlFile.getPath() + ".";
-				log.error(msg, ex);
-				ex.printStackTrace();
-			}
-			if (documentElement != null) {
-				Iterator<?> it = documentElement.getChildrenWithName(new QName(CartridgeConstants.SECURITY_KEY));
-				if (it.hasNext()) {
-					OMElement securityKeyElement = (OMElement) it.next();
-					SecretResolver secretResolver = SecretResolverFactory.create(documentElement, false);
-					String alias = securityKeyElement.getAttributeValue(new QName(CartridgeConstants.ALIAS_NAMESPACE,
-							CartridgeConstants.ALIAS_LOCALPART, CartridgeConstants.ALIAS_PREFIX));
-
-					if (secretResolver != null && secretResolver.isInitialized()
-							&& secretResolver.isTokenProtected(alias)) {
-						securityKey = "";
-						securityKey = secretResolver.resolve(alias);
-						// TODO : a proper testing on the secure vault protected
-						// user defined encryption key
-					}
-				}
-			}
-		}
-        else {
-            log.error(String.format("File does not exist: %s", xmlFile.getPath()));
-		}
-		return securityKey;
-	}
+	
 
 	public static void updateInstanceState(String state, String[] ips, String clusterDomain, String clusterSubDomain, String cartridgeType)
 			throws Exception {
@@ -843,44 +807,42 @@ public class PersistenceManager {
 		}
 
 	}
-
-	private static String encryptPassword(String repoUserPassword) {
-		String encryptPassword = "";
-		String secret = getSecurityKey(); // secret key length must be 16
-		SecretKey key;
-		Cipher cipher;
-		Base64 coder;
-		key = new SecretKeySpec(secret.getBytes(), "AES");
+	
+	
+	public static Repository getRepository(String clusterId) throws Exception {
+		
+		Repository repository =null;		
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		
 		try {
-			cipher = Cipher.getInstance("AES/ECB/PKCS5Padding", "SunJCE");
-			coder = new Base64();
-			cipher.init(Cipher.ENCRYPT_MODE, key);
-			byte[] cipherText = cipher.doFinal(repoUserPassword.getBytes());
-			encryptPassword = new String(coder.encode(cipherText));
-		} catch (Exception e) {
-			e.printStackTrace();
+			con = StratosDBUtils.getConnection();			
+			String sql = "SELECT REPO_NAME,REPO_USER_NAME,REPO_USER_PASSWORD FROM REPOSITORY R "
+					+ "WHERE R.REPO_ID IN (SELECT REPO_ID FROM CARTRIDGE_SUBSCRIPTION C WHERE C.CLUSTER_DOMAIN=? AND C.STATE != 'UNSUBSCRIBED') ";
+			
+			statement = con.prepareStatement(sql);
+			statement.setString(1, clusterId);
+			if (log.isDebugEnabled()) {
+				log.debug("Executing query: " + sql);
+			}
+			resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				repository = new Repository();
+				repository.setUrl(resultSet.getString("REPO_NAME"));
+				repository.setUserName(resultSet.getString("REPO_USER_NAME"));
+				repository.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.getString("REPO_USER_PASSWORD")));
+			}			
+		} catch (Exception s) {
+			String msg = "Error while sql connection :" + s.getMessage();
+			log.error(msg, s);
+			throw new Exception("An error occurred while listing cartridge information.");
+		} finally {
+			StratosDBUtils.closeAllConnections(con, statement, resultSet);
 		}
-		return encryptPassword;
+		return repository;
 	}
 
-	private static String decryptPassword(String repoUserPassword) {
-		String decryptPassword = "";
-		String secret = getSecurityKey(); // secret key length must be 16
-		SecretKey key;
-		Cipher cipher;
-		Base64 coder;
-		key = new SecretKeySpec(secret.getBytes(), "AES");
-		try {
-			cipher = Cipher.getInstance("AES/ECB/PKCS5Padding", "SunJCE");
-			coder = new Base64();
-			byte[] encrypted = coder.decode(repoUserPassword.getBytes());
-			cipher.init(Cipher.DECRYPT_MODE, key);
-			byte[] decrypted = cipher.doFinal(encrypted);
-			decryptPassword = new String(decrypted);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return decryptPassword;
-	}
+	
 
 }

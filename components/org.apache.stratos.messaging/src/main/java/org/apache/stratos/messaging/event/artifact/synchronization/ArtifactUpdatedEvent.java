@@ -25,6 +25,9 @@ package org.apache.stratos.messaging.event.artifact.synchronization;
 public class ArtifactUpdatedEvent {
     private String clusterId;
     private String status;
+    private String repoUserName;
+    private String repoPassword;
+    private String repoURL;
 
     public String getClusterId() {
         return clusterId;
@@ -41,4 +44,30 @@ public class ArtifactUpdatedEvent {
     public void setStatus(String status) {
         this.status = status;
     }
+
+	public String getRepoUserName() {
+		return repoUserName;
+	}
+
+	public void setRepoUserName(String repoUserName) {
+		this.repoUserName = repoUserName;
+	}
+
+	public String getRepoPassword() {
+		return repoPassword;
+	}
+
+	public void setRepoPassword(String repoPassword) {
+		this.repoPassword = repoPassword;
+	}
+
+	public String getRepoURL() {
+		return repoURL;
+	}
+
+	public void setRepoURL(String repoURL) {
+		this.repoURL = repoURL;
+	}
+    
+    
 }
