@@ -22,12 +22,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.messaging.domain.topology.Partition;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -48,6 +47,7 @@ public class ServiceContext implements Serializable{
     private Cartridge cartridge;
     private StringBuilder payload;
     private String autoScalerPolicyName;
+    private List<Partition> partitionList = new ArrayList<Partition>();
 
     /**
      * Key - Value pair.
@@ -362,5 +362,21 @@ public class ServiceContext implements Serializable{
 
     public void setAutoScalerPolicyName(String autoScalerPolicyName) {
         this.autoScalerPolicyName = autoScalerPolicyName;
+    }
+
+    public List<Partition> getPartitionList() {
+        return partitionList;
+    }
+
+    public void setPartitionList(List<Partition> partitionList) {
+        this.partitionList = partitionList;
+    }
+
+    public void addPartition(Partition partition) {
+        this.partitionList.add(partition);
+    }
+
+    public void removePartition(Partition partition) {
+        this.partitionList.remove(partition);
     }
 }

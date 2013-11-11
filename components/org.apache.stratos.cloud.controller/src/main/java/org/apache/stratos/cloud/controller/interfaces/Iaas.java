@@ -70,5 +70,7 @@ public abstract class Iaas {
      * @return whether the key pair creation is successful or not.
      */
     public abstract boolean createKeyPairFromPublicKey(IaasProvider iaasInfo, String region, String keyPairName, String publicKey);
+
+    public abstract void buildTemplate(IaasProvider iaas);
     
 }

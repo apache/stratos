@@ -205,7 +205,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
-                                           String iaasNodeId, LocationScope locationScope, String privateIp) {
+                                           String iaasNodeId, Partition locationScope, String privateIp) {
         //adding the new member to the cluster after it is successfully started in IaaS.
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);

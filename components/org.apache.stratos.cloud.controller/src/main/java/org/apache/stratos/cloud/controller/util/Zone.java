@@ -1,15 +1,21 @@
 package org.apache.stratos.cloud.controller.util;
 
+import org.jclouds.compute.ComputeService;
+import org.jclouds.compute.domain.Template;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Zone {
+public class Zone extends Region {
     private String id;
     private String type;
     private List<Host> listOfHosts;
 
     private Map<String, String> properties = new HashMap<String, String>();
+    private transient ComputeService computeService;
+
+    private transient Template template;
 
     public String getId() {
         return id;
@@ -43,7 +49,11 @@ public class Zone {
     }
 
     public String getProperty(String key) {
-        return getProperties().get(key);
+        if(getProperties().get(key) != null) {
+            return getProperties().get(key);
+        } else {
+            return super.getProperty(key);
+        }
     }
 
     public List<Host> getListOfHosts() {
@@ -60,5 +70,21 @@ public class Zone {
 
     public void removeHost(Host host) {
         this.listOfHosts.remove(host);
+    }
+
+     public ComputeService getComputeService() {
+        return computeService;
+    }
+
+    public void setComputeService(ComputeService computeService) {
+        this.computeService = computeService;
+    }
+
+    public Template getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(Template template) {
+        this.template = template;
     }
 }
