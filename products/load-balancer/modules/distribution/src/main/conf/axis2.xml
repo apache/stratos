@@ -346,7 +346,7 @@
      corresponding to the "class" attribute of the "clustering" element. It is also responsible for
      getting this node to join the cluster.
      -->
-    <clustering class="org.apache.axis2.clustering.tribes.TribesClusteringAgent" enable="true">
+    <clustering class="org.apache.axis2.clustering.tribes.TribesClusteringAgent" enable="false">
 
         <!--
            This parameter indicates whether the cluster has to be automatically initalized
