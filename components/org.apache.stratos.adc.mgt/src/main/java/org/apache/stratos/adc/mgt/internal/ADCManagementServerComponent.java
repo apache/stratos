@@ -20,10 +20,14 @@ package org.apache.stratos.adc.mgt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.listener.InstanceStatusListener;
 import org.apache.stratos.adc.mgt.utils.CartridgeConfigFileReader;
 import org.apache.stratos.adc.mgt.utils.StratosDBUtils;
-import org.osgi.service.component.ComponentContext;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.util.Constants;
+import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -56,7 +60,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class ADCManagementServerComponent {
     private static final Log log = LogFactory.getLog(ADCManagementServerComponent.class);
-
+    
 	protected void activate(ComponentContext componentContext) throws Exception {
 		if (log.isInfoEnabled()) {
 			log.info("ADC Management Server Component activated");
@@ -65,6 +69,15 @@ public class ADCManagementServerComponent {
 		try {
 			CartridgeConfigFileReader.readProperties();
 			StratosDBUtils.initialize();
+			DataHolder.setEventPublisher(new EventPublisher(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC));
+			
+            //initialting the subscriber
+			// Not implemented for M2 release
+            /*TopicSubscriber subscriber = new TopicSubscriber("instance-status");
+            subscriber.setMessageListener(new InstanceStatusListener());
+            Thread tsubscriber = new Thread(subscriber);
+			tsubscriber.start();*/
+			
 		} catch (Exception e) {
 			log.fatal("Error while initializing the ADC Management Server Component", e);
 		}
