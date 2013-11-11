@@ -18,17 +18,19 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
+import org.apache.stratos.messaging.domain.topology.Scope;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PartitionUpdatedEvent extends TopologyEvent implements Serializable {
     private String id;
-    private String scope;
+    private Scope scope;
     private Map<String, String> properties = new HashMap<String, String>();
     private String oldPartitionId;
 
-    public PartitionUpdatedEvent(String id, String scope, String oldId) {
+    public PartitionUpdatedEvent(String id, Scope scope, String oldId) {
         this.id = id;
         this.scope = scope;
         this.oldPartitionId = oldId;
@@ -42,11 +44,11 @@ public class PartitionUpdatedEvent extends TopologyEvent implements Serializable
         this.id = id;
     }
 
-    public String getScope() {
+    public Scope getScope() {
         return scope;
     }
 
-    public void setScope(String scope) {
+    public void setScope(Scope scope) {
         this.scope = scope;
     }
 

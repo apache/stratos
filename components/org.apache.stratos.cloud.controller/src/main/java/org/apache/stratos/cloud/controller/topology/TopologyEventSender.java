@@ -60,7 +60,7 @@ public class TopologyEventSender {
      public static void sendPartitionCreatedEvent(Partition partition) {
          PartitionCreatedEvent partitionCreatedEvent =
                  new PartitionCreatedEvent(partition.getId(),
-                                           partition.getScope().toString());
+                                           partition.getScope());
          partitionCreatedEvent.setProperties(partition.getProperties());
          publishEvent(partitionCreatedEvent);
      }
@@ -68,7 +68,7 @@ public class TopologyEventSender {
     public static void sendPartitionUpdatedEvent(Partition partition, String oldPartitionId) {
         PartitionUpdatedEvent partitionUpdatedEvent =
                 new PartitionUpdatedEvent(partition.getId(),
-                                          partition.getScope().toString(),
+                                          partition.getScope(),
                                           oldPartitionId);
         partitionUpdatedEvent.setProperties(partition.getProperties());
         publishEvent(partitionUpdatedEvent);
