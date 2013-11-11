@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -64,7 +65,7 @@ public class CloudControllerDSComponent {
         	String topicsString = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.TOPICS_PROPERTY);
         	
         	if(topicsString == null || topicsString.isEmpty()) {
-        		topicsString = CloudControllerConstants.TOPOLOGY_TOPIC_NAME;
+        		topicsString = Constants.TOPOLOGY_TOPIC;
         	} 
         	
         	String[] topics = topicsString.split(",");
