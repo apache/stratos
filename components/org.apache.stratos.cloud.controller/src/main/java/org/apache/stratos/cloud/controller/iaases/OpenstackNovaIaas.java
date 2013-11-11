@@ -64,7 +64,7 @@ public class OpenstackNovaIaas extends Iaas {
 
 	}
 
-	private void buildTemplate(IaasProvider iaas) {
+	public void buildTemplate(IaasProvider iaas) {
 		if (iaas.getComputeService() == null) {
 			throw new CloudControllerException(
 					"Compute service is null for IaaS provider: "
@@ -80,6 +80,9 @@ public class OpenstackNovaIaas extends Iaas {
 		TemplateBuilder templateBuilder = iaas.getComputeService()
 				.templateBuilder();
 		templateBuilder.imageId(iaas.getImage());
+        if(!(iaas instanceof IaasProvider)) {
+           templateBuilder.locationId(iaas.getType());
+        }
 
 		// to avoid creation of template objects in each and every time, we
 		// create all
@@ -139,7 +142,7 @@ public class OpenstackNovaIaas extends Iaas {
 		iaas.setTemplate(template);
 	}
 
-	@Override
+    @Override
 	public void setDynamicPayload(IaasProvider iaasInfo) {
 
 		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {

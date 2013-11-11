@@ -62,7 +62,7 @@ public class AWSEC2Iaas extends Iaas {
 
 	}
 
-	private void buildTemplate(IaasProvider iaas) {
+	public void buildTemplate(IaasProvider iaas) {
 		if (iaas.getComputeService() == null) {
 			String msg = "Compute service is null for IaaS provider: "
 					+ iaas.getName();
@@ -75,6 +75,10 @@ public class AWSEC2Iaas extends Iaas {
 
 		// set image id specified
 		templateBuilder.imageId(iaas.getImage());
+
+        if(!(iaas instanceof IaasProvider)) {
+           templateBuilder.locationId(iaas.getType());
+        }
 
 		if (iaas.getProperty("instanceType") != null) {
 			// set instance type eg: m1.large

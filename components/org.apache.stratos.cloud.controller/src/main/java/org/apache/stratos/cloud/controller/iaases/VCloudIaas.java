@@ -18,25 +18,25 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
+import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.vcloud.compute.options.VCloudTemplateOptions;
 import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
-import org.apache.stratos.cloud.controller.interfaces.Iaas;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class VCloudIaas extends Iaas {
 
@@ -53,7 +53,7 @@ public class VCloudIaas extends Iaas {
 
 	}
 
-	private void buildTemplate(IaasProvider iaas) {
+	public void buildTemplate(IaasProvider iaas) {
 		if (iaas.getComputeService() == null) {
 			String msg = "Compute service is null for IaaS provider: "
 					+ iaas.getName();
