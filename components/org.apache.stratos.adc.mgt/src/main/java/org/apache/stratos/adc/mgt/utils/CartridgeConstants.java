@@ -37,6 +37,8 @@ public class CartridgeConstants {
     public static final String UNSUBSCRIBED = "UNSUBSCRIBED";
     public static final String MB_IP = "mb.ip";
     public static final String MB_PORT = "mb.port";
+    public static final String CEP_IP = "cep.ip";
+    public static final String CEP_PORT = "cep.port";
 
 
 	public static final String DB_DATASOURCE = "adc.datasource";

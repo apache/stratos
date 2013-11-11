@@ -71,6 +71,10 @@ public abstract class Payload {
         payloadBuilder.append(",");
         payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
         payloadBuilder.append(",");
+        payloadBuilder.append("CEP_IP=" + System.getProperty(CartridgeConstants.CEP_IP));
+        payloadBuilder.append(",");
+        payloadBuilder.append("CEP_PORT=" + System.getProperty(CartridgeConstants.CEP_PORT));
+        payloadBuilder.append(",");
         payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
 
         if(payloadArg.getCartridgeInfo() != null) {
