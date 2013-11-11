@@ -334,9 +334,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     reloadPayload(serviceCtxt.getCartridge(), serviceCtxt.generatePayload());
 
                     iaas.getIaas().setDynamicPayload(iaas);
-
                     // get the pre built ComputeService from provider or region or zone or host
-                    if(scope.name().equals(Scope.PROVIDER.name())) {
+                    if(scope == null || scope.name().equals(Scope.PROVIDER.name())) {
                         computeService = iaas.getComputeService();
                         template = iaas.getTemplate();
                     } else if(scope.name().equals(Scope.REGION.name())) {
@@ -823,7 +822,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new CloudControllerException(msg);
 		}
 
-        if(scope.name().equals(Scope.PROVIDER.name())) {
+        if(scope == null || scope.name().equals(Scope.PROVIDER.name())) {
             iaasTemp.getComputeService().destroyNode(nodeId);
         } else if(scope.name().equals(Scope.REGION.name())) {
             for(Region region : iaasTemp.getListOfRegions()) {
