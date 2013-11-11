@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
-	    <version>0.13.wso2v6</version>
+	    <version>0.13.wso2v8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs.wso2</groupId>
