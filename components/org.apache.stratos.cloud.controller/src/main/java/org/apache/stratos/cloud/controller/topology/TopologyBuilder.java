@@ -70,6 +70,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.getInstance().acquireWriteLock();
             topology.addPartition(partition);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
@@ -87,6 +88,7 @@ public class TopologyBuilder {
             TopologyManager.getInstance().acquireWriteLock();
             topology.removePartition(oldPartition);
             topology.addPartition(newPartition);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
@@ -103,6 +105,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.getInstance().acquireWriteLock();
             topology.removePartition(partition);
+            TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }

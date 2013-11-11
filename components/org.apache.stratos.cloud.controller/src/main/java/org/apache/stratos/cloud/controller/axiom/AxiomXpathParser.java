@@ -31,9 +31,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.messaging.domain.topology.Partition;
+import org.apache.stratos.messaging.domain.topology.Scope;
 import org.jaxen.JaxenException;
 import org.w3c.dom.Element;
 import org.wso2.securevault.SecretResolver;
@@ -412,8 +414,9 @@ public class AxiomXpathParser {
         return iaas;
     }
 
-    private Partition getPartition(final OMNode item, Collection<Partition> partitions) {
+    private Partition getPartition(final OMNode item) {
         Partition partition = null;
+        Partition oldPartition = null;
         String id = null;
         String type = null;
 
@@ -439,7 +442,7 @@ public class AxiomXpathParser {
                                 "has not specified in " + xmlSource;
                 handleException(msg);
             }
-
+            oldPartition = TopologyManager.getInstance().getTopology().getPartition(id);
             Iterator<?> it1 =
                     iaasElt.getChildrenWithName(new QName(CloudControllerConstants.SCOPE_ELEMENT));
 
@@ -461,36 +464,35 @@ public class AxiomXpathParser {
             }
 
 
-            if (partitions != null) {
-                // check whether this is a reference to a predefined Region.
-                for (Partition partition1 : partitions) {
-                    //load region id
-                    if (partition1.getId().equals(id)) {
-                        partition = partition1;
-                        break;
-                    }
+            if (oldPartition != null) {
+                //load region id
+                if (oldPartition.getId().equals(id)) {
+                    partition = oldPartition;
                 }
             }
 
             if (partition == null) {
                 partition = new Partition();
                 partition.setId(id);
-                partition.setScope(type);
+                partition.setScope(Scope.valueOf(type));
                 loadProperties(iaasElt, partition.getProperties());
                 //handle partition created event
+                TopologyBuilder.handlePartitionCreated(partition);
+
             } else {
                 Partition partition1 = new Partition();
                 partition1.setId(id);
-                partition1.setScope(type);
+                partition1.setScope(Scope.valueOf(type));
                 loadProperties(iaasElt, partition1.getProperties());
                 Gson gson = new Gson();
                 String partitionS = gson.toJson(partition);
                 String partition1S = gson.toJson(partition1);
                 if (!partitionS.endsWith(partition1S)) {
-                    //handle update partition
                     partition.setId(id);
-                    partition.setScope(type);
+                    partition.setScope(Scope.valueOf(type));
                     loadProperties(iaasElt, partition.getProperties());
+                    //handle update partition event
+                    TopologyBuilder.handlePartitionUpdated(partition, oldPartition);
 
                 }
 
@@ -607,8 +609,8 @@ public class AxiomXpathParser {
                 OMElement providerElt = (OMElement) it2.next();
                 typeRegion = providerElt.getText();
             }
-            if(!region.getType().equals(typeRegion)) {
-               return zone;
+            if (!region.getType().equals(typeRegion)) {
+                return zone;
             }
             Iterator<?> it =
                     zoneElm.getChildrenWithName(new QName(CloudControllerConstants.TYPE_ELEMENT));
@@ -692,8 +694,8 @@ public class AxiomXpathParser {
                 OMElement providerElt = (OMElement) it2.next();
                 typeZone = providerElt.getText();
             }
-            if(!zone.getType().equals(typeZone)) {
-               return host;
+            if (!zone.getType().equals(typeZone)) {
+                return host;
             }
             Iterator<?> it =
                     hostElt.getChildrenWithName(new QName(CloudControllerConstants.TYPE_ELEMENT));
@@ -1676,7 +1678,8 @@ public class AxiomXpathParser {
     }
 
     public void setPartitionsList() {
-        Collection<Partition> partitions = TopologyManager.getInstance().getTopology().getPartitions();
+        Set<String> partitionIds = TopologyManager.getInstance().getTopology().getPartitionMap().keySet();
+        List<String> ids = new ArrayList<String>();
 
         List<OMNode> nodeList = getMatchingNodes(CloudControllerConstants.PARTITION_XPATH);
 
@@ -1687,7 +1690,23 @@ public class AxiomXpathParser {
         }
 
         for (OMNode node : nodeList) {
-            partitions.add(getPartition(node, partitions));
+            ids.add(getPartition(node).getId());
+
+        }
+        //have to remove the non existing partition from the map
+        boolean isFound;
+        for (String parId : partitionIds) {
+            isFound = false;
+            for (String id : ids) {
+                if (parId.equals(id)) {
+                    isFound = true;
+                    break;
+                }
+            }
+            if (!isFound) {
+                //have to remove the partition id from the Topology
+                TopologyBuilder.handlePartitionRemoved(TopologyManager.getInstance().getTopology().getPartition(parId));
+            }
         }
     }
 

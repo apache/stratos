@@ -82,6 +82,7 @@
     <modules>
         <module>service-stubs</module>
         <module>components</module>
+        <module>extensions</module>
         <module>features</module>
         <module>products</module>
     </modules>
@@ -327,6 +328,30 @@
             </extension>
         </extensions>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.3.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <requireMavenVersion>
+                            <version>[3.0,)</version>
+                        </requireMavenVersion>
+                        <requireJavaVersion>
+                            <version>[1.6,1.8)</version>
+                        </requireJavaVersion>
+                    </rules>
+                    <fail>true</fail>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jvnet.maven.incrementalbuild</groupId>
                 <artifactId>incremental-build-plugin</artifactId>

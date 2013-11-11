@@ -70,6 +70,8 @@ public class TopologyEventProcessorChain extends MessageProcessorChain {
         memberTerminatedEventProcessor = new MemberTerminatedEventProcessor();
         add(memberTerminatedEventProcessor);
 
+        add(new CompleteTopologyEventIgnoreProcessor());
+
         if(log.isDebugEnabled()) {
             log.debug("Topology message processor chain initialized");
         }

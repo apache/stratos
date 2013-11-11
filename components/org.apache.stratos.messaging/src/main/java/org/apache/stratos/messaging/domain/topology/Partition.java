@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class Partition {
     private String id;
-    private String scope;
+    private Scope scope;
     /**
      * key -  type of scope
      * value - name of the scope
@@ -39,11 +39,11 @@ public class Partition {
     }
 
 
-    public String getScope() {
+    public Scope getScope() {
         return scope;
     }
 
-    public void setScope(String scope) {
+    public void setScope(Scope scope) {
         this.scope = scope;
     }
 
