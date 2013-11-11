@@ -265,7 +265,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 	}
 
-    @Override
+    @Override()
 	public String startInstance(String clusterId, LocationScope locationScope) {
 
 		ComputeService computeService;

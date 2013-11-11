@@ -65,7 +65,7 @@ public final class CloudControllerConstants {
     public static final String PROVIDER_ELEMENT = "provider";
     public static final String IDENTITY_ELEMENT = "identity";
     public static final String TYPE_ELEMENT = "type";
-    public static final String SCOPE_ELEMENT = "type";
+    public static final String SCOPE_ELEMENT = "scope";
     public static final String ID_ELEMENT = "id";
     public static final String CREDENTIAL_ELEMENT = "credential";
     public static final String DEFAULT_SERVICE_ELEMENT = "default";
@@ -149,9 +149,9 @@ public final class CloudControllerConstants {
     public static final String REGION_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
      IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + "/" + REGION_ELEMENT;
     public static final String ZONE_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
-     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + REGION_ELEMENT + "/" + ZONE_ELEMENT;
+     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + "/" + REGION_ELEMENT + "/" + ZONE_ELEMENT;
      public static final String HOST_XPATH = "/"+CLOUD_CONTROLLER_ELEMENT+"/"+
-     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + REGION_ELEMENT + "/" + ZONE_ELEMENT
+     IAAS_PROVIDERS_ELEMENT+"/"+IAAS_PROVIDER_ELEMENT + "/" + REGION_ELEMENT + "/" + ZONE_ELEMENT
              + "/" + HOST_ELEMENT ;
     public static final String PROPERTY_ELEMENT_XPATH = "/"+PROPERTY_ELEMENT;
     public static final String IMAGE_ID_ELEMENT_XPATH = "/"+IMAGE_ID_ELEMENT;
