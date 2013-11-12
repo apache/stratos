@@ -1,6 +1,22 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax25="http://util.controller.cloud.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax27="http://util.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax25="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
     <wsdl:documentation>CloudControllerService</wsdl:documentation>
     <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://topology.domain.messaging.stratos.apache.org/xsd">
+            <xs:complexType name="Partition">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="scope" nillable="true" type="ax25:Scope"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Scope">
+                <xs:complexContent>
+                    <xs:extension base="xs:Enum">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
             <xs:complexType name="UnregisteredServiceException">
                 <xs:sequence/>
@@ -9,8 +25,9 @@
                 <xs:sequence/>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax26="http://util.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+        <xs:schema xmlns:ax28="http://util.controller.cloud.stratos.apache.org/xsd" xmlns:ax26="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
             <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://topology.domain.messaging.stratos.apache.org/xsd"/>
             <xs:import namespace="http://util.controller.cloud.stratos.apache.org/xsd"/>
             <xs:element name="CloudControllerServiceUnregisteredServiceException">
                 <xs:complexType>
@@ -47,26 +64,12 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateLastlySpawnedInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateLastlySpawnedInstanceResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="terminateInstances">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="noOfInstances" type="xs:int"/>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -81,7 +84,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -110,7 +113,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
                         <xs:element minOccurs="0" name="noOfInstancesToBeSpawned" type="xs:int"/>
                     </xs:sequence>
                 </xs:complexType>
@@ -126,7 +129,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="locationScope" nillable="true" type="ax25:LocationScope"/>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -151,7 +154,7 @@
                         <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
+                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"/>
                         <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
                     </xs:sequence>
@@ -200,24 +203,15 @@
             <xs:element name="getCartridgeInfoResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:CartridgeInfo"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:CartridgeInfo"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="LocationScope">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="cloud" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="host" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="network" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="region" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="zone" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
@@ -228,15 +222,15 @@
             </xs:complexType>
             <xs:complexType name="CartridgeInfo">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax25:AppType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax27:AppType"/>
                     <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax25:PortMapping"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax27:PortMapping"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"/>
@@ -329,12 +323,6 @@
     <wsdl:message name="terminateInstancesResponse">
         <wsdl:part name="parameters" element="ns:terminateInstancesResponse"/>
     </wsdl:message>
-    <wsdl:message name="terminateLastlySpawnedInstanceRequest">
-        <wsdl:part name="parameters" element="ns:terminateLastlySpawnedInstance"/>
-    </wsdl:message>
-    <wsdl:message name="terminateLastlySpawnedInstanceResponse">
-        <wsdl:part name="parameters" element="ns:terminateLastlySpawnedInstanceResponse"/>
-    </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="getPendingInstanceCount">
             <wsdl:input message="ns:getPendingInstanceCountRequest" wsaw:Action="urn:getPendingInstanceCount"/>
@@ -382,10 +370,6 @@
         <wsdl:operation name="terminateInstances">
             <wsdl:input message="ns:terminateInstancesRequest" wsaw:Action="urn:terminateInstances"/>
             <wsdl:output message="ns:terminateInstancesResponse" wsaw:Action="urn:terminateInstancesResponse"/>
-        </wsdl:operation>
-        <wsdl:operation name="terminateLastlySpawnedInstance">
-            <wsdl:input message="ns:terminateLastlySpawnedInstanceRequest" wsaw:Action="urn:terminateLastlySpawnedInstance"/>
-            <wsdl:output message="ns:terminateLastlySpawnedInstanceResponse" wsaw:Action="urn:terminateLastlySpawnedInstanceResponse"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
@@ -491,15 +475,6 @@
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <soap:operation soapAction="urn:startInstance" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="terminateLastlySpawnedInstance">
-            <soap:operation soapAction="urn:terminateLastlySpawnedInstance" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -618,15 +593,6 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateLastlySpawnedInstance">
-            <soap12:operation soapAction="urn:terminateLastlySpawnedInstance" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
         <http:binding verb="POST"/>
@@ -729,34 +695,25 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateLastlySpawnedInstance">
-            <http:operation location="terminateLastlySpawnedInstance"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
-        </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.100.1.142:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://10.129.24.65:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.100.1.142:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://10.129.24.65:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.100.1.142:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://10.129.24.65:9763/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.100.1.142:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://10.129.24.65:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.100.1.142:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
+            <http:address location="http://10.129.24.65:9763/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.100.1.142:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
+            <http:address location="https://10.129.24.65:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

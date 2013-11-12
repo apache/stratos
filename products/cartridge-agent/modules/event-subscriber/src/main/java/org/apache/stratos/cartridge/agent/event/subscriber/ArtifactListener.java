@@ -13,7 +13,6 @@ import javax.jms.TextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
 /**
@@ -31,14 +30,13 @@ public class ArtifactListener implements MessageListener{
 		
 		// If cluster id of the node is equal to that of message's, invoke the script
 		TextMessage receivedMessage = (TextMessage) message;
-		log.info(" ++++++++ artifact listener +++++++++");
-		String type = null;
+		log.info(" Message received on artifact update ");
 		String json = null;
 		try {
-			type = receivedMessage.getStringProperty(Constants.EVENT_CLASS_NAME);
 			json = receivedMessage.getText();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			log.error("Exception is occurred " + e.getMessage(), e);
 		}
 		
        // if(ArtifactUpdatedEvent.class.getName().equals(type)) {
@@ -48,12 +46,6 @@ public class ArtifactListener implements MessageListener{
 		String repoURL = event.getRepoURL();
 		String repoPassword = event.getRepoPassword();
 		String repoUsername = event.getRepoUserName();
-
-		if (log.isDebugEnabled()) {
-			log.debug(" cluster id from message " + clusterIdInMessage + " repo details"
-					+ repoURL + repoUsername + repoPassword);
-		}
-		
 				
 		// execute script
 		if(clusterIdInPayload != null && clusterIdInPayload.equals(clusterIdInMessage)) {
@@ -64,7 +56,8 @@ public class ArtifactListener implements MessageListener{
 			Process proc = Runtime.getRuntime().exec(command);
 			proc.waitFor();
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				log.error("Exception is occurred in executing script. " + e.getMessage(), e);
 			}
 		}
 		
@@ -90,7 +83,8 @@ public class ArtifactListener implements MessageListener{
 			}
 			scanner.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			log.error("Exception is occurred in reading file. ", e);
 		}
 		
 		return clusterId;

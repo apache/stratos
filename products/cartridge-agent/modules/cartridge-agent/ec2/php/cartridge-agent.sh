@@ -28,6 +28,7 @@ set -e # Terminate on any error
 export LOG=/var/log/apache-stratos/cartridge-agent.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 event_publisher_path=/opt/apache-stratos-cartridge-agent/event-publisher # Event publisher home
+event_subscriber_path=/opt/apache-stratos-cartridge-agent/event-subscriber # Event subscriber home
 
 # ---------------------------------------------
 # Download payload.zip
@@ -56,6 +57,26 @@ if [ ! -d ${instance_path}/payload ]; then
 fi
 
 source ${instance_path}/launch.params
+
+
+#---------------------------
+# Starting Topic Subscriber
+#---------------------------
+# change mb ip port in conf/jndi.properties
+pushd $event_subscriber_path/conf
+cp -rf jndi.properties jndi.properties.tmp
+cat jndi.properties.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > jndi.properties
+cp -rf jndi.properties jndi.properties.tmp
+cat jndi.properties.tmp | sed -e "s@MB-IP-ADDRESS@$MB_IP@g" > jndi.properties
+rm -f jndi.properties.tmp
+popd
+
+pushd $event_subscriber_path/bin
+echo "Executing: event-subscriber.sh "
+sh event-subscriber.sh  &
+echo "Event subscribed" | tee -a $LOG
+popd
+
 
 # ---------------------------------------------
 # Publish member-started-event
@@ -107,16 +128,10 @@ GIT_SH_LOG=/var/log/apache-stratos/git-sh.log
 if [ -d \"${APP_PATH}/.git\" ]; then
    cd ${APP_PATH}
    echo \"Invoking repo info service...\" | tee -a \$GIT_SH_LOG
-   curl -X POST -H \"Content-Type: text/xml\" -H \"SOAPAction: urn:getRepositoryCredentials\" -d @${instance_path}/repoinforequest.xml --silent  \"${REPO_INFO_EPR}\" --insecure > /tmp/git.xml
-   echo \"Processing repo info service response...\" | tee -a \$GIT_SH_LOG
-   sed '1,5d' /tmp/git.xml > /tmp/git1.xml
-   sed '2d' /tmp/git1.xml > /tmp/git.xml
-   username=\`xml_grep 'ax29:userName' /tmp/git.xml --text_only\`
-   password=\`xml_grep 'ax29:password' /tmp/git.xml --text_only\`
-   repo=\`xml_grep 'ax29:url' /tmp/git.xml --text_only\`
+   username=\$1
+   password=\$2
+   repo=\$3
    echo \"username=\$username repo=\${repo}\" | tee -a \$GIT_SH_LOG
-   rm /tmp/git1.xml
-   rm /tmp/git.xml
    echo \"Preparing .netrc...\" | tee -a \$GIT_SH_LOG
    url=\`echo \$repo |sed 's/http.*\/\///g' |sed 's/\:.*//g' |sed 's/\/.*//g'\`
    echo \"machine \${url} login \${username} password \${password}\" > ~/.netrc
@@ -139,7 +154,7 @@ if [ -d \"${APP_PATH}/.git\" ]; then
    echo \"Changing owner of application path/www to www-data:www-data...\" | tee -a \$GIT_SH_LOG
    sudo chown -R www-data:www-data ${APP_PATH}/www
    if [ -f \"${APP_PATH}/sql/alter.sql\" ] && [ -n \"${MYSQL_HOST}\" ] && [ -n \"${MYSQL_USER}\" ] && [ -n \"${MYSQL_PASSWORD}\" ]; then
- 	mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/alter.sql
+ 	    mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} < ${APP_PATH}/sql/alter.sql
    fi
 else
    echo \"Removing index.html from application path...\" | tee -a \$GIT_SH_LOG

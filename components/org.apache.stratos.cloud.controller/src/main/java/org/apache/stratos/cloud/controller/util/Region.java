@@ -7,9 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Region {
+public class Region extends IaasProvider {
     private String imageId;
-    private String provider;
     private String identity;
     private String credential;
     private String id;
@@ -23,7 +22,11 @@ public class Region {
     private Map<String, String> properties = new HashMap<String, String>();
 
     public String getProperty(String key) {
-        return getProperties().get(key);
+        if(getProperties().get(key) != null) {
+            return getProperties().get(key);
+        } else {
+            return super.getProperty(key);
+        }
     }
 
     public Map<String, String> getProperties() {
@@ -50,15 +53,10 @@ public class Region {
         this.imageId = imageId;
     }
 
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
-
     public String getIdentity() {
+        if(identity == null) {
+            return super.getIdentity();
+        }
         return identity;
     }
 
@@ -67,6 +65,9 @@ public class Region {
     }
 
     public String getCredential() {
+        if(credential == null) {
+            return super.getCredential();
+        }
         return credential;
     }
 

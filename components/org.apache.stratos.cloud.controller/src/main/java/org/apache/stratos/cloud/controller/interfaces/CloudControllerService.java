@@ -21,8 +21,8 @@ package org.apache.stratos.cloud.controller.interfaces;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
 import org.apache.stratos.cloud.controller.util.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.LocationScope;
 import org.apache.stratos.cloud.controller.util.Properties;
+import org.apache.stratos.messaging.domain.topology.Partition;
 
 import java.util.List;
 
@@ -71,27 +71,27 @@ public interface CloudControllerService {
      * 
      * @param clusterId
      *            cluster ID of the instance to be started up.
-     * @param locationScope
+     * @param partition
      *            It contains the region, zone, network and host of a IaaS where
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstance(String clusterId, LocationScope locationScope);
+    public String startInstance(String clusterId, Partition partition);
 
     /**
      * Calling this method will spawn more than one ininstances in the
-      * specified locationScope for the particular cluster
+      * specified partition for the particular cluster
      *
      * @param clusterId
      *            cluster ID of the instance to be started up.
      * @param noOfInstancesToBeSpawned
      *            no of instances to be started up.
-     * @param locationScope
+     * @param partition
      *            It contains the region, zone, network and host of a IaaS where
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstances(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned);
+    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned);
     
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -99,12 +99,12 @@ public interface CloudControllerService {
      * 
      * @param clusterId
      *            cluster ID of the instance to be terminated.
-     * @param locationScope
+     * @param partition
      *            It contains the region, zone, network and host of a IaaS where
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstance(String clusterId, LocationScope locationScope);
+    public boolean terminateInstance(String clusterId, Partition partition);
 
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -114,12 +114,12 @@ public interface CloudControllerService {
      *            no of instances to be started up
      * @param clusterId
      *            cluster ID of the instance to be terminated.
-     * @param locationScope
+     * @param partition
      *            It contains the region, zone, network and host of a IaaS where
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstances(int noOfInstances, String clusterId, LocationScope locationScope);
+    public boolean terminateInstances(int noOfInstances, String clusterId, Partition partition);
 
      /**
      * Calling this method will result in termination of an instance which is belong
@@ -141,17 +141,7 @@ public interface CloudControllerService {
      */
     public boolean terminateAllInstances(String clusterId);
 
-    
     /**
-     * Calling this method will result in termination of the lastly spawned instance which is
-     * belong to the provided clusterID.
-     * 
-     * @param clusterId
-     *            service domain of the instance to be terminated.
-     * @return whether the termination is successful or not.
-     */
-    public boolean terminateLastlySpawnedInstance(String clusterId);
-
     /**
      * Unregister the service cluster which represents by this domain and sub domain.
      * @param clusterId service cluster domain

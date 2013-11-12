@@ -35,6 +35,8 @@ import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.util.Properties;
+import org.apache.stratos.messaging.domain.topology.Partition;
+import org.apache.stratos.messaging.domain.topology.Scope;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -266,13 +268,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override()
-	public String startInstance(String clusterId, LocationScope locationScope) {
+	public String startInstance(String clusterId, Partition partition) {
 
-		ComputeService computeService;
-		Template template;
+		ComputeService computeService = null;
+		Template template = null;
 		String ip;
-        String cloud = locationScope.getCloud();
-        String region = locationScope.getRegion();
+        String partitionId = partition.getId();
+        Scope scope = partition.getScope();
+        String provider = partition.getProperty("provider");
 		final Lock lock = new ReentrantLock();
 
 
@@ -310,19 +313,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
 
-            if(cloud == null) {
+            if(provider == null) {
                 String msg = "There's no IaaS provided for the cluster: "
 					+ clusterId + " to start an instance";
                 log.fatal(msg);
                 throw new CloudControllerException(msg);
             }
-
-            if(region == null) {
-                log.info("Region is not provided. Hence the default region is taken into the spawning a new instance");
-            }
-            //checking for the cloud and the region
-            //TODO adding more locations and retrieve it from the request received
-            if(iaas.getType().equals(cloud)) {
+            if(iaas.getType().equals(provider)) {
                 IaasContext ctxt;
                 if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
                     ctxt = serviceCtxt.addIaasContext(iaas.getType());
@@ -337,13 +334,38 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     reloadPayload(serviceCtxt.getCartridge(), serviceCtxt.generatePayload());
 
                     iaas.getIaas().setDynamicPayload(iaas);
-
-                    // get the ComputeService
-                    computeService = iaas.getComputeService();
-                     // corresponding Template
-                    template = iaas.getTemplate();
-
-
+                    // get the pre built ComputeService from provider or region or zone or host
+                    if(scope == null || scope.name().equals(Scope.PROVIDER.name())) {
+                        computeService = iaas.getComputeService();
+                        template = iaas.getTemplate();
+                    } else if(scope.name().equals(Scope.REGION.name())) {
+                        for(Region region : iaas.getListOfRegions()) {
+                            if(region.getId().equals(partitionId)) {
+                                computeService = region.getComputeService();
+                                template = region.getTemplate();
+                            }
+                        }
+                    } else if(scope.name().equals(Scope.ZONE.name())) {
+                        for(Region region : iaas.getListOfRegions()) {
+                            for(Zone zone : region.getListOfZones()) {
+                               if(zone.getId().equals(partitionId)) {
+                                computeService = zone.getComputeService();
+                                template = zone.getTemplate();
+                                }
+                            }
+                        }
+                    } else if(scope.name().equals(Scope.HOST.name())) {
+                        for(Region region : iaas.getListOfRegions()) {
+                            for(Zone zone : region.getListOfZones()) {
+                                for(Host host: zone.getListOfHosts()) {
+                                    if(host.getId().equals(partitionId)) {
+                                        computeService = host.getComputeService();
+                                        template = host.getTemplate();
+                                    }
+                                }
+                            }
+                        }
+                    }
                     if (template == null) {
                         String msg = "Failed to start an instance in "
                                 + iaas.getType()
@@ -440,7 +462,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         // trigger topology
                         TopologyBuilder.handleMemberSpawned(memberID, serviceCtxt.getCartridgeType(), clusterId,
-                                 node.getId(), locationScope, privateIp);
+                                 node.getId(), partition, privateIp);
 
                         //update the topology with the newly spawned member
                         // publish data
@@ -471,20 +493,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 e);
                     }
             }
-            else {
-                if(region != null) {
-                   log.error("Failed to start an instance, in any IaaS: " + cloud +
-                           " of the region: " + region +  "for the cluster: "
-				            + clusterId);
-                }
-            }
+
         }
         return null;
 
 	}
 
     @Override
-    public String startInstances(String clusterId, LocationScope locationScope, int noOfInstancesToBeSpawned) {
+    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned) {
         log.info("aaaaaaaaaaaaaaaaaaaaaaaa");
         //TODO
         return null;
@@ -549,10 +565,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 	@Override
-	public boolean terminateInstance(String clusterId, LocationScope locationScope) {
+	public boolean terminateInstance(String clusterId, Partition partition) {
 
-         String cloud = locationScope.getCloud();
-        String region = locationScope.getRegion();
+        String partitionId = partition.getId();
+        Scope scope = partition.getScope();
+        String provider = partition.getProperty("provider");
 		log.info("Starting to terminate an instance of domain : " + clusterId);
 
 		ServiceContext serviceCtxt = dataHolder
@@ -585,7 +602,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					+ iaas.getType()
 					+ ". Hence, will try to terminate an instance in another IaaS if possible.";
             //TODO adding more locations and retrieve it from the request received
-            if(iaas.getType().equals(cloud)) {
+            if(iaas.getType().equals(provider)) {
                 String nodeId = null;
 
                 IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
@@ -609,7 +626,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
 
                 // terminate it!
-                terminate(iaas, ctxt, nodeId);
+                terminate(iaas, ctxt, nodeId, partition);
 
                 // log information
                 logTermination(nodeId, ctxt, serviceCtxt);
@@ -631,7 +648,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-    public boolean terminateInstances(int noOfInstances, String clusterId, LocationScope locationScope) {
+    public boolean terminateInstances(int noOfInstances, String clusterId, Partition partition) {
         log.info("vvvvvvvvvvvvvvvvv");
         return false;  //TODO
     }
@@ -641,75 +658,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.info("vvvvvvvvvvdddvvvvvvv");
         return false;  //TODO
     }
-
-    @Override
-	public boolean terminateLastlySpawnedInstance(String clusterId) {
-        log.info("Starting to terminate the last instance spawned, of domain : "
-				+ clusterId);
-
-		ServiceContext serviceCtxt = dataHolder
-				.getServiceContextFromDomain(clusterId);
-
-		if (serviceCtxt == null) {
-			String msg = "Not a registered service: domain - " + clusterId;
-			log.fatal(msg);
-			throw new CloudControllerException(msg);
-		}
-
-		// load Cartridge, if null
-		//if (serviceCtxt.getCartridge() == null) {
-			serviceCtxt.setCartridge(loadCartridge(
-					serviceCtxt.getCartridgeType(),
-					dataHolder.getCartridges()));
-		//}
-
-		if (serviceCtxt.getCartridge() == null) {
-			String msg = "There's no registered Cartridge found. Domain - "
-					+ clusterId;
-			log.fatal(msg);
-			throw new CloudControllerException(msg);
-		}
-
-		IaasProvider iaas = serviceCtxt.getCartridge().getLastlyUsedIaas();
-		// this is required since, we need to find the correct reference.
-		// caz if the lastly used iaas retrieved from registry, it is not a
-		// reference.
-		iaas = serviceCtxt.getCartridge().getIaasProvider(iaas.getType());
-
-		if (iaas != null) {
-
-			String nodeId = null;
-			IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
-
-			int i;
-			for (i = ctxt.getNodeIds().size() - 1; i >= 0; i--) {
-				String id = ctxt.getNodeIds().get(i);
-				if (id != null) {
-					nodeId = id;
-					break;
-				}
-			}
-
-			if (nodeId != null) {
-
-				// terminate it!
-				iaas = terminate(iaas, ctxt, nodeId);
-
-				// log information
-				logTermination(nodeId, ctxt, serviceCtxt);
-
-				return true;
-			}
-
-		}
-
-		log.info("Termination of an instance which is belong to domain '"
-				+ clusterId + ", failed! Reason: No matching "
-				+ "running instance found in lastly used IaaS.");
-
-		return false;
-
-	}
 
 	@Override
 	public boolean terminateAllInstances(String clusterId) {
@@ -756,7 +704,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			for (String id : temp) {
 				if (id != null) {
 					// terminate it!
-					terminate(iaas, ctxt, id);
+                    //TODO need to enable once partition added to the topology
+                    /*Collection<Member> members = TopologyManager.getInstance().getTopology().
+                            getService(serviceCtxt.getCartridgeType()).
+                            getCluster(serviceCtxt.getClusterId()).getMembers();
+                    for (Iterator iterator = members.iterator(); iterator.hasNext();) {
+                         Member member = (Member) iterator.next();
+                         terminate(iaas, ctxt, member.getIaasNodeId(), member.getPartition());
+                    }*/
 
 					// log information
 					logTermination(id, ctxt, serviceCtxt);
@@ -857,8 +812,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
      * @return will return the IaaSProvider
      */
 	private IaasProvider terminate(IaasProvider iaasTemp, IaasContext ctxt,
-			String nodeId) {
-
+			String nodeId, Partition partition) {
+        Scope scope = partition.getScope();
+        String partitionId = partition.getId();
 		// this is just to be safe
 		if (iaasTemp.getComputeService() == null) {
 			String msg = "Unexpeced error occured! IaasContext's ComputeService is null!";
@@ -866,6 +822,33 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new CloudControllerException(msg);
 		}
 
+        if(scope == null || scope.name().equals(Scope.PROVIDER.name())) {
+            iaasTemp.getComputeService().destroyNode(nodeId);
+        } else if(scope.name().equals(Scope.REGION.name())) {
+            for(Region region : iaasTemp.getListOfRegions()) {
+                if(region.getId().equals(partitionId)) {
+                    region.getComputeService();
+                }
+            }
+        } else if(scope.name().equals(Scope.ZONE.name())) {
+            for(Region region : iaasTemp.getListOfRegions()) {
+                for(Zone zone : region.getListOfZones()) {
+                   if(zone.getId().equals(partitionId)) {
+                        zone.getComputeService().destroyNode(nodeId);
+                   }
+                }
+            }
+        } else if(scope.name().equals(Scope.HOST.name())) {
+            for(Region region : iaasTemp.getListOfRegions()) {
+                for(Zone zone : region.getListOfZones()) {
+                    for(Host host: zone.getListOfHosts()) {
+                        if(host.getId().equals(partitionId)) {
+                            host.getComputeService().destroyNode(nodeId);
+                        }
+                    }
+                }
+            }
+        }
 		// destroy the node
 		iaasTemp.getComputeService().destroyNode(nodeId);
 

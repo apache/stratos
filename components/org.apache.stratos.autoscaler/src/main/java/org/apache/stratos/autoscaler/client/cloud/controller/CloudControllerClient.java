@@ -28,7 +28,6 @@ import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.Partition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
-import org.apache.stratos.cloud.controller.util.xsd.LocationScope;
 
 import java.rmi.RemoteException;
 
@@ -57,13 +56,15 @@ public class CloudControllerClient {
         //call CC spawnInstances method
 
         log.info("Calling CC for spawning instances in cluster " + clusterId);
-        LocationScope locationScope = new LocationScope();
-        locationScope.setCloud(partition.getIaas());
-        locationScope.setRegion(partition.getZone());
+        org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
+                org.apache.stratos.messaging.domain.topology.xsd.Partition();
+        partitionTopology.setId(partition.getId());
+        /*locationScope.setCloud(partition.getIaas());
+        locationScope.setRegion(partition.getZone());*/
 
         try {
             for(int i =0; i< memberCountToBeIncreased; i++){
-                stub.startInstance(clusterId, locationScope);
+                stub.startInstance(clusterId, partitionTopology);
             }
         } catch (RemoteException e) {
             log.error("Error occurred in cloud controller side while spawning instance");
@@ -73,12 +74,14 @@ public class CloudControllerClient {
     public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
 
         log.info("Calling CC for spawning an instance in cluster " + clusterId);
-        LocationScope locationScope = new LocationScope();
-        locationScope.setCloud(partition.getIaas());
-        locationScope.setRegion(partition.getZone());
+        org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
+                org.apache.stratos.messaging.domain.topology.xsd.Partition();
+        partitionTopology.setId(partition.getId());
+        /*locationScope.setCloud(partition.getIaas());
+        locationScope.setRegion(partition.getZone());*/
 
         try {
-            stub.startInstance(clusterId, locationScope);
+            stub.startInstance(clusterId, partitionTopology);
         } catch (RemoteException e) {
 
             log.error("Error occurred in cloud controller side while spawning instance");
@@ -90,12 +93,14 @@ public class CloudControllerClient {
         //call CC terminate method
 
         log.info("Calling CC for terminating an instance in cluster " + clusterId);
-        LocationScope locationScope = new LocationScope();
-        locationScope.setCloud(partition.getIaas());
-        locationScope.setRegion(partition.getZone());
+        org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
+                org.apache.stratos.messaging.domain.topology.xsd.Partition();
+        partitionTopology.setId(partition.getId());
+        /*locationScope.setCloud(partition.getIaas());
+            locationScope.setRegion(partition.getZone());*/
 
         try {
-            stub.terminateInstance(clusterId, locationScope);
+            stub.terminateInstance(clusterId, partitionTopology);
         } catch (RemoteException e) {
 
             log.error("Error occurred in cloud controller side while terminating instance");
