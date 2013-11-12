@@ -19,6 +19,8 @@
 
 package org.apache.stratos.autoscaler.rule;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
@@ -33,6 +35,7 @@ import org.drools.builder.*;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.wso2.carbon.utils.CarbonUtils;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
@@ -50,7 +53,6 @@ public class AutoscalerRuleEvaluator {
 	
 	private static AutoscalerRuleEvaluator instance = null;
 	private static final String DRL_FILE_NAME = "autoscaler.drl";
-    //TODO move .drl file outside jar
 	
 	private KnowledgeBase kbase;
 	private StatefulKnowledgeSession ksession;
@@ -64,7 +66,7 @@ public class AutoscalerRuleEvaluator {
     }
     
     
-    public void evaluate(Service service){
+    public void evaluate(Service service) throws Exception{
         try {
 
             for (Cluster cluster: service.getClusters()){
@@ -81,7 +83,7 @@ public class AutoscalerRuleEvaluator {
 			ksession.insert(service);
 			ksession.fireAllRules();
 		} catch (Exception e) {
-			log.error("Rule evaluate error", e);
+			throw new Exception("Rule evaluate error", e);
 		}
     }
     
@@ -144,7 +146,8 @@ public class AutoscalerRuleEvaluator {
     
     private KnowledgeBase readKnowledgeBase() throws Exception {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        Resource resource = ResourceFactory.newClassPathResource(DRL_FILE_NAME);
+        String configDir = CarbonUtils.getCarbonConfigDirPath();
+        Resource resource = ResourceFactory.newFileResource(configDir + File.separator + DRL_FILE_NAME);
 		kbuilder.add(resource, ResourceType.DRL);
         KnowledgeBuilderErrors errors = kbuilder.getErrors();
         if (errors.size() > 0) {

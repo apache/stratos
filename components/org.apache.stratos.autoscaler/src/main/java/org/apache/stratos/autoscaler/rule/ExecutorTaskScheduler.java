@@ -51,6 +51,7 @@ public class ExecutorTaskScheduler implements Runnable {
 
     @Override
     public void run() {
+    	final ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
         final Runnable rulesEvaluator = new Runnable() {
             public void run() {
 
@@ -78,11 +79,13 @@ public class ExecutorTaskScheduler implements Runnable {
                     }
 
                 } catch (Exception e) {
-                    log.error("Error ", e);
+                    log.error("Error", e);
+                    log.debug("Shutting down rule scheduler");
+                    ex.shutdownNow();
                 }
             }
         };
-        ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
+        
         ex.scheduleWithFixedDelay(rulesEvaluator, initialDelay, period, TimeUnit.SECONDS);
     }
 }
