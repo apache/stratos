@@ -41,7 +41,7 @@ public class ClusterContext {
     private int memberCount;
 
     //This map will keep number of instance count against partitionId
-//    TODO private Map<String, Integer> partitionCountMap;
+    private Map<String, Integer> partitionCountMap;
 
     private int currentPartitionIndex;
 
@@ -54,7 +54,7 @@ public class ClusterContext {
         this.clusterId = clusterId;
         this.serviceId = serviceId;
         memberContextMap = new HashMap<String, MemberContext>();
-        //TODO partitionCountMap = new HashMap<String, Integer>();
+        partitionCountMap = new HashMap<String, Integer>();
         memberCount = 0;
     }
 
@@ -129,33 +129,33 @@ public class ClusterContext {
 
     }
 
-//   TODO public void increaseMemberCountInPartition(String partitionId, int count){
-//
-//        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) + count);
-//    }
-//
-//    public void decreaseMemberCountInPartition(String partitionId, int count){
-//
-//        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
-//    }
-//
-//    public void addPartitionCount(String partitionId, int count){
-//
-//        partitionCountMap.put(partitionId, count);
-//    }
-//
-//    public void removePartitionCount(String partitionId){
-//
-//        partitionCountMap.remove(partitionId);
-//    }
-//
-//    public boolean partitionCountExists(String partitionId){
-//        return partitionCountMap.containsKey(partitionId);
-//    }
-//
-//    public int getPartitionCount(String partitionId){
-//        return partitionCountMap.get(partitionId);
-//    }
+   public void increaseMemberCountInPartition(String partitionId, int count){
+
+        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) + count);
+    }
+
+    public void decreaseMemberCountInPartition(String partitionId, int count){
+
+        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
+    }
+
+    public void addPartitionCount(String partitionId, int count){
+
+        partitionCountMap.put(partitionId, count);
+    }
+
+    public void removePartitionCount(String partitionId){
+
+        partitionCountMap.remove(partitionId);
+    }
+
+    public boolean partitionCountExists(String partitionId){
+        return partitionCountMap.containsKey(partitionId);
+    }
+
+    public int getPartitionCount(String partitionId){
+        return partitionCountMap.get(partitionId);
+    }
 
     public void setMemberContextMap(Map<String, MemberContext> memberContextMap) {
 

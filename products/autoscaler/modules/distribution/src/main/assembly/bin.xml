@@ -170,6 +170,15 @@
               <include>**/patch0002/axis2_1.6.1.wso2v9.jar</include>
            </includes>
         </fileSet>
+
+	<fileSet>
+	  <directory>src/main/policies</directory>
+	  <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/deployment/server/policies</outputDirectory>
+	  <directoryMode>0755</directoryMode>
+           <includes>
+              <include>*.xml</include>
+           </includes>
+	</fileSet>
     </fileSets>
 
     <dependencySets>

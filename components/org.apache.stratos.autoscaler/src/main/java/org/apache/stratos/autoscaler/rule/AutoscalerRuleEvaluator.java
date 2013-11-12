@@ -33,6 +33,12 @@ import org.drools.builder.*;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 
 /**
  * This class is responsible for evaluating the current details of topology, statistics, and health
@@ -60,6 +66,11 @@ public class AutoscalerRuleEvaluator {
     
     public void evaluate(Service service){
         try {
+
+            for (Cluster cluster: service.getClusters()){
+                //update cluster-context
+                AutoscalerUtil.updateClusterContext(cluster);
+            }
 
             ksession = kbase.newStatefulKnowledgeSession();
             ksession.setGlobal("$context", AutoscalerContext.getInstance());
@@ -146,5 +157,18 @@ public class AutoscalerRuleEvaluator {
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
         return kbase;
     }
+
+    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm){
+        AutoscaleAlgorithm autoscaleAlgorithm = null;
+        if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
+
+            autoscaleAlgorithm = new RoundRobin();
+        } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
+
+            autoscaleAlgorithm = new OneAfterAnother();
+        }
+        return autoscaleAlgorithm;
+    }
+
 
 }

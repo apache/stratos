@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoscalePolicy id="economyPolicy">
+	<LoadThresholds>
+		<RequestsInFlight>
+			<Average value="20" />
+			<Gradient value="1" />
+			<SecondDerivative value="0" />
+			<ScaleDownMarginOfGradient  value="1.0" />
+			<ScaleDownMarginOfSecondDerivative value="0.2" />
+		</RequestsInFlight>
+		<MemoryConsumption>
+			<Average value="20" />
+			<Gradient value="1" />
+			<SecondDerivative value="0" />
+			<ScaleDownMarginOfGradient  value="1.0" />
+			<ScaleDownMarginOfSecondDerivative value="0.2" />
+		</MemoryConsumption>
+		<LoadAverage>
+			<Average value="20" />
+			<Gradient value="1" />
+			<SecondDerivative value="0" />
+			<ScaleDownMarginOfGradient  value="1.0" />
+			<ScaleDownMarginOfSecondDerivative value="0.2" />
+		</LoadAverage>
+	</LoadThresholds>
+	<HAPolicy>
+		<PartitionAlgo>one-after-another</PartitionAlgo>
+		<Partitions>
+			<Partition id="part1">
+				<PartitionMax>3</PartitionMax>
+				<PartitionMin>1</PartitionMin>
+			</Partition>
+		</Partitions>
+	</HAPolicy>
+</AutoscalePolicy>

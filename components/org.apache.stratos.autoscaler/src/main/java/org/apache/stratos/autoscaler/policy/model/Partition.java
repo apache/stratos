@@ -27,10 +27,6 @@ public class Partition {
 	private int partitionMax;
 	private int partitionMin;
 	private String id;
-	private String iaas;
-	private String zone;
-    private boolean maxReached;
-    private boolean minReached;
 
 
     /**
@@ -64,55 +60,6 @@ public class Partition {
     public void setPartitionMin(int value) {
         this.partitionMin = value;
     }
-
-    /**
-     * Gets the value of the iaas property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getIaas() {
-        return iaas;
-    }
-
-    /**
-     * Sets the value of the iaas property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setIaas(String value) {
-        this.iaas = value;
-    }
-
-    /**
-     * Gets the value of the zone property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getZone() {
-        return zone;
-    }
-
-    /**
-     * Sets the value of the zone property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setZone(String value) {
-        this.zone = value;
-    }
-
     /**
      * Gets the value of the id property.
      * 

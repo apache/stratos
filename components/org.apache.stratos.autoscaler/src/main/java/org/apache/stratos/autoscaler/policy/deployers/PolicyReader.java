@@ -132,8 +132,6 @@ public class PolicyReader  {
 					if(next instanceof OMElement){
 						OMElement partitionEle = (OMElement) next;
 						Partition partition = new Partition();
-						partition.setIaas(partitionEle.getAttributeValue(new QName("iaas")));
-						partition.setZone(partitionEle.getAttributeValue(new QName("zone")));
 						partition.setId(partitionEle.getAttributeValue(new QName("id")));
 						partition.setPartitionMax(Integer.valueOf(readValue(partitionEle, "PartitionMax")));
 						partition.setPartitionMin(Integer.valueOf(readValue(partitionEle, "PartitionMin")));

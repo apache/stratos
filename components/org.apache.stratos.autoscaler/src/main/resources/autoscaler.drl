@@ -44,146 +44,71 @@ global org.apache.commons.logging.Log log;
 global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
 global org.apache.stratos.messaging.domain.topology.Topology $topology;
 
+
 rule "Minimum Rule"
 dialect "mvel"
-
 	when
         $service : Service ()
-        cluster : Cluster () from  $service.getClusters()
-        $policy : AutoscalePolicy(id == cluster.autoscalePolicyName ) from $manager.getPolicyList()
+        $cluster : Cluster () from  $service.getClusters()
+        $policy : AutoscalePolicy(id == $cluster.autoscalePolicyName ) from $manager.getPolicyList()
         $partition : Partition () from $policy.getHAPolicy().getPartitions()
-
+        $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
+        eval($clusterContext.getPartitionCount($partition.getId()) < $partition.getPartitionMembersMin() )
 	then
-        String clusterId = cluster.getClusterId();
-
-        ClusterContext clusterContext = $context.getClusterContext(clusterId);
-
-        if(null==clusterContext){
-
-            //get values from policy
-            LoadThresholds loadThresholds = $policy.getLoadThresholds();
-            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-            float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
-
-            clusterContext = new ClusterContext(clusterId, cluster.getServiceName()) ;
-
-            clusterContext.setRequestsInFlightGradient(gradientLimit);
-            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-            clusterContext.setAverageRequestsInFlight(averageLimit);
-
-            AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(cluster.getAutoscalePolicyName());
-
-             //for(Partition partition: $policy.getHAPolicy().getPartitions()){
-             //       clusterContext.addPartitionCount(partition.getId(), 0);
-             //}
-             $context.addClusterContext(clusterContext);
+        int memberCountToBeIncreased =  $partition.getPartitionMembersMin() - $clusterContext.getPartitionCount($partition.getId());
+        if($evaluator.delegateSpawn($partition,$cluster.getClusterId(), memberCountToBeIncreased)){
+            $clusterContext.increaseMemberCountInPartition($partition.getId(), memberCountToBeIncreased);
         }
-
-        //int currentMemberCount = clusterContext.getPartitionCount($partition.getId());
-        int currentMemberCount = clusterContext.getMemberCount();
-        int partitionMin = $partition.getPartitionMembersMin();
-
-        if(currentMemberCount < partitionMin) {
-
-            int memberCountToBeIncreased = partitionMin - currentMemberCount;
-            if($evaluator.delegateSpawn($partition,clusterId, memberCountToBeIncreased)){
-            }
-
-        }
-
-
 end
 
-rule "Autoscaler Rule"
-    dialect "mvel"
+rule "Scaler-up Rule"
+dialect "mvel"
 	when
         $service : Service ()
-        cluster : Cluster () from  $service.getClusters()
-        $policy : AutoscalePolicy(id == cluster.autoscalePolicyName ) from $manager.getPolicyList()
-
+        $cluster : Cluster () from  $service.getClusters()
+        $policy : AutoscalePolicy(id == $cluster.autoscalePolicyName ) from $manager.getPolicyList()
+        $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
+        $loadThresholds :LoadThresholds() from  $policy.getLoadThresholds()
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $evaluator.getAutoscaleAlgorithm($policy.getHAPolicy().getPartitionAlgo())
+        lbStatAverage : Float() from  $clusterContext.getAverageRequestsInFlight()
+        lbStatGradient : Float() from  $clusterContext.getRequestsInFlightGradient()
+        lbStatSecondDerivative : Float() from  $clusterContext.getRequestsInFlightSecondDerivative()
+        averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
+        gradientLimit : Float() from  $loadThresholds.getRequestsInFlight().getGradient()
+        secondDerivative  : Float() from  $loadThresholds.getRequestsInFlight().getSecondDerivative()
+        partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($cluster.getClusterId())
+        eval (lbStatAverage > averageLimit && lbStatGradient > gradientLimit)
 	then
+        int numberOfInstancesToBeSpawned = (lbStatSecondDerivative > secondDerivative) ? 2 : 1; //  take from a config
+        $evaluator.delegateSpawn(partition,$cluster.getClusterId(), numberOfInstancesToBeSpawned);
+        $clusterContext.setRequestsInFlightGradient(gradientLimit);
+        $clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+        $clusterContext.setAverageRequestsInFlight(averageLimit);
+end
 
-	    String clusterId = cluster.getClusterId();
-
-        LoadThresholds loadThresholds = $policy.getLoadThresholds();
-        float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-        float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-        float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
-
-		ClusterContext clusterContext = $context.getClusterContext(clusterId);
-
-		if(null==clusterContext){
-
-     	    clusterContext = new ClusterContext(cluster.getClusterId(), cluster.getServiceName()) ;
-
-
-            clusterContext.setRequestsInFlightGradient(gradientLimit);
-            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-            clusterContext.setAverageRequestsInFlight(averageLimit);
-
-            //for(Partition partition: $policy.getHAPolicy().getPartitions()){
-            //    clusterContext.addPartitionCount(partition.getId(), 0);
-            //}
-            $context.addClusterContext(clusterContext);
-
-        }
-
-        //get current stats from cluster context
-        float lbStatAverage = clusterContext.getAverageRequestsInFlight();
-        float lbStatGradient = clusterContext.getRequestsInFlightGradient();
-        float lbStatSecondDerivative = clusterContext.getRequestsInFlightSecondDerivative();
-
-        //get values from policy
-        LoadThresholds loadThresholds = $manager.getPolicy(cluster.autoscalePolicyName).getLoadThresholds();
-        float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-        float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-        float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative()
-        //String partitionAlgorithm = $manager.getPolicy(cluster.autoscalePolicyName).getHAPolicy().getPartitionAlgo();
-
-
-        //AutoscaleAlgorithm autoscaleAlgorithm = null;
-        //if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
-
-        //    autoscaleAlgorithm = new RoundRobin();
-        //} else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
-
-        //    autoscaleAlgorithm = new OneAfterAnother();
-        //}
-
-            float scaleDownSlowerMarginOfGradient = 1.0;     //TODO get from config
-            float scaleDownSlowerMarginOfSecondDerivative = 0.2;  //TODO get from config
-
-        Partition partition = $policy.getHAPolicy().getPartitions().get(0);
-
-        if(lbStatAverage > averageLimit && lbStatGradient > gradientLimit && lbStatSecondDerivative > secondDerivative){
-
-            int i = 0;
-            //TODO Partition partition = autoscaleAlgorithm.getScaleUpPartition(clusterId);
-
-            if(partition != null){
-
-                    $evaluator.delegateSpawn(partition,clusterId);
-
-                    clusterContext.setRequestsInFlightGradient(gradientLimit);
-                    clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-                    clusterContext.setAverageRequestsInFlight(averageLimit);
-                    //spawnInstances One
-
-            }
-        } else if(lbStatAverage < averageLimit  && lbStatGradient < gradientLimit - scaleDownSlowerMarginOfSecondDerivative
-            && lbStatSecondDerivative < secondDerivative - scaleDownSlowerMarginOfSecondDerivative){
-
-            //terminate one
-            //TODO Partition partition = autoscaleAlgorithm.getScaleDownPartition(clusterId);
-            if(partition != null){
-                $evaluator.delegateTerminate(partition,clusterId);
-
-                clusterContext.setRequestsInFlightGradient(gradientLimit);
-                clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-                clusterContext.setAverageRequestsInFlight(averageLimit);
-            }
-        }
-
-
+rule "Scaler-down Rule"
+dialect "mvel"
+	when
+	    $service : Service ()
+	    $cluster : Cluster () from  $service.getClusters()
+	    $policy : AutoscalePolicy(id == $cluster.autoscalePolicyName ) from $manager.getPolicyList()
+	    $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
+        $loadThresholds :LoadThresholds() from  $policy.getLoadThresholds()
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $evaluator.getAutoscaleAlgorithm($policy.getHAPolicy().getPartitionAlgo())
+        lbStatAverage : Float() from  $clusterContext.getAverageRequestsInFlight()
+        lbStatGradient : Float() from  $clusterContext.getRequestsInFlightGradient()
+        lbStatSecondDerivative : Float() from  $clusterContext.getRequestsInFlightSecondDerivative()
+        averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
+        gradientLimit : Float() from  $loadThresholds.getRequestsInFlight().getGradient()
+        secondDerivative  : Float() from  $loadThresholds.getRequestsInFlight().getSecondDerivative()
+        scaleDownSlowerMarginOfGradient : Float() from  $loadThresholds.getRequestsInFlight().getScaleDownMarginOfGradient()
+        scaleDownSlowerMarginOfSecondDerivative : Float() from  $loadThresholds.getRequestsInFlight().getScaleDownMarginOfSecondDerivative()
+        partition : Partition() from autoscaleAlgorithm.getNextScaleDownPartition($cluster.getClusterId())
+        eval(lbStatAverage < averageLimit  && lbStatGradient < gradientLimit - scaleDownSlowerMarginOfSecondDerivative
+                         && lbStatSecondDerivative < secondDerivative - scaleDownSlowerMarginOfSecondDerivative)
+	then
+        $evaluator.delegateTerminate(partition,$cluster.getClusterId());
+        $clusterContext.setRequestsInFlightGradient(gradientLimit);
+        $clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+        $clusterContext.setAverageRequestsInFlight(averageLimit);
 end
