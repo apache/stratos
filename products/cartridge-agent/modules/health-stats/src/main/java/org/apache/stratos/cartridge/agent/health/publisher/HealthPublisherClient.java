@@ -20,9 +20,13 @@
 package org.apache.stratos.cartridge.agent.health.publisher;
 
 import java.io.*;
+import java.lang.Double;
+import java.lang.Integer;
 import java.lang.Runtime;
+import java.lang.System;
 import java.util.HashMap;
 import java.util.Map;
+import java.lang.management.ManagementFactory;
 
 public class HealthPublisherClient {
 
@@ -30,16 +34,20 @@ public class HealthPublisherClient {
 
 	public Object getHealthStats() {
 
+        String memberID = System.getProperty("member.id");
+
         Runtime runtime = Runtime.getRuntime();
 
 		Map<String, Integer> statsMap = new HashMap<String, Integer>();
 
-        statsMap.put("Available Processors", (int)runtime.availableProcessors());
-        statsMap.put("Total Memory", (int)(runtime.totalMemory() / MB));
-		statsMap.put("Max Memory", (int)(runtime.maxMemory() / MB));
-        statsMap.put("Used Memory", (int)((runtime.totalMemory() - runtime.freeMemory()) / MB));
-        statsMap.put("Free Memory", (int)(runtime.freeMemory() / MB));
-		
+        //statsMap.put("Available Processors", (int)runtime.availableProcessors());
+        statsMap.put("total_memory", (int)(runtime.totalMemory() / MB));
+        statsMap.put("max_memory", (int)(runtime.maxMemory() / MB));
+        statsMap.put("used_memory", (int)((runtime.totalMemory() - runtime.freeMemory()) / MB));
+        statsMap.put("free_memory", (int)(runtime.freeMemory() / MB));
+        statsMap.put("load_average", (int)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage());
+        statsMap.put("member_id", Integer.parseInt(memberID));
+
 		Object statObj = (Object)statsMap;
 		
 		return statObj;
