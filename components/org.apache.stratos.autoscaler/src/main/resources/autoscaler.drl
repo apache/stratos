@@ -55,7 +55,7 @@ dialect "mvel"
         $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
         eval($clusterContext.getPartitionCount($partition.getId()) < $partition.getPartitionMembersMin() )
 	then
-        int memberCountToBeIncreased =  $partition.getPartitionMembersMin() - $clusterContext.getPartitionCount($partition.getId());
+        int memberCountToBeIncreased =  1;
         if($evaluator.delegateSpawn($partition,$cluster.getClusterId(), memberCountToBeIncreased)){
             $clusterContext.increaseMemberCountInPartition($partition.getId(), memberCountToBeIncreased);
         }

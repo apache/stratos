@@ -56,11 +56,11 @@ public class CloudControllerClient {
         //call CC spawnInstances method
 
         log.info("Calling CC for spawning instances in cluster " + clusterId);
+        log.info("Member count to be increased: " + memberCountToBeIncreased);
+
         org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
                 org.apache.stratos.messaging.domain.topology.xsd.Partition();
         partitionTopology.setId(partition.getId());
-        /*locationScope.setCloud(partition.getIaas());
-        locationScope.setRegion(partition.getZone());*/
 
         try {
             for(int i =0; i< memberCountToBeIncreased; i++){

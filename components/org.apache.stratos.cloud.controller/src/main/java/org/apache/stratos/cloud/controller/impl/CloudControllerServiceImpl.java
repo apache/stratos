@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.util.Properties;
 import org.apache.stratos.messaging.domain.topology.Partition;
@@ -270,16 +271,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override()
 	public String startInstance(String clusterId, Partition partition) {
 
+        log.info("Starting new instance of domain : " + clusterId);
+
 		ComputeService computeService = null;
 		Template template = null;
 		String ip;
         String partitionId = partition.getId();
-        Scope scope = partition.getScope();
-        String provider = partition.getProperty("provider");
+        Partition partition_ = TopologyManager.getInstance().getTopology().getPartition(partitionId);
+        Scope scope = partition_.getScope();
+        String provider = partition_.getProperty("provider");
 		final Lock lock = new ReentrantLock();
-
-
-		log.info("Starting new instance of domain : " + clusterId);
 
 		// get the subjected ServiceContext
 		ServiceContext serviceCtxt = dataHolder
