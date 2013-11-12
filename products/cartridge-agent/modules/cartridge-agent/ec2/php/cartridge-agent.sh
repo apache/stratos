@@ -29,6 +29,7 @@ export LOG=/var/log/apache-stratos/cartridge-agent.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 event_publisher_path=/opt/apache-stratos-cartridge-agent/event-publisher # Event publisher home
 event_subscriber_path=/opt/apache-stratos-cartridge-agent/event-subscriber # Event subscriber home
+health_publisher_path=/opt/apache-stratos-cartridge-agent/health-publisher # Health publisher home
 
 # ---------------------------------------------
 # Download payload.zip
@@ -274,3 +275,8 @@ sh event-publisher.sh $MB_IP $MB_PORT $event_class_name $event_json_path
 echo "Event published" | tee -a $LOG
 popd
 
+pushd $health_publisher_path/bin
+echo "Executing: health-publisher.sh"
+sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT
+echo "Health stat published" | tee -a $LOG
+popd
