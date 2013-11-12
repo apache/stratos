@@ -20,6 +20,7 @@
 package org.apache.stratos.cartridge.agent.health.publisher;
 
 import java.io.File;
+import java.lang.Double;
 import java.lang.NullPointerException;
 import java.lang.String;
 import java.util.HashMap;
