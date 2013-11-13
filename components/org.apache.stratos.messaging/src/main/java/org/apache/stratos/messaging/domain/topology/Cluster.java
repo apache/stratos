@@ -29,18 +29,19 @@ import java.util.*;
  * Key: serviceName, clusterId
  */
 public class Cluster implements Serializable {
-    private String serviceName;
+
+	private static final long serialVersionUID = -361960242360176077L;
+	
+	private String serviceName;
     private String clusterId;
     private String hostName;
     private String tenantRange;
     private String autoscalePolicyName;
+    private String haPolicyName;
     private Cloud cloud;
     private Region region;
     private Zone zone;
-    private float averageRequestsInFlight;
-    private float requestsInFlightSecondDerivative;
-    private float requestsInFlightGradient;
-
+    
     // Key: Member.memberId
     private Map<String, Member> memberMap;
     private Properties properties;
@@ -139,30 +140,6 @@ public class Cluster implements Serializable {
         this.autoscalePolicyName = autoscalePolicyName;
     }
 
-    public float getAverageRequestsInFlight() {
-        return averageRequestsInFlight;
-    }
-
-    public void setAverageRequestsInFlight(float averageRequestsInFlight) {
-        this.averageRequestsInFlight = averageRequestsInFlight;
-    }
-
-    public float getRequestsInFlightSecondDerivative() {
-        return requestsInFlightSecondDerivative;
-    }
-
-    public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
-        this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
-    }
-
-    public float getRequestsInFlightGradient() {
-        return requestsInFlightGradient;
-    }
-
-    public void setRequestsInFlightGradient(float requestsInFlightGradient) {
-        this.requestsInFlightGradient = requestsInFlightGradient;
-    }
-
     public void addMemberToIaasNodeId(Member member) {
            membertoNodeIdMap.put(member.getIaasNodeId(), member);
        }
@@ -178,6 +155,14 @@ public class Cluster implements Serializable {
        public boolean memberExistsFromIaasNodeId(String iaasNodeId) {
            return this.membertoNodeIdMap.containsKey(iaasNodeId);
        }
+
+	public String getHaPolicyName() {
+		return haPolicyName;
+	}
+
+	public void setHaPolicyName(String haPolicyName) {
+		this.haPolicyName = haPolicyName;
+	}
 
 }
 
