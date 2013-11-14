@@ -18,9 +18,7 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Cloud;
-import org.apache.stratos.messaging.domain.topology.Region;
-import org.apache.stratos.messaging.domain.topology.Zone;
+import org.apache.stratos.messaging.domain.topology.Partition;
 
 import java.io.Serializable;
 
@@ -29,9 +27,7 @@ import java.io.Serializable;
  */
 public class InstanceSpawnedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2672909702971355178L;
-    private Cloud cloud;
-    private Region region;
-    private Zone zone;
+    private Partition partition;
     private String serviceName;
     private String clusterId;
     private String memberId;
@@ -42,30 +38,6 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
         this.clusterId = clusterId;
         this.memberId = memberId;
         this.iaasNodeId = iaasNodeId;
-    }
-
-    public Cloud getCloud() {
-        return cloud;
-    }
-
-    public void setCloud(Cloud cloud) {
-        this.cloud = cloud;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public Zone getZone() {
-        return zone;
-    }
-
-    public void setZone(Zone zone) {
-        this.zone = zone;
     }
 
     public String getServiceName() {
@@ -86,5 +58,13 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     public void setIaasNodeId(String iaasNodeId) {
         this.iaasNodeId = iaasNodeId;
+    }
+
+    public Partition getPartition() {
+        return partition;
+    }
+
+    public void setPartition(Partition partition) {
+        this.partition = partition;
     }
 }

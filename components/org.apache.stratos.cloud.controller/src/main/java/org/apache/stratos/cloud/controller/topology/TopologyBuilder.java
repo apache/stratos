@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.Cartridge;
-import org.apache.stratos.cloud.controller.util.LocationScope;
 import org.apache.stratos.cloud.controller.util.PortMapping;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -46,10 +45,20 @@ public class TopologyBuilder {
             throw new RuntimeException(String.format("Cartridge list is empty"));
         }
         try {
+
             TopologyManager.getInstance().acquireWriteLock();
             for (Cartridge cartridge : cartridgeList) {
                 if (!topology.serviceExists(cartridge.getType())) {
                     service = new Service(cartridge.getType());
+                     List<PortMapping> portMappings = cartridge.getPortMappings();
+                    Port port;
+                    //adding ports to the event
+                    for (PortMapping portMapping : portMappings) {
+                        port = new Port(portMapping.getProtocol(),
+                                Integer.parseInt(portMapping.getPort()),
+                                Integer.parseInt(portMapping.getProxyPort()));
+                        service.addPort(port);
+                    }
                     topology.addService(service);
                     TopologyManager.getInstance().updateTopology(topology);
                 }

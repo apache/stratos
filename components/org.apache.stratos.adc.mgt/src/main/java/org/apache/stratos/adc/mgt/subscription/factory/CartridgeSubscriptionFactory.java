@@ -44,16 +44,15 @@ public class CartridgeSubscriptionFactory {
             cartridgeSubscription = new MultiTenantCartridgeSubscription(cartridgeInfo);
 
         } else {
-            if(cartridgeInfo.getType().equals(CartridgeConstants.MYSQL_CARTRIDGE_NAME)) {
+            if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
                 cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo);
             }
-            else if (cartridgeInfo.getType().equals(CartridgeConstants.PHP_CARTRIDGE_NAME)) {
-                cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
-            }
-            else if (cartridgeInfo.getType().equals(CartridgeConstants.TOMCAT_CARTRIDGE_NAME)) {
+            else {
                 cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
             }
         }
+
+
 
         if(cartridgeSubscription == null) {
             throw new ADCException("Unable to create a CartridgeSubscription subscription for "

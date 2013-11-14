@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.topology.InstanceSpawnedEvent;
 import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
@@ -41,7 +42,7 @@ public class InstanceSpawnedEventProcessor extends MessageProcessor {
 
         if (MemberStartedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(message, MemberStartedEvent.class);
+            InstanceSpawnedEvent event = (InstanceSpawnedEvent) Util.jsonToObject(message, InstanceSpawnedEvent.class);
 
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
@@ -64,6 +65,7 @@ public class InstanceSpawnedEventProcessor extends MessageProcessor {
             // Apply changes to the topology
             Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId());
             member.setStatus(MemberStatus.Created);
+            member.setPartition(event.getPartition());
             cluster.addMember(member);
 
             if (log.isInfoEnabled()) {
