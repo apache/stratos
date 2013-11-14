@@ -40,7 +40,7 @@ public class ClusterContext {
     
     private int memberCount;
 
-    //This map will keep number of instance count against partitionId
+    //This map will keep number of currently spawned instance count against partitionId
     private Map<String, Integer> partitionCountMap;
 
     private int currentPartitionIndex;

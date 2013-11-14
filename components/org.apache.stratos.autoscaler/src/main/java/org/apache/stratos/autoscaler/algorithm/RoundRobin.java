@@ -31,95 +31,84 @@ import org.apache.stratos.autoscaler.policy.model.Partition;
 public class RoundRobin implements AutoscaleAlgorithm{
 
     public Partition getNextScaleUpPartition(String clusterId){
-
-        String policyId;
-        int nextPartitionIndex;
-        ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-        int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-
+    	
+        ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);    	            	       
         String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
+    	//Find relevant policyId using topology
+    	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getAutoscalePolicyName();
+    	int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
+    	for(int i=0; i < noOfPartitions; i++)
+    	{
+    	        
+    	        int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	        Partition currentPartition = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions()
+    	                .get(currentPartitionIndex); 
+    	        String currentPartitionId =  currentPartition.getId();
+    	        
+    	        // point to next partition
+    	        currentPartitionIndex = currentPartitionIndex + 1 == noOfPartitions ? 0 : currentPartitionIndex+1;
 
-        //Find relevant policyId using topology
-        policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getAutoscalePolicyName();
-
-
-        int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
-
-        if (currentPartitionIndex + 1 >= noOfPartitions) {
-
-            nextPartitionIndex = 0;
-        } else {
-
-            nextPartitionIndex = currentPartitionIndex++;
-        }
-
-        //Set next partition as current partition in Autoscaler Context
-        AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(nextPartitionIndex);
-
-        //Find next partition
-        Partition nextPartition = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions()
-                .get(nextPartitionIndex);
-        String nextPartitionId = nextPartition.getId();
-
-        if(clusterContext.partitionCountExists(nextPartitionId)){
-
-            //If the current partitions max is reached, it will try next partition
-            if(clusterContext.getPartitionCount(nextPartitionId) >= nextPartition.getPartitionMembersMax()){
-
-                nextPartition = getNextScaleUpPartition(clusterId);
-            }
-        } else {
-
-            //Add the partition count entry to cluster context
-            AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(nextPartitionId, 1);
-        }
-        return nextPartition;
+    	        //Set next partition as current partition in Autoscaler Context
+    	        AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(currentPartitionIndex);
+    	        
+    	        
+    	        if(clusterContext.getPartitionCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
+    	        	// current partition is free
+    	        	AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(currentPartitionId, 1);
+	                return currentPartition;
+	            }    	            	      
+    	        
+    	}
+    	
+    	// coming here means non of the partitions has space for another instance to be created. All partitions are full.
+        return null;
     }
 
 
     public Partition getNextScaleDownPartition(String clusterId){
 
-        String policyId;
-        int nextPartitionIndex;
-        ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-        int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	 String policyId;
+         int previousPartitionIndex;
+         ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
+         int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
 
-        String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
+         String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
 
-        //Find relevant policyId using topology
-        policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getAutoscalePolicyName();
-
-
-        int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
-
-        if (currentPartitionIndex - 1 >= noOfPartitions) {
-
-            nextPartitionIndex = 0;
-        } else {
-
-            nextPartitionIndex = currentPartitionIndex--;
-        }
-
-        //Set next partition as current partition in Autoscaler Context
-        AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(nextPartitionIndex);
-
-        //Find next partition
-        Partition nextPartition = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions()
-                .get(nextPartitionIndex);
-        String nextPartitionId = nextPartition.getId();
-
-        if(clusterContext.partitionCountExists(nextPartitionId)
-                && (clusterContext.getPartitionCount(nextPartitionId) <= nextPartition.getPartitionMembersMin())){
+         //Find relevant policyId using topology
+         policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getAutoscalePolicyName();
 
 
-            //If the current partitions max is reached, it will try next partition
-            nextPartition = getNextScaleDownPartition(clusterId);
-        }
-        return nextPartition;
+         int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
+         
+         for(int i=0; i<noOfPartitions;i++)
+         {
+         	if (currentPartitionIndex == 0) {
+
+         		previousPartitionIndex = noOfPartitions - 1;
+            }else {
+
+            	previousPartitionIndex = currentPartitionIndex - 1;
+            }
+
+             //Set next partition as current partition in Autoscaler Context
+             AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(previousPartitionIndex);
+
+             //Find next partition
+             Partition previousPartition = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions()
+                     .get(previousPartitionIndex);
+             String previousPartitionId = previousPartition.getId();
+             if(clusterContext.partitionCountExists(previousPartitionId)
+                     && (clusterContext.getPartitionCount(previousPartitionId) > previousPartition.getPartitionMembersMin())){
+            	 return previousPartition;
+             }
+         }
+         
+         return null;
     }
 
 
     public Partition getScaleDownPartition(String clusterId){
+    	
         Partition partition = PolicyManager.getInstance().getPolicy("economyPolicy").getHAPolicy().getPartitions()
                             .get(0);
 
