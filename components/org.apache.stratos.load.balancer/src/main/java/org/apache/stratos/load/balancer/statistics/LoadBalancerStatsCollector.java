@@ -16,14 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.load.balancer.statistics;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.stratos.load.balancer.common.statistics.observers.WSO2CEPStatsObserver;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPStatsObserver;
 
 /**
  * This is the load balancing stats collector and any observer can get registered here 
@@ -32,13 +34,14 @@ import org.apache.stratos.load.balancer.common.statistics.observers.WSO2CEPStats
  * @author nirmal
  *
  */
-public class LoadBalancingStatsCollector extends Observable{
+public class LoadBalancerStatsCollector extends Observable{
+    private static final Log log = LogFactory.getLog(LoadBalancerStatsCollector.class);
 
-	private static LoadBalancingStatsCollector collector;
+	private static LoadBalancerStatsCollector collector;
 	private Map<String, Integer> clusterIdToRequestInflightCountMap;
 	private Thread notifier;
 	
-	private LoadBalancingStatsCollector() {
+	private LoadBalancerStatsCollector() {
 		clusterIdToRequestInflightCountMap = new ConcurrentHashMap<String, Integer>();
 		if (notifier == null || (notifier != null && !notifier.isAlive())) {
 			notifier = new Thread(new ObserverNotifier());
@@ -46,11 +49,11 @@ public class LoadBalancingStatsCollector extends Observable{
 		}
     }
 	
-	public static LoadBalancingStatsCollector getInstance() {
+	public static LoadBalancerStatsCollector getInstance() {
 		if (collector == null) {
-			synchronized (LoadBalancingStatsCollector.class) {
+			synchronized (LoadBalancerStatsCollector.class) {
 				if (collector == null) {
-					collector = new LoadBalancingStatsCollector();
+					collector = new LoadBalancerStatsCollector();
 					// add observers
 					collector.addObserver(new WSO2CEPStatsObserver());
 				}
@@ -58,34 +61,49 @@ public class LoadBalancingStatsCollector extends Observable{
 		}
 		return collector;
 	}
+
+    public void setRequestInflightCount(String clusterId, int value) {
+        if(clusterId == null) {
+            return;
+        }
+
+        clusterIdToRequestInflightCountMap.put(clusterId, value);
+        setChanged();
+    }
+
+    public void incrementRequestInflightCount(String clusterId) {
+        incrementRequestInflightCount(clusterId, 1);
+    }
 	
-	public void incrementRequestInflightCount(String clusterId) {
+	public void incrementRequestInflightCount(String clusterId, int value) {
 		if(clusterId == null) {
 			return;
 		}
-		
-		int value = 1;
+
 		if(clusterIdToRequestInflightCountMap.get(clusterId) != null) {
 			value += clusterIdToRequestInflightCountMap.get(clusterId);
 		}
 		clusterIdToRequestInflightCountMap.put(clusterId, value);
 		setChanged();
 	}
+
+    public void decrementRequestInflightCount(String clusterId) {
+        decrementRequestInflightCount(clusterId , 1);
+    }
 	
-	public void decrementRequestInflightCount(String clusterId) {
+	public void decrementRequestInflightCount(String clusterId, int value) {
 		if(clusterId == null) {
 			return;
 		}
-		
-		int value = -1;
+
 		if(clusterIdToRequestInflightCountMap.get(clusterId) != null) {
 			value += clusterIdToRequestInflightCountMap.get(clusterId);
 		}
 		clusterIdToRequestInflightCountMap.put(clusterId, value);
 		setChanged();
 	}
-	
-	
+
+
 	/**
 	 * This thread will notify all the observers of this subject.
 	 * @author nirmal
@@ -95,16 +113,16 @@ public class LoadBalancingStatsCollector extends Observable{
 
 		@Override
         public void run() {
+            if(log.isInfoEnabled()) {
+                log.info("Load balancing statistics notifier thread started");
+            }
 			while(true) {
 				try {
 	                Thread.sleep(15000);
                 } catch (InterruptedException ignore) {
                 }
-				LoadBalancingStatsCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
+				LoadBalancerStatsCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
 			}
-	        
         }
-		
 	}
-	
 }

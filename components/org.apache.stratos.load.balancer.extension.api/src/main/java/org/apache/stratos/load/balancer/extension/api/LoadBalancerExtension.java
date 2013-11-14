@@ -21,12 +21,19 @@ package org.apache.stratos.load.balancer.extension.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatsPublisher;
+import org.apache.stratos.load.balancer.common.statistics.WSO2CEPStatsPublisher;
 import org.apache.stratos.load.balancer.common.topology.TopologyReceiver;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyEventProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Load balancer extension thread for executing load balancer life-cycle according to the topology updates
@@ -36,18 +43,26 @@ public class LoadBalancerExtension implements Runnable {
     private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
 
     private LoadBalancer loadBalancer;
+    private LoadBalancerStatsReader statsReader;
 
-    public LoadBalancerExtension(LoadBalancer loadBalancer) {
+    public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatsReader statsReader) {
         this.loadBalancer = loadBalancer;
+        this.statsReader = statsReader;
     }
 
     @Override
     public void run() {
         try {
-            // Start topology receiver
+            // Start topology receiver thread
             TopologyReceiver topologyReceiver = new TopologyReceiver(createMessageDelegator());
-            Thread thread = new Thread(topologyReceiver);
-            thread.start();
+            Thread topologyReceiverThread = new Thread(topologyReceiver);
+            topologyReceiverThread.start();
+
+            // Start stats notifier thread
+            LoadBalancerStatsNotifier statsNotifier = new LoadBalancerStatsNotifier(statsReader);
+            Thread statsNotifierThread = new Thread(statsNotifier);
+            statsNotifierThread.start();
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error(e);

@@ -24,7 +24,7 @@ import org.apache.axis2.description.TransportInDescription;
 import org.apache.http.protocol.HTTP;
 import org.apache.stratos.load.balancer.RequestDelegator;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
-import org.apache.stratos.load.balancer.common.statistics.LoadBalancingStatsCollector;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerStatsCollector;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Port;
@@ -410,7 +410,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         setupLoadBalancerContextProperties(synCtx);
 
         // Update health stats
-        LoadBalancingStatsCollector.getInstance().incrementRequestInflightCount(currentMember.getDomain());
+        LoadBalancerStatsCollector.getInstance().incrementRequestInflightCount(currentMember.getDomain());
         // Set the cluster id in the message context
         synCtx.setProperty(Constants.CLUSTER_ID, currentMember.getDomain());
 

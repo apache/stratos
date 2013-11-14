@@ -56,7 +56,8 @@ public class Main {
             }
 
             HAProxy haProxy = new HAProxy(executableFilePath, templatePath, templateName, confFilePath);
-            LoadBalancerExtension  extension = new LoadBalancerExtension(haProxy);
+            HAProxyStatsReader statsReader = new HAProxyStatsReader();
+            LoadBalancerExtension extension = new LoadBalancerExtension(haProxy, statsReader);
             Thread thread = new Thread(extension);
             thread.start();
         }
