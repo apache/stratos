@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.topology.TopologyReceiver;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.topology.TopologyEventProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -59,8 +58,9 @@ public class LoadBalancerExtension implements Runnable {
 
     private TopologyEventMessageDelegator createMessageDelegator() {
         TopologyEventProcessorChain processorChain = createEventProcessorChain();
-        TopologyEventMessageDelegator messageDelegator = new TopologyEventMessageDelegator(processorChain);
+        final TopologyEventMessageDelegator messageDelegator = new TopologyEventMessageDelegator(processorChain);
         messageDelegator.addCompleteTopologyEventListener(new CompleteTopologyEventListener() {
+
             @Override
             protected void onEvent(Event event) {
                 // Configure load balancer
@@ -68,6 +68,10 @@ public class LoadBalancerExtension implements Runnable {
 
                 // Start load balancer
                 loadBalancer.start();
+
+                // Complete topology event is only received once
+                // Remove event listener
+                messageDelegator.removeCompleteTopologyEventListener(this);
             }
         });
         return messageDelegator;

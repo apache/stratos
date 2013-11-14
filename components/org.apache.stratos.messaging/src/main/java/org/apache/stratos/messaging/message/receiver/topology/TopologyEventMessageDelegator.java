@@ -23,6 +23,7 @@ import javax.jms.TextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.EventListener;
+import org.apache.stratos.messaging.event.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.topology.*;
 import org.apache.stratos.messaging.util.Constants;
@@ -52,8 +53,12 @@ public class TopologyEventMessageDelegator implements Runnable {
         this.processorChain = processorChain;
     }
 
-    public void addCompleteTopologyEventListener(EventListener eventListener) {
+    public void addCompleteTopologyEventListener(CompleteTopologyEventListener eventListener) {
         completeTopEvMsgProcessor.addEventListener(eventListener);
+    }
+
+    public void removeCompleteTopologyEventListener(CompleteTopologyEventListener eventListener) {
+        completeTopEvMsgProcessor.removeEventListener(eventListener);
     }
 
     @Override
