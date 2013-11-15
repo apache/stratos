@@ -23,6 +23,17 @@
 echo "Starting haproxy extension..."
 lib_path=./../lib/
 class_path=`echo ../lib/*.jar | tr ' ' ':'`
-properties="-Djndi.properties.dir=./../conf -Dexecutable.file.path=haproxy -Dtemplates.path=./../templates -Dtemplates.name=haproxy.cfg.template -Dconf.file.path=/tmp/haproxy.cfg"
+properties="-Djndi.properties.dir=./../conf
+            -Dexecutable.file.path=/Users/imesh/dist/haproxy/haproxy-1.4.24/haproxy
+            -Dtemplates.path=./../templates
+            -Dtemplates.name=haproxy.cfg.template
+            -Dconf.file.path=/tmp/haproxy.cfg"
+            -Djavax.net.ssl.trustStore=./../security/client-truststore.jks
+            -Djavax.net.ssl.trustStorePassword=wso2carbon
+            -Dthrift.receiver.ip=localhost
+            -Dthrift.receiver.port=7615
+
+# Uncomment below line and add $debug next to $properties to enable remote debugging
+#debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
 java -cp "$class_path" $properties org.apache.stratos.haproxy.extension.Main -Dp1=sample_value $*

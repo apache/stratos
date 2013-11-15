@@ -42,6 +42,14 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/security</directory>
+            <outputDirectory>/security</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>client-trustsore.jks</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/main/templates</directory>
             <outputDirectory>/templates</outputDirectory>
             <fileMode>0600</fileMode>

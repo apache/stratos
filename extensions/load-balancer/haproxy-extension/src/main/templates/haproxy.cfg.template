@@ -1,6 +1,7 @@
 global
     daemon
     maxconn 256
+    stats socket /tmp/haproxy_stats
 
 defaults
     mode http

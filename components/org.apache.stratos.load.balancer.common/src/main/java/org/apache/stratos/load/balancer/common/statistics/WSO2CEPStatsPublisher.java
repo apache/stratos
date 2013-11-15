@@ -43,16 +43,13 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
 
     public WSO2CEPStatsPublisher() {
         AgentConfiguration agentConfiguration = new AgentConfiguration();
-        // TODO get following from somewhere, without hard-coding.
-        System.setProperty("javax.net.ssl.trustStore", CarbonUtils.getCarbonHome()+ File.separator+"repository"+
-                File.separator+"resources"+File.separator+"security"+File.separator+"client-truststore.jks"	);
-        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
-
         Agent agent = new Agent(agentConfiguration);
+
         //TODO read following from a config file?
         String ip = System.getProperty("thrift.receiver.ip");
         String port = System.getProperty("thrift.receiver.port");
-        //Using Asynchronous data publisher
+
+        // Using asynchronous data publisher
         asyncDataPublisher = new AsyncDataPublisher("tcp://"+ip+":"+port+"", "admin", "admin", agent);
         String streamDefinition = "{" +
                 " 'name':'" + CALL_CENTER_DATA_STREAM + "'," +

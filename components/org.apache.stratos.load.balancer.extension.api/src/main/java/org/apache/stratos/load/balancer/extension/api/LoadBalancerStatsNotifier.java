@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Load balancer statistics notifier thread for publishing statistics periodically to CEP.
  */
 public class LoadBalancerStatsNotifier implements Runnable {
     private static final Log log = LogFactory.getLog(LoadBalancerStatsNotifier.class);

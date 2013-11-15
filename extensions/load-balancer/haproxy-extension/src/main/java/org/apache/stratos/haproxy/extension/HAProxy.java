@@ -24,12 +24,13 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
 
 /**
  * HAProxy load balancer life-cycle implementation.
- *
+ * <p/>
  * Thanks to Vaadin for HAProxyController implementation:
  * https://vaadin.com/license
  * http://dev.vaadin.com/browser/svn/incubator/Arvue/ArvueMaster/src/org/vaadin/arvue/arvuemaster/HAProxyController.java
@@ -52,24 +53,6 @@ public class HAProxy implements LoadBalancer {
         this.processIdFilePath = confFilePath.replace(".cfg", ".pid");
     }
 
-    public void reload(Topology topology) {
-        configure(topology);
-        reloadConfiguration();
-    }
-
-    public void configure(Topology topology) {
-        if(log.isInfoEnabled()) {
-            log.info("Configuring haproxy instance...");
-        }
-
-        HAProxyConfigWriter writer = new HAProxyConfigWriter(templatePath, templateName, confFilePath);
-        writer.write(topology);
-
-        if(log.isInfoEnabled()) {
-            log.info("Configuration done");
-        }
-    }
-
     private void executeCommand(String command) throws IOException {
         String line;
         Runtime r = Runtime.getRuntime();
@@ -79,31 +62,30 @@ public class HAProxy implements LoadBalancer {
         Process p = r.exec(command);
         BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
         while ((line = in.readLine()) != null) {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(line);
             }
         }
         StringBuilder sb = new StringBuilder();
         BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
         while ((line = error.readLine()) != null) {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(line);
                 sb.append(line + NEW_LINE);
             }
         }
-        if(sb.length() > 0) {
+        if (sb.length() > 0) {
             throw new RuntimeException("Command execution failed: " + NEW_LINE + sb.toString());
         }
     }
 
-    private void reloadConfiguration() {
-
-        if(log.isInfoEnabled()) {
-            log.info("Reloading configuration...");
-        }
-        BufferedReader input = null;
+    private void reloadConfiguration() throws LoadBalancerExtensionException {
 
         try {
+            if (log.isInfoEnabled()) {
+                log.info("Reloading configuration...");
+            }
+
             // Read pid
             String pid = "";
             BufferedReader reader = new BufferedReader(new FileReader(processIdFilePath));
@@ -115,70 +97,90 @@ public class HAProxy implements LoadBalancer {
             // Execute hot configuration deployment
             String command = executableFilePath + " -f " + confFilePath + " -p " + processIdFilePath + " -sf " + pid;
             executeCommand(command);
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Configuration done");
             }
         } catch (Exception e) {
-            if(log.isErrorEnabled()) {
-                log.error("Reconfiguration failed", e);
+            if (log.isErrorEnabled()) {
+                log.error("Reconfiguration failed");
             }
+            throw new LoadBalancerExtensionException(e);
         }
     }
 
-    public void start() {
+    public void reload(Topology topology) throws LoadBalancerExtensionException {
+        configure(topology);
+        reloadConfiguration();
+    }
+
+    public void configure(Topology topology) throws LoadBalancerExtensionException {
+
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("Configuring haproxy instance...");
+            }
+
+            HAProxyConfigWriter writer = new HAProxyConfigWriter(templatePath, templateName, confFilePath);
+            writer.write(topology);
+
+            if (log.isInfoEnabled()) {
+                log.info("Configuration done");
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not configure haproxy");
+            }
+            throw new LoadBalancerExtensionException(e);
+        }
+    }
+
+    public void start() throws LoadBalancerExtensionException {
 
         // Check for configuration file
-        File conf;
-        conf = new File(confFilePath);
+        File conf = new File(confFilePath);
         if (!conf.exists()) {
-            throw new RuntimeException("Could not find haproxy configuration file");
+            throw new LoadBalancerExtensionException("Could not find haproxy configuration file");
         }
 
         // Start haproxy and write pid to processIdFilePath
         try {
-            String command = executableFilePath + " -f " + confFilePath +" -p " + processIdFilePath;
+            String command = executableFilePath + " -f " + confFilePath + " -p " + processIdFilePath;
             executeCommand(command);
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("haproxy started");
             }
         } catch (Exception e) {
-            if(log.isErrorEnabled()) {
-                log.error("Could not start haproxy", e);
+            if (log.isErrorEnabled()) {
+                log.error("Could not start haproxy");
             }
+            throw new LoadBalancerExtensionException(e);
         }
     }
 
-    public void stop() {
+    public void stop() throws LoadBalancerExtensionException {
 
-        // Read the PID's
-        Vector<String> pids = new Vector<String>();
         try {
+            // Read the PIDs
+            Vector<String> pids = new Vector<String>();
             BufferedReader reader = new BufferedReader(new FileReader(processIdFilePath));
-            String pid = null;
-            while ((pid = reader.readLine()) != null) {
-                pids.add(pid);
+            String pid_ = null;
+            while ((pid_ = reader.readLine()) != null) {
+                pids.add(pid_);
+            }
+
+            // Kill all haproxy processes
+            for (String pid : pids) {
+                String command = "kill -s 9 " + pid;
+                executeCommand(command);
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("haproxy stopped [pid] %s", pid));
+                }
             }
         } catch (Exception e) {
             if(log.isErrorEnabled()) {
-                log.error(e);
+                log.error("Could not stop haproxy");
             }
-            return;
-        }
-
-        // Kill all haproxy processes
-        for (String pid : pids) {
-            try {
-                String command = "kill -s 9" + pid;
-                executeCommand(command);
-                if(log.isInfoEnabled()) {
-                    log.info("haproxy stopped");
-                }
-            } catch (Exception e) {
-                if(log.isErrorEnabled()) {
-                    log.error(e);
-                }
-                return;
-            }
+            throw new LoadBalancerExtensionException(e);
         }
     }
 }

@@ -21,19 +21,12 @@ package org.apache.stratos.load.balancer.extension.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatsPublisher;
-import org.apache.stratos.load.balancer.common.statistics.WSO2CEPStatsPublisher;
 import org.apache.stratos.load.balancer.common.topology.TopologyReceiver;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyEventProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Load balancer extension thread for executing load balancer life-cycle according to the topology updates
@@ -44,6 +37,7 @@ public class LoadBalancerExtension implements Runnable {
 
     private LoadBalancer loadBalancer;
     private LoadBalancerStatsReader statsReader;
+    private boolean loadBalancerStarted;
 
     public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatsReader statsReader) {
         this.loadBalancer = loadBalancer;
@@ -65,9 +59,8 @@ public class LoadBalancerExtension implements Runnable {
 
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error(e);
+                log.error("Could not start load balancer extension", e);
             }
-            loadBalancer.stop();
         }
     }
 
@@ -78,15 +71,23 @@ public class LoadBalancerExtension implements Runnable {
 
             @Override
             protected void onEvent(Event event) {
-                // Configure load balancer
-                loadBalancer.configure(TopologyManager.getTopology());
+                try {
+                    // Configure load balancer
+                    loadBalancer.configure(TopologyManager.getTopology());
 
-                // Start load balancer
-                loadBalancer.start();
+                    // Start load balancer
+                    loadBalancer.start();
+                    loadBalancerStarted = true;
 
-                // Complete topology event is only received once
-                // Remove event listener
-                messageDelegator.removeCompleteTopologyEventListener(this);
+                    // Complete topology event is only received once
+                    // Remove event listener
+                    messageDelegator.removeCompleteTopologyEventListener(this);
+                }
+                catch (Exception e) {
+                    if(log.isErrorEnabled()) {
+                        log.error("Could not start load balancer", e);
+                    }
+                }
             }
         });
         return messageDelegator;
@@ -97,33 +98,46 @@ public class LoadBalancerExtension implements Runnable {
         processorChain.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                loadBalancer.reload(TopologyManager.getTopology());
+                reloadConfiguration();
             }
         });
         processorChain.addEventListener(new MemberSuspendedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                loadBalancer.reload(TopologyManager.getTopology());
+                reloadConfiguration();
             }
         });
         processorChain.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                loadBalancer.reload(TopologyManager.getTopology());
+                reloadConfiguration();
             }
         });
         processorChain.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                loadBalancer.reload(TopologyManager.getTopology());
+                reloadConfiguration();
             }
         });
         processorChain.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                loadBalancer.reload(TopologyManager.getTopology());
+                reloadConfiguration();
             }
         });
         return processorChain;
+    }
+
+    private void reloadConfiguration() {
+        try {
+            if(loadBalancerStarted) {
+                loadBalancer.reload(TopologyManager.getTopology());
+            }
+        }
+        catch (Exception e) {
+            if(log.isErrorEnabled()) {
+                log.error("Could not reload load balancer configuration", e);
+            }
+        }
     }
 }

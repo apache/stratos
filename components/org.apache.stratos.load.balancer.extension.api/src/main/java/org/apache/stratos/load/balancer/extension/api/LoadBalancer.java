@@ -19,6 +19,7 @@
 
 package org.apache.stratos.load.balancer.extension.api;
 
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.domain.topology.Topology;
 
 /**
@@ -28,23 +29,27 @@ public interface LoadBalancer {
 
     /**
      * Start a new load balancer instance.
+     * Throw an exception if the start operation fails.
      */
-    void start();
+    void start() throws LoadBalancerExtensionException;
 
     /**
-     * Stop the running load balancer instance.
+     * Stop running load balancer instance.
+     * Throw an exception if the stop operation fails.
      */
-    void stop();
+    void stop() throws LoadBalancerExtensionException;
 
     /**
      * Configure the load balancer using the given topology.
+     * Throw an exception is the configure operation fails.
      * @param topology
      */
-    void configure(Topology topology);
+    void configure(Topology topology) throws LoadBalancerExtensionException;
 
     /**
      * Reload load balancer configuration using the given topology without interrupting the incoming requests.
+     * Throw an exception if the reload operation fails.
      * @param topology
      */
-    void reload(Topology topology);
+    void reload(Topology topology) throws LoadBalancerExtensionException;
 }

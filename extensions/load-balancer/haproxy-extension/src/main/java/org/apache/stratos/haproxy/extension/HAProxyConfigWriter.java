@@ -21,6 +21,7 @@ package org.apache.stratos.haproxy.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -60,6 +61,10 @@ public class HAProxyConfigWriter {
 
         for(Service service : topology.getServices()) {
             for(Cluster cluster : service.getClusters()) {
+                if((service.getPorts() == null) || (service.getPorts().size() == 0)) {
+                    throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
+                }
+
                 for(Port port : service.getPorts()) {
 
                     String frontEndId = cluster.getClusterId() + "-proxy-" + port.getProxy();
@@ -108,8 +113,9 @@ public class HAProxyConfigWriter {
             }
         } catch (IOException e) {
             if(log.isErrorEnabled()) {
-                log.error("Could not write configuration file", e);
+                log.error(String.format("Could not write configuration file: %s", confFilePath));
             }
+            throw new RuntimeException(e);
         }
     }
 }

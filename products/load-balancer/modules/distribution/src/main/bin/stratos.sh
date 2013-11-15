@@ -294,8 +294,10 @@ exec "$JAVACMD" \
         -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
         -Dcom.atomikos.icatch.hide_init_file_path=true \
         -Dorg.terracotta.quartz.skipUpdateCheck=true \
+        -Djavax.net.ssl.trustStore=$CARBON_HOME/repository/resources/security/client-truststore.jks
+        -Djavax.net.ssl.trustStorePassword=wso2carbon
         -Dthrift.receiver.ip=localhost \
-        -Dthrift.receiver.port=7614 \
+        -Dthrift.receiver.port=7615 \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 
