@@ -39,6 +39,7 @@ public class LoadBalancerStatsNotifier implements Runnable {
     private LoadBalancerStatsReader statsReader;
     private final LoadBalancerStatsPublisher statsPublisher;
     private long statsPublisherInterval = 15000;
+    private boolean terminated;
 
     public LoadBalancerStatsNotifier(LoadBalancerStatsReader statsReader) {
         this.statsReader = statsReader;
@@ -52,7 +53,7 @@ public class LoadBalancerStatsNotifier implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!terminated) {
             try {
                 try {
                     Thread.sleep(statsPublisherInterval);
@@ -73,5 +74,12 @@ public class LoadBalancerStatsNotifier implements Runnable {
                 }
             }
         }
+    }
+
+    /**
+     * Terminate load balancer statistics notifier thread.
+     */
+    public void terminate() {
+        terminated = true;
     }
 }

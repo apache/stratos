@@ -42,6 +42,7 @@ public class TopologyEventMessageDelegator implements Runnable {
     private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
     private CompleteTopologyEventProcessor completeTopEvMsgProcessor;
     private MessageProcessorChain processorChain;
+    private boolean terminated;
 
     public TopologyEventMessageDelegator() {
         this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
@@ -68,7 +69,7 @@ public class TopologyEventMessageDelegator implements Runnable {
                 log.info("Topology event message delegator started");
                 log.info("Waiting for the complete topology event message...");
             }
-            while (true) {
+            while (!terminated) {
                 try {
                     // First take the complete topology event
                     TextMessage message = TopologyEventQueue.getInstance().take();
@@ -86,7 +87,7 @@ public class TopologyEventMessageDelegator implements Runnable {
                 }
             }
 
-            while (true) {
+            while (!terminated) {
                 try {
                     TextMessage message = TopologyEventQueue.getInstance().take();
 
@@ -118,5 +119,12 @@ public class TopologyEventMessageDelegator implements Runnable {
                 log.error("Topology event message delegator failed", e);
             }
         }
+    }
+
+    /**
+     * Terminate topology event message delegator thread.
+     */
+    public void terminate() {
+        terminated = true;
     }
 }
