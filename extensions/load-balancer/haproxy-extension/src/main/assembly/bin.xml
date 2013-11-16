@@ -39,6 +39,7 @@
             <fileMode>0600</fileMode>
             <includes>
                 <include>jndi.properties</include>
+                <include>log4j.properties</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -46,7 +47,7 @@
             <outputDirectory>/security</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
-                <include>client-trustsore.jks</include>
+                <include>client-truststore.jks</include>
             </includes>
         </fileSet>
         <fileSet>

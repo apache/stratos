@@ -22,6 +22,7 @@ package org.apache.stratos.haproxy.extension;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
 
 /**
@@ -31,7 +32,12 @@ public class Main {
     private static final Log log = LogFactory.getLog(Main.class);
 
     public static void main(String[] args) {
+
+        LoadBalancerExtension extension = null;
         try {
+            // Configure log4j properties
+            PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
+
             if(log.isInfoEnabled()) {
                 log.info("HAProxy extension started");
             }
@@ -57,13 +63,16 @@ public class Main {
 
             HAProxy haProxy = new HAProxy(executableFilePath, templatePath, templateName, confFilePath);
             HAProxyStatsReader statsReader = new HAProxyStatsReader();
-            LoadBalancerExtension extension = new LoadBalancerExtension(haProxy, statsReader);
+            extension = new LoadBalancerExtension(haProxy, statsReader);
             Thread thread = new Thread(extension);
             thread.start();
         }
         catch (Exception e) {
             if(log.isErrorEnabled()) {
                 log.error(e);
+            }
+            if(extension != null) {
+                extension.terminate();
             }
         }
     }
