@@ -21,7 +21,6 @@ package org.apache.stratos.haproxy.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -35,11 +34,6 @@ import java.io.StringWriter;
 
 /**
  * HAProxy load balancer configuration writer.
- *
- * Thanks to Vaadin for HAProxyController implementation:
- * https://vaadin.com/license
- * http://dev.vaadin.com/browser/svn/incubator/Arvue/ArvueMaster/src/org/vaadin/arvue/arvuemaster/HAProxyController.java
-
  */
 public class HAProxyConfigWriter {
     private static final Log log = LogFactory.getLog(Main.class);
@@ -48,39 +42,45 @@ public class HAProxyConfigWriter {
     private String templatePath;
     private String templateName;
     private String confFilePath;
+    private String statsSocketFilePath;
 
-    public HAProxyConfigWriter(String templatePath, String templateName, String confFilePath) {
+    public HAProxyConfigWriter(String templatePath, String templateName, String confFilePath, String statsSocketFilePath) {
         this.templatePath = templatePath;
         this.templateName = templateName;
         this.confFilePath = confFilePath;
+        this.statsSocketFilePath = statsSocketFilePath;
     }
 
     public void write(Topology topology) {
+        // Prepare global parameters
+        StringBuilder globalParameters = new StringBuilder();
+        globalParameters.append("stats socket ");
+        globalParameters.append(statsSocketFilePath);
 
-        StringBuilder sb = new StringBuilder();
-
-        for(Service service : topology.getServices()) {
-            for(Cluster cluster : service.getClusters()) {
-                if((service.getPorts() == null) || (service.getPorts().size() == 0)) {
+        // Prepare frontend-backend collection
+        StringBuilder frontendBackendCollection = new StringBuilder();
+        for (Service service : topology.getServices()) {
+            for (Cluster cluster : service.getClusters()) {
+                if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
                     throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
                 }
 
-                for(Port port : service.getPorts()) {
+                for (Port port : service.getPorts()) {
 
-                    String frontEndId = cluster.getClusterId() + "-proxy-" + port.getProxy();
-                    String backEndId = frontEndId + "-members";
+                    String frontendId = cluster.getClusterId() + "-proxy-" + port.getProxy();
+                    String backendId = frontendId + "-members";
 
-                    sb.append("frontend ").append(frontEndId).append(NEW_LINE);
-                    sb.append("\tbind ").append(cluster.getHostName()).append(":").append(port.getProxy()).append(NEW_LINE);
-                    sb.append("\tdefault_backend ").append(backEndId).append(NEW_LINE);
-                    sb.append(NEW_LINE);
-                    sb.append("backend ").append(backEndId).append(NEW_LINE);
+                    frontendBackendCollection.append("frontend ").append(frontendId).append(NEW_LINE);
+                    frontendBackendCollection.append("\tbind ").append(cluster.getHostName()).append(":").append(port.getProxy()).append(NEW_LINE);
+                    frontendBackendCollection.append("\tdefault_backend ").append(backendId).append(NEW_LINE);
+                    frontendBackendCollection.append(NEW_LINE);
+                    frontendBackendCollection.append("backend ").append(backendId).append(NEW_LINE);
 
                     for (Member member : cluster.getMembers()) {
-                        sb.append("\tserver ").append(member.getMemberId()).append(" ")
-                          .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
+                        frontendBackendCollection.append("\tserver ").append(member.getMemberId()).append(" ")
+                                .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
                     }
-                    sb.append(NEW_LINE);
+                    frontendBackendCollection.append(NEW_LINE);
                 }
             }
         }
@@ -95,7 +95,8 @@ public class HAProxyConfigWriter {
 
         // Insert strings into the template
         VelocityContext context = new VelocityContext();
-        context.put("frontend_backend_collection", sb.toString());
+        context.put("global_parameters", globalParameters.toString());
+        context.put("frontend_backend_collection", frontendBackendCollection.toString());
 
         // Create a new string from the template
         StringWriter stringWriter = new StringWriter();
@@ -108,11 +109,11 @@ public class HAProxyConfigWriter {
             writer.write(configuration);
             writer.close();
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Configuration written to file: %s", confFilePath));
             }
         } catch (IOException e) {
-            if(log.isErrorEnabled()) {
+            if (log.isErrorEnabled()) {
                 log.error(String.format("Could not write configuration file: %s", confFilePath));
             }
             throw new RuntimeException(e);

@@ -19,15 +19,78 @@
 
 package org.apache.stratos.haproxy.extension;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerStatsReader;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import java.io.IOException;
 
 /**
  * HAProxy statistics reader.
  */
 public class HAProxyStatsReader implements LoadBalancerStatsReader {
+    private static final Log log = LogFactory.getLog(HAProxyStatsReader.class);
+
+    private String scriptsPath;
+    private String statsSocketFilePath;
+
+    public HAProxyStatsReader() {
+        this.scriptsPath = HAProxyContext.getInstance().getScriptsPath();
+        this.statsSocketFilePath = HAProxyContext.getInstance().getStatsSocketFilePath();
+    }
 
     @Override
     public int getInFlightRequestCount(String clusterId) {
+        String frontendId, backendId, command, output;
+        String[] array;
+        int totalWeight, weight;
+
+        for (Service service : TopologyManager.getTopology().getServices()) {
+            for (Cluster cluster : service.getClusters()) {
+                if (cluster.getClusterId().equals(clusterId)) {
+                    totalWeight = 0;
+                    if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
+                        throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
+                    }
+
+                    for (Port port : service.getPorts()) {
+                        frontendId = cluster.getClusterId() + "-proxy-" + port.getProxy();
+                        backendId = frontendId + "-members";
+
+                        for (Member member : cluster.getMembers()) {
+                            // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
+                            command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
+                            try {
+                                output = CommandUtil.executeCommand(command);
+                                if ((output != null) && (output.length() > 0)) {
+                                    array = output.split(" ");
+                                    if ((array != null) && (array.length > 0)) {
+                                        weight = Integer.parseInt(array[0]);
+                                        if (log.isDebugEnabled()) {
+                                            log.debug(String.format("Member weight found: [cluster] %s [member] %s [weight] %d", member.getClusterId(), member.getMemberId(), weight));
+                                        }
+                                        totalWeight += weight;
+                                    }
+                                }
+                            } catch (IOException e) {
+                                if (log.isErrorEnabled()) {
+                                    log.error(e);
+                                }
+                            }
+                        }
+                    }
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Cluster weight found: [cluster] %s [weight] %d", cluster.getClusterId(), totalWeight));
+                    }
+                    return totalWeight;
+                }
+            }
+        }
         return 0;
     }
 }

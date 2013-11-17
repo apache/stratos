@@ -1,7 +1,7 @@
 global
     daemon
     maxconn 256
-    stats socket /tmp/haproxy_stats
+    $global_parameters
 
 defaults
     mode http

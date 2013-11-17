@@ -1,3 +1,5 @@
+#!/bin/bash
+# --------------------------------------------------------------
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -16,11 +18,6 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+# --------------------------------------------------------------
 
-resource.loader=class, file
-class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
-file.resource.loader.class=org.apache.velocity.runtime.resource.loader.FileResourceLoader
-runtime.log.logsystem.class=org.apache.velocity.runtime.log.SimpleLog4JLogSystem
-runtime.log.logsystem.log4j.category=velocity
-input.encoding=UTF-8
-output.encoding=UTF-8
+echo "get weight $1/$2" | socat stdio $3

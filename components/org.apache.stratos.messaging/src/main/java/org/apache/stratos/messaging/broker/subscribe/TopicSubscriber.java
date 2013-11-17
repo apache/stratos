@@ -29,17 +29,20 @@ import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
  * object.
- * 
+ *
  * @author nirmal
- * 
+ *
  */
 public class TopicSubscriber implements Runnable {
 
 	private static final Log log = LogFactory.getLog(TopicSubscriber.class);
-	private MessageListener messageListener;
+
+    private boolean terminated = false;
+    private MessageListener messageListener;
 	private TopicSession topicSession;
 	private String topicName;
 	private TopicConnector connector;
+    private TopicHealthChecker healthChecker;
 	private javax.jms.TopicSubscriber topicSubscriber = null;
 
 	/**
@@ -84,7 +87,8 @@ public class TopicSubscriber implements Runnable {
 	@Override
 	public void run() {
 
-		while (true) {
+        // Keep the thread live until terminated
+		while (!terminated) {
 			try {
 				doSubscribe();
 
@@ -92,11 +96,12 @@ public class TopicSubscriber implements Runnable {
 				log.error("Error while subscribing to the topic: " + topicName, e);
 			} finally {
 				// start the health checker
-				Thread healthChecker = new Thread(new TopicHealthChecker(topicName));
-				healthChecker.start();
+                healthChecker = new TopicHealthChecker(topicName);
+			    Thread healthCheckerThread = new Thread(healthChecker);
+				healthCheckerThread.start();
 				try {
 					// waits till the thread finishes.
-					healthChecker.join();
+					healthCheckerThread.join();
 				} catch (InterruptedException ignore) {
 				}
 				// health checker failed
@@ -117,4 +122,11 @@ public class TopicSubscriber implements Runnable {
 		}
 	}
 
+    /**
+     * Terminate topic subscriber.
+     */
+    public void terminate() {
+        healthChecker.terminate();
+        terminated = true;
+    }
 }

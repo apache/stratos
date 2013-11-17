@@ -34,8 +34,9 @@ public class TopicHealthChecker implements Runnable {
 
 	private static final Log log = LogFactory.getLog(TopicHealthChecker.class);
 	private String topicName;
+    private boolean terminated;
 
-	public TopicHealthChecker(String name) {
+    public TopicHealthChecker(String name) {
 		topicName = name;
 	}
 
@@ -44,7 +45,7 @@ public class TopicHealthChecker implements Runnable {
 		log.info("Topic Health Checker is running... ");
 
 		TopicConnector testConnector = new TopicConnector();
-		while (true) {
+		while (!terminated) {
 			try {
 				// health checker runs in every 30s
 				Thread.sleep(30000);
@@ -71,4 +72,7 @@ public class TopicHealthChecker implements Runnable {
 
 	}
 
+    public void terminate() {
+        terminated = true;
+    }
 }

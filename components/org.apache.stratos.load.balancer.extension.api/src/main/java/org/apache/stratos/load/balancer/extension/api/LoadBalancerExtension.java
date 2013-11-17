@@ -38,6 +38,9 @@ public class LoadBalancerExtension implements Runnable {
     private LoadBalancer loadBalancer;
     private LoadBalancerStatsReader statsReader;
     private boolean loadBalancerStarted;
+    private TopologyReceiver topologyReceiver;
+    private LoadBalancerStatsNotifier statsNotifier;
+    private boolean terminated;
 
     public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatsReader statsReader) {
         this.loadBalancer = loadBalancer;
@@ -47,16 +50,22 @@ public class LoadBalancerExtension implements Runnable {
     @Override
     public void run() {
         try {
+            if(log.isInfoEnabled()) {
+                log.info("Load balancer extension started");
+            }
+
             // Start topology receiver thread
-            TopologyReceiver topologyReceiver = new TopologyReceiver(createMessageDelegator());
+            topologyReceiver = new TopologyReceiver(createMessageDelegator());
             Thread topologyReceiverThread = new Thread(topologyReceiver);
             topologyReceiverThread.start();
 
             // Start stats notifier thread
-            LoadBalancerStatsNotifier statsNotifier = new LoadBalancerStatsNotifier(statsReader);
+            statsNotifier = new LoadBalancerStatsNotifier(statsReader);
             Thread statsNotifierThread = new Thread(statsNotifier);
             statsNotifierThread.start();
 
+            // Keep the thread live until terminated
+            while (!terminated);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Could not start load balancer extension", e);
@@ -82,11 +91,11 @@ public class LoadBalancerExtension implements Runnable {
                     // Complete topology event is only received once
                     // Remove event listener
                     messageDelegator.removeCompleteTopologyEventListener(this);
-                }
-                catch (Exception e) {
-                    if(log.isErrorEnabled()) {
+                } catch (Exception e) {
+                    if (log.isErrorEnabled()) {
                         log.error("Could not start load balancer", e);
                     }
+                    terminate();
                 }
             }
         });
@@ -130,14 +139,19 @@ public class LoadBalancerExtension implements Runnable {
 
     private void reloadConfiguration() {
         try {
-            if(loadBalancerStarted) {
+            if (loadBalancerStarted) {
                 loadBalancer.reload(TopologyManager.getTopology());
             }
-        }
-        catch (Exception e) {
-            if(log.isErrorEnabled()) {
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
                 log.error("Could not reload load balancer configuration", e);
             }
         }
+    }
+
+    public void terminate() {
+        topologyReceiver.terminate();
+        statsNotifier.terminate();
+        terminated = true;
     }
 }
