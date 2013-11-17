@@ -137,7 +137,7 @@ public class HAProxy implements LoadBalancer {
             // Read the PIDs
             Vector<String> pids = new Vector<String>();
             BufferedReader reader = new BufferedReader(new FileReader(processIdFilePath));
-            String pid_ = null;
+            String pid_;
             while ((pid_ = reader.readLine()) != null) {
                 pids.add(pid_);
             }

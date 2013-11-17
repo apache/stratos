@@ -47,7 +47,7 @@ public class CommandUtil {
             if (log.isDebugEnabled()) {
                 log.debug("output = " + line);
             }
-            output.append(line + NEW_LINE);
+            output.append(line).append(NEW_LINE);
         }
         StringBuilder errors = new StringBuilder();
         BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -55,7 +55,7 @@ public class CommandUtil {
             if (log.isDebugEnabled()) {
                 log.debug("error = " + line);
             }
-            errors.append(line + NEW_LINE);
+            errors.append(line).append(NEW_LINE);
         }
         if (errors.length() > 0) {
             throw new RuntimeException("Command execution failed: " + NEW_LINE + errors.toString());

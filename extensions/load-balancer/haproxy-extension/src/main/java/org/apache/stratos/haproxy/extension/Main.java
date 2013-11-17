@@ -41,7 +41,7 @@ public class Main {
                 log.info("HAProxy extension started");
             }
 
-            // Validate rumtime parameters
+            // Validate runtime parameters
             HAProxyContext.getInstance().validate();
             extension = new LoadBalancerExtension(new HAProxy(), new HAProxyStatsReader());
             Thread thread = new Thread(extension);

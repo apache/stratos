@@ -31,7 +31,6 @@ public class HAProxyContext {
     private static volatile HAProxyContext context;
 
     private String executableFilePath;
-    private String processIdFilePath;
     private String templatePath;
     private String templateName;
     private String scriptsPath;
@@ -76,10 +75,6 @@ public class HAProxyContext {
 
     public String getExecutableFilePath() {
         return executableFilePath;
-    }
-
-    public String getProcessIdFilePath() {
-        return processIdFilePath;
     }
 
     public String getTemplatePath() {
