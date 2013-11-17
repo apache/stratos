@@ -19,7 +19,6 @@
 
 package org.apache.stratos.haproxy.extension;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
@@ -38,40 +37,20 @@ public class Main {
             // Configure log4j properties
             PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("HAProxy extension started");
             }
 
-            String executableFilePath = System.getProperty("executable.file.path");
-            String templatePath = System.getProperty("templates.path");
-            String templateName = System.getProperty("templates.name");
-            String confFilePath = System.getProperty("conf.file.path");
-
-            if(log.isDebugEnabled()) {
-                log.debug("executable.file.path = " + executableFilePath);
-                log.debug("templates.path = " + templatePath);
-                log.debug("templates.name = " + templateName);
-                log.debug("conf.file.path = " + confFilePath);
-            }
-
-            if((StringUtils.isEmpty(executableFilePath)) || (StringUtils.isEmpty(templatePath)) || (StringUtils.isEmpty(templateName)) || (StringUtils.isEmpty(confFilePath))) {
-                if(log.isErrorEnabled()) {
-                    log.error("System properties are not valid. Expected: executable.file.path, templates.path, templates.name, conf.file.path");
-                }
-                return;
-            }
-
-            HAProxy haProxy = new HAProxy(executableFilePath, templatePath, templateName, confFilePath);
-            HAProxyStatsReader statsReader = new HAProxyStatsReader();
-            extension = new LoadBalancerExtension(haProxy, statsReader);
+            // Validate rumtime parameters
+            HAProxyContext.getInstance().validate();
+            extension = new LoadBalancerExtension(new HAProxy(), new HAProxyStatsReader());
             Thread thread = new Thread(extension);
             thread.start();
-        }
-        catch (Exception e) {
-            if(log.isErrorEnabled()) {
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
                 log.error(e);
             }
-            if(extension != null) {
+            if (extension != null) {
                 extension.terminate();
             }
         }

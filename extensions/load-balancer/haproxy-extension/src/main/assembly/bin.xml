@@ -59,13 +59,21 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/scripts</directory>
+            <outputDirectory>/scripts</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>get-weight.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}</directory>
             <outputDirectory>/</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
                 <include>README*</include>
                 <include>LICENSE*</include>
-                <include>NOTICE*</include>
+                <include>INSTALL*</include>
             </includes>
         </fileSet>
     </fileSets>
