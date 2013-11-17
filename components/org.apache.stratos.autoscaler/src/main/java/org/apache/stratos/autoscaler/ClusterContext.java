@@ -139,8 +139,7 @@ public class ClusterContext {
         partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
     }
 
-    public void addPartitionCount(String partitionId, int count){
-
+    public void addPartitionCount(String partitionId, int count){    	
         partitionCountMap.put(partitionId, count);
     }
 
@@ -153,7 +152,7 @@ public class ClusterContext {
         return partitionCountMap.containsKey(partitionId);
     }
 
-    public int getPartitionCount(String partitionId){
+    public int getMemberCount(String partitionId){
         return partitionCountMap.get(partitionId);
     }
 
