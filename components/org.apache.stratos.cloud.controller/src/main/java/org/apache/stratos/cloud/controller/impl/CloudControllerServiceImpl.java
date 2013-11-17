@@ -502,7 +502,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     @Override
     public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned) {
-        log.info("aaaaaaaaaaaaaaaaaaaaaaaa");
         //TODO
         return null;
     }

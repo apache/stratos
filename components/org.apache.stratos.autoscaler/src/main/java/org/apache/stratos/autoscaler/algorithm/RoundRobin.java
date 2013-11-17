@@ -52,7 +52,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	        AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(currentPartitionIndex);
     	        
     	        
-    	        if(clusterContext.getPartitionCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
+    	        if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
     	        	// current partition is free
     	        	AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(currentPartitionId, 1);
 	                return currentPartition;
@@ -98,7 +98,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
                      .get(previousPartitionIndex);
              String previousPartitionId = previousPartition.getId();
              if(clusterContext.partitionCountExists(previousPartitionId)
-                     && (clusterContext.getPartitionCount(previousPartitionId) > previousPartition.getPartitionMembersMin())){
+                     && (clusterContext.getMemberCount(previousPartitionId) > previousPartition.getPartitionMembersMin())){
             	 return previousPartition;
              }
          }
@@ -113,7 +113,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
                             .get(0);
 
         ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-        int partitionMemberCount = clusterContext.getPartitionCount(partition.getId());
+        int partitionMemberCount = clusterContext.getMemberCount(partition.getId());
 
         if(partitionMemberCount >= partition.getPartitionMembersMin())       {
 
@@ -142,7 +142,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
                             .get(0);
 
         ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-        int partitionMemberCount = clusterContext.getPartitionCount(partition.getId());
+        int partitionMemberCount = clusterContext.getMemberCount(partition.getId());
 
         if(partitionMemberCount <= partition.getPartitionMembersMax())       {
 

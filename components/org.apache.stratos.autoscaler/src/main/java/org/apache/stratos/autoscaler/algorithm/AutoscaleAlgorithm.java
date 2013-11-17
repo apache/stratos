@@ -27,8 +27,6 @@ import org.apache.stratos.autoscaler.policy.model.Partition;
 public interface AutoscaleAlgorithm {
 public Partition getNextScaleUpPartition(String clusterId);
 public Partition getNextScaleDownPartition(String clusterId);
-public Partition getScaleUpPartition(String clusterId);
-public Partition getScaleDownPartition(String clusterId);
 public boolean scaleUpPartitionAvailable(String clusterId);
 public boolean scaleDownPartitionAvailable(String clusterId);
 }
