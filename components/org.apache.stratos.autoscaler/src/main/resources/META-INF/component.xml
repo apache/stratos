@@ -19,9 +19,14 @@
 <component xmlns="http://products.wso2.org/carbon">
     <deployers>
         <deployer>
-            <directory>policies</directory>
+            <directory>autoscale-policies</directory>
             <extension>xml</extension>
-            <class>org.apache.stratos.autoscaler.policy.deployers.PolicyDeployer</class>
+            <class>org.apache.stratos.autoscaler.policy.deployers.AutoscalerPolicyDeployer</class>
+        </deployer>
+        <deployer>
+            <directory>deployment-policies</directory>
+            <extension>xml</extension>
+            <class>org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyDeployer</class>
         </deployer>
     </deployers>
 </component>

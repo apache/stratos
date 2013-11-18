@@ -25,7 +25,6 @@ package org.apache.stratos.autoscaler.policy.model;
 public class AutoscalePolicy {
 
 	private LoadThresholds loadThresholds;
-	private HAPolicy haPolicy;
 	private String id;
 	private String displayName;
 	private String description;
@@ -52,30 +51,6 @@ public class AutoscalePolicy {
      */
     public void setLoadThresholds(LoadThresholds value) {
         this.loadThresholds = value;
-    }
-
-    /**
-     * Gets the value of the haPolicy property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link HAPolicy }
-     *     
-     */
-    public HAPolicy getHAPolicy() {
-        return haPolicy;
-    }
-
-    /**
-     * Sets the value of the haPolicy property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link HAPolicy }
-     *     
-     */
-    public void setHAPolicy(HAPolicy value) {
-        this.haPolicy = value;
     }
 
     /**

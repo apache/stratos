@@ -35,9 +35,9 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
  * 
  * The Axis2 deployer class for Autoscale-policy definitions.
  */
-public class PolicyDeployer extends AbstractDeployer {
+public class AutoscalerPolicyDeployer extends AbstractDeployer {
 	
-	 private static final Log log = LogFactory.getLog(PolicyDeployer.class);
+	 private static final Log log = LogFactory.getLog(AutoscalerPolicyDeployer.class);
 	 
 	 private static String fileExt="xml"; //default
 	 private static String deployDirectory=null;
@@ -75,10 +75,10 @@ public class PolicyDeployer extends AbstractDeployer {
 
 		try {
 			
-			PolicyReader reader = new PolicyReader(policyFile);
+			AutoscalerPolicyReader reader = new AutoscalerPolicyReader(policyFile);
 			
 			AutoscalePolicy policy = reader.read();
-			PolicyManager.getInstance().addPolicy(policyFile,policy);
+			PolicyManager.getInstance().addAutoscalePolicy(policyFile,policy);
 
 			log.info("Successfully deployed the policy specified at "
 					+ deploymentFileData.getAbsolutePath());
@@ -98,7 +98,7 @@ public class PolicyDeployer extends AbstractDeployer {
 		File policyFile = new File(fileName);
 		String policyName = policyFile.getName().replaceAll("." + fileExt + "$", "");
 		try {
-			PolicyManager.getInstance().removePolicy(policyFile);
+			PolicyManager.getInstance().removeAutoscalePolicy(policyFile);
 			log.info("Successfully undeployed the policy specified at " + fileName);
 		} catch (InvalidPolicyException e) {
 			log.error("unable to remove policy " + policyName , e);

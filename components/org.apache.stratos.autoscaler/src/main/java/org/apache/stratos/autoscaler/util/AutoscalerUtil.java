@@ -23,8 +23,10 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
 import org.apache.stratos.autoscaler.policy.model.Partition;
+import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 
 /**
@@ -47,7 +49,7 @@ public class AutoscalerUtil {
 		if (null == clusterContext) {
 
 			clusterContext = new ClusterContext(cluster.getClusterId(), cluster.getServiceName());
-			AutoscalePolicy policy = PolicyManager.getInstance().getPolicy(cluster.getAutoscalePolicyName());
+			AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(cluster.getAutoscalePolicyName());
 
             if(policy!=null){
 
@@ -62,9 +64,15 @@ public class AutoscalerUtil {
                 clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
                 clusterContext.setAverageRequestsInFlight(averageLimit);
 
-                for (Partition partition : policy.getHAPolicy().getPartitions()) {
-                         clusterContext.addPartitionCount(partition.getId(), 0);
-                 }
+                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getHaPolicyName());
+                if(deploymentPolicy!=null){
+                	for(PartitionGroup group :deploymentPolicy.getPartitionGroups()){
+                		for (Partition partition : group.getPartitions()) {
+                            clusterContext.addPartitionCount(partition.getId(), 0);
+                    }
+                	}
+                }
+                
              }
 
 			context.addClusterContext(clusterContext);

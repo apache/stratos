@@ -68,7 +68,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         if(!AutoscalerContext.getInstance().clusterExists(clusterId)){
 
                             Cluster cluster = service.getCluster(clusterId);
-                            AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getPolicy(cluster.getAutoscalePolicyName());
+                            AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(cluster.getAutoscalePolicyName());
 
                             ClusterContext clusterContext = new ClusterContext(clusterId, service.getServiceName());
 

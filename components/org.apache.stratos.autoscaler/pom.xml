@@ -185,7 +185,8 @@
 							*;resolution:=optional
                         </Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
-						<Axis2Deployer>PolicyDeployer</Axis2Deployer>
+						<Axis2Deployer>AutoscalerPolicyDeployer</Axis2Deployer>
+						<Axis2Deployer>DeploymentPolicyDeployer</Axis2Deployer>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 					</instructions>
