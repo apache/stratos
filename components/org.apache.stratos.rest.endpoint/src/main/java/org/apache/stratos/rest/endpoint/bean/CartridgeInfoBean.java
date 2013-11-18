@@ -1,4 +1,4 @@
-package org.apache.stratos.rest.endpoint.bean;/*
+/*
 *  Copyright (c) 2005-2012, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
@@ -15,6 +15,7 @@ package org.apache.stratos.rest.endpoint.bean;/*
 * specific language governing permissions and limitations
 * under the License.
 */
+package org.apache.stratos.rest.endpoint.bean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
