@@ -34,7 +34,7 @@
     <url>http://apache.org</url>
 
     <modules>                            
-        <module>org.apache.stratos.lb.cartridge.autoscaler.service.stub</module>
+        <module>org.apache.stratos.cloud.controller.service.stub</module>
         <module>org.apache.stratos.adc.mgt.stub</module>
         <module>org.apache.stratos.account.mgt.stub</module>
         <module>org.apache.stratos.tenant.mgt.stub</module>

@@ -154,7 +154,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.lb.cartridge.autoscaler.service.stub</artifactId>
+            <artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
