@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.event;
 
+import org.apache.stratos.messaging.listener.EventListener;
+
 import java.util.Observable;
 
 /**

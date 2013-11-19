@@ -109,8 +109,8 @@ public class TopologyEventSender {
 
     public static void sendClusterCreatedEvent(ServiceContext serviceContext) {
         ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(serviceContext.getCartridgeType(),
-                                                                          serviceContext.getClusterId());
-        clusterCreatedEvent.setHostName(serviceContext.getHostName());
+                                                                          serviceContext.getClusterId(),
+                                                                          serviceContext.getHostName());
         clusterCreatedEvent.setTenantRange(serviceContext.getTenantRange());
         clusterCreatedEvent.setAutoscalingPolicyName(serviceContext.getAutoScalerPolicyName());
 
@@ -123,9 +123,9 @@ public class TopologyEventSender {
     }
 
     public static void sendClusterRemovedEvent(ServiceContext serviceContext) {
-        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent();
-        clusterRemovedEvent.setClusterId(serviceContext.getClusterId());
-        clusterRemovedEvent.setServiceName(serviceContext.getCartridgeType());
+        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(serviceContext.getCartridgeType(),
+                                                                          serviceContext.getClusterId(),
+                                                                          serviceContext.getHostName());
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster removed event: [service] %s [cluster] %s", serviceContext.getCartridgeType(), serviceContext.getClusterId()));

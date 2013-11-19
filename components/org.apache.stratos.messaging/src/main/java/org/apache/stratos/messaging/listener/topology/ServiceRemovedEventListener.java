@@ -17,10 +17,10 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.listener.topology;
 
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.EventListener;
+import org.apache.stratos.messaging.listener.EventListener;
 
 public class ServiceRemovedEventListener extends EventListener {
 

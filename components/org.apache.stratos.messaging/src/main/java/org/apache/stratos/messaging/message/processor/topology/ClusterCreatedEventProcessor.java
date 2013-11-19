@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.messaging.message.processor.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -45,6 +46,10 @@ public class ClusterCreatedEventProcessor extends MessageProcessor {
             // Parse complete message and build event
             ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
 
+            // Validate event properties
+            if(StringUtils.isBlank(event.getHostName())) {
+                throw new RuntimeException("Hostname not found in cluster created event");
+            }
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
@@ -64,8 +69,8 @@ public class ClusterCreatedEventProcessor extends MessageProcessor {
 
             service.addCluster(cluster);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster created: [service] %s [cluster] %s",
-                         event.getServiceName(), event.getClusterId()));
+                log.info(String.format("Cluster created: [service] %s [cluster] %s [hostname] %s",
+                         event.getServiceName(), event.getClusterId(), event.getHostName()));
             }
 
             // Notify event listeners

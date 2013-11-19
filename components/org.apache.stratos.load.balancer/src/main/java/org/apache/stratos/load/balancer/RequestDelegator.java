@@ -45,15 +45,16 @@ public class RequestDelegator {
         this.algorithm = algorithm;
     }
 
-    public Member findNextMember(String targetHost) {
+    public Member findNextMember(String hostName) {
 
         try {
-            if(targetHost == null)
+            if(hostName == null)
                 return null;
 
             TopologyManager.acquireReadLock();
+            long startTime = System.currentTimeMillis();
 
-            Cluster cluster = findCluster(targetHost);
+            Cluster cluster = LoadBalancerContext.getInstance().getCluster(hostName);
             if(cluster != null) {
                 // Find algorithm context of the cluster
                 ClusterContext clusterContext = LoadBalancerContext.getInstance().getClusterContext(cluster.getClusterId());
@@ -69,8 +70,9 @@ public class RequestDelegator {
                 }
                 algorithm.setMembers(new ArrayList<Member>(cluster.getMembers()));
                 Member member = algorithm.getNextMember(algorithmContext);
+                long endTime = System.currentTimeMillis();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Next member found: service: %s cluster id: %s member id: %s", member.getServiceName(), member.getClusterId(), member.getMemberId()));
+                    log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [member] %s", (endTime - startTime), member.getServiceName(), member.getClusterId(), member.getMemberId()));
                 }
                 return member;
             }
@@ -81,32 +83,16 @@ public class RequestDelegator {
         }
     }
 
-    public Member findNextMember(String serviceName, int tenantId, String targetHost) {
-        throw new NotImplementedException();
-    }
+    public boolean isTargetHostValid(String hostName) {
+        try {
+            if(hostName == null)
+                return false;
 
-    private Service findService(String serviceName) {
-        Collection<Service> services = TopologyManager.getTopology().getServices();
-        for (Service service : services) {
-            if(service.getServiceName().equals(serviceName))
-                return service;
+            TopologyManager.acquireReadLock();
+            return LoadBalancerContext.getInstance().clusterExists(hostName);
         }
-        return null;
-    }
-
-    private Cluster findCluster(String targetHost) {
-        Collection<Service> services = TopologyManager.getTopology().getServices();
-        for (Service service : services) {
-            for (Cluster cluster : service.getClusters()) {
-                if (targetHost.equals(cluster.getHostName())) {
-                    return cluster;
-                }
-            }
+        finally {
+            TopologyManager.releaseReadLock();
         }
-        return null;
-    }
-
-    public boolean isTargetHostValid(String targetHost) {
-        return (findCluster(targetHost) != null);
     }
 }

@@ -17,14 +17,35 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.EventListener;
 
-public class MemberStartedEventListener extends EventListener {
+import java.util.Observable;
+import java.util.Observer;
+
+/**
+ *  Event listener definition.
+ */
+public abstract class EventListener implements Observer {
+    private static final Log log = LogFactory.getLog(EventListener.class);
 
     @Override
-    protected void onEvent(Event event) {
+    public void update(Observable o, Object arg) {
+        if(arg instanceof Event) {
+            Event event = (Event) arg;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Event received: %s", event.getClass().getName()));
+            }
+            onEvent(event);
+        }
     }
+
+    /**
+     * Triggered when an event is received.
+     * @param event
+     */
+    protected abstract void onEvent(Event event);
 }

@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.messaging.message.processor.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -43,6 +44,10 @@ public class ClusterRemovedEventProcessor extends MessageProcessor {
         if (ClusterRemovedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ClusterRemovedEvent event = (ClusterRemovedEvent) Util.jsonToObject(message, ClusterRemovedEvent.class);
+            // Validate event properties
+            if(StringUtils.isBlank(event.getHostName())) {
+                throw new RuntimeException("Hostname not found in cluster removed event");
+            }
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
@@ -50,9 +55,10 @@ public class ClusterRemovedEventProcessor extends MessageProcessor {
                         event.getServiceName()));
             }
             if (!service.clusterExists(event.getClusterId())) {
-                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s [hostname] %s",
                         event.getServiceName(),
-                        event.getClusterId()));
+                        event.getClusterId(),
+                        event.getHostName()));
             }
 
             // Apply changes to the topology
