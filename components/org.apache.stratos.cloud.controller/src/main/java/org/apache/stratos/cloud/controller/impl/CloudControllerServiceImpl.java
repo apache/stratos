@@ -36,6 +36,7 @@ import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegato
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.util.Properties;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Partition;
 import org.apache.stratos.messaging.domain.topology.Scope;
 import org.jclouds.compute.ComputeService;
@@ -568,7 +569,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	public boolean terminateInstance(String clusterId, Partition partition) {
 
         String partitionId = partition.getId();
-        Scope scope = partition.getScope();
         String provider = partition.getProperty("provider");
 		log.info("Starting to terminate an instance of domain : " + clusterId);
 
@@ -624,9 +624,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             + ".");
                     continue;
                 }
+                //get the partition for the member
+                //TODO Fix ME with autoscalers input
+                Partition partition_ = TopologyManager.getInstance().getTopology().getService(serviceCtxt.getCartridgeType()).
+                        getCluster(serviceCtxt.getClusterId()).getMemberFromIaasNodeId(nodeId).getPartition();
 
                 // terminate it!
-                terminate(iaas, ctxt, nodeId, partition);
+                terminate(iaas, ctxt, nodeId, partition_);
 
                 // log information
                 logTermination(nodeId, ctxt, serviceCtxt);
@@ -704,14 +708,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			for (String id : temp) {
 				if (id != null) {
 					// terminate it!
-                    //TODO need to enable once partition added to the topology
-                    /*Collection<Member> members = TopologyManager.getInstance().getTopology().
+                    Collection<Member> members = TopologyManager.getInstance().getTopology().
                             getService(serviceCtxt.getCartridgeType()).
                             getCluster(serviceCtxt.getClusterId()).getMembers();
                     for (Iterator iterator = members.iterator(); iterator.hasNext();) {
                          Member member = (Member) iterator.next();
                          terminate(iaas, ctxt, member.getIaasNodeId(), member.getPartition());
-                    }*/
+                    }
 
 					// log information
 					logTermination(id, ctxt, serviceCtxt);
