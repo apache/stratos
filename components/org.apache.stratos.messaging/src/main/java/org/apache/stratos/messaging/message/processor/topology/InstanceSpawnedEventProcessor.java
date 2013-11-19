@@ -40,7 +40,7 @@ public class InstanceSpawnedEventProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Topology topology = (Topology)object;
 
-        if (MemberStartedEvent.class.getName().equals(type)) {
+        if (InstanceSpawnedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             InstanceSpawnedEvent event = (InstanceSpawnedEvent) Util.jsonToObject(message, InstanceSpawnedEvent.class);
 
