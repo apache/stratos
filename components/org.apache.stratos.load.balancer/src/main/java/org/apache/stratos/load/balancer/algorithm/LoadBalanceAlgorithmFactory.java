@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Load balance algorithm factory to create the algorithm
+ * Load balance algorithm factory to create algorithm objects.
  */
 public class LoadBalanceAlgorithmFactory {
     private static final Log log = LogFactory.getLog(LoadBalanceAlgorithmFactory.class);

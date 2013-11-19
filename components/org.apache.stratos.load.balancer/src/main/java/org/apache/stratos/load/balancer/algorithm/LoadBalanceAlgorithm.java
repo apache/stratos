@@ -24,7 +24,8 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import java.util.List;
 
 /**
- * Defines the specification for implementing load balancing algorithms.
+ * Load balance algorithm interface.
+ * Implement this interface to introduce new load balance algorithms.
  */
 public interface LoadBalanceAlgorithm {
     /**
@@ -55,11 +56,4 @@ public interface LoadBalanceAlgorithm {
      * @param algorithmContext
      */
     public void reset(AlgorithmContext algorithmContext);
-
-    /**
-     * Clone algorithm object.
-     *
-     * @return
-     */
-    public LoadBalanceAlgorithm clone();
 }
