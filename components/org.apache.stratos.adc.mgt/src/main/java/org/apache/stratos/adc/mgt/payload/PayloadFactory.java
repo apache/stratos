@@ -46,7 +46,7 @@ public class PayloadFactory {
             payload = new CarbonPayload(payloadFilePath);
 
         } else {
-            if(cartridgeType.equals(CartridgeConstants.MYSQL_CARTRIDGE_NAME)) {
+            if(cartridgeProvider.equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
                 payload = new DataPayload(payloadFilePath);
             }
             else {
