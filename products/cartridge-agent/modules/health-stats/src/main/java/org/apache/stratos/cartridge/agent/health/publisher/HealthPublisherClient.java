@@ -38,7 +38,7 @@ public class HealthPublisherClient {
 
         Runtime runtime = Runtime.getRuntime();
 
-		Map<String, Integer> statsMap = new HashMap<String, Integer>();
+		Map<String, Object> statsMap = new HashMap<String, Object>();
 
         //statsMap.put("Available Processors", (int)runtime.availableProcessors());
         statsMap.put("total_memory", (int)(runtime.totalMemory() / MB));
@@ -46,11 +46,9 @@ public class HealthPublisherClient {
         statsMap.put("used_memory", (int)((runtime.totalMemory() - runtime.freeMemory()) / MB));
         statsMap.put("free_memory", (int)(runtime.freeMemory() / MB));
         statsMap.put("load_average", (int)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage());
-        statsMap.put("member_id", Integer.parseInt(memberID));
+        statsMap.put("member_id", memberID);
 
-		Object statObj = (Object)statsMap;
-		
-		return statObj;
+        return statsMap;
 	}
 	
 	public void run() {
