@@ -19,112 +19,77 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
+import java.util.List;
+
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.Partition;
+import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
 
 /**
  * Completes partitions in the order defined in autoscaler policy, go to next if current one reached the max limit
  */
 public class OneAfterAnother implements AutoscaleAlgorithm {
 
-    public Partition getNextScaleUpPartition(String clusterId) {
-
-        // Find cluster context
-        ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-
-        // Find service id
-        String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
-
-        //Find relevant policyId using topology
-        String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getAutoscalePolicyName();
-
-        // Find number of partitions
-        int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
-        
-        for(int i=0; i<noOfPartitions;i++)
-        {
-            // Here in "one after another" algorithm, next partition is also the current partition unless it reached its max
-            int nextPartitionIndex = clusterContext.getCurrentPartitionIndex();;
-
-            //Find next partition
-            Partition nextPartition = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().get(nextPartitionIndex);
-            String nextPartitionId = nextPartition.getId();
-
-            if (clusterContext.partitionCountExists(nextPartitionId)) {            	
-                if (clusterContext.getMemberCount(nextPartitionId) >= nextPartition.getPartitionMembersMax()) {
-                    if(nextPartitionIndex == (noOfPartitions - 1)) {
-                        // All partitions have reached their max
-                        return null;
-                    }
-                    // Selected partition's max has reached, it will try next partition
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(nextPartitionIndex + 1);
-                }
-                else {
-                    // Increase member partition member count by one
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCountInPartition(nextPartitionId, 1);
-                    return nextPartition;
-                }
-            } else {
-
-                // Add the partition count entry to cluster context
-                AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(nextPartitionId, 1);
-            }
-
-        }
-
-        return null;
+    public Partition getNextScaleUpPartition(PartitionGroup partitionGrp, String clusterId) {
+    	
+    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
+    	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	List<Partition> partitions = partitionGrp.getPartitions();
+    	int noOfPartitions = partitions.size();
+    	
+    	for(int i=currentPartitionIndex; i< noOfPartitions; i++)
+    	{
+    		Partition currentPartition = partitions.get(currentPartitionIndex);
+	        String currentPartitionId =  currentPartition.getId();
+	        
+    		if(clusterContext.partitionCountExists(currentPartitionId)){
+    			clusterContext.addPartitionCount(currentPartitionId, 0);
+    		}
+    		
+    		 if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
+ 	        	// current partition is free    	        	
+ 	        	clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
+	            return currentPartition;
+	         }else
+	         {
+	        	 // last partition is reached which is not free
+	        	 if(currentPartitionIndex == noOfPartitions - 1)
+	        		 return null;
+	        	 
+	        	 clusterContext.setCurrentPartitionIndex(currentPartitionIndex + 1);
+	         }
+    	}
+    	return null;
     }
 
-    public Partition getNextScaleDownPartition(String clusterId) {
+    public Partition getNextScaleDownPartition(PartitionGroup partitionGrp, String clusterId) {
 
-        // Find cluster context
-        ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-
-        // Find service id
-        String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
-
-        //Find relevant policyId using topology
-        String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getAutoscalePolicyName();
-
-        // Find number of partitions
-        int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
-        
-        for(int i=0;i<noOfPartitions;i++)
-        {
-
-            // Here in "one after another" algorithm, next partition is also the current partition unless it reached its max
-            int nextPartitionIndex = clusterContext.getCurrentPartitionIndex();;
-
-            //Find next partition
-            Partition nextPartition = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().get(nextPartitionIndex);
-            String nextPartitionId = nextPartition.getId();
-
-            if (clusterContext.partitionCountExists(nextPartitionId)) {
-                if (clusterContext.getMemberCount(nextPartitionId) >= nextPartition.getPartitionMembersMax()) {
-                    if(nextPartitionIndex == 0) {
-                        // All partitions have reached their min
-                        return null;
-                    }
-
-                    // Selected partition's min has reached, it will try next partition
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(nextPartitionIndex - 1);
-                }
-                else {
-                    // Increase member partition member count by one
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCountInPartition(nextPartitionId, 1);
-                    return nextPartition;
-                }
-            } else {
-
-                // Add the partition count entry to cluster context
-                AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(nextPartitionId, 1);
+    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
+    	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	List<Partition> partitions = partitionGrp.getPartitions();
+    	int noOfPartitions = partitions.size();
+    	
+    	for(int i = currentPartitionIndex; i >= 0; i--)
+    	{
+    		Partition currentPartition = partitions.get(currentPartitionIndex);
+	        String currentPartitionId =  currentPartition.getId();
+	        	            
+	        // has more than minimum instances.
+	        if(clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()){
+	        	// current partition is free    	        	
+	        	clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+                return currentPartition;
+            }else{
+            	if (currentPartitionIndex == 0)
+    	        	return null;
+               
+        	    //Set next partition as current partition in Autoscaler Context
+                currentPartitionIndex = currentPartitionIndex - 1;                	
+                clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
             }
-        }
-        
-        return null;
+    	}
+    	return null;
     }
     
 
@@ -137,4 +102,5 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
     public boolean scaleDownPartitionAvailable(String clusterId) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
+    
 }
