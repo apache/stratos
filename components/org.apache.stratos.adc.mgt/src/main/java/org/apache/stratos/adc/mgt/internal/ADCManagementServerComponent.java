@@ -72,11 +72,10 @@ public class ADCManagementServerComponent {
 			DataHolder.setEventPublisher(new EventPublisher(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC));
 			
             //initialting the subscriber
-			// Not implemented for M2 release
-            /*TopicSubscriber subscriber = new TopicSubscriber("instance-status");
+            TopicSubscriber subscriber = new TopicSubscriber("instance-status");
             subscriber.setMessageListener(new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
-			tsubscriber.start();*/
+			tsubscriber.start();
 			
 		} catch (Exception e) {
 			log.fatal("Error while initializing the ADC Management Server Component", e);

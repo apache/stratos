@@ -1,5 +1,20 @@
-/**
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one 
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * KIND, either express or implied.  See the License for the 
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.stratos.adc.mgt.listener;
 
@@ -9,16 +24,13 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
-/**
- * @author wso2
- * 
- */
 public class InstanceStatusListener implements MessageListener {
 
 	private static final Log log = LogFactory
@@ -33,15 +45,18 @@ public class InstanceStatusListener implements MessageListener {
 		try {
 			String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
 			// If member started event is received publish artifact update message
+			// To do a git clone
 			if (MemberStartedEvent.class.getName().equals(type)) {
 				String json = receivedMessage.getText();
 				MemberStartedEvent event = (MemberStartedEvent) Util
 						.jsonToObject(json, MemberStartedEvent.class);
 				clusterId = event.getClusterId();
 				log.info("--- cluster id is --- : " + clusterId);
-				new ArtifactUpdatePublisher(
-						PersistenceManager.getRepository(clusterId), clusterId)
-						.publish();
+				
+				CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);				
+				new ArtifactUpdatePublisher(subscription.getRepository(),
+						clusterId,
+						String.valueOf(subscription.getTenantId())).publish();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -29,8 +29,10 @@ public class RepoPasswordMgtUtil {
 	private static final Log log = LogFactory.getLog(RepoPasswordMgtUtil.class);
 	
 	public static String getSecurityKey() {
+		// TODO : a proper testing on the secure vault protected
+		// user defined encryption key
 		String securityKey = CartridgeConstants.DEFAULT_SECURITY_KEY;
-		OMElement documentElement = null;
+		/*OMElement documentElement = null;
 		File xmlFile = new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf"
 				+ File.separator + CartridgeConstants.SECURITY_KEY_FILE);
 
@@ -54,15 +56,14 @@ public class RepoPasswordMgtUtil {
 							&& secretResolver.isTokenProtected(alias)) {
 						securityKey = "";
 						securityKey = secretResolver.resolve(alias);
-						// TODO : a proper testing on the secure vault protected
-						// user defined encryption key
+						
 					}
 				}
 			}
 		}
         else {
             log.error(String.format("File does not exist: %s", xmlFile.getPath()));
-		}
+		}*/
 		return securityKey;
 	}
 	
