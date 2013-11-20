@@ -203,13 +203,7 @@ public class LoadBalancerContext {
     }
 
     public Cluster getCluster(String hostName) {
-        long startTime = System.currentTimeMillis();
-        Cluster cluster = clusterMap.get(hostName);
-        long endTime = System.currentTimeMillis();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cluster resolved using hostname in %dms: [cluster] %s [hostname] %s", (endTime - startTime), cluster.getClusterId(), hostName));
-        }
-        return cluster;
+        return clusterMap.get(hostName);
     }
 
     public boolean clusterExists(String hostName) {
