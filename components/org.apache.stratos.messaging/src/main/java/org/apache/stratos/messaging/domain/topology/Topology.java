@@ -28,6 +28,7 @@ import java.util.Map;
  * Defines a topology of serviceMap in Stratos.
  */
 public class Topology implements Serializable {
+    private static final long serialVersionUID = -2453583548027402122L;
     // Key: Service.serviceName
     private Map<String, Service> serviceMap;
     private Map<String, Partition> partitionMap;

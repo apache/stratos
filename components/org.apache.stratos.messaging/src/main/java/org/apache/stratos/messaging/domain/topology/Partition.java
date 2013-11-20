@@ -18,10 +18,12 @@
  */
 package org.apache.stratos.messaging.domain.topology;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Partition {
+public class Partition implements Serializable{
+    private static final long serialVersionUID = 4827628468577123048L;
     private String id;
     private Scope scope;
     /**
