@@ -298,6 +298,7 @@ exec "$JAVACMD" \
         -Djavax.net.ssl.trustStorePassword=wso2carbon \
         -Dthrift.receiver.ip=localhost \
         -Dthrift.receiver.port=7615 \
+        -Dstratos.messaging.topology.service.filter="" \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 
