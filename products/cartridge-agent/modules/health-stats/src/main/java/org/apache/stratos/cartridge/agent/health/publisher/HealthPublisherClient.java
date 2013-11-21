@@ -32,37 +32,37 @@ public class HealthPublisherClient {
 
     private static final int MB = 1024 * 1024;
 
-	public Object getHealthStats() {
-
-        String memberID = System.getProperty("member.id");
+    public Object getHealthStats() {
 
         Runtime runtime = Runtime.getRuntime();
 
-		Map<String, Object> statsMap = new HashMap<String, Object>();
+        Map<String, Double> statsMap = new HashMap<String, Double>();
 
         //statsMap.put("Available Processors", (int)runtime.availableProcessors());
-        statsMap.put("total_memory", (int)(runtime.totalMemory() / MB));
-        statsMap.put("max_memory", (int)(runtime.maxMemory() / MB));
-        statsMap.put("used_memory", (int)((runtime.totalMemory() - runtime.freeMemory()) / MB));
-        statsMap.put("free_memory", (int)(runtime.freeMemory() / MB));
-        statsMap.put("load_average", (int)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage());
-        statsMap.put("member_id", memberID);
+        statsMap.put("total_memory", (double)(runtime.totalMemory() / MB));
+        //statsMap.put("max_memory", (int)(runtime.maxMemory() / MB));
+        statsMap.put("used_memory", (double)((runtime.totalMemory() - runtime.freeMemory()) / MB));
+        //statsMap.put("free_memory", (int)(runtime.freeMemory() / MB));
+        statsMap.put("load_average", (double)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage());
+        //statsMap.put("member_id", Integer.parseInt(memberID));
 
-        return statsMap;
-	}
-	
-	public void run() {
-		try {
-			HealthPublisher publisher = new HealthPublisher();
-			
-			while (true) {
-				Object healthStatObj = getHealthStats();
-				publisher.update(healthStatObj);
-			
-				Thread.sleep(10000);
-			}
-		} catch(InterruptedException ex) {
-		    Thread.currentThread().interrupt();
-		}
-	}
+        Object statObj = (Object)statsMap;
+
+        return statObj;
+    }
+
+    public void run() {
+        try {
+            HealthPublisher publisher = new HealthPublisher();
+
+            while (true) {
+                Object healthStatObj = getHealthStats();
+                publisher.update(healthStatObj);
+
+                Thread.sleep(10000);
+            }
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
