@@ -381,15 +381,16 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         EndpointReference to = getEndpointReferenceAfterURLRewrite(currentMember, transport, address, incomingPort);
         synCtx.setTo(to);
 
-        faultHandler.setTo(to);
-        faultHandler.setCurrentMember(currentMember);
-        synCtx.pushFaultHandler(faultHandler);
+        Endpoint endpoint = getEndpoint(to, currentMember, synCtx);
+
         if (isFailover()) {
+            faultHandler.setTo(to);
+            faultHandler.setCurrentMember(currentMember);
+            faultHandler.setCurrentEp(endpoint);
+            synCtx.pushFaultHandler(faultHandler);
             synCtx.getEnvelope().build();
         }
 
-        Endpoint endpoint = getEndpoint(to, currentMember, synCtx);
-        faultHandler.setCurrentEp(endpoint);
         if (isSessionAffinityBasedLB() && newSession) {
             prepareEndPointSequence(synCtx, endpoint);
             synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER, currentMember);
@@ -465,6 +466,11 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         private org.apache.axis2.clustering.Member currentMember;
         private Endpoint currentEp;
         private EndpointReference to;
+        private Map<String, Boolean> faultyMembers;
+
+        public TenantAwareLoadBalanceFaultHandler() {
+            faultyMembers = new HashMap<String, Boolean>();
+        }
 
         @Override
         public void setCurrentMember(org.apache.axis2.clustering.Member currentMember) {
@@ -483,7 +489,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
         @Override
         public void onFault(MessageContext synCtx) {
-            //cleanup endpoint if exists
+            // Cleanup endpoint if exists
             if (currentEp != null) {
                 currentEp.destroy();
             }
@@ -491,17 +497,23 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 return;
             }
 
-            Stack faultStack = synCtx.getFaultStack();
-            if (faultStack != null && !faultStack.isEmpty()) {
-                faultStack.pop();  // Remove the LoadbalanceFaultHandler
-            }
+            // Add current member to faulty members
+            faultyMembers.put(currentMember.getHostName(), true);
 
             currentMember = findNextMember(synCtx);
             if (currentMember == null) {
                 String msg = String.format("No application members available to serve the request %s", synCtx.getTo().getAddress());
-                log.error(msg);
-                throw new SynapseException(msg);
+                if(log.isErrorEnabled()) {
+                    log.error(msg);
+                }
+                throwSynapseException(synCtx, 404, msg);
             }
+            if(faultyMembers.containsKey(currentMember.getHostName())) {
+                // This member has been identified as faulty previously. It implies that
+                // this request could not be served by any of the members in the cluster.
+                throwSynapseException(synCtx, 404, String.format("Requested resource could not be found"));
+            }
+
             synCtx.setTo(to);
             if (isSessionAffinityBasedLB()) {
                 //We are sending the this message on a new session,
