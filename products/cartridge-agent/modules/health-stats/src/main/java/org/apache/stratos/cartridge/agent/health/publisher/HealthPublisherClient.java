@@ -38,13 +38,12 @@ public class HealthPublisherClient {
 
         Map<String, Double> statsMap = new HashMap<String, Double>();
 
-        //statsMap.put("Available Processors", (int)runtime.availableProcessors());
-        statsMap.put("total_memory", (double)(runtime.totalMemory() / MB));
-        //statsMap.put("max_memory", (int)(runtime.maxMemory() / MB));
-        statsMap.put("used_memory", (double)((runtime.totalMemory() - runtime.freeMemory()) / MB));
-        //statsMap.put("free_memory", (int)(runtime.freeMemory() / MB));
+        double totalMemory = (double)(runtime.totalMemory() / MB);
+        double usedMemory = (double)((totalMemory - (runtime.freeMemory() / MB) ));
+        double memoryConsumption = (usedMemory / totalMemory) * 100;
+
+        statsMap.put("memory_consumption", memoryConsumption);
         statsMap.put("load_average", (double)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage());
-        //statsMap.put("member_id", Integer.parseInt(memberID));
 
         Object statObj = (Object)statsMap;
 
