@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.iaases;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -29,6 +30,8 @@ import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.apache.stratos.cloud.controller.validate.AWSEC2PartitionValidator;
+import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.aws.ec2.AWSEC2ApiMetadata;
 import org.jclouds.aws.ec2.AWSEC2Client;
 import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
@@ -39,11 +42,15 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.ec2.EC2Api;
+import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
+import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
 public class AWSEC2Iaas extends Iaas {
 
@@ -298,5 +305,60 @@ public class AWSEC2Iaas extends Iaas {
 		ec2Client.getElasticIPAddressServices().releaseAddressInRegion(region,
 				ip);
 	}
+
+    @Override
+    public boolean isValidRegion(IaasProvider iaasInfo, String region) {
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        EC2Api api = context.unwrap();
+        for (String configuredRegion : api.getConfiguredRegions()) {
+            if (region.equalsIgnoreCase(configuredRegion)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Found a matching region: " + region);
+                }
+                return true;
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Did not find a matching region: " + region);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) {
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        EC2Api api = context.unwrap();
+        AvailabilityZoneAndRegionApi zoneRegionApi =
+                                                     api.getAvailabilityZoneAndRegionApiForRegion(region)
+                                                        .get();
+        Set<AvailabilityZoneInfo> availabilityZones =
+                                                      zoneRegionApi.describeAvailabilityZonesInRegion(region,
+                                                                                                      null);
+        for (AvailabilityZoneInfo zoneInfo : availabilityZones) {
+            String configuredZone = zoneInfo.getZone();
+            if (zone.equalsIgnoreCase(configuredZone)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Found a matching zone: " + zone);
+                }
+                return true;
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Did not find a matching zone: " + zone);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) {
+        // there's no such concept in EC2
+        return false;
+    }
+
+    @Override
+    public PartitionValidator getPartitionValidator() {
+        return new AWSEC2PartitionValidator();
+    }
+
 
 }

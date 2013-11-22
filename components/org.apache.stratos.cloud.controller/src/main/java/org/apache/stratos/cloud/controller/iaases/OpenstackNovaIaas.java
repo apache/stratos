@@ -22,6 +22,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -30,6 +31,8 @@ import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
+import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
@@ -40,8 +43,10 @@ import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
+import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
+import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 
 import java.util.ArrayList;
@@ -282,5 +287,69 @@ public class OpenstackNovaIaas extends Iaas {
 			return false;
 		}
 	}
+
+    @Override
+    public boolean isValidRegion(IaasProvider iaasInfo, String region) {
+        // jclouds doesn't support regions in Openstack-Nova API
+        return false;
+    }
+
+    @Override
+    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) {
+        if (zone == null || iaasInfo == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
+                          iaasInfo);
+            }
+            return false;
+        }
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        NovaApi api = context.unwrap();
+        for (String configuredZone : api.getConfiguredZones()) {
+            if (zone.equalsIgnoreCase(configuredZone)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Found a matching zone: " + zone);
+                }
+                return true;
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Did not find a matching zone: " + zone);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) {
+        if (host == null || zone == null || iaasInfo == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Host or Zone or IaaSProvider is null: host: " + host + " - zone: " +
+                          zone + " - IaaSProvider: " + iaasInfo);
+            }
+            return false;
+        }
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        NovaApi api = context.unwrap();
+        HostAggregateApi hostApi = api.getHostAggregateExtensionForZone(zone).get();
+        for (HostAggregate hostAggregate : hostApi.list()) {
+            for (String configuredHost : hostAggregate.getHosts()) {
+                if (host.equalsIgnoreCase(configuredHost)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Found a matching host: " + host);
+                    }
+                    return true;
+                }
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Did not find a matching host: " + host);
+        }
+        return false;
+    }
+
+    @Override
+    public PartitionValidator getPartitionValidator() {
+        return new OpenstackNovaPartitionValidator();
+    }
 
 }
