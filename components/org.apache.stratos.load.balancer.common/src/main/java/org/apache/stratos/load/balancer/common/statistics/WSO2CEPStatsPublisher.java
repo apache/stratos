@@ -38,24 +38,32 @@ import java.util.Map;
  */
 public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     private static final Log log = LogFactory.getLog(WSO2CEPStatsPublisher.class);
+
     private static final String CALL_CENTER_DATA_STREAM = "stratos.lb.stats";
     private static final String VERSION = "1.0.0";
     private AsyncDataPublisher asyncDataPublisher;
+    private String ip;
+    private String port;
     private boolean enabled = true;
 
     public WSO2CEPStatsPublisher() {
-        AgentConfiguration agentConfiguration = new AgentConfiguration();
-        Agent agent = new Agent(agentConfiguration);
-
-        //TODO read following from a config file?
-        String ip = System.getProperty("thrift.receiver.ip");
-        String port = System.getProperty("thrift.receiver.port");
+        //TODO: Move system properties to a config file
+        ip = System.getProperty("thrift.receiver.ip");
+        port = System.getProperty("thrift.receiver.port");
         String enabledStr = System.getProperty("load.balancer.stats.publisher.enabled");
         if(StringUtils.isNotBlank(enabledStr)) {
             enabled = Boolean.getBoolean(enabledStr);
         }
+        if(enabled) {
+            init();
+        }
+    }
 
-        // Using asynchronous data publisher
+    private void init() {
+        AgentConfiguration agentConfiguration = new AgentConfiguration();
+        Agent agent = new Agent(agentConfiguration);
+
+        // Initialize asynchronous data publisher
         asyncDataPublisher = new AsyncDataPublisher("tcp://"+ip+":"+port+"", "admin", "admin", agent);
         String streamDefinition = "{" +
                 " 'name':'" + CALL_CENTER_DATA_STREAM + "'," +
@@ -74,6 +82,9 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        if(this.enabled) {
+            init();
+        }
     }
 
     @Override
@@ -83,6 +94,10 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
 
     @Override
     public void publish(Map<String, Integer> stats) {
+        if(!isEnabled()) {
+            throw new RuntimeException("Statistics publisher is not enabled");
+        }
+
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
 
             Object[] payload = new Object[]{entry.getKey(), entry.getValue()};
