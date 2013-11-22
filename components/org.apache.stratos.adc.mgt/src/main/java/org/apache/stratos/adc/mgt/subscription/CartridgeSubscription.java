@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
+import org.apache.stratos.adc.mgt.dao.Cluster;
 import org.apache.stratos.adc.mgt.dns.DNSManager;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
@@ -43,20 +44,15 @@ import java.util.Properties;
 public abstract class CartridgeSubscription {
 
     private static Log log = LogFactory.getLog(CartridgeSubscription.class);
-
     private int subscriptionId;
     private String type;
     private String alias;
-    private String clusterDomain;
-    private String clusterSubDomain;
-    private String mgtClusterDomain;
-    private String mgtClusterSubDomain;
-    private String hostName;
     private Policy autoscalingPolicy;
     private Subscriber subscriber;
     private Repository repository;
     private CartridgeInfo cartridgeInfo;
     private Payload payload;
+    private Cluster cluster;
     private String subscriptionStatus;
     private String mappedDomain;
     private List<String> connectedSubscriptionAliases;
@@ -70,11 +66,12 @@ public abstract class CartridgeSubscription {
 
         this.setCartridgeInfo(cartridgeInfo);
         this.setType(cartridgeInfo.getType());
-        this.setClusterDomain("");
-        this.setClusterSubDomain(CartridgeConstants.DEFAULT_SUBDOMAIN);
-        this.setMgtClusterDomain("");
-        this.setMgtClusterSubDomain(CartridgeConstants.DEFAULT_MGT_SUBDOMAIN);
-        this.setHostName(cartridgeInfo.getHostName());
+        this.setCluster(new Cluster());
+        getCluster().setClusterDomain("");
+        getCluster().setClusterSubDomain(CartridgeConstants.DEFAULT_SUBDOMAIN);
+        getCluster().setMgtClusterDomain("");
+        getCluster().setMgtClusterSubDomain(CartridgeConstants.DEFAULT_MGT_SUBDOMAIN);
+        getCluster().setHostName(cartridgeInfo.getHostName());
         this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         this.connectedSubscriptionAliases = new ArrayList<String>();
     }
@@ -266,10 +263,10 @@ public abstract class CartridgeSubscription {
         }
 
         //TODO: FIXME: do we need this?
-        new DNSManager().removeSubDomain(hostName);
+        new DNSManager().removeSubDomain(getCluster().getHostName());
 
         try {
-            new RegistryManager().removeDomainMappingFromRegistry(hostName);
+            new RegistryManager().removeDomainMappingFromRegistry(getCluster().getHostName());
 
         } catch (Exception e) {
             String errorMsg = "Error in removing domain mapping, alias " + alias + ", tenant " +
@@ -278,9 +275,9 @@ public abstract class CartridgeSubscription {
         }
 
         TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
-        String[] ips = topologyMgtService.getActiveIPs(type, clusterDomain, clusterSubDomain);
+        String[] ips = topologyMgtService.getActiveIPs(type, getCluster().getClusterDomain(), getCluster().getClusterSubDomain());
         try {
-            PersistenceManager.updateInstanceState("INACTIVE", ips, clusterDomain, clusterSubDomain, type);
+            PersistenceManager.updateInstanceState("INACTIVE", ips, getCluster().getClusterDomain(), getCluster().getClusterSubDomain(), type);
 
         } catch (Exception e) {
             String errorMsg = "Error in updating state to INACTIVE";
@@ -315,7 +312,7 @@ public abstract class CartridgeSubscription {
     }
 
     public String getHostName() {
-        return hostName;
+        return getCluster().getHostName();
     }
 
     public void setType(String type) {
@@ -327,39 +324,39 @@ public abstract class CartridgeSubscription {
     }
 
     public String getClusterDomain() {
-        return clusterDomain;
+        return getCluster().getClusterDomain();
     }
 
     public void setClusterDomain(String clusterDomain) {
-        this.clusterDomain = clusterDomain;
+        getCluster().setClusterDomain(clusterDomain);
     }
 
     public String getClusterSubDomain() {
-        return clusterSubDomain;
+        return getCluster().getClusterSubDomain();
     }
 
     public void setClusterSubDomain(String clusterSubDomain) {
-        this.clusterSubDomain = clusterSubDomain;
+        getCluster().setClusterSubDomain(clusterSubDomain);
     }
 
     public String getMgtClusterDomain() {
-        return mgtClusterDomain;
+        return getCluster().getMgtClusterDomain();
     }
 
     public void setMgtClusterDomain(String mgtClusterDomain) {
-        this.mgtClusterDomain = mgtClusterDomain;
+        getCluster().setMgtClusterDomain(mgtClusterDomain);
     }
 
     public String getMgtClusterSubDomain() {
-        return mgtClusterSubDomain;
+        return getCluster().getMgtClusterSubDomain();
     }
 
     public void setMgtClusterSubDomain(String mgtClusterSubDomain) {
-        this.mgtClusterSubDomain = mgtClusterSubDomain;
+        getCluster().setMgtClusterSubDomain(mgtClusterSubDomain);
     }
 
     public void setHostName(String hostName) {
-        this.hostName = hostName;
+        getCluster().setHostName(hostName);
     }
 
     public Policy getAutoscalingPolicy() {
@@ -412,5 +409,13 @@ public abstract class CartridgeSubscription {
 
     public void setSubscriptionStatus(String subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public Cluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
     }
 }

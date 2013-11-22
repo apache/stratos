@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.repository;
 
 public class Repository {
 
+    private int id;
     private String url;
     private String userName;
     private String password;
@@ -56,5 +57,13 @@ public class Repository {
 
     public void setPrivateRepository(boolean privateRepository) {
         isPrivateRepository = privateRepository;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
