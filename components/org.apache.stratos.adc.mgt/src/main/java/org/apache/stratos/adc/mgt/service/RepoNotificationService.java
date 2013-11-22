@@ -19,7 +19,6 @@
 
 package org.apache.stratos.adc.mgt.service;
 
-import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,12 +32,7 @@ import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.adc.mgt.utils.RepoPasswordMgtUtil;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
 import org.wso2.carbon.core.deployment.SynchronizeGitRepositoryRequest;
-import org.wso2.carbon.utils.CarbonUtils;
 
 
 public class RepoNotificationService {
@@ -93,13 +87,14 @@ public class RepoNotificationService {
 		}
 
 		if (CartridgeConstants.PROVIDER_NAME_WSO2.equals(subscription.getProvider())) {
-			log.info(" wso2 cartridge.. ");
 			createAndSendClusterMessage(subscription.getTenantId(), subscription.getTenantDomain(),
 			                            UUID.randomUUID(), subscription.getClusterDomain(),
 			                            subscription.getClusterSubdomain());
 			
 		} else {						
-			new ArtifactUpdatePublisher(subscription.getRepository(),subscription.getClusterDomain()).publish();;
+			new ArtifactUpdatePublisher(subscription.getRepository(),
+					subscription.getClusterDomain(),
+					String.valueOf(subscription.getTenantId())).publish();;
 		}
 	}
 

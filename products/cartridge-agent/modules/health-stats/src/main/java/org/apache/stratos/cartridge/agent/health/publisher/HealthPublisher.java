@@ -1,18 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one 
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
- * KIND, either express or implied.  See the License for the 
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -69,7 +69,8 @@ public class HealthPublisher implements Observer {
                     " 'metaData':[]," +
                     " 'payloadData':[" +
                     " {'name':'health_description','type':'STRING'}," +
-                    " {'name':'value','type':'INT'}" +
+                    " {'name':'value','type':'DOUBLE'}," +
+                    " {'name':'member_id','type':'STRING'}" +
                     " ]" +
                     "}";
             asyncDataPublisher.addStreamDefinition(streamDefinition, CALL_CENTER_DATA_STREAM, VERSION);
@@ -83,23 +84,25 @@ public class HealthPublisher implements Observer {
 
     public void update(Observable arg0, Object arg1) {
         if (arg1 != null && arg1 instanceof Map<?, ?>) {
-            Map<String, Integer> stats = (Map<String, Integer>) arg1;
+            Map<String, Double> stats = (Map<String, Double>) arg1;
             publishEvents(stats);
         }
     }
 
     public void update(Object healthStatObj) {
         if (healthStatObj != null && healthStatObj instanceof Map<?, ?>) {
-            Map<String, Integer> stats = (Map<String, Integer>) healthStatObj;
+            Map<String, Double> stats = (Map<String, Double>) healthStatObj;
             publishEvents(stats);
         }
     }
 
-    private void publishEvents(Map<String, Integer> stats) {
+    private void publishEvents(Map<String, Double> stats) {
 
-        for (Map.Entry<String, Integer> entry : stats.entrySet()) {
+        String memberID = System.getProperty("member.id");
 
-            Object[] payload = new Object[]{entry.getKey(), entry.getValue()};
+        for (Map.Entry<String, Double> entry : stats.entrySet()) {
+
+            Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
                 asyncDataPublisher.publish(CALL_CENTER_DATA_STREAM, VERSION, event);
