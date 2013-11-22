@@ -809,38 +809,37 @@ public class PersistenceManager {
 	}
 	
 	
-	public static Repository getRepository(String clusterId) throws Exception {
-		
-		Repository repository =null;		
+	public static CartridgeSubscriptionInfo getSubscriptionFromClusterId(String clusterId) throws Exception {
+
+		CartridgeSubscriptionInfo cartridgeSubscriptionInfo = null;
 		Connection con = null;
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		
+
 		try {
-			con = StratosDBUtils.getConnection();			
-			String sql = "SELECT REPO_NAME,REPO_USER_NAME,REPO_USER_PASSWORD FROM REPOSITORY R "
-					+ "WHERE R.REPO_ID IN (SELECT REPO_ID FROM CARTRIDGE_SUBSCRIPTION C WHERE C.CLUSTER_DOMAIN=? AND C.STATE != 'UNSUBSCRIBED') ";
-			
+			con = StratosDBUtils.getConnection();
+			String sql = "SELECT * FROM CARTRIDGE_SUBSCRIPTION C left join REPOSITORY R on "
+					+ "C.REPO_ID=R.REPO_ID left join DATA_CARTRIDGE D on "
+					+ "D.DATA_CART_ID=C.DATA_CARTRIDGE_ID WHERE C.CLUSTER_DOMAIN=? AND C.STATE != 'UNSUBSCRIBED'";
 			statement = con.prepareStatement(sql);
 			statement.setString(1, clusterId);
 			if (log.isDebugEnabled()) {
 				log.debug("Executing query: " + sql);
 			}
 			resultSet = statement.executeQuery();
-			while (resultSet.next()) {
-				repository = new Repository();
-				repository.setUrl(resultSet.getString("REPO_NAME"));
-				repository.setUserName(resultSet.getString("REPO_USER_NAME"));
-				repository.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.getString("REPO_USER_PASSWORD")));
-			}			
+			if (resultSet.next()) {
+				cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
+				populateSubscription(cartridgeSubscriptionInfo, resultSet);
+			}
 		} catch (Exception s) {
 			String msg = "Error while sql connection :" + s.getMessage();
 			log.error(msg, s);
-			throw new Exception("An error occurred while listing cartridge information.");
+			throw s;
 		} finally {
 			StratosDBUtils.closeAllConnections(con, statement, resultSet);
 		}
-		return repository;
+
+		return cartridgeSubscriptionInfo;
 	}
 
 	

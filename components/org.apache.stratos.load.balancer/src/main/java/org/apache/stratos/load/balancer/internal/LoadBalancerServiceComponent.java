@@ -26,6 +26,7 @@ import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -103,8 +104,21 @@ public class LoadBalancerServiceComponent {
             topologyReceiver = new LoadBalancerTopologyReceiver();
             Thread topologyReceiverThread = new Thread(topologyReceiver);
             topologyReceiverThread.start();
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Topology receiver thread started");
+            }
+
+            if (log.isInfoEnabled()) {
+                if (ServiceFilter.getInstance().isActive()) {
+                    StringBuilder sb = new StringBuilder();
+                    for (String serviceName : ServiceFilter.getInstance().getIncludedServiceNames()) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(serviceName);
+                    }
+                    log.info(String.format("Service filter activated: [services] %s", sb.toString()));
+                }
             }
 
             activated = true;

@@ -20,9 +20,11 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
 public class CompleteTopologyEventProcessor extends MessageProcessor {
@@ -42,7 +44,36 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
         if (CompleteTopologyEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
-            topology.addServices(event.getTopology().getServices());
+
+            // Apply service filter
+            if(ServiceFilter.getInstance().isActive()) {
+                // Add services included in service filter
+                for(Service service : event.getTopology().getServices()) {
+                    if(ServiceFilter.getInstance().included(service.getServiceName())) {
+                        topology.addService(service);
+                    }
+                }
+            }
+            else {
+                // Add all services
+                topology.addServices(event.getTopology().getServices());
+            }
+            if(log.isDebugEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for(Service service : topology.getServices()) {
+                    if(sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(service.getServiceName());
+                }
+                if(sb.length() > 0) {
+                    log.debug(String.format("Services added: %s", sb.toString()));
+                }
+            }
+
+            // Add partitions
+            topology.addPartitions(event.getTopology().getPartitions());
+
             if (log.isInfoEnabled()) {
                 log.info("Topology initialized");
             }

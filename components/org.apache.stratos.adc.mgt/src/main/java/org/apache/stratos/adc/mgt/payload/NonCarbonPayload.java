@@ -63,6 +63,10 @@ public class NonCarbonPayload extends Payload {
         if(payloadArg.getPolicy() != null) {
             payloadBuilder.append(getAutoscalingParams(payloadArg.getPolicy()));
         }
+        
+        // git repository specific
+        payloadBuilder.append(",");
+        payloadBuilder.append("CARTRIDGE_KEY=" + CartridgeConstants.DEFAULT_SECURITY_KEY);
     }
 
     private String createPortMappingPayloadString(CartridgeInfo cartridgeInfo) {

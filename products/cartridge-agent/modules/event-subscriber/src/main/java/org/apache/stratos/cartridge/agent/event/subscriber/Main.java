@@ -35,6 +35,7 @@ public class Main {
     	log.info("Strating cartridge agent event subscriber");
     	System.setProperty("jndi.properties.dir", args[0]); 
     	
+    	    	
         //initialting the subscriber
         TopicSubscriber subscriber = new TopicSubscriber(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC);
         subscriber.setMessageListener(new ArtifactListener());

@@ -27,6 +27,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberSuspendedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
 public class MemberSuspendedEventProcessor extends MessageProcessor {
@@ -46,6 +47,17 @@ public class MemberSuspendedEventProcessor extends MessageProcessor {
         if (MemberSuspendedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             MemberSuspendedEvent event = (MemberSuspendedEvent) Util.jsonToObject(message, MemberSuspendedEvent.class);
+
+            // Apply service filter
+            if(ServiceFilter.getInstance().isActive()) {
+                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+                    // Service is excluded, do not update topology or fire event
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                    }
+                    return true;
+                }
+            }
 
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());

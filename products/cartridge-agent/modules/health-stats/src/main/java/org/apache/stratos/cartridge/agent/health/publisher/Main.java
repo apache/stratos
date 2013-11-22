@@ -27,27 +27,27 @@ import org.apache.commons.logging.LogFactory;
  */
 
 public class Main {
-	private static final Log log = LogFactory.getLog(Main.class);
-	
-	public static void main (String args[]) {
-		try {
+    private static final Log log = LogFactory.getLog(Main.class);
+
+    public static void main (String args[]) {
+        try {
             if (log.isInfoEnabled()) {
                 log.info("Health publisher started");
             }
-            
+
             System.out.println("This is health stat publisher module");
-            
+
             HealthPublisherClient client = new HealthPublisherClient();
             client.run();
-            
+
             System.exit(0);
-			
-		} catch (Exception e) {
+
+        } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Could not publish health stats", e);
             }
-		}
-		
-		System.exit(-1);
-	}
+        }
+
+        System.exit(-1);
+    }
 }

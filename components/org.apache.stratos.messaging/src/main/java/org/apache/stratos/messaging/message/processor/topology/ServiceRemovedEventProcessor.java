@@ -24,6 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
 public class ServiceRemovedEventProcessor extends MessageProcessor {
@@ -43,6 +44,17 @@ public class ServiceRemovedEventProcessor extends MessageProcessor {
         if (ServiceRemovedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
+
+            // Apply service filter
+            if(ServiceFilter.getInstance().isActive()) {
+                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+                    // Service is excluded, do not update topology or fire event
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                    }
+                    return true;
+                }
+            }
 
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());

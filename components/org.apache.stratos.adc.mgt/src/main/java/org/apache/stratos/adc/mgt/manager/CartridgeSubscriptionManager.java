@@ -198,8 +198,7 @@ public class CartridgeSubscriptionManager {
                 connectingSubscriptionAlias);
 
         if(cartridgeSubscription == null) {
-            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + ", alias " +
-                    cartridgeSubscription.getAlias() + ",  connecting aborted";
+            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + "  connecting aborted";
             log.error(errorMsg);
             return;
         }

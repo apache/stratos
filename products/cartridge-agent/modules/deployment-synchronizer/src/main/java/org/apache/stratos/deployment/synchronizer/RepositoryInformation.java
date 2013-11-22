@@ -16,67 +16,50 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.artifact.synchronization;
+
+package org.apache.stratos.deployment.synchronizer;
 
 /**
- * This event is fired to a cluster when an artifact notification received from the git repository.
+ * @author wso2
+ *
  */
+public class RepositoryInformation {
 
-public class ArtifactUpdatedEvent {
-    private String clusterId;
-    private String status;
-    private String repoUserName;
-    private String repoPassword;
-    private String repoURL;
-    private String tenantId;
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-	public String getRepoUserName() {
-		return repoUserName;
+	private String repoUrl;
+	private String repoUsername;
+	private String repoPassword;
+	private String repoPath;
+	private String tenantId;
+	
+	public String getRepoUrl() {
+		return repoUrl;
 	}
-
-	public void setRepoUserName(String repoUserName) {
-		this.repoUserName = repoUserName;
+	public void setRepoUrl(String repoUrl) {
+		this.repoUrl = repoUrl;
 	}
-
+	public String getRepoUsername() {
+		return repoUsername;
+	}
+	public void setRepoUsername(String repoUsername) {
+		this.repoUsername = repoUsername;
+	}
 	public String getRepoPassword() {
 		return repoPassword;
 	}
-
 	public void setRepoPassword(String repoPassword) {
 		this.repoPassword = repoPassword;
 	}
-
-	public String getRepoURL() {
-		return repoURL;
+	public String getRepoPath() {
+		return repoPath;
 	}
-
-	public void setRepoURL(String repoURL) {
-		this.repoURL = repoURL;
+	public void setRepoPath(String repoPath) {
+		this.repoPath = repoPath;
 	}
-
 	public String getTenantId() {
 		return tenantId;
 	}
-
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
 	}
 	
-    
 }

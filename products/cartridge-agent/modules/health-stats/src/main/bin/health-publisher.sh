@@ -30,5 +30,5 @@ current_path=`pwd`
 
 java -cp $class_path -Dmember.id=$1 -Dkey.file.path=$current_path/../security/client-truststore.jks -Dthrift.receiver.ip=$2 -Dthrift.receiver.port=$3 org.apache.stratos.cartridge.agent.health.publisher.Main $*
 
-echo "Health publisher completed" 
+echo "Health publisher completed"
 
