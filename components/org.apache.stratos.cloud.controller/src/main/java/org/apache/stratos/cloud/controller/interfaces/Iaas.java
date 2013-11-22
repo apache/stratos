@@ -22,6 +22,7 @@ import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 
 /**
  * All IaaSes that are going to support by Cloud Controller, should extend this abstract class.
@@ -70,6 +71,41 @@ public abstract class Iaas {
      * @return whether the key pair creation is successful or not.
      */
     public abstract boolean createKeyPairFromPublicKey(IaasProvider iaasInfo, String region, String keyPairName, String publicKey);
+    
+    /**
+     * Validate a given region name against a particular IaaS.
+     * If a particular IaaS doesn't have a concept called region, it can simply return false.
+     * @param iaasInfo {@link IaasProvider} 
+     * @param region name of the region.
+     * @return whether the region is valid or not.
+     */
+    public abstract boolean isValidRegion(IaasProvider iaasInfo, String region);
+    
+    /**
+     * Validate a given zone name against a particular region in an IaaS.
+     * If a particular IaaS doesn't have a concept called zone, it can simply return false.
+     * @param iaasInfo {@link IaasProvider} 
+     * @param region region of the IaaS that the zone belongs to.
+     * @param zone 
+     * @return whether the zone is valid in the given region or not.
+     */
+    public abstract boolean isValidZone(IaasProvider iaasInfo, String region, String zone);
+    
+    /**
+     * Validate a given host id against a particular zone in an IaaS.
+     * If a particular IaaS doesn't have a concept called hosts, it can simply return false.
+     * @param iaasInfo {@link IaasProvider} 
+     * @param zone zone of the IaaS that the host belongs to.
+     * @param host
+     * @return whether the host is valid in the given zone or not.
+     */
+    public abstract boolean isValidHost(IaasProvider iaasInfo, String zone, String host);
+    
+    /**
+     * provides the {@link PartitionValidator} corresponds to this particular IaaS.
+     * @return {@link PartitionValidator}
+     */
+    public abstract PartitionValidator getPartitionValidator();
 
     public abstract void buildTemplate(IaasProvider iaas);
     
