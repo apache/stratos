@@ -20,8 +20,8 @@ package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
+import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.util.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.Properties;
 import org.apache.stratos.messaging.domain.topology.Partition;
 
 import java.util.List;
@@ -40,28 +40,14 @@ public interface CloudControllerService {
      * present service cluster, if there is any. A service cluster is uniquely identified by its
      * domain and sub domain combination.
      * </p>
-     * @param clusterId
-     *            service cluster domain
-     * @param tenantRange
-     * 			  tenant range eg: '1-10' or '2'
-     * @param cartridgeType
-     *            cartridge type of the new service. This should be an already registered cartridge
-     *            type.
-     * @param hostName
-     * 			  host name of this service instance
-     * @param properties
-     * 			  Set of properties related to this service definition.
-     * @param payload
-     *            payload which will be passed to instance to be started. Payload shouldn't contain 
-     *            xml tags.
+     * @param registrant information about the new subscription.
      * @return whether the registration is successful or not.
      * 
      * @throws UnregisteredCartridgeException
      *             when the cartridge type requested by this service is
      *             not a registered one.
      */
-    public boolean registerService(String clusterId, String tenantRange, String cartridgeType,
-        String hostName, Properties properties, String payload, String autoScalerPolicyName) throws UnregisteredCartridgeException;
+    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException;
 
     /**
      * Calling this method will result in an instance startup, which is belong

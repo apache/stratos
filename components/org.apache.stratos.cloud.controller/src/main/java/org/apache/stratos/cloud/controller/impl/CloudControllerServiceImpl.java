@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,7 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeExcept
 import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
+import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -951,19 +953,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public boolean registerService(String clusterId,
-			String tenantRange, String cartridgeType, String hostName,
-			Properties properties, String payload, String autoScalerPolicyName)
+	public boolean registerService(Registrant registrant)
 			throws UnregisteredCartridgeException {
 
+	    String clusterId = registrant.getClusterId();
+	    
 		// create a ServiceContext dynamically
 		ServiceContext newServiceCtxt = new ServiceContext();
-		newServiceCtxt.setClusterId(clusterId);
+        newServiceCtxt.setClusterId(clusterId);
 		//newServiceCtxt.setSubDomainName(subDomain);
-		newServiceCtxt.setTenantRange(tenantRange);
-		newServiceCtxt.setHostName(hostName);
-        newServiceCtxt.setAutoScalerPolicyName(autoScalerPolicyName);
-        newServiceCtxt.setPayload(new StringBuilder(payload));
+		newServiceCtxt.setTenantRange(registrant.getTenantRange());
+		newServiceCtxt.setHostName(registrant.getHostName());
+        newServiceCtxt.setAutoScalerPolicyName(registrant.getAutoScalerPolicyName());
+        newServiceCtxt.setPayload(new StringBuilder(registrant.getPayload()));
+        Properties properties = registrant.getProperties();
+        String cartridgeType = registrant.getCartridgeType();
 
 		if (properties != null && properties.getProperties() != null) {
 			// add properties
