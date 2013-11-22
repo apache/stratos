@@ -19,6 +19,7 @@
 
 package org.apache.stratos.load.balancer.common.statistics;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.databridge.agent.thrift.Agent;
@@ -40,6 +41,7 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     private static final String CALL_CENTER_DATA_STREAM = "stratos.lb.stats";
     private static final String VERSION = "1.0.0";
     private AsyncDataPublisher asyncDataPublisher;
+    private boolean enabled = true;
 
     public WSO2CEPStatsPublisher() {
         AgentConfiguration agentConfiguration = new AgentConfiguration();
@@ -48,6 +50,10 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
         //TODO read following from a config file?
         String ip = System.getProperty("thrift.receiver.ip");
         String port = System.getProperty("thrift.receiver.port");
+        String enabledStr = System.getProperty("load.balancer.stats.publisher.enabled");
+        if(StringUtils.isNotBlank(enabledStr)) {
+            enabled = Boolean.getBoolean(enabledStr);
+        }
 
         // Using asynchronous data publisher
         asyncDataPublisher = new AsyncDataPublisher("tcp://"+ip+":"+port+"", "admin", "admin", agent);
@@ -66,8 +72,17 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     }
 
     @Override
-    public void publish(Map<String, Integer> stats) {
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void publish(Map<String, Integer> stats) {
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
 
             Object[] payload = new Object[]{entry.getKey(), entry.getValue()};

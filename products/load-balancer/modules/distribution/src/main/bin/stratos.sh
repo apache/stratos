@@ -299,6 +299,7 @@ exec "$JAVACMD" \
         -Dthrift.receiver.ip=localhost \
         -Dthrift.receiver.port=7615 \
         -Dstratos.messaging.topology.service.filter="" \
+        -Dload.balancer.stats.publisher.enabled="false" \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 
