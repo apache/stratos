@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.InstanceSpawnedEvent;
+import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
@@ -50,6 +51,17 @@ public class InstanceSpawnedEventProcessor extends MessageProcessor {
                     // Service is excluded, do not update topology or fire event
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                    }
+                    return true;
+                }
+            }
+
+            // Apply cluster filter
+            if(ClusterFilter.getInstance().isActive()) {
+                if(ClusterFilter.getInstance().excluded(event.getClusterId())) {
+                    // Cluster is excluded, do not update topology or fire event
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
                     }
                     return true;
                 }
