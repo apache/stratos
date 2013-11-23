@@ -153,6 +153,8 @@ public class LoadBalancerServiceComponent {
         } catch (Exception e) {
             log.warn("Couldn't remove the EndpointDeployer");
         }
+        // Terminate topology receiver
+        topologyReceiver.terminate();
     }
 
     /**
