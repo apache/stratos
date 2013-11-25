@@ -26,6 +26,7 @@ import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
@@ -119,6 +120,16 @@ public class LoadBalancerServiceComponent {
                     }
                     log.info(String.format("Service filter activated: [services] %s", sb.toString()));
                 }
+                if (ClusterFilter.getInstance().isActive()) {
+                    StringBuilder sb = new StringBuilder();
+                    for (String clusterId : ClusterFilter.getInstance().getIncludedClusterIds()) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(clusterId);
+                    }
+                    log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+                }
             }
 
             activated = true;
@@ -142,6 +153,8 @@ public class LoadBalancerServiceComponent {
         } catch (Exception e) {
             log.warn("Couldn't remove the EndpointDeployer");
         }
+        // Terminate topology receiver
+        topologyReceiver.terminate();
     }
 
     /**

@@ -23,8 +23,10 @@ public class DataCartridge {
 
 	private int id;
 	private String dataCartridgeType;
+    private String host;
 	private String userName;
 	private String password;
+
 	public int getId() {
     	return id;
     }
@@ -48,5 +50,13 @@ public class DataCartridge {
     }
 	public void setPassword(String password) {
     	this.password = password;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }

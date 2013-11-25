@@ -60,7 +60,7 @@ public class DeploymentPolicyReader  extends AbstractPolicyReader<DeploymentPoli
 					if(nextGroup instanceof OMElement){
 						OMElement groupEle = (OMElement) nextGroup;
 						PartitionGroup group = new PartitionGroup();
-						group.setPartitionAlgo(readValue(groupEle, "PartitionAlgo"));
+						group.setPartitionAlgo(readValue(groupEle, "partitionAlgo"));
 						//Partitions
 						OMElement partitionsEle = groupEle.getFirstChildWithName(new QName("partitions"));
 						Iterator<?> partitionItr = partitionsEle.getChildrenWithLocalName("partition");

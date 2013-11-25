@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,29 +17,33 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.adc.mgt.exception;
 
-import java.util.Map;
+public class PersistenceManagerException extends Exception {
 
-/**
- * Load balancer statistics publisher interface.
- */
-public interface LoadBalancerStatsPublisher {
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Set statistics publisher enabled or disabled.
-     * @param enabled
-     */
-    void setEnabled(boolean enabled);
+    private String message;
 
-    /**
-     * Return enabled state of the statistics publisher.
-     */
-    boolean isEnabled();
+    public PersistenceManagerException() {
+        super();
+    }
 
-    /**
-     * Publish statistics as a map of Cluster Id, In-flight Request Count.
-     * @param stats
-     */
-    void publish(Map<String, Integer> stats);
+    public PersistenceManagerException(String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+    }
+
+    public PersistenceManagerException(String message) {
+        super(message);
+        this.message = message;
+    }
+
+    public PersistenceManagerException(Throwable cause) {
+        super(cause);
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

@@ -69,7 +69,7 @@ public class RepoPasswordMgtUtil {
 	
 	public static String encryptPassword(String repoUserPassword, String secKey) {
 		String encryptPassword = "";
-		String secret = /*getSecurityKey()*/secKey; // secret key length must be 16
+		String secret = secKey; // secret key length must be 16
 		SecretKey key;
 		Cipher cipher;
 		Base64 coder;
@@ -85,11 +85,15 @@ public class RepoPasswordMgtUtil {
 		}
 		return encryptPassword;
 	}
+	
+	public static String encryptPassword(String repoUserPassword) {
+		return encryptPassword(repoUserPassword,getSecurityKey());
+	}
 
 	public static String decryptPassword(String repoUserPassword, String secKey) {
 		
 		String decryptPassword = "";
-		String secret = /*getSecurityKey()*/secKey; // secret key length must be 16
+		String secret = secKey; // secret key length must be 16
 		SecretKey key;
 		Cipher cipher;
 		Base64 coder;
@@ -105,5 +109,9 @@ public class RepoPasswordMgtUtil {
 			e.printStackTrace();
 		}
 		return decryptPassword;
+	}
+	
+	public static String decryptPassword(String repoUserPassword) {		
+		return decryptPassword(repoUserPassword,getSecurityKey());
 	}
 }

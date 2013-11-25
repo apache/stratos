@@ -22,9 +22,12 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.statistics.WSO2CEPStatsPublisher;
 
 public class WSO2CEPStatsObserver implements Observer{
+    private static final Log log = LogFactory.getLog(WSO2CEPStatsObserver.class);
     private WSO2CEPStatsPublisher statsPublisher;
 
     public WSO2CEPStatsObserver() {
@@ -34,7 +37,12 @@ public class WSO2CEPStatsObserver implements Observer{
     public void update(Observable arg0, Object arg1) {
         if(arg1 != null && arg1 instanceof Map<?, ?>) {
             Map<String, Integer> stats = (Map<String, Integer>)arg1;
-            statsPublisher.publish(stats);
+            if(statsPublisher.isEnabled()) {
+                statsPublisher.publish(stats);
+            }
+            else if (log.isWarnEnabled()) {
+                log.warn("Load balancer statistics publisher is disabled");
+            }
         }
     }
 }

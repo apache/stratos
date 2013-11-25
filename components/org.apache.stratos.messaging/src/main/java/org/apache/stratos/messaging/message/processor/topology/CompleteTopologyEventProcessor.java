@@ -20,9 +20,11 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
+import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
@@ -39,35 +41,41 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology)object;
+        Topology topology = (Topology) object;
 
         if (CompleteTopologyEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
 
             // Apply service filter
-            if(ServiceFilter.getInstance().isActive()) {
+            if (ServiceFilter.getInstance().isActive()) {
                 // Add services included in service filter
-                for(Service service : event.getTopology().getServices()) {
-                    if(ServiceFilter.getInstance().included(service.getServiceName())) {
+                for (Service service : event.getTopology().getServices()) {
+                    if (ServiceFilter.getInstance().included(service.getServiceName())) {
                         topology.addService(service);
                     }
+                    else {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Service is excluded: [service] %s", service.getServiceName()));
+                        }
+                    }
                 }
-            }
-            else {
+            } else {
                 // Add all services
                 topology.addServices(event.getTopology().getServices());
             }
-            if(log.isDebugEnabled()) {
-                StringBuilder sb = new StringBuilder();
-                for(Service service : topology.getServices()) {
-                    if(sb.length() > 0) {
-                        sb.append(", ");
+
+            // Apply cluster filter
+            if (ClusterFilter.getInstance().isActive()) {
+                for (Service service : topology.getServices()) {
+                    for (Cluster cluster : service.getClusters()) {
+                        if (ClusterFilter.getInstance().excluded(cluster.getClusterId())) {
+                            service.removeCluster(cluster.getClusterId());
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));
+                            }
+                        }
                     }
-                    sb.append(service.getServiceName());
-                }
-                if(sb.length() > 0) {
-                    log.debug(String.format("Services added: %s", sb.toString()));
                 }
             }
 
