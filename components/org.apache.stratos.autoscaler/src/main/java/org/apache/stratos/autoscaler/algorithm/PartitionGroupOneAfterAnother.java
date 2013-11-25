@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -34,36 +36,42 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
  */
 public class PartitionGroupOneAfterAnother implements AutoscaleAlgorithm {
 
+	private static final Log log = LogFactory.getLog(PartitionGroupOneAfterAnother.class);
+	
     public Partition getNextScaleUpPartition(String clusterId) {
     	
     	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);    	            	       
         String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
         
     	//Find relevant policyId using topology
-    	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getDeploymentPolicy();
-    	int currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();
-    	
+    	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getDeploymentPolicyName();
+    	    	
     	List<PartitionGroup> partitionGroups = PolicyManager.getInstance().getDeploymentPolicy(policyId).getPartitionGroups();  	    	    
-    	
-    	//int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
+    	int currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();  
     	
     	for(int i= currentPartitionGroupIndex; i< partitionGroups.size(); i++)
     	{
-    		int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();    		
-	        PartitionGroup currentPartitionGroup = partitionGroups.get(currentPartitionIndex);
+    		currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();   		
+	        PartitionGroup currentPartitionGroup = partitionGroups.get(currentPartitionGroupIndex);
 	        String alogirthm = currentPartitionGroup.getPartitionAlgo();
 	        
+	        if(log.isDebugEnabled())
+	        	log.debug("Trying current partition group " + currentPartitionGroup.getId());
 	        // search withing the partition group
 	        Partition partition = AutoscalerRuleEvaluator.getInstance().getAutoscaleAlgorithm(alogirthm).getNextScaleUpPartition(currentPartitionGroup, clusterId);
 	        
 	        if(partition != null){
+	        	if(log.isDebugEnabled())
+	        		log.debug("No partition found in partition group" +currentPartitionGroup.getId());
 	        	return partition;
 	        }else{
 	        	clusterContext.setCurrentPartitionIndex(0);
 	        	//last partition group has reached
-	        	if(currentPartitionGroupIndex == partitionGroups.size() - 1)
+	        	if(currentPartitionGroupIndex == partitionGroups.size() - 1){
+	        		if(log.isDebugEnabled())
+	        			log.debug("First partition group has reached wihtout space ");
 	        		return null;
-	        	
+	        	}
 	        	// current partition group is filled	        	
 	        	clusterContext.setCurrentPartitionGroupIndex(currentPartitionGroupIndex + 1);	        	
 	        }
@@ -78,23 +86,24 @@ public class PartitionGroupOneAfterAnother implements AutoscaleAlgorithm {
         String serviceId = AutoscalerContext.getInstance().getClusterContext(clusterId).getServiceId();
         
     	//Find relevant policyId using topology
-    	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getDeploymentPolicy();
+    	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getDeploymentPolicyName();
     	int currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();
     	
     	List<PartitionGroup> partitionGroups = PolicyManager.getInstance().getDeploymentPolicy(policyId).getPartitionGroups();  	    	    
     	
-    	//int noOfPartitions = PolicyManager.getInstance().getPolicy(policyId).getHAPolicy().getPartitions().size();
-    	
     	for(int i = currentPartitionGroupIndex; i >= 0; i--)
     	{
-    		int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();    		
-	        PartitionGroup currentPartitionGroup = partitionGroups.get(currentPartitionIndex);
+    		currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();    		
+	        PartitionGroup currentPartitionGroup = partitionGroups.get(currentPartitionGroupIndex);
 	        String alogirthm = currentPartitionGroup.getPartitionAlgo();
-	        
+	        if(log.isDebugEnabled())
+	        	log.debug("Trying scale down in partition group " + currentPartitionGroup.getId());
 	        // search within the partition group
 	        Partition partition = AutoscalerRuleEvaluator.getInstance().getAutoscaleAlgorithm(alogirthm).getNextScaleDownPartition(currentPartitionGroup, clusterId);
 	        
 	        if(partition != null){
+	        	if(log.isDebugEnabled())
+	        		log.debug("No free partition in partition group" + currentPartitionGroup.getId());
 	        	return partition;
 	        }else{
 	        	clusterContext.setCurrentPartitionIndex(0);

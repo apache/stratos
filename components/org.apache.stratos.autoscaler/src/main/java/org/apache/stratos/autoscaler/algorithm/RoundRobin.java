@@ -19,6 +19,8 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.policy.model.Partition;
@@ -30,22 +32,24 @@ import java.util.List;
 * Select partition in round robin manner and return
 */
 public class RoundRobin implements AutoscaleAlgorithm{
+	
+	private static final Log log = LogFactory.getLog(RoundRobin.class);
     
     public Partition getNextScaleUpPartition(PartitionGroup partitionGrp, String clusterId){
     	
-    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-    	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);    	
     	List<Partition> partitions = partitionGrp.getPartitions();
     	int noOfPartitions = partitions.size();
-    	
+
     	for(int i=0; i < noOfPartitions; i++)
     	{
+    			int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
     		    Partition currentPartition = partitions.get(currentPartitionIndex);
     	        String currentPartitionId =  currentPartition.getId();
     	        
     	        // point to next partition
-    	        int nextPartitionIndex = currentPartitionIndex + 1 == noOfPartitions ? 0 : currentPartitionIndex+1;
-    	        AutoscalerContext.getInstance().getClusterContext(clusterId).setCurrentPartitionIndex(nextPartitionIndex);
+    	        int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
+    	        clusterContext.setCurrentPartitionIndex(nextPartitionIndex);
     	        
     	        // current partition has no partitionid-instanceid info in cluster context
 	        	if(!clusterContext.partitionCountExists(currentPartitionId))    	        		
@@ -54,12 +58,17 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	        if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
     	        	// current partition is free    	        	
     	        	clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
+    	        	if(log.isDebugEnabled())
+    	        		log.debug("Free space found in partition " + currentPartition.getId());
 	                return currentPartition;
 	            }   	            	      
-    	        
+    	        if(log.isDebugEnabled())
+    	        	log.debug("No free space for a new instance in partition " + currentPartition.getId());
     	}
     	
     	// none of the partitions were free.
+    	if(log.isDebugEnabled())
+    		log.debug("No free partition found at partition group " + partitionGrp);
         return null;
     }
 
@@ -68,16 +77,14 @@ public class RoundRobin implements AutoscaleAlgorithm{
 	public Partition getNextScaleDownPartition(PartitionGroup partitionGrp , String clusterId) {
 		
 		ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-    	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	
     	List<Partition> partitions = partitionGrp.getPartitions();
     	int noOfPartitions = partitions.size();
     	
     	for(int i=0; i < noOfPartitions; i++)
     	{
-    		    Partition currentPartition = partitions.get(currentPartitionIndex);
-    	        String currentPartitionId =  currentPartition.getId();
-    	        
-    	        // point to next partition
+    			int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    			 // point to next partition
     	        if (currentPartitionIndex == 0) {
 
     	        	currentPartitionIndex = noOfPartitions - 1;
@@ -85,19 +92,29 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
                 	currentPartitionIndex = currentPartitionIndex - 1;
                 }
-
+     	       
     	        //Set next partition as current partition in Autoscaler Context
     	        clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
-    	            	
+    	        
+    		    Partition currentPartition = partitions.get(currentPartitionIndex);
+    	        String currentPartitionId =  currentPartition.getId();
+    	            	         
+    	        if(!clusterContext.partitionCountExists(currentPartitionId))    	        		
+	        		AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(currentPartitionId, 0);
     	        // has more than minimum instances.
     	        if(clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()){
     	        	// current partition is free    	        	
     	        	clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+    	        	if(log.isDebugEnabled())
+    	        		log.debug("Returning partition for scaling down " + currentPartition.getId());
 	                return currentPartition;
 	            }   	            	      
-    	        
+    	        if(log.isDebugEnabled())
+    	        	log.debug("Found no members to scale down at partition" + currentPartition.getId());
     	}
     	
+    	if(log.isDebugEnabled())
+    		log.debug("No partition found for scale down at partition group " + partitionGrp.getId());
     	// none of the partitions were free.
         return null;
 	}

@@ -42,6 +42,7 @@ import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.autoscaler.algorithm.PartitionGroupOneAfterAnother;
 
 /**
  * This class is responsible for evaluating the current details of topology, statistics, and health
@@ -173,5 +174,13 @@ public class AutoscalerRuleEvaluator {
         return autoscaleAlgorithm;
     }
 
-
+    public Partition getNextScaleUpPartition(String clusterID)
+    {
+    	return new PartitionGroupOneAfterAnother().getNextScaleUpPartition(clusterID);
+    }
+    
+    public Partition getNextScaleDownPartition(String clusterID)
+    {
+    	return new PartitionGroupOneAfterAnother().getNextScaleDownPartition(clusterID);
+    }
 }

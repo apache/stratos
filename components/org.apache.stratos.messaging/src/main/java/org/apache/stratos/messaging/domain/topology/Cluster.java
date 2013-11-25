@@ -37,7 +37,7 @@ public class Cluster implements Serializable {
     private String hostName;
     private String tenantRange;
     private String autoscalePolicyName;
-    private String deploymentPolicy;
+    private String deploymentPolicyName;
     private Cloud cloud;
     private Region region;
     private Zone zone;
@@ -156,12 +156,12 @@ public class Cluster implements Serializable {
            return this.membertoNodeIdMap.containsKey(iaasNodeId);
        }
 
-	public String getDeploymentPolicy() {
-		return deploymentPolicy;
+	public String getDeploymentPolicyName() {
+		return deploymentPolicyName;
 	}
 
-	public void setHaPolicyName(String haPolicyName) {
-		this.deploymentPolicy = haPolicyName;
+	public void setDeploymentPolicyName(String deploymentPolicy) {
+		this.deploymentPolicyName = deploymentPolicy;
 	}
 
 }

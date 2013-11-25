@@ -64,7 +64,7 @@ public class AutoscalerUtil {
                 clusterContext.setRequestsInFlightGradient(gradientLimit);
                 clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
                 clusterContext.setAverageRequestsInFlight(averageLimit);
-                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicy());
+                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicyName());
                 if(deploymentPolicy!=null){
                 	for(PartitionGroup group :deploymentPolicy.getPartitionGroups()){
                 		for (Partition partition : group.getPartitions()) {
