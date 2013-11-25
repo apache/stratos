@@ -56,6 +56,7 @@ public abstract class CartridgeSubscription {
     private String subscriptionStatus;
     private String mappedDomain;
     private List<String> connectedSubscriptionAliases;
+    private String subscriptionKey;
 
     /**
      * Constructor
@@ -161,7 +162,7 @@ public abstract class CartridgeSubscription {
         payloadArg.setTenantDomain(getSubscriber().getTenantDomain());
         payloadArg.setCartridgeAlias(getAlias());
         payloadArg.setServiceName(getCartridgeInfo().getType());
-
+        payloadArg.setSubscriptionKey(subscriptionKey);
         return payloadArg;
     }
 
@@ -411,6 +412,14 @@ public abstract class CartridgeSubscription {
         this.subscriptionStatus = subscriptionStatus;
     }
 
+	public String getSubscriptionKey() {
+		return subscriptionKey;
+	}
+
+	public void setSubscriptionKey(String subscriptionKey) {
+		this.subscriptionKey = subscriptionKey;
+	}
+	
     public Cluster getCluster() {
         return cluster;
     }
@@ -418,4 +427,5 @@ public abstract class CartridgeSubscription {
     public void setCluster(Cluster cluster) {
         this.cluster = cluster;
     }
+
 }

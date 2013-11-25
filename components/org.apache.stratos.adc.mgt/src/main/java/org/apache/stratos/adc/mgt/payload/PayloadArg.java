@@ -43,6 +43,7 @@ public class PayloadArg {
     private String mgtServiceDomain;
     private String mgtServiceSubDomain;
     private String deployment;
+    private String subscriptionKey;
 
     //data cartridge specific
     private String dataCartridgeHost;
@@ -182,4 +183,12 @@ public class PayloadArg {
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
+	public String getSubscriptionKey() {
+		return subscriptionKey;
+	}
+	public void setSubscriptionKey(String subscriptionKey) {
+		this.subscriptionKey = subscriptionKey;
+	}
+    
+    
 }

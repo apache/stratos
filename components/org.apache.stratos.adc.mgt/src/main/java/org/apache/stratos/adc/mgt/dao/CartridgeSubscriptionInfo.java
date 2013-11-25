@@ -43,6 +43,7 @@ public class CartridgeSubscriptionInfo {
 	private String mappedDomain;
 	private String mgtClusterDomain;
 	private String mgtClusterSubDomain;
+	private String subscriptionKey;
 
 	public int getSubscriptionId() {
 		return subscriptionId;
@@ -187,5 +188,13 @@ public class CartridgeSubscriptionInfo {
 	public void setMgtClusterSubDomain(String mgtClusterSubDomain) {
 		this.mgtClusterSubDomain = mgtClusterSubDomain;
 	}
+
+	public String getSubscriptionKey() {
+		return subscriptionKey;
+	}
+
+	public void setSubscriptionKey(String subscriptionKey) {
+		this.subscriptionKey = subscriptionKey;
+	}	
 
 }
