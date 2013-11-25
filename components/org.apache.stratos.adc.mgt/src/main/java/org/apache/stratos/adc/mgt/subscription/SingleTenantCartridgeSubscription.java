@@ -73,7 +73,7 @@ public class SingleTenantCartridgeSubscription extends CartridgeSubscription {
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
                 getRepository(), getHostName(), getClusterDomain(), getClusterSubDomain(),
-                getMgtClusterDomain(), getMgtClusterSubDomain(), null, "PENDING");
+                getMgtClusterDomain(), getMgtClusterSubDomain(), null, "PENDING",getSubscriptionKey());
     }
 
     @Override

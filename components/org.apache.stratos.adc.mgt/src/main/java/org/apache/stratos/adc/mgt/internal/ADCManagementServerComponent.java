@@ -72,7 +72,7 @@ public class ADCManagementServerComponent {
 			DataHolder.setEventPublisher(new EventPublisher(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC));
 			
             //initialting the subscriber
-            TopicSubscriber subscriber = new TopicSubscriber("instance-status");
+            TopicSubscriber subscriber = new TopicSubscriber(Constants.INSTANCE_STATUS_TOPIC);
             subscriber.setMessageListener(new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();

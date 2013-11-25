@@ -1,4 +1,3 @@
-package org.apache.stratos.adc.mgt.utils;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,13 +19,29 @@ package org.apache.stratos.adc.mgt.utils;
  *
 */
 
+package org.apache.stratos.adc.mgt.utils;
 
-import com.google.gson.Gson;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.Member;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
@@ -38,12 +53,19 @@ import org.apache.stratos.adc.mgt.dto.Cartridge;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.dto.RepositoryInformation;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
-import org.apache.stratos.adc.mgt.exception.*;
+import org.apache.stratos.adc.mgt.exception.ADCException;
+import org.apache.stratos.adc.mgt.exception.DuplicateCartridgeAliasException;
+import org.apache.stratos.adc.mgt.exception.InvalidCartridgeAliasException;
+import org.apache.stratos.adc.mgt.exception.InvalidRepositoryException;
+import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
+import org.apache.stratos.adc.mgt.exception.RepositoryCredentialsRequiredException;
+import org.apache.stratos.adc.mgt.exception.RepositoryRequiredException;
+import org.apache.stratos.adc.mgt.exception.RepositoryTransportException;
+import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 import org.apache.stratos.cloud.controller.util.xsd.Properties;
@@ -57,20 +79,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * This class contains utility methods used by ApplicationManagementService.
@@ -100,7 +109,8 @@ public class ApplicationManagementUtil {
                                                                     String mgtClusterDomain,
                                                                     String mgtClusterSubDomain,
                                                                     DataCartridge dataCartridge,
-                                                                    String state) {
+                                                                    String state,
+                                                                    String subscribeKey) {
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
         cartridgeSubscriptionInfo.setCartridge(cartridgeType);
@@ -120,11 +130,13 @@ public class ApplicationManagementUtil {
         cartridgeSubscriptionInfo.setBaseDirectory(cartridgeInfo.getBaseDir());
         //cartridgeSubscriptionInfo.setState("PENDING");
         cartridgeSubscriptionInfo.setState(state);
+        cartridgeSubscriptionInfo.setSubscriptionKey(subscribeKey);
         return cartridgeSubscriptionInfo;
     }
 
 
-    private static List<PortMapping> createPortMappings(CartridgeInfo cartridgeInfo) {
+
+	private static List<PortMapping> createPortMappings(CartridgeInfo cartridgeInfo) {
         List<PortMapping> portMappings = new ArrayList<PortMapping>();
 
         if (cartridgeInfo.getPortMappings() != null) {

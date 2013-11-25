@@ -97,7 +97,7 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
                 getRepository(), getHostName(), getClusterDomain(), getClusterSubDomain(),
-                getMgtClusterDomain(), getMgtClusterSubDomain(), dataCartridge, "PENDING");
+                getMgtClusterDomain(), getMgtClusterSubDomain(), dataCartridge, "PENDING",getSubscriptionKey());
     }
 
     public String getHost() {

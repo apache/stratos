@@ -262,7 +262,7 @@ public class PersistenceManager {
 				repoCredentials = new RepositoryCredentials();
 				repoCredentials.setUrl(resultSet.getString("REPO_NAME"));
 				repoCredentials.setUserName(resultSet.getString("REPO_USER_NAME"));
-				repoCredentials.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.getString("REPO_USER_PASSWORD")));
+				repoCredentials.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.getString("REPO_USER_PASSWORD"),null)); // TODO this is no longer supported
 			}
 		} catch (Exception s) {
 			String msg = "Error while sql connection :" + s.getMessage();
@@ -323,7 +323,7 @@ public class PersistenceManager {
 			// persist repo
 			if (cartridgeSubscriptionInfo.getRepository() != null) {
 				String encryptedRepoUserPassword = RepoPasswordMgtUtil.encryptPassword(cartridgeSubscriptionInfo.getRepository()
-						.getPassword());
+						.getPassword(),cartridgeSubscriptionInfo.getSubscriptionKey());
 				String insertRepo = "INSERT INTO REPOSITORY (REPO_NAME,STATE,REPO_USER_NAME,REPO_USER_PASSWORD)"
 						+ " VALUES (?,?,?,?)";
 
@@ -363,10 +363,11 @@ public class PersistenceManager {
 				StratosDBUtils.closeResultSet(res);
 			}
 
+			// TODO - Mapped domain is not used. Is it not used anymore?
 			String insertSubscription = "INSERT INTO CARTRIDGE_SUBSCRIPTION (TENANT_ID, CARTRIDGE, PROVIDER,"
-					+ "HOSTNAME, POLICY, CLUSTER_DOMAIN, " + "CLUSTER_SUBDOMAIN, MGT_DOMAIN, MGT_SUBDOMAIN, STATE, "
-					+ "ALIAS, TENANT_DOMAIN, BASE_DIR, REPO_ID, DATA_CARTRIDGE_ID)"
-					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ "HOSTNAME, POLICY, CLUSTER_DOMAIN, CLUSTER_SUBDOMAIN, MGT_DOMAIN, MGT_SUBDOMAIN, STATE, "
+					+ "ALIAS, TENANT_DOMAIN, BASE_DIR, REPO_ID, DATA_CARTRIDGE_ID, SUBSCRIPTION_KEY)"
+					+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 			insertSubscriptionStmt = con.prepareStatement(insertSubscription, Statement.RETURN_GENERATED_KEYS);
 			insertSubscriptionStmt.setInt(1, cartridgeSubscriptionInfo.getTenantId());
@@ -384,6 +385,7 @@ public class PersistenceManager {
 			insertSubscriptionStmt.setString(13, cartridgeSubscriptionInfo.getBaseDirectory());
 			insertSubscriptionStmt.setInt(14, repoId);
 			insertSubscriptionStmt.setInt(15, dataCartridgeId);
+			insertSubscriptionStmt.setString(16, cartridgeSubscriptionInfo.getSubscriptionKey());
 			if (log.isDebugEnabled()) {
 				log.debug("Executing insert: " + insertSubscription);
 			}
@@ -536,6 +538,7 @@ public class PersistenceManager {
 		cartridgeSubscriptionInfo.setBaseDirectory(resultSet.getString("BASE_DIR"));
 		cartridgeSubscriptionInfo.setSubscriptionId(resultSet.getInt("SUBSCRIPTION_ID"));
 		cartridgeSubscriptionInfo.setMappedDomain(resultSet.getString("MAPPED_DOMAIN"));
+		cartridgeSubscriptionInfo.setSubscriptionKey(resultSet.getString("SUBSCRIPTION_KEY"));
 	}
 
 	private static List<PortMapping> getPortMappings(int subscriptionId) throws Exception {
