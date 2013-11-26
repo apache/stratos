@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.adc.mgt.dto;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
+@XmlRootElement
 public class SubscriptionInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
