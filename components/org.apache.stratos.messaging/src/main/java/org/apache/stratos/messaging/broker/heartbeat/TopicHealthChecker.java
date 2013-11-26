@@ -56,7 +56,7 @@ public class TopicHealthChecker implements Runnable {
 				// implies connection is not established
 				// sleep for 5s and retry
 				try {
-					log.info("Health checker failed and will retry to establish a connection after a 5s.");
+					log.info(topicName + " topic Health Checker is failed and will retry to establish a connection after a 5s.");
 					Thread.sleep(5000);
 					break;
 				} catch (InterruptedException ignore) {
