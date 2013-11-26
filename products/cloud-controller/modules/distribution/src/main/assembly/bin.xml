@@ -29,15 +29,15 @@
             <excludes>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/*.bat</exclude>
-                <exclude>**/log4j.properties</exclude>
+                <exclude>**/conf/log4j.properties</exclude>
                 <exclude>**/conf/axis2/axis2.xml</exclude>
                 <exclude>**/services/sample01.aar</exclude>
                 <exclude>**/repository/services/version/**</exclude>
                 <exclude>**/version.txt</exclude>
                 <exclude>**/LICENSE</exclude>
-		<exclude>**/NOTICE</exclude>
+		        <exclude>**/NOTICE</exclude>
                 <exclude>**/stratos.bat</exclude>
-		<exclude>**/launch.ini</exclude>
+		        <exclude>**/launch.ini</exclude>
                 <exclude>**/README.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/release-notes.html</exclude>
@@ -241,10 +241,10 @@
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/resources/log4j.properties</source>
+            <source>src/main/conf/log4j.properties</source>
             <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
-            <fileMode>755</fileMode>
+            <fileMode>600</fileMode>
         </file>
 	 <file>
             <source>src/main/conf/synapse.properties</source>
