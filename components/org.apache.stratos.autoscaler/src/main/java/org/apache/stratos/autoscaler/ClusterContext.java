@@ -132,12 +132,12 @@ public class ClusterContext {
 
    public void increaseMemberCountInPartitionBy(String partitionId, int count){
 
-        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) + count);
+        partitionCountMap.put(partitionId, getMemberCount(partitionId) + count);
     }
 
     public void decreaseMemberCountInPartitionBy(String partitionId, int count){
 
-        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
+        partitionCountMap.put(partitionId, getMemberCount(partitionId) - count);
     }
 
     public void addPartitionCount(String partitionId, int count){    	
