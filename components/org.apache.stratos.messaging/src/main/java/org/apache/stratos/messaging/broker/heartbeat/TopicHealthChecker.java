@@ -42,8 +42,9 @@ public class TopicHealthChecker implements Runnable {
 
 	@Override
 	public void run() {
-		log.info(topicName + " topic Health Checker is running... " );
-
+        if(log.isDebugEnabled()){
+		    log.debug(topicName + " topic Health Checker is running... " );
+        }
 		TopicConnector testConnector = new TopicConnector();
 		while (!terminated) {
 			try {
@@ -56,7 +57,7 @@ public class TopicHealthChecker implements Runnable {
 				// implies connection is not established
 				// sleep for 5s and retry
 				try {
-					log.info(topicName + " topic Health Checker is failed and will retry to establish a connection after a 5s.");
+					log.error(topicName + " topic Health Checker is failed and will retry to establish a connection after a 5s.");
 					Thread.sleep(5000);
 					break;
 				} catch (InterruptedException ignore) {
