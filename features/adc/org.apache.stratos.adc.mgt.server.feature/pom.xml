@@ -127,14 +127,15 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt:${project.version}</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${project.version}</bundleDef>
-				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
-				<bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
-				<bundleDef>com.google.code.gson:gson:2.1</bundleDef>
-				<bundleDef>org.eclipse.jgit:org.eclipse.jgit:2.1.0.wso2v1</bundleDef>
-				<bundleDef>com.jcraft:jsch:0.1.49.wso2v1</bundleDef>
-			    </bundles>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${project.version}</bundleDef>
+                                <bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
+                                <bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
+                                <bundleDef>com.google.code.gson:gson:2.1</bundleDef>
+                                <bundleDef>org.apache.commons:commons-lang3:3.1</bundleDef>
+                                <bundleDef>org.eclipse.jgit:org.eclipse.jgit:2.1.0.wso2v1</bundleDef>
+                                <bundleDef>com.jcraft:jsch:0.1.49.wso2v1</bundleDef>
+                            </bundles>
                         </configuration>
                     </execution>
                 </executions>
