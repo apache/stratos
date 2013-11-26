@@ -154,7 +154,10 @@ public class ClusterContext {
     }
 
     public int getMemberCount(String partitionId){
-        return partitionCountMap.get(partitionId);
+        if(partitionCountMap.containsKey(partitionId)) {
+            return partitionCountMap.get(partitionId);
+        }
+        return 0;
     }
 
     public void setMemberContextMap(Map<String, MemberContext> memberContextMap) {
