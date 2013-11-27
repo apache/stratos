@@ -89,8 +89,10 @@
                         <Export-Package>
                             org.apache.stratos.cloud.controller.exception.xsd.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.pojo.xsd.*; version=${project.version},
                             org.apache.stratos.cloud.controller.util.xsd.*; version=${project.version},
-                            org.apache.stratos.messaging.domain.topology.xsd.*; version=${project.version}
+                            org.apache.stratos.messaging.domain.policy.xsd.*; version=${project.version},
+                            org.apache.stratos.messaging.util.xsd.*; version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
