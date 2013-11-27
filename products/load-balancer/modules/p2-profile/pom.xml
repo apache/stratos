@@ -145,6 +145,10 @@
                                 </featureArtifactDef>
 
                                 <featureArtifactDef>
+                                    org.apache.stratos:org.apache.stratos.load.balancer.common.feature:${project.version}
+                                </featureArtifactDef>
+
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.sequences.server.feature:${carbon.patch.version.4.1.1}
                                 </featureArtifactDef>
 
@@ -282,6 +286,10 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.load.balancer.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.apache.stratos.load.balancer.common.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>

@@ -18,11 +18,11 @@
  */
 package org.apache.stratos.messaging.broker.heartbeat;
 
-import javax.jms.JMSException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicConnector;
+
+import javax.jms.JMSException;
 
 /**
  * This health checker runs forever, and is responsible for checking the
@@ -42,8 +42,9 @@ public class TopicHealthChecker implements Runnable {
 
 	@Override
 	public void run() {
-		log.info("Topic Health Checker is running... ");
-
+        if(log.isDebugEnabled()){
+		    log.debug(topicName + " topic Health Checker is running... " );
+        }
 		TopicConnector testConnector = new TopicConnector();
 		while (!terminated) {
 			try {
@@ -56,7 +57,7 @@ public class TopicHealthChecker implements Runnable {
 				// implies connection is not established
 				// sleep for 5s and retry
 				try {
-					log.info("Health checker failed and will retry to establish a connection after a 5s.");
+					log.error(topicName + " topic Health Checker is failed and will retry to establish a connection after a 5s.");
 					Thread.sleep(5000);
 					break;
 				} catch (InterruptedException ignore) {

@@ -28,6 +28,7 @@ public class ArtifactUpdatedEvent {
     private String repoUserName;
     private String repoPassword;
     private String repoURL;
+    private String tenantId;
 
     public String getClusterId() {
         return clusterId;
@@ -68,6 +69,14 @@ public class ArtifactUpdatedEvent {
 	public void setRepoURL(String repoURL) {
 		this.repoURL = repoURL;
 	}
-    
+
+	public String getTenantId() {
+		return tenantId;
+	}
+
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+	
     
 }

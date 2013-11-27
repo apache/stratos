@@ -145,6 +145,7 @@ public class TopologyEventSender {
                                                                              clusterId,
                                                                              memberId,
                                                                              nodeId);
+        instanceSpawnedEvent.setPartition(partition);
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [member] %s [node] %s", serviceName, clusterId, memberId, nodeId));
         }

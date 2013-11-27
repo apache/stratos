@@ -17,14 +17,15 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.deployment.synchronizer;
 
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.EventListener;
 
-public class MemberSuspendedEventListener extends EventListener {
+/**
+ * @author wso2
+ *
+ */
+public interface ArtifactRepository {
 
-    @Override
-    protected void onEvent(Event event) {
-    }
+	public boolean checkout(RepositoryInformation repositoryInformation);
+	
 }

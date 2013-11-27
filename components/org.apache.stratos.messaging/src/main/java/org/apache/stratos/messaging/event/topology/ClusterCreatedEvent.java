@@ -37,9 +37,10 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private String autoscalingPolicyName;
     private Properties properties;
 
-    public ClusterCreatedEvent(String serviceName, String clusterId) {
+    public ClusterCreatedEvent(String serviceName, String clusterId, String hostName) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.hostName = hostName;
     }
 
     public String getServiceName() {

@@ -23,6 +23,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
 import org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService;
@@ -38,8 +39,8 @@ import java.util.Map;
  */
 public class LoadBalancerContext {
 
-    private static volatile LoadBalancerContext instance;
     private static final Log log = LogFactory.getLog(LoadBalancerContext.class);
+    private static volatile LoadBalancerContext instance;
 
     private SynapseConfiguration synapseConfiguration;
     private ConfigurationContext configCtxt;
@@ -47,16 +48,21 @@ public class LoadBalancerContext {
     private UserRegistry configRegistry;
     private UserRegistry governanceRegistry;
     private DependencyManagementService dependencyManager;
-    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServices;
 
+    // <TenantId, SynapseEnvironmentService> Map
+    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServices;
+    // <ServiceName, ServiceContext> Map
     private Map<String, ServiceContext> serviceContextMap;
+    // <ClusterId, ClusterContext> Map
     private Map<String, ClusterContext> clusterContextMap;
+    // <Hostname, Cluster> Map
+    private Map<String, Cluster> clusterMap;
 
     private LoadBalancerContext() {
         synapseEnvironmentServices = new HashMap<Integer, SynapseEnvironmentService>();
-
         serviceContextMap = new HashMap<String, ServiceContext>();
         clusterContextMap = new HashMap<String, ClusterContext>();
+        clusterMap = new HashMap<String, Cluster>();
     }
 
     public static synchronized LoadBalancerContext getInstance() {
@@ -131,16 +137,16 @@ public class LoadBalancerContext {
         this.governanceRegistry = governanceRegistry;
     }
 
-    public SynapseEnvironmentService getSynapseEnvironmentService(int id) {
-        return synapseEnvironmentServices.get(id);
+    public SynapseEnvironmentService getSynapseEnvironmentService(int tenantId) {
+        return synapseEnvironmentServices.get(tenantId);
     }
 
-    public void addSynapseEnvironmentService(int id, SynapseEnvironmentService synapseEnvironmentService) {
-        synapseEnvironmentServices.put(id, synapseEnvironmentService);
+    public void addSynapseEnvironmentService(int tenantId, SynapseEnvironmentService synapseEnvironmentService) {
+        synapseEnvironmentServices.put(tenantId, synapseEnvironmentService);
     }
 
-    public void removeSynapseEnvironmentService(int id) {
-        synapseEnvironmentServices.remove(id);
+    public void removeSynapseEnvironmentService(int tenantId) {
+        synapseEnvironmentServices.remove(tenantId);
     }
 
     public Map<Integer, SynapseEnvironmentService> getSynapseEnvironmentServices() {
@@ -155,6 +161,7 @@ public class LoadBalancerContext {
         this.configCtxt = configCtxt;
     }
 
+    // ServiceContextMap methods START
     public Collection<ServiceContext> getServiceContexts() {
         return serviceContextMap.values();
     }
@@ -167,6 +174,12 @@ public class LoadBalancerContext {
         serviceContextMap.put(serviceContext.getServiceName(), serviceContext);
     }
 
+    public void removeServiceContext(String serviceName) {
+        serviceContextMap.remove(serviceName);
+    }
+    // ServiceContextMap methods END
+
+    // ClusterContextMap methods START
     public Collection<ClusterContext> getClusterContexts() {
         return clusterContextMap.values();
     }
@@ -178,4 +191,31 @@ public class LoadBalancerContext {
     public void addClusterContext(ClusterContext clusterContext) {
         clusterContextMap.put(clusterContext.getClusterId(), clusterContext);
     }
+
+    public void removeClusterContext(String clusterId) {
+        clusterContextMap.remove(clusterId);
+    }
+    // ClusterContextMap methods END
+
+    // ClusterMap methods START
+    public Collection<Cluster> getClusters() {
+        return clusterMap.values();
+    }
+
+    public Cluster getCluster(String hostName) {
+        return clusterMap.get(hostName);
+    }
+
+    public boolean clusterExists(String hostName) {
+        return clusterMap.containsKey(hostName);
+    }
+
+    public void addCluster(Cluster cluster) {
+        clusterMap.put(cluster.getHostName(), cluster);
+    }
+
+    public void removeCluster(String hostName) {
+        clusterMap.remove(hostName);
+    }
+    // ClusterMap methods END
 }

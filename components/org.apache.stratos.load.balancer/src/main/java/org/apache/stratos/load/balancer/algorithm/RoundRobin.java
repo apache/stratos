@@ -54,8 +54,12 @@ public class RoundRobin implements LoadBalanceAlgorithm {
             if (currentMemberIndex >= members.size()) {
                 currentMemberIndex = 0;
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Searching for next member: [service] %s [cluster]: %s [member-count]: %d [current-index] %d", algorithmContext.getServiceName(), algorithmContext.getClusterId(), members.size(), currentMemberIndex));
+            }
             int index = members.size();
-            do {                                                                   current = members.get(currentMemberIndex);
+            do {
+                current = members.get(currentMemberIndex);
                 if (currentMemberIndex == members.size() - 1) {
                     currentMemberIndex = 0;
                 } else {
@@ -64,11 +68,6 @@ public class RoundRobin implements LoadBalanceAlgorithm {
                 index--;
             } while ((!current.isActive()) && index > 0);
             algorithmContext.setCurrentMemberIndex(currentMemberIndex);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Service name: %s cluster id: %s members: %d", algorithmContext.getServiceName(), algorithmContext.getClusterId(), members.size()));
-                log.debug(String.format("Current member: %s", current.getMemberId()));
-            }
-
         } finally {
             lock.unlock();
         }
@@ -82,15 +81,14 @@ public class RoundRobin implements LoadBalanceAlgorithm {
 
     @Override
     public void reset(AlgorithmContext algorithmContext) {
-        if (log.isDebugEnabled()) {
-            log.debug("Resetting the Round Robin load balancing algorithm ...");
-        }
         synchronized (algorithmContext) {
             algorithmContext.setCurrentMemberIndex(0);
+            if (log.isDebugEnabled()) {
+                log.debug("Round robin load balance algorithm was reset");
+            }
         }
     }
 
-    @Override
     public LoadBalanceAlgorithm clone() {
         return new RoundRobin();
     }

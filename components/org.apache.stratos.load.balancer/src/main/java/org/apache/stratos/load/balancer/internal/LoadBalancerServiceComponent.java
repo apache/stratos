@@ -22,13 +22,12 @@ package org.apache.stratos.load.balancer.internal;
 import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.load.balancer.LoadBalancerContext;
+import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -92,6 +91,7 @@ public class LoadBalancerServiceComponent {
     private static final Log log = LogFactory.getLog(LoadBalancerServiceComponent.class);
 
     private boolean activated = false;
+    private LoadBalancerTopologyReceiver topologyReceiver;
 
     protected void activate(ComponentContext ctxt) {
         try {
@@ -101,20 +101,35 @@ public class LoadBalancerServiceComponent {
             registerDeployer(LoadBalancerContext.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
 
-            // Start topic subscriber thread
-            TopicSubscriber topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
-            Thread subscriberThread = new Thread(topicSubscriber);
-            subscriberThread.start();
-            if (log.isDebugEnabled()) {
-                log.debug("Topology event message receiver thread started");
+            // Start topology receiver
+            topologyReceiver = new LoadBalancerTopologyReceiver();
+            Thread topologyReceiverThread = new Thread(topologyReceiver);
+            topologyReceiverThread.start();
+            if (log.isInfoEnabled()) {
+                log.info("Topology receiver thread started");
             }
 
-            // Start topology message receiver thread
-            Thread receiverThread = new Thread(new TopologyEventMessageDelegator());
-            receiverThread.start();
-            if (log.isDebugEnabled()) {
-                log.debug("Topology message processor thread started");
+            if (log.isInfoEnabled()) {
+                if (ServiceFilter.getInstance().isActive()) {
+                    StringBuilder sb = new StringBuilder();
+                    for (String serviceName : ServiceFilter.getInstance().getIncludedServiceNames()) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(serviceName);
+                    }
+                    log.info(String.format("Service filter activated: [services] %s", sb.toString()));
+                }
+                if (ClusterFilter.getInstance().isActive()) {
+                    StringBuilder sb = new StringBuilder();
+                    for (String clusterId : ClusterFilter.getInstance().getIncludedClusterIds()) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(clusterId);
+                    }
+                    log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+                }
             }
 
             activated = true;
@@ -138,6 +153,8 @@ public class LoadBalancerServiceComponent {
         } catch (Exception e) {
             log.warn("Couldn't remove the EndpointDeployer");
         }
+        // Terminate topology receiver
+        topologyReceiver.terminate();
     }
 
     /**

@@ -66,7 +66,12 @@ public class LoadBalancerStatsNotifier implements Runnable {
                     }
                 }
                 if (stats.size() > 0) {
-                    statsPublisher.publish(stats);
+                    if(statsPublisher.isEnabled()) {
+                        statsPublisher.publish(stats);
+                    }
+                    else if (log.isWarnEnabled()) {
+                        log.warn("Load balancer statistics publisher is disabled");
+                    }
                 }
             } catch (Exception e) {
                 if (log.isErrorEnabled()) {

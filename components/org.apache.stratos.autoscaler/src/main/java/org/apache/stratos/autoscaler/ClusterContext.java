@@ -44,6 +44,7 @@ public class ClusterContext {
     private Map<String, Integer> partitionCountMap;
 
     private int currentPartitionIndex;
+    private int currentPartitionGroupIndex;
 
     private Properties properties;
 
@@ -129,14 +130,14 @@ public class ClusterContext {
 
     }
 
-   public void increaseMemberCountInPartition(String partitionId, int count){
+   public void increaseMemberCountInPartitionBy(String partitionId, int count){
 
-        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) + count);
+        partitionCountMap.put(partitionId, getMemberCount(partitionId) + count);
     }
 
-    public void decreaseMemberCountInPartition(String partitionId, int count){
+    public void decreaseMemberCountInPartitionBy(String partitionId, int count){
 
-        partitionCountMap.put(partitionId, partitionCountMap.get(partitionId) - count);
+        partitionCountMap.put(partitionId, getMemberCount(partitionId) - count);
     }
 
     public void addPartitionCount(String partitionId, int count){    	
@@ -153,7 +154,10 @@ public class ClusterContext {
     }
 
     public int getMemberCount(String partitionId){
-        return partitionCountMap.get(partitionId);
+        if(partitionCountMap.containsKey(partitionId)) {
+            return partitionCountMap.get(partitionId);
+        }
+        return 0;
     }
 
     public void setMemberContextMap(Map<String, MemberContext> memberContextMap) {
@@ -179,5 +183,13 @@ public class ClusterContext {
 
     public void setMemberCount(int memberCount) {
         this.memberCount = memberCount;
+    }
+    
+    public int getCurrentPartitionGroupIndex() {
+        return currentPartitionGroupIndex;
+    }
+
+    public void setCurrentPartitionGroupIndex(int currentPartitionGroupIndex) {
+        this.currentPartitionGroupIndex = currentPartitionGroupIndex;
     }
 }

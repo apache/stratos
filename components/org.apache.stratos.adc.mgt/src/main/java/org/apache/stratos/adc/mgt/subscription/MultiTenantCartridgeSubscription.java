@@ -92,11 +92,11 @@ public class MultiTenantCartridgeSubscription extends CartridgeSubscription {
 
             for (DomainContext domainContext : domainContexts) {
                 if (domainContext.getSubDomain().equalsIgnoreCase("mgt")) {
-                    setMgtClusterDomain(domainContext.getDomain());
-                    setMgtClusterSubDomain(domainContext.getSubDomain());
+                    getCluster().setMgtClusterDomain(domainContext.getDomain());
+                    getCluster().setMgtClusterSubDomain(domainContext.getSubDomain());
                 } else {
-                    setClusterDomain(domainContext.getDomain());
-                    setClusterSubDomain(domainContext.getSubDomain());
+                    getCluster().setClusterDomain(domainContext.getDomain());
+                    getCluster().setClusterSubDomain(domainContext.getSubDomain());
                 }
             }
         } else {
@@ -121,8 +121,8 @@ public class MultiTenantCartridgeSubscription extends CartridgeSubscription {
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
-                getRepository(), getHostName(), getClusterDomain(), getClusterSubDomain(),
-                getMgtClusterDomain(), getMgtClusterSubDomain(), null, "PENDING");
+                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
+                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), null, "PENDING",getSubscriptionKey());
     }
 
     @Override

@@ -20,6 +20,7 @@
 package org.apache.stratos.adc.mgt.manager;
 
 import org.apache.axis2.AxisFault;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
@@ -126,10 +127,12 @@ public class CartridgeSubscriptionManager {
         Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
 
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
+        
         Repository repository = cartridgeSubscription.manageRepository(repositoryURL, repositoryUsername,
                 repositoryPassword, isPrivateRepository, cartridgeAlias, cartridgeInfo, tenantDomain);
-
+        
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoScalingPolicy, repository);
+        cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey()); // TODO ---- fix properly
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
                 " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " + cartridgeType +
@@ -198,8 +201,7 @@ public class CartridgeSubscriptionManager {
                 connectingSubscriptionAlias);
 
         if(cartridgeSubscription == null) {
-            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + ", alias " +
-                    cartridgeSubscription.getAlias() + ",  connecting aborted";
+            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + "  connecting aborted";
             log.error(errorMsg);
             return;
         }
@@ -436,4 +438,11 @@ public class CartridgeSubscriptionManager {
 
         return cartridgeSubscription;
     }
+    
+
+    private String generateSubscriptionKey() {
+    	String key = RandomStringUtils.randomAlphanumeric(16);
+    	log.info("Generated key  : " + key); // TODO -- remove the log
+		return key;
+	}
 }

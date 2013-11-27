@@ -22,8 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.InstanceSpawnedEvent;
-import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
+import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
 public class InstanceSpawnedEventProcessor extends MessageProcessor {
@@ -40,9 +41,31 @@ public class InstanceSpawnedEventProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Topology topology = (Topology)object;
 
-        if (MemberStartedEvent.class.getName().equals(type)) {
+        if (InstanceSpawnedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             InstanceSpawnedEvent event = (InstanceSpawnedEvent) Util.jsonToObject(message, InstanceSpawnedEvent.class);
+
+            // Apply service filter
+            if(ServiceFilter.getInstance().isActive()) {
+                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+                    // Service is excluded, do not update topology or fire event
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                    }
+                    return true;
+                }
+            }
+
+            // Apply cluster filter
+            if(ClusterFilter.getInstance().isActive()) {
+                if(ClusterFilter.getInstance().excluded(event.getClusterId())) {
+                    // Cluster is excluded, do not update topology or fire event
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
+                    }
+                    return true;
+                }
+            }
 
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());

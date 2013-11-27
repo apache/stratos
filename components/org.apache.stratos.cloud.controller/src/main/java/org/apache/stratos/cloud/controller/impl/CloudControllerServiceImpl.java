@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.impl;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
@@ -40,6 +42,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
@@ -58,6 +61,8 @@ import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -444,38 +449,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         // reset ip
                         ip = "";
                         // default behavior is autoIpAssign=false
-                        if (autoAssignIpProp == null
-                                || (autoAssignIpProp != null && autoAssignIpProp
-                                        .equals("false"))) {
+                        if (autoAssignIpProp == null || (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
                             // allocate an IP address - manual IP assigning mode
                             ip = iaas.getIaas().associateAddress(iaas, node);
+                            log.info("Allocated ip address: " + ip);
                         }
 
-                        if (ip.isEmpty()
-                                && node.getPublicAddresses() != null
-                                && node.getPublicAddresses().iterator()
-                                        .hasNext()) {
+                        if (ip.isEmpty() && node.getPublicAddresses() != null && node.getPublicAddresses().iterator().hasNext()) {
                             ip = node.getPublicAddresses().iterator().next();
-                        }
-                         String privateIp = null;
-                        if (node.getPrivateAddresses() != null
-                                && node.getPrivateAddresses().iterator()
-                                        .hasNext()) {
-                            privateIp = node.getPrivateAddresses().iterator().next();
-                        }
-                        log.info("private ip of the instance is: " + privateIp);
-                        // if not public IP is assigned, we're using private IP
-                        if (ip.isEmpty()
-                                && node.getPrivateAddresses() != null
-                                && node.getPrivateAddresses().iterator()
-                                        .hasNext()) {
-                            ip = node.getPrivateAddresses().iterator().next();
+                            log.info("Public ip address: " + ip);
                         }
 
-                        String nodeId = node.getId();
-                        if (nodeId == null) {
-                            String msg = "Node id of the starting instance is null.\n"
-                                    + node.toString();
+                        // if not public IP is assigned, we're using private IP
+                        if (ip.isEmpty() && node.getPrivateAddresses() != null && node.getPrivateAddresses().iterator().hasNext()) {
+                            ip = node.getPrivateAddresses().iterator().next();
+                            log.info("Private ip address: " + ip);
+                        }
+
+                        if (node.getId() == null) {
+                            String msg = "Node id of the starting instance is null.\n" + node.toString();
                             log.fatal(msg);
                             throw new CloudControllerException(msg);
                         }
@@ -535,6 +527,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                         + ". Hence, will try to start in another IaaS if available.",
                                 e);
                     }
+            }
 
 //        }
         return null;
@@ -627,8 +620,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         exec.execute(new InstanceTerminator(ctxt));
         exec.shutdown();
 
-
-//			return true;
+       
+		
 
 //		}
 
@@ -675,9 +668,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     throw new InvalidCartridgeTypeException(msg);
                 }
 
-                // Scope scope = partition.getScope();
-                // String provider = partition.getProperty("provider");
-
                 // if no matching node id can be found.
                 if (nodeId == null) {
 
@@ -715,13 +705,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 IaasProvider iaas = cartridge.getIaasProviderOfPartition(partitionId);
 
-                // String msg = "Failed to terminate an instance in "
-                // + iaas.getType()
-                // + ". Hence, will try to terminate an instance in another IaaS if possible.";
-                // //TODO adding more locations and retrieve it from the request received
-                // String nodeId = null;
 
-                // IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
 
                 // // terminate the last instance first
                 // for (String id : Lists.reverse(ctxt.getNodeIds())) {
@@ -1326,6 +1310,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //		return serviceDefFile.delete();
 	}
 
+		
 
     @Override
     public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) 

@@ -22,8 +22,7 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.EventListener;
-import org.apache.stratos.messaging.event.topology.CompleteTopologyEventListener;
+import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.topology.*;
 import org.apache.stratos.messaging.util.Constants;

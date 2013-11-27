@@ -22,7 +22,6 @@ package org.apache.stratos.adc.mgt.utils;
 
 
 import com.google.gson.Gson;
-
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.Member;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
@@ -63,7 +62,6 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -747,6 +745,7 @@ public class ApplicationManagementUtil {
     	DecimalFormat df = new DecimalFormat("##.##");
         df.setParseBigDecimal(true);
 
+        Properties properties = new Properties();
         List<Property> allProperties = new ArrayList<Property>();
         // min_app_instances
         Property property = new Property();

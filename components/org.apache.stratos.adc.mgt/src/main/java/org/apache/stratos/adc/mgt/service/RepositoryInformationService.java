@@ -52,7 +52,7 @@ public class RepositoryInformationService {
 
     public RepositoryCredentials getRepositoryCredentials(int tenantId, String cartridgeType, String alias) throws Exception {
 
-    	RepositoryCredentials repoCredentials = null;
+    	/*RepositoryCredentials repoCredentials = null;
         try {
         	repoCredentials = PersistenceManager.getRepoCredentials(tenantId,cartridgeType, alias);
         } catch (Exception e) {
@@ -64,6 +64,8 @@ public class RepositoryInformationService {
             log.error("Repository credentials are not successfully retrieved " + "for tenant [" + tenantId +
                     "] and cartridge [" + cartridgeType + "] ");
         }
-        return repoCredentials;
+        return repoCredentials;*/
+    	log.error("This method is no longer supported");
+    	throw new Exception("This method is no longer supported");
     }
 }

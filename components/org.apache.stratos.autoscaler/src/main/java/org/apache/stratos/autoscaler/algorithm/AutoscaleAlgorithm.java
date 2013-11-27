@@ -20,13 +20,15 @@
 package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.stratos.autoscaler.policy.model.Partition;
+import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
 
 /**
  *
  */
 public interface AutoscaleAlgorithm {
-public Partition getNextScaleUpPartition(String clusterId);
-public Partition getNextScaleDownPartition(String clusterId);
+
 public boolean scaleUpPartitionAvailable(String clusterId);
 public boolean scaleDownPartitionAvailable(String clusterId);
+public Partition getNextScaleUpPartition(PartitionGroup partition,String clusterId);
+public Partition getNextScaleDownPartition(PartitionGroup partition,String clusterId);
 }

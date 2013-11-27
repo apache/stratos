@@ -27,6 +27,17 @@ import java.util.Map;
 public interface LoadBalancerStatsPublisher {
 
     /**
+     * Set statistics publisher enabled or disabled.
+     * @param enabled
+     */
+    void setEnabled(boolean enabled);
+
+    /**
+     * Return enabled state of the statistics publisher.
+     */
+    boolean isEnabled();
+
+    /**
      * Publish statistics as a map of Cluster Id, In-flight Request Count.
      * @param stats
      */

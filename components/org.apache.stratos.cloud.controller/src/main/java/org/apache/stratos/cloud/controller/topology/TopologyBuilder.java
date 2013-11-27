@@ -225,12 +225,11 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
-                                           String iaasNodeId, Partition locationScope, String privateIp) {
+                                           String iaasNodeId, Partition partition, String privateIp) {
         //adding the new member to the cluster after it is successfully started in IaaS.
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
-        //TODO adding the IaaS scope to the member
 
         if (cluster.memberExists(memberId)) {
             throw new RuntimeException(String.format("Member %s already exists", memberId));
@@ -242,13 +241,14 @@ public class TopologyBuilder {
             member.setIaasNodeId(iaasNodeId);
             member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
+            member.setPartition(partition);
             cluster.addMember(member);
             cluster.addMemberToIaasNodeId(member);
             TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, iaasNodeId);
+        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, iaasNodeId, partition);
 
     }
 

@@ -52,23 +52,32 @@ public class DeploymentPolicyReader  extends AbstractPolicyReader<DeploymentPoli
 			OMElement docEle = getDocument();
 			if("deploymentPolicy".equalsIgnoreCase(docEle.getLocalName())){
 				policy.setId(docEle.getAttributeValue(new QName("id")));
+				
 				//Partition-Groups
-				OMElement partitionGroupsEle = docEle.getFirstChildWithName(new QName("partitionGroups"));
-				Iterator<?> partitionGroupItr = partitionGroupsEle.getChildrenWithLocalName("partitionGroup");
+				Iterator<?> partitionGroupItr = docEle.getChildrenWithLocalName("partitionGroup");
 				while(partitionGroupItr.hasNext()){
 					Object nextGroup = partitionGroupItr.next();
 					if(nextGroup instanceof OMElement){
 						OMElement groupEle = (OMElement) nextGroup;
 						PartitionGroup group = new PartitionGroup();
-						group.setPartitionAlgo(readValue(groupEle, "PartitionAlgo"));
+						group.setId(groupEle.getAttributeValue(new QName("id")));
+						group.setPartitionAlgo(readValue(groupEle, "partitionAlgo"));
+						
 						//Partitions
-						OMElement partitionsEle = groupEle.getFirstChildWithName(new QName("partitions"));
-						Iterator<?> partitionItr = partitionsEle.getChildrenWithLocalName("partition");
+						Iterator<?> partitionItr = groupEle.getChildrenWithLocalName("partition");
 						while(partitionItr.hasNext()){
 							Object next = partitionItr.next();
 							if(next instanceof OMElement){
 								OMElement partitionEle = (OMElement) next;
 								Partition partition = new Partition();
+								Iterator<?> partitionPropItr = partitionEle.getChildrenWithLocalName("property");
+								while(partitionPropItr.hasNext())
+								{
+									Object nextProperty = partitionPropItr.next();
+									if(nextProperty instanceof OMElement){
+										OMElement property = (OMElement)nextProperty;
+									}
+								}
 								partition.setId(partitionEle.getAttributeValue(new QName("id")));
 								partition.setPartitionMax(Integer.valueOf(readValue(partitionEle, "max")));
 								partition.setPartitionMin(Integer.valueOf(readValue(partitionEle, "min")));

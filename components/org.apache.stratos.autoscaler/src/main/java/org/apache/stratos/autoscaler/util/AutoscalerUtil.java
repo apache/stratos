@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.policy.model.Partition;
 import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 
+
 /**
  * This class contains utility methods used by Autoscaler.
  */
@@ -63,8 +64,7 @@ public class AutoscalerUtil {
                 clusterContext.setRequestsInFlightGradient(gradientLimit);
                 clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
                 clusterContext.setAverageRequestsInFlight(averageLimit);
-
-                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getHaPolicyName());
+                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicyName());
                 if(deploymentPolicy!=null){
                 	for(PartitionGroup group :deploymentPolicy.getPartitionGroups()){
                 		for (Partition partition : group.getPartitions()) {

@@ -29,7 +29,7 @@
             <excludes>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/*.bat</exclude>
-                <exclude>**/log4j.properties</exclude>
+                <exclude>**/conf/log4j.properties</exclude>
                 <exclude>**/conf/axis2/axis2.xml</exclude>
                 <exclude>**/services/sample01.aar</exclude>
                 <exclude>**/repository/services/version/**</exclude>
@@ -246,10 +246,10 @@
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/resources/log4j.properties</source>
+            <source>src/main/conf/log4j.properties</source>
             <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
-            <fileMode>755</fileMode>
+            <fileMode>600</fileMode>
         </file>
 	  <file>
             <source>src/main/resources/stratos.bat</source>

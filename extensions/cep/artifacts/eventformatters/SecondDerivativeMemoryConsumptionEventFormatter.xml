@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventFormatter name="SecondDerivativeMemoryConsumptionEventFormatter"
+  statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventformatter">
+  <from streamName="second_derivative_memory_consumption_stats" version="1.0.0"/>
+  <mapping customMapping="enable" type="json">
+    <inline>{"second_derivative_memory_consumption":{"member_id":"{{member_id}}","value":"{{second_derivative_memory_consumption}}"}}</inline>
+  </mapping>
+  <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
+    <property name="transport.jms.Destination">summarized-health-stats</property>
+  </to>
+</eventFormatter>

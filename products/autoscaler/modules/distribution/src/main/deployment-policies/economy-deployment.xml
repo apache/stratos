@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<autoscalePolicy id="economyPolicy">
-	<loadThresholds>
-		<requestsInFlight>
-			<average value="6000" />
-			<gradient value="0" />
-			<secondDerivative value="0" />
-			<scaleDownMarginOfGradient  value="1.0" />
-			<scaleDownMarginOfSecondDerivative value="0.2" />
-		</requestsInFlight>
-		<memoryConsumption>
-			<average value="6000" />
-			<gradient value="0" />
-			<secondDerivative value="0" />
-			<scaleDownMarginOfGradient value="1.0" />
-			<scaleDownMarginOfSecondDerivative value="0.2" />
-		</memoryConsumption>
-		<loadAverage>
-			<average value="6000" />
-			<gradient value="0" />
-			<secondDerivative value="0" />
-			<scaleDownMarginOfGradient value="1.0" />
-			<scaleDownMarginOfSecondDerivative value="0.2" />
-		</loadAverage>
-	</loadThresholds>
-</autoscalePolicy>
+<deploymentPolicy id ="economy-deployment">
+		<partitionGroup id="group1" >
+			<partitionAlgo>one-after-another</partitionAlgo>
+			<partition id="partition1" >
+				<max>3</max>
+				<min>1</min>
+			</partition>
+			<partition id="partition2" >
+				<max>5</max>
+				<min>1</min>
+			</partition>
+			<partition id="partition3">
+				<max>20</max>
+				<min>1</min>
+			</partition>
+		</partitionGroup>
+		<partitionGroup id="group2" >
+			<partitionAlgo>round-robin</partitionAlgo>
+			<partition id="partition4" >
+				<max>3</max>
+				<min>1</min>
+			</partition>
+			<partition id="partition5" >
+				<max>5</max>
+				<min>1</min>
+			</partition>
+			<partition id="partition6">
+				<max>20</max>
+				<min>1</min>
+			</partition>
+		</partitionGroup>
+</deploymentPolicy>

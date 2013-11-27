@@ -34,16 +34,16 @@ import java.util.Properties;
 
 public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription {
 
-    protected String host;
-    protected String username;
-    protected String password;
+    private String host;
+    private String username;
+    private String password;
 
     public DataCartridgeSubscription(CartridgeInfo cartridgeInfo) {
 
         super(cartridgeInfo);
-        this.host = "localhost";
-        this.username = CartridgeConstants.MYSQL_DEFAULT_USER;
-        this.password = ApplicationManagementUtil.generatePassword();
+        this.setHost("localhost");
+        this.setUsername(CartridgeConstants.MYSQL_DEFAULT_USER);
+        this.setPassword(ApplicationManagementUtil.generatePassword());
     }
 
     @Override
@@ -69,8 +69,8 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
 
         PayloadArg payloadArg = super.createPayloadParameters();
         payloadArg.setDataCartridgeHost(this.getHost());
-        payloadArg.setDataCartridgeAdminUser(username);
-        payloadArg.setDataCartridgeAdminPassword(password);
+        payloadArg.setDataCartridgeAdminUser(getUsername());
+        payloadArg.setDataCartridgeAdminPassword(getPassword());
 
         return payloadArg;
     }
@@ -79,25 +79,26 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
             throws ADCException, UnregisteredCartridgeException {
 
         ApplicationManagementUtil.registerService(getType(),
-                getClusterDomain(),
-                getClusterSubDomain(),
+                getCluster().getClusterDomain(),
+                getCluster().getClusterSubDomain(),
                 getPayload().createPayload(),
                 getPayload().getPayloadArg().getTenantRange(),
-                getHostName(),
+                getCluster().getHostName(),
                 ApplicationManagementUtil.setRegisterServiceProperties(getAutoscalingPolicy(),
                         getSubscriber().getTenantId(), getAlias()));
 
         getPayload().delete();
 
         DataCartridge dataCartridge = new DataCartridge();
-        dataCartridge.setUserName(username);
-        dataCartridge.setPassword(password);
+        dataCartridge.setUserName(getUsername());
+        dataCartridge.setPassword(getPassword());
         dataCartridge.setDataCartridgeType(getType());
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
-                getRepository(), getHostName(), getClusterDomain(), getClusterSubDomain(),
-                getMgtClusterDomain(), getMgtClusterSubDomain(), dataCartridge, "PENDING");
+                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
+                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), dataCartridge, "PENDING",getSubscriptionKey());
+
     }
 
     public String getHost() {
@@ -106,5 +107,21 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
