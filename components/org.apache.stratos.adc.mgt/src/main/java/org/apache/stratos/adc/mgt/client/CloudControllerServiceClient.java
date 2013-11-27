@@ -26,12 +26,16 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+import org.apache.stratos.cloud.controller.pojo.xsd.Registrant;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.xsd.Properties;
+import org.apache.stratos.messaging.util.xsd.Property;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Properties;
 
 public class CloudControllerServiceClient {
 
@@ -70,15 +74,46 @@ public class CloudControllerServiceClient {
 	public boolean register(String clusterId, String cartridgeType,
 	                        String payload, String tenantRange,
                             String hostName, Properties properties,
-                            String autoscalorPolicyName) throws RemoteException, CloudControllerServiceUnregisteredCartridgeExceptionException
+                            String autoscalorPolicyName) throws RemoteException, 
+                            CloudControllerServiceUnregisteredCartridgeExceptionException, 
+                            CloudControllerServiceIllegalArgumentExceptionException
 	                                                                                  {		
-		return stub.registerService(clusterId, tenantRange, cartridgeType, hostName,
-		                            properties, payload, autoscalorPolicyName);
+	    Registrant registrant = new Registrant();
+	    registrant.setClusterId(clusterId);
+	    registrant.setCartridgeType(cartridgeType);
+	    registrant.setTenantRange(tenantRange);
+	    registrant.setHostName(hostName);
+	    org.apache.stratos.messaging.util.xsd.Properties props = extractProperties(properties);
+	    registrant.setProperties(props);
+	    registrant.setPayload(payload);
+	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
+		return stub.registerService(registrant);
 
 	}
 
-    public boolean terminateAllInstances(String clusterId) throws Exception {
-		return stub.terminateAllInstances(clusterId);
+    private org.apache.stratos.messaging.util.xsd.Properties
+        extractProperties(Properties properties) {
+        org.apache.stratos.messaging.util.xsd.Properties props =
+                                                                 new org.apache.stratos.messaging.util.xsd.Properties();
+        if (properties != null) {
+
+            for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
+                String key = (String) iterator.next();
+                String value = properties.getProperty(key);
+
+                Property prop = new Property();
+                prop.setName(key);
+                prop.setValue(value);
+
+                props.addProperties(prop);
+
+            }
+        }
+        return props;
+    }
+
+    public void terminateAllInstances(String clusterId) throws Exception {
+		stub.terminateAllInstances(clusterId);
 	}
 
 	public String[] getRegisteredCartridges() throws Exception {
@@ -95,8 +130,8 @@ public class CloudControllerServiceClient {
 		}
 	}
 	
-	public boolean unregisterService(String clusterId) throws Exception {
-	    return stub.unregisterService(clusterId);
+	public void unregisterService(String clusterId) throws Exception {
+	    stub.unregisterService(clusterId);
 	}
 
 }

@@ -22,6 +22,7 @@ package org.apache.stratos.adc.mgt.utils;
 
 
 import com.google.gson.Gson;
+
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.Member;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
@@ -44,10 +45,10 @@ import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.xsd.Properties;
-import org.apache.stratos.cloud.controller.util.xsd.Property;
+import org.apache.stratos.messaging.util.xsd.Property;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -62,6 +63,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -745,7 +747,6 @@ public class ApplicationManagementUtil {
     	DecimalFormat df = new DecimalFormat("##.##");
         df.setParseBigDecimal(true);
 
-        Properties properties = new Properties();
         List<Property> allProperties = new ArrayList<Property>();
         // min_app_instances
         Property property = new Property();
@@ -802,7 +803,14 @@ public class ApplicationManagementUtil {
         property.setValue(String.valueOf(alias));
         allProperties.add(property);
         
-        properties.setProperties(allProperties.toArray(new Property[allProperties.size()]));
+        return addToJavaUtilProperties(allProperties);
+    }
+
+    private static Properties addToJavaUtilProperties(List<Property> allProperties) {
+        Properties properties = new Properties();
+        for (Property property : allProperties) {
+            properties.put(property.getName(), property.getValue());
+        }
         return properties;
     }
 
@@ -934,6 +942,10 @@ public class ApplicationManagementUtil {
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
                     hostName, properties, "economyPolicy");
+        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
+            String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
+            log.error(msg, e);
+            throw new IllegalArgumentException("Not a registered cartridge " + cartridgeType, e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);
