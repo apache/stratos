@@ -113,5 +113,18 @@ public class Partition implements Serializable{
     public String toString() {
         return "Partition Id: "+this.id+", Partition Provider: "+this.provider;
     }
+    
+    public boolean equals(Object obj) {
+        if(obj != null && obj instanceof Partition) {
+            return this.id.equals(((Partition) obj).getId());
+        }
+        return false;
+        
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
 
 }

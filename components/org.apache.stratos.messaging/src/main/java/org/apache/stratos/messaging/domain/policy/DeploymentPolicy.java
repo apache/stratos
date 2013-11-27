@@ -64,6 +64,20 @@ public class DeploymentPolicy {
         return this.partitionGroups;
     }
     
+    /**
+     * Returns all the partitions referenced by this policy.
+     * @return List of {@link Partition}
+     */
+    public List<Partition> getAllPartitions() {
+        List<Partition> partitions = new ArrayList<Partition>();
+        for (PartitionGroup group : partitionGroups) {
+            if (group != null) {
+                partitions.addAll(group.getPartitions());
+            }
+        }
+        return partitions;
+    }
+    
     public String toString() {
         return "Deployment Policy: "+this.id;
     }
