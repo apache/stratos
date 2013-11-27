@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.messaging.domain.policy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +62,10 @@ public class DeploymentPolicy {
             partitionGroups = new ArrayList<PartitionGroup>();
         }
         return this.partitionGroups;
+    }
+    
+    public String toString() {
+        return "Deployment Policy: "+this.id;
     }
 
 }

@@ -22,5 +22,5 @@ package org.apache.stratos.messaging.domain.topology;
   * represents the scope of each partition which can be configured in stratos.
   */
 public enum Scope {
-     PROVIDER, REGION, ZONE, HOST
+     provider, region, zone, host
 }

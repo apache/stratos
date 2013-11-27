@@ -59,6 +59,12 @@
             <artifactId>org.wso2.carbon.logging</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
+        <dependency>
+    		<groupId>com.jamesmurty.utils</groupId>
+    		<artifactId>java-xmlbuilder</artifactId>
+    		<version>0.6</version>
+  		</dependency>
+        
     </dependencies>
 
     <build>

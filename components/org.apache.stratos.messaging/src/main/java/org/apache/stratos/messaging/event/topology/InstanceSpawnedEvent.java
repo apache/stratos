@@ -18,9 +18,10 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Partition;
 
 import java.io.Serializable;
+
+import org.apache.stratos.messaging.domain.policy.Partition;
 
 /**
  * This event is fired by Cloud Controller when a member is spawned by the IaaS in a given cluster.

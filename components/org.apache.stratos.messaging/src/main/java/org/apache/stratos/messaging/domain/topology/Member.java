@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.stratos.messaging.domain.policy.Partition;
+
 /**
  * Defines a member node in a cluster.
  * Key: serviceName, clusterId, memberId

@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.stratos.messaging.domain.policy.Partition;
+
 /**
  * Defines a topology of serviceMap in Stratos.
  */

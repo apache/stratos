@@ -18,54 +18,23 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Scope;
-
+import org.apache.stratos.messaging.domain.policy.Partition;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PartitionCreatedEvent extends TopologyEvent implements Serializable {
-    private String id;
-    private Scope scope;
-    private Map<String, String> properties = new HashMap<String, String>();
+    private static final long serialVersionUID = -312209596940292730L;
+    private Partition partition;
 
-    public PartitionCreatedEvent(String id, Scope scope) {
-        this.id = id;
-        this.scope = scope;
+    public PartitionCreatedEvent(Partition partition) {
+        this.setPartition(partition);
     }
 
-    public String getId() {
-        return id;
+    public Partition getPartition() {
+        return partition;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPartition(Partition partition) {
+        this.partition = partition;
     }
 
-    public Scope getScope() {
-        return scope;
-    }
-
-    public void setScope(Scope scope) {
-        this.scope = scope;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    public void setProperty(String key, String value) {
-
-        if (key != null && value != null) {
-            getProperties().put(key, value);
-        }
-    }
-
-    public String getProperty(String key) {
-        return getProperties().get(key);
-    }
 }

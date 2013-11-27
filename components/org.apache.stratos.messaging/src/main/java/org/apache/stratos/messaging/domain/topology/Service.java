@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.domain.topology;
 
 import java.io.Serializable;
 import java.util.*;
+import com.jamesmurty.utils.XMLBuilder;
 
 /**
  * Defines a service in the topology. A service represents a cartridge type.
@@ -107,4 +108,5 @@ public class Service implements Serializable{
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+    
 }

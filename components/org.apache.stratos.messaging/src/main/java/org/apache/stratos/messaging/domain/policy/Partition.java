@@ -17,15 +17,25 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.messaging.domain.policy;
+
+import java.io.Serializable;
+
+import org.apache.stratos.messaging.util.Properties;
 
 /**
  * The model class for Partition definition.
  */
-public class Partition {
+public class Partition implements Serializable{
 
-	private int partitionMax;
+    private static final long serialVersionUID = 3725971214092010720L;
+    private int partitionMax;
 	private int partitionMin;
+	/**
+	 * provider should match with an IaasProvider type.
+	 */
+    private String provider;
+    private Properties properties = new Properties();
 	private String id;
 
 
@@ -83,5 +93,25 @@ public class Partition {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+    
+    public String toString() {
+        return "Partition Id: "+this.id+", Partition Provider: "+this.provider;
+    }
 
 }
