@@ -550,7 +550,8 @@ public class ApplicationManagementUtil {
                                                                     String mgtClusterDomain,
                                                                     String mgtClusterSubDomain,
                                                                     DataCartridge dataCartridge,
-                                                                    String state) {
+                                                                    String state,
+                                                                    String subscribeKey) {
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = new CartridgeSubscriptionInfo();
         cartridgeSubscriptionInfo.setCartridge(cartridgeType);
@@ -570,11 +571,13 @@ public class ApplicationManagementUtil {
         cartridgeSubscriptionInfo.setBaseDirectory(cartridgeInfo.getBaseDir());
         //cartridgeSubscriptionInfo.setState("PENDING");
         cartridgeSubscriptionInfo.setState(state);
+        cartridgeSubscriptionInfo.setSubscriptionKey(subscribeKey);
         return cartridgeSubscriptionInfo;
     }
 
 
-    private static List<PortMapping> createPortMappings(CartridgeInfo cartridgeInfo) {
+
+	private static List<PortMapping> createPortMappings(CartridgeInfo cartridgeInfo) {
         List<PortMapping> portMappings = new ArrayList<PortMapping>();
 
         if (cartridgeInfo.getPortMappings() != null) {
