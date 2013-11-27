@@ -19,19 +19,34 @@
 
 package org.apache.stratos.autoscaler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.messaging.domain.policy.Partition;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.drools.runtime.rule.FactHandle;
+import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.StatelessKnowledgeSession;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestKnowledgeBase {
     private static final Log log = LogFactory.getLog(TestKnowledgeBase.class);
-    private String droolsFilePath = "../../products/autoscaler/modules/distribution/src/main/conf/autoscaler.drl";
+    private String droolsFilePath = "src/test/resources/test-minimum-autoscaler-rule.drl";
+    private KnowledgeBase kbase;
+    private StatefulKnowledgeSession ksession;
+    private StatelessKnowledgeSession ksession1;
 
-    @Test
-    public void testKnowledgeBase() {
+    @Before
+    public void setUp() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         Resource resource = ResourceFactory.newFileResource(droolsFilePath);
         kbuilder.add(resource, ResourceType.DRL);
@@ -46,5 +61,46 @@ public class TestKnowledgeBase {
             }
             throw new IllegalArgumentException(String.format("Could not parse drools file: %s", droolsFilePath));
         }
+        
+        kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+    }
+    
+    @Test
+    public void testMinimumRule() {
+        if(kbase == null) {
+            throw new IllegalArgumentException("Knowledge base is null.");
+        }
+        
+//        ksession1 = kbase.newStatelessKnowledgeSession();
+        ksession = kbase.newStatefulKnowledgeSession();
+        List<String> p = new ArrayList<String>();
+        p.add("aa");
+        p.add("bb");
+//        p.setId("pp");
+//        ksession.setGlobal("pa", p);
+//        ksession.setGlobal("log", log);
+//        ksession.setGlobal("$manager", PolicyManager.getInstance());
+//        ksession.setGlobal("$topology", TopologyManager.getTopology());
+//        ksession.setGlobal("$evaluator", this);
+//        ksession1.execute(p);
+//        FactHandle handle = ksession.insert(p);
+        ksession.insert(p);
+        ksession.fireAllRules();
+//        p = new Partition();
+//        p.setId("3");
+//        ksession.update(handle, p);
+//        ksession.fireAllRules();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+//        System.err.println(p.getId());
+//        ksession1.execute(p);
+//        ksession.insert(p);
+//        ksession.execute(p);
+        
     }
 }

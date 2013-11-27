@@ -20,8 +20,14 @@
 package org.apache.stratos.autoscaler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
+import org.apache.stratos.messaging.domain.policy.Partition;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 
 /**
  * Defines cluster context properties.
@@ -39,9 +45,14 @@ public class ClusterContext {
     private float requestsInFlightGradient;
     
     private int memberCount;
+    
+    private StatefulKnowledgeSession ksession;
+    private FactHandle facthandle;
 
     //This map will keep number of currently spawned instance count against partitionId
     private Map<String, Integer> partitionCountMap;
+    
+    private List<Partition> partitionsOfThisCluster;
 
     private int currentPartitionIndex;
     private int currentPartitionGroupIndex;
@@ -49,13 +60,22 @@ public class ClusterContext {
     private Properties properties;
 
     private Map<String, MemberContext> memberContextMap;
+    private DeploymentPolicy deploymentPolicy;
 
-    public ClusterContext(String clusterId, String serviceId) {
+    public ClusterContext(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy) {
 
         this.clusterId = clusterId;
         this.serviceId = serviceId;
+        this.setDeploymentPolicy(deploymentPolicy);
+        if (deploymentPolicy != null) {
+            this.setPartitionsOfThisCluster(deploymentPolicy.getAllPartitions());
+        }
         memberContextMap = new HashMap<String, MemberContext>();
         partitionCountMap = new HashMap<String, Integer>();
+        
+        for (Partition partition : partitionsOfThisCluster) {
+            this.addPartitionCount(partition.getId(), 0);
+        }
         memberCount = 0;
     }
 
@@ -191,5 +211,37 @@ public class ClusterContext {
 
     public void setCurrentPartitionGroupIndex(int currentPartitionGroupIndex) {
         this.currentPartitionGroupIndex = currentPartitionGroupIndex;
+    }
+
+    public List<Partition> getAllPartitions() {
+        return partitionsOfThisCluster;
+    }
+
+    public void setPartitionsOfThisCluster(List<Partition> partitionsOfThisCluster) {
+        this.partitionsOfThisCluster = partitionsOfThisCluster;
+    }
+
+    public StatefulKnowledgeSession getKsession() {
+        return ksession;
+    }
+
+    public void setKsession(StatefulKnowledgeSession ksession) {
+        this.ksession = ksession;
+    }
+
+    public FactHandle getFacthandle() {
+        return facthandle;
+    }
+
+    public void setFacthandle(FactHandle facthandle) {
+        this.facthandle = facthandle;
+    }
+
+    public DeploymentPolicy getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }

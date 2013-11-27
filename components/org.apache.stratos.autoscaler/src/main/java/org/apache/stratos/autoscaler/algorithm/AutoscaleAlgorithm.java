@@ -19,16 +19,19 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
-import org.apache.stratos.autoscaler.policy.model.Partition;
-import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
+import org.apache.stratos.messaging.domain.policy.Partition;
+import org.apache.stratos.messaging.domain.policy.PartitionGroup;
 
 /**
  *
  */
 public interface AutoscaleAlgorithm {
 
-public boolean scaleUpPartitionAvailable(String clusterId);
-public boolean scaleDownPartitionAvailable(String clusterId);
-public Partition getNextScaleUpPartition(PartitionGroup partition,String clusterId);
-public Partition getNextScaleDownPartition(PartitionGroup partition,String clusterId);
+    public boolean scaleUpPartitionAvailable(String clusterId);
+
+    public boolean scaleDownPartitionAvailable(String clusterId);
+
+    public Partition getNextScaleUpPartition(PartitionGroup partition, String clusterId);
+
+    public Partition getNextScaleDownPartition(PartitionGroup partition, String clusterId);
 }

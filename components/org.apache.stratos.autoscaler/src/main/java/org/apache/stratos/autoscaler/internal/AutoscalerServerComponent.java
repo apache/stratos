@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
+import org.apache.stratos.autoscaler.topology.processors.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.topology.processors.TopologyReceiver;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
@@ -42,18 +44,20 @@ public class AutoscalerServerComponent {
     protected void activate(ComponentContext componentContext) throws Exception {
 
         // Subscribe to all topics
-        TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-        topologyTopicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
-        Thread topologyTopicSubscriberThread = new Thread(topologyTopicSubscriber);
-        topologyTopicSubscriberThread.start();
-        if (log.isDebugEnabled()) {
-            log.debug("Topology event message receiver thread started");
-        }
+//        TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
+//        topologyTopicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+//        Thread topologyTopicSubscriberThread = new Thread(topologyTopicSubscriber);
+//        topologyTopicSubscriberThread.start();
+//        if (log.isDebugEnabled()) {
+//            log.debug("Topology event message receiver thread started");
+//        }
+//
+//        TopologyEventMessageDelegator tropologyEventMessageDelegator = new TopologyEventMessageDelegator();
+//        Thread tropologyDelegatorThread = new Thread(tropologyEventMessageDelegator);
+//        tropologyDelegatorThread.start();
 
-        TopologyEventMessageDelegator tropologyEventMessageDelegator = new TopologyEventMessageDelegator();
-        Thread tropologyDelegatorThread = new Thread(tropologyEventMessageDelegator);
-        tropologyDelegatorThread.start();
-
+        Thread th = new Thread(new AutoscalerTopologyReceiver());
+        th.start();
         if (log.isDebugEnabled()) {
             log.debug("Topology message processor thread started");
         }

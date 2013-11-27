@@ -27,8 +27,8 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.Partition;
-import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
+import org.apache.stratos.messaging.domain.policy.Partition;
+import org.apache.stratos.messaging.domain.policy.PartitionGroup;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 
 /**

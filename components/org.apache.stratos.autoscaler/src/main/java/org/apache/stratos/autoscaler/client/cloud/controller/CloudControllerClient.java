@@ -25,9 +25,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.policy.model.Partition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.messaging.domain.policy.Partition;
 
 import java.rmi.RemoteException;
 
@@ -38,9 +42,24 @@ import java.rmi.RemoteException;
 public class CloudControllerClient {
 
     private static final Log log = LogFactory.getLog(CloudControllerClient.class);
-    private CloudControllerServiceStub stub;
+    private static CloudControllerServiceStub stub;
+    private static CloudControllerClient instance;
     
-    public CloudControllerClient(){
+    public static CloudControllerClient getInstance() {
+
+        if (instance == null) {
+            synchronized (CloudControllerClient.class) {
+                
+                if(instance == null) {
+                    instance = new CloudControllerClient();
+                }
+            }
+        }
+
+        return instance;
+    }
+    
+    private CloudControllerClient(){
     	try {
             XMLConfiguration conf = ConfUtil.getInstance().getConfiguration();
             int port = conf.getInt("autoscaler.cloudController.port", Constants.CLOUD_CONTROLLER_DEFAULT_PORT);
@@ -58,53 +77,54 @@ public class CloudControllerClient {
         log.info("Calling CC for spawning instances in cluster " + clusterId);
         log.info("Member count to be increased: " + memberCountToBeIncreased);
 
-        org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
-                org.apache.stratos.messaging.domain.topology.xsd.Partition();
-        partitionTopology.setId(partition.getId());
-
-        try {
-            for(int i =0; i< memberCountToBeIncreased; i++){
-                stub.startInstance(clusterId, partitionTopology);
-            }
-        } catch (RemoteException e) {
-            log.error("Error occurred in cloud controller side while spawning instance");
+        for(int i =0; i< memberCountToBeIncreased; i++){
+            spawnAnInstance(partition, clusterId);
         }
+        
     }
 
-    public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
+    public static void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
 
-        log.info("Calling CC for spawning an instance in cluster " + clusterId);
-        org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
-                org.apache.stratos.messaging.domain.topology.xsd.Partition();
+        org.apache.stratos.messaging.domain.policy.xsd.Partition partitionTopology = new
+                org.apache.stratos.messaging.domain.policy.xsd.Partition();
         partitionTopology.setId(partition.getId());
-        /*locationScope.setCloud(partition.getIaas());
-        locationScope.setRegion(partition.getZone());*/
-
+        
         try {
             stub.startInstance(clusterId, partitionTopology);
+        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
+            log.error(e.getMessage());
+            throw new SpawningException(e);
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            log.error(e.getMessage());
+            throw new SpawningException(e);
         } catch (RemoteException e) {
-
-            log.error("Error occurred in cloud controller side while spawning instance");
-
+            String msg = "Error occurred in cloud controller side while spawning instance";
+            log.error(msg);
+            throw new SpawningException(msg, e);
         }
     }
 
-    public void terminate(Partition partition, String clusterId) throws TerminationException {
+    public void terminate(String memberId) throws TerminationException {
         //call CC terminate method
 
-        log.info("Calling CC for terminating an instance in cluster " + clusterId);
-        org.apache.stratos.messaging.domain.topology.xsd.Partition partitionTopology = new
-                org.apache.stratos.messaging.domain.topology.xsd.Partition();
-        partitionTopology.setId(partition.getId());
-        /*locationScope.setCloud(partition.getIaas());
-            locationScope.setRegion(partition.getZone());*/
+        log.info("Calling CC for terminating member with id: " + memberId);
 
         try {
-            stub.terminateInstance(clusterId, partitionTopology);
+            stub.terminateInstance(memberId);
         } catch (RemoteException e) {
+            String msg = "Error occurred in cloud controller side while terminating instance";
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
 
-            log.error("Error occurred in cloud controller side while terminating instance");
-
+        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
+            log.error(e.getMessage());
+            throw new TerminationException(e);
+        } catch (CloudControllerServiceInvalidMemberExceptionException e) {
+            log.error(e.getMessage());
+            throw new TerminationException(e);
+        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+            log.error(e.getMessage());
+            throw new TerminationException(e);
         }
     }
 

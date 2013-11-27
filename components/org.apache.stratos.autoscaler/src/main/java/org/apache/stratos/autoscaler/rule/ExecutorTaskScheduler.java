@@ -55,34 +55,36 @@ public class ExecutorTaskScheduler implements Runnable {
         final Runnable rulesEvaluator = new Runnable() {
             public void run() {
 
-                try {
-                    for (Service service : TopologyManager.getTopology().getServices()) {
-
-                        AutoscalerRuleEvaluator.getInstance().evaluate(service);
-                    }
-
-                    // Remove cluster context if its already removed from Topology
-                    for (String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()) {
-                        boolean clusterAvailable = false;
-                        for (Service service : TopologyManager.getTopology().getServices()) {
-                            for (Cluster cluster : service.getClusters()) {
-                                if (cluster.getClusterId().equals(clusterContextId)) {
-
-                                    clusterAvailable = true;
-                                }
-                            }
-                        }
-
-                        if (!clusterAvailable) {
-                            AutoscalerContext.getInstance().removeClusterContext(clusterContextId);
-                        }
-                    }
-
-                } catch (Exception e) {
-                    log.error("Error", e);
-                    log.debug("Shutting down rule scheduler");
-                    ex.shutdownNow();
-                }
+//                try {
+//                    for (Service service : TopologyManager.getTopology().getServices()) {
+//
+//                        AutoscalerRuleEvaluator.getInstance().evaluate(service);
+//                    }
+//
+//                    // Remove cluster context if its already removed from Topology
+//                    for (String clusterContextId : AutoscalerContext.getInstance().getClusterContexes().keySet()) {
+//                        boolean clusterAvailable = false;
+//                        for (Service service : TopologyManager.getTopology().getServices()) {
+//                            for (Cluster cluster : service.getClusters()) {
+//                                if (cluster.getClusterId().equals(clusterContextId)) {
+//
+//                                    clusterAvailable = true;
+//                                }
+//                            }
+//                        }
+//
+//                        if (!clusterAvailable) {
+//                            AutoscalerContext.getInstance().removeClusterContext(clusterContextId);
+//                        }
+//                    }
+//
+//                } catch (Exception e) {
+//                    String msg = "Error while evaluating rules.";
+//                    log.error(msg, e);
+//                    throw new RuntimeException(msg, e);
+////                    log.debug("Shutting down rule scheduler");
+////                    ex.shutdownNow();
+//                }
             }
         };
         
