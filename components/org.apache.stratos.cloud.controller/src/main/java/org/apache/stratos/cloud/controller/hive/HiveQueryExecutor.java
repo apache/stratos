@@ -57,8 +57,8 @@ public class HiveQueryExecutor {
             
             // admin service authentication
             authenticator = new HttpTransportProperties.Authenticator();
-            authenticator.setUsername(dataHolder.getBamUsername());
-            authenticator.setPassword(dataHolder.getBamPassword());
+            authenticator.setUsername(dataHolder.getDataPubConfig().getBamUsername());
+            authenticator.setPassword(dataHolder.getDataPubConfig().getBamPassword());
             authenticator.setPreemptiveAuthentication(true);
             
             ServiceClient client = hiveService._getServiceClient();
@@ -101,11 +101,11 @@ public class HiveQueryExecutor {
                 payloadPrefix+CloudControllerConstants.STATUS_COL+" STRING," +
                 payloadPrefix+CloudControllerConstants.SUB_DOMAIN_COL+" STRING" +
                 ") STORED BY 'org.apache.hadoop.hive.cassandra.CassandraStorageHandler' " +
-                "WITH SERDEPROPERTIES ( \"cassandra.host\" = \""+dataHolder.getCassandraConnUrl().split(":")[0]+"\"," +
-                "\"cassandra.port\" = \""+dataHolder.getCassandraConnUrl().split(":")[1]+
+                "WITH SERDEPROPERTIES ( \"cassandra.host\" = \""+dataHolder.getDataPubConfig().getCassandraConnUrl().split(":")[0]+"\"," +
+                "\"cassandra.port\" = \""+dataHolder.getDataPubConfig().getCassandraConnUrl().split(":")[1]+
                 "\",\"cassandra.ks.name\" = \""+CloudControllerConstants.DEFAULT_CASSANDRA_KEY_SPACE+"\"," +
-                "\"cassandra.ks.username\" = \""+dataHolder.getCassandraUser()+
-                "\", \"cassandra.ks.password\" = \""+dataHolder.getCassandraPassword()+"\"," +
+                "\"cassandra.ks.username\" = \""+dataHolder.getDataPubConfig().getCassandraUser()+
+                "\", \"cassandra.ks.password\" = \""+dataHolder.getDataPubConfig().getCassandraPassword()+"\"," +
                 "\"cassandra.cf.name\" = \""+CloudControllerConstants.CLOUD_CONTROLLER_COL_FAMILY+"\"," +
                 "\"cassandra.columns.mapping\" = \"" +
                 payloadPrefix+CloudControllerConstants.NODE_ID_COL+"," +

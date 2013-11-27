@@ -19,7 +19,12 @@
 package org.apache.stratos.cloud.controller.validate;
 
 import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Scope;
@@ -32,30 +37,52 @@ import org.apache.stratos.messaging.domain.topology.Scope;
  */
 public class AWSEC2PartitionValidator implements PartitionValidator {
     
-    private static final String NAME = "ec2";
+    private static final Log log = LogFactory.getLog(AWSEC2PartitionValidator.class);
     private IaasProvider iaasProvider;
     private Iaas iaas;
 
     @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public boolean validate(Properties properties) {
+    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
         // validate the existence of the region and zone properties.
-        if (properties.containsKey(Scope.REGION.toString())) {
-            String region = properties.getProperty(Scope.REGION.name());
-            if (iaas.isValidRegion(iaasProvider, region)) {
-                if (properties.containsKey(Scope.ZONE.toString())) {
-                    String zone = properties.getProperty(Scope.ZONE.name());
-                    return iaas.isValidZone(iaasProvider, region, zone);
-                } else {
-                    return true;
-                }
+        try {
+            if (properties.containsKey(Scope.region.toString())) {
+                String region = properties.getProperty(Scope.region.toString());
+                
+                if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
+
+                    String msg =
+                                 "Invalid Partition Detected : " + partitionId +
+                                         " - Cause: Invalid Region: " + region;
+                    log.error(msg);
+                    throw new InvalidPartitionException(msg);
+                } 
+                
+                iaas.isValidRegion(iaasProvider, region);
+                
+                IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
+                Iaas updatedIaas = updatedIaasProvider.getIaas();
+                
+                if (properties.containsKey(Scope.zone.toString())) {
+                    String zone = properties.getProperty(Scope.zone.toString());
+                    iaas.isValidZone(iaasProvider, region, zone);
+                    updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
+                    updatedIaas.buildTemplate(updatedIaasProvider);
+                } 
+                
+                return updatedIaasProvider;
+                
+            } else {
+                
+                String msg = "Invalid Partition Detected : "+partitionId+". - "+Scope.region.toString()+" Property is not defined.";
+                log.error(msg);
+                throw new InvalidPartitionException(msg);
             }
+        } catch (Exception ex) {
+            String msg = "Invalid Partition Detected : "+partitionId;
+            log.error(msg, ex);
+            throw new InvalidPartitionException(msg, ex);
         }
-        return false;
+        
     }
 
     @Override

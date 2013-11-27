@@ -265,8 +265,8 @@ public class CartridgeInstanceDataPublisherTask implements Task{
         String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
         String trustStorePassword = serverConfig.getFirstProperty("Security.TrustStore.Password");
         String bamServerUrl = serverConfig.getFirstProperty("BamServerURL");
-        String adminUsername = FasterLookUpDataHolder.getInstance().getBamUsername();
-        String adminPassword = FasterLookUpDataHolder.getInstance().getBamPassword();
+        String adminUsername = FasterLookUpDataHolder.getInstance().getDataPubConfig().getBamUsername();
+        String adminPassword = FasterLookUpDataHolder.getInstance().getDataPubConfig().getBamPassword();
 
         System.setProperty("javax.net.ssl.trustStore", trustStorePath);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);

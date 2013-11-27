@@ -16,22 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.exception;
+
 
 /**
- * Had to wrap {@link Property} array using a class, since there's a bug in current 
- * stub generation.
+ * Throws when a {@link Partition} is evaluated to be invalid.
+ * @author nirmal
+ *
  */
-public class Properties {
+public class InvalidZoneException extends Exception {
 
-	private Property[] properties;
+    private static final long serialVersionUID = 1830765777991647319L;
 
-	public Property[] getProperties() {
-	    return properties;
+    public InvalidZoneException(String msg) {
+        super(msg);
     }
-
-	public void setProperties(Property[] properties) {
-	    this.properties = properties;
+    
+    public InvalidZoneException(String msg, Exception ex) {
+        super(msg, ex);
     }
-	
 }

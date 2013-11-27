@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.runtime;
 
+import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
@@ -37,10 +39,32 @@ public class FasterLookUpDataHolder implements Serializable{
 	private static volatile FasterLookUpDataHolder ctxt;
 
 	/* We keep following maps in order to make the look up time, small. */
+	
+	/**
+     * Key - cluster id
+     * Value - list of {@link MemberContext}
+     */
+    private Map<String, List<MemberContext>> clusterIdToMemberContext = new HashMap<String, List<MemberContext>>();
+    
+	/**
+	 * Key - member id
+	 * Value - {@link MemberContext}
+	 */
+	private Map<String, MemberContext> memberIdToContext = new HashMap<String, MemberContext>();
+	
+	/**
+	 * Key - cluster id
+	 * Value - {@link ClusterContext}
+	 */
+	private Map<String, ClusterContext> clusterIdToContext = new HashMap<String, ClusterContext>();
+	
+	/**
+	 * Key - member id
+	 * Value - node id
+	 */
+	private Map<String, String> memberIdToNodeId;
 
 	/**
-	 * Map of maps.
-	 * Map 1:
 	 * Key - domain
 	 * value - {@link ServiceContext}
 	 */
@@ -74,14 +98,10 @@ public class FasterLookUpDataHolder implements Serializable{
 
 	private String serializationDir;
 	private boolean enableBAMDataPublisher;
+	private DataPublisherConfig dataPubConfig;
 	private boolean enableTopologySync;
 	private TopologyConfig topologyConfig;
-	private String bamUsername = CloudControllerConstants.DEFAULT_BAM_SERVER_USER_NAME;
-	private String bamPassword = CloudControllerConstants.DEFAULT_BAM_SERVER_PASSWORD;
-	private String dataPublisherCron = CloudControllerConstants.PUB_CRON_EXPRESSION;
-	private String cassandraConnUrl = CloudControllerConstants.DEFAULT_CASSANDRA_URL;
-	private String cassandraUser = CloudControllerConstants.DEFAULT_CASSANDRA_USER;
-	private String cassandraPassword = CloudControllerConstants.DEFAULT_CASSANDRA_PASSWORD;
+	
 	/**
 	 * Key - node id 
 	 * Value - Status of the instance
@@ -141,6 +161,7 @@ public class FasterLookUpDataHolder implements Serializable{
 		serviceCtxts = new ConcurrentHashMap<String,ServiceContext>();
 		nodeIdToServiceCtxt = new LinkedHashMap<String, ServiceContext>();
 		cartridges = new ArrayList<Cartridge>();
+		setMemberIdToNodeId(new ConcurrentHashMap<String, String>());
 
 	}
 
@@ -276,6 +297,19 @@ public class FasterLookUpDataHolder implements Serializable{
 		}
 
 	}
+	
+	public IaasProvider getIaasProvider(String type) {
+	    if(type == null) {
+	        return null;
+	    }
+	    
+	    for (IaasProvider iaasProvider : iaasProviders) {
+            if(type.equals(iaasProvider.getType())) {
+                return iaasProvider;
+            }
+        }
+	    return null;
+	}
 
 	public List<IaasProvider> getIaasProviders() {
 		return iaasProviders;
@@ -293,29 +327,7 @@ public class FasterLookUpDataHolder implements Serializable{
 		this.serializationDir = serializationDir;
 	}
 
-	public String getBamUsername() {
-		return bamUsername;
-	}
-
-	public void setBamUsername(String bamUsername) {
-		this.bamUsername = bamUsername;
-	}
-
-	public String getBamPassword() {
-		return bamPassword;
-	}
-
-	public void setBamPassword(String bamPassword) {
-		this.bamPassword = bamPassword;
-	}
-
-	public String getDataPublisherCron() {
-		return dataPublisherCron;
-	}
-
-	public void setDataPublisherCron(String dataPublisherCron) {
-		this.dataPublisherCron = dataPublisherCron;
-	}
+	
 
 	public Map<String, String> getNodeIdToStatusMap() {
 		return nodeIdToStatusMap;
@@ -349,29 +361,7 @@ public class FasterLookUpDataHolder implements Serializable{
 		this.enableBAMDataPublisher = enableBAMDataPublisher;
 	}
 
-	public String getCassandraConnUrl() {
-		return cassandraConnUrl;
-	}
-
-	public void setCassandraConnUrl(String cassandraHostAddr) {
-		this.cassandraConnUrl = cassandraHostAddr;
-	}
-
-	public String getCassandraUser() {
-		return cassandraUser;
-	}
-
-	public void setCassandraUser(String cassandraUser) {
-		this.cassandraUser = cassandraUser;
-	}
-
-	public String getCassandraPassword() {
-		return cassandraPassword;
-	}
-
-	public void setCassandraPassword(String cassandraPassword) {
-		this.cassandraPassword = cassandraPassword;
-	}
+	
 
 	public boolean isPublisherRunning() {
 		return isPublisherRunning;
@@ -416,4 +406,86 @@ public class FasterLookUpDataHolder implements Serializable{
     public void addEventPublisher(EventPublisher publisher, String topicName) {
         topicToPublisherMap.put(topicName, publisher);
     }
+
+    public DataPublisherConfig getDataPubConfig() {
+        return dataPubConfig;
+    }
+
+    public void setDataPubConfig(DataPublisherConfig dataPubConfig) {
+        this.dataPubConfig = dataPubConfig;
+    }
+    
+    public void addMemberContext(MemberContext ctxt) {
+        memberIdToContext.put(ctxt.getMemberId(), ctxt);
+        
+        List<MemberContext> ctxts;
+        
+        if((ctxts = clusterIdToMemberContext.get(ctxt)) == null) {
+            ctxts = new ArrayList<MemberContext>();
+        } 
+        ctxts.add(ctxt);
+        clusterIdToMemberContext.put(ctxt.getClusterId(), ctxts);
+    }
+    
+    public void removeMemberContext(String clusterId) {
+        List<MemberContext> ctxts = clusterIdToMemberContext.remove(clusterId);
+        
+        for (MemberContext memberContext : ctxts) {
+            String memberId = memberContext.getMemberId();
+            memberIdToContext.remove(memberId);
+        }
+    }
+    
+    public MemberContext getMemberContextOfMemberId(String memberId) {
+        return memberIdToContext.get(memberId);
+    }
+    
+    public List<MemberContext> getMemberContextsOfClusterId(String clusterId) {
+        return clusterIdToMemberContext.get(clusterId);
+    }
+
+    public void addNodeId(String memberId, String nodeId) {
+        memberIdToNodeId.put(memberId, nodeId);
+    }
+    
+    public String getNodeId(String memberId) {
+        return memberIdToNodeId.get(memberId);
+    }
+    
+    public Map<String, String> getMemberIdToNodeId() {
+        return memberIdToNodeId;
+    }
+
+    public void setMemberIdToNodeId(Map<String, String> memberIdToNodeId) {
+        this.memberIdToNodeId = memberIdToNodeId;
+    }
+
+    public Map<String, MemberContext> getMemberIdToContext() {
+        return memberIdToContext;
+    }
+
+    public void setMemberIdToContext(Map<String, MemberContext> memberIdToContext) {
+        this.memberIdToContext = memberIdToContext;
+    }
+
+    public void addClusterContext(ClusterContext ctxt) {
+        clusterIdToContext.put(ctxt.getClusterId(), ctxt);
+    }
+    
+    public ClusterContext getClusterContext(String clusterId) {
+        return clusterIdToContext.get(clusterId);
+    }
+    
+    public ClusterContext removeClusterContext(String clusterId) {
+        return clusterIdToContext.remove(clusterId);
+    }
+    
+    public Map<String, ClusterContext> getClusterIdToContext() {
+        return clusterIdToContext;
+    }
+
+    public void setClusterIdToContext(Map<String, ClusterContext> clusterIdToContext) {
+        this.clusterIdToContext = clusterIdToContext;
+    }
+
 }

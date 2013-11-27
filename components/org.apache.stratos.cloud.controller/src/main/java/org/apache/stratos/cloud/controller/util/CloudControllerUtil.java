@@ -21,12 +21,14 @@ package org.apache.stratos.cloud.controller.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.messaging.util.Property;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 public class CloudControllerUtil {
 	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
@@ -81,6 +83,26 @@ public class CloudControllerUtil {
     		Thread.sleep(time);
     	} catch (InterruptedException ignore) {}
     	
+    }
+	
+	/**
+	 * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
+	 * @param properties org.apache.stratos.messaging.util.Properties
+	 * @return java.util.Properties
+	 */
+    public static Properties toJavaUtilProperties(
+        org.apache.stratos.messaging.util.Properties properties) {
+        Properties javaProps = new Properties();
+
+        if (properties != null && properties.getProperties() != null) {
+
+            for (org.apache.stratos.messaging.util.Property property : properties.getProperties()) {
+                javaProps.put(property.getName(), property.getValue());
+            }
+
+        }
+
+        return javaProps;
     }
 	
 	public static void handleException(String msg, Exception e){

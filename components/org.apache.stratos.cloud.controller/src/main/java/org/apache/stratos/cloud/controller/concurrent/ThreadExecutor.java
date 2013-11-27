@@ -27,8 +27,8 @@ import java.util.concurrent.Executors;
 public class ThreadExecutor {
     private ExecutorService executor;
 
-    public ThreadExecutor(int poolSize) {
-        executor = Executors.newFixedThreadPool(poolSize);
+    public ThreadExecutor() {
+        executor = Executors.newCachedThreadPool();
     }
     
     public void execute(Runnable job){

@@ -16,38 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
-/**
- * Holds a property 
- */
-public class Property {
-	
-	private String name;
-	private String value;
-	
-	public Property(){
-		
-	}
-	
-	public Property(String name, String value){
-		this.setName(name);
-		this.setValue(value);
-	}
+package org.apache.stratos.cloud.controller.exception;
 
-	public String getName() {
-	    return name;
+public class UnregisteredClusterException extends Exception {
+    
+    private static final long serialVersionUID = -6326227079367867222L;
+
+    public UnregisteredClusterException(String msg) {
+        super(msg);
     }
-
-	public void setName(String name) {
-	    this.name = name;
-    }
-
-	public String getValue() {
-	    return value;
-    }
-
-	public void setValue(String value) {
-	    this.value = value;
+    
+    public UnregisteredClusterException(String msg, Exception ex) {
+        super(msg, ex);
     }
 
 }

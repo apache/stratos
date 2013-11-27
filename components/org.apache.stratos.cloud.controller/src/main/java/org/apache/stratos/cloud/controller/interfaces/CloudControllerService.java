@@ -18,21 +18,42 @@
  */
 package org.apache.stratos.cloud.controller.interfaces;
 
+import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
+import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
+import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
+import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredServiceException;
+import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.util.CartridgeInfo;
-import org.apache.stratos.messaging.domain.topology.Partition;
-
-import java.util.List;
+import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
+import org.apache.stratos.messaging.domain.policy.Partition;
 
 /**
- * This Interface provides a way to communicate with underline
- * Infrastructure which are supported by <i>JClouds</i>.
+ * This API provides a way to communicate with underline
+ * Infrastructure which are supported by <i>jClouds</i>.
  * 
  */
 public interface CloudControllerService {
 
+    /**
+     * Validate a given {@link Partition} for basic property existence.
+     * @param partition partition to be validated.
+     * @return whether the partition is a valid one.
+     * @throws InvalidPartitionException if the partition is invalid.
+     */
+    public boolean validatePartition(Partition partition) throws InvalidPartitionException;
+    
+    /**
+     * Validate a given {@link DeploymentPolicy} against a Cartridge.
+     * @param cartridgeType type of the cartridge that this policy is going to be attached to.
+     * @param deploymentPolicy policy to be validated.
+     * @return whether the policy is a valid one against the given Cartridge.
+     * @throws InvalidPartitionException if the policy contains at least one invalid partition.
+     * @throws InvalidCartridgeTypeException if the given Cartridge type is not a valid one.
+     */
+    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) 
+            throws InvalidPartitionException, InvalidCartridgeTypeException;
 
     /**
      * <p>
@@ -40,14 +61,15 @@ public interface CloudControllerService {
      * present service cluster, if there is any. A service cluster is uniquely identified by its
      * domain and sub domain combination.
      * </p>
-     * @param registrant information about the new subscription.
+     * @param clusterContext information about the new subscription.
      * @return whether the registration is successful or not.
      * 
      * @throws UnregisteredCartridgeException
      *             when the cartridge type requested by this service is
      *             not a registered one.
      */
-    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException;
+    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException, 
+    IllegalArgumentException;
 
     /**
      * Calling this method will result in an instance startup, which is belong
@@ -62,7 +84,7 @@ public interface CloudControllerService {
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstance(String clusterId, Partition partition);
+    public String startInstance(String clusterId, Partition partition) throws IllegalArgumentException, UnregisteredCartridgeException;
 
     /**
      * Calling this method will spawn more than one ininstances in the
@@ -77,7 +99,20 @@ public interface CloudControllerService {
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned);
+//    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned);
+    
+    /**
+     * Calling this method will result in termination of the instance with given member id in the given Partition.
+     * 
+     * @param memberId
+     *            member ID of the instance to be terminated.
+     * @param partition
+     *            It contains the region, zone, network and host of a IaaS where
+     *            an instance need to be terminated..
+     * @return whether an instance terminated successfully or not.
+     */
+    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException, 
+    IllegalArgumentException;
     
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -90,7 +125,7 @@ public interface CloudControllerService {
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstance(String clusterId, Partition partition);
+//    public boolean terminateInstance(String clusterId, Partition partition);
 
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -105,17 +140,17 @@ public interface CloudControllerService {
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateInstances(int noOfInstances, String clusterId, Partition partition);
+//    public boolean terminateInstances(String[] memberIds);
 
-     /**
-     * Calling this method will result in termination of an instance which is belong
-     * to the provided instance Id.
-     *
-     * @param instancesToBeTerminated
-     *            list of instance Ids to be terminated.
-     * @return whether an instance terminated successfully or not.
-     */
-    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated);
+//     /**
+//     * Calling this method will result in termination of an instance which is belong
+//     * to the provided instance Id.
+//     *
+//     * @param instancesToBeTerminated
+//     *            list of instance Ids to be terminated.
+//     * @return whether an instance terminated successfully or not.
+//     */
+//    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated);
 
     /**
      * Calling this method will result in termination of all instances belong
@@ -125,16 +160,16 @@ public interface CloudControllerService {
      *            cluster ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    public boolean terminateAllInstances(String clusterId);
+    public void terminateAllInstances(String clusterId) throws IllegalArgumentException, InvalidClusterException;
 
     /**
     /**
      * Unregister the service cluster which represents by this domain and sub domain.
      * @param clusterId service cluster domain
      * @return whether the unregistration was successful or not.
-     * @throws org.apache.stratos.cloud.controller.exception.UnregisteredServiceException if the service cluster requested is not a registered one.
+     * @throws org.apache.stratos.cloud.controller.exception.UnregisteredClusterException if the service cluster requested is not a registered one.
      */
-    public boolean unregisterService(String clusterId) throws UnregisteredServiceException;
+    public void unregisterService(String clusterId) throws UnregisteredClusterException;
     
     /**
      * This method will return the information regarding the given cartridge, if present.
@@ -147,16 +182,16 @@ public interface CloudControllerService {
      */
     public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException;
 
-    /**
-     * Calling this method will result in returning the pending instances
-     * count of a particular domain.
-     * 
-     * @param clusterId
-     *            service cluster domain
-     * @return number of pending instances for this domain. If no instances of this
-     *         domain is present, this will return zero.
-     */
-    public int getPendingInstanceCount(String clusterId);
+//    /**
+//     * Calling this method will result in returning the pending instances
+//     * count of a particular domain.
+//     * 
+//     * @param clusterId
+//     *            service cluster domain
+//     * @return number of pending instances for this domain. If no instances of this
+//     *         domain is present, this will return zero.
+//     */
+//    public int getPendingInstanceCount(String clusterId);
 
     /**
      * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.util.Cartridge}s

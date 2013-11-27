@@ -37,7 +37,7 @@ public class IaasProvider implements Serializable{
     private static final long serialVersionUID = -940288190885166118L;
 
 	/**
-     * IaaS provider + Region should be unique for a IaasProvider.
+     * Type of the IaasProvider.
      */
     private String type;
 

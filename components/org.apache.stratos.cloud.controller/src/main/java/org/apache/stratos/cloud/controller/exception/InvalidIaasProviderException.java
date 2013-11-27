@@ -16,32 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.validate.interfaces;
+package org.apache.stratos.cloud.controller.exception;
 
-import java.util.Properties;
-
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 
 /**
- * All the Partition Validators should implement this interface.
+ * Throws when a {@link IaasProvider} is evaluated to be invalid.
  * @author nirmal
  *
  */
-public interface PartitionValidator {
-    
-    /**
-     * set the IaasProvider reference.
-     * @param iaas {@link IaasProvider}
-     */
-    public void setIaasProvider(IaasProvider iaas);
+public class InvalidIaasProviderException extends Exception {
 
-    /**
-     * Validate the given properties for its existent in this partition.
-     * @param partitionId partition id.
-     * @param properties set of properties to be validated.
-     * @return cloned and modified {@link IaasProvider} which maps to the given partition. 
-     * @throws InvalidPartitionException if at least one property is evaluated to be invalid.
-     */
-    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException;
+    private static final long serialVersionUID = 2453133690565031869L;
+
+    public InvalidIaasProviderException(String msg) {
+        super(msg);
+    }
+    
+    public InvalidIaasProviderException(String msg, Exception ex) {
+        super(msg, ex);
+    }
 }

@@ -26,6 +26,9 @@ import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.InvalidHostException;
+import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
+import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
@@ -99,7 +102,7 @@ public class OpenstackNovaIaas extends Iaas {
 		String instanceType;
 
 		// set instance type
-		if (((instanceType = iaas.getProperty("instanceType")) != null)) {
+		if (((instanceType = iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
 
 			templateBuilder.hardwareId(instanceType);
 		}
@@ -111,7 +114,7 @@ public class OpenstackNovaIaas extends Iaas {
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
 		boolean blockUntilRunning = Boolean.parseBoolean(iaas
-				.getProperty("autoAssignIp"));
+				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
 
@@ -120,11 +123,11 @@ public class OpenstackNovaIaas extends Iaas {
 		template.getOptions().as(TemplateOptions.class)
 				.inboundPorts(new int[] {});
 
-		if (iaas.getProperty("securityGroups") != null) {
+		if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(NovaTemplateOptions.class)
 					.securityGroupNames(
-							iaas.getProperty("securityGroups").split(
+							iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 		}
 
@@ -138,10 +141,16 @@ public class OpenstackNovaIaas extends Iaas {
 									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
 		}
 */
-		if (iaas.getProperty("keyPair") != null) {
+		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
-					.keyPairName(iaas.getProperty("keyPair"));
+					.keyPairName(CloudControllerConstants.KEY_PAIR);
 		}
+		
+		//TODO
+//		if (iaas.getProperty(CloudControllerConstants.HOST) != null) {
+//            template.getOptions().as(NovaTemplateOptions.class)
+//                    .(CloudControllerConstants.HOST);
+//        }
 
 		// set Template
 		iaas.setTemplate(template);
@@ -289,47 +298,51 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
     @Override
-    public boolean isValidRegion(IaasProvider iaasInfo, String region) {
-        // jclouds doesn't support regions in Openstack-Nova API
-        return false;
-    }
-
-    @Override
-    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) {
-        if (zone == null || iaasInfo == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
-                          iaasInfo);
-            }
-            return false;
+    public boolean isValidRegion(IaasProvider iaasInfo, String region) throws InvalidRegionException {
+        // jclouds' zone = region in openstack
+        if (region == null || iaasInfo == null) {
+            String msg =
+                         "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " +
+                                 iaasInfo;
+            log.error(msg);
+            throw new InvalidRegionException(msg);
         }
+        
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        NovaApi api = context.unwrap();
+        NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
         for (String configuredZone : api.getConfiguredZones()) {
-            if (zone.equalsIgnoreCase(configuredZone)) {
+            if (region.equalsIgnoreCase(configuredZone)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Found a matching zone: " + zone);
+                    log.debug("Found a matching region: " + region);
                 }
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Did not find a matching zone: " + zone);
-        }
-        return false;
+        
+        String msg = "Invalid region: " + region +" in the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidRegionException(msg);
     }
 
     @Override
-    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) {
+    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) throws InvalidZoneException {
+        // jclouds doesn't support zone in Openstack-Nova API
+        String msg = "Invalid zone: " + zone +" in the region: "+region+ " and of the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidZoneException(msg);
+        
+    }
+
+    @Override
+    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) throws InvalidHostException {
         if (host == null || zone == null || iaasInfo == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Host or Zone or IaaSProvider is null: host: " + host + " - zone: " +
-                          zone + " - IaaSProvider: " + iaasInfo);
-            }
-            return false;
+            String msg = "Host or Zone or IaaSProvider is null: host: " + host + " - zone: " +
+                    zone + " - IaaSProvider: " + iaasInfo;
+            log.error(msg);
+            throw new InvalidHostException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        NovaApi api = context.unwrap();
+        NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
         HostAggregateApi hostApi = api.getHostAggregateExtensionForZone(zone).get();
         for (HostAggregate hostAggregate : hostApi.list()) {
             for (String configuredHost : hostAggregate.getHosts()) {
@@ -341,10 +354,10 @@ public class OpenstackNovaIaas extends Iaas {
                 }
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Did not find a matching host: " + host);
-        }
-        return false;
+        
+        String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidHostException(msg);
     }
 
     @Override

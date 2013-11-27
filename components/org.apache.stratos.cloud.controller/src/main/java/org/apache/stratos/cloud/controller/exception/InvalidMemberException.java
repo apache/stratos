@@ -18,16 +18,21 @@
  */
 package org.apache.stratos.cloud.controller.exception;
 
-public class UnregisteredServiceException extends Exception {
-    
-    private static final long serialVersionUID = -6326227079367867222L;
 
-    public UnregisteredServiceException(String msg) {
+/**
+ * Throws when a {@link Partition} is evaluated to be invalid.
+ * @author nirmal
+ *
+ */
+public class InvalidMemberException extends Exception {
+
+    private static final long serialVersionUID = -7883324379272628566L;
+
+    public InvalidMemberException(String msg) {
         super(msg);
     }
     
-    public UnregisteredServiceException(String msg, Exception ex) {
+    public InvalidMemberException(String msg, Exception ex) {
         super(msg, ex);
     }
-
 }

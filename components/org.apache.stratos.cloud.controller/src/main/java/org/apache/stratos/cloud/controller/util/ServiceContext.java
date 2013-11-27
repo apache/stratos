@@ -22,7 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.messaging.domain.topology.Partition;
+import org.apache.stratos.messaging.domain.policy.Partition;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.*;

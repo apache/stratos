@@ -18,47 +18,26 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
-import org.apache.stratos.messaging.util.Properties;
-
 /**
- * Upon a new subscription, Stratos Manager would send this POJO.
+ * Holds runtime data of a Cluster.
  * @author nirmal
  *
  */
-public class Registrant {
+public class ClusterContext {
 
+    // cluster id
     private String clusterId;
-    private String tenantRange;
-    private String hostName;
+    // cartridge type
     private String cartridgeType;
+    // payload as a String
     private String payload;
-    private Properties properties;
-    private String autoScalerPolicyName;
     
-    public String getTenantRange() {
-        return tenantRange;
+    public ClusterContext(String clusterId, String cartridgeType, String payload) {
+        this.clusterId = clusterId;
+        this.cartridgeType = cartridgeType;
+        this.payload = payload;
     }
-    public void setTenantRange(String tenantRange) {
-        this.tenantRange = tenantRange;
-    }
-    public String getHostName() {
-        return hostName;
-    }
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-    public Properties getProperties() {
-        return properties;
-    }
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-    public String getAutoScalerPolicyName() {
-        return autoScalerPolicyName;
-    }
-    public void setAutoScalerPolicyName(String autoScalerPolicyName) {
-        this.autoScalerPolicyName = autoScalerPolicyName;
-    }
+    
     public String getClusterId() {
         return clusterId;
     }

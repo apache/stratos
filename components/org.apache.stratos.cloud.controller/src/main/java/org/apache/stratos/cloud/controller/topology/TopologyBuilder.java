@@ -20,15 +20,20 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.Cartridge;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PortMapping;
 import org.apache.stratos.cloud.controller.util.ServiceContext;
+import org.apache.stratos.messaging.domain.policy.Partition;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * this is to manipulate the received events by cloud controller
@@ -87,39 +92,39 @@ public class TopologyBuilder {
 
     }
 
-    public static void handlePartitionUpdated(Partition newPartition, Partition oldPartition) {
-
-        Topology topology = TopologyManager.getInstance().getTopology();
-        if (newPartition == null || oldPartition == null) {
-            throw new RuntimeException(String.format("Partition is empty"));
-        }
-        try {
-            TopologyManager.getInstance().acquireWriteLock();
-            topology.removePartition(oldPartition);
-            topology.addPartition(newPartition);
-            TopologyManager.getInstance().updateTopology(topology);
-        } finally {
-            TopologyManager.getInstance().releaseWriteLock();
-        }
-        TopologyEventSender.sendPartitionUpdatedEvent(newPartition, oldPartition.getId());
-
-    }
-
-    public static void handlePartitionRemoved(Partition partition) {
-
-        Topology topology = TopologyManager.getInstance().getTopology();
-        if (partition == null) {
-            throw new RuntimeException(String.format("Partition is empty"));
-        }
-        try {
-            TopologyManager.getInstance().acquireWriteLock();
-            topology.removePartition(partition);
-            TopologyManager.getInstance().updateTopology(topology);
-        } finally {
-            TopologyManager.getInstance().releaseWriteLock();
-        }
-        TopologyEventSender.sendPartitionRemovedEvent(partition);
-    }
+//    public static void handlePartitionUpdated(Partition newPartition, Partition oldPartition) {
+//
+//        Topology topology = TopologyManager.getInstance().getTopology();
+//        if (newPartition == null || oldPartition == null) {
+//            throw new RuntimeException(String.format("Partition is empty"));
+//        }
+//        try {
+//            TopologyManager.getInstance().acquireWriteLock();
+//            topology.removePartition(oldPartition);
+//            topology.addPartition(newPartition);
+//            TopologyManager.getInstance().updateTopology(topology);
+//        } finally {
+//            TopologyManager.getInstance().releaseWriteLock();
+//        }
+//        TopologyEventSender.sendPartitionUpdatedEvent(newPartition, oldPartition.getId());
+//
+//    }
+//
+//    public static void handlePartitionRemoved(Partition partition) {
+//
+//        Topology topology = TopologyManager.getInstance().getTopology();
+//        if (partition == null) {
+//            throw new RuntimeException(String.format("Partition is empty"));
+//        }
+//        try {
+//            TopologyManager.getInstance().acquireWriteLock();
+//            topology.removePartition(partition);
+//            TopologyManager.getInstance().updateTopology(topology);
+//        } finally {
+//            TopologyManager.getInstance().releaseWriteLock();
+//        }
+//        TopologyEventSender.sendPartitionRemovedEvent(partition);
+//    }
 
 
     public static void handleServiceRemoved(List<Cartridge> cartridgeList) {
@@ -146,71 +151,77 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated(ServiceContext serviceContext) {
+    public static void handleClusterCreated(Registrant registrant) {
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service;
         try {
             TopologyManager.getInstance().acquireWriteLock();
-            service = topology.getService(serviceContext.getCartridgeType());
-            if (service == null) {
-                service = new Service(serviceContext.getClusterId());
-                Cluster cluster = new Cluster(serviceContext.getCartridgeType(),
-                        serviceContext.getClusterId(),
-                        serviceContext.getAutoScalerPolicyName());
-                cluster.setHostName(serviceContext.getHostName());
-                cluster.setTenantRange(serviceContext.getTenantRange());
-                cluster.setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
-                service.addCluster(cluster);
-                topology.addService(service);
-            } else {
-                if (service.clusterExists(serviceContext.getClusterId())) {
+            service = topology.getService(registrant.getCartridgeType());
+//            if (service == null) {
+//                service = new Service(registrant.getClusterId());
+//                Cluster cluster = new Cluster(registrant.getCartridgeType(),
+//                                              registrant.getClusterId(),
+//                                              registrant.getAutoScalerPolicyName());
+//                cluster.setHostName(registrant.getHostName());
+//                cluster.setTenantRange(registrant.getTenantRange());
+//                cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
+//                service.addCluster(cluster);
+//                topology.addService(service);
+//            } else {
+            Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+            
+            Cluster cluster;
+                if (service.clusterExists(registrant.getClusterId())) {
                     //update the cluster
-                    service.getCluster(serviceContext.getClusterId()).
-                            setHostName(serviceContext.getHostName());
-                    service.getCluster(serviceContext.getClusterId()).
-                            setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
-                    service.getCluster(serviceContext.getClusterId()).
-                            setTenantRange(serviceContext.getTenantRange());
+                    cluster = service.getCluster(registrant.getClusterId());
+                    cluster.
+                            setHostName(registrant.getHostName());
+                    cluster.
+                            setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
+                    cluster.
+                            setTenantRange(registrant.getTenantRange());
+                    cluster.setProperties(props);
                 } else {
-                    Cluster cluster = new Cluster(serviceContext.getCartridgeType(),
-                            serviceContext.getClusterId(),
-                            serviceContext.getAutoScalerPolicyName());
-                    cluster.setHostName(serviceContext.getHostName());
-                    cluster.setTenantRange(serviceContext.getTenantRange());
-                    cluster.setAutoscalePolicyName(serviceContext.getAutoScalerPolicyName());
+                    cluster = new Cluster(registrant.getCartridgeType(),
+                            registrant.getClusterId(),
+                            registrant.getAutoScalerPolicyName());
+                    cluster.setHostName(registrant.getHostName());
+                    cluster.setTenantRange(registrant.getTenantRange());
+                    cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
+                    cluster.setProperties(props);
                     service.addCluster(cluster);
                 }
-            }
+//            }
             TopologyManager.getInstance().updateTopology(topology);
-            TopologyEventSender.sendClusterCreatedEvent(serviceContext);
+            TopologyEventSender.sendClusterCreatedEvent(registrant);
 
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
     }
 
-    public static void handleClusterRemoved(ServiceContext serviceContext) {
+    public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getInstance().getTopology();
-        Service service = topology.getService(serviceContext.getCartridgeType());
+        Service service = topology.getService(ctxt.getCartridgeType());
         if (service == null) {
             throw new RuntimeException(String.format("Service %s does not exist",
-                    serviceContext.getCartridgeType()));
+                    ctxt.getCartridgeType()));
         }
 
-        if (!service.clusterExists(serviceContext.getClusterId())) {
+        if (!service.clusterExists(ctxt.getClusterId())) {
             throw new RuntimeException(String.format("Cluster %s does not exist for service %s",
-                    serviceContext.getClusterId(),
-                    serviceContext.getCartridgeType()));
+                    ctxt.getClusterId(),
+                    ctxt.getCartridgeType()));
         }
 
         try {
             TopologyManager.getInstance().acquireWriteLock();
-            service.removeCluster(serviceContext.getClusterId());
+            service.removeCluster(ctxt.getClusterId());
             TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendClusterRemovedEvent(serviceContext);
+        TopologyEventSender.sendClusterRemovedEvent(ctxt);
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,

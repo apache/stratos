@@ -21,6 +21,9 @@ package org.apache.stratos.cloud.controller.interfaces;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
+import org.apache.stratos.cloud.controller.exception.InvalidHostException;
+import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
+import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.util.IaasProvider;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 
@@ -74,32 +77,35 @@ public abstract class Iaas {
     
     /**
      * Validate a given region name against a particular IaaS.
-     * If a particular IaaS doesn't have a concept called region, it can simply return false.
+     * If a particular IaaS doesn't have a concept called region, it can simply throw {@link InvalidRegionException}.
      * @param iaasInfo {@link IaasProvider} 
      * @param region name of the region.
-     * @return whether the region is valid or not.
+     * @return whether the region is valid.
+     * @throws InvalidRegionException if the region is invalid.
      */
-    public abstract boolean isValidRegion(IaasProvider iaasInfo, String region);
+    public abstract boolean isValidRegion(IaasProvider iaasInfo, String region) throws InvalidRegionException;
     
     /**
      * Validate a given zone name against a particular region in an IaaS.
-     * If a particular IaaS doesn't have a concept called zone, it can simply return false.
+     * If a particular IaaS doesn't have a concept called zone, it can simply throw {@link InvalidZoneException}.
      * @param iaasInfo {@link IaasProvider} 
      * @param region region of the IaaS that the zone belongs to.
      * @param zone 
      * @return whether the zone is valid in the given region or not.
+     * @throws InvalidZoneException if the zone is invalid in a given region.
      */
-    public abstract boolean isValidZone(IaasProvider iaasInfo, String region, String zone);
+    public abstract boolean isValidZone(IaasProvider iaasInfo, String region, String zone) throws InvalidZoneException;
     
     /**
      * Validate a given host id against a particular zone in an IaaS.
-     * If a particular IaaS doesn't have a concept called hosts, it can simply return false.
+     * If a particular IaaS doesn't have a concept called hosts, it can simply throw {@link InvalidHostException}.
      * @param iaasInfo {@link IaasProvider} 
      * @param zone zone of the IaaS that the host belongs to.
      * @param host
      * @return whether the host is valid in the given zone or not.
+     * @throws InvalidHostException if the host is invalid in a given zone.
      */
-    public abstract boolean isValidHost(IaasProvider iaasInfo, String zone, String host);
+    public abstract boolean isValidHost(IaasProvider iaasInfo, String zone, String host) throws InvalidHostException;
     
     /**
      * provides the {@link PartitionValidator} corresponds to this particular IaaS.

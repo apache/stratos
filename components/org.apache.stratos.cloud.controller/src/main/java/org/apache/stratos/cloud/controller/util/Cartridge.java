@@ -21,8 +21,10 @@ package org.apache.stratos.cloud.controller.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -67,6 +69,12 @@ public class Cartridge implements Serializable{
     
     private IaasProvider lastlyUsedIaas;
     
+    /**
+     * Key - partition id
+     * Value - Corresponding IaasProvider.
+     */
+    private Map<String, IaasProvider> partitionToIaasProvider = new ConcurrentHashMap<String, IaasProvider>();
+    
     public Cartridge(){}
     
     public Cartridge(String type, String host, String provider, String version, boolean multiTenant) {
@@ -83,6 +91,23 @@ public class Cartridge implements Serializable{
 
     public void setType(String type) {
         this.type = type;
+    }
+    
+    public void addIaasProvider(String partitionId, IaasProvider iaasProvider) {
+        partitionToIaasProvider.put(partitionId, iaasProvider);
+    }
+    
+    public void addIaasProviders(Map<String, IaasProvider> map) {
+        for (Iterator<String> iterator = map.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            IaasProvider value = map.get(key);
+            
+            partitionToIaasProvider.put(key, value);
+        }
+    }
+    
+    public IaasProvider getIaasProviderOfPartition(String partitionId) {
+        return partitionToIaasProvider.get(partitionId);
     }
 
     public Map<String, String> getProperties() {
@@ -250,6 +275,14 @@ public class Cartridge implements Serializable{
 
 	public void setAppTypeMappings(List<AppType> appTypeMappings) {
     	this.appTypeMappings = appTypeMappings;
+    }
+
+    public Map<String, IaasProvider> getPartitionToIaasProvider() {
+        return partitionToIaasProvider;
+    }
+
+    public void setPartitionToIaasProvider(Map<String, IaasProvider> partitionToIaasProvider) {
+        this.partitionToIaasProvider = partitionToIaasProvider;
     }
     
 }

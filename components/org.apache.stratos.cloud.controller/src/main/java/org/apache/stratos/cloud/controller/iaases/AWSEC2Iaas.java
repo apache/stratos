@@ -25,6 +25,9 @@ import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.InvalidHostException;
+import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
+import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
@@ -43,6 +46,8 @@ import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.ec2.EC2Api;
+import org.jclouds.ec2.EC2ApiMetadata;
+import org.jclouds.ec2.EC2Client;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
@@ -87,9 +92,9 @@ public class AWSEC2Iaas extends Iaas {
            templateBuilder.locationId(iaas.getType());
         }
 
-		if (iaas.getProperty("instanceType") != null) {
+		if (iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
 			// set instance type eg: m1.large
-			templateBuilder.hardwareId(iaas.getProperty("instanceType"));
+			templateBuilder.hardwareId(iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE));
 		}
 
 		// build the Template
@@ -100,7 +105,7 @@ public class AWSEC2Iaas extends Iaas {
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
 		boolean blockUntilRunning = Boolean.parseBoolean(iaas
-				.getProperty("autoAssignIp"));
+				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
 
@@ -110,31 +115,31 @@ public class AWSEC2Iaas extends Iaas {
 				.inboundPorts(new int[] {});
 
 		// set EC2 specific options
-		if (iaas.getProperty("subnetId") != null) {
+		if (iaas.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.subnetId(iaas.getProperty("subnetId"));
+					.subnetId(iaas.getProperty(CloudControllerConstants.SUBNET_ID));
 		}
 
-		if (iaas.getProperty("availabilityZone") != null) {
+		if (iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.placementGroup(iaas.getProperty("availabilityZone"));
+					.placementGroup(iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
 		}
 
         // security group names
-		if (iaas.getProperty("securityGroups") != null) {
+		if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
 					.securityGroups(
-							iaas.getProperty("securityGroups").split(
+							iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 
 		}
 
         // security group ids
-        if (iaas.getProperty("securityGroupIds") != null) {
+        if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(AWSEC2TemplateOptions.class)
-                    .securityGroupIds(iaas.getProperty("securityGroupIds")
+                    .securityGroupIds(iaas.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
                                         .split(CloudControllerConstants.ENTRY_SEPARATOR));
 
         }
@@ -150,9 +155,9 @@ public class AWSEC2Iaas extends Iaas {
 									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
 		}*/
 
-		if (iaas.getProperty("keyPair") != null) {
+		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.keyPair(iaas.getProperty("keyPair"));
+					.keyPair(iaas.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
 
 		// set Template
@@ -307,9 +312,18 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
     @Override
-    public boolean isValidRegion(IaasProvider iaasInfo, String region) {
+    public boolean isValidRegion(IaasProvider iaasInfo, String region) throws InvalidRegionException {
+        
+        if (region == null || iaasInfo == null) {
+            String msg =
+                         "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " +
+                                 iaasInfo;
+            log.error(msg);
+            throw new InvalidRegionException(msg);
+        }
+        
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        EC2Api api = context.unwrap();
+        EC2Client api = EC2Client.class.cast(context.unwrap(EC2ApiMetadata.CONTEXT_TOKEN).getApi());
         for (String configuredRegion : api.getConfiguredRegions()) {
             if (region.equalsIgnoreCase(configuredRegion)) {
                 if (log.isDebugEnabled()) {
@@ -318,16 +332,22 @@ public class AWSEC2Iaas extends Iaas {
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Did not find a matching region: " + region);
-        }
-        return false;
+        String msg = "Invalid region: " + region +" in the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidRegionException(msg);
     }
 
     @Override
-    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) {
+    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) throws InvalidZoneException {
+        if (zone == null || iaasInfo == null) {
+            String msg =
+                         "Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
+                                 iaasInfo;
+            log.error(msg);
+            throw new InvalidZoneException(msg);
+        }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        EC2Api api = context.unwrap();
+        EC2Client api = EC2Client.class.cast(context.unwrap(EC2ApiMetadata.CONTEXT_TOKEN).getApi());
         AvailabilityZoneAndRegionApi zoneRegionApi =
                                                      api.getAvailabilityZoneAndRegionApiForRegion(region)
                                                         .get();
@@ -343,16 +363,19 @@ public class AWSEC2Iaas extends Iaas {
                 return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Did not find a matching zone: " + zone);
-        }
-        return false;
+
+        String msg = "Invalid zone: " + zone +" in the region: "+region+ " and of the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidZoneException(msg);
+
     }
 
     @Override
-    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) {
+    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) throws InvalidHostException {
         // there's no such concept in EC2
-        return false;
+        String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidHostException(msg);
     }
 
     @Override

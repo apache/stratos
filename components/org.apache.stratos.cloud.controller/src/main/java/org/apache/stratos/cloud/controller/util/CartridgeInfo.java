@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.stratos.messaging.util.Property;
+
 /**
  * Holds useful information for externals, regarding a Cartridge.
  */
