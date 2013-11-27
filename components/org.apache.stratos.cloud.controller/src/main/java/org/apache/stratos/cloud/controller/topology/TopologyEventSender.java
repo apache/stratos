@@ -112,8 +112,8 @@ public class TopologyEventSender {
     public static void sendClusterCreatedEvent(Registrant registrant) {
         Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
         ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(registrant.getCartridgeType(),
-                                                                          registrant.getClusterId());
-        clusterCreatedEvent.setHostName(registrant.getHostName());
+                                                                          registrant.getClusterId(),
+                                                                          registrant.getHostName());
         clusterCreatedEvent.setTenantRange(registrant.getTenantRange());
         clusterCreatedEvent.setAutoscalingPolicyName(registrant.getAutoScalerPolicyName());
         clusterCreatedEvent.setProperties(props);
@@ -129,9 +129,7 @@ public class TopologyEventSender {
     }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt) {
-        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent();
-        clusterRemovedEvent.setClusterId(ctxt.getClusterId());
-        clusterRemovedEvent.setServiceName(ctxt.getCartridgeType());
+        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getHostName());
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster removed event: [service] %s [cluster] %s", ctxt.getCartridgeType(), ctxt.getClusterId()));
@@ -140,7 +138,8 @@ public class TopologyEventSender {
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId) {
+    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId,
+                                                Partition partition) {
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName,
                                                                              clusterId,
                                                                              memberId,

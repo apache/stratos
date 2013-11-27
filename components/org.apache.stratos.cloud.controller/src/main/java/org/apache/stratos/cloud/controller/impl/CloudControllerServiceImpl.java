@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -466,7 +467,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             log.info("Private ip address: " + ip);
                         }
 
-                        if (node.getId() == null) {
+                        String nodeId = node.getId();
+                        if (nodeId == null) {
                             String msg = "Node id of the starting instance is null.\n" + node.toString();
                             log.fatal(msg);
                             throw new CloudControllerException(msg);
@@ -497,7 +499,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         // trigger topology
                         TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId,
-                                 nodeId, partition, privateIp);
+                                 nodeId, partition, ip);
 
                         //update the topology with the newly spawned member
                         // publish data
@@ -527,12 +529,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                         + ". Hence, will try to start in another IaaS if available.",
                                 e);
                     }
+                
+                return null;
             }
-
-//        }
-        return null;
-
-	}
 
 //    @Override
 //    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned) {
@@ -1147,6 +1146,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    String cartridgeType = registrant.getCartridgeType();
 	    String clusterId = registrant.getClusterId();
         String payload = registrant.getPayload();
+        String hostName = registrant.getHostName();
         
         if(cartridgeType == null || clusterId == null || payload == null) {
 	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", Cluster Id: "+clusterId+", Payload: "+payload;

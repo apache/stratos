@@ -31,11 +31,19 @@ public class ClusterContext {
     private String cartridgeType;
     // payload as a String
     private String payload;
+    private String hostName;
     
     public ClusterContext(String clusterId, String cartridgeType, String payload) {
         this.clusterId = clusterId;
         this.cartridgeType = cartridgeType;
         this.payload = payload;
+    }
+    
+    public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName) {
+        this.clusterId = clusterId;
+        this.cartridgeType = cartridgeType;
+        this.payload = payload;
+        this.setHostName(hostName);
     }
     
     public String getClusterId() {
@@ -55,6 +63,14 @@ public class ClusterContext {
     }
     public void setPayload(String payload) {
         this.payload = payload;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
     
 }
