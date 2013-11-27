@@ -409,37 +409,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         // reset ip
                         ip = "";
                         // default behavior is autoIpAssign=false
-                        if (autoAssignIpProp == null
-                                || (autoAssignIpProp != null && autoAssignIpProp
-                                        .equals("false"))) {
+                        if (autoAssignIpProp == null || (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
                             // allocate an IP address - manual IP assigning mode
                             ip = iaas.getIaas().associateAddress(iaas, node);
+                            log.info("Allocated ip address: " + ip);
                         }
 
-                        if (ip.isEmpty()
-                                && node.getPublicAddresses() != null
-                                && node.getPublicAddresses().iterator()
-                                        .hasNext()) {
+                        if (ip.isEmpty() && node.getPublicAddresses() != null && node.getPublicAddresses().iterator().hasNext()) {
                             ip = node.getPublicAddresses().iterator().next();
+                            log.info("Public ip address: " + ip);
                         }
-                         String privateIp = null;
-                        if (node.getPrivateAddresses() != null
-                                && node.getPrivateAddresses().iterator()
-                                        .hasNext()) {
-                            privateIp = node.getPrivateAddresses().iterator().next();
-                        }
-                        log.info("private ip of the instance is: " + privateIp);
+
                         // if not public IP is assigned, we're using private IP
-                        if (ip.isEmpty()
-                                && node.getPrivateAddresses() != null
-                                && node.getPrivateAddresses().iterator()
-                                        .hasNext()) {
+                        if (ip.isEmpty() && node.getPrivateAddresses() != null && node.getPrivateAddresses().iterator().hasNext()) {
                             ip = node.getPrivateAddresses().iterator().next();
+                            log.info("Private ip address: " + ip);
                         }
 
                         if (node.getId() == null) {
-                            String msg = "Node id of the starting instance is null.\n"
-                                    + node.toString();
+                            String msg = "Node id of the starting instance is null.\n" + node.toString();
                             log.fatal(msg);
                             throw new CloudControllerException(msg);
                         }
@@ -464,7 +452,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         // trigger topology
                         TopologyBuilder.handleMemberSpawned(memberID, serviceCtxt.getCartridgeType(), clusterId,
-                                 node.getId(), partition, privateIp);
+                                 node.getId(), partition, ip);
 
                         //update the topology with the newly spawned member
                         // publish data

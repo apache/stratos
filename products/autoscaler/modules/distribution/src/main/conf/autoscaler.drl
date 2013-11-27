@@ -49,18 +49,20 @@ global org.apache.stratos.messaging.domain.topology.Topology $topology;
 rule "Minimum Rule"
 dialect "mvel"
        when
-       $service : Service ()
-       $cluster : Cluster () from  $service.getClusters()
-       $deploymentPolicy : DeploymentPolicy(id == "economy-deployment" ) from $manager.getDeploymentPolicyList()
-       $partitionGroup : PartitionGroup () from  $deploymentPolicy.getPartitionGroups()
-       $partition : Partition () from $partitionGroup.getPartitions()
-       $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
-       eval($clusterContext.getMemberCount($partition.getId()) < $partition.getPartitionMembersMin() )
+	       $service : Service () 
+	       $cluster : Cluster () from  $service.getClusters()
+	       $deploymentPolicy : DeploymentPolicy(id == $cluster.getDeploymentPolicyName() ) from $manager.getDeploymentPolicyList()
+	       $partitionGroup : PartitionGroup () from  $deploymentPolicy.getPartitionGroups()
+	       $partition : Partition () from $partitionGroup.getPartitions()
+	       $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
+	       eval($clusterContext.getMemberCount($partition.getId()) < $partition.getPartitionMembersMin())
+
+
        then
-       int memberCountToBeIncreased =  $partition.getPartitionMembersMin() - $clusterContext.getMemberCount($partition.getId());
-       if($evaluator.delegateSpawn($partition,$cluster.getClusterId(), memberCountToBeIncreased)){
-           $clusterContext.increaseMemberCountInPartitionBy($partition.getId(), memberCountToBeIncreased);
-       }
+	       int memberCountToBeIncreased = 1;
+	       if($evaluator.delegateSpawn($partition,$cluster.getClusterId(), memberCountToBeIncreased)){
+		   $clusterContext.increaseMemberCountInPartitionBy($partition.getId(), memberCountToBeIncreased);
+	       }
 end
 
 rule "Scaler-up Rule"
@@ -68,8 +70,8 @@ dialect "mvel"
 	when
         $service : Service ()
         $cluster : Cluster () from  $service.getClusters()
-        $autoScalingPolicy : AutoscalePolicy(id == "economyPolicy" ) from $manager.getAutoscalePolicyList()
-        $deploymentPolicy : DeploymentPolicy(id == "economy-deployment" ) from $manager.getDeploymentPolicyList()
+        $autoScalingPolicy : AutoscalePolicy(id == $cluster.getAutoscalePolicyName() ) from $manager.getAutoscalePolicyList()
+        $deploymentPolicy : DeploymentPolicy(id == $cluster.getDeploymentPolicyName() ) from $manager.getDeploymentPolicyList()
         $partitionGroup : PartitionGroup () from  $deploymentPolicy.getPartitionGroups()
         $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
         $loadThresholds :LoadThresholds() from  $autoScalingPolicy.getLoadThresholds()
@@ -96,8 +98,8 @@ dialect "mvel"
 	when
 	    $service : Service ()
 	    $cluster : Cluster () from  $service.getClusters()
-	    $autoScalingPolicy : AutoscalePolicy(id == "economyPolicy" ) from $manager.getAutoscalePolicyList()
-        $deploymentPolicy : DeploymentPolicy(id == "economy-deployment" ) from $manager.getDeploymentPolicyList()
+	    $autoScalingPolicy : AutoscalePolicy(id == $cluster.getAutoscalePolicyName() ) from $manager.getAutoscalePolicyList()
+        $deploymentPolicy : DeploymentPolicy(id == $cluster.getDeploymentPolicyName() ) from $manager.getDeploymentPolicyList()
         $partitionGroup : PartitionGroup () from  $deploymentPolicy.getPartitionGroups()
 	    $clusterContext : ClusterContext() from $context.getClusterContext($cluster.getClusterId())
         $loadThresholds :LoadThresholds() from  $autoScalingPolicy.getLoadThresholds()

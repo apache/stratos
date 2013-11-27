@@ -72,7 +72,8 @@ public class AutoscalerRuleEvaluator {
 
             for (Cluster cluster: service.getClusters()){
                 //update cluster-context
-                AutoscalerUtil.updateClusterContext(cluster);
+            	cluster.setDeploymentPolicyName("economy-deployment");
+                AutoscalerUtil.updateClusterContext(cluster);                
             }
 
             ksession = kbase.newStatefulKnowledgeSession();
