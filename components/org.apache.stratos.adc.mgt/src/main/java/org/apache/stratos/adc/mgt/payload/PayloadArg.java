@@ -20,7 +20,7 @@
 package org.apache.stratos.adc.mgt.payload;
 
 import org.apache.stratos.adc.mgt.dto.Policy;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 public class PayloadArg {
 

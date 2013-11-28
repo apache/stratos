@@ -22,6 +22,7 @@ package org.apache.stratos.adc.mgt.utils;
 
 
 import com.google.gson.Gson;
+
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.Member;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
@@ -44,10 +45,10 @@ import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
-import org.apache.stratos.messaging.util.xsd.Property;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -62,6 +63,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -454,8 +456,8 @@ public class ApplicationManagementUtil {
     private static String createPortMappingPayloadString(CartridgeInfo cartridgeInfo) {
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
-        org.apache.stratos.cloud.controller.util.xsd.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
-        for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : portMappings) {
+        org.apache.stratos.cloud.controller.pojo.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
+        for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : portMappings) {
             String port = portMapping.getPort();
             String protocol = portMapping.getProtocol();
             String proxyPort = portMapping.getProxyPort();
@@ -581,7 +583,7 @@ public class ApplicationManagementUtil {
         List<PortMapping> portMappings = new ArrayList<PortMapping>();
 
         if (cartridgeInfo.getPortMappings() != null) {
-            for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
+            for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
                 PortMapping portMap = new PortMapping();
                 portMap.setPrimaryPort(portMapping.getPort());
                 portMap.setProxyPort(portMapping.getProxyPort());
@@ -1018,7 +1020,7 @@ public class ApplicationManagementUtil {
         List<String> accessURLs = new ArrayList<String>();
 
         if (cartridgeInfo.getPortMappings() != null) {
-            for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : cartridgeInfo
+            for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : cartridgeInfo
                     .getPortMappings()) {
                 if (portMapping != null) {
 					try {

@@ -35,7 +35,7 @@ import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.utils.*;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

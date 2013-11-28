@@ -25,7 +25,7 @@ import org.apache.stratos.adc.mgt.subscription.DataCartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.MultiTenantCartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 public class CartridgeSubscriptionFactory {
 

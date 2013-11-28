@@ -26,12 +26,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.pojo.xsd.Registrant;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
-import org.apache.stratos.messaging.util.xsd.Property;
+import org.apache.stratos.cloud.controller.pojo.Property;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -83,7 +83,7 @@ public class CloudControllerServiceClient {
 	    registrant.setCartridgeType(cartridgeType);
 	    registrant.setTenantRange(tenantRange);
 	    registrant.setHostName(hostName);
-	    org.apache.stratos.messaging.util.xsd.Properties props = extractProperties(properties);
+	    org.apache.stratos.cloud.controller.pojo.Properties props = extractProperties(properties);
 	    registrant.setProperties(props);
 	    registrant.setPayload(payload);
 	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
@@ -91,10 +91,10 @@ public class CloudControllerServiceClient {
 
 	}
 
-    private org.apache.stratos.messaging.util.xsd.Properties
+    private org.apache.stratos.cloud.controller.pojo.Properties
         extractProperties(Properties properties) {
-        org.apache.stratos.messaging.util.xsd.Properties props =
-                                                                 new org.apache.stratos.messaging.util.xsd.Properties();
+        org.apache.stratos.cloud.controller.pojo.Properties props =
+                                                                 new org.apache.stratos.cloud.controller.pojo.Properties();
         if (properties != null) {
 
             for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
