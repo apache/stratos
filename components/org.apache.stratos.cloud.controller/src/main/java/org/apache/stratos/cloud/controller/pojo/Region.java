@@ -1,4 +1,4 @@
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;

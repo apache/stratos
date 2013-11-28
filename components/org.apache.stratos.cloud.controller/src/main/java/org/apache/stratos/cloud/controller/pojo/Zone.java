@@ -1,20 +1,21 @@
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Host extends Zone {
+public class Zone extends Region {
     private String id;
     private String type;
-    private Map<String, String> properties = new HashMap<String, String>();
+    private List<Host> listOfHosts;
 
+    private Map<String, String> properties = new HashMap<String, String>();
     private transient ComputeService computeService;
 
     private transient Template template;
-
 
     public String getId() {
         return id;
@@ -32,7 +33,7 @@ public class Host extends Zone {
         this.type = type;
     }
 
-     public Map<String, String> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
@@ -53,6 +54,22 @@ public class Host extends Zone {
         } else {
             return super.getProperty(key);
         }
+    }
+
+    public List<Host> getListOfHosts() {
+        return listOfHosts;
+    }
+
+    public void setListOfHosts(List<Host> listOfHosts) {
+        this.listOfHosts = listOfHosts;
+    }
+
+    public void addHost(Host host) {
+        this.listOfHosts.add(host);
+    }
+
+    public void removeHost(Host host) {
+        this.listOfHosts.remove(host);
     }
 
      public ComputeService getComputeService() {

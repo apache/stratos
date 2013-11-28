@@ -32,6 +32,11 @@ import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.Host;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.Region;
+import org.apache.stratos.cloud.controller.pojo.Zone;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.*;
@@ -44,7 +49,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * All the {@link org.apache.stratos.cloud.controller.util.Cartridge}s will get deployed / undeployed / updated via this class.
+ * All the {@link org.apache.stratos.cloud.controller.pojo.Cartridge}s will get deployed / undeployed / updated via this class.
  */
 public class CartridgeDeployer extends AbstractDeployer{
     

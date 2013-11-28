@@ -20,14 +20,14 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.PortMapping;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
-import org.apache.stratos.messaging.domain.policy.Partition;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
@@ -75,22 +75,22 @@ public class TopologyBuilder {
 
     }
 
-    public static void handlePartitionCreated(Partition partition) {
-
-        Topology topology = TopologyManager.getInstance().getTopology();
-        if (partition == null) {
-            throw new RuntimeException(String.format("Partition is empty"));
-        }
-        try {
-            TopologyManager.getInstance().acquireWriteLock();
-            topology.addPartition(partition);
-            TopologyManager.getInstance().updateTopology(topology);
-        } finally {
-            TopologyManager.getInstance().releaseWriteLock();
-        }
-        TopologyEventSender.sendPartitionCreatedEvent(partition);
-
-    }
+//    public static void handlePartitionCreated(Partition partition) {
+//
+//        Topology topology = TopologyManager.getInstance().getTopology();
+//        if (partition == null) {
+//            throw new RuntimeException(String.format("Partition is empty"));
+//        }
+//        try {
+//            TopologyManager.getInstance().acquireWriteLock();
+//            topology.addPartition(partition);
+//            TopologyManager.getInstance().updateTopology(topology);
+//        } finally {
+//            TopologyManager.getInstance().releaseWriteLock();
+//        }
+//        TopologyEventSender.sendPartitionCreatedEvent(partition);
+//
+//    }
 
 //    public static void handlePartitionUpdated(Partition newPartition, Partition oldPartition) {
 //
@@ -241,14 +241,13 @@ public class TopologyBuilder {
             member.setIaasNodeId(iaasNodeId);
             member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
-            member.setPartition(partition);
             cluster.addMember(member);
             cluster.addMemberToIaasNodeId(member);
             TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, iaasNodeId, partition);
+        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, iaasNodeId);
 
     }
 

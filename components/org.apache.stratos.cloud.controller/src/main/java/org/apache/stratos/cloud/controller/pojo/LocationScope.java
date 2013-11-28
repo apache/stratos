@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 /**
  * this contains the scope of a IaaS spanned across the geography.

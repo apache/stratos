@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.axiom.parser;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -29,12 +30,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
+import org.apache.stratos.cloud.controller.pojo.AppType;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.AppType;
-import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
-import org.apache.stratos.cloud.controller.util.PortMapping;
 
 /**
  * Parse the cartridge definition files.
@@ -322,7 +323,7 @@ public class CartridgeConfigParser {
     
     /**
      * @param cartridgeElementString Cartridges section as a {@link String}
-     * @param aCartridge             {@link org.apache.stratos.cloud.controller.util.Cartridge} instance.
+     * @param aCartridge             {@link org.apache.stratos.cloud.controller.pojo.Cartridge} instance.
      * @param appTypesNodes          nodes of App types.
      */
     private static void getAppTypes(final String fileName, String cartridgeElementString, Cartridge aCartridge,

@@ -24,7 +24,7 @@ import org.jclouds.compute.domain.Template;
 import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 
 /**

@@ -16,12 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.stratos.messaging.util.Property;
 
 /**
  * Holds useful information for externals, regarding a Cartridge.

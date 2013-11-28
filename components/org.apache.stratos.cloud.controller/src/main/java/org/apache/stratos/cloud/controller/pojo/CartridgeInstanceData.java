@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 import org.jclouds.compute.domain.NodeMetadata;
 

@@ -19,15 +19,14 @@ package org.apache.stratos.cloud.controller.topology;
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.Cartridge;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.PortMapping;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.domain.policy.Partition;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
@@ -65,15 +64,15 @@ public class TopologyEventSender {
         }
     }
 
-     public static void sendPartitionCreatedEvent(Partition partition) {
-         PartitionCreatedEvent partitionCreatedEvent =
-                 new PartitionCreatedEvent(partition);
-
-         if(log.isInfoEnabled()) {
-             log.info(String.format("Publishing partition created event: [partition] %s", partition.getId()));
-         }
-         publishEvent(partitionCreatedEvent);
-     }
+//     public static void sendPartitionCreatedEvent(Partition partition) {
+//         PartitionCreatedEvent partitionCreatedEvent =
+//                 new PartitionCreatedEvent(partition);
+//
+//         if(log.isInfoEnabled()) {
+//             log.info(String.format("Publishing partition created event: [partition] %s", partition.getId()));
+//         }
+//         publishEvent(partitionCreatedEvent);
+//     }
 
 //    public static void sendPartitionUpdatedEvent(Partition partition, String oldPartitionId) {
 //        PartitionUpdatedEvent partitionUpdatedEvent =
@@ -138,13 +137,11 @@ public class TopologyEventSender {
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId,
-                                                Partition partition) {
+    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId) {
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName,
                                                                              clusterId,
                                                                              memberId,
                                                                              nodeId);
-        instanceSpawnedEvent.setPartition(partition);
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [member] %s [node] %s", serviceName, clusterId, memberId, nodeId));
         }

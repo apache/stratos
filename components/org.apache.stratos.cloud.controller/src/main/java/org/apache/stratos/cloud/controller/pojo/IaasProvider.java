@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;

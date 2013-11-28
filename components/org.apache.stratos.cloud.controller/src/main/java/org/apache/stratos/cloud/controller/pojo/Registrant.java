@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
-import org.apache.stratos.messaging.util.Properties;
-
 /**
  * Upon a new subscription, Stratos Manager would send this POJO.
  * @author nirmal

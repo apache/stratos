@@ -24,6 +24,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
+import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
@@ -34,9 +37,14 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredClusterExceptio
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.IaasContext;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -46,9 +54,6 @@ import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegato
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
-import org.apache.stratos.messaging.domain.policy.Partition;
-import org.apache.stratos.messaging.domain.policy.PartitionGroup;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -1378,7 +1383,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         validator.setIaasProvider(iaasProvider);
         validator.validate(partition.getId(),
                            CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-        TopologyBuilder.handlePartitionCreated(partition);
 
         return true;
     }

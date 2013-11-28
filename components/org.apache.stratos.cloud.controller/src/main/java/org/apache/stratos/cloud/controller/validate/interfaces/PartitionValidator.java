@@ -21,7 +21,7 @@ package org.apache.stratos.cloud.controller.validate.interfaces;
 import java.util.Properties;
 
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.util.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 
 /**
  * All the Partition Validators should implement this interface.

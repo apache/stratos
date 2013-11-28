@@ -21,7 +21,11 @@ package org.apache.stratos.cloud.controller.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.messaging.util.Property;
+import org.apache.stratos.cloud.controller.pojo.AppType;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.pojo.Property;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -91,12 +95,12 @@ public class CloudControllerUtil {
 	 * @return java.util.Properties
 	 */
     public static Properties toJavaUtilProperties(
-        org.apache.stratos.messaging.util.Properties properties) {
+        org.apache.stratos.cloud.controller.pojo.Properties properties) {
         Properties javaProps = new Properties();
 
         if (properties != null && properties.getProperties() != null) {
 
-            for (org.apache.stratos.messaging.util.Property property : properties.getProperties()) {
+            for (org.apache.stratos.cloud.controller.pojo.Property property : properties.getProperties()) {
                 javaProps.put(property.getName(), property.getValue());
             }
 

@@ -16,44 +16,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.util;
+package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Configuration related to Topology synchronization
+ * domain mapping related data.
  *
  */
-public class TopologyConfig implements Serializable{
+public class AppType implements Serializable{
 	
-	private static final long serialVersionUID = 4435173744617096911L;
+    private static final long serialVersionUID = 3550489774139807168L;
+	private String name;
+	private boolean appSpecificMapping = true;
 	
-	/**
-     * Key - Value pair.
-     */
-    private Map<String, String> properties = new HashMap<String, String>();
-    
-    public void setProperty(String key, String value) {
-        properties.put(key, value);
-    }
-    
-    public String getProperty(String key) {
-        
-        if(properties.containsKey(key)){
-            return properties.get(key);
-        }
-        
-        return null;
+	public AppType(){
+		
+	}
+	
+	public AppType(String name){
+		this.setName(name);
+	}
+	
+	public AppType(String name, boolean appSpecificMapping){
+		this.setName(name);
+		this.setAppSpecificMapping(appSpecificMapping);
+	}
+
+	public String getName() {
+	    return name;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+	public void setName(String name) {
+	    this.name = name;
     }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+	public boolean isAppSpecificMapping() {
+	    return appSpecificMapping;
+    }
+
+	public void setAppSpecificMapping(boolean appSpecificMapping) {
+	    this.appSpecificMapping = appSpecificMapping;
     }
 
 }
