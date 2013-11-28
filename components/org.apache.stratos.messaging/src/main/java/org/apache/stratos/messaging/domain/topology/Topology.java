@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.stratos.messaging.domain.policy.Partition;
-
 /**
  * Defines a topology of serviceMap in Stratos.
  */
@@ -33,19 +31,13 @@ public class Topology implements Serializable {
     private static final long serialVersionUID = -2453583548027402122L;
     // Key: Service.serviceName
     private Map<String, Service> serviceMap;
-    private Map<String, Partition> partitionMap;
 
     public Topology() {
         this.serviceMap = new HashMap<String, Service>();
-        partitionMap = new HashMap<String, Partition>();
     }
 
     public Collection<Service> getServices() {
         return serviceMap.values();
-    }
-
-    public Collection<Partition> getPartitions() {
-        return partitionMap.values();
     }
 
     public void addService(Service service) {
@@ -74,33 +66,4 @@ public class Topology implements Serializable {
         return this.serviceMap.containsKey(serviceName);
     }
 
-    public Map<String, Partition> getPartitionMap() {
-        return partitionMap;
-    }
-
-    public Partition getPartition(String id) {
-        return  this.partitionMap.get(id);
-    }
-
-    public void setPartitionMap(Map<String, Partition> partitionMap) {
-        this.partitionMap = partitionMap;
-    }
-
-    public void addPartition(Partition partition) {
-        this.partitionMap.put(partition.getId(), partition);
-    }
-
-    public void addPartitions(Collection<Partition> partitions) {
-        for (Partition partition : partitions) {
-            addPartition(partition);
-        }
-    }
-
-    public void removePartition(Partition partition) {
-        this.partitionMap.remove(partition.getId());
-    }
-
-    public void removePartition(String partitionId) {
-        this.partitionMap.remove(partitionId);
-    }
 }

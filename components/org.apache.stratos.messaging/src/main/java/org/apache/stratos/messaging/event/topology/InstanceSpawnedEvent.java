@@ -21,14 +21,12 @@ package org.apache.stratos.messaging.event.topology;
 
 import java.io.Serializable;
 
-import org.apache.stratos.messaging.domain.policy.Partition;
 
 /**
  * This event is fired by Cloud Controller when a member is spawned by the IaaS in a given cluster.
  */
 public class InstanceSpawnedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2672909702971355178L;
-    private Partition partition;
     private String serviceName;
     private String clusterId;
     private String memberId;
@@ -61,11 +59,4 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
         this.iaasNodeId = iaasNodeId;
     }
 
-    public Partition getPartition() {
-        return partition;
-    }
-
-    public void setPartition(Partition partition) {
-        this.partition = partition;
-    }
 }

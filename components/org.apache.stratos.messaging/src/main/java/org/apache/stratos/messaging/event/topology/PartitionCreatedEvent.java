@@ -18,23 +18,22 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.policy.Partition;
 import java.io.Serializable;
 
 public class PartitionCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -312209596940292730L;
-    private Partition partition;
-
-    public PartitionCreatedEvent(Partition partition) {
-        this.setPartition(partition);
-    }
-
-    public Partition getPartition() {
-        return partition;
-    }
-
-    public void setPartition(Partition partition) {
-        this.partition = partition;
-    }
+//    private Partition partition;
+//
+//    public PartitionCreatedEvent(Partition partition) {
+//        this.setPartition(partition);
+//    }
+//
+//    public Partition getPartition() {
+//        return partition;
+//    }
+//
+//    public void setPartition(Partition partition) {
+//        this.partition = partition;
+//    }
 
 }

@@ -79,9 +79,6 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
                 }
             }
 
-            // Add partitions
-            topology.addPartitions(event.getTopology().getPartitions());
-
             if (log.isInfoEnabled()) {
                 log.info("Topology initialized");
             }

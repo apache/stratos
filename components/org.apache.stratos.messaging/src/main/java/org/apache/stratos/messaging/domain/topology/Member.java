@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.stratos.messaging.domain.policy.Partition;
-
 /**
  * Defines a member node in a cluster.
  * Key: serviceName, clusterId, memberId
@@ -43,7 +41,6 @@ public class Member implements Serializable {
     private Map<String, Port> portMap;
     private Properties properties;
     private String iaasNodeId;
-    private Partition partition;
 
     public Member(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
@@ -146,12 +143,5 @@ public class Member implements Serializable {
         this.iaasNodeId = iaasNodeId;
     }
 
-    public Partition getPartition() {
-        return partition;
-    }
-
-    public void setPartition(Partition partition) {
-        this.partition = partition;
-    }
 }
 
