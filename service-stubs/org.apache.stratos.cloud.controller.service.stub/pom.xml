@@ -47,7 +47,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub"/>
+                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.pojo"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -87,12 +87,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.cloud.controller.exception.xsd.*; version=${project.version},
-                            org.apache.stratos.cloud.controller.stub.*; version=${project.version},
-                            org.apache.stratos.cloud.controller.pojo.xsd.*; version=${project.version},
-                            org.apache.stratos.cloud.controller.util.xsd.*; version=${project.version},
-                            org.apache.stratos.messaging.domain.policy.xsd.*; version=${project.version},
-                            org.apache.stratos.messaging.util.xsd.*; version=${project.version}
+                            org.apache.stratos.cloud.controller.exception.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.deployment.policy.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.deployment.partition.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.pojo.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.stub.*; version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
