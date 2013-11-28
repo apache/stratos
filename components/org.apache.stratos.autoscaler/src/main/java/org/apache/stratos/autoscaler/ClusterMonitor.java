@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.messaging.domain.policy.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
@@ -36,6 +38,7 @@ import org.drools.runtime.rule.FactHandle;
  */
 public class ClusterMonitor implements Runnable{
 
+    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String clusterId;
     private ClusterContext clusterCtxt;
     private List<MemberContext> memberCtxt;
@@ -112,7 +115,12 @@ public class ClusterMonitor implements Runnable{
     public void run() {
 
         while (!isDestroyed()) {
-            minInstanceCountCheck();
+            log.info("Cluster monitor is running..");
+            try {
+                minInstanceCountCheck();
+            } catch (Exception e) {
+                log.error("Cluster monitor: min instance count check failed.", e);
+            }
             // TODO scale
             try {
                 // TODO make this configurable
@@ -131,8 +139,9 @@ public class ClusterMonitor implements Runnable{
                 PartitionContext ctxt = partitionCtxts.get(id);
                 if(ctxt == null) {
                     ctxt = new PartitionContext(partition);
+                    partitionCtxts.put(id, ctxt);
                 }
-                ctxt.setMinimumMemberCount(partition.getPartitionMembersMin());
+                ctxt.setMinimumMemberCount(partition.getPartitionMin());
                 
                 AutoscalerRuleEvaluator.evaluate(ksession, facthandle, ctxt);
             }

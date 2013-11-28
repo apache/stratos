@@ -21,7 +21,8 @@ package org.apache.stratos.autoscaler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.stratos.messaging.domain.policy.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
 
 /**
  * @author nirmal

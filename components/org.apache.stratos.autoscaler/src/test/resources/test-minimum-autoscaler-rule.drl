@@ -19,42 +19,16 @@
 
 package org.apache.stratos.autoscaler.rule;
 
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterContext;
-import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.messaging.domain.policy.Partition;
-import org.apache.stratos.messaging.domain.policy.PartitionGroup;
-import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
-import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
-import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.commons.logging.Log;
-import java.util.ArrayList;
-
-global org.apache.stratos.autoscaler.policy.PolicyManager $manager;
-global org.apache.stratos.autoscaler.AutoscalerContext $context; 
-global org.apache.commons.logging.Log log;
-global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
-global org.apache.stratos.messaging.domain.topology.Topology $topology;
-global org.apache.stratos.messaging.domain.policy.Partition pa;
 
 
-rule "Minimum Rule"
-dialect "mvel"
-       when
-	       $p : ArrayList()
-	       $x : String() from $p
-		   eval(true)
 
-       then
-			System.out.println($x+ "SSsSS");	       
-end
+#rule "Minimum Rule"
+#dialect "mvel"
+#       when
+#	       $p : ArrayList()
+#	       $x : String() from $p
+#		   eval(true)
+#
+ #      then
+#			System.out.println($x+ "SSsSS");	       
+#end

@@ -31,7 +31,6 @@ import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.messaging.domain.policy.Partition;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.KnowledgeBase;
@@ -48,6 +47,7 @@ import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.algorithm.PartitionGroupOneAfterAnother;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.drools.runtime.rule.FactHandle;
 
 /**
@@ -82,6 +82,7 @@ public class AutoscalerRuleEvaluator {
             ksession.update(handle, obj);
         }
         ksession.fireAllRules();
+        log.info("fired all rules "+obj);
 
     }
 
@@ -116,7 +117,7 @@ public class AutoscalerRuleEvaluator {
 
 //            if(currentMemberCount < partition.getPartitionMembersMax())       {
 //                AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(1);
-    			CloudControllerClient.spawnAnInstance(partition, clusterId);
+    			CloudControllerClient.getInstance().spawnAnInstance(partition, clusterId);
 
 		} catch (Throwable e) {
 			log.error("Cannot spawn an instance", e);

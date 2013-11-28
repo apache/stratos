@@ -23,15 +23,18 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.messaging.domain.policy.Partition;
 
 import java.rmi.RemoteException;
 
@@ -82,15 +85,26 @@ public class CloudControllerClient {
         }
         
     }
-
-    public static void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
-
-        org.apache.stratos.messaging.domain.policy.xsd.Partition partitionTopology = new
-                org.apache.stratos.messaging.domain.policy.xsd.Partition();
-        partitionTopology.setId(partition.getId());
+    
+    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy policy) throws PolicyValidationException{
         
         try {
-            stub.startInstance(clusterId, partitionTopology);
+            return stub.validateDeploymentPolicy(cartridgeType, policy);
+        } catch (RemoteException e) {
+            log.error(e.getMessage());
+            throw new PolicyValidationException(e);
+        } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
+            log.error(e.getMessage());
+            throw new PolicyValidationException(e);
+        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+            log.error(e.getMessage());
+            throw new PolicyValidationException(e);
+        }
+    }
+
+    public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
+        try {
+            stub.startInstance(clusterId, partition);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             log.error(e.getMessage());
             throw new SpawningException(e);

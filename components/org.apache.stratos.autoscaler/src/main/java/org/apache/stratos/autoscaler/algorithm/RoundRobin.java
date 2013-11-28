@@ -23,8 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
-import org.apache.stratos.messaging.domain.policy.Partition;
-import org.apache.stratos.messaging.domain.policy.PartitionGroup;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.util.List;
 
@@ -38,13 +40,14 @@ public class RoundRobin implements AutoscaleAlgorithm{
     public Partition getNextScaleUpPartition(PartitionGroup partitionGrp, String clusterId){
     	
     	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);    	
-    	List<Partition> partitions = partitionGrp.getPartitions();
+    	List<?> partitions = Arrays.asList(partitionGrp.getPartitions());
     	int noOfPartitions = partitions.size();
 
     	for(int i=0; i < noOfPartitions; i++)
     	{
-    			int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    		    Partition currentPartition = partitions.get(currentPartitionIndex);
+    	    int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+    	    if (partitions.get(currentPartitionIndex) instanceof Partition) {
+    		    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
     	        String currentPartitionId =  currentPartition.getId();
     	        
     	        // point to next partition
@@ -62,62 +65,75 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	        		log.debug("Free space found in partition " + currentPartition.getId());
 	                return currentPartition;
 	            }   	            	      
-    	        if(log.isDebugEnabled())
+    	        if(log.isDebugEnabled()) {
     	        	log.debug("No free space for a new instance in partition " + currentPartition.getId());
+    	        }
+    	    }
     	}
     	
     	// none of the partitions were free.
-    	if(log.isDebugEnabled())
+    	if(log.isDebugEnabled()) {
     		log.debug("No free partition found at partition group " + partitionGrp);
+    	}
         return null;
     }
 
 
 	@Override
-	public Partition getNextScaleDownPartition(PartitionGroup partitionGrp , String clusterId) {
-		
-		ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-    	
-    	List<Partition> partitions = partitionGrp.getPartitions();
-    	int noOfPartitions = partitions.size();
-    	
-    	for(int i=0; i < noOfPartitions; i++)
-    	{
-    			int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    			 // point to next partition
-    	        if (currentPartitionIndex == 0) {
+    public Partition getNextScaleDownPartition(PartitionGroup partitionGrp, String clusterId) {
 
-    	        	currentPartitionIndex = noOfPartitions - 1;
-                }else {
+        ClusterContext clusterContext =
+                                        AutoscalerContext.getInstance()
+                                                         .getClusterContext(clusterId);
 
-                	currentPartitionIndex = currentPartitionIndex - 1;
+        List<?> partitions = Arrays.asList(partitionGrp.getPartitions());
+        int noOfPartitions = partitions.size();
+
+        for (int i = 0; i < noOfPartitions; i++) {
+            int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+            // point to next partition
+            if (currentPartitionIndex == 0) {
+
+                currentPartitionIndex = noOfPartitions - 1;
+            } else {
+
+                currentPartitionIndex = currentPartitionIndex - 1;
+            }
+
+            // Set next partition as current partition in Autoscaler Context
+            clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
+
+            if (partitions.get(currentPartitionIndex) instanceof Partition) {
+
+                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+                String currentPartitionId = currentPartition.getId();
+
+                if (!clusterContext.partitionCountExists(currentPartitionId))
+                    AutoscalerContext.getInstance().getClusterContext(clusterId)
+                                     .addPartitionCount(currentPartitionId, 0);
+                // has more than minimum instances.
+                if (clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()) {
+                    // current partition is free
+                    clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Returning partition for scaling down " +
+                                  currentPartition.getId());
+                    }
+                    return currentPartition;
                 }
-     	       
-    	        //Set next partition as current partition in Autoscaler Context
-    	        clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
-    	        
-    		    Partition currentPartition = partitions.get(currentPartitionIndex);
-    	        String currentPartitionId =  currentPartition.getId();
-    	            	         
-    	        if(!clusterContext.partitionCountExists(currentPartitionId))    	        		
-	        		AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(currentPartitionId, 0);
-    	        // has more than minimum instances.
-    	        if(clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()){
-    	        	// current partition is free    	        	
-    	        	clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
-    	        	if(log.isDebugEnabled())
-    	        		log.debug("Returning partition for scaling down " + currentPartition.getId());
-	                return currentPartition;
-	            }   	            	      
-    	        if(log.isDebugEnabled())
-    	        	log.debug("Found no members to scale down at partition" + currentPartition.getId());
-    	}
-    	
-    	if(log.isDebugEnabled())
-    		log.debug("No partition found for scale down at partition group " + partitionGrp.getId());
-    	// none of the partitions were free.
+                if (log.isDebugEnabled()) {
+                    log.debug("Found no members to scale down at partition" +
+                              currentPartition.getId());
+                }
+            }
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("No partition found for scale down at partition group " +
+                      partitionGrp.getId());
+        // none of the partitions were free.
         return null;
-	}
+    }
 	
 
     @Override

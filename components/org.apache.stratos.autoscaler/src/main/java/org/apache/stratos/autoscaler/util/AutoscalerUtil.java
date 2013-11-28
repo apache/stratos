@@ -19,11 +19,15 @@
 
 package org.apache.stratos.autoscaler.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ClusterContext;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
-import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 
 
@@ -31,6 +35,8 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
  * This class contains utility methods used by Autoscaler.
  */
 public class AutoscalerUtil {
+    
+    private static final Log log = LogFactory.getLog(AutoscalerUtil.class);
 
 	private AutoscalerUtil() {
 
@@ -40,14 +46,18 @@ public class AutoscalerUtil {
 	 * Updates ClusterContext for given cluster
 	 * @param cluster
 	 * @return ClusterContext - Updated ClusterContext
+	 * @throws PolicyValidationException 
 	 */
-    public static ClusterContext getClusterContext(Cluster cluster) {
+    public static ClusterContext getClusterContext(Cluster cluster) throws PolicyValidationException {
         // FIXME fix the following code to correctly update
         // AutoscalerContext context = AutoscalerContext.getInstance();
         if (null == cluster) {
             return null;
         }
 
+        log.info("Deployment policy name: "+cluster.getDeploymentPolicyName());
+        log.info("Autoscaler policy name: "+cluster.getAutoscalePolicyName());
+        
         AutoscalePolicy policy =
                                  PolicyManager.getInstance()
                                               .getAutoscalePolicy(cluster.getAutoscalePolicyName());
@@ -55,6 +65,8 @@ public class AutoscalerUtil {
                                             PolicyManager.getInstance()
                                                          .getDeploymentPolicy(cluster.getDeploymentPolicyName());
 
+        log.info("Autoscaler policy: "+policy+" Deployment Policy: "+deploymentPolicy);
+            CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
         ClusterContext clusterContext =
                                         new ClusterContext(cluster.getClusterId(),
                                                            cluster.getServiceName(),

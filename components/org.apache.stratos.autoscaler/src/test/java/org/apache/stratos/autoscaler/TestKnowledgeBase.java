@@ -24,10 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.messaging.domain.policy.Partition;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.drools.runtime.rule.FactHandle;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;

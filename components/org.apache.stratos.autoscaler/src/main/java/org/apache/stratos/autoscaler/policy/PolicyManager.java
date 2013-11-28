@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 
 /**
  * 

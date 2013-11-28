@@ -19,8 +19,9 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
-import org.apache.stratos.messaging.domain.policy.Partition;
-import org.apache.stratos.messaging.domain.policy.PartitionGroup;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
+
 
 /**
  *
