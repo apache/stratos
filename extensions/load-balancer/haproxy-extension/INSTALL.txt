@@ -3,24 +3,22 @@
 ================================================================================
 
 
-Apache Stratos HAProxy Extension could be run in an unix environment. Please follow the
+Apache Stratos HAProxy Extension could be used for integrating HAProxy load balancer with Apache Stratos. Please follow
 below steps to proceed with the installation:
 
-1. Download and extract HAProxy binary distribution to a desired location: <HAPROXY-HOME>.
+1. Download and extract HAProxy binary distribution to a desired location: <haproxy-home>.
 
-2. Extract apache-stratos-haproxy-extension-4.0.0-SNAPSHOT-bin.zip to a desired location: <HAPROXY-EXTENSION-HOME>.
+2. Extract apache-stratos-haproxy-extension-4.0.0-SNAPSHOT-bin.zip to a desired location: <haproxy-extension-home>.
 
-3. Open <HAPROXY-EXTENSION-HOME>/bin/haproxy-extension.sh file in a text editor and update following system properties:
-   -Dexecutable.file.path=<HAPROXY-HOME>/haproxy        # HAProxy executable file path
-   -Dconf.file.path=/tmp/haproxy.cfg                    # HAProxy configuration file path
-   -Dstats.socket.file.path=/tmp/haproxy-stats.socket   # HAProxy statistics socket file path
+3. Open <haproxy-extension-home>/bin/haproxy-extension.sh file in a text editor and update following system properties:
+   -Dexecutable.file.path=<haproxy-home>/haproxy        # HAProxy executable file path
    -Dthrift.receiver.ip=localhost                       # CEP IP Address
    -Dthrift.receiver.port=7615                          # CEP Port
 
-4. Open <HAPROXY-EXTENSION-HOME>/conf/jndi.properties file in a text editor and update message broker information:
+4. Open <haproxy-extension-home>/conf/jndi.properties file in a text editor and update message broker information:
    connectionfactory.topicConnectionfactory=amqp://admin:admin@carbon/carbon?brokerlist='tcp://<message-broker-ip>:<message-broker-port>'
 
-5. Run <HAPROXY-EXTENSION-HOME>/bin/haproxy-extension.sh
+5. Run <haproxy-extension-home>/bin/haproxy-extension.sh
 
 
 Thank you for using Apache Stratos!
