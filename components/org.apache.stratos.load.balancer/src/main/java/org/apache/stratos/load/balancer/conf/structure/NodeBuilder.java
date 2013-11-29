@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.conf.util.Constants;
 
 /**
- * This responsible for build up a Node object from a given content.
+ * Responsible for build up a Node object from a given content.
  * Every closing brace should be in a new line.
  */
 public class NodeBuilder {
@@ -31,29 +31,33 @@ public class NodeBuilder {
     private static final Log log = LogFactory.getLog(NodeBuilder.class);
 
     /**
-     * This method is useful when you do not have a root node in your content.
-     * @param aNode
-     *            Node object whose name set.
+     * Construct a node structure for the given content.
      * @param content
-     *            should be something similar to following.
-     * 
-     *            abc d;
-     *            efg h;
-     *            # comment 
-     *            ij { # comment
-     *              klm n;
-     * 
-     *              pq {
-     *                  rst u;
+     *            Sample content format:
+     *
+     *            # comment
+     *            property_1 value1;
+     *            property_2 value2;
+     *
+     *            node1 { # comment
+     *              property_3 value3;
+     *              property_4 value4;
+     *
+     *              node2 {
+     *                  property_5 value5;
      *              }
      *            }
-     * 
-     * @return fully constructed Node
+     *
+     * @return fully constructed root node
      */
-    public static Node buildNode(Node aNode, String content) {
+    public static Node buildNode(String content) {
+        return buildNode(null, content);
+    }
+
+    private static Node buildNode(Node node, String content) {
 
     	if(content == null || content.isEmpty()){
-    		return aNode;
+    		return node;
     	}
     	
         String[] lines = content.split("\n");
@@ -61,24 +65,22 @@ public class NodeBuilder {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
-            // avoid line comments
+            // Skip line comments
             if (!line.startsWith(Constants.NGINX_COMMENT)) {
-                
-                // skip comments in-line 
+
+                // Skip inline comments
                 if(line.contains(Constants.NGINX_COMMENT)){
                     line = line.substring(0, line.indexOf(Constants.NGINX_COMMENT));
                 }
                 
-                // another node is detected and it is not a variable starting from $
-                if (line.contains(Constants.NGINX_NODE_START_BRACE) && 
-                        !line.contains(Constants.NGINX_VARIABLE)) {
+                // A node is detected and it is not a variable starting from $
+                if (line.contains(Constants.NGINX_NODE_START_BRACE) && !line.contains(Constants.NGINX_VARIABLE)) {
                     
                     try {
                         Node childNode = new Node();
                         childNode.setName(line.substring(0, line.indexOf(Constants.NGINX_NODE_START_BRACE)).trim());
 
                         StringBuilder sb = new StringBuilder();
-
                         int matchingBraceTracker = 1;
 
                         while (!line.contains(Constants.NGINX_NODE_END_BRACE) || matchingBraceTracker != 0) {
@@ -87,40 +89,40 @@ public class NodeBuilder {
                                 break;
                             }
                             line = lines[i];
+                            sb.append(line + "\n");
+
                             if (line.contains(Constants.NGINX_NODE_START_BRACE)) {
                                 matchingBraceTracker++;
                             }
                             if (line.contains(Constants.NGINX_NODE_END_BRACE)) {
                                 matchingBraceTracker--;
                             }
-                            sb.append(line + "\n");
                         }
 
                         childNode = buildNode(childNode, sb.toString());
-						if (aNode == null) {
-							aNode = childNode;
+						if (node == null) {
+							node = childNode;
 						} else {
-							aNode.appendChild(childNode);
+							node.appendChild(childNode);
 						}
 
                     } catch (Exception e) {
-                        String msg = "Malformatted element is defined in the configuration file. [" +
-                                i + "] \n";
+                        String msg = "Malformed element found in configuration: [" + i + "] \n";
                         log.error(msg , e);
                         throw new RuntimeException(msg + line, e);
                     }
 
                 }
-                // this is a property
                 else {
                     if (!line.isEmpty() && !Constants.NGINX_NODE_END_BRACE.equals(line)) {
+                        // Add property
                         String[] prop = line.split(Constants.NGINX_SPACE_REGEX);
+                        String key = prop[0].replace(":", "");
                         String value = line.substring(prop[0].length(), line.indexOf(Constants.NGINX_LINE_DELIMITER)).trim();
                         try {
-                            aNode.addProperty(prop[0], value);
+                            node.addProperty(key, value);
                         } catch (Exception e) {
-                            String msg = "Malformatted property is defined in the configuration file. [" +
-                                    i + "] \n";
+                            String msg = "Malformed property found in configuration: [" + i + "] \n";
                             log.error(msg, e);
                             throw new RuntimeException(msg + line, e);
                         }
@@ -129,12 +131,6 @@ public class NodeBuilder {
             
             }
         }
-
-        return aNode;
-
-    }
-    
-    public static Node buildNode(String content) {
-	    return buildNode(null, content);
+        return node;
     }
 }

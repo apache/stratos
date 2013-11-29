@@ -33,6 +33,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Defines load balancer context information.
@@ -50,7 +51,7 @@ public class LoadBalancerContext {
     private DependencyManagementService dependencyManager;
 
     // <TenantId, SynapseEnvironmentService> Map
-    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServices;
+    private Map<Integer, SynapseEnvironmentService> synapseEnvironmentServiceMap;
     // <ServiceName, ServiceContext> Map
     private Map<String, ServiceContext> serviceContextMap;
     // <ClusterId, ClusterContext> Map
@@ -59,10 +60,10 @@ public class LoadBalancerContext {
     private Map<String, Cluster> clusterMap;
 
     private LoadBalancerContext() {
-        synapseEnvironmentServices = new HashMap<Integer, SynapseEnvironmentService>();
-        serviceContextMap = new HashMap<String, ServiceContext>();
-        clusterContextMap = new HashMap<String, ClusterContext>();
-        clusterMap = new HashMap<String, Cluster>();
+        synapseEnvironmentServiceMap = new ConcurrentHashMap<Integer, SynapseEnvironmentService>();
+        serviceContextMap = new ConcurrentHashMap<String, ServiceContext>();
+        clusterContextMap = new ConcurrentHashMap<String, ClusterContext>();
+        clusterMap = new ConcurrentHashMap<String, Cluster>();
     }
 
     public static synchronized LoadBalancerContext getInstance() {
@@ -74,6 +75,13 @@ public class LoadBalancerContext {
             }
         }
         return instance;
+    }
+
+    public void clear() {
+        synapseEnvironmentServiceMap.clear();
+        serviceContextMap.clear();
+        clusterContextMap.clear();
+        clusterMap.clear();
     }
 
     public RealmService getRealmService() {
@@ -138,19 +146,19 @@ public class LoadBalancerContext {
     }
 
     public SynapseEnvironmentService getSynapseEnvironmentService(int tenantId) {
-        return synapseEnvironmentServices.get(tenantId);
+        return synapseEnvironmentServiceMap.get(tenantId);
     }
 
     public void addSynapseEnvironmentService(int tenantId, SynapseEnvironmentService synapseEnvironmentService) {
-        synapseEnvironmentServices.put(tenantId, synapseEnvironmentService);
+        synapseEnvironmentServiceMap.put(tenantId, synapseEnvironmentService);
     }
 
     public void removeSynapseEnvironmentService(int tenantId) {
-        synapseEnvironmentServices.remove(tenantId);
+        synapseEnvironmentServiceMap.remove(tenantId);
     }
 
-    public Map<Integer, SynapseEnvironmentService> getSynapseEnvironmentServices() {
-        return synapseEnvironmentServices;
+    public Map<Integer, SynapseEnvironmentService> getSynapseEnvironmentServiceMap() {
+        return synapseEnvironmentServiceMap;
     }
 
     public ConfigurationContext getConfigCtxt() {

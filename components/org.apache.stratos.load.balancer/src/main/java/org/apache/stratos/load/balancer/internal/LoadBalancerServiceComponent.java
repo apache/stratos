@@ -26,6 +26,7 @@ import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
@@ -101,34 +102,38 @@ public class LoadBalancerServiceComponent {
             registerDeployer(LoadBalancerContext.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
 
-            // Start topology receiver
-            topologyReceiver = new LoadBalancerTopologyReceiver();
-            Thread topologyReceiverThread = new Thread(topologyReceiver);
-            topologyReceiverThread.start();
-            if (log.isInfoEnabled()) {
-                log.info("Topology receiver thread started");
-            }
+            LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
 
-            if (log.isInfoEnabled()) {
-                if (ServiceFilter.getInstance().isActive()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (String serviceName : ServiceFilter.getInstance().getIncludedServiceNames()) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(serviceName);
-                    }
-                    log.info(String.format("Service filter activated: [services] %s", sb.toString()));
+            if (configuration.isTopologyEventListenerEnabled()) {
+                // Start topology receiver
+                topologyReceiver = new LoadBalancerTopologyReceiver();
+                Thread topologyReceiverThread = new Thread(topologyReceiver);
+                topologyReceiverThread.start();
+                if (log.isInfoEnabled()) {
+                    log.info("Topology receiver thread started");
                 }
-                if (ClusterFilter.getInstance().isActive()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (String clusterId : ClusterFilter.getInstance().getIncludedClusterIds()) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
+
+                if (log.isInfoEnabled()) {
+                    if (ServiceFilter.getInstance().isActive()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String serviceName : ServiceFilter.getInstance().getIncludedServiceNames()) {
+                            if (sb.length() > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append(serviceName);
                         }
-                        sb.append(clusterId);
+                        log.info(String.format("Service filter activated: [services] %s", sb.toString()));
                     }
-                    log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+                    if (ClusterFilter.getInstance().isActive()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String clusterId : ClusterFilter.getInstance().getIncludedClusterIds()) {
+                            if (sb.length() > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append(clusterId);
+                        }
+                        log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+                    }
                 }
             }
 
@@ -144,7 +149,7 @@ public class LoadBalancerServiceComponent {
     protected void deactivate(ComponentContext context) {
         try {
             Set<Map.Entry<Integer, SynapseEnvironmentService>> entrySet = LoadBalancerContext
-                    .getInstance().getSynapseEnvironmentServices().entrySet();
+                    .getInstance().getSynapseEnvironmentServiceMap().entrySet();
             for (Map.Entry<Integer, SynapseEnvironmentService> entry : entrySet) {
                 unregisterDeployer(entry.getValue().getConfigurationContext()
                         .getAxisConfiguration(), entry.getValue()
@@ -240,7 +245,7 @@ public class LoadBalancerServiceComponent {
      */
     protected void setSynapseEnvironmentService(SynapseEnvironmentService synapseEnvironmentService) {
         boolean alreadyCreated = LoadBalancerContext.getInstance()
-                .getSynapseEnvironmentServices()
+                .getSynapseEnvironmentServiceMap()
                 .containsKey(synapseEnvironmentService.getTenantId());
 
         LoadBalancerContext.getInstance().addSynapseEnvironmentService(
@@ -319,7 +324,7 @@ public class LoadBalancerServiceComponent {
     protected void unsetSynapseRegistrationsService(
             SynapseRegistrationsService synapseRegistrationsService) {
         int tenantId = synapseRegistrationsService.getTenantId();
-        if (LoadBalancerContext.getInstance().getSynapseEnvironmentServices()
+        if (LoadBalancerContext.getInstance().getSynapseEnvironmentServiceMap()
                 .containsKey(tenantId)) {
             SynapseEnvironment env = LoadBalancerContext.getInstance()
                     .getSynapseEnvironmentService(tenantId)
