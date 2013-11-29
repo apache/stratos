@@ -65,12 +65,10 @@ public class ClusterContext {
     }
 
     public Properties getProperties() {
-
         return properties;
     }
 
     public void setProperties(Properties properties) {
-
         this.properties = properties;
     }
 
@@ -79,27 +77,22 @@ public class ClusterContext {
     }
 
     public void setAverageRequestsInFlight(float averageRequestsInFlight) {
-
         this.averageRequestsInFlight = averageRequestsInFlight;
     }
 
     public float getRequestsInFlightSecondDerivative() {
-
         return requestsInFlightSecondDerivative;
     }
 
     public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
-
         this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
     }
 
     public float getRequestsInFlightGradient() {
-
         return requestsInFlightGradient;
     }
 
     public void setRequestsInFlightGradient(float requestsInFlightGradient) {
-
         this.requestsInFlightGradient = requestsInFlightGradient;
     }
 
@@ -108,7 +101,6 @@ public class ClusterContext {
      * @param memberContext will be added to map
      */
     public void addMemberContext(MemberContext memberContext) {
-
         memberContextMap.put(memberContext.getMemberId(), memberContext);
     }
 
@@ -117,27 +109,23 @@ public class ClusterContext {
      * @param memberId
      */
     public void removeMemberContext(String memberId){
-
         memberContextMap.remove(memberId);
     }
 
     public void increaseMemberCount(int count){
         memberCount += count;
-
     }
+    
     public void decreaseMemberCount(){
         memberCount --;
-
     }
 
-   public void increaseMemberCountInPartitionBy(String partitionId, int count){
-
-        partitionCountMap.put(partitionId, getMemberCount(partitionId) + count);
+    public void increaseMemberCountInPartitionBy(String partitionId, int count){
+        partitionCountMap.put(partitionId, getMemberCountInPartition(partitionId) + count);
     }
 
     public void decreaseMemberCountInPartitionBy(String partitionId, int count){
-
-        partitionCountMap.put(partitionId, getMemberCount(partitionId) - count);
+        partitionCountMap.put(partitionId, getMemberCountInPartition(partitionId) - count);
     }
 
     public void addPartitionCount(String partitionId, int count){    	
@@ -145,7 +133,6 @@ public class ClusterContext {
     }
 
     public void removePartitionCount(String partitionId){
-
         partitionCountMap.remove(partitionId);
     }
 
@@ -153,7 +140,7 @@ public class ClusterContext {
         return partitionCountMap.containsKey(partitionId);
     }
 
-    public int getMemberCount(String partitionId){
+    public int getMemberCountInPartition(String partitionId){
         if(partitionCountMap.containsKey(partitionId)) {
             return partitionCountMap.get(partitionId);
         }
@@ -161,7 +148,6 @@ public class ClusterContext {
     }
 
     public void setMemberContextMap(Map<String, MemberContext> memberContextMap) {
-
         this.memberContextMap = memberContextMap;
     }
 

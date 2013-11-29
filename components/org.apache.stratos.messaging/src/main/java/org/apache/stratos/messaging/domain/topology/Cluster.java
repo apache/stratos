@@ -42,9 +42,12 @@ public class Cluster implements Serializable {
     private Region region;
     private Zone zone;
     
-    // Key: Member.memberId
+    // Key- Member.memberId, Value- Member
     private Map<String, Member> memberMap;
+    
     private Properties properties;
+    
+    // Key- IAAS node id, Value- Member
     private Map<String, Member> membertoNodeIdMap;
 
     public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
@@ -141,20 +144,20 @@ public class Cluster implements Serializable {
     }
 
     public void addMemberToIaasNodeId(Member member) {
-           membertoNodeIdMap.put(member.getIaasNodeId(), member);
-       }
+    	membertoNodeIdMap.put(member.getIaasNodeId(), member);
+    }
 
-       public void removeMemberFromIaasNodeId(Member member) {
-           membertoNodeIdMap.remove(member.getIaasNodeId());
-       }
+    public void removeMemberFromIaasNodeId(Member member) {
+    	membertoNodeIdMap.remove(member.getIaasNodeId());
+    }
 
-       public Member getMemberFromIaasNodeId(String iaasNodeId) {
-           return membertoNodeIdMap.get(iaasNodeId);
-       }
+    public Member getMemberFromIaasNodeId(String iaasNodeId) {
+    	return membertoNodeIdMap.get(iaasNodeId);
+    }
 
-       public boolean memberExistsFromIaasNodeId(String iaasNodeId) {
-           return this.membertoNodeIdMap.containsKey(iaasNodeId);
-       }
+    public boolean memberExistsFromIaasNodeId(String iaasNodeId) {
+    	return this.membertoNodeIdMap.containsKey(iaasNodeId);
+    }
 
 	public String getDeploymentPolicyName() {
 		return deploymentPolicyName;

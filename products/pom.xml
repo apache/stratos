@@ -36,11 +36,11 @@
 
     <modules>
         <module>autoscaler</module>
-        <module>cloud-controller</module>
+        <!--<module>cloud-controller</module>
         <module>load-balancer</module>
         <module>stratos-cli</module>
         <module>stratos-controller</module>
-        <module>cartridge-agent</module>
+        <module>cartridge-agent</module>-->
     </modules>
 </project>
 

@@ -28,5 +28,10 @@
             <extension>xml</extension>
             <class>org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyDeployer</class>
         </deployer>
+        <deployer>
+            <directory>partitions</directory>
+            <extension>xml</extension>
+            <class>org.apache.stratos.autoscaler.partition.deployers.PartitionDeployer</class>
+        </deployer>
     </deployers>
 </component>

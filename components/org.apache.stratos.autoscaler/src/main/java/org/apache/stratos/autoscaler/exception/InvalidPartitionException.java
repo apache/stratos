@@ -17,21 +17,21 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy;
+package org.apache.stratos.autoscaler.exception;
 
-public class InvalidPolicyException extends Exception {
+public class InvalidPartitionException extends Exception {
 
-	private static final long serialVersionUID = 1L;
-
-	public InvalidPolicyException(String message) {
+	private static final long serialVersionUID = -4914522749282514366L;
+	
+	public InvalidPartitionException(String message) {
 		super(message);
 	}
 	
-	public InvalidPolicyException(String message,Throwable e) {
+	public InvalidPartitionException(String message,Throwable e) {
 		super(message,e);
 	}
 	
-	public InvalidPolicyException(Throwable e) {
+	public InvalidPartitionException(Throwable e) {
 		super(e);
 	}
 	

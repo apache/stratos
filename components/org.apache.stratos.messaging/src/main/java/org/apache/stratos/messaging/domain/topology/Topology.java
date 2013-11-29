@@ -78,6 +78,10 @@ public class Topology implements Serializable {
     public Partition getPartition(String id) {
         return  this.partitionMap.get(id);
     }
+    
+    public boolean partitionExist(String id) {
+        return  null != this.partitionMap.get(id);
+    }
 
     public void setPartitionMap(Map<String, Partition> partitionMap) {
         this.partitionMap = partitionMap;

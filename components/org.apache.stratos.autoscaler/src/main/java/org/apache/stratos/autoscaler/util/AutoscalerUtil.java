@@ -60,19 +60,9 @@ public class AutoscalerUtil {
                 float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
                 float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
 
-
                 clusterContext.setRequestsInFlightGradient(gradientLimit);
                 clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-                clusterContext.setAverageRequestsInFlight(averageLimit);
-                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicyName());
-                if(deploymentPolicy!=null){
-                	for(PartitionGroup group :deploymentPolicy.getPartitionGroups()){
-                		for (Partition partition : group.getPartitions()) {
-                            clusterContext.addPartitionCount(partition.getId(), 0);
-                    }
-                	}
-                }
-                
+                clusterContext.setAverageRequestsInFlight(averageLimit);                                
              }
 
 			context.addClusterContext(clusterContext);

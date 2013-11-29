@@ -40,6 +40,12 @@
             <artifactId>org.apache.stratos.autoscaler</artifactId>
             <version>${project.version}</version>
          </dependency>
+	<dependency>
+		<groupId>org.drools</groupId>
+		<artifactId>knowledge-api</artifactId>
+		<version>${drools.version}</version>
+	</dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -65,7 +71,8 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.autoscaler:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
+                                <bundleDef>org.drools:knowledge-api:${drools.version}</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
@@ -76,6 +83,8 @@
             </plugin>
         </plugins>
     </build>
-
+    <properties>
+	<drools.version>5.5.0.Final</drools.version>
+    </properties>
 </project>
 

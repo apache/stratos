@@ -16,25 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.util;
 
-package org.apache.stratos.autoscaler.policy;
+public final class AutoScalerConstants {
 
-public class InvalidPolicyException extends Exception {
-
-	private static final long serialVersionUID = 1L;
-
-	public InvalidPolicyException(String message) {
-		super(message);
-	}
-	
-	public InvalidPolicyException(String message,Throwable e) {
-		super(message,e);
-	}
-	
-	public InvalidPolicyException(Throwable e) {
-		super(e);
-	}
-	
-	
-	
+    /**
+     * Constant values for Auto Scaler
+     */
+    public static final String ID_ELEMENT = "id";
+    public static final String PARTITION_ELEMENT = "partition";
+    public static final String PARTITIONS_ELEMENT = "partitions";
+       
 }

@@ -52,7 +52,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
     			clusterContext.addPartitionCount(currentPartitionId, 0);
     		}
     		
-    		 if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
+    		 if(clusterContext.getMemberCountInPartition(currentPartitionId) < currentPartition.getPartitionMembersMax()){
  	        	// current partition is free    	        	
  	        	clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
  	        	if(log.isDebugEnabled()) 	        		
@@ -91,7 +91,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 	        String currentPartitionId =  currentPartition.getId();
 	        	            
 	        // has more than minimum instances.
-	        if(clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()){
+	        if(clusterContext.getMemberCountInPartition(currentPartitionId) > currentPartition.getPartitionMembersMin()){
 	        	// current partition is free    	        	
 	        	clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
 	        	if(log.isDebugEnabled())
