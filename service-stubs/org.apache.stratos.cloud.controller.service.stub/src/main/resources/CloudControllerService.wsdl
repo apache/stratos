@@ -1,38 +1,78 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax27="http://util.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax25="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://policy.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:ax25="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax26="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
     <wsdl:documentation>CloudControllerService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://topology.domain.messaging.stratos.apache.org/xsd">
-            <xs:complexType name="Partition">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="scope" nillable="true" type="ax25:Scope"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Scope">
-                <xs:complexContent>
-                    <xs:extension base="xs:Enum">
-                        <xs:sequence/>
-                    </xs:extension>
-                </xs:complexContent>
-            </xs:complexType>
-        </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="UnregisteredServiceException">
+            <xs:complexType name="InvalidPartitionException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeTypeException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="UnregisteredClusterException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="InvalidMemberException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="InvalidClusterException">
                 <xs:sequence/>
             </xs:complexType>
             <xs:complexType name="UnregisteredCartridgeException">
                 <xs:sequence/>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax28="http://util.controller.cloud.stratos.apache.org/xsd" xmlns:ax26="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+        <xs:schema xmlns:ax212="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax28="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax211="http://policy.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
             <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://topology.domain.messaging.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://util.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:element name="CloudControllerServiceUnregisteredServiceException">
+            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://policy.deployment.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:element name="CloudControllerServiceInvalidPartitionException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredServiceException" nillable="true" type="ax23:UnregisteredServiceException"/>
+                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax23:InvalidPartitionException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validatePartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax28:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validatePartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax23:InvalidCartridgeTypeException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validateDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax29:DeploymentPolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validateDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceUnregisteredClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax23:UnregisteredClusterException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -43,55 +83,31 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="unregisterServiceResponse">
+            <xs:element name="CloudControllerServiceInvalidMemberException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax23:InvalidMemberException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateUnhealthyInstances">
+            <xs:element name="CloudControllerServiceIllegalArgumentException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instancesToBeTerminated" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateUnhealthyInstancesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstances">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="noOfInstances" type="xs:int"/>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstancesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="IllegalArgumentException" nillable="true" type="xs:anyType"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="terminateInstance">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateInstanceResponse">
+            <xs:element name="CloudControllerServiceInvalidClusterException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax23:InvalidClusterException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -102,26 +118,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateAllInstancesResponse">
+            <xs:element name="CloudControllerServiceUnregisteredCartridgeException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstances">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
-                        <xs:element minOccurs="0" name="noOfInstancesToBeSpawned" type="xs:int"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstancesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax23:UnregisteredCartridgeException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -129,7 +129,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax25:Partition"/>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax28:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -140,23 +140,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredCartridgeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax23:UnregisteredCartridgeException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"/>
-                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax212:Registrant"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -203,15 +190,26 @@
             <xs:element name="getCartridgeInfoResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:CartridgeInfo"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax212:CartridgeInfo"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.controller.cloud.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax210="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:complexType name="DeploymentPolicy">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="allPartitions" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroup" nillable="true" type="ax210:PartitionGroup"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax210:PartitionGroup"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.controller.cloud.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax26:Property"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
@@ -220,17 +218,28 @@
                     <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="Registrant">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax26:Properties"/>
+                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="CartridgeInfo">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax27:AppType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax26:AppType"/>
                     <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax27:PortMapping"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax26:PortMapping"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax26:Property"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"/>
@@ -250,6 +259,27 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
+        <xs:schema xmlns:ax27="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:complexType name="Partition">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMembersMax" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMembersMin" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"/>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PartitionGroup">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax25:Partition"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
     </wsdl:types>
     <wsdl:message name="getPendingInstanceCountRequest">
         <wsdl:part name="parameters" element="ns:getPendingInstanceCount"/>
@@ -257,17 +287,32 @@
     <wsdl:message name="getPendingInstanceCountResponse">
         <wsdl:part name="parameters" element="ns:getPendingInstanceCountResponse"/>
     </wsdl:message>
-    <wsdl:message name="terminateUnhealthyInstancesRequest">
-        <wsdl:part name="parameters" element="ns:terminateUnhealthyInstances"/>
+    <wsdl:message name="validatePartitionRequest">
+        <wsdl:part name="parameters" element="ns:validatePartition"/>
     </wsdl:message>
-    <wsdl:message name="terminateUnhealthyInstancesResponse">
-        <wsdl:part name="parameters" element="ns:terminateUnhealthyInstancesResponse"/>
+    <wsdl:message name="validatePartitionResponse">
+        <wsdl:part name="parameters" element="ns:validatePartitionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceInvalidPartitionException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidPartitionException"/>
+    </wsdl:message>
+    <wsdl:message name="validateDeploymentPolicyRequest">
+        <wsdl:part name="parameters" element="ns:validateDeploymentPolicy"/>
+    </wsdl:message>
+    <wsdl:message name="validateDeploymentPolicyResponse">
+        <wsdl:part name="parameters" element="ns:validateDeploymentPolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceInvalidCartridgeTypeException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeTypeException"/>
     </wsdl:message>
     <wsdl:message name="terminateInstanceRequest">
         <wsdl:part name="parameters" element="ns:terminateInstance"/>
     </wsdl:message>
-    <wsdl:message name="terminateInstanceResponse">
-        <wsdl:part name="parameters" element="ns:terminateInstanceResponse"/>
+    <wsdl:message name="CloudControllerServiceInvalidMemberException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidMemberException"/>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceIllegalArgumentException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceIllegalArgumentException"/>
     </wsdl:message>
     <wsdl:message name="registerServiceRequest">
         <wsdl:part name="parameters" element="ns:registerService"/>
@@ -287,17 +332,14 @@
     <wsdl:message name="unregisterServiceRequest">
         <wsdl:part name="parameters" element="ns:unregisterService"/>
     </wsdl:message>
-    <wsdl:message name="unregisterServiceResponse">
-        <wsdl:part name="parameters" element="ns:unregisterServiceResponse"/>
-    </wsdl:message>
-    <wsdl:message name="CloudControllerServiceUnregisteredServiceException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredServiceException"/>
+    <wsdl:message name="CloudControllerServiceUnregisteredClusterException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredClusterException"/>
     </wsdl:message>
     <wsdl:message name="terminateAllInstancesRequest">
         <wsdl:part name="parameters" element="ns:terminateAllInstances"/>
     </wsdl:message>
-    <wsdl:message name="terminateAllInstancesResponse">
-        <wsdl:part name="parameters" element="ns:terminateAllInstancesResponse"/>
+    <wsdl:message name="CloudControllerServiceInvalidClusterException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"/>
     </wsdl:message>
     <wsdl:message name="getRegisteredCartridgesRequest">
         <wsdl:part name="parameters" element="ns:getRegisteredCartridges"/>
@@ -305,41 +347,39 @@
     <wsdl:message name="getRegisteredCartridgesResponse">
         <wsdl:part name="parameters" element="ns:getRegisteredCartridgesResponse"/>
     </wsdl:message>
-    <wsdl:message name="startInstancesRequest">
-        <wsdl:part name="parameters" element="ns:startInstances"/>
-    </wsdl:message>
-    <wsdl:message name="startInstancesResponse">
-        <wsdl:part name="parameters" element="ns:startInstancesResponse"/>
-    </wsdl:message>
     <wsdl:message name="startInstanceRequest">
         <wsdl:part name="parameters" element="ns:startInstance"/>
     </wsdl:message>
     <wsdl:message name="startInstanceResponse">
         <wsdl:part name="parameters" element="ns:startInstanceResponse"/>
     </wsdl:message>
-    <wsdl:message name="terminateInstancesRequest">
-        <wsdl:part name="parameters" element="ns:terminateInstances"/>
-    </wsdl:message>
-    <wsdl:message name="terminateInstancesResponse">
-        <wsdl:part name="parameters" element="ns:terminateInstancesResponse"/>
-    </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="getPendingInstanceCount">
             <wsdl:input message="ns:getPendingInstanceCountRequest" wsaw:Action="urn:getPendingInstanceCount"/>
             <wsdl:output message="ns:getPendingInstanceCountResponse" wsaw:Action="urn:getPendingInstanceCountResponse"/>
         </wsdl:operation>
-        <wsdl:operation name="terminateUnhealthyInstances">
-            <wsdl:input message="ns:terminateUnhealthyInstancesRequest" wsaw:Action="urn:terminateUnhealthyInstances"/>
-            <wsdl:output message="ns:terminateUnhealthyInstancesResponse" wsaw:Action="urn:terminateUnhealthyInstancesResponse"/>
+        <wsdl:operation name="validatePartition">
+            <wsdl:input message="ns:validatePartitionRequest" wsaw:Action="urn:validatePartition"/>
+            <wsdl:output message="ns:validatePartitionResponse" wsaw:Action="urn:validatePartitionResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validatePartitionCloudControllerServiceInvalidPartitionException"/>
+        </wsdl:operation>
+        <wsdl:operation name="validateDeploymentPolicy">
+            <wsdl:input message="ns:validateDeploymentPolicyRequest" wsaw:Action="urn:validateDeploymentPolicy"/>
+            <wsdl:output message="ns:validateDeploymentPolicyResponse" wsaw:Action="urn:validateDeploymentPolicyResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidPartitionException"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidCartridgeTypeException"/>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"/>
-            <wsdl:output message="ns:terminateInstanceResponse" wsaw:Action="urn:terminateInstanceResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidMemberException" name="CloudControllerServiceInvalidMemberException" wsaw:Action="urn:terminateInstanceCloudControllerServiceInvalidMemberException"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:terminateInstanceCloudControllerServiceInvalidCartridgeTypeException"/>
+            <wsdl:fault message="ns:CloudControllerServiceIllegalArgumentException" name="CloudControllerServiceIllegalArgumentException" wsaw:Action="urn:terminateInstanceCloudControllerServiceIllegalArgumentException"/>
         </wsdl:operation>
         <wsdl:operation name="registerService">
             <wsdl:input message="ns:registerServiceRequest" wsaw:Action="urn:registerService"/>
             <wsdl:output message="ns:registerServiceResponse" wsaw:Action="urn:registerServiceResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:registerServiceCloudControllerServiceUnregisteredCartridgeException"/>
+            <wsdl:fault message="ns:CloudControllerServiceIllegalArgumentException" name="CloudControllerServiceIllegalArgumentException" wsaw:Action="urn:registerServiceCloudControllerServiceIllegalArgumentException"/>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <wsdl:input message="ns:getCartridgeInfoRequest" wsaw:Action="urn:getCartridgeInfo"/>
@@ -348,32 +388,38 @@
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
             <wsdl:input message="ns:unregisterServiceRequest" wsaw:Action="urn:unregisterService"/>
-            <wsdl:output message="ns:unregisterServiceResponse" wsaw:Action="urn:unregisterServiceResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceUnregisteredServiceException" name="CloudControllerServiceUnregisteredServiceException" wsaw:Action="urn:unregisterServiceCloudControllerServiceUnregisteredServiceException"/>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredClusterException" name="CloudControllerServiceUnregisteredClusterException" wsaw:Action="urn:unregisterServiceCloudControllerServiceUnregisteredClusterException"/>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
             <wsdl:input message="ns:terminateAllInstancesRequest" wsaw:Action="urn:terminateAllInstances"/>
-            <wsdl:output message="ns:terminateAllInstancesResponse" wsaw:Action="urn:terminateAllInstancesResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceIllegalArgumentException" name="CloudControllerServiceIllegalArgumentException" wsaw:Action="urn:terminateAllInstancesCloudControllerServiceIllegalArgumentException"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllInstancesCloudControllerServiceInvalidClusterException"/>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <wsdl:input message="ns:getRegisteredCartridgesRequest" wsaw:Action="urn:getRegisteredCartridges"/>
             <wsdl:output message="ns:getRegisteredCartridgesResponse" wsaw:Action="urn:getRegisteredCartridgesResponse"/>
         </wsdl:operation>
-        <wsdl:operation name="startInstances">
-            <wsdl:input message="ns:startInstancesRequest" wsaw:Action="urn:startInstances"/>
-            <wsdl:output message="ns:startInstancesResponse" wsaw:Action="urn:startInstancesResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="startInstance">
             <wsdl:input message="ns:startInstanceRequest" wsaw:Action="urn:startInstance"/>
             <wsdl:output message="ns:startInstanceResponse" wsaw:Action="urn:startInstanceResponse"/>
-        </wsdl:operation>
-        <wsdl:operation name="terminateInstances">
-            <wsdl:input message="ns:terminateInstancesRequest" wsaw:Action="urn:terminateInstances"/>
-            <wsdl:output message="ns:terminateInstancesResponse" wsaw:Action="urn:terminateInstancesResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceIllegalArgumentException" name="CloudControllerServiceIllegalArgumentException" wsaw:Action="urn:startInstanceCloudControllerServiceIllegalArgumentException"/>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startInstanceCloudControllerServiceUnregisteredCartridgeException"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="validatePartition">
+            <soap:operation soapAction="urn:validatePartition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getPendingInstanceCount">
             <soap:operation soapAction="urn:getPendingInstanceCount" style="document"/>
             <wsdl:input>
@@ -383,14 +429,20 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateUnhealthyInstances">
-            <soap:operation soapAction="urn:terminateUnhealthyInstances" style="document"/>
+        <wsdl:operation name="validateDeploymentPolicy">
+            <soap:operation soapAction="urn:validateDeploymentPolicy" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="registerService">
             <soap:operation soapAction="urn:registerService" style="document"/>
@@ -400,6 +452,9 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
             </wsdl:fault>
@@ -409,9 +464,15 @@
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidMemberException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidMemberException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <soap:operation soapAction="urn:getCartridgeInfo" style="document"/>
@@ -430,11 +491,8 @@
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceUnregisteredServiceException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredServiceException"/>
+            <wsdl:fault name="CloudControllerServiceUnregisteredClusterException">
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
@@ -442,30 +500,15 @@
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="startInstances">
-            <soap:operation soapAction="urn:startInstances" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <soap:operation soapAction="urn:getRegisteredCartridges" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="terminateInstances">
-            <soap:operation soapAction="urn:terminateInstances" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -481,10 +524,28 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+            </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="validatePartition">
+            <soap12:operation soapAction="urn:validatePartition" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getPendingInstanceCount">
             <soap12:operation soapAction="urn:getPendingInstanceCount" style="document"/>
             <wsdl:input>
@@ -494,14 +555,20 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateUnhealthyInstances">
-            <soap12:operation soapAction="urn:terminateUnhealthyInstances" style="document"/>
+        <wsdl:operation name="validateDeploymentPolicy">
+            <soap12:operation soapAction="urn:validateDeploymentPolicy" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="registerService">
             <soap12:operation soapAction="urn:registerService" style="document"/>
@@ -511,6 +578,9 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap12:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
             </wsdl:fault>
@@ -520,9 +590,15 @@
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap12:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidMemberException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidMemberException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <soap12:operation soapAction="urn:getCartridgeInfo" style="document"/>
@@ -541,11 +617,8 @@
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceUnregisteredServiceException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredServiceException"/>
+            <wsdl:fault name="CloudControllerServiceUnregisteredClusterException">
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
@@ -553,30 +626,15 @@
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="startInstances">
-            <soap12:operation soapAction="urn:startInstances" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap12:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <soap12:operation soapAction="urn:getRegisteredCartridges" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="terminateInstances">
-            <soap12:operation soapAction="urn:terminateInstances" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -592,10 +650,25 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap12:fault use="literal" name="CloudControllerServiceIllegalArgumentException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+            </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
         <http:binding verb="POST"/>
+        <wsdl:operation name="validatePartition">
+            <http:operation location="validatePartition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getPendingInstanceCount">
             <http:operation location="getPendingInstanceCount"/>
             <wsdl:input>
@@ -605,8 +678,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateUnhealthyInstances">
-            <http:operation location="terminateUnhealthyInstances"/>
+        <wsdl:operation name="validateDeploymentPolicy">
+            <http:operation location="validateDeploymentPolicy"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -628,9 +701,6 @@
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <http:operation location="getCartridgeInfo"/>
@@ -646,39 +716,15 @@
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
             <http:operation location="terminateAllInstances"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="startInstances">
-            <http:operation location="startInstances"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
             <http:operation location="getRegisteredCartridges"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="terminateInstances">
-            <http:operation location="terminateInstances"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -698,22 +744,22 @@
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.129.24.65:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://192.168.1.2:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.129.24.65:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://192.168.1.2:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.129.24.65:9763/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://192.168.1.2:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.129.24.65:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://192.168.1.2:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.129.24.65:9763/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
+            <http:address location="http://192.168.1.2:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.129.24.65:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
+            <http:address location="https://192.168.1.2:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

@@ -21,9 +21,14 @@ package org.apache.stratos.cloud.controller.publisher;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInstanceData;
+import org.apache.stratos.cloud.controller.pojo.IaasContext;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.*;
 import org.jclouds.compute.ComputeService;
@@ -265,8 +270,8 @@ public class CartridgeInstanceDataPublisherTask implements Task{
         String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
         String trustStorePassword = serverConfig.getFirstProperty("Security.TrustStore.Password");
         String bamServerUrl = serverConfig.getFirstProperty("BamServerURL");
-        String adminUsername = FasterLookUpDataHolder.getInstance().getBamUsername();
-        String adminPassword = FasterLookUpDataHolder.getInstance().getBamPassword();
+        String adminUsername = FasterLookUpDataHolder.getInstance().getDataPubConfig().getBamUsername();
+        String adminPassword = FasterLookUpDataHolder.getInstance().getDataPubConfig().getBamPassword();
 
         System.setProperty("javax.net.ssl.trustStore", trustStorePath);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);

@@ -37,7 +37,7 @@ import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.adc.mgt.utils.RepoPasswordMgtUtil;
 import org.apache.stratos.adc.mgt.utils.StratosDBUtils;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.wso2.carbon.context.CarbonContext;
 
 import java.sql.*;

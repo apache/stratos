@@ -237,6 +237,14 @@ public final class CloudControllerConstants {
 	public static final String CLOUD_CONTROLLER_RESOURCE = "/cloud.controller";
 	public static final String DATA_RESOURCE = "/data";
     public static final String TOPOLOGY_RESOURCE = "/topology";
+    public static final String AVAILABILITY_ZONE = "availabilityZone";
+    public static final String KEY_PAIR = "keyPair";
+    public static final String HOST = "host";
+    public static final String SECURITY_GROUP_IDS = "securityGroupIds";
+    public static final String SECURITY_GROUPS = "securityGroups";
+    public static final String SUBNET_ID = "subnetId";
+    public static final String AUTO_ASSIGN_IP = "autoAssignIp";
+    public static final String INSTANCE_TYPE = "instanceType";
 
     
 }

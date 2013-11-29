@@ -31,7 +31,7 @@ import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.Properties;
 

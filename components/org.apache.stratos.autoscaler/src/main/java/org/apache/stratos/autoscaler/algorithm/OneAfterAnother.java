@@ -25,8 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
-import org.apache.stratos.autoscaler.policy.model.Partition;
-import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Completes partitions in the order defined in autoscaler policy, go to next if current one reached the max limit
@@ -39,37 +41,38 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
     	
     	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
     	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    	List<Partition> partitions = partitionGrp.getPartitions();
+    	List<?> partitions = Arrays.asList(partitionGrp.getPartitions());
     	int noOfPartitions = partitions.size();    	
     	
     	for(int i=currentPartitionIndex; i< noOfPartitions; i++)
     	{
-    		currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    		Partition currentPartition = partitions.get(currentPartitionIndex);
-	        String currentPartitionId =  currentPartition.getId();
-	        
-    		if(clusterContext.partitionCountExists(currentPartitionId)){
-    			clusterContext.addPartitionCount(currentPartitionId, 0);
-    		}
-    		
-    		 if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
- 	        	// current partition is free    	        	
- 	        	clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
- 	        	if(log.isDebugEnabled()) 	        		
- 	        		log.debug("Free space found in partition " + currentPartition.getId());
- 	        	
-	            return currentPartition;
-	         }else
-	         {
-	        	 // last partition is reached which is not free
-	        	 if(currentPartitionIndex == noOfPartitions - 1){
-	        		 if(log.isDebugEnabled())
-	        			 log.debug("Last partition also has no space");
-	        		 return null;
-	        	 }
-	        		 	        	 
-	        	 clusterContext.setCurrentPartitionIndex(currentPartitionIndex + 1);
-	         }
+            if (partitions.get(currentPartitionIndex) instanceof Partition) {
+                currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+                String currentPartitionId = currentPartition.getId();
+
+                if (clusterContext.partitionCountExists(currentPartitionId)) {
+                    clusterContext.addPartitionCount(currentPartitionId, 0);
+                }
+
+                if (clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()) {
+                    // current partition is free
+                    clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
+                    if (log.isDebugEnabled())
+                        log.debug("Free space found in partition " + currentPartition.getId());
+
+                    return currentPartition;
+                } else {
+                    // last partition is reached which is not free
+                    if (currentPartitionIndex == noOfPartitions - 1) {
+                        if (log.isDebugEnabled())
+                            log.debug("Last partition also has no space");
+                        return null;
+                    }
+
+                    clusterContext.setCurrentPartitionIndex(currentPartitionIndex + 1);
+                }
+            }
     	}
     	
     	if(log.isDebugEnabled())
@@ -82,30 +85,33 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 
     	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
     	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    	List<Partition> partitions = partitionGrp.getPartitions();
+    	List<?> partitions = Arrays.asList(partitionGrp.getPartitions());
     	
     	for(int i = currentPartitionIndex; i >= 0; i--)
     	{
-    		currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    		Partition currentPartition = partitions.get(currentPartitionIndex);
-	        String currentPartitionId =  currentPartition.getId();
-	        	            
-	        // has more than minimum instances.
-	        if(clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()){
-	        	// current partition is free    	        	
-	        	clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
-	        	if(log.isDebugEnabled())
-	        		log.debug("A free space found for scale down in partition" + currentPartition.getId());
-                return currentPartition;
-            }else{
-            	if (currentPartitionIndex == 0){
-            		if(log.isDebugEnabled())
-            			log.debug("First partition reached with no space to scale down");
-    	        	return null;
-            	}
-        	    //Set next partition as current partition in Autoscaler Context
-                currentPartitionIndex = currentPartitionIndex - 1;                	
-                clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
+            if (partitions.get(currentPartitionIndex) instanceof Partition) {
+                currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
+                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+                String currentPartitionId = currentPartition.getId();
+
+                // has more than minimum instances.
+                if (clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()) {
+                    // current partition is free
+                    clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+                    if (log.isDebugEnabled())
+                        log.debug("A free space found for scale down in partition" +
+                                  currentPartition.getId());
+                    return currentPartition;
+                } else {
+                    if (currentPartitionIndex == 0) {
+                        if (log.isDebugEnabled())
+                            log.debug("First partition reached with no space to scale down");
+                        return null;
+                    }
+                    // Set next partition as current partition in Autoscaler Context
+                    currentPartitionIndex = currentPartitionIndex - 1;
+                    clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
+                }
             }
 	        
     	}

@@ -21,7 +21,7 @@ package org.apache.stratos.adc.mgt.payload;
 
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.text.DecimalFormat;
 
@@ -69,8 +69,8 @@ public class NonCarbonPayload extends Payload {
     private String createPortMappingPayloadString(CartridgeInfo cartridgeInfo) {
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
-        org.apache.stratos.cloud.controller.util.xsd.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
-        for (org.apache.stratos.cloud.controller.util.xsd.PortMapping portMapping : portMappings) {
+        org.apache.stratos.cloud.controller.pojo.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
+        for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : portMappings) {
             String port = portMapping.getPort();
             portMapBuilder.append(port).append("|");
         }

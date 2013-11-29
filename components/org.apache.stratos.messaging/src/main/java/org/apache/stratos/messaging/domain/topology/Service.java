@@ -19,13 +19,17 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import java.io.Serializable;
 import java.util.*;
+import com.jamesmurty.utils.XMLBuilder;
 
 /**
  * Defines a service in the topology. A service represents a cartridge type.
  * Key: serviceName
  */
-public class Service {
+public class Service implements Serializable{
+
+    private static final long serialVersionUID = -8835648141999889756L;
     private String serviceName;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterMap;
@@ -104,4 +108,5 @@ public class Service {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+    
 }

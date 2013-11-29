@@ -10,6 +10,7 @@
     <stream as="healthStats1" name="stratos.agent.health.stats" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[define partition healthStats1Partition by member_id;
+  from healthStats1 [health_description == 'port_not_open'] select member_id insert into fault_message partition by healthStats1Partition;
   from healthStats1 [health_description == 'load_average'] #window.timeBatch(1 min) select member_id, avg(value) as average_load_average insert into average_load_average_stats partition by healthStats1Partition;
   from healthStats1 [health_description == 'memory_consumption'] #window.timeBatch(1 min) select member_id, avg(value) as average_memory_consumption insert into average_memory_consumption_stats partition by healthStats1Partition;]]></queryExpressions>
   <exportedStreams>
@@ -17,5 +18,7 @@
       valueOf="average_load_average_stats" version="1.0.0"/>
     <stream name="average_memory_consumption_stats" passthroughFlow="disable"
       valueOf="average_memory_consumption_stats" version="1.0.0"/>
+    <stream name="fault_message" passthroughFlow="disable"
+      valueOf="fault_message" version="1.0.0"/>
   </exportedStreams>
 </executionPlan>

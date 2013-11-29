@@ -20,7 +20,9 @@ package org.apache.cartridge.autoscaler.service.axiom;
 
 import java.io.File;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
+import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
 import org.xml.sax.SAXParseException;
 
 import junit.framework.TestCase;
@@ -38,63 +40,56 @@ public class AxiomValidationTest extends TestCase {
     
     protected void setUp() throws Exception {
         super.setUp();
-        util1 = new AxiomXpathParser(new File(dir+"cartridges-1.xml"));
-        util2 = new AxiomXpathParser(new File(dir+"cartridges-2.xml"));
-        util3 = new AxiomXpathParser(new File(dir+"cartridges-3.xml"));
-        util4 = new AxiomXpathParser(new File(dir+"cartridges-4.xml"));
-        util5 = new AxiomXpathParser(new File(dir+"cartridges-5.xml"));
-        util6 = new AxiomXpathParser(new File(dir+"cartridges-6.xml"));
-        util7 = new AxiomXpathParser(new File(dir+"cartridges-7.xml"));
-        util8 = new AxiomXpathParser(new File(dir+"cartridges-8.xml"));
-        util9 = new AxiomXpathParser(new File(dir+"cartridges-9.xml"));
-        util1.parse();
-        util2.parse();
-        util3.parse();
-        util4.parse();
-        util5.parse();
-        util6.parse();
-        util7.parse();
-        util8.parse();
-        util9.parse();
     }
 
     public final void testCartridgeValidation() throws Exception {
+        OMElement elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-1.xml"));
         
         // schema 1 - cartridges 
-        assertEquals(true, util1.validate(xmlSchemaCartridges));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridges);
         
-        assertEquals(true, util5.validate(xmlSchemaCartridges));
+        elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-5.xml"));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridges);
         
-        assertEquals(true, util6.validate(xmlSchemaCartridges));
+        elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-6.xml"));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridges);
         
-        assertEquals(true, util7.validate(xmlSchemaCartridges));
+        elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-7.xml"));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridges);
         
-        assertEquals(true, util9.validate(xmlSchemaCartridges));
+        elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-9.xml"));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridges);
         
+        elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-2.xml"));
         // schema 2 - cartridge
-        assertEquals(true, util2.validate(xmlSchemaCartridge));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridge);
         
-        assertEquals(true, util8.validate(xmlSchemaCartridge));
+        elt = AxiomXpathParserUtil.parse(new File(dir+"cartridges-8.xml"));
+        AxiomXpathParserUtil.validate(elt, xmlSchemaCartridge);
     }
     
     public final void testCartridgeInvalidation() {
+        OMElement elt1 = AxiomXpathParserUtil.parse(new File(dir+"cartridges-1.xml"));
+        OMElement elt2 = AxiomXpathParserUtil.parse(new File(dir+"cartridges-2.xml"));
+        OMElement elt3 = AxiomXpathParserUtil.parse(new File(dir+"cartridges-3.xml"));
+        OMElement elt4 = AxiomXpathParserUtil.parse(new File(dir+"cartridges-4.xml"));
         
      // schema 1 - cartridges 
         try {
-            util2.validate(xmlSchemaCartridges);
+            AxiomXpathParserUtil.validate(elt2, xmlSchemaCartridges);
         } catch (Exception e) {
             assertEquals(SAXParseException.class, e.getClass());
         }
         
         try {
-            util3.validate(xmlSchemaCartridges);
+            AxiomXpathParserUtil.validate(elt3, xmlSchemaCartridges);
         } catch (Exception e) {
 
             assertEquals(SAXParseException.class, e.getClass());
         }
         
         try {
-            util4.validate(xmlSchemaCartridges);
+            AxiomXpathParserUtil.validate(elt4, xmlSchemaCartridges);
         } catch (Exception e) {
 
             assertEquals(SAXParseException.class, e.getClass());
@@ -103,21 +98,21 @@ public class AxiomValidationTest extends TestCase {
         // schema 2 - cartridge
         
         try {
-            util1.validate(xmlSchemaCartridge);
+            AxiomXpathParserUtil.validate(elt1, xmlSchemaCartridge);
         } catch (Exception e) {
 
             assertEquals(SAXParseException.class, e.getClass());
         }
         
         try {
-            util3.validate(xmlSchemaCartridge);
+            AxiomXpathParserUtil.validate(elt3, xmlSchemaCartridge);
         } catch (Exception e) {
 
             assertEquals(SAXParseException.class, e.getClass());
         }
         
         try {
-            util4.validate(xmlSchemaCartridge);
+            AxiomXpathParserUtil.validate(elt4, xmlSchemaCartridge);
         } catch (Exception e) {
 
             assertEquals(SAXParseException.class, e.getClass());

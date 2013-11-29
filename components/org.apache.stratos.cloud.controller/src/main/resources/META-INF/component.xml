@@ -28,10 +28,10 @@
             <extension>xml</extension>
             <class>org.apache.stratos.cloud.controller.deployers.CartridgeDeployer</class>
         </deployer>
-        <deployer>
+        <!-- >deployer>
             <directory>services</directory>
             <extension>xml</extension>
             <class>org.apache.stratos.cloud.controller.deployers.ServiceDeployer</class>
-        </deployer>
+        </deployer-->
     </deployers>
 </component>

@@ -145,12 +145,12 @@ public class CassandraDataRetriever {
     private static void getCassandraKeyspace() {
         if (cluster == null) {
             Map<String, String> credentials = new HashMap<String, String>();
-            credentials.put("username", dataHolder.getCassandraUser());
-            credentials.put("password", dataHolder.getCassandraPassword());
+            credentials.put("username", dataHolder.getDataPubConfig().getCassandraUser());
+            credentials.put("password", dataHolder.getDataPubConfig().getCassandraPassword());
 
             cluster =
                       retrieveCassandraCluster(CloudControllerConstants.DEFAULT_CASSANDRA_CLUSTER_NAME,
-                                               dataHolder.getCassandraConnUrl(), credentials);
+                                               dataHolder.getDataPubConfig().getCassandraConnUrl(), credentials);
 
             keyspace =
                        HFactory.createKeyspace(CloudControllerConstants.DEFAULT_CASSANDRA_KEY_SPACE,

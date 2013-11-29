@@ -24,10 +24,9 @@ package org.apache.stratos.adc.mgt.service;
 */
 
 
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 /**
- * @author wso2
  *
  */
 public class RepositoryInfoBean {

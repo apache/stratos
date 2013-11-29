@@ -19,14 +19,15 @@
 
 package org.apache.stratos.autoscaler.util;
 
-import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ClusterContext;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
-import org.apache.stratos.autoscaler.policy.model.Partition;
-import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
+import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 
 
@@ -34,6 +35,8 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
  * This class contains utility methods used by Autoscaler.
  */
 public class AutoscalerUtil {
+    
+    private static final Log log = LogFactory.getLog(AutoscalerUtil.class);
 
 	private AutoscalerUtil() {
 
@@ -43,41 +46,47 @@ public class AutoscalerUtil {
 	 * Updates ClusterContext for given cluster
 	 * @param cluster
 	 * @return ClusterContext - Updated ClusterContext
+	 * @throws PolicyValidationException 
 	 */
-	public static ClusterContext updateClusterContext(Cluster cluster) {
-		AutoscalerContext context = AutoscalerContext.getInstance();
-		ClusterContext clusterContext = context.getClusterContext(cluster.getClusterId());
-		if (null == clusterContext) {
+    public static ClusterContext getClusterContext(Cluster cluster) throws PolicyValidationException {
+        // FIXME fix the following code to correctly update
+        // AutoscalerContext context = AutoscalerContext.getInstance();
+        if (null == cluster) {
+            return null;
+        }
 
-			clusterContext = new ClusterContext(cluster.getClusterId(), cluster.getServiceName());
-			AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(cluster.getAutoscalePolicyName());
+        log.info("Deployment policy name: "+cluster.getDeploymentPolicyName());
+        log.info("Autoscaler policy name: "+cluster.getAutoscalePolicyName());
+        
+        AutoscalePolicy policy =
+                                 PolicyManager.getInstance()
+                                              .getAutoscalePolicy(cluster.getAutoscalePolicyName());
+        DeploymentPolicy deploymentPolicy =
+                                            PolicyManager.getInstance()
+                                                         .getDeploymentPolicy(cluster.getDeploymentPolicyName());
 
-            if(policy!=null){
+        log.info("Autoscaler policy: "+policy+" Deployment Policy: "+deploymentPolicy);
+            CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
+        ClusterContext clusterContext =
+                                        new ClusterContext(cluster.getClusterId(),
+                                                           cluster.getServiceName(),
+                                                           deploymentPolicy);
 
-                //get values from policy
-                LoadThresholds loadThresholds = policy.getLoadThresholds();
-                float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-                float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-                float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
+        if (policy != null) {
 
+            // get values from policy
+            LoadThresholds loadThresholds = policy.getLoadThresholds();
+            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+            float secondDerivative = loadThresholds.getRequestsInFlight().getSecondDerivative();
 
-                clusterContext.setRequestsInFlightGradient(gradientLimit);
-                clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-                clusterContext.setAverageRequestsInFlight(averageLimit);
-                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicyName());
-                if(deploymentPolicy!=null){
-                	for(PartitionGroup group :deploymentPolicy.getPartitionGroups()){
-                		for (Partition partition : group.getPartitions()) {
-                            clusterContext.addPartitionCount(partition.getId(), 0);
-                    }
-                	}
-                }
-                
-             }
+            clusterContext.setRequestsInFlightGradient(gradientLimit);
+            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+            clusterContext.setAverageRequestsInFlight(averageLimit);
 
-			context.addClusterContext(clusterContext);
-		}
-		return clusterContext;
-	}
+        }
+
+        return clusterContext;
+    }
 
 }

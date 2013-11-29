@@ -20,14 +20,15 @@
 package org.apache.stratos.adc.mgt.test;
 
 import junit.framework.TestCase;
+
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.payload.Payload;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.payload.PayloadFactory;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.util.xsd.PortMapping;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
 
 import java.math.BigDecimal;
 

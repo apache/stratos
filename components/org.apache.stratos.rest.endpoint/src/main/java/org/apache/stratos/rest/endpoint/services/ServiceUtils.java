@@ -34,8 +34,8 @@ import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.cloud.controller.util.xsd.CartridgeInfo;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;

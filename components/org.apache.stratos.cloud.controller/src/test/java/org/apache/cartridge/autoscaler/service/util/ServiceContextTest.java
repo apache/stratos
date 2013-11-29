@@ -18,7 +18,8 @@
  */
 package org.apache.cartridge.autoscaler.service.util;
 
-import org.apache.stratos.cloud.controller.util.ServiceContext;
+import org.apache.stratos.cloud.controller.pojo.ServiceContext;
+
 import junit.framework.TestCase;
 
 public class ServiceContextTest extends TestCase {

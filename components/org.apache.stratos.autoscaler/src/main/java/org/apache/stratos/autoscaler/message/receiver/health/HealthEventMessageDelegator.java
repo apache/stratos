@@ -19,19 +19,13 @@
 package org.apache.stratos.autoscaler.message.receiver.health;
 
 import com.google.gson.stream.JsonReader;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-
 import javax.jms.TextMessage;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 
@@ -61,31 +55,32 @@ public class HealthEventMessageDelegator implements Runnable {
                 log.info(clusterId);
                 log.info(value);
                 log.info(eventName);
-                for (Service service :  TopologyManager.getTopology().getServices()){
-
-                    if(service.clusterExists(clusterId)){
-
-                        if(!AutoscalerContext.getInstance().clusterExists(clusterId)){
-
-                            Cluster cluster = service.getCluster(clusterId);
-                            AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(cluster.getAutoscalePolicyName());
-
-                            ClusterContext clusterContext = new ClusterContext(clusterId, service.getServiceName());
-
-                            LoadThresholds loadThresholds = autoscalePolicy.getLoadThresholds();
-                            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-                            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-                            float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
-
-                            clusterContext.setAverageRequestsInFlight(averageLimit);
-                            clusterContext.setRequestsInFlightGradient(gradientLimit);
-                            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-
-                            AutoscalerContext.getInstance().addClusterContext(clusterContext);
-                        }
-                        break;
-                    }
-                }
+//                for (Service service :  TopologyManager.getTopology().getServices()){
+//
+//                    if(service.clusterExists(clusterId)){
+//
+//                        if(!AutoscalerContext.getInstance().clusterExists(clusterId)){
+//
+//                            Cluster cluster = service.getCluster(clusterId);
+//                            AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(cluster.getAutoscalePolicyName());
+//                            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicyName());
+//
+//                            ClusterContext clusterContext = new ClusterContext(clusterId, service.getServiceName(), deploymentPolicy.getAllPartitions());
+//
+//                            LoadThresholds loadThresholds = autoscalePolicy.getLoadThresholds();
+//                            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+//                            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+//                            float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
+//
+//                            clusterContext.setAverageRequestsInFlight(averageLimit);
+//                            clusterContext.setRequestsInFlightGradient(gradientLimit);
+//                            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
+//
+//                            AutoscalerContext.getInstance().addClusterContext(clusterContext);
+//                        }
+//                        break;
+//                    }
+//                }
                 if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setAverageRequestsInFlight(value);
 

@@ -27,9 +27,11 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.Partition;
-import org.apache.stratos.autoscaler.policy.model.PartitionGroup;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Completes partitions in the order defined in autoscaler policy, go to next if current one reached the max limit
@@ -46,36 +48,43 @@ public class PartitionGroupOneAfterAnother implements AutoscaleAlgorithm {
     	//Find relevant policyId using topology
     	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getDeploymentPolicyName();
     	    	
-    	List<PartitionGroup> partitionGroups = PolicyManager.getInstance().getDeploymentPolicy(policyId).getPartitionGroups();  	    	    
+    	List<?> partitionGroups = Arrays.asList(PolicyManager.getInstance().getDeploymentPolicy(policyId).getPartitionGroups());  	    	    
     	int currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();  
     	
     	for(int i= currentPartitionGroupIndex; i< partitionGroups.size(); i++)
     	{
-    		currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();   		
-	        PartitionGroup currentPartitionGroup = partitionGroups.get(currentPartitionGroupIndex);
-	        String alogirthm = currentPartitionGroup.getPartitionAlgo();
-	        
-	        if(log.isDebugEnabled())
-	        	log.debug("Trying current partition group " + currentPartitionGroup.getId());
-	        // search withing the partition group
-	        Partition partition = AutoscalerRuleEvaluator.getInstance().getAutoscaleAlgorithm(alogirthm).getNextScaleUpPartition(currentPartitionGroup, clusterId);
-	        
-	        if(partition != null){
-	        	if(log.isDebugEnabled())
-	        		log.debug("No partition found in partition group" +currentPartitionGroup.getId());
-	        	return partition;
-	        }else{
-	        	clusterContext.setCurrentPartitionIndex(0);
-	        	//last partition group has reached
-	        	if(currentPartitionGroupIndex == partitionGroups.size() - 1){
-	        		if(log.isDebugEnabled())
-	        			log.debug("First partition group has reached wihtout space ");
-	        		return null;
-	        	}
-	        	// current partition group is filled	        	
-	        	clusterContext.setCurrentPartitionGroupIndex(currentPartitionGroupIndex + 1);	        	
-	        }
-	       
+            if (partitionGroups.get(currentPartitionGroupIndex) instanceof PartitionGroup) {
+                currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();
+                PartitionGroup currentPartitionGroup =
+                                                       (PartitionGroup) partitionGroups.get(currentPartitionGroupIndex);
+                String alogirthm = currentPartitionGroup.getPartitionAlgo();
+
+                if (log.isDebugEnabled())
+                    log.debug("Trying current partition group " + currentPartitionGroup.getId());
+                // search withing the partition group
+                Partition partition =
+                                      AutoscalerRuleEvaluator.getInstance()
+                                                             .getAutoscaleAlgorithm(alogirthm)
+                                                             .getNextScaleUpPartition(currentPartitionGroup,
+                                                                                      clusterId);
+
+                if (partition != null) {
+                    if (log.isDebugEnabled())
+                        log.debug("No partition found in partition group" +
+                                  currentPartitionGroup.getId());
+                    return partition;
+                } else {
+                    clusterContext.setCurrentPartitionIndex(0);
+                    // last partition group has reached
+                    if (currentPartitionGroupIndex == partitionGroups.size() - 1) {
+                        if (log.isDebugEnabled())
+                            log.debug("First partition group has reached wihtout space ");
+                        return null;
+                    }
+                    // current partition group is filled
+                    clusterContext.setCurrentPartitionGroupIndex(currentPartitionGroupIndex + 1);
+                }
+            }
     	}
     	
     	return null;
@@ -89,32 +98,41 @@ public class PartitionGroupOneAfterAnother implements AutoscaleAlgorithm {
     	String policyId = TopologyManager.getTopology().getService(serviceId).getCluster(clusterId).getDeploymentPolicyName();
     	int currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();
     	
-    	List<PartitionGroup> partitionGroups = PolicyManager.getInstance().getDeploymentPolicy(policyId).getPartitionGroups();  	    	    
+    	List<?> partitionGroups = Arrays.asList(PolicyManager.getInstance().getDeploymentPolicy(policyId).getPartitionGroups());  	    	    
     	
     	for(int i = currentPartitionGroupIndex; i >= 0; i--)
     	{
-    		currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();    		
-	        PartitionGroup currentPartitionGroup = partitionGroups.get(currentPartitionGroupIndex);
-	        String alogirthm = currentPartitionGroup.getPartitionAlgo();
-	        if(log.isDebugEnabled())
-	        	log.debug("Trying scale down in partition group " + currentPartitionGroup.getId());
-	        // search within the partition group
-	        Partition partition = AutoscalerRuleEvaluator.getInstance().getAutoscaleAlgorithm(alogirthm).getNextScaleDownPartition(currentPartitionGroup, clusterId);
-	        
-	        if(partition != null){
-	        	if(log.isDebugEnabled())
-	        		log.debug("No free partition in partition group" + currentPartitionGroup.getId());
-	        	return partition;
-	        }else{
-	        	clusterContext.setCurrentPartitionIndex(0);
-	        	//first partition group has reached. None of the partitions group has less than minimum instance count.  
-	        	if(currentPartitionGroupIndex == 0)
-	        		return null;
-	        	
-	        	// current partition group has no extra instances      		        	
-	        	clusterContext.setCurrentPartitionGroupIndex(currentPartitionGroupIndex - 1);	        	
-	        }
-	       
+            if (partitionGroups.get(currentPartitionGroupIndex) instanceof PartitionGroup) {
+                currentPartitionGroupIndex = clusterContext.getCurrentPartitionGroupIndex();
+                PartitionGroup currentPartitionGroup =
+                                                       (PartitionGroup) partitionGroups.get(currentPartitionGroupIndex);
+                String alogirthm = currentPartitionGroup.getPartitionAlgo();
+                if (log.isDebugEnabled())
+                    log.debug("Trying scale down in partition group " +
+                              currentPartitionGroup.getId());
+                // search within the partition group
+                Partition partition =
+                                      AutoscalerRuleEvaluator.getInstance()
+                                                             .getAutoscaleAlgorithm(alogirthm)
+                                                             .getNextScaleDownPartition(currentPartitionGroup,
+                                                                                        clusterId);
+
+                if (partition != null) {
+                    if (log.isDebugEnabled())
+                        log.debug("No free partition in partition group" +
+                                  currentPartitionGroup.getId());
+                    return partition;
+                } else {
+                    clusterContext.setCurrentPartitionIndex(0);
+                    // first partition group has reached. None of the partitions group has less than
+                    // minimum instance count.
+                    if (currentPartitionGroupIndex == 0)
+                        return null;
+
+                    // current partition group has no extra instances
+                    clusterContext.setCurrentPartitionGroupIndex(currentPartitionGroupIndex - 1);
+                }
+            }
     	}
     	// none of the partitions groups are free.
     	return null;

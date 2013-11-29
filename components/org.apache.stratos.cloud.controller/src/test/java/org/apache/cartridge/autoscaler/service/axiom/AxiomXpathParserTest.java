@@ -19,16 +19,19 @@
 package org.apache.cartridge.autoscaler.service.axiom;
 
 import junit.framework.TestCase;
+
+import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
+import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
+import org.apache.stratos.cloud.controller.axiom.parser.CloudControllerConfigParser;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 
 import java.io.File;
 import java.util.List;
 
 public class AxiomXpathParserTest extends TestCase {
-    AxiomXpathParser parser;
     File xmlFile = new File("src/test/resources/cloud-controller.xml");
+    OMElement docElt;
 
     public AxiomXpathParserTest(String name) {
         super(name);
@@ -36,26 +39,24 @@ public class AxiomXpathParserTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        parser = new AxiomXpathParser(xmlFile);
-        parser.parse();
+        docElt = AxiomXpathParserUtil.parse(xmlFile);
+
+        CloudControllerConfigParser.parse(docElt);
     }
     
     public void testGetMatchingNodes(){
-        List<OMNode> list = parser.getMatchingNodes("/cloudController/iaasProviders/iaasProvider/provider");
+        List<OMNode> list = AxiomXpathParserUtil.getMatchingNodes("/cloudController/iaasProviders/iaasProvider/provider", docElt);
         assertEquals(1, list.size());
-        parser.setIaasProvidersList();
         assertEquals(1, FasterLookUpDataHolder.getInstance().getIaasProviders().size());
     }
     
     public void testDataPublisherConfig() {
-		parser.setDataPublisherRelatedData();
 		assertEquals(true, FasterLookUpDataHolder.getInstance().getEnableBAMDataPublisher());
-		assertEquals("nirmal", FasterLookUpDataHolder.getInstance().getBamUsername());
-		assertEquals("nirmal", FasterLookUpDataHolder.getInstance().getBamPassword());
+		assertEquals("nirmal", FasterLookUpDataHolder.getInstance().getDataPubConfig().getBamUsername());
+		assertEquals("nirmal", FasterLookUpDataHolder.getInstance().getDataPubConfig().getBamPassword());
 	}
     
     public void testTopologySynchParser() {
-		parser.setTopologySyncRelatedData();
 		assertNotNull(FasterLookUpDataHolder.getInstance().getTopologyConfig());
 		assertEquals("1 * * * * ? *", FasterLookUpDataHolder.getInstance().getTopologyConfig().getProperty("cron"));
 	}

@@ -37,7 +37,7 @@ public class Cluster implements Serializable {
     private String hostName;
     private String tenantRange;
     private String autoscalePolicyName;
-    private String deploymentPolicyName;
+    private String deploymentPolicyName = "economy-deployment";
     private Cloud cloud;
     private Region region;
     private Zone zone;

@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.deployers;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.AbstractDeployer;
 import org.apache.axis2.deployment.DeploymentException;
@@ -25,9 +26,17 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
+import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
+import org.apache.stratos.cloud.controller.axiom.parser.CartridgeConfigParser;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.Host;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.Region;
+import org.apache.stratos.cloud.controller.pojo.Zone;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.*;
@@ -40,7 +49,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * All the {@link org.apache.stratos.cloud.controller.util.Cartridge}s will get deployed / undeployed / updated via this class.
+ * All the {@link org.apache.stratos.cloud.controller.pojo.Cartridge}s will get deployed / undeployed / updated via this class.
  */
 public class CartridgeDeployer extends AbstractDeployer{
     
@@ -68,33 +77,36 @@ public class CartridgeDeployer extends AbstractDeployer{
     public void deploy(DeploymentFileData deploymentFileData) throws DeploymentException {
         
         log.debug("Started to deploy the deployment artifact: "+deploymentFileData.getFile());
-        
-        AxiomXpathParser parser = new AxiomXpathParser(deploymentFileData.getFile());
-        parser.parse();
 
         try {
+            OMElement docElt = AxiomXpathParserUtil.parse(deploymentFileData.getFile());
+            String fileName = deploymentFileData.getFile().getAbsolutePath();
+            
         	// validate
-            validateCartridge(parser);
+            validateCartridge(docElt, fileName);
             
 			// deploy - grab cartridges
-			List<Cartridge> cartridges = parser.getCartridgesList();
+			List<Cartridge> cartridges = CartridgeConfigParser.parse(fileName, docElt);
 
-			ThreadExecutor exec = new ThreadExecutor(3);
+			// update map
+			fileToCartridgeListMap.put(deploymentFileData.getAbsolutePath(),
+			                           new ArrayList<Cartridge>(cartridges));
+			
+			ThreadExecutor exec = new ThreadExecutor();
 			// create Jclouds objects, for each IaaS
 			for (Cartridge cartridge : cartridges) {
 				// jclouds object building is time consuming, hence I use Java executor framework
 				exec.execute(new JcloudsObjectBuilder(cartridge, deploymentFileData));
 			}
+			// wait till the jobs finish.
 			exec.shutdown();
-			// update map
-			fileToCartridgeListMap.put(deploymentFileData.getAbsolutePath(),
-			                           new ArrayList<Cartridge>(cartridges));
 
+			TopologyBuilder.handleServiceCreated(cartridges);
 			log.info("Successfully deployed the Cartridge definition specified at " + deploymentFileData.getAbsolutePath());
-            TopologyBuilder.handleServiceCreated(cartridges);
+			
         } catch (Exception e) {
 			String msg = "Invalid deployment artefact at "+deploymentFileData.getAbsolutePath();
-            // back up the file
+            // back up the file - this will in-turn triggers undeploy()
             File f = deploymentFileData.getFile();
             f.renameTo(new File(deploymentFileData.getAbsolutePath()+".back"));
             log.error(msg, e);
@@ -102,13 +114,13 @@ public class CartridgeDeployer extends AbstractDeployer{
 		}
     }
     
-    private void validateCartridge(AxiomXpathParser parser) throws Exception {
+    private void validateCartridge(final OMElement elt, final String fileName) throws MalformedConfigurationFileException {
         boolean validated = false;
         Exception firstException = null;
 
         try{
             // first try to validate using cartridges schema
-            parser.validate(cartridgesSchema);
+            AxiomXpathParserUtil.validate(elt, cartridgesSchema);
             validated = true;
             
         }catch (Exception e) {
@@ -118,14 +130,14 @@ public class CartridgeDeployer extends AbstractDeployer{
         if(!validated){
             try{
                 // Now try to validate using cartridge schema
-                parser.validate(cartridgeSchema);
+                AxiomXpathParserUtil.validate(elt, cartridgeSchema);
                 validated = true;
                 log.debug("Cartridge validation was successful.");
                 
             }catch (Exception e) {
-                String msg = "Cartridge XML validation failed. Invalid Cartridge XML: "+parser.getXmlSource().getAbsolutePath();
+                String msg = "Cartridge XML validation failed. Invalid Cartridge XML: "+fileName;
                 log.error(msg, firstException);
-                throw firstException;
+                throw new MalformedConfigurationFileException(msg, firstException);
             }
         }
         

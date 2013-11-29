@@ -19,18 +19,21 @@ package org.apache.stratos.cloud.controller.topology;
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.Cartridge;
-import org.apache.stratos.cloud.controller.util.PortMapping;
-import org.apache.stratos.cloud.controller.util.ServiceContext;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.domain.topology.Partition;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * this is to send the relevant events from cloud controller to topology topic
@@ -61,39 +64,37 @@ public class TopologyEventSender {
         }
     }
 
-     public static void sendPartitionCreatedEvent(Partition partition) {
-         PartitionCreatedEvent partitionCreatedEvent =
-                 new PartitionCreatedEvent(partition.getId(),
-                                           partition.getScope());
-         partitionCreatedEvent.setProperties(partition.getProperties());
+//     public static void sendPartitionCreatedEvent(Partition partition) {
+//         PartitionCreatedEvent partitionCreatedEvent =
+//                 new PartitionCreatedEvent(partition);
+//
+//         if(log.isInfoEnabled()) {
+//             log.info(String.format("Publishing partition created event: [partition] %s", partition.getId()));
+//         }
+//         publishEvent(partitionCreatedEvent);
+//     }
 
-         if(log.isInfoEnabled()) {
-             log.info(String.format("Publishing partition created event: [partition] %s", partition.getId()));
-         }
-         publishEvent(partitionCreatedEvent);
-     }
-
-    public static void sendPartitionUpdatedEvent(Partition partition, String oldPartitionId) {
-        PartitionUpdatedEvent partitionUpdatedEvent =
-                new PartitionUpdatedEvent(partition.getId(),
-                                          partition.getScope(),
-                                          oldPartitionId);
-        partitionUpdatedEvent.setProperties(partition.getProperties());
-
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing partition updated event: [partition] %s", partition.getId()));
-        }
-        publishEvent(partitionUpdatedEvent);
-    }
-
-    public static void sendPartitionRemovedEvent(Partition partition) {
-        PartitionRemovedEvent partitionRemovedEvent = new PartitionRemovedEvent(partition.getId());
-
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing partition removed event: [partition] %s", partition.getId()));
-        }
-        publishEvent(partitionRemovedEvent);
-    }
+//    public static void sendPartitionUpdatedEvent(Partition partition, String oldPartitionId) {
+//        PartitionUpdatedEvent partitionUpdatedEvent =
+//                new PartitionUpdatedEvent(partition.getId(),
+//                                          partition.getScope(),
+//                                          oldPartitionId);
+//        partitionUpdatedEvent.setProperties(partition.getProperties());
+//
+//        if(log.isInfoEnabled()) {
+//            log.info(String.format("Publishing partition updated event: [partition] %s", partition.getId()));
+//        }
+//        publishEvent(partitionUpdatedEvent);
+//    }
+//
+//    public static void sendPartitionRemovedEvent(Partition partition) {
+//        PartitionRemovedEvent partitionRemovedEvent = new PartitionRemovedEvent(partition.getId());
+//
+//        if(log.isInfoEnabled()) {
+//            log.info(String.format("Publishing partition removed event: [partition] %s", partition.getId()));
+//        }
+//        publishEvent(partitionRemovedEvent);
+//    }
 
     public static void sendServiceRemovedEvent(List<Cartridge> cartridgeList) {
         ServiceRemovedEvent serviceRemovedEvent;
@@ -107,40 +108,40 @@ public class TopologyEventSender {
         }
     }
 
-    public static void sendClusterCreatedEvent(ServiceContext serviceContext) {
-        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(serviceContext.getCartridgeType(),
-                                                                          serviceContext.getClusterId(),
-                                                                          serviceContext.getHostName());
-        clusterCreatedEvent.setTenantRange(serviceContext.getTenantRange());
-        clusterCreatedEvent.setAutoscalingPolicyName(serviceContext.getAutoScalerPolicyName());
+    public static void sendClusterCreatedEvent(Registrant registrant) {
+        Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(registrant.getCartridgeType(),
+                                                                          registrant.getClusterId(),
+                                                                          registrant.getHostName());
+        clusterCreatedEvent.setTenantRange(registrant.getTenantRange());
+        clusterCreatedEvent.setAutoscalingPolicyName(registrant.getAutoScalerPolicyName());
+        clusterCreatedEvent.setProperties(props);
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster created event: [service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s",
-                    serviceContext.getCartridgeType(), serviceContext.getClusterId(), serviceContext.getHostName(), serviceContext.getTenantRange(), serviceContext.getAutoScalerPolicyName()));
+            log.info(String.format("Publishing cluster created event: " +
+                    "[service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s",
+                                   registrant.getCartridgeType(), registrant.getClusterId(), 
+                                   registrant.getHostName(), registrant.getTenantRange(), registrant.getAutoScalerPolicyName()));
         }
         publishEvent(clusterCreatedEvent);
 
     }
 
-    public static void sendClusterRemovedEvent(ServiceContext serviceContext) {
-        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(serviceContext.getCartridgeType(),
-                                                                          serviceContext.getClusterId(),
-                                                                          serviceContext.getHostName());
+    public static void sendClusterRemovedEvent(ClusterContext ctxt) {
+        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getHostName());
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster removed event: [service] %s [cluster] %s", serviceContext.getCartridgeType(), serviceContext.getClusterId()));
+            log.info(String.format("Publishing cluster removed event: [service] %s [cluster] %s", ctxt.getCartridgeType(), ctxt.getClusterId()));
         }
         publishEvent(clusterRemovedEvent);
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId,
-                                                Partition partition) {
+    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId) {
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName,
                                                                              clusterId,
                                                                              memberId,
                                                                              nodeId);
-        instanceSpawnedEvent.setPartition(partition);
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [member] %s [node] %s", serviceName, clusterId, memberId, nodeId));
         }

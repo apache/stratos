@@ -27,6 +27,7 @@ import java.lang.System;
 import java.util.HashMap;
 import java.util.Map;
 import java.lang.management.ManagementFactory;
+import java.net.*;
 
 public class HealthPublisherClient {
 
@@ -44,6 +45,13 @@ public class HealthPublisherClient {
 
         statsMap.put("memory_consumption", memoryConsumption);
         statsMap.put("load_average", (double)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage());
+
+        // This section checks open ports in the vm
+        boolean isOpen = checkOpenPorts();
+
+        if ( !isOpen ) {
+            statsMap.put("port_not_open", 0.0);
+        }
 
         Object statObj = (Object)statsMap;
 
@@ -63,5 +71,22 @@ public class HealthPublisherClient {
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private boolean checkOpenPorts() {
+        int portNumber = 0;
+        String ports = System.getProperty("open.ports");
+        String[] portsArray = ports.split(",");
+
+        for (int i = 0; i < portsArray.length; i++) {
+            try {
+                portNumber = Integer.parseInt(portsArray[i].trim());
+                Socket ServerSok = new Socket("127.0.0.1", portNumber);
+                ServerSok.close();
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
     }
 }
