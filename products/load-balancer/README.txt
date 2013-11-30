@@ -1,8 +1,8 @@
 ================================================================================
-                        Apache Stratos Load Balancer 2.0.5
+                        Apache Stratos Load Balancer 4.0.0
 ================================================================================
 
-Welcome to the Apache Stratos Load Balancer 2.0.5 release
+Welcome to the Apache Stratos Load Balancer 4.0.0
 
 Apache Stratos LB is a lightweight and easy-to-use Open Source Load Balancer
 (LB) available under the Apache Software License v2.0. Apache Stratos LB allows
@@ -43,29 +43,24 @@ System Requirements
 Installation & Running
 ==========================
 
-1. Extract the wso2elb-2.0.5.zip and go to the extracted directory
-2. Run the stratos.sh or stratos.bat as appropriate
-3. Configure the load balancer to manage the load across the instants to be balanced.
+1. Extract the load balancer binary package and go to the extracted directory.
+2. Update load balancer configuration: repository/conf/loadbalancer.conf.
+3. Run bin/stratos.sh or bin/stratos.bat as appropriate.
 
 Apache Stratos LB 2.0.5 distribution directory structure
 =============================================================
 
     CARBON_HOME
 	|- bin <folder>
-    |- dbscripts <folder>
 	|- lib <folder>
 	|- repository <folder>
 	|- tmp <folder>
 	|- LICENSE.txt <file>
 	|- README.txt <file>
-	|- INSTALL.txt <file>		
-	|- release-notes.html <file>
+	|- INSTALL.txt <file>
 
     - bin
 	  Contains various scripts, .sh & .bat files
-
-    - dbscripts
-    Contains all the database scripts
 
     - lib
 	  Contains the basic set of libraries required to startup LB
@@ -94,7 +89,7 @@ Apache Stratos LB 2.0.5 distribution directory structure
       This document will contain information on installing Apache Stratos LB
 
     - release-notes.html
-	  Release information for Apache Stratos LB 2.0.5
+	  Release information for Apache Stratos load balancer.
 
 
 Support

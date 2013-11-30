@@ -285,7 +285,7 @@ exec "$JAVACMD" \
         -Dwso2.server.standalone=true \
         -Dcarbon.registry.root=/ \
         -Dcarbon.home="$CARBON_HOME" \
-        -Dloadbalancer.conf=file:repository/conf/loadbalancer.conf \
+        -Dloadbalancer.conf.file="$CARBON_HOME/repository/conf/loadbalancer.conf" \
         -Djava.util.logging.config.file="$CARBON_HOME/lib/log4j.properties" \
         -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
         -Dconf.location="$CARBON_HOME/repository/conf" \

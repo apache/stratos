@@ -33,6 +33,7 @@
                 <exclude>**/conf/synapse.xml</exclude>
                 <exclude>**/conf/cipher-text.properties</exclude>
                 <exclude>**/log4j.properties</exclude>
+                <exclude>**/dbscripts/**</exclude>
                 <exclude>**/native/*</exclude>
                 <exclude>**/services/sample01.aar</exclude>
                 <exclude>**/repository/services/version/**</exclude>
