@@ -37,6 +37,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 
 import java.rmi.RemoteException;
+import java.util.UUID;
 
 
 /**
@@ -102,9 +103,13 @@ public class CloudControllerClient {
         }
     }
 
-    public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
+    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
         try {
-            stub.startInstance(clusterId, partition);
+            org.apache.stratos.cloud.controller.pojo.MemberContext member = new org.apache.stratos.cloud.controller.pojo.MemberContext();
+            member.setClusterId(clusterId);
+            member.setPartition(partition);
+            member.setInitTime(System.currentTimeMillis());
+            return stub.startInstance(member);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             log.error(e.getMessage());
             throw new SpawningException(e);
@@ -117,6 +122,7 @@ public class CloudControllerClient {
             throw new SpawningException(msg, e);
         }
     }
+    
 
     public void terminate(String memberId) throws TerminationException {
         //call CC terminate method

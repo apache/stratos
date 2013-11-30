@@ -61,7 +61,7 @@ public class ClusterContext {
 
     private Properties properties;
 
-    private Map<String, MemberContext> memberContextMap;
+    private Map<String, MemberStatsContext> memberContextMap;
     private DeploymentPolicy deploymentPolicy;
 
     @SuppressWarnings("unchecked")
@@ -78,7 +78,7 @@ public class ClusterContext {
                 }
             }
         }
-        memberContextMap = new HashMap<String, MemberContext>();
+        memberContextMap = new HashMap<String, MemberStatsContext>();
         partitionCountMap = new HashMap<String, Integer>();
         
         for (Partition partition : partitionsOfThisCluster) {
@@ -135,13 +135,13 @@ public class ClusterContext {
      *
      * @param memberContext will be added to map
      */
-    public void addMemberContext(MemberContext memberContext) {
+    public void addMemberContext(MemberStatsContext memberContext) {
 
         memberContextMap.put(memberContext.getMemberId(), memberContext);
     }
 
     /**
-     * {@link MemberContext} which carries memberId will be removed from map
+     * {@link MemberStatsContext} which carries memberId will be removed from map
      * @param memberId
      */
     public void removeMemberContext(String memberId){
@@ -188,7 +188,7 @@ public class ClusterContext {
         return 0;
     }
 
-    public void setMemberContextMap(Map<String, MemberContext> memberContextMap) {
+    public void setMemberContextMap(Map<String, MemberStatsContext> memberContextMap) {
 
         this.memberContextMap = memberContextMap;
     }

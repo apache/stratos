@@ -23,12 +23,12 @@ package org.apache.stratos.autoscaler;
  * This class will keep additional parameters such as load average and memory consumption
  */
 
-public class MemberContext {
+public class MemberStatsContext {
     private float loadAverage;
     private float memoryConsumption;
     private String memberId;
 
-    public MemberContext(String memberId){
+    public MemberStatsContext(String memberId){
         this.memberId = memberId;
     }
 

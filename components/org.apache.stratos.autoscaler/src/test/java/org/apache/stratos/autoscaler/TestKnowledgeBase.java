@@ -99,4 +99,8 @@ public class TestKnowledgeBase {
 //        ksession.execute(p);
         
     }
+    
+    public static String get() {
+        return "null";
+    }
 }

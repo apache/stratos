@@ -41,7 +41,7 @@ public class ClusterMonitor implements Runnable{
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String clusterId;
     private ClusterContext clusterCtxt;
-    private List<MemberContext> memberCtxt;
+    private List<MemberStatsContext> memberCtxt;
     private Map<String, PartitionContext> partitionCtxts;
     private StatefulKnowledgeSession ksession;
     private boolean isDestroyed;
@@ -71,11 +71,11 @@ public class ClusterMonitor implements Runnable{
         this.clusterCtxt = clusterCtxt;
     }
 
-    public List<MemberContext> getMemberCtxt() {
+    public List<MemberStatsContext> getMemberCtxt() {
         return memberCtxt;
     }
 
-    public void setMemberCtxt(List<MemberContext> memberCtxt) {
+    public void setMemberCtxt(List<MemberStatsContext> memberCtxt) {
         this.memberCtxt = memberCtxt;
     }
 
@@ -115,7 +115,7 @@ public class ClusterMonitor implements Runnable{
     public void run() {
 
         while (!isDestroyed()) {
-            log.info("Cluster monitor is running..");
+            log.debug("Cluster monitor is running..");
             try {
                 minInstanceCountCheck();
             } catch (Exception e) {
@@ -143,7 +143,7 @@ public class ClusterMonitor implements Runnable{
                 }
                 ctxt.setMinimumMemberCount(partition.getPartitionMin());
                 
-                AutoscalerRuleEvaluator.evaluate(ksession, facthandle, ctxt);
+                facthandle = AutoscalerRuleEvaluator.evaluate(ksession, facthandle, ctxt);
             }
         }
     }
