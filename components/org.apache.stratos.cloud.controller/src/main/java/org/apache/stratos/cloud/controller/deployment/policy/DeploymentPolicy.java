@@ -60,7 +60,7 @@ public class DeploymentPolicy implements Serializable{
         this.id = value;
     }
     
-    public void setPartitionGroup(PartitionGroup[] groups) {
+    public void setPartitionGroups(PartitionGroup[] groups) {
         this.partitionGroups = groups;
     }
 
