@@ -32,7 +32,8 @@ public class Serializer {
     public static void serializeToFile(Object serializableObj, String filePath) throws IOException {
 
         File outFile = new File(filePath);
-        ObjectOutput ObjOut = null;
+        ObjectOutput objOut = null;
+        FileOutputStream fileOutputStream = null;
         
         try {
 
@@ -41,9 +42,9 @@ public class Serializer {
             } else{
                 log.debug("Serialization file is already existing at "+filePath);
             }
-            
-            ObjOut = new ObjectOutputStream(new FileOutputStream(outFile));
-            ObjOut.writeObject(serializableObj);
+            fileOutputStream = new FileOutputStream(outFile);
+            objOut = new ObjectOutputStream(fileOutputStream);
+            objOut.writeObject(serializableObj);
 
         } catch (IOException e) {
             log.error("Failed to serialize the object "+serializableObj.toString()
@@ -51,7 +52,12 @@ public class Serializer {
             throw e;
             
         } finally{
-            ObjOut.close();
+            if(objOut != null) {
+                objOut.close();
+            }
+            if(fileOutputStream != null) {
+                fileOutputStream.close();
+            }
         }
 
     }
@@ -72,10 +78,12 @@ public class Serializer {
     	  
     	  return bos.toByteArray();
     	  
-    	} finally {
-    	  out.close();
-    	  bos.close();
-    	}
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
 
     }
 
@@ -95,10 +103,12 @@ public class Serializer {
 
     	  return bos.toByteArray();
 
-    	} finally {
-    	  out.close();
-    	  bos.close();
-    	}
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
 
     }
 

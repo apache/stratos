@@ -20,8 +20,6 @@
 package org.apache.stratos.cloud.controller.deployment.partition;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The model class for PartitionGroup definition.

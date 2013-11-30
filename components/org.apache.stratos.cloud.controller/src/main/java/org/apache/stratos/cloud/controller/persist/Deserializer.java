@@ -59,8 +59,10 @@ public class Deserializer {
             log.error("Failed to deserialize the file at "+filePath , e);
             throw e;
             
-        } finally{
-            objIn.close();
+        } finally {
+            if (objIn != null) {
+                objIn.close();
+            }
         }
         
         return obj;
@@ -75,18 +77,20 @@ public class Deserializer {
      */
     public static Object deserializeFromByteArray(byte[] bytes) throws Exception {
 
-    	ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-    	ObjectInput in = null;
-    	try {
-    	  in = new ObjectInputStream(bis);
-    	  Object o = in.readObject(); 
-    	  
-    	  return o;
-    	  
-    	} finally {
-    	  bis.close();
-    	  in.close();
-    	}
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInput in = null;
+        try {
+            in = new ObjectInputStream(bis);
+            Object o = in.readObject();
+
+            return o;
+
+        } finally {
+            bis.close();
+            if (in != null) {
+                in.close();
+            }
+        }
     }
 
 }

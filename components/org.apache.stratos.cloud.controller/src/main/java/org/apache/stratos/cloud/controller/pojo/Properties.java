@@ -18,12 +18,15 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
+import java.io.Serializable;
+
 /**
  * Had to wrap {@link Property} array using a class, since there's a bug in current 
  * stub generation.
  */
-public class Properties {
+public class Properties implements Serializable{
 
+    private static final long serialVersionUID = 1986895299288322592L;
     private Property[] properties;
 
     public Property[] getProperties() {

@@ -18,14 +18,17 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
+import java.io.Serializable;
+
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 
 /**
  * @author nirmal
  *
  */
-public class DataPublisherConfig {
+public class DataPublisherConfig implements Serializable{
 
+    private static final long serialVersionUID = -2097472019584151205L;
     private String bamUsername = CloudControllerConstants.DEFAULT_BAM_SERVER_USER_NAME;
     private String bamPassword = CloudControllerConstants.DEFAULT_BAM_SERVER_PASSWORD;
     private String dataPublisherCron = CloudControllerConstants.PUB_CRON_EXPRESSION;

@@ -18,13 +18,16 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
+import java.io.Serializable;
+
 /**
  * Holds runtime data of a Cluster.
  * @author nirmal
  *
  */
-public class ClusterContext {
+public class ClusterContext implements Serializable{
 
+    private static final long serialVersionUID = 4830667953031229223L;
     // cluster id
     private String clusterId;
     // cartridge type

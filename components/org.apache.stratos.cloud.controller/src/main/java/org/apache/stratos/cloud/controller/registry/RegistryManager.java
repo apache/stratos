@@ -46,18 +46,15 @@ public class RegistryManager {
 
         registryService = ServiceReferenceHolder.getInstance().getRegistry();
 
-        if (registryManager == null) {
-            synchronized (RegistryManager.class) {
-                if (registryManager == null) {
-                    if (registryService == null) {
-//						log.warn("Registry Service is null. Hence unable to fetch data from registry.");
-                        return registryManager;
-                    }
-                    registryManager = new RegistryManager();
+        synchronized (RegistryManager.class) {
+            if (registryManager == null) {
+                if (registryService == null) {
+                    // log.warn("Registry Service is null. Hence unable to fetch data from registry.");
+                    return registryManager;
                 }
+                registryManager = new RegistryManager();
             }
         }
-
         return registryManager;
     }
 

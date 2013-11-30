@@ -177,7 +177,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+		@SuppressWarnings("deprecation")
+        NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 
 		KeyPairApi api = novaApi.getKeyPairExtensionForZone(region).get();
 
@@ -204,7 +205,8 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+		@SuppressWarnings("deprecation")
+        NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
 		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
@@ -273,7 +275,8 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+		@SuppressWarnings("deprecation")
+        NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
 		FloatingIPApi floatingIPApi = novaApi
@@ -309,6 +312,7 @@ public class OpenstackNovaIaas extends Iaas {
         }
         
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        @SuppressWarnings("deprecation")
         NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
         for (String configuredZone : api.getConfiguredZones()) {
             if (region.equalsIgnoreCase(configuredZone)) {
@@ -342,6 +346,7 @@ public class OpenstackNovaIaas extends Iaas {
             throw new InvalidHostException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        @SuppressWarnings("deprecation")
         NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
         HostAggregateApi hostApi = api.getHostAggregateExtensionForZone(zone).get();
         for (HostAggregate hostAggregate : hostApi.list()) {

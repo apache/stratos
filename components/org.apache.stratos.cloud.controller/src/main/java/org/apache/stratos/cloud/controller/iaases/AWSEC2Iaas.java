@@ -45,18 +45,19 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
-import org.jclouds.ec2.EC2Api;
 import org.jclouds.ec2.EC2ApiMetadata;
 import org.jclouds.ec2.EC2Client;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
 import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
+import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
+@SuppressWarnings("deprecation")
 public class AWSEC2Iaas extends Iaas {
 
 	private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
@@ -292,7 +293,7 @@ public class AWSEC2Iaas extends Iaas {
 			log.info("Successfully associated public IP ");
 			return true;
 		} catch (Exception e) {
-			log.error("Exception in associating public IP " + e.getMessage());
+			log.debug("Exception in associating public IP " + e.getMessage());
 			return false;
 		}
 	}
@@ -353,7 +354,7 @@ public class AWSEC2Iaas extends Iaas {
                                                         .get();
         Set<AvailabilityZoneInfo> availabilityZones =
                                                       zoneRegionApi.describeAvailabilityZonesInRegion(region,
-                                                                                                      null);
+                                                                                                      new DescribeAvailabilityZonesOptions[0]);
         for (AvailabilityZoneInfo zoneInfo : availabilityZones) {
             String configuredZone = zoneInfo.getZone();
             if (zone.equalsIgnoreCase(configuredZone)) {
