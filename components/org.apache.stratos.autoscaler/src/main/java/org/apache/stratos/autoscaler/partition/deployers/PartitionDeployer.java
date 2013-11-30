@@ -20,6 +20,7 @@
 package org.apache.stratos.autoscaler.partition.deployers;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.axis2.context.ConfigurationContext;
@@ -28,6 +29,7 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
@@ -77,7 +79,12 @@ public class PartitionDeployer extends AbstractDeployer {
 			PartitionReader reader = new PartitionReader(partitionFile);
 			
 			List<Partition> partitionList = reader.getPartitionList();
+			Iterator<Partition> it = partitionList.iterator();
 			
+			while(it.hasNext()){
+				// validate the partition with CC
+				CloudControllerClient.getInstance().validatePartition(it.next());
+			}			
 
 			log.info("Successfully deployed the partition specified at "
 					+ deploymentFileData.getAbsolutePath());

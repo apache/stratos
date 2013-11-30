@@ -52,7 +52,7 @@ public class PartitionReader{
 		this.partitionFIle = partitionFile;
 	}
 	
-	public List<Partition> getPartitionList() throws InvalidPartitionException{
+	public List<Partition> getPartitionList(){
 			this.parse(this.partitionFIle);
 			String partitionXpath = AutoScalerConstants.PARTITIONS_ELEMENT + "/"+AutoScalerConstants.PARTITION_ELEMENT;
 			List<OMNode> partitionXMLNodes = getMatchingNodes(partitionXpath);
@@ -103,7 +103,7 @@ public class PartitionReader{
         return partition;
     }
 	
-	public void parse(File xmlSource) {
+	public void parse(File xmlSource){
 
         if (xmlSource.exists()) {
             try {

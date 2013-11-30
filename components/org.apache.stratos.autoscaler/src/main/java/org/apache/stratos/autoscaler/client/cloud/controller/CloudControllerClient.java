@@ -23,6 +23,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -100,6 +101,21 @@ public class CloudControllerClient {
             log.error(e.getMessage());
             throw new PolicyValidationException(e);
         }
+    }
+    
+    /*
+     * Calls the CC to validate the partition.
+     */
+    public boolean validatePartition(Partition partition) throws InvalidPartitionException{
+        
+        try {
+            return stub.validatePartition(partition);
+        } catch (RemoteException e) {
+            log.error(e.getMessage());
+            throw new InvalidPartitionException(e);
+        } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
+        	throw new InvalidPartitionException(e);
+		}
     }
 
     public void spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
