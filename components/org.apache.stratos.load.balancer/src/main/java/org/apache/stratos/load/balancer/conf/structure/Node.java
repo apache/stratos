@@ -133,13 +133,13 @@ public class Node implements Serializable{
      * Returns all the properties of this Node as a String.
      * Key and value of the property is separated by a tab (\t) character and
      * each property is separated by a new line character.
-     * @param indentation relative number of tabs 
+     * @param indentation relative number of tabs
      * @return properties of this node as a String.
      */
     public String propertiesToString(int indentation) {
-        
+
         String indent = getIndentation(indentation);
-        
+
         StringBuilder sb = new StringBuilder();
         for (Entry<String, String> entry : properties.entrySet()) {
             // hack to get a quick fix in.
@@ -149,7 +149,7 @@ public class Node implements Serializable{
         }
         return sb.toString();
     }
-    
+
     /**
      * Removes the first occurrence of a node having the given name
      * and returns the removed {@link org.apache.stratos.load.balancer.conf.structure.Node}.
@@ -158,13 +158,13 @@ public class Node implements Serializable{
      */
     public Node removeChildNode(String name) {
         Node aNode = findChildNodeByName(name);
-        
+
         if(aNode != null){
             if(childNodes.remove(aNode)){
                 return aNode;
             }
         }
-        
+
         return null;
     }
 
@@ -187,7 +187,7 @@ public class Node implements Serializable{
     }
 
     /**
-     * Appends a child node at the end of the List of child nodes of this Node, if 
+     * Appends a child node at the end of the List of child nodes of this Node, if
      * a similar node is not already present as a child node.
      * @param aNode child Node to be appended.
      */
@@ -352,5 +352,4 @@ public class Node implements Serializable{
                 
         return indent.toString();
     }
-
 }
