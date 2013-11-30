@@ -30,6 +30,7 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
@@ -82,12 +83,21 @@ public class PartitionDeployer extends AbstractDeployer {
 			Iterator<Partition> it = partitionList.iterator();
 			
 			while(it.hasNext()){
-				// validate the partition with CC
-				CloudControllerClient.getInstance().validatePartition(it.next());
+				Partition partition = it.next();
+				if(PartitionManager.getInstance().partitionExist(partition.getId())){
+					log.warn("Partition already exists in the system " + partition.getId());
+					continue;
+				}
+				
+				boolean isValid = CloudControllerClient.getInstance().validatePartition(partition);
+				if(!isValid){
+					log.error("Partition is not valid " + partition.getId());
+					continue;					
+				}
+				PartitionManager.getInstance().addPartition(partition.getId(), partition);
 			}			
 
-			log.info("Successfully deployed the partition specified at "
-					+ deploymentFileData.getAbsolutePath());
+			log.info("Successfully deployed the partition specified at "+ deploymentFileData.getAbsolutePath());
 			 
 		} catch (Exception e) {
 			String msg = "Invalid partition artifact at " + deploymentFileData.getAbsolutePath();

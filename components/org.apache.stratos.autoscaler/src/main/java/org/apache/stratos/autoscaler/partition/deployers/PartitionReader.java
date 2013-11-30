@@ -31,7 +31,6 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
@@ -90,15 +89,12 @@ public class PartitionReader{
                 String msg ="Essential " + AutoScalerConstants.ID_ELEMENT + "element " +
                                 "has not specified in ";
                 // handleException(msg);
-            }
-            // boolean partitionExist = TopologyManager.getInstance().getTopology().partitionExist(id);
-            boolean partitionExist =false;
-            if(!partitionExist){
-            	partition = new Partition();
-                partition.setId(id);
-                partition.setProperties(getProperties(iaasElt)); 
-                
-            }            
+            }         
+            	
+            partition = new Partition();               
+            partition.setId(id);
+            partition.setProperties(getProperties(iaasElt)); 
+                                    
         }
         return partition;
     }
