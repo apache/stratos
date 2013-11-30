@@ -25,14 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
-import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
@@ -44,10 +38,9 @@ import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.algorithm.PartitionGroupOneAfterAnother;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.drools.runtime.rule.FactHandle;
 
 /**
@@ -73,7 +66,7 @@ public class AutoscalerRuleEvaluator {
     }
     
     
-    public static void evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+    public static FactHandle evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
 
         if (handle == null) {
 
@@ -83,7 +76,7 @@ public class AutoscalerRuleEvaluator {
         }
         ksession.fireAllRules();
         log.info("fired all rules "+obj);
-
+        return handle;
     }
 
     public void addMonitor(ClusterMonitor monitor) {
@@ -111,21 +104,22 @@ public class AutoscalerRuleEvaluator {
 //        ksession.fireAllRules();
     }
     
-	public static boolean delegateSpawn(Partition partition, String clusterId) {
+	public static MemberContext delegateSpawn(Partition partition, String clusterId) {
 		try {
 //            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
 
 //            if(currentMemberCount < partition.getPartitionMembersMax())       {
 //                AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(1);
-    			CloudControllerClient.getInstance().spawnAnInstance(partition, clusterId);
+    			return CloudControllerClient.getInstance().spawnAnInstance(partition, clusterId);
 
 		} catch (Throwable e) {
-			log.error("Cannot spawn an instance", e);
+			String message = "Cannot spawn an instance";
+            log.error(message, e);
+			throw new RuntimeException(message, e);
 		}
-		return false;
 	}
 
-	public boolean delegateTerminate(Partition partition, String clusterId) {
+	public static void delegateTerminate(String memberId) {
 		try {
 
 //            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
@@ -135,11 +129,10 @@ public class AutoscalerRuleEvaluator {
                //FIXME
 //                cloudControllerClient.terminate(partition, clusterId);
 //            }
-			return true;
+			CloudControllerClient.getInstance().terminate(memberId);
 		} catch (Throwable e) {
 			log.error("Cannot terminate instance", e);
 		}
-		return false;
 	}
 
 //	public boolean delegateSpawn(Partition partition, String clusterId, int memberCountToBeIncreased) {

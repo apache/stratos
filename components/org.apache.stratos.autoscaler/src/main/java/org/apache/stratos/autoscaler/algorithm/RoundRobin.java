@@ -58,7 +58,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
 	        	if(!clusterContext.partitionCountExists(currentPartitionId))    	        		
 	        		AutoscalerContext.getInstance().getClusterContext(clusterId).addPartitionCount(currentPartitionId, 0);
 	        	
-    	        if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMembersMax()){
+    	        if(clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMax()){
     	        	// current partition is free    	        	
     	        	clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
     	        	if(log.isDebugEnabled())
@@ -112,7 +112,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
                     AutoscalerContext.getInstance().getClusterContext(clusterId)
                                      .addPartitionCount(currentPartitionId, 0);
                 // has more than minimum instances.
-                if (clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMembersMin()) {
+                if (clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMin()) {
                     // current partition is free
                     clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
                     if (log.isDebugEnabled()) {

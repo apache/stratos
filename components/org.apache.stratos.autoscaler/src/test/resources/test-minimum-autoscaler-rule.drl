@@ -19,16 +19,17 @@
 
 package org.apache.stratos.autoscaler.rule;
 
+import function org.apache.stratos.autoscaler.TestKnowledgeBase.get;
 
 
+rule "Minimum Rule"
+dialect "mvel"
+       when
+		   eval(true)
 
-#rule "Minimum Rule"
-#dialect "mvel"
-#       when
-#	       $p : ArrayList()
-#	       $x : String() from $p
-#		   eval(true)
-#
- #      then
-#			System.out.println($x+ "SSsSS");	       
-#end
+      then
+      		p = get();
+      		if(p != null) {
+			System.out.println(p+ "SSsSS");	       
+			}
+end

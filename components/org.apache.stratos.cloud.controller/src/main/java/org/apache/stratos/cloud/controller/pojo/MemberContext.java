@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
 /**
- * Holds runtime data of a Member.
+ * Holds information about a Member.
  * @author nirmal
  *
  */
@@ -31,21 +33,26 @@ public class MemberContext {
     private String nodeId;
     // cluster id of this member
     private String clusterId;
-    // partition id this member is in.
-    private String partitionId;
+    // partition this member is in.
+    private Partition partition;
     // cartridge type this member belongs to.
     private String cartridgeType;
-    // allocated ip
+    // private ip
+    private String privateIpAddress;
+    // public ip
+    private String publicIpAddress;
+    // manually allocated ip
     private String allocatedIpAddress;
+    // member initiated time
+    private long initTime;
     
-    public MemberContext(String id, String nodeId, String clusterId, String partitionId, String cartridgeType, String ip) {
+    public MemberContext(String id, String clusterId, Partition partition) {
         this.memberId = id;
-        this.nodeId = nodeId;
         this.clusterId = clusterId;
-        this.partitionId = partitionId;
-        this.cartridgeType = cartridgeType;
-        this.allocatedIpAddress = ip;
-        
+        this.setPartition(partition);
+    }
+    
+    public MemberContext() {
     }
     
     public String getMemberId() {
@@ -66,23 +73,50 @@ public class MemberContext {
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
     }
-    public String getPartitionId() {
-        return partitionId;
-    }
-    public void setPartitionId(String partitionId) {
-        this.partitionId = partitionId;
-    }
     public String getCartridgeType() {
         return cartridgeType;
     }
     public void setCartridgeType(String cartridgeType) {
         this.cartridgeType = cartridgeType;
     }
+    public Partition getPartition() {
+        return partition;
+    }
+
+    public void setPartition(Partition partition) {
+        this.partition = partition;
+    }
+
+    public String getPublicIpAddress() {
+        return publicIpAddress;
+    }
+
+    public void setPublicIpAddress(String publicIpAddress) {
+        this.publicIpAddress = publicIpAddress;
+    }
+
+    public String getPrivateIpAddress() {
+        return privateIpAddress;
+    }
+
+    public void setPrivateIpAddress(String privateIpAddress) {
+        this.privateIpAddress = privateIpAddress;
+    }
+
     public String getAllocatedIpAddress() {
         return allocatedIpAddress;
     }
+
     public void setAllocatedIpAddress(String allocatedIpAddress) {
         this.allocatedIpAddress = allocatedIpAddress;
+    }
+
+    public long getInitTime() {
+        return initTime;
+    }
+
+    public void setInitTime(long initTime) {
+        this.initTime = initTime;
     }
     
     

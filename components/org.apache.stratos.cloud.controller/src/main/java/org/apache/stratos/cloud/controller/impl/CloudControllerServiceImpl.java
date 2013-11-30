@@ -285,13 +285,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-	public String startInstance(String clusterId, Partition partition) throws IllegalArgumentException, UnregisteredCartridgeException {
+	public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException {
 
+        if (member == null) {
+            String msg = "Instance start-up failed. Member is null.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        String clusterId = member.getClusterId();
+        Partition partition = member.getPartition();
+        
         log.info("Starting new instance of cluster : " + clusterId);
 
 		ComputeService computeService = null;
 		Template template = null;
-		String ip;
 		
 		if(partition == null) {
 		    String msg = "Instance start-up failed. Specified Partition is null. Cluster id: "+clusterId;
@@ -318,43 +326,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredCartridgeException(msg);
         }
         
+        member.setCartridgeType(cartridgeType);
         
-//        Partition partition_ = TopologyManager.getInstance().getTopology().getPartition(partitionId);
-//        Scope scope = partition_.getScope();
-//        String provider = partition_.getProperty("provider");
 		final Lock lock = new ReentrantLock();
-
-		// get the subjected ServiceContext
-//		ServiceContext serviceCtxt = dataHolder
-//				.getServiceContextFromDomain(clusterId);
-//
-//		if (serviceCtxt == null) {
-//			String msg = "Not a registered service: domain - " + clusterId;
-//			log.fatal(msg);
-//			throw new CloudControllerException(msg);
-//		}
-//
-//		// load Cartridge
-//		serviceCtxt.setCartridge(loadCartridge(serviceCtxt.getCartridgeType(),
-//				 dataHolder
-//						.getCartridges()));
-//
-//		if (serviceCtxt.getCartridge() == null) {
-//			String msg = "There's no registered Cartridge found. Domain - "
-//					+ clusterId;
-//			log.fatal(msg);
-//			throw new CloudControllerException(msg);
-//		}
-//
-//		if (serviceCtxt.getCartridge().getIaases().isEmpty()) {
-//			String msg = "There's no registered IaaSes found for Cartridge type: "
-//					+ serviceCtxt.getCartridge().getType();
-//			log.fatal(msg);
-//			throw new CloudControllerException(msg);
-//		}
-
-
-//		for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
 
 		IaasProvider iaas = cartridge.getIaasProviderOfPartition(partitionId);
             if(iaas == null) {
@@ -364,13 +338,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.fatal(msg);
                 throw new CloudControllerException(msg);
             }
-//                IaasContext ctxt;
-//                if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
-//                    ctxt = serviceCtxt.addIaasContext(iaas.getType());
-//                }
                 try {
                     //generating the Unique member ID...
                     String memberID = generateMemberId(clusterId);
+                    member.setMemberId(memberID);
                     //have to add memberID to the payload
                     StringBuilder payload = new StringBuilder(ctxt.getPayload());
                     payload.append(",");
@@ -383,37 +354,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     computeService = iaas.getComputeService();
                     template = iaas.getTemplate();
                     
-//                    if(scope == null || scope.name().equals(Scope.PROVIDER.name())) {
-//                        computeService = iaas.getComputeService();
-//                        template = iaas.getTemplate();
-//                    } else if(scope.name().equals(Scope.REGION.name())) {
-//                        for(Region region : iaas.getListOfRegions()) {
-//                            if(region.getId().equals(partitionId)) {
-//                                computeService = region.getComputeService();
-//                                template = region.getTemplate();
-//                            }
-//                        }
-//                    } else if(scope.name().equals(Scope.ZONE.name())) {
-//                        for(Region region : iaas.getListOfRegions()) {
-//                            for(Zone zone : region.getListOfZones()) {
-//                               if(zone.getId().equals(partitionId)) {
-//                                computeService = zone.getComputeService();
-//                                template = zone.getTemplate();
-//                                }
-//                            }
-//                        }
-//                    } else if(scope.name().equals(Scope.HOST.name())) {
-//                        for(Region region : iaas.getListOfRegions()) {
-//                            for(Zone zone : region.getListOfZones()) {
-//                                for(Host host: zone.getListOfHosts()) {
-//                                    if(host.getId().equals(partitionId)) {
-//                                        computeService = host.getComputeService();
-//                                        template = host.getTemplate();
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
                     if (template == null) {
                         String msg = "Failed to start an instance in "
                                 + iaas.getType()
@@ -423,12 +363,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         log.error(msg);
                         throw new CloudControllerException(msg);
                     }
-
-                    // set instance name as the host name
-                    // template.getOptions().userMetadata("Name",
-                    // serviceCtxt.getHostName());
-                    // template.getOptions().as(TemplateOptions.class).userMetadata("Name",
-                    // serviceCtxt.getHostName());
 
                     // generate the group id from domain name and sub domain
                     // name.
@@ -452,26 +386,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     lock.lock();
 
                     try {
-                        // reset ip
-                        ip = "";
-                        // default behavior is autoIpAssign=false
-                        if (autoAssignIpProp == null || (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
-                            // allocate an IP address - manual IP assigning mode
-                            ip = iaas.getIaas().associateAddress(iaas, node);
-                            log.info("Allocated ip address: " + ip);
-                        }
-
-                        if (ip.isEmpty() && node.getPublicAddresses() != null && node.getPublicAddresses().iterator().hasNext()) {
-                            ip = node.getPublicAddresses().iterator().next();
-                            log.info("Public ip address: " + ip);
-                        }
-
-                        // if not public IP is assigned, we're using private IP
-                        if (ip.isEmpty() && node.getPrivateAddresses() != null && node.getPrivateAddresses().iterator().hasNext()) {
-                            ip = node.getPrivateAddresses().iterator().next();
-                            log.info("Private ip address: " + ip);
-                        }
-
+                        // node id
                         String nodeId = node.getId();
                         if (nodeId == null) {
                             String msg = "Node id of the starting instance is null.\n" + node.toString();
@@ -479,25 +394,34 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             throw new CloudControllerException(msg);
                         }
                         
-                        MemberContext memberCtxt = new MemberContext(memberID, nodeId, clusterId, partitionId, cartridgeType, ip);
-                        dataHolder.addMemberContext(memberCtxt);
+                        member.setNodeId(nodeId);
+                        
+                        // reset ip
+                        String ip = "";
+                        // default behavior is autoIpAssign=false
+                        if (autoAssignIpProp == null || (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
+                            // allocate an IP address - manual IP assigning mode
+                            ip = iaas.getIaas().associateAddress(iaas, node);
+                            member.setAllocatedIpAddress(ip);
+                            log.info("Allocated ip address: " + ip);
+                        }
 
-                        // add node ID
-//                        ctxt.addNodeId(node.getId());
-//                        ctxt.addNodeToPublicIp(node.getId(), ip);
+                        // public ip
+                        if (node.getPublicAddresses() != null && node.getPublicAddresses().iterator().hasNext()) {
+                            ip = node.getPublicAddresses().iterator().next();
+                            member.setPublicIpAddress(ip);
+                            log.info("Public ip address: " + ip);
+                        }
 
-                        // to faster look up
-//                        dataHolder.addNodeId(
-//                                node.getId(), serviceCtxt);
-//                        
-//                        dataHolder.addNodeId(memberID, node.getId());
-//
-//                        serviceCtxt.getCartridge().setLastlyUsedIaas(iaas);
-//
-//                        // add this ip to the topology
-//                        appendToPublicIpProperty(ip, serviceCtxt);
-//
-//                        dataHolder.updateActiveInstanceCount(iaas.getType(), 1);
+                        // private IP
+                        if (node.getPrivateAddresses() != null && node.getPrivateAddresses().iterator().hasNext()) {
+                            ip = node.getPrivateAddresses().iterator().next();
+                            member.setPrivateIpAddress(ip);
+                            log.info("Private ip address: " + ip);
+                        }
+
+                        
+                        dataHolder.addMemberContext(member);
 
                         // persist in registry
                         persist();
@@ -508,7 +432,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         //update the topology with the newly spawned member
                         // publish data
-//                        CartridgeInstanceDataPublisherTask.publish();
                         if (log.isDebugEnabled()) {
                             log.debug("Node details: \n" + node.toString()
                                     + "\n***************\n");
@@ -520,7 +443,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 + ip
                                 + "\tNode Id: " + nodeId);
 
-                        return ip;
+                        return member;
 
                     } finally {
                         // release the lock
@@ -651,7 +574,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String memberId = ctxt.getMemberId();
             String clusterId = ctxt.getClusterId();
-            String partitionId = ctxt.getPartitionId();
+            String partitionId = ctxt.getPartition().getId();
             String cartridgeType = ctxt.getCartridgeType();
             String nodeId = ctxt.getNodeId();
 
@@ -1008,52 +931,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
      */
 	private IaasProvider terminate(IaasProvider iaasTemp, 
 			String nodeId, MemberContext ctxt) {
-//        Scope scope = partition.getScope();
-//        String partitionId = partition.getId();
-//		// this is just to be safe
-//		if (iaasTemp.getComputeService() == null) {
-//			String msg = "Unexpeced error occured! IaasContext's ComputeService is null!";
-//			log.error(msg);
-//			throw new CloudControllerException(msg);
-//		}
-//
-//        if(scope == null || scope.name().equals(Scope.PROVIDER.name())) {
-//            iaasTemp.getComputeService().destroyNode(nodeId);
-//        } else if(scope.name().equals(Scope.REGION.name())) {
-//            for(Region region : iaasTemp.getListOfRegions()) {
-//                if(region.getId().equals(partitionId)) {
-//                    region.getComputeService();
-//                }
-//            }
-//        } else if(scope.name().equals(Scope.ZONE.name())) {
-//            for(Region region : iaasTemp.getListOfRegions()) {
-//                for(Zone zone : region.getListOfZones()) {
-//                   if(zone.getId().equals(partitionId)) {
-//                        zone.getComputeService().destroyNode(nodeId);
-//                   }
-//                }
-//            }
-//        } else if(scope.name().equals(Scope.HOST.name())) {
-//            for(Region region : iaasTemp.getListOfRegions()) {
-//                for(Zone zone : region.getListOfZones()) {
-//                    for(Host host: zone.getListOfHosts()) {
-//                        if(host.getId().equals(partitionId)) {
-//                            host.getComputeService().destroyNode(nodeId);
-//                        }
-//                    }
-//                }
-//            }
-//        }
 		// destroy the node
 		iaasTemp.getComputeService().destroyNode(nodeId);
 
-		String autoAssignIpProp = iaasTemp
-				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
-
 		// release allocated IP address
-		if (autoAssignIpProp == null
-				|| (autoAssignIpProp
-						.equals("false"))) {
+		if (ctxt.getAllocatedIpAddress() != null) {
 			// allocate an IP address - manual IP assigning mode
 			iaasTemp.getIaas().releaseAddress(iaasTemp,
 					ctxt.getAllocatedIpAddress());
