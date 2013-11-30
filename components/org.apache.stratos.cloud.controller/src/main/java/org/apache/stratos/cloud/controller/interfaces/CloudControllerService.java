@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 
 /**
@@ -84,7 +85,7 @@ public interface CloudControllerService {
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
      */
-    public String startInstance(String clusterId, Partition partition) throws IllegalArgumentException, UnregisteredCartridgeException;
+    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException;
 
     /**
      * Calling this method will spawn more than one ininstances in the

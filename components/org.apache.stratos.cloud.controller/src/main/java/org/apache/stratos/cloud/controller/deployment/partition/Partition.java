@@ -43,7 +43,7 @@ public class Partition implements Serializable{
      * Gets the value of the partitionMax property.
      * 
      */
-    public int getPartitionMembersMax() {
+    public int getPartitionMax() {
         return partitionMax;
     }
 
@@ -59,7 +59,7 @@ public class Partition implements Serializable{
      * Gets the value of the partitionMin property.
      * 
      */
-    public int getPartitionMembersMin() {
+    public int getPartitionMin() {
         return partitionMin;
     }
 
