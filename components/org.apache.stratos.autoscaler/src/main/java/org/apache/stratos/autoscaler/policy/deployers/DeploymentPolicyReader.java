@@ -35,9 +35,6 @@ import org.apache.stratos.autoscaler.policy.InvalidPolicyException;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
-
 /**
  * 
  * The Reader class for Deployment-policy definitions.
@@ -78,16 +75,17 @@ public class DeploymentPolicyReader  extends AbstractPolicyReader<DeploymentPoli
 								OMElement partitionEle = (OMElement) next;
 								
 								String partitionId = partitionEle.getAttributeValue(new QName("id"));
+								/*
 								Partition partition = PartitionManager.getInstance().getPartitionById(partitionId);
-								// If a partition with this name does not exist in the partition list.
+								 If a partition with this name does not exist in the partition list.
 								if(partition == null)
-									throw new InvalidPolicyException("No Partition found matching ID " + partitionId);
-								
+									log.info("No Partition found with matching ID " + partitionId);
+								*/
+								Partition partition = new Partition();
+								partition.setId(partitionId);
 								partition.setPartitionMax(Integer.valueOf(readValue(partitionEle, "max")));
 								partition.setPartitionMin(Integer.valueOf(readValue(partitionEle, "min")));
 //								partition.setProvider(readValue(partitionEle, "provider"));
-								//TODO partition validation before policy deployment
-//								validatePartition();
 								partitions.add(partition);
 							}
 						}
