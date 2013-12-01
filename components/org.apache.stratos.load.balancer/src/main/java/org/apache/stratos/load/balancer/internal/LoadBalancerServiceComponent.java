@@ -27,6 +27,7 @@ import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
+import org.apache.stratos.load.balancer.conf.SynapseConfigurator;
 import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
@@ -102,7 +103,9 @@ public class LoadBalancerServiceComponent {
             registerDeployer(LoadBalancerContext.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
 
+            // Configure synapse settings
             LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
+            SynapseConfigurator.configure(configuration);
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
