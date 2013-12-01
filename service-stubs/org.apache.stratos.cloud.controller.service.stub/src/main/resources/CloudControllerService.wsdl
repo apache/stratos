@@ -1,9 +1,11 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://policy.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:ax25="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax26="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax25="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax26="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
     <wsdl:documentation>CloudControllerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
             <xs:complexType name="InvalidPartitionException">
-                <xs:sequence/>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence/>
@@ -21,10 +23,9 @@
                 <xs:sequence/>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax213="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax28="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax211="http://policy.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+        <xs:schema xmlns:ax28="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax210="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
             <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://policy.deployment.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"/>
             <xs:element name="CloudControllerServiceInvalidPartitionException">
                 <xs:complexType>
@@ -58,7 +59,7 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax29:DeploymentPolicy"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax28:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -128,21 +129,21 @@
             <xs:element name="startInstance">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="member" nillable="true" type="ax213:MemberContext"/>
+                        <xs:element minOccurs="0" name="member" nillable="true" type="ax210:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="startInstanceResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax213:MemberContext"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax210:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax213:Registrant"/>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax210:Registrant"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -165,20 +166,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getPendingInstanceCount">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getPendingInstanceCountResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:int"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="getCartridgeInfo">
                 <xs:complexType>
                     <xs:sequence>
@@ -189,23 +176,12 @@
             <xs:element name="getCartridgeInfoResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax213:CartridgeInfo"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax210:CartridgeInfo"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax210="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:complexType name="DeploymentPolicy">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="allPartitions" nillable="true" type="xs:anyType"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroup" nillable="true" type="ax210:PartitionGroup"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax210:PartitionGroup"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax212="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.controller.cloud.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax29="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
             <xs:complexType name="Properties">
                 <xs:sequence>
@@ -226,7 +202,7 @@
                     <xs:element minOccurs="0" name="initTime" type="xs:long"/>
                     <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="nodeId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax212:Partition"/>
+                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax29:Partition"/>
                     <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -283,21 +259,8 @@
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="PartitionGroup">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax25:Partition"/>
-                </xs:sequence>
-            </xs:complexType>
         </xs:schema>
     </wsdl:types>
-    <wsdl:message name="getPendingInstanceCountRequest">
-        <wsdl:part name="parameters" element="ns:getPendingInstanceCount"/>
-    </wsdl:message>
-    <wsdl:message name="getPendingInstanceCountResponse">
-        <wsdl:part name="parameters" element="ns:getPendingInstanceCountResponse"/>
-    </wsdl:message>
     <wsdl:message name="validatePartitionRequest">
         <wsdl:part name="parameters" element="ns:validatePartition"/>
     </wsdl:message>
@@ -365,10 +328,6 @@
         <wsdl:part name="parameters" element="ns:startInstanceResponse"/>
     </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
-        <wsdl:operation name="getPendingInstanceCount">
-            <wsdl:input message="ns:getPendingInstanceCountRequest" wsaw:Action="urn:getPendingInstanceCount"/>
-            <wsdl:output message="ns:getPendingInstanceCountResponse" wsaw:Action="urn:getPendingInstanceCountResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="validatePartition">
             <wsdl:input message="ns:validatePartitionRequest" wsaw:Action="urn:validatePartition"/>
             <wsdl:output message="ns:validatePartitionResponse" wsaw:Action="urn:validatePartitionResponse"/>
@@ -430,15 +389,6 @@
             <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
                 <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
             </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getPendingInstanceCount">
-            <soap:operation soapAction="urn:getPendingInstanceCount" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
             <soap:operation soapAction="urn:validateDeploymentPolicy" style="document"/>
@@ -557,15 +507,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getPendingInstanceCount">
-            <soap12:operation soapAction="urn:getPendingInstanceCount" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
             <soap12:operation soapAction="urn:validateDeploymentPolicy" style="document"/>
             <wsdl:input>
@@ -680,15 +621,6 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getPendingInstanceCount">
-            <http:operation location="getPendingInstanceCount"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
             <http:operation location="validateDeploymentPolicy"/>
             <wsdl:input>
@@ -755,22 +687,22 @@
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.100.1.154:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://192.168.1.2:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.100.1.154:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://192.168.1.2:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.100.1.154:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://192.168.1.2:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.100.1.154:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://192.168.1.2:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.100.1.154:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
+            <http:address location="http://192.168.1.2:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.100.1.154:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
+            <http:address location="https://192.168.1.2:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
