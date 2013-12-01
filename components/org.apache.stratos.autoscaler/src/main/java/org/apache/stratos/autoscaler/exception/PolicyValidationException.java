@@ -16,4 +16,8 @@ public class PolicyValidationException extends Exception {
     public PolicyValidationException(Exception exception){
         super(exception);
     }
+    
+    public PolicyValidationException(String msg){
+        super(msg);
+    }
 }

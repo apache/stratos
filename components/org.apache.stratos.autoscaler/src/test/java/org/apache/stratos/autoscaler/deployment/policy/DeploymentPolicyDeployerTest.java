@@ -22,9 +22,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
-import org.apache.stratos.autoscaler.policy.InvalidPolicyException;
+import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyReader;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.junit.Before;
 import org.junit.Test;
 

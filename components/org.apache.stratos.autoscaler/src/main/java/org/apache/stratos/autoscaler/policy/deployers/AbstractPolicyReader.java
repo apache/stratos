@@ -31,7 +31,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.policy.InvalidPolicyException;
+import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 
 /**
  * Abstract super-class, with some common logic, for reading policies. The only
@@ -83,6 +83,9 @@ public abstract class AbstractPolicyReader<T> {
 
 	protected String readValue(OMElement ele, String qName) {
 		OMElement valueContainer = ele.getFirstChildWithName(new QName(qName));
+		if(valueContainer == null) {
+            return null;
+        }
 		String value = valueContainer.getText();
 		return value;
 	}

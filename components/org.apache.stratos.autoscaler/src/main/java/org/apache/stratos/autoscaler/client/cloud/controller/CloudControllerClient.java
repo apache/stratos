@@ -29,7 +29,6 @@ import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
@@ -38,7 +37,6 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 
 import java.rmi.RemoteException;
-import java.util.UUID;
 
 
 /**
@@ -88,10 +86,10 @@ public class CloudControllerClient {
         
     }
     
-    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy policy) throws PolicyValidationException{
+    public boolean validatePartitionsOfPolicy(String cartridgeType, Partition[] partitions) throws PolicyValidationException{
         
         try {
-            return stub.validateDeploymentPolicy(cartridgeType, policy);
+            return stub.validateDeploymentPolicy(cartridgeType, partitions);
         } catch (RemoteException e) {
             log.error(e.getMessage());
             throw new PolicyValidationException(e);
@@ -101,7 +99,7 @@ public class CloudControllerClient {
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
             log.error(e.getMessage());
             throw new PolicyValidationException(e);
-        }
+        } 
     }
     
     /*
@@ -115,7 +113,7 @@ public class CloudControllerClient {
             log.error(e.getMessage());
             throw new PartitionValidationException(e);
         } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
-        	throw new PartitionValidationException(e);
+        	throw new PartitionValidationException(e.getMessage(),e);
 		}
     }
 
