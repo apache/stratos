@@ -22,8 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
@@ -54,6 +52,7 @@ import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -1017,51 +1016,46 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		
 
     @Override
-    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) 
+    public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
-        Map<String, IaasProvider> partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
-        
+        Map<String, IaasProvider> partitionToIaasProviders =
+                                                             new ConcurrentHashMap<String, IaasProvider>();
+
         Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
-        
-        if(cartridge == null) {
-            String msg = "Invalid Cartridge Type: "+cartridgeType;
+
+        if (cartridge == null) {
+            String msg = "Invalid Cartridge Type: " + cartridgeType;
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
-        
-        if(deploymentPolicy == null) {
-            String msg = "Deployment Policy is null.";
-            log.error(msg);
-            throw new InvalidPartitionException(msg);
-        }
-        
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-            for (Partition partition : partitionGroup.getPartitions()) {
-                String provider = partition.getProvider();
-                IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
-                
-                if(iaasProvider == null) {
-                    String msg = "Invalid Partition - "+partition.toString() +", in "+deploymentPolicy.toString()+
-                            ". Cause: Iaas Provider is null for: "+provider;
-                    log.error(msg);
-                    throw new InvalidPartitionException(msg);
-                }
-                
-                Iaas iaas = iaasProvider.getIaas();
-                PartitionValidator validator = iaas.getPartitionValidator();
-                validator.setIaasProvider(iaasProvider);
-                IaasProvider updatedIaasProvider = validator.validate(partition.getId(), 
-                                 CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-                // add to a temporary Map
-                partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
-                
+
+        for (Partition partition : partitions) {
+            String provider = partition.getProvider();
+            IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
+
+            if (iaasProvider == null) {
+                String msg =
+                             "Invalid Partition - " + partition.toString() +
+                                     ". Cause: Iaas Provider is null for: " + provider;
+                log.error(msg);
+                throw new InvalidPartitionException(msg);
             }
+
+            Iaas iaas = iaasProvider.getIaas();
+            PartitionValidator validator = iaas.getPartitionValidator();
+            validator.setIaasProvider(iaasProvider);
+            IaasProvider updatedIaasProvider =
+                                               validator.validate(partition.getId(),
+                                                                  CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
+            // add to a temporary Map
+            partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
+
         }
-        
+
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
-        
+
         return true;
     }
 
@@ -1076,8 +1070,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }
-
+        
         Iaas iaas = iaasProvider.getIaas();
+        if (iaas == null) {
+            try {
+                iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
+                iaas.buildComputeServiceAndTemplate(iaasProvider);
+                iaasProvider.setIaas(iaas);
+            } catch (Exception e) {
+                String msg =
+                             "Error while instantiating an instance of the class: " +
+                                     iaasProvider.getClassName();
+                log.error(msg, e);
+                throw new InvalidPartitionException(msg, e);
+            }
+        }
+
         PartitionValidator validator = iaas.getPartitionValidator();
         validator.setIaasProvider(iaasProvider);
         validator.validate(partition.getId(),

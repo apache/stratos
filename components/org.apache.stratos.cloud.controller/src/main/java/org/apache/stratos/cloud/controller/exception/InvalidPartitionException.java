@@ -35,4 +35,8 @@ public class InvalidPartitionException extends Exception {
     public InvalidPartitionException(String msg, Exception ex) {
         super(msg, ex);
     }
+    
+    public String getMessage() {
+        return super.getMessage();
+    }
 }
