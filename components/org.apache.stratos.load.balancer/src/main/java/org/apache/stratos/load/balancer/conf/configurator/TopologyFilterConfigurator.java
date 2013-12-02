@@ -17,33 +17,18 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.event;
+package org.apache.stratos.load.balancer.conf.configurator;
 
-import java.io.Serializable;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 
 /**
- *  This event is fired by Event processing engine to send average of requests in flight
+ * Topology filter configurator to configure topology filters.
  */
-public class AverageRequestsInFlightEvent implements Serializable {
+public class TopologyFilterConfigurator {
 
-	private static final long serialVersionUID = 7178667274015434275L;
-	private String clusterId;
-    private float value;
-
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
+    public static void configure(LoadBalancerConfiguration configuration) {
+        System.setProperty("stratos.messaging.topology.service.filter", configuration.getTopologyServiceFilter());
+        System.setProperty("stratos.messaging.topology.cluster.filter", configuration.getTopologyClusterFilter());
     }
 }

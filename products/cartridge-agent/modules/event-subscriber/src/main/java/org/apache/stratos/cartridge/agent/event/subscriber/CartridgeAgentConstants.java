@@ -17,33 +17,17 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.event;
+package org.apache.stratos.cartridge.agent.event.subscriber;
 
 import java.io.Serializable;
 
-/**
- *  This event is fired by Event processing engine to send average of requests in flight
- */
-public class AverageRequestsInFlightEvent implements Serializable {
+public class CartridgeAgentConstants implements Serializable{
 
-	private static final long serialVersionUID = 7178667274015434275L;
-	private String clusterId;
-    private float value;
-
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
-    }
+	public static final String JNDI_PROPERTIES_DIR = "jndi.properties.dir";
+	public static final String PARAM_FILE_PATH = "param.file.path";
+	
+	public static final String CARTRIDGE_KEY = "CARTRIDGE_KEY";
+	public static final String CLUSTER_ID = "CLUSTER_ID";
+	public static final String APP_PATH = "APP_PATH";
+	
 }

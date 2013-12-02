@@ -87,7 +87,7 @@ public interface CloudControllerService {
     public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException;
 
     /**
-     * Calling this method will spawn more than one ininstances in the
+     * Calling this method will spawn more than one instances in the
       * specified partition for the particular cluster
      *
      * @param clusterId

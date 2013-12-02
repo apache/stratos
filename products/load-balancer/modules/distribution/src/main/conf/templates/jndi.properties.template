@@ -1,5 +1,3 @@
-#!/bin/bash
-# --------------------------------------------------------------
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -18,11 +16,11 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# --------------------------------------------------------------
+# This is a generated file and will be overwritten at the next load balancer startup.
+# Please use loadbalancer.conf for updating mb-ip, mb-port and templates/jndi.properties.template
+# file for updating other configurations.
+#
+connectionfactoryName=topicConnectionfactory
+connectionfactory.topicConnectionfactory=amqp://admin:admin@carbon/carbon?brokerlist='tcp://$mb_ip:$mb_port'
+java.naming.factory.initial=org.wso2.andes.jndi.PropertiesFileInitialContextFactory
 
-echo "Starting event subscriber..."
-lib_path=./../lib/
-class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
-
-java -cp "${class_path}" org.apache.stratos.cartridge.agent.event.subscriber.Main ../conf /opt/apache-stratos-cartridge-agent/payload/launch-params
-echo "Event subscriber completed"

@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
-import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
@@ -86,19 +85,23 @@ public class CloudControllerClient {
         
     }
     
-    public boolean validatePartitionsOfPolicy(String cartridgeType, Partition[] partitions) throws PolicyValidationException{
+    /*
+     * This will validate the given partitions against the given cartridge type.
+     */
+    
+    public boolean validatePartitionsOfPolicy(String cartridgeType, Partition[] partitions) throws PartitionValidationException{
         
         try {
             return stub.validateDeploymentPolicy(cartridgeType, partitions);
         } catch (RemoteException e) {
             log.error(e.getMessage());
-            throw new PolicyValidationException(e);
+            throw new PartitionValidationException(e);
         } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
             log.error(e.getMessage());
-            throw new PolicyValidationException(e);
+            throw new PartitionValidationException(e);
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
             log.error(e.getMessage());
-            throw new PolicyValidationException(e);
+            throw new PartitionValidationException(e);
         } 
     }
     

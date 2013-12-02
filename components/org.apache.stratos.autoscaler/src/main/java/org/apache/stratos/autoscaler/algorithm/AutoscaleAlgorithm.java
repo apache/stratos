@@ -24,15 +24,39 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 
 /**
- *
+ * This interface is should be implemented by all the algorithms that are there to select partitions of a particulaler
+ * partition group
  */
 public interface AutoscaleAlgorithm {
 
+    /**
+     * Returns whether there is available {@link Partition} to scale up considering the current count and maximum
+     * @param clusterId Id of the cluster which need the availability information
+     * @return availability of {@link Partition}s to scale up
+     */
     public boolean scaleUpPartitionAvailable(String clusterId);
 
+    /**
+     * Returns whether there is available {@link Partition} to scale down considering the current count and minimum
+     * @param clusterId Id of the cluster which need the availability information
+     * @return availability of {@link Partition}s to scale down
+     */
     public boolean scaleDownPartitionAvailable(String clusterId);
 
-    public Partition getNextScaleUpPartition(PartitionGroup partition, String clusterId);
+    /**
+     * Returns a {@link Partition} to scale up from the given {@link PartitionGroup} according to algorithm
+     * @param partitionGroup {@link PartitionGroup} which need the {@link Partition}
+     * @param clusterId Id of the cluster which need the {@link Partition}
+     * @return {@link Partition} to scale up
+     */
+    public Partition getNextScaleUpPartition(PartitionGroup partitionGroup, String clusterId);
 
-    public Partition getNextScaleDownPartition(PartitionGroup partition, String clusterId);
+
+    /**
+     * Returns a {@link Partition} to scale down from the given {@link PartitionGroup} according to algorithm
+     * @param partitionGroup {@link PartitionGroup} which need the {@link Partition}
+     * @param clusterId Id of the cluster which need the {@link Partition}
+     * @return {@link Partition} to scale down
+     */
+    public Partition getNextScaleDownPartition(PartitionGroup partitionGroup, String clusterId);
 }

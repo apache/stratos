@@ -19,13 +19,15 @@
 
 package org.apache.stratos.autoscaler.partition;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 
 /**
  * The model class for managing Partitions.
@@ -71,6 +73,11 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 			return partitionListMap.get(partitionId);
 		else
 			return null;
+	}
+	
+	public List<Partition> getAllPartitions(){
+		return Collections.unmodifiableList(new ArrayList<Partition>(partitionListMap.values()));
+		
 	}
 
 }

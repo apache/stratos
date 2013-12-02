@@ -17,33 +17,19 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.event;
+package org.apache.stratos.load.balancer.conf.configurator;
 
-import java.io.Serializable;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 
 /**
- *  This event is fired by Event processing engine to send average of requests in flight
+ * Complex event processor configurator to configure CEP related settings.
  */
-public class AverageRequestsInFlightEvent implements Serializable {
+public class CEPConfigurator {
 
-	private static final long serialVersionUID = 7178667274015434275L;
-	private String clusterId;
-    private float value;
-
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
+    public static void configure(LoadBalancerConfiguration configuration) {
+        // Set system properties
+        System.setProperty("load.balancer.cep.stats.publisher.enabled", String.valueOf(configuration.isCepStatsPublisherEnabled()));
+        System.setProperty("thrift.receiver.ip", configuration.getCepIp());
+        System.setProperty("thrift.receiver.port", String.valueOf(configuration.getCepPort()));
     }
 }
