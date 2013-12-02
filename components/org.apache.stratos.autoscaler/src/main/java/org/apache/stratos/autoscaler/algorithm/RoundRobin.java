@@ -31,16 +31,19 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.List;
 
 /**
-* Select partition in round robin manner and return
+* This class is used for selecting a {@link Partition} in round robin manner and checking availability of
+ * {@link Partition}s of a {@link PartitionGroup}
+ *
 */
 public class RoundRobin implements AutoscaleAlgorithm{
 	
 	private static final Log log = LogFactory.getLog(RoundRobin.class);
     
-    public Partition getNextScaleUpPartition(PartitionGroup partitionGrp, String clusterId){
-    	
-    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);    	
-    	List<?> partitions = Arrays.asList(partitionGrp.getPartitions());
+    public Partition getNextScaleUpPartition(PartitionGroup partitionGroup, String clusterId){
+
+
+        ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
+    	List<?> partitions = Arrays.asList(partitionGroup.getPartitions());
     	int noOfPartitions = partitions.size();
 
     	for(int i=0; i < noOfPartitions; i++)
@@ -64,29 +67,30 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	        	if(log.isDebugEnabled())
     	        		log.debug("Free space found in partition " + currentPartition.getId());
 	                return currentPartition;
-	            }   	            	      
-    	        if(log.isDebugEnabled()) {
+	            }
+
+    	        if(log.isDebugEnabled())
     	        	log.debug("No free space for a new instance in partition " + currentPartition.getId());
-    	        }
+
     	    }
     	}
     	
     	// none of the partitions were free.
     	if(log.isDebugEnabled()) {
-    		log.debug("No free partition found at partition group " + partitionGrp);
+    		log.debug("No free partition found at partition group " + partitionGroup);
     	}
         return null;
     }
 
 
 	@Override
-    public Partition getNextScaleDownPartition(PartitionGroup partitionGrp, String clusterId) {
+    public Partition getNextScaleDownPartition(PartitionGroup partitionGroup, String clusterId) {
 
         ClusterContext clusterContext =
                                         AutoscalerContext.getInstance()
                                                          .getClusterContext(clusterId);
 
-        List<?> partitions = Arrays.asList(partitionGrp.getPartitions());
+        List<?> partitions = Arrays.asList(partitionGroup.getPartitions());
         int noOfPartitions = partitions.size();
 
         for (int i = 0; i < noOfPartitions; i++) {
@@ -130,7 +134,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
         if (log.isDebugEnabled())
             log.debug("No partition found for scale down at partition group " +
-                      partitionGrp.getId());
+                      partitionGroup.getId());
         // none of the partitions were free.
         return null;
     }

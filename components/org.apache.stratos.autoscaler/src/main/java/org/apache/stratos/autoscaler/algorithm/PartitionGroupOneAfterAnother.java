@@ -19,22 +19,22 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
-import java.util.List;
-
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.List;
 
 /**
- * Completes partitions in the order defined in autoscaler policy, go to next if current one reached the max limit
+ * Completes {@link PartitionGroup} in the order defined in  * {@link org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy}, and go to next  if current one
+  * reached the max limit policy, go to next if current one reached the max limit
  */
 public class PartitionGroupOneAfterAnother implements AutoscaleAlgorithm {
 
@@ -149,14 +149,14 @@ public class PartitionGroupOneAfterAnother implements AutoscaleAlgorithm {
     }
 
 	@Override
-	public Partition getNextScaleUpPartition(PartitionGroup partition,
+	public Partition getNextScaleUpPartition(PartitionGroup partitionGroup,
 			String clusterId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Partition getNextScaleDownPartition(PartitionGroup partition,
+	public Partition getNextScaleDownPartition(PartitionGroup partitionGroup,
 			String clusterId) {
 		// TODO Auto-generated method stub
 		return null;
