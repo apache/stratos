@@ -21,11 +21,15 @@ package org.apache.stratos.cloud.controller.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.AppType;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -108,6 +112,39 @@ public class CloudControllerUtil {
 
         return javaProps;
     }
+    
+    public static void persist(Topology topology) {
+      try {
+          RegistryManager.getInstance().persistTopology(topology);
+      } catch (RegistryException e) {
+
+          String msg = "Failed to persist the Topology in registry. ";
+          log.fatal(msg, e);
+//          throw new CloudControllerException(msg, e);
+      }
+    }
+    
+    public static Topology retrieve() {
+
+          Object obj = RegistryManager.getInstance().retrieveTopology();
+          if (obj != null) {
+              try {
+                  Object dataObj = Deserializer
+                          .deserializeFromByteArray((byte[]) obj);
+                  if(dataObj instanceof Topology) {
+                      return (Topology) dataObj;
+                  } else {
+                      return null;
+                  }
+              } catch (Exception e) {
+                String msg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+                log.warn(msg, e);
+            }
+          }
+          
+          return null;
+    }
+
 	
 	public static void handleException(String msg, Exception e){
 		log.error(msg, e);
