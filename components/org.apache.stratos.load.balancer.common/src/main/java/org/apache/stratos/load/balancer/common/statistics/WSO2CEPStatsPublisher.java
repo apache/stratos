@@ -44,7 +44,7 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     private AsyncDataPublisher asyncDataPublisher;
     private String ip;
     private String port;
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     public WSO2CEPStatsPublisher() {
         ip = System.getProperty("thrift.receiver.ip");
