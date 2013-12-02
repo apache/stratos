@@ -189,6 +189,14 @@
            </includes>
 	</fileSet>
 
+	<fileSet>
+	  <directory>src/main/partitions</directory>
+	  <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/deployment/server/partitions</outputDirectory>
+	  <directoryMode>0755</directoryMode>
+           <includes>
+              <include>*.xml</include>
+           </includes>
+	</fileSet>
     </fileSets>
 
     <dependencySets>

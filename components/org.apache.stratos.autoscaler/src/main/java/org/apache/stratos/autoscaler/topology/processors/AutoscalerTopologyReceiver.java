@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
+import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -194,6 +195,10 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 ctxt = AutoscalerUtil.getClusterContext(cluster);
             } catch (PolicyValidationException e) {
                 String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+                log.error(msg, e);
+                throw new RuntimeException(msg, e);
+            }catch(PartitionValidationException e){
+            	String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
                 log.error(msg, e);
                 throw new RuntimeException(msg, e);
             }
