@@ -18,9 +18,13 @@
  */
 package org.apache.stratos.autoscaler.api;
 
+import java.util.ArrayList;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -44,6 +48,19 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	
 	public AutoscalePolicy[] getAllAutoScalingPolicy(){
 		return PolicyManager.getInstance().getAutoscalePolicyList().toArray(new AutoscalePolicy[0]);
+	}
+
+	@Override
+	public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType) throws PartitionValidationException {
+		ArrayList<DeploymentPolicy> validPolicies = new ArrayList<DeploymentPolicy>();
+		
+		for(DeploymentPolicy deploymentPolicy : this.getAllDeploymentPolicies()){
+			Partition[] policyPartitions = deploymentPolicy.getAllPartitions().toArray(new Partition[0]);
+			boolean isValid = CloudControllerClient.getInstance().validatePartitionsOfPolicy(cartridgeType, policyPartitions);
+			if(isValid)
+				validPolicies.add(deploymentPolicy);			
+		}
+		return validPolicies.toArray(new DeploymentPolicy[0]);
 	}
 
 }

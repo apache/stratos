@@ -32,6 +32,7 @@ import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
+import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -59,9 +60,10 @@ public class AutoscalerUtil {
      * @param cluster
      * @return ClusterContext - Updated ClusterContext
      * @throws PolicyValidationException
+     * @throws PartitionValidationException 
      */
     public static ClusterContext
-        getClusterContext(Cluster cluster) throws PolicyValidationException {
+        getClusterContext(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
         // FIXME fix the following code to correctly update
         // AutoscalerContext context = AutoscalerContext.getInstance();
         if (null == cluster) {
