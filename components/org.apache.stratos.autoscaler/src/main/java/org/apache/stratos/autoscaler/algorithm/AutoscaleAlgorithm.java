@@ -19,8 +19,8 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
 
 
 /**

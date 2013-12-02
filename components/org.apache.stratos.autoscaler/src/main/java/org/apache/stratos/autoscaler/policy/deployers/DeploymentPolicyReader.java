@@ -30,10 +30,12 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axis2.deployment.DeploymentException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.policy.InvalidPolicyException;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 /**
  * 
  * The Reader class for Deployment-policy definitions.
@@ -71,21 +73,33 @@ public class DeploymentPolicyReader  extends AbstractPolicyReader<DeploymentPoli
 						while(partitionItr.hasNext()){
 							Object next = partitionItr.next();
 							if(next instanceof OMElement){
-								OMElement partitionEle = (OMElement) next;
+								OMElement partitionElt = (OMElement) next;
 								
-								String partitionId = partitionEle.getAttributeValue(new QName("id"));
-								/*
-								Partition partition = PartitionManager.getInstance().getPartitionById(partitionId);
-								 If a partition with this name does not exist in the partition list.
-								if(partition == null)
-									log.info("No Partition found with matching ID " + partitionId);
-								*/
-								Partition partition = new Partition();
-								partition.setId(partitionId);
-								partition.setPartitionMax(Integer.valueOf(readValue(partitionEle, "max")));
-								partition.setPartitionMin(Integer.valueOf(readValue(partitionEle, "min")));
-//								partition.setProvider(readValue(partitionEle, "provider"));
-								partitions.add(partition);
+								String partitionId = partitionElt.getAttributeValue(new QName("id"));
+                                if (partitionId != null) {
+                                    Partition partition = new Partition();
+                                    partition.setId(partitionId);
+                                    String maxValue = readValue(partitionElt, "max");
+                                    if (maxValue != null) {
+                                        partition.setPartitionMax(Integer.valueOf(maxValue));
+                                    }
+                                    String minValue = readValue(partitionElt, "min");
+                                    if (minValue != null) {
+                                        partition.setPartitionMin(Integer.valueOf(minValue));
+                                    }
+                                    String providerValue = readValue(partitionElt, "provider");
+                                    if (providerValue != null) {
+                                        partition.setProvider(providerValue);
+                                    }
+                                    
+                                    Properties properties = AutoscalerUtil.getProperties(partitionElt);
+                                    if (properties != null) {
+                                        partition.setProperties(properties);
+                                    }
+                                    partitions.add(partition);
+                                } else {
+                                    log.warn("Invalid Partition id: null. Partition will be ignored.");
+                                }
 							}
 						}
 						if(group.getPartitions() == null) {
@@ -97,7 +111,7 @@ public class DeploymentPolicyReader  extends AbstractPolicyReader<DeploymentPoli
 					if(policy.getPartitionGroups() == null) {
                         policy.setPartitionGroups(new PartitionGroup[0]);
                     }
-					policy.setPartitionGroup(partitionGroups.toArray(policy.getPartitionGroups()));
+					policy.setPartitionGroups(partitionGroups.toArray(policy.getPartitionGroups()));
 				}
 			} else{
 				throw new DeploymentException("File is not a valid deployment policy");

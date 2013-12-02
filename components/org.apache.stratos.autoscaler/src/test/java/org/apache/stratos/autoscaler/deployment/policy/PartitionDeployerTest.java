@@ -23,7 +23,9 @@ import static org.junit.Assert.*;
 import java.io.File;
 
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
+import org.apache.stratos.autoscaler.partition.deployers.PartitionReader;
 import org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyReader;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,22 +33,34 @@ import org.junit.Test;
  * @author nirmal
  *
  */
-public class DeploymentPolicyDeployerTest {
+public class PartitionDeployerTest {
     
-    DeploymentPolicyReader reader;
+    PartitionReader reader, reader1;
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        reader = new DeploymentPolicyReader(new File("src/test/resources/deployment-policy.xml"));
+        reader = new PartitionReader(new File("src/test/resources/partitions.xml"));
+        reader1 = new PartitionReader(new File("src/test/resources/partition.xml"));
     }
 
     @Test
-    public void test() throws InvalidPolicyException {
+    public void testPartitionCount() throws InvalidPolicyException {
         
-        DeploymentPolicy policy = reader.read();
+        assertEquals(2, reader.getPartitionList().size());
+    }
+    
+    @Test
+    public void testPartition() throws InvalidPolicyException {
+        
+        assertEquals(1, reader1.getPartitionList().size());
+        
+        Partition p = reader1.getPartitionList().get(0);
+        assertEquals("P1", p.getId());
+        assertEquals(3, p.getPartitionMax());
+        assertEquals(2, p.getProperties().getProperties().length);
     }
 
 }

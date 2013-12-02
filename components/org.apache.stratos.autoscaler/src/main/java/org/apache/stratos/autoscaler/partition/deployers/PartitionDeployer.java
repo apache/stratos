@@ -73,7 +73,7 @@ public class PartitionDeployer extends AbstractDeployer {
 	public void deploy(DeploymentFileData deploymentFileData) throws DeploymentException {
 
 		File partitionFile = deploymentFileData.getFile();
-		log.debug("Started to deploy the policy: " + partitionFile);
+		log.debug("Started to deploy the partitions of file: " + partitionFile);
 
 		try {
 			
@@ -82,25 +82,29 @@ public class PartitionDeployer extends AbstractDeployer {
 			List<Partition> partitionList = reader.getPartitionList();
 			Iterator<Partition> it = partitionList.iterator();
 			
-			while(it.hasNext()){
-				Partition partition = it.next();
-				if(PartitionManager.getInstance().partitionExist(partition.getId())){
-					log.warn("Partition already exists in the system " + partition.getId());
-					continue;
-				}
-				
-				boolean isValid = CloudControllerClient.getInstance().validatePartition(partition);
-				if(!isValid){
-					log.error("Partition is not valid " + partition.getId());
-					continue;					
-				}
-				PartitionManager.getInstance().addPartition(partition.getId(), partition);
-			}			
+            while (it.hasNext()) {
+                Partition partition = it.next();
+                try {
+                    if (PartitionManager.getInstance().partitionExist(partition.getId())) {
+                        log.warn("Partition already exists in the system " + partition.getId());
+                        continue;
+                    }
 
-			log.info("Successfully deployed the partition specified at "+ deploymentFileData.getAbsolutePath());
+                    CloudControllerClient.getInstance().validatePartition(partition);
+                    PartitionManager.getInstance().addPartition(partition.getId(), partition);
+                    log.info("Partition :" + partition.getId() + " is deployed successfully.");
+                } catch (Exception e) {
+                    String msg =
+                                 "Invalid partition: " + partition.getId() + " in file: " +
+                                         partitionFile.getAbsolutePath()+". Cause: "+e.getMessage();
+                    log.error(msg, e);
+                    continue;
+                }
+            }			
+
 			 
 		} catch (Exception e) {
-			String msg = "Invalid partition artifact at " + deploymentFileData.getAbsolutePath();
+			String msg = "Invalid partition definition file: " + deploymentFileData.getAbsolutePath();
 			// back up the file
 			File fileToBeRenamed = partitionFile;
 			fileToBeRenamed.renameTo(new File(deploymentFileData.getAbsolutePath() + ".back"));

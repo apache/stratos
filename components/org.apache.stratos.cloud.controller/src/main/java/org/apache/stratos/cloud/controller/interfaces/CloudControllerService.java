@@ -19,7 +19,6 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
@@ -53,7 +52,7 @@ public interface CloudControllerService {
      * @throws InvalidPartitionException if the policy contains at least one invalid partition.
      * @throws InvalidCartridgeTypeException if the given Cartridge type is not a valid one.
      */
-    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) 
+    public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
             throws InvalidPartitionException, InvalidCartridgeTypeException;
 
     /**

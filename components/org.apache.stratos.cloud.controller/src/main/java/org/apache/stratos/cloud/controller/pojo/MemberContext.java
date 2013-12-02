@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
+import java.io.Serializable;
+
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
@@ -25,8 +27,9 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
  * @author nirmal
  *
  */
-public class MemberContext {
+public class MemberContext implements Serializable{
 
+    private static final long serialVersionUID = -388327475844701869L;
     // id of the member
     private String memberId;
     // corresponding jclouds node id

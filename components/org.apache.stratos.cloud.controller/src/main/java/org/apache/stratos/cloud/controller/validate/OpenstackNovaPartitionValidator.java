@@ -75,11 +75,7 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
                 
             } else {
 
-                String msg =
-                        "Invalid Partition Detected : "+partitionId+". - "+Scope.zone.toString() +
-                                     " Property is not defined.";
-                log.error(msg);
-                throw new InvalidPartitionException(msg);
+                return iaasProvider;
             }
         } catch (Exception ex) {
             String msg = "Invalid Partition Detected : "+partitionId;

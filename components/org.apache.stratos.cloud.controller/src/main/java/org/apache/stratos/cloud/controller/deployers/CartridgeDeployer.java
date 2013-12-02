@@ -25,7 +25,6 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
 import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.axiom.parser.CartridgeConfigParser;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
@@ -33,13 +32,9 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.Host;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.Region;
-import org.apache.stratos.cloud.controller.pojo.Zone;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.util.*;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
@@ -186,20 +181,20 @@ public class CartridgeDeployer extends AbstractDeployer{
 					Iaas iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
 					iaas.buildComputeServiceAndTemplate(iaasProvider);
 					iaasProvider.setIaas(iaas);
-                    if(iaasProvider.getListOfRegions() != null) {
-                        for(Region region : iaasProvider.getListOfRegions()) {
-                            iaas.buildComputeServiceAndTemplate(region);
-                            for(Zone zone : region.getListOfZones()) {
-                                zone.setComputeService(region.getComputeService());
-                                iaas.buildTemplate(zone);
-                                for(Host host: zone.getListOfHosts()) {
-                                    host.setComputeService(region.getComputeService());
-                                    iaas.buildTemplate(host);
-                                }
-                            }
-
-                        }
-                    }
+//                    if(iaasProvider.getListOfRegions() != null) {
+//                        for(Region region : iaasProvider.getListOfRegions()) {
+//                            iaas.buildComputeServiceAndTemplate(region);
+//                            for(Zone zone : region.getListOfZones()) {
+//                                zone.setComputeService(region.getComputeService());
+//                                iaas.buildTemplate(zone);
+//                                for(Host host: zone.getListOfHosts()) {
+//                                    host.setComputeService(region.getComputeService());
+//                                    iaas.buildTemplate(host);
+//                                }
+//                            }
+//
+//                        }
+//                    }
 					
 				} catch (Exception e) {
 					rename();

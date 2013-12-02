@@ -19,10 +19,7 @@
 package org.apache.stratos.cloud.controller.axiom.parser;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -36,8 +33,6 @@ import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.pojo.TopologyConfig;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.wso2.securevault.SecretResolver;
-import org.wso2.securevault.SecretResolverFactory;
 
 /**
  * Parse the cloud-controller.xml
@@ -197,9 +192,4 @@ public class CloudControllerConfigParser {
         }
     }
     
-    private static void handleException(final String msg) throws MalformedConfigurationFileException{
-        log.error(msg);
-        throw new MalformedConfigurationFileException(msg);
-    }
-
 }

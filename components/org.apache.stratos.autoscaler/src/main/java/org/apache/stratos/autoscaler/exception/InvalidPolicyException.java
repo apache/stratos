@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy;
+package org.apache.stratos.autoscaler.exception;
 
 public class InvalidPolicyException extends Exception {
 

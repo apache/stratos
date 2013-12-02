@@ -18,11 +18,14 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
+import java.io.Serializable;
+
 /**
  * Holds a property 
  */
-public class Property {
+public class Property implements Serializable{
     
+    private static final long serialVersionUID = -2191782657999410197L;
     private String name;
     private String value;
     

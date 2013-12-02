@@ -25,9 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
@@ -64,26 +63,20 @@ public class ClusterContext {
     private Map<String, MemberStatsContext> memberContextMap;
     private DeploymentPolicy deploymentPolicy;
 
-    @SuppressWarnings("unchecked")
-    public ClusterContext(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy) {
+    public ClusterContext(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy, List<Partition> partitions) {
 
         this.clusterId = clusterId;
         this.serviceId = serviceId;
         this.setDeploymentPolicy(deploymentPolicy);
         partitionsOfThisCluster = new ArrayList<Partition>();
-        if (deploymentPolicy != null) {
-            for (PartitionGroup group : deploymentPolicy.getPartitionGroup()) {
-                for (Partition partition : group.getPartitions()) {
-                    partitionsOfThisCluster.add(partition);
-                }
-            }
-        }
         memberContextMap = new HashMap<String, MemberStatsContext>();
         partitionCountMap = new HashMap<String, Integer>();
         
-        for (Partition partition : partitionsOfThisCluster) {
+        for (Partition partition : partitions) {
+            partitionsOfThisCluster.add(partition);
             this.addPartitionCount(partition.getId(), 0);
         }
+        
         memberCount = 0;
     }
 

@@ -25,7 +25,6 @@ import org.jclouds.compute.domain.Template;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,8 +40,6 @@ public class IaasProvider implements Serializable{
      */
     private String type;
 
-    private List<Region>  listOfRegions;
-    
     /**
      * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.interfaces.Iaas}
      */
@@ -250,22 +247,4 @@ public class IaasProvider implements Serializable{
 //    	toBeRemovedNodeIds = new ArrayList<String>();
     }
 
-    /**
-     * Partition the IaaS using different region
-     */
-    public List<Region> getListOfRegions() {
-        return listOfRegions;
-    }
-
-    public void setListOfRegions(List<Region> listOfRegions) {
-        this.listOfRegions = listOfRegions;
-    }
-
-    public void addRegion(Region region) {
-        this.listOfRegions.add(region);
-    }
-
-    public void removeRegion(Region region) {
-        this.listOfRegions.remove(region);
-    }
 }

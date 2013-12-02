@@ -18,23 +18,12 @@
  */
 package org.apache.stratos.cloud.controller.publisher;
 
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.MapDifference.ValueDifference;
-import com.google.common.collect.Maps;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInstanceData;
-import org.apache.stratos.cloud.controller.pojo.IaasContext;
-import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.*;
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.domain.ComputeMetadata;
-import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.domain.internal.NodeMetadataImpl;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.databridge.agent.thrift.Agent;
 import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
@@ -64,6 +53,7 @@ public class CartridgeInstanceDataPublisherTask implements Task{
         publish();
     }
     
+    @SuppressWarnings("deprecation")
     public static void publish(){
         if(FasterLookUpDataHolder.getInstance().isPublisherRunning() ||
                 // this is a temporary fix to avoid task execution - limitation with ntask
@@ -189,7 +179,7 @@ public class CartridgeInstanceDataPublisherTask implements Task{
         }
         
         // replace old map with new one only if data is published
-        FasterLookUpDataHolder.getInstance().setNodeIdToStatusMap(newNodeToStateMap);
+//        FasterLookUpDataHolder.getInstance().setNodeIdToStatusMap(newNodeToStateMap);
         
         //TODO remove
 //        CassandraDataRetriever.init();
@@ -291,178 +281,178 @@ public class CartridgeInstanceDataPublisherTask implements Task{
         
     }
     
-    private static void bundleData(String key, String val, ServiceContext serviceCtxt) {
-        
-        CartridgeInstanceData instanceData = new CartridgeInstanceData();
-        instanceData.setNodeId(key);
-        instanceData.setStatus(val);
-        instanceData.setDomain(serviceCtxt.getClusterId());
-        instanceData.setAlias("".equals(serviceCtxt.getProperty(CloudControllerConstants.ALIAS_PROPERTY))
-            ? "NULL"
-                : serviceCtxt.getProperty(CloudControllerConstants.ALIAS_PROPERTY));
-        instanceData.setTenantRange("".equals(serviceCtxt.getProperty(CloudControllerConstants.TENANT_ID_PROPERTY))
-            ? serviceCtxt.getTenantRange()
-                : serviceCtxt.getProperty(CloudControllerConstants.TENANT_ID_PROPERTY));
-        
-        if (serviceCtxt.getCartridge() != null) {
-            instanceData.setMultiTenant(serviceCtxt.getCartridge().isMultiTenant());
-
-            for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
-
-                IaasContext ctxt = null;
-                if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
-                    ctxt = serviceCtxt.addIaasContext(iaas.getType());
-                }
-
-                if (ctxt.didISpawn(key)) {
-                    instanceData.setIaas(iaas.getType());
-                    instanceData.setMetaData(ctxt.getNode(key));
-
-                    // clear to be removed data
-                    ctxt.removeToBeRemovedNodeId(key);
-
-                    // if the node is terminated
-                    if (val.equals(NodeStatus.TERMINATED.toString())) {
-                        // since this node is terminated
-                        FasterLookUpDataHolder.getInstance().removeNodeId(key);
-
-                        // remove node meta data
-                        ctxt.removeNodeMetadata(ctxt.getNode(key));
-                    }
-
-                    break;
-                }
-            }
-
-            instanceData.setType(serviceCtxt.getCartridge().getType());
-        } else {
-            log.warn("Cartridge is null for Service Context : (domain: " +
-                serviceCtxt.getClusterId() +
-                    ")");
-        }
-        
-        dataToBePublished.add(instanceData);
-        
-    }
+//    private static void bundleData(String key, String val, ServiceContext serviceCtxt) {
+//        
+//        CartridgeInstanceData instanceData = new CartridgeInstanceData();
+//        instanceData.setNodeId(key);
+//        instanceData.setStatus(val);
+//        instanceData.setDomain(serviceCtxt.getClusterId());
+//        instanceData.setAlias("".equals(serviceCtxt.getProperty(CloudControllerConstants.ALIAS_PROPERTY))
+//            ? "NULL"
+//                : serviceCtxt.getProperty(CloudControllerConstants.ALIAS_PROPERTY));
+//        instanceData.setTenantRange("".equals(serviceCtxt.getProperty(CloudControllerConstants.TENANT_ID_PROPERTY))
+//            ? serviceCtxt.getTenantRange()
+//                : serviceCtxt.getProperty(CloudControllerConstants.TENANT_ID_PROPERTY));
+//        
+//        if (serviceCtxt.getCartridge() != null) {
+//            instanceData.setMultiTenant(serviceCtxt.getCartridge().isMultiTenant());
+//
+//            for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
+//
+//                IaasContext ctxt = null;
+//                if ((ctxt = serviceCtxt.getIaasContext(iaas.getType())) == null) {
+//                    ctxt = serviceCtxt.addIaasContext(iaas.getType());
+//                }
+//
+//                if (ctxt.didISpawn(key)) {
+//                    instanceData.setIaas(iaas.getType());
+//                    instanceData.setMetaData(ctxt.getNode(key));
+//
+//                    // clear to be removed data
+//                    ctxt.removeToBeRemovedNodeId(key);
+//
+//                    // if the node is terminated
+//                    if (val.equals(NodeStatus.TERMINATED.toString())) {
+//                        // since this node is terminated
+////                        FasterLookUpDataHolder.getInstance().removeNodeId(key);
+//
+//                        // remove node meta data
+//                        ctxt.removeNodeMetadata(ctxt.getNode(key));
+//                    }
+//
+//                    break;
+//                }
+//            }
+//
+//            instanceData.setType(serviceCtxt.getCartridge().getType());
+//        } else {
+//            log.warn("Cartridge is null for Service Context : (domain: " +
+//                serviceCtxt.getClusterId() +
+//                    ")");
+//        }
+//        
+//        dataToBePublished.add(instanceData);
+//        
+//    }
     
     private static Map<String, String> getNodeIdToStatusMap() throws Exception {
         
         Map<String, String> statusMap = new HashMap<String, String>();
         
-        // iterate through all ServiceContexts
-        for (Iterator<?> it1 = FasterLookUpDataHolder.getInstance().getServiceContexts().entrySet().iterator(); it1.hasNext();) {
-            @SuppressWarnings("unchecked")
-            Map.Entry<String, Map<String, ServiceContext>> entry = (Map.Entry<String, Map<String, ServiceContext>>) it1.next();
-            
-            Map<String, ServiceContext> map = (Map<String, ServiceContext>) entry.getValue();
-            
-            for (Iterator<ServiceContext> it2 = map.values().iterator(); it2.hasNext();) {
-                ServiceContext subjectedSerCtxt = (ServiceContext) it2.next();
-                
-                if (subjectedSerCtxt != null && subjectedSerCtxt.getCartridge() != null) {
-                    List<IaasProvider> iaases = subjectedSerCtxt.getCartridge().getIaases();
-
-                    for (IaasProvider iaas : iaases) {
-
-                        ComputeService computeService = iaas.getComputeService();
-                        
-                        if(computeService == null){
-                            continue;
-                        }
-                        
-                        IaasContext ctxt = null;
-                        if((ctxt = subjectedSerCtxt.getIaasContext(iaas.getType())) == null){
-                        	ctxt = subjectedSerCtxt.addIaasContext(iaas.getType());
-                        }
-
-                        // get list of node Ids
-                        List<String> nodeIds = ctxt.getAllNodeIds();
-
-                        if (nodeIds.isEmpty()) {
-                            
-                            continue;
-                        }
-                        
-                        try {
-
-                            // get all the nodes spawned by this IaasContext
-                            Set<? extends ComputeMetadata> set = computeService.listNodes();
-
-                            Iterator<? extends ComputeMetadata> iterator = set.iterator();
-
-                            // traverse through all nodes of this ComputeService object
-                            while (iterator.hasNext()) {
-                                NodeMetadata nodeMetadata = (NodeMetadataImpl) iterator.next();
-
-                                // if this node belongs to the requested domain
-                                if (nodeIds.contains(nodeMetadata.getId())) {
-
-                                    statusMap.put(nodeMetadata.getId(), nodeMetadata.getStatus()
-                                                                                    .toString());
-
-                                    ctxt.addNodeMetadata(nodeMetadata);
-                                }
-
-                            }
-
-                        }catch (Exception e) {
-                            log.error(e.getMessage(), e);
-                            throw e;
-                        }
-
-                    }
-                }
-            }
-            
-            
-        }
+//        // iterate through all ServiceContexts
+//        for (Iterator<?> it1 = FasterLookUpDataHolder.getInstance().getServiceContexts().entrySet().iterator(); it1.hasNext();) {
+//            @SuppressWarnings("unchecked")
+//            Map.Entry<String, Map<String, ServiceContext>> entry = (Map.Entry<String, Map<String, ServiceContext>>) it1.next();
+//            
+//            Map<String, ServiceContext> map = (Map<String, ServiceContext>) entry.getValue();
+//            
+//            for (Iterator<ServiceContext> it2 = map.values().iterator(); it2.hasNext();) {
+//                ServiceContext subjectedSerCtxt = (ServiceContext) it2.next();
+//                
+//                if (subjectedSerCtxt != null && subjectedSerCtxt.getCartridge() != null) {
+//                    List<IaasProvider> iaases = subjectedSerCtxt.getCartridge().getIaases();
+//
+//                    for (IaasProvider iaas : iaases) {
+//
+//                        ComputeService computeService = iaas.getComputeService();
+//                        
+//                        if(computeService == null){
+//                            continue;
+//                        }
+//                        
+//                        IaasContext ctxt = null;
+//                        if((ctxt = subjectedSerCtxt.getIaasContext(iaas.getType())) == null){
+//                        	ctxt = subjectedSerCtxt.addIaasContext(iaas.getType());
+//                        }
+//
+//                        // get list of node Ids
+//                        List<String> nodeIds = ctxt.getAllNodeIds();
+//
+//                        if (nodeIds.isEmpty()) {
+//                            
+//                            continue;
+//                        }
+//                        
+//                        try {
+//
+//                            // get all the nodes spawned by this IaasContext
+//                            Set<? extends ComputeMetadata> set = computeService.listNodes();
+//
+//                            Iterator<? extends ComputeMetadata> iterator = set.iterator();
+//
+//                            // traverse through all nodes of this ComputeService object
+//                            while (iterator.hasNext()) {
+//                                NodeMetadata nodeMetadata = (NodeMetadataImpl) iterator.next();
+//
+//                                // if this node belongs to the requested domain
+//                                if (nodeIds.contains(nodeMetadata.getId())) {
+//
+//                                    statusMap.put(nodeMetadata.getId(), nodeMetadata.getStatus()
+//                                                                                    .toString());
+//
+//                                    ctxt.addNodeMetadata(nodeMetadata);
+//                                }
+//
+//                            }
+//
+//                        }catch (Exception e) {
+//                            log.error(e.getMessage(), e);
+//                            throw e;
+//                        }
+//
+//                    }
+//                }
+//            }
+//            
+//            
+//        }
         return statusMap;
 
     }
     
     private static void populateNewlyAddedOrStateChangedNodes(Map<String, String> newMap){
         
-        MapDifference<String, String> diff = Maps.difference(newMap, 
-                                                             FasterLookUpDataHolder.getInstance().getNodeIdToStatusMap());
-        
-        // adding newly added nodes
-        Map<String, String> newlyAddedNodes = diff.entriesOnlyOnLeft();
-        
-        for (Iterator<?> it = newlyAddedNodes.entrySet().iterator(); it.hasNext();) {
-            @SuppressWarnings("unchecked")
-            Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
-            String key = entry.getKey();
-            String val = entry.getValue();
-            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContextFromNodeId(key);
-            
-            log.debug("------ Node id: "+key+" --- node status: "+val+" -------- ctxt: "+ctxt);
-            
-            if (ctxt != null && key != null && val != null) {
-                // bundle the data to be published
-                bundleData(key, val, ctxt);
-            }   
-                    
-        }
-        
-        // adding nodes with state changes
-        Map<String, ValueDifference<String>> stateChangedNodes = diff.entriesDiffering();
-        
-        for (Iterator<?> it = stateChangedNodes.entrySet().iterator(); it.hasNext();) {
-            @SuppressWarnings("unchecked")
-            Map.Entry<String, ValueDifference<String>> entry = (Map.Entry<String, ValueDifference<String>>) it.next();
-            
-            String key = entry.getKey();
-            String newState = entry.getValue().leftValue();
-            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContextFromNodeId(key);
-            
-            log.debug("------- Node id: "+key+" --- node status: "+newState+" -------- ctxt: "+ctxt);
-            
-            if (ctxt != null && key != null && newState != null) {
-                // bundle the data to be published
-                bundleData(key, newState, ctxt);
-            }  
-            
-        }
+//        MapDifference<String, String> diff = Maps.difference(newMap, 
+//                                                             FasterLookUpDataHolder.getInstance().getNodeIdToStatusMap());
+//        
+//        // adding newly added nodes
+//        Map<String, String> newlyAddedNodes = diff.entriesOnlyOnLeft();
+//        
+//        for (Iterator<?> it = newlyAddedNodes.entrySet().iterator(); it.hasNext();) {
+//            @SuppressWarnings("unchecked")
+//            Map.Entry<String, String> entry = (Map.Entry<String, String>) it.next();
+//            String key = entry.getKey();
+//            String val = entry.getValue();
+//            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContextFromNodeId(key);
+//            
+//            log.debug("------ Node id: "+key+" --- node status: "+val+" -------- ctxt: "+ctxt);
+//            
+//            if (ctxt != null && key != null && val != null) {
+//                // bundle the data to be published
+//                bundleData(key, val, ctxt);
+//            }   
+//                    
+//        }
+//        
+//        // adding nodes with state changes
+//        Map<String, ValueDifference<String>> stateChangedNodes = diff.entriesDiffering();
+//        
+//        for (Iterator<?> it = stateChangedNodes.entrySet().iterator(); it.hasNext();) {
+//            @SuppressWarnings("unchecked")
+//            Map.Entry<String, ValueDifference<String>> entry = (Map.Entry<String, ValueDifference<String>>) it.next();
+//            
+//            String key = entry.getKey();
+//            String newState = entry.getValue().leftValue();
+//            ServiceContext ctxt = FasterLookUpDataHolder.getInstance().getServiceContextFromNodeId(key);
+//            
+//            log.debug("------- Node id: "+key+" --- node status: "+newState+" -------- ctxt: "+ctxt);
+//            
+//            if (ctxt != null && key != null && newState != null) {
+//                // bundle the data to be published
+//                bundleData(key, newState, ctxt);
+//            }  
+//            
+//        }
 
     }
     

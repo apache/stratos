@@ -35,12 +35,10 @@ public class Member implements Serializable {
     private String clusterId;
     private String memberId;
     private MemberStatus status;
-    private float loadAverage;
-    private float memoryConsumption;
     private String memberIp;
     private Map<String, Port> portMap;
     private Properties properties;
-    private String iaasNodeId;
+    private String partitionId;
 
     public Member(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
@@ -119,28 +117,12 @@ public class Member implements Serializable {
 	    this.memberIp = memberIp;
     }
 
-    public float getLoadAverage() {
-        return loadAverage;
+    public String getPartitionId() {
+        return partitionId;
     }
 
-    public void setLoadAverage(float loadAverage) {
-        this.loadAverage = loadAverage;
-    }
-
-    public float getMemoryConsumption() {
-        return memoryConsumption;
-    }
-
-    public void setMemoryConsumption(float memoryConsumption) {
-        this.memoryConsumption = memoryConsumption;
-    }
-
-     public String getIaasNodeId() {
-        return iaasNodeId;
-    }
-
-    public void setIaasNodeId(String iaasNodeId) {
-        this.iaasNodeId = iaasNodeId;
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
     }
 
 }

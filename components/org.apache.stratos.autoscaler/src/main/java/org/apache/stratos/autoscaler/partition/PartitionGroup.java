@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.deployment.partition;
+package org.apache.stratos.autoscaler.partition;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
  * The model class for PartitionGroup definition.

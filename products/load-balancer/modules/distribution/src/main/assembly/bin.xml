@@ -28,6 +28,7 @@
             <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/*.sh</exclude>
+                <exclude>**/*.bat</exclude>
                 <exclude>**/conf/axis2/axis2.xml</exclude>
                 <exclude>**/conf/mgt-transports.xml</exclude>
                 <exclude>**/conf/synapse.xml</exclude>

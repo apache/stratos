@@ -53,10 +53,13 @@ public class TopologyManager {
     }
 
     public static TopologyManager getInstance() {
-        if (instance == null) {
-            instance = new TopologyManager();
+        synchronized (TopologyManager.class) {
+            if (instance == null) {
+                instance = new TopologyManager();
+            }
+            return instance;
+            
         }
-        return instance;
     }
 
     public void acquireReadLock() {

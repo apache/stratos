@@ -30,13 +30,22 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
     private String serviceName;
     private String clusterId;
     private String memberId;
-    private String iaasNodeId;
+    private String partitionId;
+
 
     public InstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String iaasNodeId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.memberId = memberId;
-        this.iaasNodeId = iaasNodeId;
+        this.partitionId = iaasNodeId;
+    }
+    
+    public String getPartitionId() {
+        return partitionId;
+    }
+    
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
     }
 
     public String getServiceName() {
@@ -49,14 +58,6 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     public String getMemberId() {
         return memberId;
-    }
-
-    public String getIaasNodeId() {
-        return iaasNodeId;
-    }
-
-    public void setIaasNodeId(String iaasNodeId) {
-        this.iaasNodeId = iaasNodeId;
     }
 
 }

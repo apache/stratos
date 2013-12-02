@@ -17,15 +17,16 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.deployment.policy;
+package org.apache.stratos.autoscaler.deployment.policy;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * The model class for Deployment-Policy definition.
@@ -35,6 +36,7 @@ public class DeploymentPolicy implements Serializable{
     private static final long serialVersionUID = 5675507196284400099L;
     private String id;
 	private PartitionGroup[] partitionGroups;
+	private List<Partition> allPartitions;
 
     /**
      * Gets the value of the id property.
@@ -60,8 +62,22 @@ public class DeploymentPolicy implements Serializable{
         this.id = value;
     }
     
-    public void setPartitionGroup(PartitionGroup[] groups) {
+    @SuppressWarnings("unchecked")
+    public void setPartitionGroups(PartitionGroup[] groups) {
         this.partitionGroups = groups;
+        if(allPartitions == null) {
+            allPartitions = new ArrayList<Partition>();
+        }
+        for (PartitionGroup partitionGroup : groups) {
+            Partition[] partitions = partitionGroup.getPartitions();
+            if(partitions != null) {
+                allPartitions.addAll(Arrays.asList(partitions));
+            }
+        }
+    }
+    
+    public List<Partition> getAllPartitions() {
+        return allPartitions;
     }
 
     /**
@@ -70,20 +86,6 @@ public class DeploymentPolicy implements Serializable{
     public PartitionGroup[] getPartitionGroups() {
         
         return this.partitionGroups;
-    }
-    
-    /**
-     * Returns all the partitions referenced by this policy.
-     * @return List of {@link Partition}
-     */
-    public List<Partition> getAllPartitions() {
-        List<Partition> partitions = new ArrayList<Partition>();
-        for (PartitionGroup group : partitionGroups) {
-            if (group != null) {
-                partitions.addAll(Arrays.asList(group.getPartitions()));
-            }
-        }
-        return partitions;
     }
     
     public String toString() {

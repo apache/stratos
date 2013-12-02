@@ -45,14 +45,12 @@ public class Cluster implements Serializable {
     // Key: Member.memberId
     private Map<String, Member> memberMap;
     private Properties properties;
-    private Map<String, Member> membertoNodeIdMap;
 
     public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.autoscalePolicyName = autoscalePolicyName;
         this.memberMap = new HashMap<String, Member>();
-        this.membertoNodeIdMap = new HashMap<String, Member>();
     }
 
     public String getServiceName() {
@@ -139,22 +137,6 @@ public class Cluster implements Serializable {
     public void setAutoscalePolicyName(String autoscalePolicyName) {
         this.autoscalePolicyName = autoscalePolicyName;
     }
-
-    public void addMemberToIaasNodeId(Member member) {
-           membertoNodeIdMap.put(member.getIaasNodeId(), member);
-       }
-
-       public void removeMemberFromIaasNodeId(Member member) {
-           membertoNodeIdMap.remove(member.getIaasNodeId());
-       }
-
-       public Member getMemberFromIaasNodeId(String iaasNodeId) {
-           return membertoNodeIdMap.get(iaasNodeId);
-       }
-
-       public boolean memberExistsFromIaasNodeId(String iaasNodeId) {
-           return this.membertoNodeIdMap.containsKey(iaasNodeId);
-       }
 
 	public String getDeploymentPolicyName() {
 		return deploymentPolicyName;

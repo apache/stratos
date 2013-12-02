@@ -18,15 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.impl;
 
-import com.google.common.collect.Lists;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.deployment.partition.PartitionGroup;
-import org.apache.stratos.cloud.controller.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
@@ -36,39 +31,28 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeExcept
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
-import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.IaasContext;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
-import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.domain.NodeMetadata.Status;
 import org.jclouds.compute.domain.Template;
-import org.jclouds.compute.domain.internal.NodeMetadataImpl;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -285,181 +269,187 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
-	public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException {
+    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException,
+        UnregisteredCartridgeException {
 
         if (member == null) {
             String msg = "Instance start-up failed. Member is null.";
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        
+
         String clusterId = member.getClusterId();
         Partition partition = member.getPartition();
-        
+
         log.info("Starting new instance of cluster : " + clusterId);
 
-		ComputeService computeService = null;
-		Template template = null;
-		
-		if(partition == null) {
-		    String msg = "Instance start-up failed. Specified Partition is null. Cluster id: "+clusterId;
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
-		}
-		
-        String partitionId = partition.getId();
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
-        
-        if(ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id: "+clusterId;
+        ComputeService computeService = null;
+        Template template = null;
+
+        if (partition == null) {
+            String msg =
+                         "Instance start-up failed. Specified Partition is null. Cluster id: " +
+                                 clusterId;
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        
+
+        String partitionId = partition.getId();
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        if (ctxt == null) {
+            String msg = "Instance start-up failed. Invalid cluster id: " + clusterId;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
         String cartridgeType = ctxt.getCartridgeType();
-        
+
         Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
-        
-        if(cartridge == null) {
-            String msg = "Instance start-up failed. No valid Cartridge found for type: "+cartridgeType;
+
+        if (cartridge == null) {
+            String msg =
+                         "Instance start-up failed. No valid Cartridge found for type: " +
+                                 cartridgeType;
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
-        
-        member.setCartridgeType(cartridgeType);
-        
-		final Lock lock = new ReentrantLock();
 
-		IaasProvider iaas = cartridge.getIaasProviderOfPartition(partitionId);
-            if(iaas == null) {
-                String msg = "Instance start-up failed for cluster: "+clusterId+". " +
-                        "There's no IaaS provided for the partition: "+partitionId+
-                        " and for the Cartridge type: "+cartridgeType;
-                log.fatal(msg);
+        member.setCartridgeType(cartridgeType);
+
+        final Lock lock = new ReentrantLock();
+
+        IaasProvider iaas = cartridge.getIaasProviderOfPartition(partitionId);
+        if (iaas == null) {
+            String msg =
+                         "Instance start-up failed for cluster: " + clusterId + ". " +
+                                 "There's no IaaS provided for the partition: " + partitionId +
+                                 " and for the Cartridge type: " + cartridgeType;
+            log.fatal(msg);
+            throw new CloudControllerException(msg);
+        }
+        try {
+            // generating the Unique member ID...
+            String memberID = generateMemberId(clusterId);
+            member.setMemberId(memberID);
+            // have to add memberID to the payload
+            StringBuilder payload = new StringBuilder(ctxt.getPayload());
+            payload.append(",");
+            payload.append("MEMBER_ID=" + memberID);
+            if (log.isDebugEnabled()) {
+                log.debug("Payload: " + payload.toString());
+            }
+            // reloading the payload with memberID
+            iaas.setPayload(payload.toString().getBytes());
+
+            iaas.getIaas().setDynamicPayload(iaas);
+            // get the pre built ComputeService from provider or region or zone or host
+            computeService = iaas.getComputeService();
+            template = iaas.getTemplate();
+
+            if (template == null) {
+                String msg =
+                             "Failed to start an instance in " +
+                                     iaas.getType() +
+                                     ". Reason : Template is null. You have not specify a matching service " +
+                                     "element in the configuration file of Autoscaler.\n Hence, will try to " +
+                                     "start in another IaaS if available.";
+                log.error(msg);
                 throw new CloudControllerException(msg);
             }
-                try {
-                    //generating the Unique member ID...
-                    String memberID = generateMemberId(clusterId);
-                    member.setMemberId(memberID);
-                    //have to add memberID to the payload
-                    StringBuilder payload = new StringBuilder(ctxt.getPayload());
-                    payload.append(",");
-                    payload.append("MEMBER_ID=" + memberID);
-                    //reloading the payload with memberID
-                    iaas.setPayload(payload.toString().getBytes());
 
-                    iaas.getIaas().setDynamicPayload(iaas);
-                    // get the pre built ComputeService from provider or region or zone or host
-                    computeService = iaas.getComputeService();
-                    template = iaas.getTemplate();
-                    
-                    if (template == null) {
-                        String msg = "Failed to start an instance in "
-                                + iaas.getType()
-                                + ". Reason : Template is null. You have not specify a matching service "
-                                + "element in the configuration file of Autoscaler.\n Hence, will try to "
-                                + "start in another IaaS if available.";
-                        log.error(msg);
-                        throw new CloudControllerException(msg);
-                    }
+            // generate the group id from domain name and sub domain
+            // name.
+            // Should have lower-case ASCII letters, numbers, or dashes.
+            // Should have a length between 3-15
+            String str = clusterId.substring(0, 10);
+            String group = str.replaceAll("[^a-z0-9-]", "");
 
-                    // generate the group id from domain name and sub domain
-                    // name.
-                    // Should have lower-case ASCII letters, numbers, or dashes.
-                    // Should have a length between 3-15
-                    String str = clusterId.substring(0, 10);
-                    String group = str.replaceAll("[^a-z0-9-]", "");
+            NodeMetadata node;
 
-                    NodeMetadata node;
+            // create and start a node
+            Set<? extends NodeMetadata> nodes =
+                                                computeService.createNodesInGroup(group, 1,
+                                                                                  template);
 
-                    // create and start a node
-                    Set<? extends NodeMetadata> nodes = computeService
-                            .createNodesInGroup(group, 1, template);
+            node = nodes.iterator().next();
 
-                    node = nodes.iterator().next();
+            String autoAssignIpProp =
+                                      iaas.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
 
-                    String autoAssignIpProp = iaas
-                            .getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
+            // acquire the lock
+            lock.lock();
 
-                    // acquire the lock
-                    lock.lock();
+            try {
+                // node id
+                String nodeId = node.getId();
+                if (nodeId == null) {
+                    String msg = "Node id of the starting instance is null.\n" + node.toString();
+                    log.fatal(msg);
+                    throw new CloudControllerException(msg);
+                }
 
-                    try {
-                        // node id
-                        String nodeId = node.getId();
-                        if (nodeId == null) {
-                            String msg = "Node id of the starting instance is null.\n" + node.toString();
-                            log.fatal(msg);
-                            throw new CloudControllerException(msg);
-                        }
-                        
-                        member.setNodeId(nodeId);
-                        
-                        // reset ip
-                        String ip = "";
-                        // default behavior is autoIpAssign=false
-                        if (autoAssignIpProp == null || (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
-                            // allocate an IP address - manual IP assigning mode
-                            ip = iaas.getIaas().associateAddress(iaas, node);
-                            member.setAllocatedIpAddress(ip);
-                            log.info("Allocated ip address: " + ip);
-                        }
+                member.setNodeId(nodeId);
 
-                        // public ip
-                        if (node.getPublicAddresses() != null && node.getPublicAddresses().iterator().hasNext()) {
-                            ip = node.getPublicAddresses().iterator().next();
-                            member.setPublicIpAddress(ip);
-                            log.info("Public ip address: " + ip);
-                        }
+                // reset ip
+                String ip = "";
+                // default behavior is autoIpAssign=false
+                if (autoAssignIpProp == null ||
+                    (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
+                    // allocate an IP address - manual IP assigning mode
+                    ip = iaas.getIaas().associateAddress(iaas, node);
+                    member.setAllocatedIpAddress(ip);
+                    log.info("Allocated ip address: " + ip);
+                }
 
-                        // private IP
-                        if (node.getPrivateAddresses() != null && node.getPrivateAddresses().iterator().hasNext()) {
-                            ip = node.getPrivateAddresses().iterator().next();
-                            member.setPrivateIpAddress(ip);
-                            log.info("Private ip address: " + ip);
-                        }
+                // public ip
+                if (node.getPublicAddresses() != null &&
+                    node.getPublicAddresses().iterator().hasNext()) {
+                    ip = node.getPublicAddresses().iterator().next();
+                    member.setPublicIpAddress(ip);
+                    log.info("Public ip address: " + ip);
+                }
 
-                        
-                        dataHolder.addMemberContext(member);
+                // private IP
+                if (node.getPrivateAddresses() != null &&
+                    node.getPrivateAddresses().iterator().hasNext()) {
+                    ip = node.getPrivateAddresses().iterator().next();
+                    member.setPrivateIpAddress(ip);
+                    log.info("Private ip address: " + ip);
+                }
 
-                        // persist in registry
-                        persist();
+                dataHolder.addMemberContext(member);
 
-                        // trigger topology
-                        TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId,
-                                 nodeId, partition, ip);
+                // persist in registry
+                persist();
 
-                        //update the topology with the newly spawned member
-                        // publish data
-                        if (log.isDebugEnabled()) {
-                            log.debug("Node details: \n" + node.toString()
-                                    + "\n***************\n");
-                        }
+                // trigger topology
+                TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, partition,
+                                                    ip);
 
-                        log.info("Instance is successfully starting up in IaaS "
-                                + iaas.getType()
-                                + ".\tIP Address(public/private): "
-                                + ip
-                                + "\tNode Id: " + nodeId);
+                // update the topology with the newly spawned member
+                // publish data
+                if (log.isDebugEnabled()) {
+                    log.debug("Node details: \n" + node.toString() + "\n***************\n");
+                }
 
-                        return member;
+                log.info("Instance is successfully starting up in IaaS " + iaas.getType() +
+                         ".\tIP Address(public/private): " + ip + "\tNode Id: " + nodeId);
 
-                    } finally {
-                        // release the lock
-                        lock.unlock();
-                    }
+                return member;
 
-                    } catch (Exception e) {
-                        log.warn(
-                                "Failed to start an instance in "
-                                        + iaas.getType()
-                                        + ". Hence, will try to start in another IaaS if available.",
-                                e);
-                    }
-                
-                return null;
+            } finally {
+                // release the lock
+                lock.unlock();
             }
+
+        } catch (Exception e) {
+            log.warn("Failed to start an instance in " + iaas.getType() +
+                     ". Hence, will try to start in another IaaS if available.", e);
+        }
+
+        return null;
+    }
 
 //    @Override
 //    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned) {
@@ -467,24 +457,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //        return null;
 //    }
 
-    /**
-	 * Appends this ip to the Service Context's
-	 * {@link CloudControllerConstants#PUBLIC_IP_PROPERTY}
-	 * 
-	 * @param ip
-	 * @param serviceCtxt
-	 */
-	private void appendToPublicIpProperty(String ip, ServiceContext serviceCtxt) {
-		String ipStr = serviceCtxt
-				.getProperty(CloudControllerConstants.PUBLIC_IP_PROPERTY);
-		if (ip != null && !"".equals(ip)) {
-			serviceCtxt.setProperty(
-					CloudControllerConstants.PUBLIC_IP_PROPERTY,
-					("".equals(ipStr) ? "" : ipStr
-							+ CloudControllerConstants.ENTRY_SEPARATOR)
-							+ ip);
-		}
-	}
 
 	/**
 	 * Persist data in registry.
@@ -506,25 +478,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
          return clusterId + memberId.toString();
     }
 
-	private Cartridge loadCartridge(String cartridgeType,
-			List<Cartridge> cartridges) {
-
-		for (Cartridge cartridge : cartridges) {
-			if (cartridge.getType().equals(cartridgeType)) {
-                return cartridge;
-			}
-		}
-
-		return null;
-	}
-
-    private void reloadPayload(Cartridge cartridge, byte[] payload) {
-        for (IaasProvider iaas : cartridge.getIaases()) {
-					iaas.setPayload(payload);
-        }
-
-    }
-    
     @Override
     public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException, 
     IllegalArgumentException{
@@ -646,7 +599,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 terminate(iaas, nodeId, ctxt);
 
                 // log information
-                logTermination(nodeId, ctxt);
+                logTermination(ctxt);
 
             } catch (Exception e) {
                 String msg =
@@ -851,76 +804,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	}
 
-	public int getPendingInstanceCount(String clusterId) {
-        int pendingInstanceCount = 0;
-
-		ServiceContext subjectedSerCtxt = dataHolder
-				.getServiceContextFromDomain(clusterId);
-
-		if (subjectedSerCtxt != null
-				&& subjectedSerCtxt.getCartridgeType() != null) {
-
-			// load cartridge
-			subjectedSerCtxt.setCartridge(loadCartridge(subjectedSerCtxt
-					.getCartridgeType(),
-					dataHolder.getCartridges()));
-
-			if (subjectedSerCtxt.getCartridge() == null) {
-				return pendingInstanceCount;
-			}
-
-			List<IaasProvider> iaases = subjectedSerCtxt.getCartridge()
-					.getIaases();
-
-			for (IaasProvider iaas : iaases) {
-
-				ComputeService computeService = iaas.getComputeService();
-
-				IaasContext ctxt;
-				if ((ctxt = subjectedSerCtxt.getIaasContext(iaas.getType())) == null) {
-					ctxt = subjectedSerCtxt.addIaasContext(iaas.getType());
-				}
-
-				// get list of node Ids which are belong to this domain- sub
-				// domain
-				List<String> nodeIds = ctxt.getNodeIds();
-
-				if (nodeIds.isEmpty()) {
-					log.debug("Zero nodes spawned in the IaaS "
-							+ iaas.getType() + " of domain: " + clusterId);
-					continue;
-				}
-
-				// get all the nodes spawned by this IaasContext
-				Set<? extends ComputeMetadata> set = computeService.listNodes();
-
-                // traverse through all nodes of this ComputeService object
-                for (ComputeMetadata aSet : set) {
-                    NodeMetadataImpl nodeMetadata = (NodeMetadataImpl) aSet;
-
-                    // if this node belongs to the requested domain
-                    if (nodeIds.contains(nodeMetadata.getId())) {
-
-                        // get the status of the node
-                        Status nodeStatus = nodeMetadata.getStatus();
-
-                        // count nodes that are in pending state
-                        if (nodeStatus.equals(Status.PENDING)) {
-                            pendingInstanceCount++;
-                        }
-                    }
-
-                }
-			}
-		}
-
-		log.debug("Pending instance count of domain '" + clusterId
-				+ " is "
-				+ pendingInstanceCount);
-
-		return pendingInstanceCount;
-
-	}
 
 	/**
 	 * A helper method to terminate an instance.
@@ -953,7 +836,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		return iaasTemp;
 	}
 
-	private void logTermination(String nodeId, MemberContext ctxt) {
+	private void logTermination(MemberContext ctxt) {
 
 		// get the ip of the terminated node
 //		String ip = ctxt.getPublicIp(nodeId);
@@ -971,7 +854,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //		serviceCtxt.setProperty(ipProp, newIpStr.length() == 0 ? "" : newIpStr
 //				.substring(0, newIpStr.length() - 1).toString());
         //updating the topology
-        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), nodeId);
+        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getMemberId());
 
 		// remove the reference
 //		ctxt.removeNodeIdToPublicIp(nodeId);
@@ -1033,7 +916,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    String cartridgeType = registrant.getCartridgeType();
 	    String clusterId = registrant.getClusterId();
         String payload = registrant.getPayload();
-        String hostName = registrant.getHostName();
         
         if(cartridgeType == null || clusterId == null || payload == null) {
 	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", Cluster Id: "+clusterId+", Payload: "+payload;
@@ -1052,61 +934,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload));
 	    TopologyBuilder.handleClusterCreated(registrant);
 	    
-//		// create a ServiceContext dynamically
-//		ServiceContext newServiceCtxt = new ServiceContext();
-//        newServiceCtxt.setClusterId(clusterId);
-//		//newServiceCtxt.setSubDomainName(subDomain);
-//		newServiceCtxt.setTenantRange(registrant.getTenantRange());
-//		newServiceCtxt.setHostName(registrant.getHostName());
-//        newServiceCtxt.setAutoScalerPolicyName(registrant.getAutoScalerPolicyName());
-//        newServiceCtxt.setPayload(new StringBuilder(registrant.getPayload()));
-//        Properties properties = registrant.getProperties();
-//        String cartridgeType = registrant.getCartridgeType();
-//
-//		if (properties != null && properties.getProperties() != null) {
-//			// add properties
-//			for (Property property : properties.getProperties()) {
-//				if (property != null && property.getName() != null) {
-//					newServiceCtxt.setProperty(property.getName(),
-//							property.getValue());
-//				}
-//			}
-//		}
-//
-//		newServiceCtxt.setCartridgeType(cartridgeType);
-//
-//		for (Cartridge cartridge : dataHolder
-//				.getCartridges()) {
-//			if (cartridge.getType().equals(cartridgeType)) {
-//				newServiceCtxt.setCartridge(cartridge);
-//				break;
-//			}
-//		}
-//
-//		if (newServiceCtxt.getCartridge() == null) {
-//			String msg = "Registration failed - Unregistered Cartridge type: "
-//					+ cartridgeType;
-//			log.error(msg);
-//			throw new UnregisteredCartridgeException(msg);
-//		}
-//		// persist
-//        String uniqueName = clusterId + "-"
-//                + UUID.randomUUID() + ".xml";
-//        newServiceCtxt.setPayloadFile("/tmp/" + CloudControllerConstants.PAYLOAD_NAME + ".zip");
-//        newServiceCtxt.generatePayload();
-//        dataHolder.addServiceContext(newServiceCtxt);
-//        // notify consumer by adding services
-//        TopologyBuilder.handleClusterCreated(newServiceCtxt);
-//        try {
-//            FileUtils.writeStringToFile(new File(CloudControllerConstants.SERVICES_DIR + uniqueName),
-//                                            newServiceCtxt.toXml());
-//        } catch (IOException e) {
-//            log.error("couldn't write the service definition", e);
-//            throw new CloudControllerException("couldn't write the service definition", e);
-//        }
-//        log.info("Service successfully registered! Domain - " + clusterId
-//                + ", Cartridge type - " + cartridgeType);
-
 		return true;
 	}
 
@@ -1130,17 +957,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		return cartridgeTypes;
 	}
-
-	/*private String checkSubDomain(String subDomainName) {
-		// if sub domain is null, we assume it as default one.
-		if (subDomainName == null || "null".equalsIgnoreCase(subDomainName)) {
-			subDomainName = Constants.DEFAULT_SUB_DOMAIN;
-			log.debug("Sub domain is null, hence using the default value : "
-					+ subDomainName);
-		}
-
-		return subDomainName;
-	}*/
 
 	@Override
 	public CartridgeInfo getCartridgeInfo(String cartridgeType)
@@ -1200,51 +1016,46 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		
 
     @Override
-    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) 
+    public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
-        Map<String, IaasProvider> partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
-        
+        Map<String, IaasProvider> partitionToIaasProviders =
+                                                             new ConcurrentHashMap<String, IaasProvider>();
+
         Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
-        
-        if(cartridge == null) {
-            String msg = "Invalid Cartridge Type: "+cartridgeType;
+
+        if (cartridge == null) {
+            String msg = "Invalid Cartridge Type: " + cartridgeType;
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
-        
-        if(deploymentPolicy == null) {
-            String msg = "Deployment Policy is null.";
-            log.error(msg);
-            throw new InvalidPartitionException(msg);
-        }
-        
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-            for (Partition partition : partitionGroup.getPartitions()) {
-                String provider = partition.getProvider();
-                IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
-                
-                if(iaasProvider == null) {
-                    String msg = "Invalid Partition - "+partition.toString() +", in "+deploymentPolicy.toString()+
-                            ". Cause: Iaas Provider is null for: "+provider;
-                    log.error(msg);
-                    throw new InvalidPartitionException(msg);
-                }
-                
-                Iaas iaas = iaasProvider.getIaas();
-                PartitionValidator validator = iaas.getPartitionValidator();
-                validator.setIaasProvider(iaasProvider);
-                IaasProvider updatedIaasProvider = validator.validate(partition.getId(), 
-                                 CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-                // add to a temporary Map
-                partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
-                
+
+        for (Partition partition : partitions) {
+            String provider = partition.getProvider();
+            IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
+
+            if (iaasProvider == null) {
+                String msg =
+                             "Invalid Partition - " + partition.toString() +
+                                     ". Cause: Iaas Provider is null for: " + provider;
+                log.error(msg);
+                throw new InvalidPartitionException(msg);
             }
+
+            Iaas iaas = iaasProvider.getIaas();
+            PartitionValidator validator = iaas.getPartitionValidator();
+            validator.setIaasProvider(iaasProvider);
+            IaasProvider updatedIaasProvider =
+                                               validator.validate(partition.getId(),
+                                                                  CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
+            // add to a temporary Map
+            partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
+
         }
-        
+
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
-        
+
         return true;
     }
 
@@ -1259,8 +1070,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }
-
+        
         Iaas iaas = iaasProvider.getIaas();
+        if (iaas == null) {
+            try {
+                iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
+                iaas.buildComputeServiceAndTemplate(iaasProvider);
+                iaasProvider.setIaas(iaas);
+            } catch (Exception e) {
+                String msg =
+                             "Error while instantiating an instance of the class: " +
+                                     iaasProvider.getClassName();
+                log.error(msg, e);
+                throw new InvalidPartitionException(msg, e);
+            }
+        }
+
         PartitionValidator validator = iaas.getPartitionValidator();
         validator.setIaasProvider(iaasProvider);
         validator.validate(partition.getId(),

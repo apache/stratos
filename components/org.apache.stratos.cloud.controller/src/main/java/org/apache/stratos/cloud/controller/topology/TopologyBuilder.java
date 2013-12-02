@@ -25,7 +25,6 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
-import org.apache.stratos.cloud.controller.pojo.ServiceContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -225,11 +224,12 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
-                                           String iaasNodeId, Partition partition, String privateIp) {
+                                           Partition partition, String privateIp) {
         //adding the new member to the cluster after it is successfully started in IaaS.
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
+        String partitionId = partition.getId();
 
         if (cluster.memberExists(memberId)) {
             throw new RuntimeException(String.format("Member %s already exists", memberId));
@@ -238,16 +238,15 @@ public class TopologyBuilder {
         try {
             TopologyManager.getInstance().acquireWriteLock();
             Member member = new Member(serviceName, clusterId, memberId);
-            member.setIaasNodeId(iaasNodeId);
+            member.setPartitionId(partitionId);
             member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
             cluster.addMember(member);
-            cluster.addMemberToIaasNodeId(member);
             TopologyManager.getInstance().updateTopology(topology);
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, iaasNodeId);
+        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, memberId, partitionId);
 
     }
 
@@ -285,18 +284,17 @@ public class TopologyBuilder {
     public static void handleMemberActivated(MemberActivatedEvent memberActivatedEvent) {
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(memberActivatedEvent.getServiceName());
-        Cluster cluster = service.getCluster(memberActivatedEvent.getClusterId());
-        Member member = cluster.getMember(memberActivatedEvent.getMemberId());
-
         if (service == null) {
             throw new RuntimeException(String.format("Service %s does not exist",
-                    memberActivatedEvent.getServiceName()));
+                                                     memberActivatedEvent.getServiceName()));
         }
-
+        
+        Cluster cluster = service.getCluster(memberActivatedEvent.getClusterId());
         if (cluster == null) {
             throw new RuntimeException(String.format("Cluster %s does not exist",
-                    memberActivatedEvent.getClusterId()));
+                                                     memberActivatedEvent.getClusterId()));
         }
+        Member member = cluster.getMember(memberActivatedEvent.getMemberId());
 
         if (member == null) {
             throw new RuntimeException(String.format("Member %s does not exist",
@@ -333,16 +331,15 @@ public class TopologyBuilder {
         TopologyEventSender.sendMemberActivatedEvent(memberActivatedEventTopology);
     }
 
-    public static void handleMemberTerminated(String serviceName, String clusterId, String nodeId) {
+    public static void handleMemberTerminated(String serviceName, String clusterId, String memberId) {
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
-        Member member = cluster.getMemberFromIaasNodeId(nodeId);
-        String memberId = member.getMemberId();
+        Member member = cluster.getMember(memberId);
 
         if (member == null) {
             throw new RuntimeException(String.format("Member with nodeID %s does not exist",
-                    nodeId));
+                    memberId));
         }
 
         try {

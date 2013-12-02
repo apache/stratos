@@ -21,7 +21,6 @@ package org.apache.cartridge.autoscaler.service.axiom;
 import java.io.File;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParser;
 import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
 import org.xml.sax.SAXParseException;
 
@@ -29,7 +28,6 @@ import junit.framework.TestCase;
 
 public class AxiomValidationTest extends TestCase {
     
-    AxiomXpathParser util1, util2, util3, util4, util5, util6, util7, util8, util9;
     File xmlSchemaCartridges = new File("src/main/resources/cartridges.xsd");
     File xmlSchemaCartridge = new File("src/main/resources/cartridge.xsd");
     private String dir = "src/test/resources/";
