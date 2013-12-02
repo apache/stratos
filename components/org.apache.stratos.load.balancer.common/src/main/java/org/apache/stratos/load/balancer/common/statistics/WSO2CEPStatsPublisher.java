@@ -47,10 +47,9 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     private boolean enabled = true;
 
     public WSO2CEPStatsPublisher() {
-        //TODO: Move system properties to a config file
         ip = System.getProperty("thrift.receiver.ip");
         port = System.getProperty("thrift.receiver.port");
-        String enabledStr = System.getProperty("load.balancer.stats.publisher.enabled");
+        String enabledStr = System.getProperty("load.balancer.cep.stats.publisher.enabled");
         if(StringUtils.isNotBlank(enabledStr)) {
             enabled = Boolean.getBoolean(enabledStr);
         }

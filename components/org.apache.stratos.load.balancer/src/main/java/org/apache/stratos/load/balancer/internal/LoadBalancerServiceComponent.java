@@ -26,8 +26,10 @@ import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
+import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
-import org.apache.stratos.load.balancer.conf.SynapseConfigurator;
+import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
@@ -108,6 +110,9 @@ public class LoadBalancerServiceComponent {
             SynapseConfigurator.configure(configuration);
 
             if (configuration.isTopologyEventListenerEnabled()) {
+                // Configure jndi.properties
+                JndiConfigurator.configure(configuration);
+
                 // Start topology receiver
                 topologyReceiver = new LoadBalancerTopologyReceiver();
                 Thread topologyReceiverThread = new Thread(topologyReceiver);
@@ -138,6 +143,11 @@ public class LoadBalancerServiceComponent {
                         log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
                     }
                 }
+            }
+
+            if(configuration.isCepStatsPublisherEnabled()) {
+                // Configure cep related settings
+                CEPConfigurator.configure(configuration);
             }
 
             activated = true;
