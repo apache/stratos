@@ -26,7 +26,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Implements topology event queue.
  */
 public class HealthEventQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile HealthEventQueue instance;
+
+	private static final long serialVersionUID = 2556240855574421561L;
+	private static volatile HealthEventQueue instance;
 
     private HealthEventQueue(){
     }

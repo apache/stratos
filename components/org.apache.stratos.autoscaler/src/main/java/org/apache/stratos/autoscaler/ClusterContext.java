@@ -61,6 +61,8 @@ public class ClusterContext {
     private Properties properties;
 
     private Map<String, MemberStatsContext> memberContextMap;
+    // Key- MemberId Value- partitionId
+    private Map<String, String> memberPartitionMap;
     private DeploymentPolicy deploymentPolicy;
 
     public ClusterContext(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy, List<Partition> partitions) {
@@ -70,6 +72,7 @@ public class ClusterContext {
         this.setDeploymentPolicy(deploymentPolicy);
         partitionsOfThisCluster = new ArrayList<Partition>();
         memberContextMap = new HashMap<String, MemberStatsContext>();
+        setMemberPartitionMap(new HashMap<String, String>());
         partitionCountMap = new HashMap<String, Integer>();
         
         for (Partition partition : partitions) {
@@ -245,4 +248,30 @@ public class ClusterContext {
     public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
     }
+
+	/**
+	 * @return the memberPartitionMap
+	 */
+	public Map<String, String> getMemberPartitionMap() {
+		return memberPartitionMap;
+	}
+
+	/**
+	 * @param memberPartitionMap the memberPartitionMap to set
+	 */
+	public void setMemberPartitionMap(Map<String, String> memberPartitionMap) {
+		this.memberPartitionMap = memberPartitionMap;
+	}
+	
+	public void addMemberpartition(String memberId, String partitionId){
+		this.memberPartitionMap.put(memberId, partitionId);
+	}
+	
+	public void removeMemberPartition(String memberId){
+		this.memberPartitionMap.remove(memberId);
+	}
+	
+	public String getPartitonOfMember(String memberId){
+		return this.memberPartitionMap.get(memberId);
+	}
 }

@@ -24,10 +24,7 @@ import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageD
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
 import org.apache.stratos.autoscaler.topology.processors.AutoscalerTopologyReceiver;
-import org.apache.stratos.autoscaler.topology.processors.TopologyReceiver;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
 

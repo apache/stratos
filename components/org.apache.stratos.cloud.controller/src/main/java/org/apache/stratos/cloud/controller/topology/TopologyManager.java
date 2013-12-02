@@ -19,14 +19,17 @@
 package org.apache.stratos.cloud.controller.topology;
 
 import com.google.gson.Gson;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.Topology;
 
 import javax.jms.TextMessage;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -83,24 +86,29 @@ public class TopologyManager {
         synchronized (TopologyManager.class) {
             if(this.topology == null) {
                 //need to initialize the topology
-//                if(this.topologyFile.exists()) {
-//                    try {
-//                        currentContent = FileUtils.readFileToString(this.topologyFile);
-//                        Gson gson = new Gson();
-//                        this.topology = gson.fromJson(currentContent, Topology.class);
-//                        if(log.isDebugEnabled()) {
-//                            log.debug("The current topology is: " + currentContent);
-//                        }
-//                    } catch (IOException e) {
-//                        log.error(e.getMessage());
-//                        throw new CloudControllerException(e.getMessage(), e);
-//                    }
-//                } else {
+//                this.topology = CloudControllerUtil.retrieve();
+//                if (this.topology == null) {
+                    
+//                }
+                if(this.topologyFile.exists()) {
+                    try {
+                        currentContent = FileUtils.readFileToString(this.topologyFile);
+                        Gson gson = new Gson();
+                        this.topology = gson.fromJson(currentContent, Topology.class);
+                        if(log.isDebugEnabled()) {
+                            log.debug("The current topology is: " + currentContent);
+                        }
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                        throw new CloudControllerException(e.getMessage(), e);
+                    }
+                    
+                } else {
                     if(log.isDebugEnabled()) {
                         log.debug("Creating new topology");
                     }
                     this.topology = new Topology();
-//                }
+                }
             }
         }
         if(log.isDebugEnabled()) {
@@ -112,22 +120,29 @@ public class TopologyManager {
     public synchronized void updateTopology(Topology topology) {
         synchronized (TopologyManager.class) {
              this.topology = topology;
-//            if (this.topologyFile.exists()) {
-//                this.backup.delete();
-//                this.topologyFile.renameTo(backup);
-//            }
-//            Gson gson = new Gson();
-//            String message = gson.toJson(topology);
-//            // overwrite the topology file
-//            try {
-//                FileUtils.writeStringToFile(this.topologyFile, message);
-//                if(log.isDebugEnabled()) {
-//                    log.debug("The updated topology is: " + message);
-//                }
-//            } catch (IOException e) {
-//                log.error(e.getMessage());
-//                throw new CloudControllerException(e.getMessage(), e);
-//            }
+             CloudControllerUtil.persist(this.topology);
+             if (log.isDebugEnabled()) {
+                 Gson gson = new Gson();
+                 String message = gson.toJson(topology);
+                 log.debug("Topology got updated. Full Topology: "+message);
+             }
+             
+            if (this.topologyFile.exists()) {
+                this.backup.delete();
+                this.topologyFile.renameTo(backup);
+            }
+            Gson gson = new Gson();
+            String message = gson.toJson(topology);
+            // overwrite the topology file
+            try {
+                FileUtils.writeStringToFile(this.topologyFile, message);
+                if(log.isDebugEnabled()) {
+                    log.debug("The updated topology is: " + message);
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                throw new CloudControllerException(e.getMessage(), e);
+            }
         }
 
     }

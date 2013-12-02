@@ -79,7 +79,14 @@ public class DeploymentPolicy implements Serializable{
     public List<Partition> getAllPartitions() {
         return allPartitions;
     }
-
+    
+    public Partition getPartitionById(String id){
+    	for(Partition p : this.getAllPartitions()){
+    		if(p.getId().equalsIgnoreCase(id))
+    			return p;
+    	}
+    	 return null;
+    }
     /**
      * Gets the value of the partition-groups.
      */

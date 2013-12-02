@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import org.apache.axis2.engine.AxisConfiguration;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -30,6 +31,7 @@ public class ServiceReferenceHolder {
     private static ServiceReferenceHolder instance;
     private TaskService taskService;
     private Registry registry;
+    private AxisConfiguration axisConfiguration;
     
     private ServiceReferenceHolder() {
     }
@@ -39,6 +41,14 @@ public class ServiceReferenceHolder {
             instance = new ServiceReferenceHolder();
         }
         return instance;
+    }
+    
+    public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
+        this.axisConfiguration = axisConfiguration;
+    }
+    
+    public AxisConfiguration getAxisConfiguration() {
+        return axisConfiguration;
     }
     
     public TaskService getTaskService() {

@@ -100,9 +100,9 @@ public class FasterLookUpDataHolder implements Serializable{
 
 	private String serializationDir;
 	private boolean enableBAMDataPublisher;
-	private DataPublisherConfig dataPubConfig;
+	private transient DataPublisherConfig dataPubConfig;
 	private boolean enableTopologySync;
-	private TopologyConfig topologyConfig;
+	private transient TopologyConfig topologyConfig;
 	
 	/**
 	 * Key - node id 

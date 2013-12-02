@@ -38,13 +38,14 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.List;
 
 /**
  * Registering Cloud Controller Service.
  * 
- * @scr.component name="org.wso2.carbon.stratos.cloud.controller" immediate="true"
+ * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService"
  *                unbind="unsetTaskService"
@@ -52,8 +53,17 @@ import java.util.List;
  *                interface=
  *                "org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"
+ *                unbind="unsetRegistryService"   
+ * @scr.reference name="config.context.service"
+ *                interface="org.wso2.carbon.utils.ConfigurationContextService"
+ *                cardinality="1..1" policy="dynamic"
+ *                bind="setConfigurationContextService"
+ *                unbind="unsetConfigurationContextService"           
  */
+//* @scr.reference name="org.apache.stratos.cloud.controller.deployers" 
+//*                interface="org.apache.stratos.cloud.controller.interfaces.CloudControllerDeployerService"
+//*                cardinality="1..1" policy="dynamic" bind="setCloudControllerDeployerService"
+//*                unbind="unsetCloudControllerDeployerService"
 public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
@@ -61,27 +71,42 @@ public class CloudControllerDSComponent {
 
     protected void activate(ComponentContext context) {
         try {
-        	// get all the topics - comma separated list
-        	String topicsString = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.TOPICS_PROPERTY);
+            
+            // register deployers of CC
+//            AxisConfiguration axisConfig = ServiceReferenceHolder.getInstance().getAxisConfiguration();
+//            
+//            if(axisConfig ==  null) {
+//                String msg = "Axis Configuration is null. Cannot register deployers.";
+//                log.error(msg);
+//                throw new CloudControllerException(msg);
+//            }
+//            
+//            DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
+//            Deployer cloudControllerDeployer = new CloudControllerDeployer();
+//            Deployer cartridgeDeployer = new CartridgeDeployer();
+//            deploymentEngine.addDeployer(cloudControllerDeployer, "../../conf", "xml");
+//            deploymentEngine.addDeployer(cartridgeDeployer, "cartridges", "xml");
         	
-        	if(topicsString == null || topicsString.isEmpty()) {
-        		topicsString = Constants.TOPOLOGY_TOPIC;
-        	} 
-        	
-        	String[] topics = topicsString.split(",");
-        	
-        	// initialize the topic publishers
-        	for (String topic : topics) {
-				
-        		dataHolder.addEventPublisher(new EventPublisher(topic), topic);
-			}
+            // get all the topics - comma separated list
+            String topicsString = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.TOPICS_PROPERTY);
+            
+            if(topicsString == null || topicsString.isEmpty()) {
+                topicsString = Constants.TOPOLOGY_TOPIC;
+            } 
+            
+            String[] topics = topicsString.split(",");
+            for (String topic : topics) {
+                
+                dataHolder.addEventPublisher(new EventPublisher(topic), topic);
+            }
 
             //initialting the subscriber
             TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
             subscriber.setMessageListener(new TopologyListener());
             Thread tsubscriber = new Thread(subscriber);
-			tsubscriber.start();
-            
+            tsubscriber.start();
+        	
+        	// initialize the topic publishers
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(),
                                           new CloudControllerServiceImpl(), null);
@@ -128,6 +153,15 @@ public class CloudControllerDSComponent {
         ServiceReferenceHolder.getInstance().setRegistry(null);
 	}
 	
+	protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
+        ServiceReferenceHolder.getInstance().setAxisConfiguration(
+                cfgCtxService.getServerConfigContext().getAxisConfiguration());
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
+        ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
+    }
+	
 	protected void deactivate(ComponentContext ctx) {
 
 		List<EventPublisher> publishers = dataHolder.getAllEventPublishers();
@@ -135,4 +169,5 @@ public class CloudControllerDSComponent {
 			topicPublisher.close();
 		}
 	}
+	
 }

@@ -26,8 +26,8 @@ import java.io.Serializable;
  */
 public class AverageRequestsInFlightEvent implements Serializable {
 
-
-    private String clusterId;
+	private static final long serialVersionUID = 7178667274015434275L;
+	private String clusterId;
     private float value;
 
 
