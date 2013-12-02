@@ -28,12 +28,15 @@ import org.apache.stratos.messaging.util.Constants;
  * Event publisher main class.
  */
 public class Main {
-    private static final Log log = LogFactory.getLog(Main.class);
+    
+	private static final Log log = LogFactory.getLog(Main.class);
 
     public static void main(String[] args) {
     	
     	log.info("Strating cartridge agent event subscriber");
-    	System.setProperty("jndi.properties.dir", args[0]); 
+    	
+    	System.setProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR, args[0]); 
+    	System.setProperty(CartridgeAgentConstants.PARAM_FILE_PATH, args[1]);
     	
     	    	
         //initialting the subscriber

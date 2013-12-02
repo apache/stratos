@@ -38,14 +38,10 @@ import org.apache.stratos.deployment.synchronizer.git.impl.GitBasedArtifactRepos
 import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.util.Util;
 
-/**
- * @author wso2
- *
- */
+
 public class ArtifactListener implements MessageListener{
 	
 	 private static final Log log = LogFactory.getLog(ArtifactListener.class);
-	 private String launchParams = "/opt/apache-stratos-cartridge-agent/payload/launch-params";
 	
 	@Override
 	public void onMessage(Message message) {
@@ -57,13 +53,12 @@ public class ArtifactListener implements MessageListener{
 		try {
 			json = receivedMessage.getText();
 		} catch (Exception e) {
-			//e.printStackTrace();
 			log.error("Exception is occurred " + e.getMessage(), e);
 		}
 		
 		ArtifactUpdatedEvent event = (ArtifactUpdatedEvent) Util.jsonToObject(json, ArtifactUpdatedEvent.class);
-		String clusterIdInPayload = readParamValueFromPayload("CLUSTER_ID");
-		String localRepoPath = readParamValueFromPayload("APP_PATH");
+		String clusterIdInPayload = readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID);
+		String localRepoPath = readParamValueFromPayload(CartridgeAgentConstants.APP_PATH);
 		String clusterIdInMessage = event.getClusterId();		
 		String repoURL = event.getRepoURL();
 		String repoPassword = decryptPassword(event.getRepoPassword());
@@ -91,7 +86,7 @@ public class ArtifactListener implements MessageListener{
 	private String readParamValueFromPayload(String param) {
 		String paramValue = null;
 		// read launch params
-		File file = new File(launchParams);
+		File file = new File(System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH));
 
 		try {
 			Scanner scanner = new Scanner(file);
@@ -118,7 +113,7 @@ public class ArtifactListener implements MessageListener{
 	private String decryptPassword(String repoUserPassword) {
 		
 		String decryptPassword = "";
-		String secret = readParamValueFromPayload("CARTRIDGE_KEY"); 
+		String secret = readParamValueFromPayload(CartridgeAgentConstants.CARTRIDGE_KEY); 
 		SecretKey key;
 		Cipher cipher;
 		Base64 coder;
