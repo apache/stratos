@@ -36,11 +36,11 @@ fi
 function help {
     echo ""
     echo "Give one or more of the servers to start on this machine. The available servers are"
-    echo "cc, elb, agent, sc, all. 'all' means you need to start all servers."
+    echo "mb, cc, lb, as, sc, cep, all. 'all' means you need to start all servers."
     echo "usage:"
     echo "setup.sh -p\"<product list>\""
     echo "eg."
-    echo "setup.sh -p\"cc elb\""
+    echo "setup.sh -p\"cc lb\""
     echo ""
 }
 
@@ -61,6 +61,9 @@ arr=$(echo $product_list | tr ";" "\n")
 
 for x in $arr
 do
+    if [[ $x = "mb" ]]; then
+        mb="true"
+    fi
     if [[ $x = "cc" ]]; then
         cc="true"
     fi
@@ -74,6 +77,7 @@ do
         sc="true"
     fi
     if [[ $x = "all" ]]; then
+	mb="true"
         cc="true"
         elb="true"
         agent="true"
@@ -95,16 +99,15 @@ if [[ -z $product_list || $product_list = "" ]]; then
     exit 1
 fi
 
-#if [[ $bam = "true" ]]; then
-#
-#    echo ${bam_path}
-#
-#    echo "Starting BAM server ..." >> $LOG
-#    nohup ${bam_path}/bin/stratos.sh -DportOffset=$bam_port_offset &
-#    echo "BAM server started" >> $LOG
-#    sleep $SLEEP
-#
-#fi
+if [[ $mb = "true" ]]; then
+    echo ${mb_path}
+
+    echo "Starting MB server ..." >> $LOG
+    nohup ${mb_path}/bin/wso2server.sh &
+    echo "MB server started" >> $LOG
+    sleep $SLEEP
+    sleep $SLEEP
+fi
 
 if [[ $cc = "true" ]]; then
     echo ${cc_path}
