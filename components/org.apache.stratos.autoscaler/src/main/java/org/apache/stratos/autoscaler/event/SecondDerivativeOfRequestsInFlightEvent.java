@@ -25,9 +25,9 @@ import java.io.Serializable;
  *  This event is fired by Event processing engine to send second derivative of requests in flight
  */
 public class SecondDerivativeOfRequestsInFlightEvent implements Serializable {
-
-
-    private String clusterId;
+	
+	private static final long serialVersionUID = 8857808689466762084L;
+	private String clusterId;
     private float value;
 
 

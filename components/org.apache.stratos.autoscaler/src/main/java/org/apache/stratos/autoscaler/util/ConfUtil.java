@@ -19,21 +19,14 @@
 
 package org.apache.stratos.autoscaler.util;
 
-import org.apache.axiom.om.OMElement;
+import java.io.File;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
 import org.wso2.carbon.utils.CarbonUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.xml.namespace.QName;
 
 /**
  * This class contains utility methods for read Autoscaler configuration file.

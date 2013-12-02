@@ -26,8 +26,8 @@ import java.io.Serializable;
  */
 public class GradientOfRequestsInFlightEvent implements Serializable {
 
-
-    private String clusterId;
+	private static final long serialVersionUID = 6140723469565274572L;
+	private String clusterId;
     private float value;
 
 
