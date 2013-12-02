@@ -30,4 +30,12 @@
                 <id>P2</id>                
                 <property name="provider" value="openstack"/>
             </partition>
+            <partition id="P3">
+                <id>P2</id>                
+                <property name="provider" value="ec2"/>
+            </partition>
+            <partition id="P3">
+                <id>P2</id>                
+                <property name="provider" value="ec2"/>
+            </partition>
 </partitions>
