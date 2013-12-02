@@ -18,11 +18,10 @@
  */
 package org.apache.stratos.autoscaler.api;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -31,20 +30,20 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
  */
-public class AutoScalerServiceImpl {
+public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
 	
-	public List<Partition> getAllAvailablePartitions(){
-		return PartitionManager.getInstance().getAllPartitions();		
+	public Partition[] getAllAvailablePartitions(){
+		return PartitionManager.getInstance().getAllPartitions().toArray(new Partition[0]);		
 	}
 	
-	public List<DeploymentPolicy> getAllDeploymentPolicies(){
-		return PolicyManager.getInstance().getDeploymentPolicyList();
+	public DeploymentPolicy[] getAllDeploymentPolicies(){
+		return PolicyManager.getInstance().getDeploymentPolicyList().toArray(new DeploymentPolicy[0]);
 	}
 	
-	public List<AutoscalePolicy> getAllAutoScalingPolicy(){
-		return PolicyManager.getInstance().getAutoscalePolicyList();
+	public AutoscalePolicy[] getAllAutoScalingPolicy(){
+		return PolicyManager.getInstance().getAutoscalePolicyList().toArray(new AutoscalePolicy[0]);
 	}
 
 }
