@@ -61,4 +61,9 @@ public class PortMapping implements Serializable{
     	this.proxyPort = proxyPort;
     }
 
+    public String toString () {
+
+        return "Protocol: " + protocol + ", Port: " + port + ", Proxy Port: " + proxyPort;
+    }
+
 }

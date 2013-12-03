@@ -26,6 +26,7 @@ import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * Some of the admin services needs objects with states inside the runtime. There are
@@ -65,4 +66,10 @@ public class ServiceHolder {
         return tenantPersistor;
     }
 
+    public static ConfigurationContextService getConfigurationContext() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ConfigurationContextService configurationContextService = (ConfigurationContextService) carbonContext.
+                getOSGiService(ConfigurationContextService.class);
+        return configurationContextService;
+    }
 }

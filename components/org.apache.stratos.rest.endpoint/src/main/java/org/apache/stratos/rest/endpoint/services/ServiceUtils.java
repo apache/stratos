@@ -34,8 +34,14 @@ import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.rest.endpoint.service.client.CartridgeMgtServiceClient;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +51,147 @@ import java.util.regex.Pattern;
 public class ServiceUtils {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
+
+    static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean) throws RestAPIException {
+
+        log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+
+        CartridgeMgtServiceClient cartridgeMgtServiceClient = getCartridgeMgtServiceClient();
+        if (cartridgeMgtServiceClient != null) {
+
+            CartridgeConfig cartridgeConfig = populateCartridgeConfigPojo(cartridgeDefinitionBean);
+
+            if(cartridgeConfig == null) {
+                throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
+            }
+
+            try {
+                cartridgeMgtServiceClient.deployCartridgedefinition(cartridgeConfig);
+
+            } catch (Exception e) {
+                throw new RestAPIException(e);
+            }
+        }
+    }
+
+    static CartridgeConfig populateCartridgeConfigPojo (CartridgeDefinitionBean cartridgeDefinitionBean) {
+
+        CartridgeConfig cartridgeConfig = new CartridgeConfig();
+
+        cartridgeConfig.setType(cartridgeDefinitionBean.type);
+        cartridgeConfig.setHostName(cartridgeDefinitionBean.host);
+        cartridgeConfig.setProvider(cartridgeDefinitionBean.provider);
+        cartridgeConfig.setVersion(cartridgeDefinitionBean.version);
+        cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
+        cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
+        cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
+        //deployment information
+        if(cartridgeDefinitionBean.deployment != null) {
+            cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
+            if(cartridgeDefinitionBean.deployment.dir != null && !cartridgeDefinitionBean.deployment.dir.isEmpty()) {
+                cartridgeConfig.setDeploymentDirs(cartridgeDefinitionBean.deployment.dir.
+                        toArray(new String[cartridgeDefinitionBean.deployment.dir.size()]));
+            }
+        }
+        //port mapping
+        if(cartridgeDefinitionBean.portMapping != null && !cartridgeDefinitionBean.portMapping.isEmpty()) {
+            cartridgeConfig.setPortMappings(getPortMappingsAsArray(cartridgeDefinitionBean.portMapping));
+        }
+        //IaaS
+        if(cartridgeDefinitionBean.iaasProvider != null & !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
+            cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.iaasProvider));
+        }
+        //Properties
+        if(cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
+            cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
+        }
+
+        return cartridgeConfig;
+    }
+
+    private static PortMapping[] getPortMappingsAsArray(List<PortMappingBean> portMappingBeans) {
+
+        //convert to an array
+        PortMappingBean [] portMappingBeanArray = new PortMappingBean[portMappingBeans.size()];
+        portMappingBeans.toArray(portMappingBeanArray);
+        PortMapping [] portMappingArray = new PortMapping[portMappingBeanArray.length];
+
+        for (int i = 0 ; i < portMappingBeanArray.length ; i++) {
+            PortMapping portMapping = new PortMapping();
+            portMapping.setProtocol(portMappingBeanArray[i].protocol);
+            portMapping.setPort(Integer.toString(portMappingBeanArray[i].port));
+            portMapping.setProxyPort(Integer.toString(portMappingBeanArray[i].proxyPort));
+            portMappingArray[i] = portMapping;
+        }
+
+        return portMappingArray;
+    }
+
+    private static IaasConfig[] getIaasConfigsAsArray (List<IaasProviderBean> iaasProviderBeans) {
+
+        //convert to an array
+        IaasProviderBean [] iaasProviderBeansArray = new IaasProviderBean[iaasProviderBeans.size()];
+        iaasProviderBeans.toArray(iaasProviderBeansArray);
+        IaasConfig [] iaasConfigsArray =  new IaasConfig[iaasProviderBeansArray.length];
+
+        for (int i = 0 ; i < iaasProviderBeansArray.length ; i++) {
+            IaasConfig iaasConfig = new IaasConfig();
+            iaasConfig.setType(iaasProviderBeansArray[i].type);
+            iaasConfig.setImageId(iaasProviderBeansArray[i].imageId);
+            iaasConfig.setMaxInstanceLimit(iaasProviderBeansArray[i].maxInstanceLimit);
+
+            if(iaasProviderBeansArray[i].property != null && !iaasProviderBeansArray[i].property.isEmpty()) {
+                //set the Properties instance to IaasConfig instance
+                iaasConfig.setProperties(getProperties(iaasProviderBeansArray[i].property));
+            }
+            iaasConfigsArray[i] = iaasConfig;
+        }
+        return iaasConfigsArray;
+    }
+
+    private static Properties getProperties (List<PropertyBean> propertyBeans) {
+
+        //convert to an array
+        PropertyBean [] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+        propertyBeans.toArray(propertyBeansArray);
+        Property [] propertyArray = new Property[propertyBeansArray.length];
+
+        for (int j = 0 ; j < propertyBeansArray.length ; j++) {
+            Property property = new Property();
+            property.setName(propertyBeansArray[j].name);
+            property.setValue(propertyBeansArray[j].value);
+            propertyArray[j] = property;
+        }
+
+        Properties properties = new Properties();
+        properties.setProperties(propertyArray);
+        return properties;
+    }
+
+    static void undeployCartridge (String cartridgeType) throws RestAPIException {
+
+        CartridgeMgtServiceClient cartridgeMgtServiceClient = getCartridgeMgtServiceClient();
+        if (cartridgeMgtServiceClient != null) {
+            try {
+                cartridgeMgtServiceClient.undeployCartridgeDefinition(cartridgeType);
+
+            } catch (Exception e) {
+                throw new RestAPIException(e);
+            }
+        }
+    }
+
+    private static CartridgeMgtServiceClient getCartridgeMgtServiceClient () {
+
+        try {
+            return CartridgeMgtServiceClient.getServiceClient();
+
+        } catch (AxisFault axisFault) {
+            String errorMsg = "Error in getting CartridgeMgtServiceClient instance";
+            log.error(errorMsg, axisFault);
+        }
+        return null;
+    }
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();

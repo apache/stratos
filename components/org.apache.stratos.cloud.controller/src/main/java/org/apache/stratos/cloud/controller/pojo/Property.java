@@ -54,4 +54,8 @@ public class Property implements Serializable{
         this.value = value;
     }
 
+    public String toString () {
+
+        return name + " : " + value;
+    }
 }
