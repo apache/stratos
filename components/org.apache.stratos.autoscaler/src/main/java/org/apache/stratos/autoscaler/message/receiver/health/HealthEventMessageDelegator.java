@@ -60,7 +60,7 @@ public class HealthEventMessageDelegator implements Runnable {
 
                 messageProperties = setEventValues(messageText);
                 this.clusterId = messageProperties.get("cluster_id");
-                log.info("Received event " + eventName);
+                log.info("Received event " + eventName + " for cluster " + this.clusterId);
 
                 if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){                	
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
@@ -75,8 +75,9 @@ public class HealthEventMessageDelegator implements Runnable {
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightSecondDerivative(messageValue);
 
                 }else if (Constants.MEMBER_FAULT_EVENT_NAME.equals(eventName)){
+                	
                 	String memberId = messageProperties.get("member_id");
-                	if(memberId != null && !memberId.isEmpty())
+                	if(memberId == null || memberId.isEmpty())
                 		log.error("MemberId is not included in the received message");
                 	handleMemberfaultEvent(memberId);                	
                 }
