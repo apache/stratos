@@ -66,4 +66,7 @@ public class Topology implements Serializable {
         return this.serviceMap.containsKey(serviceName);
     }
 
+    public void clear() {
+        this.serviceMap.clear();
+    }
 }

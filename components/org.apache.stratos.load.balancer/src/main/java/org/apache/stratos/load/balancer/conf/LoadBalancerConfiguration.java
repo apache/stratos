@@ -66,12 +66,14 @@ public class LoadBalancerConfiguration {
         this.algorithmMap = new HashMap<String, Algorithm>();
     }
 
+    /**
+     * Get load balancer configuration singleton instance.
+     * @return
+     */
     public static synchronized LoadBalancerConfiguration getInstance() {
         if (instance == null) {
             synchronized (LoadBalancerConfiguration.class) {
                 if (instance == null) {
-                    // Clear load balancer context
-                    LoadBalancerContext.getInstance().clear();
                     // Read load balancer configuration from file
                     LoadBalancerConfigurationReader reader = new LoadBalancerConfigurationReader();
                     instance = reader.readFromFile();
@@ -79,6 +81,19 @@ public class LoadBalancerConfiguration {
             }
         }
         return instance;
+    }
+
+    /**
+     * Clear load balancer configuration singleton instance and referencing contexts.
+     */
+    public static synchronized void clear() {
+        synchronized (LoadBalancerConfiguration.class) {
+            instance = null;
+            // Clear load balancer context
+            LoadBalancerContext.getInstance().clear();
+            // Clear topology
+            TopologyManager.getTopology().clear();
+        }
     }
 
     public String getDefaultAlgorithmName() {
@@ -329,13 +344,20 @@ public class LoadBalancerConfiguration {
                     for (Node clusterNode : clustersNode.getChildNodes()) {
                         String clusterId = clusterNode.getName();
                         Cluster cluster = new Cluster(service.getServiceName(), clusterId, null);
+
+                        String algorithm = clusterNode.getProperty(Constants.CONF_PROPERTY_ALGORITHM);
+                        if(StringUtils.isNotBlank(algorithm)) {
+                            cluster.setLoadBalanceAlgorithmName(algorithm);
+                        }
+
                         String hosts = clusterNode.getProperty(Constants.CONF_ELEMENT_HOSTS);
                         if (StringUtils.isBlank(hosts)) {
                             throw new InvalidConfigurationException(String.format("%s node was not found in cluster %s", Constants.CONF_ELEMENT_HOSTS, clusterNode.getName()));
                         }
                         String[] hostsArray = hosts.split(",");
-                        // TODO: Add multiple host-names to cluster
-                        cluster.setHostName(hostsArray[0]);
+                        for(String hostsName : hostsArray) {
+                            cluster.addHostName(hostsName.trim());
+                        }
 
                         Node membersNode = clusterNode.findChildNodeByName(Constants.CONF_ELEMENT_MEMBERS);
                         if (membersNode == null) {

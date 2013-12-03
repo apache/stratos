@@ -68,16 +68,14 @@ public class ArtifactListener implements MessageListener{
 		log.info("cluster id in payload " + clusterIdInPayload);
 		log.info("cluster id in message " + clusterIdInMessage);
 		
-		if(clusterIdInPayload != null && clusterIdInPayload.equals(clusterIdInMessage)) {
-			
-	    	ArtifactRepository gitBasedArtifactRepository = new GitBasedArtifactRepository();
+		if(clusterIdInPayload != null && clusterIdInPayload.equals(clusterIdInMessage)) {			
 	    	RepositoryInformation repoInformation = new RepositoryInformation();
 	    	repoInformation.setRepoUsername(repoUsername);
 	    	repoInformation.setRepoPassword(repoPassword);
 	    	repoInformation.setRepoUrl(repoURL);
 	    	repoInformation.setRepoPath(localRepoPath);
 	    	repoInformation.setTenantId(tenantId);    	
-	    	gitBasedArtifactRepository.checkout(repoInformation);			
+	    	GitBasedArtifactRepository.checkout(repoInformation);			
 		}
 		
 	}
