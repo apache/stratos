@@ -36,8 +36,8 @@ cc="false"
 elb="false"
 agent="false"
 sc="false"
-#bam="false"
-product_list="mb;cc;elb;agent;sc"
+cep="false"
+product_list="mb;cc;cep;elb;agent;sc"
 enable_internal_git=false
 
 function help {
@@ -82,6 +82,9 @@ do
     fi
     if [[ $x = "cc" ]]; then
         cc="true"
+    fi
+    if [[ $x = "cep" ]]; then
+        cep="true"
     fi
     if [[ $x = "elb" ]]; then
         elb="true"
@@ -167,6 +170,9 @@ function setup_validate {
     if [[ -z $elb_hostname ]]; then
         elb_hostname=$hostname
     fi
+    if [[ -z $cep_hostname ]]; then
+        cep_hostname=$hostname
+    fi
 
     if [[ ( -z $hostip ) ]]; then
         hostip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
@@ -179,6 +185,14 @@ function setup_validate {
     if [[ ( -z $mb_ip ) ]]; then
         mb_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
         if [[ ( -z mb_ip ) ]]; then
+            helpsetup
+            exit 1
+        fi
+    fi
+
+    if [[ ( -z $cep_ip ) ]]; then
+        cep_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+        if [[ ( -z cep_ip ) ]]; then
             helpsetup
             exit 1
         fi
@@ -232,6 +246,13 @@ function setup_validate {
 
     if [[ $cc = "true" ]]; then
         if [[ ( -z $hostname || -z $cc_path ) ]]; then
+            helpsetup
+            exit 1
+        fi
+    fi
+
+    if [[ $cep = "true" ]]; then
+        if [[ ( -z $hostname || -z $cep_path || ! -f $cep_extension_jar ) ]]; then
             helpsetup
             exit 1
         fi
@@ -331,6 +352,11 @@ if [[ $agent = "true" ]]; then
         unzip $agent_pack -d $stratos_path
     fi
 fi
+if [[ $cep = "true" ]]; then
+    if [[ ! -d $cep_path ]]; then
+        unzip $cep_pack -d $stratos_path
+    fi
+fi
 
 # ------------------------------------------------
 # Setup MB
@@ -348,6 +374,43 @@ if [[ $mb = "true" ]]; then
     echo "End configuring the Message Broker"
     popd #mb_path
 fi
+
+# ------------------------------------------------
+# Setup CEP
+# ------------------------------------------------
+if [[ $cep = "true" ]]; then
+    echo "Setup CEP" >> $LOG
+    echo "Configuring the Complex Event Processor"
+
+    cp -f ./config/cep/repository/conf/jndi.properties $cep_path/repository/conf/
+    cp -f $cep_extension_jar $cep_path/repository/components/lib/
+    cp -f $cep_extension_path/artifacts/eventbuilders/*.xml $cep_path/repository/deployment/server/eventbuilders/
+    cp -f $cep_extension_path/artifacts/inputeventadaptors/*.xml $cep_path/repository/deployment/server/inputeventadaptors/
+    cp -f $cep_extension_path/artifacts/outputeventadaptors/*.xml $cep_path/repository/deployment/server/outputeventadaptors/
+    cp -f $cep_extension_path/artifacts/executionplans/*.xml $cep_path/repository/deployment/server/executionplans/
+    cp -f $cep_extension_path/artifacts/eventformatters/*.xml $cep_path/repository/deployment/server/eventformatters/
+
+    pushd $cep_path
+
+    echo "In repository/conf/carbon.xml"
+    cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
+    cat repository/conf/carbon.xml.orig | sed -e "s@<Offset>0</Offset>@<Offset>${cep_port_offset}</Offset>@g" > repository/conf/carbon.xml
+
+    echo "In repository/conf/jndi.properties"
+    cp -f repository/conf/jndi.properties repository/conf/jndi.properties.orig
+    cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/jndi.properties
+
+    echo "In repository/conf/siddhi/siddhi.extension"
+    cp -f repository/conf/siddhi/siddhi.extension repository/conf/siddhi/siddhi.extension.orig
+    echo "org.apache.stratos.cep.extension.GradientFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
+    echo "org.apache.stratos.cep.extension.SecondDerivativeFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
+    echo "org.apache.stratos.cep.extension.FaultHandlingWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
+    mv -f repository/conf/siddhi/siddhi.extension.orig repository/conf/siddhi/siddhi.extension
+
+    echo "End configuring the Complex Event Processor"
+    popd #cep_path
+fi
+
 
 if [[ $sc = "true" ]]; then
     ##

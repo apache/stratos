@@ -64,6 +64,9 @@ do
     if [[ $x = "mb" ]]; then
         mb="true"
     fi
+    if [[ $x = "cep" ]]; then
+        cep="true"
+    fi
     if [[ $x = "cc" ]]; then
         cc="true"
     fi
@@ -82,7 +85,7 @@ do
         elb="true"
         agent="true"
         sc="true"
-        bam="true"
+        cep="true"
     fi
     if [[ $x = "demo" ]]; then
         demo="true"
@@ -105,6 +108,16 @@ if [[ $mb = "true" ]]; then
     echo "Starting MB server ..." >> $LOG
     nohup ${mb_path}/bin/wso2server.sh &
     echo "MB server started" >> $LOG
+    sleep $SLEEP
+    sleep $SLEEP
+fi
+
+if [[ $cep = "true" ]]; then
+    echo ${cep_path}
+
+    echo "Starting CEP server ..." >> $LOG
+    nohup ${cep_path}/bin/wso2server.sh &
+    echo "CEP server started" >> $LOG
     sleep $SLEEP
     sleep $SLEEP
 fi
