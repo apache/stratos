@@ -146,16 +146,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new MemberStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
-            		try {
-						TopologyManager.acquireReadLock();
-						
-						MemberStartedEvent e = (MemberStartedEvent) event;
-						ClusterContext clusCtx = AutoscalerContext.getInstance().getClusterContext(e.getClusterId());
-						clusCtx.addMemberpartition(e.getMemberId(), e.getPartitionId());
-					}
-                    finally{
-                    	TopologyManager.releaseReadLock();
-                    }
+            		
             }
 
         });
@@ -196,6 +187,17 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //                finally {
 //                    TopologyManager.releaseReadLock();
 //                }
+
+            	try {
+					TopologyManager.acquireReadLock();
+					
+					MemberActivatedEvent e = (MemberActivatedEvent)event;
+					ClusterContext clusCtx = AutoscalerContext.getInstance().getClusterContext(e.getClusterId());
+					clusCtx.addMemberpartition(e.getMemberId(), e.getPartitionId());
+				}
+                finally{
+                	TopologyManager.releaseReadLock();
+                }
             }
         });
         

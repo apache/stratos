@@ -61,32 +61,7 @@ public class HealthEventMessageDelegator implements Runnable {
                 messageProperties = setEventValues(messageText);
                 this.clusterId = messageProperties.get("cluster_id");
                 log.info("Received event " + eventName);
-//                for (Service service :  TopologyManager.getTopology().getServices()){
-//
-//                    if(service.clusterExists(clusterId)){
-//
-//                        if(!AutoscalerContext.getInstance().clusterExists(clusterId)){
-//
-//                            Cluster cluster = service.getCluster(clusterId);
-//                            AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(cluster.getAutoscalePolicyName());
-//                            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getDeploymentPolicyName());
-//
-//                            ClusterContext clusterContext = new ClusterContext(clusterId, service.getServiceName(), deploymentPolicy.getAllPartitions());
-//
-//                            LoadThresholds loadThresholds = autoscalePolicy.getLoadThresholds();
-//                            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-//                            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-//                            float secondDerivative  = loadThresholds.getRequestsInFlight().getSecondDerivative();
-//
-//                            clusterContext.setAverageRequestsInFlight(averageLimit);
-//                            clusterContext.setRequestsInFlightGradient(gradientLimit);
-//                            clusterContext.setRequestsInFlightSecondDerivative(secondDerivative);
-//
-//                            AutoscalerContext.getInstance().addClusterContext(clusterContext);
-//                        }
-//                        break;
-//                    }
-//                }
+
                 if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){                	
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setAverageRequestsInFlight(messageValue);
@@ -99,7 +74,7 @@ public class HealthEventMessageDelegator implements Runnable {
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightSecondDerivative(messageValue);
 
-                }else if ("member_fault".equals(eventName)){
+                }else if (Constants.MEMBER_FAULT_EVENT_NAME.equals(eventName)){
                 	String memberId = messageProperties.get("member_id");
                 	if(memberId != null && !memberId.isEmpty())
                 		log.error("MemberId is not included in the received message");
