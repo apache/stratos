@@ -173,18 +173,15 @@ public class TopologyBuilder {
                 if (service.clusterExists(registrant.getClusterId())) {
                     //update the cluster
                     cluster = service.getCluster(registrant.getClusterId());
-                    cluster.
-                            setHostName(registrant.getHostName());
-                    cluster.
-                            setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
-                    cluster.
-                            setTenantRange(registrant.getTenantRange());
+                    cluster.addHostName(registrant.getHostName());
+                    cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
+                    cluster.setTenantRange(registrant.getTenantRange());
                     cluster.setProperties(props);
                 } else {
                     cluster = new Cluster(registrant.getCartridgeType(),
                             registrant.getClusterId(),
                             registrant.getAutoScalerPolicyName());
-                    cluster.setHostName(registrant.getHostName());
+                    cluster.addHostName(registrant.getHostName());
                     cluster.setTenantRange(registrant.getTenantRange());
                     cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
                     cluster.setProperties(props);
