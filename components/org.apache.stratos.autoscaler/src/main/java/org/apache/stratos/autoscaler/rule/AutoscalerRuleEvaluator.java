@@ -122,18 +122,20 @@ public class AutoscalerRuleEvaluator {
 	public static void delegateTerminate(String memberId) {
 		try {
 
-//            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
-//            log.info("Current member count is " + currentMemberCount );
-//            if(currentMemberCount > partition.getPartitionMembersMin())       {
-//                AutoscalerContext.getInstance().getClusterContext(clusterId).decreaseMemberCount();
-               //FIXME
-//                cloudControllerClient.terminate(partition, clusterId);
-//            }
 			CloudControllerClient.getInstance().terminate(memberId);
 		} catch (Throwable e) {
 			log.error("Cannot terminate instance", e);
 		}
 	}
+	
+	public static void delegateTerminateAll(String clusterId) {
+        try {
+
+            CloudControllerClient.getInstance().terminateAllInstances(clusterId);
+        } catch (Throwable e) {
+            log.error("Cannot terminate instance", e);
+        }
+    }
 
 //	public boolean delegateSpawn(Partition partition, String clusterId, int memberCountToBeIncreased) {
 //		CloudControllerClient cloudControllerClient = new CloudControllerClient();

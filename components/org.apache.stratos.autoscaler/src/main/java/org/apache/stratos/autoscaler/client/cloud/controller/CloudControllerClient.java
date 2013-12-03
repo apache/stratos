@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
@@ -140,6 +141,23 @@ public class CloudControllerClient {
         }
     }
     
+    public void terminateAllInstances(String clusterId) throws TerminationException {
+        try {
+            stub.terminateAllInstances(clusterId);
+            
+        } catch (RemoteException e) {
+            String msg = "Error occurred in cloud controller side while terminating instance";
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
+
+        } catch (CloudControllerServiceInvalidClusterExceptionException e) {
+            log.error(e.getMessage());
+            throw new TerminationException(e);
+        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
+            log.error(e.getMessage());
+            throw new TerminationException(e);
+        }
+    }
 
     public void terminate(String memberId) throws TerminationException {
         //call CC terminate method

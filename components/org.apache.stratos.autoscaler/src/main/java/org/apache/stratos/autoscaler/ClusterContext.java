@@ -267,11 +267,12 @@ public class ClusterContext {
 		this.memberPartitionMap.put(memberId, partitionId);
 	}
 	
-	public void removeMemberPartition(String memberId){
-		this.memberPartitionMap.remove(memberId);
+	public String removeMemberPartition(String memberId){
+		return this.memberPartitionMap.remove(memberId);
 	}
 	
 	public String getPartitonOfMember(String memberId){
 		return this.memberPartitionMap.get(memberId);
 	}
+
 }
