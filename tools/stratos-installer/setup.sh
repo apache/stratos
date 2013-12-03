@@ -519,60 +519,23 @@ if [[ $sc = "true" ]]; then
 fi #End SC server installation
 
 
+# ------------------------------------------------
 # Setup CC
 # ------------------------------------------------
 if [[ $cc = "true" ]]; then
     echo "Setup CC" >> $LOG
     echo "Configuring the Cloud Controller"
+
     echo "Creating payload directory ... " >> $LOG
     if [[ ! -d $cc_path/repository/resources/payload ]]; then
         mkdir -p $cc_path/repository/resources/payload
     fi
 
-    #cp -f ./config/cc/bin/stratos.sh $cc_path/bin/
     cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/
     cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
+    cp -f ./config/cc/repository/conf/jndi.properties $cc_path/repository/conf/
 
-    #MB specific file copying
-    #cp -f ./config/cc/repository/conf/advanced/qpid-virtualhosts.xml $cc_path/repository/conf/advanced/
-    #cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
-    #End MB specific file copying
-
-
-    # Setup IaaS providers
-    # ------------------------------------------------
-    # <iaasProviders>
-    # <!--iaasProvider type="ec2" name="ec2 specific details">
-    #      <className>org.wso2.carbon.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
-    #      <provider>aws-ec2</provider>
-    #      <identity svns:secretAlias="elastic.scaler.openstack.identity">dhsaghfdal</identity>
-    #      <credential svns:secretAlias="elastic.scaler.openstack.credential">jdkjaskd</credential>
-    #      <scaleUpOrder>1</scaleUpOrder>
-    #      <scaleDownOrder>2</scaleDownOrder>
-    #      <property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
-    #      <property name="availabilityZone" value="us-east-1c"/>
-    #      <property name="securityGroups" value="manager,cep,mb,default"/>
-    #      <property name="instanceType" value="m1.large"/>
-    #      <property name="keyPair" value="nirmal-key"/>
-    #      <imageId>us-east-1/ami-52409a3b</imageId>
-    # </iaasProvider-->
-    #      
-    # <iaasProvider type="openstack" name="openstack specific details">
-    #      <className>org.wso2.carbon.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
-    #      <provider>openstack-nova</provider>
-    #      <identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
-    #      <credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
-    #      <property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
-    #      <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
-    #      <property name="jclouds.api-version" value="2.0/" />
-    #      <scaleUpOrder>2</scaleUpOrder>
-    #      <scaleDownOrder>3</scaleDownOrder>
-    #      <property name="X" value="x" />
-    #      <property name="Y" value="y" />
-    #      <imageId>nova/dab37f0e-cf6f-4812-86fc-733acf22d5e6</imageId>
-    # </iaasProvider>
-    # </iaasProviders>
-
+    echo "In repository/conf/cloud-controller.xml"
     if [[ $ec2_provider_enabled = true ]]; then
         ./ec2.sh
     fi
@@ -587,28 +550,11 @@ if [[ $cc = "true" ]]; then
 
     echo "In repository/conf/carbon.xml"
     cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
-    cat repository/conf/carbon.xml.orig | sed -e "s@BAM_HOSTNAME:BAM_PORT@$bam_hostname:$bam_port@g" > repository/conf/carbon.xml
-
-    #Before starting CC we need to delete
-    #rm ./repository/conf/service-topology.conf
-    #rm ./repository/conf/service-topology.conf.back
-
-
-    # Setup MB
-    # -------------------------------------------------------------
-    #echo "Setup MB" >> $LOG
-    #echo "Set settings in cc/repository/conf/advanced/qpid-virtualhosts.xml" >> $LOG
-    #cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
-    #cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_HOST@$mb_cassandra_host@g" > repository/conf/advanced/qpid-virtualhosts.xml
-    #cp -f repository/conf/advanced/qpid-virtualhosts.xml repository/conf/advanced/qpid-virtualhosts.xml.orig
-    #cat repository/conf/advanced/qpid-virtualhosts.xml.orig | sed -e "s@MB_CASSANDRA_PORT@$mb_cassandra_port@g" > repository/conf/advanced/qpid-virtualhosts.xml
-
-    echo "Set settings in cc/repository/conf/carbon.xml" >> $LOG
-    cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
     cat repository/conf/carbon.xml.orig | sed -e "s@CC_PORT_OFFSET@$cc_port_offset@g" > repository/conf/carbon.xml
-    #Before starting sc delete rm -rf tmp/ at mb root folder
-    rm -rf ./tmp
 
+    echo "In repository/conf/jndi.properties"
+    cp -f repository/conf/jndi.properties repository/conf/jndi.properties.orig
+    cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/jndi.properties
 
     popd #cc_path
     echo "End configuring the Cloud Controller"

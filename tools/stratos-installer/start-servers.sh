@@ -113,7 +113,7 @@ if [[ $cc = "true" ]]; then
     echo ${cc_path}
 
     echo "Starting CC server ..." >> $LOG
-    nohup ${cc_path}/bin/stratos.sh -DportOffset=$cc_port_offset &
+    nohup ${cc_path}/bin/stratos.sh &
     echo "CC server started" >> $LOG
     sleep $SLEEP
     sleep $SLEEP
