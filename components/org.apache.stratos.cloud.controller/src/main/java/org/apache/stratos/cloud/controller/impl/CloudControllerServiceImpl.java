@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeExcept
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
@@ -38,6 +39,7 @@ import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
@@ -56,6 +58,7 @@ import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -198,21 +201,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private void acquireData() {
 
-//		Object obj = RegistryManager.getInstance().retrieve();
-//		if (obj != null) {
-//			try {
-//				Object dataObj = Deserializer
-//						.deserializeFromByteArray((byte[]) obj);
-//				if (dataObj instanceof FasterLookUpDataHolder) {
-//					FasterLookUpDataHolder serializedObj = (FasterLookUpDataHolder) dataObj;
-//					FasterLookUpDataHolder currentData = FasterLookUpDataHolder
-//							.getInstance();
-//
-//					// assign necessary data
-//					currentData.setNodeIdToServiceContextMap(serializedObj
-//							.getNodeIdToServiceContextMap());
-//
-//					// traverse through current Service Contexts
+		Object obj = RegistryManager.getInstance().retrieve();
+		if (obj != null) {
+			try {
+				Object dataObj = Deserializer
+						.deserializeFromByteArray((byte[]) obj);
+				if (dataObj instanceof FasterLookUpDataHolder) {
+					FasterLookUpDataHolder serializedObj = (FasterLookUpDataHolder) dataObj;
+					FasterLookUpDataHolder currentData = FasterLookUpDataHolder
+							.getInstance();
+
+					// assign necessary data
+					currentData.setClusterIdToContext(serializedObj.getClusterIdToContext());
+					currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
+					currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
+
+					// traverse through current Service Contexts
 //					for (ServiceContext ctxt : currentData.getServiceCtxtList()) {
 //						// traverse through serialized Service Contexts
 //						for (ServiceContext serializedCtxt : serializedObj
@@ -258,18 +262,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //							}
 //						}
 //					}
-//
-//					log.debug("Data is retrieved from registry.");
-//				} else {
-//					log.debug("No data is persisted in registry.");
-//				}
-//			} catch (Exception e) {
-//
-//				String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
-//				log.warn(msg, e);
-//			}
 
-//		}
+					log.debug("Data is retrieved from registry.");
+				} else {
+					log.debug("No data is persisted in registry.");
+				}
+			} catch (Exception e) {
+
+				String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
+				log.warn(msg, e);
+			}
+
+		}
 	}
 
     @Override
@@ -466,15 +470,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	 * Persist data in registry.
 	 */
 	private void persist() {
-//		try {
-//			RegistryManager.getInstance().persist(
-//					dataHolder);
-//		} catch (RegistryException e) {
-//
-//			String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
-//			log.fatal(msg);
-//			throw new CloudControllerException(msg, e);
-//		}
+		try {
+			RegistryManager.getInstance().persist(
+					dataHolder);
+		} catch (RegistryException e) {
+
+			String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
+			log.fatal(msg);
+			throw new CloudControllerException(msg, e);
+		}
 	}
 
     private String generateMemberId(String clusterId) {
@@ -920,9 +924,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    String cartridgeType = registrant.getCartridgeType();
 	    String clusterId = registrant.getClusterId();
         String payload = registrant.getPayload();
+        String hostName = registrant.getHostName();
         
-        if(cartridgeType == null || clusterId == null || payload == null) {
-	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", Cluster Id: "+clusterId+", Payload: "+payload;
+        if(cartridgeType == null || clusterId == null || payload == null || hostName == null) {
+	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", " +
+	                "Cluster Id: "+clusterId+", Payload: "+payload+", Host name: "+hostName;
 	        log.error(msg);
 	        throw new IllegalArgumentException(msg);
 	    }
@@ -935,7 +941,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredCartridgeException(msg);
         }
         
-	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload));
+	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName));
 	    TopologyBuilder.handleClusterCreated(registrant);
 	    
 		return true;

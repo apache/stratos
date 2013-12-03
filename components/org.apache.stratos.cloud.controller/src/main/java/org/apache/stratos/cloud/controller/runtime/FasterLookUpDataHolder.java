@@ -48,7 +48,8 @@ public class FasterLookUpDataHolder implements Serializable{
      */
     private Map<String, List<MemberContext>> clusterIdToMemberContext = new HashMap<String, List<MemberContext>>();
     
-	/**
+
+    /**
 	 * Key - member id
 	 * Value - {@link MemberContext}
 	 */
@@ -426,7 +427,9 @@ public class FasterLookUpDataHolder implements Serializable{
     
     public void removeMemberContext(String clusterId) {
         List<MemberContext> ctxts = clusterIdToMemberContext.remove(clusterId);
-        
+        if(ctxts == null) {
+            return;
+        }
         for (MemberContext memberContext : ctxts) {
             String memberId = memberContext.getMemberId();
             memberIdToContext.remove(memberId);
@@ -441,6 +444,13 @@ public class FasterLookUpDataHolder implements Serializable{
         return clusterIdToMemberContext.get(clusterId);
     }
 
+    public Map<String, List<MemberContext>> getClusterIdToMemberContext() {
+        return clusterIdToMemberContext;
+    }
+    
+    public void setClusterIdToMemberContext(Map<String, List<MemberContext>> clusterIdToMemberContext) {
+        this.clusterIdToMemberContext = clusterIdToMemberContext;
+    }
 //    public void addNodeId(String memberId, String nodeId) {
 //        memberIdToNodeId.put(memberId, nodeId);
 //    }
