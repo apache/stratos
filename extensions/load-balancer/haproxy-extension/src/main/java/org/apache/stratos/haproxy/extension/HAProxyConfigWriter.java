@@ -66,21 +66,22 @@ public class HAProxyConfigWriter {
                 }
 
                 for (Port port : service.getPorts()) {
+                    for(String hostName : cluster.getHostNames()) {
+                        String frontendId = cluster.getClusterId() + "-host-" + hostName + "-proxy-" + port.getProxy();
+                        String backendId = frontendId + "-members";
 
-                    String frontendId = cluster.getClusterId() + "-proxy-" + port.getProxy();
-                    String backendId = frontendId + "-members";
+                        frontendBackendCollection.append("frontend ").append(frontendId).append(NEW_LINE);
+                        frontendBackendCollection.append("\tbind ").append(hostName).append(":").append(port.getProxy()).append(NEW_LINE);
+                        frontendBackendCollection.append("\tdefault_backend ").append(backendId).append(NEW_LINE);
+                        frontendBackendCollection.append(NEW_LINE);
+                        frontendBackendCollection.append("backend ").append(backendId).append(NEW_LINE);
 
-                    frontendBackendCollection.append("frontend ").append(frontendId).append(NEW_LINE);
-                    frontendBackendCollection.append("\tbind ").append(cluster.getHostName()).append(":").append(port.getProxy()).append(NEW_LINE);
-                    frontendBackendCollection.append("\tdefault_backend ").append(backendId).append(NEW_LINE);
-                    frontendBackendCollection.append(NEW_LINE);
-                    frontendBackendCollection.append("backend ").append(backendId).append(NEW_LINE);
-
-                    for (Member member : cluster.getMembers()) {
-                        frontendBackendCollection.append("\tserver ").append(member.getMemberId()).append(" ")
-                                .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
+                        for (Member member : cluster.getMembers()) {
+                            frontendBackendCollection.append("\tserver ").append(member.getMemberId()).append(" ")
+                                    .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
+                        }
+                        frontendBackendCollection.append(NEW_LINE);
                     }
-                    frontendBackendCollection.append(NEW_LINE);
                 }
             }
         }

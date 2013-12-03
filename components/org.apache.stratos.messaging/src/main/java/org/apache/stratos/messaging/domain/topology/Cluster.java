@@ -34,7 +34,7 @@ public class Cluster implements Serializable {
 	
 	private String serviceName;
     private String clusterId;
-    private String hostName;
+    private List<String> hostNames;
     private String tenantRange;
     private String autoscalePolicyName;
     private String deploymentPolicyName = "economy-deployment";
@@ -44,11 +44,13 @@ public class Cluster implements Serializable {
     
     // Key: Member.memberId
     private Map<String, Member> memberMap;
+    private String loadBalanceAlgorithmName;
     private Properties properties;
 
     public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.hostNames = new ArrayList<String>();
         this.autoscalePolicyName = autoscalePolicyName;
         this.memberMap = new HashMap<String, Member>();
     }
@@ -61,12 +63,12 @@ public class Cluster implements Serializable {
         return clusterId;
     }
 
-    public String getHostName() {
-        return hostName;
+    public List<String> getHostNames() {
+        return hostNames;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+    public void addHostName(String hostName) {
+        this.hostNames.add(hostName);
     }
 
     public String getTenantRange() {
@@ -146,5 +148,12 @@ public class Cluster implements Serializable {
 		this.deploymentPolicyName = deploymentPolicy;
 	}
 
+    public String getLoadBalanceAlgorithmName() {
+        return loadBalanceAlgorithmName;
+    }
+
+    public void setLoadBalanceAlgorithmName(String loadBalanceAlgorithmName) {
+        this.loadBalanceAlgorithmName = loadBalanceAlgorithmName;
+    }
 }
 

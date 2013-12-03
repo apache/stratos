@@ -206,10 +206,6 @@ public class LoadBalancerContext {
     // ClusterContextMap methods END
 
     // ClusterMap methods START
-    public Collection<Cluster> getClusters() {
-        return clusterMap.values();
-    }
-
     public Cluster getCluster(String hostName) {
         return clusterMap.get(hostName);
     }
@@ -219,7 +215,13 @@ public class LoadBalancerContext {
     }
 
     public void addCluster(Cluster cluster) {
-        clusterMap.put(cluster.getHostName(), cluster);
+        for(String hostName : cluster.getHostNames()) {
+            addCluster(hostName, cluster);
+        }
+    }
+
+    public void addCluster(String hostName, Cluster cluster) {
+        clusterMap.put(hostName, cluster);
     }
 
     public void removeCluster(String hostName) {

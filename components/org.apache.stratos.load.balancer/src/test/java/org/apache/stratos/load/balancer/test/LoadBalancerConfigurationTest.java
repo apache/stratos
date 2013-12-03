@@ -1,40 +1,142 @@
 /**
-*  Licensed to the Apache Software Foundation (ASF) under one
-*  or more contributor license agreements.  See the NOTICE file
-*  distributed with this work for additional information
-*  regarding copyright ownership.  The ASF licenses this file
-*  to you under the Apache License, Version 2.0 (the
-*  "License"); you may not use this file except in compliance
-*  with the License.  You may obtain a copy of the License at
+ *  Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
 
-*  http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
 
-*  Unless required by applicable law or agreed to in writing,
-*  software distributed under the License is distributed on an
-*  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-*  KIND, either express or implied.  See the License for the
-*  specific language governing permissions and limitations
-*  under the License.
-*/
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
 package org.apache.stratos.load.balancer.test;
 
 import java.io.File;
+import java.net.URL;
 
+import org.apache.stratos.messaging.domain.topology.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 
-import junit.framework.TestCase;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
  * Test sample load balancer configurations.
  */
-public class LoadBalancerConfigurationTest extends TestCase {
-    private static String configPath = "src/test/resources/sample/configuration";
+@RunWith(JUnit4.class)
+public class LoadBalancerConfigurationTest {
+    private static String configPath = File.separator + "sample" + File.separator + "configuration";
 
-    public final void testCreateLoadBalancerConfig() {
-        File folder = new File(configPath);
-        for(File configFile : folder.listFiles()) {
-            System.setProperty("loadbalancer.conf.file", configFile.getAbsolutePath());
-            LoadBalancerConfiguration.getInstance();
+    /**
+     * Test load balancer configuration parser using different configuration files.
+     */
+    @Test
+    public final void testConfigurationParser() {
+        URL resourceUrl = this.getClass().getResource(configPath);
+        File folder = new File(resourceUrl.getFile());
+        for (File configFile : folder.listFiles()) {
+            try {
+                System.setProperty("loadbalancer.conf.file", configFile.getAbsolutePath());
+                LoadBalancerConfiguration.getInstance();
+            } finally {
+                LoadBalancerConfiguration.clear();
+            }
         }
+    }
+
+    /**
+     * Test load balancer configuration read from a configuration file.
+     */
+    @Test
+    public void testConfiguration() {
+        try {
+            String validationError = "Load balancer configuration validation failed";
+
+            URL resourceUrl = this.getClass().getResource(configPath + File.separator + "loadbalancer1.conf");
+            File configFile = new File(resourceUrl.getFile());
+            System.setProperty("loadbalancer.conf.file", configFile.getAbsolutePath());
+            LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
+
+            Assert.assertEquals(String.format("%s, algorithm not valid", validationError), "round-robin", configuration.getDefaultAlgorithmName());
+            Assert.assertTrue(String.format("%s, failover is not true", validationError), configuration.isFailOver());
+            Assert.assertTrue(String.format("%s, session affinity is not true", validationError), configuration.isSessionAffinity());
+            Assert.assertEquals(String.format("%s, session timeout is not valid", validationError), 90000, configuration.getSessionTimeout());
+            Assert.assertTrue(String.format("%s, topology event listener enabled is not true", validationError), configuration.isTopologyEventListenerEnabled());
+            Assert.assertEquals(String.format("%s, mb ip is not valid", validationError), "localhost", configuration.getMbIp());
+            Assert.assertEquals(String.format("%s, mb port is not valid", validationError), 5677, configuration.getMbPort());
+            Assert.assertTrue(String.format("%s, cep stats publisher enabled is not true", validationError), configuration.isCepStatsPublisherEnabled());
+            Assert.assertEquals(String.format("%s, cep ip is not valid", validationError), "localhost", configuration.getCepIp());
+            Assert.assertEquals(String.format("%s, cep port is not valid", validationError), 7615, configuration.getCepPort());
+        } finally {
+            LoadBalancerConfiguration.clear();
+        }
+    }
+
+    /**
+     * Test static topology configuration read from a file
+     */
+    @Test
+    public final void testStaticTopology() {
+        URL resourceUrl = this.getClass().getResource(configPath + File.separator + "loadbalancer2.conf");
+        File configFile = new File(resourceUrl.getFile());
+
+        System.setProperty("loadbalancer.conf.file", configFile.getAbsolutePath());
+        LoadBalancerConfiguration.getInstance();
+
+        try {
+            String validationError = "Static topology validation failed";
+
+            TopologyManager.acquireReadLock();
+            Topology topology = TopologyManager.getTopology();
+            Assert.assertTrue(String.format("%s, services not found", validationError), topology.getServices().size() > 0);
+
+            String serviceName = "app-server";
+            Service appServer = topology.getService(serviceName);
+            Assert.assertNotNull(String.format("%s, service not found: [service] %s", validationError, serviceName), appServer);
+
+            String clusterId = "app-server-cluster1";
+            Cluster cluster1 = appServer.getCluster(clusterId);
+            Assert.assertNotNull(String.format("%s, cluster not found: [cluster] %s", validationError, clusterId), cluster1);
+
+            String hostName = "cluster1.appserver.foo.org";
+            Assert.assertTrue(String.format("%s, hostname not found: [hostname] %s", validationError, hostName), hostNameExist(cluster1, hostName));
+
+            hostName = "cluster1.org";
+            Assert.assertTrue(String.format("%s, hostname not found: [hostname] %s", validationError, hostName), hostNameExist(cluster1, hostName));
+            Assert.assertEquals(String.format("%s, algorithm not valid", validationError), "round-robin", cluster1.getLoadBalanceAlgorithmName());
+
+            String memberId = "m1";
+            Member m1 = cluster1.getMember(memberId);
+            Assert.assertNotNull(String.format("%s, member not found: [member] %s", validationError, memberId), m1);
+            Assert.assertEquals(String.format("%s, member ip not valid", validationError), "10.0.0.10", m1.getMemberIp());
+
+            String portName = "http";
+            Port m1Http = m1.getPort(portName);
+            Assert.assertNotNull(String.format("%s, port not found: [member] %s [port] %s", validationError, memberId, portName), m1Http);
+            Assert.assertEquals(String.format("%s, port value not valid: [member] %s [port] %s", validationError, memberId, portName), 8080, m1Http.getValue());
+            Assert.assertEquals(String.format("%s, port proxy not valid: [member] %s [port] %s", validationError, memberId, portName), 80, m1Http.getProxy());
+
+        } finally {
+            TopologyManager.releaseReadLock();
+            LoadBalancerConfiguration.clear();
+        }
+    }
+
+    private boolean hostNameExist(Cluster cluster, String hostName) {
+        for (String hostName_ : cluster.getHostNames()) {
+            if (hostName_.equals(hostName))
+                return true;
+        }
+        return false;
     }
 }

@@ -19,6 +19,10 @@
 
 package org.apache.stratos.cartridge.agent.event.subscriber;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
@@ -37,13 +41,18 @@ public class Main {
     	
     	System.setProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR, args[0]); 
     	System.setProperty(CartridgeAgentConstants.PARAM_FILE_PATH, args[1]);
-    	
     	    	
         //initialting the subscriber
         TopicSubscriber subscriber = new TopicSubscriber(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC);
         subscriber.setMessageListener(new ArtifactListener());
         Thread tsubscriber = new Thread(subscriber);
-		tsubscriber.start();     
+		tsubscriber.start(); 
+		
+		// Start periodical file checker task
+		// TODO -- start this thread only if this node configured as a commit true node
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);       
+        scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0, 10, TimeUnit.SECONDS);
+		
     }
     
 }
