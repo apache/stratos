@@ -275,6 +275,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
+        //memberStartedEvent.
         TopologyEventSender.sendMemberStartedEvent(memberStartedEvent);
     }
 
@@ -319,6 +320,8 @@ public class TopologyBuilder {
                 member.addPort(port);
                 memberActivatedEventTopology.addPort(port);
             }
+            
+            memberActivatedEventTopology.setPartitionId(member.getPartitionId());
             memberActivatedEventTopology.setMemberIp(member.getMemberIp());
             TopologyManager.getInstance().updateTopology(topology);
 
