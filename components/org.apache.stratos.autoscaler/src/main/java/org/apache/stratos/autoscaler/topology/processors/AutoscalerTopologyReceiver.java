@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.topology.processors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -34,11 +35,14 @@ import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListene
 import org.apache.stratos.messaging.listener.topology.ClusterRemovedEventListener;
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ServiceRemovedEventListener;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyEventProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 
 import java.util.Collection;
 
@@ -139,6 +143,40 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
         
+        processorChain.addEventListener(new MemberStartedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+            		try {
+						TopologyManager.acquireReadLock();
+						
+						MemberStartedEvent e = (MemberStartedEvent) event;
+						ClusterContext clusCtx = AutoscalerContext.getInstance().getClusterContext(e.getClusterId());
+						clusCtx.addMemberpartition(e.getMemberId(), e.getPartitionId());
+					}
+                    finally{
+                    	TopologyManager.releaseReadLock();
+                    }
+            }
+
+        });
+        
+        processorChain.addEventListener(new MemberTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+             
+            	try {
+            		TopologyManager.acquireReadLock();
+					MemberTerminatedEvent e = (MemberTerminatedEvent) event;
+					ClusterContext clusCtx = AutoscalerContext.getInstance()
+							.getClusterContext(e.getClusterId());
+					clusCtx.removeMemberPartition(e.getMemberId());
+				} finally {
+					TopologyManager.releaseReadLock();
+				}
+            }
+
+        });
+        
         processorChain.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -160,6 +198,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //                }
             }
         });
+        
         processorChain.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {

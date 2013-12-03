@@ -33,6 +33,7 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private String memberId;
     private MemberStatus status;
     private Properties properties;
+    private String partitionId;
 
     public MemberStartedEvent(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
@@ -67,4 +68,18 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+
+	/**
+	 * @return the partitionId
+	 */
+	public String getPartitionId() {
+		return partitionId;
+	}
+
+	/**
+	 * @param partitionId the partitionId to set
+	 */
+	public void setPartitionId(String partitionId) {
+		this.partitionId = partitionId;
+	}
 }

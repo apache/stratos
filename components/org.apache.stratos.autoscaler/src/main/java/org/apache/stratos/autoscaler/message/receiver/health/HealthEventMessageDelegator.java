@@ -23,7 +23,12 @@ import com.google.gson.stream.JsonReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.exception.SpawningException;
+import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import javax.jms.TextMessage;
 
@@ -41,6 +46,7 @@ public class HealthEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(HealthEventMessageDelegator.class);
     private String eventName;
+    private String clusterId;
     private Map<String, String> messageProperties;
     @Override
     public void run() {
@@ -53,6 +59,7 @@ public class HealthEventMessageDelegator implements Runnable {
 				String messageText = message.getText();
 
                 messageProperties = setEventValues(messageText);
+                this.clusterId = messageProperties.get("cluster_id");
                 log.info("Received event " + eventName);
 //                for (Service service :  TopologyManager.getTopology().getServices()){
 //
@@ -80,23 +87,23 @@ public class HealthEventMessageDelegator implements Runnable {
 //                        break;
 //                    }
 //                }
-                if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){
-                	String clusterId = messageProperties.get("cluster_id");
+                if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){                	
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setAverageRequestsInFlight(messageValue);
 
-                }  else if(Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(eventName)){
-                	String clusterId = messageProperties.get("cluster_id");
+                }  else if(Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(eventName)){                	
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightGradient(messageValue);
 
                 }  else if(Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(eventName)){
-                	String clusterId = messageProperties.get("cluster_id");
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
                     AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightSecondDerivative(messageValue);
 
                 }else if ("member_fault".equals(eventName)){
-                	// member with 
+                	String memberId = messageProperties.get("member_id");
+                	if(memberId != null && !memberId.isEmpty())
+                		log.error("MemberId is not included in the received message");
+                	handleMemberfaultEvent(memberId);                	
                 }
                 
                 // clear the message properties after handling the message.
@@ -109,7 +116,26 @@ public class HealthEventMessageDelegator implements Runnable {
         }
     }
 
-    public Map<String, String> setEventValues(String json) {
+    private void handleMemberfaultEvent(String memberId) {
+		try {
+			// terminate the faulty member
+			CloudControllerClient ccClient = CloudControllerClient.getInstance();
+			ccClient.terminate(memberId);
+			
+			// start a new member in the same Partition
+			ClusterContext clsCtx = AutoscalerContext.getInstance().getClusterContext(clusterId);
+			String partitionId = clsCtx.getPartitonOfMember(memberId);
+			Partition partition = clsCtx.getDeploymentPolicy().getPartitionById(partitionId);
+			ccClient.spawnAnInstance(partition, clusterId);
+			
+		} catch (TerminationException e) {
+			log.error(e);
+		}catch(SpawningException e){
+			log.error(e);
+		}		
+	}
+
+	public Map<String, String> setEventValues(String json) {
     	
     	Map<String, String> properties = new HashMap<String, String>();
     	BufferedReader bufferedReader = new BufferedReader(new StringReader(json));
