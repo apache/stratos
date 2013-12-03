@@ -183,9 +183,12 @@ public class AutoscalerTopologyReceiver implements Runnable {
 					MemberActivatedEvent e = (MemberActivatedEvent)event;
 					ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(e.getClusterId());
 					ClusterContext clusCtx = monitor.getClusterCtxt();
-					clusCtx.addMemberpartition(e.getMemberId(), e.getPartitionId());
-					PartitionContext partCtxt = monitor.getPartitionCtxt(e.getPartitionId());
+					String memberId = e.getMemberId();
+                    String partitionId = e.getPartitionId();
+                    clusCtx.addMemberpartition(memberId, partitionId);
+					PartitionContext partCtxt = monitor.getPartitionCtxt(partitionId);
 					partCtxt.incrementCurrentMemberCount(1);
+					partCtxt.removePendingMember(memberId);
 					
 				}
                 finally{

@@ -119,8 +119,30 @@ public class PartitionContext {
         this.pendingMembers.add(ctxt);
     }
     
-    public void removePendingMember(MemberContext ctxt) {
-        this.pendingMembers.remove(ctxt);
+    public void removePendingMember(String memberId) {
+        if (memberId == null) {
+            return;
+        }
+        for (Iterator<MemberContext> iterator = pendingMembers.listIterator(); 
+                iterator.hasNext();) {
+            MemberContext pendingMember = (MemberContext) iterator.next();
+            if(pendingMember == null) {
+                iterator.remove();
+                continue;
+            }
+            if(memberId.equals(pendingMember.getMemberId())){
+                // member is activated
+                // remove from pending list
+                iterator.remove();
+                // add to the activated list
+                this.activeMembers.add(pendingMember);
+                if (log.isDebugEnabled()) {
+                    log.debug("Pending member is removed and added to the " +
+                            "activated member list. Id: "+memberId);
+                }
+                break;
+            }
+        }
     }
     
     public void addActiveMember(MemberContext ctxt) {
@@ -168,6 +190,7 @@ public class PartitionContext {
             while (true) {
                 long expiryTime = ctxt.getExpiryTime();
                 List<MemberContext> pendingMembers = ctxt.getPendingMembers();
+                
                 synchronized (pendingMembers) {
 
                     for (Iterator<MemberContext> iterator = pendingMembers.listIterator(); iterator.hasNext();) {
