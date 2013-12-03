@@ -17,11 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.conf;
+package org.apache.stratos.load.balancer.conf.configurator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.Algorithm;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;

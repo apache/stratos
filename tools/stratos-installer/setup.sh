@@ -31,20 +31,22 @@ SLEEP=60
 source "./conf/setup.conf"
 export LOG=$log_path/stratos-setup.log
 
+mb="false"
 cc="false"
 elb="false"
 agent="false"
 sc="false"
 #bam="false"
-product_list="cc;elb;agent;sc"
+product_list="mb;cc;elb;agent;sc"
 enable_internal_git=false
 
 function help {
     echo ""
     echo "Usage:"
     echo "setup.sh -u <host username> -p \"<product list>\""
+    echo "product list : [mb, cc, lb, as, sm, cep]"
     echo "Example:"
-    echo "sudo ./setup.sh -p \"cc elb\""
+    echo "sudo ./setup.sh -p \"cc llb\""
     echo "sudo ./setup.sh -p \"all\""
     echo ""
     echo "-u: <host username> The login user of the host."
@@ -54,7 +56,7 @@ function help {
     echo ""
 }
 
-while getopts p:g: opts
+while getopts u:p:g: opts
 do
   case $opts in
     p)
@@ -63,7 +65,7 @@ do
     g)
         enable_internal_git=${OPTARG}
         ;;
-    *)
+    \?)
         help
         exit 1
         ;;
@@ -75,6 +77,9 @@ arr=$(echo $product_list | tr " " "\n")
 
 for x in $arr
 do
+    if [[ $x = "mb" ]]; then
+        mb="true"
+    fi
     if [[ $x = "cc" ]]; then
         cc="true"
     fi
@@ -87,15 +92,12 @@ do
     if [[ $x = "sc" ]]; then
         sc="true"
     fi
-#   if [[ $x = "bam" ]]; then
-#       bam="true"
-#   fi
     if [[ $x = "all" ]]; then
+        mb="true"
         cc="true"
         elb="true"
         agent="true"
         sc="true"
-#       bam="true"
     fi
 done
 product_list=`echo $product_list | sed 's/^ *//g' | sed 's/ *$//g'`
@@ -135,6 +137,9 @@ function setup_validate {
         exit 1
     fi
 
+    if [[ -z $mb_hostname ]]; then
+        mb_hostname=$hostname
+    fi
     if [[ -z $userstore_db_hostname ]]; then
         userstore_db_hostname=""
     fi
@@ -171,6 +176,14 @@ function setup_validate {
         fi
     fi
 
+    if [[ ( -z $mb_ip ) ]]; then
+        mb_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+        if [[ ( -z mb_ip ) ]]; then
+            helpsetup
+            exit 1
+        fi
+    fi
+
     if [[ ( -z $elb_ip ) ]]; then
         elb_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
         if [[ ( -z elb_ip ) ]]; then
@@ -190,6 +203,13 @@ function setup_validate {
 
     if [[ -z $git_ip ]]; then
         git_ip=$hostip
+    fi
+
+    if [[ $mb = "true" ]]; then
+        if [[ ( -z $hostname || -z $mb_path ) ]]; then
+            helpsetup
+            exit 1
+        fi
     fi
 
     if [[ $sc = "true" ]]; then
@@ -278,7 +298,11 @@ echo ""
 echo "For all the questions asked while during executing the script please just press the enter button"
 echo ""
 
-
+if [[ $mb = "true" ]]; then
+    if [[ ! -d $mb_path ]]; then
+        unzip $mb_pack -d $stratos_path
+    fi
+fi
 if [[ $sc = "true" ]]; then
     if [[ ! -d $resource_path ]]; then
         cp -rf ./resources $stratos_path
@@ -291,9 +315,6 @@ if [[ $sc = "true" ]]; then
     if [[ ! -d $sc_path ]]; then
         unzip $sc_pack -d $stratos_path
     fi
-    #if [[ ! -d $axis2c_path ]]; then
-      #  unzip $axis2c_pack -d $stratos_path
-    #fi
 fi
 if [[ $elb = "true" ]]; then
     if [[ ! -d $elb_path ]]; then
@@ -311,12 +332,22 @@ if [[ $agent = "true" ]]; then
     fi
 fi
 
-if [[ $bam = "true" ]]; then
-    if [[ ! -d $bam_path ]]; then
-        unzip $bam_pack -d $stratos_path
-    fi
-fi
+# ------------------------------------------------
+# Setup MB
+# ------------------------------------------------
+if [[ $mb = "true" ]]; then
+    echo "Setup MB" >> $LOG
+    echo "Configuring the Message Broker"
 
+    pushd $mb_path
+
+    echo "In repository/conf/carbon.xml"
+    cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
+    cat repository/conf/carbon.xml.orig | sed -e "s@<Offset>0</Offset>@<Offset>${mb_port_offset}</Offset>@g" > repository/conf/carbon.xml
+
+    echo "End configuring the Message Broker"
+    popd #mb_path
+fi
 
 if [[ $sc = "true" ]]; then
     ##

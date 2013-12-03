@@ -46,6 +46,8 @@ public class Constants {
     public static final String CONF_PROPERTY_IP = "ip";
     public static final String CONF_PROPERTY_VALUE = "value";
     public static final String CONF_PROPERTY_PROXY = "proxy";
+    public static final String CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER = "topology-service-filter";
+    public static final String CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER = "topology-cluster-filter";
 
     public static final String CONF_DELIMITER_HOSTS = ",";
     public static final long DEFAULT_SESSION_TIMEOUT = 90000;

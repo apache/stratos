@@ -296,11 +296,6 @@ exec "$JAVACMD" \
         -Dorg.terracotta.quartz.skipUpdateCheck=true \
         -Djavax.net.ssl.trustStore=$CARBON_HOME/repository/resources/security/client-truststore.jks \
         -Djavax.net.ssl.trustStorePassword=wso2carbon \
-        -Dthrift.receiver.ip=localhost \
-        -Dthrift.receiver.port=7615 \
-        -Dstratos.messaging.topology.service.filter="" \
-        -Dstratos.messaging.topology.cluster.filter="" \
-        -Dload.balancer.stats.publisher.enabled="false" \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 

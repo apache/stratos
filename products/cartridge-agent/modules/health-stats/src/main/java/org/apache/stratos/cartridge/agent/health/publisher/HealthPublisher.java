@@ -70,7 +70,8 @@ public class HealthPublisher implements Observer {
                     " 'payloadData':[" +
                     " {'name':'health_description','type':'STRING'}," +
                     " {'name':'value','type':'DOUBLE'}," +
-                    " {'name':'member_id','type':'STRING'}" +
+                    " {'name':'member_id','type':'STRING'}," +
+                    " {'name':'cluster_id','type':'STRING'}" +
                     " ]" +
                     "}";
             asyncDataPublisher.addStreamDefinition(streamDefinition, CALL_CENTER_DATA_STREAM, VERSION);
@@ -99,10 +100,11 @@ public class HealthPublisher implements Observer {
     private void publishEvents(Map<String, Double> stats) {
 
         String memberID = System.getProperty("member.id");
+        String clusterID = System.getProperty("cluster.id");
 
         for (Map.Entry<String, Double> entry : stats.entrySet()) {
 
-            Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID};
+            Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID, clusterID};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
                 asyncDataPublisher.publish(CALL_CENTER_DATA_STREAM, VERSION, event);
