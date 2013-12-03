@@ -36,10 +36,8 @@ if [ ! -d ${instance_path}/payload ]; then
     echo "creating payload directory... " | tee -a $LOG
     mkdir ${instance_path}/payload
     echo "payload directory created" | tee -a $LOG
-    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/payload.zip    
+    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/launch-params
     echo "payload copied"  | tee -a $LOG
-    unzip -d ${instance_path}/payload ${instance_path}/payload/payload.zip
-    echo "unzipped" | tee -a $LOG
 
     for i in `/usr/bin/ruby ${instance_path}/get-launch-params.rb`
     do
