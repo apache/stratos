@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -158,9 +159,13 @@ public class AutoscalerTopologyReceiver implements Runnable {
             	try {
             		TopologyManager.acquireReadLock();
 					MemberTerminatedEvent e = (MemberTerminatedEvent) event;
-					ClusterContext clusCtx = AutoscalerContext.getInstance()
-							.getClusterContext(e.getClusterId());
-					clusCtx.removeMemberPartition(e.getMemberId());
+					ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(e.getClusterId());
+					ClusterContext clusCtx = monitor.getClusterCtxt();
+					String partitionId = clusCtx.removeMemberPartition(e.getMemberId());
+                    if (partitionId != null) {
+                        PartitionContext partCtxt = monitor.getPartitionCtxt(partitionId);
+                        partCtxt.decrementCurrentMemberCount(1);
+                    }
 				} finally {
 					TopologyManager.releaseReadLock();
 				}
@@ -171,29 +176,17 @@ public class AutoscalerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-//                try {
-//                    TopologyManager.acquireReadLock();
-//
-//                    // Add cluster to the context when its first member is activated
-//                    MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent)event;
-//                    Cluster cluster = findCluster(memberActivatedEvent.getClusterId());
-//                    if(cluster == null) {
-//                        if(log.isErrorEnabled()) {
-//                            log.error(String.format("Cluster not found in topology: [cluster] %s", memberActivatedEvent.getClusterId()));
-//                        }
-//                    }
-//                    addClusterToContext(cluster);
-//                }
-//                finally {
-//                    TopologyManager.releaseReadLock();
-//                }
 
             	try {
 					TopologyManager.acquireReadLock();
 					
 					MemberActivatedEvent e = (MemberActivatedEvent)event;
-					ClusterContext clusCtx = AutoscalerContext.getInstance().getClusterContext(e.getClusterId());
+					ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(e.getClusterId());
+					ClusterContext clusCtx = monitor.getClusterCtxt();
 					clusCtx.addMemberpartition(e.getMemberId(), e.getPartitionId());
+					PartitionContext partCtxt = monitor.getPartitionCtxt(e.getPartitionId());
+					partCtxt.incrementCurrentMemberCount(1);
+					
 				}
                 finally{
                 	TopologyManager.releaseReadLock();
@@ -280,6 +273,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
     private void removeClusterFromContext(String clusterId) {
         ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().removeMonitor(clusterId);
+//        monitor.unsubscribe();
         monitor.destroy();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));

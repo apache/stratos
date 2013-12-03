@@ -49,6 +49,7 @@ global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
 global org.apache.stratos.messaging.domain.topology.Topology $topology;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
+global java.lang.boolean clusterRemoved;
 
 import function org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator.delegateSpawn;
 import function org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator.delegateTerminate;
@@ -77,3 +78,4 @@ dialect "mvel"
         then
             delegateTerminate(memberId);
 end
+

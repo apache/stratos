@@ -89,8 +89,14 @@ public class PartitionContext {
         // live count + pending count
         return currentMemberCount + pendingMembers.size();
     }
+
     public void incrementCurrentMemberCount(int count) {
+
         this.currentMemberCount += count;
+    }
+    
+    public void decrementCurrentMemberCount(int count) {
+        this.currentMemberCount -= count;
     }
 
     public int getMinimumMemberCount() {

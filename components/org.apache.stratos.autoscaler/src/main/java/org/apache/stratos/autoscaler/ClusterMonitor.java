@@ -115,7 +115,9 @@ public class ClusterMonitor implements Runnable{
     public void run() {
 
         while (!isDestroyed()) {
-            log.debug("Cluster monitor is running..");
+            if (log.isDebugEnabled()) {
+                log.debug("Cluster monitor is running..");
+            }
             try {
                 minInstanceCountCheck();
             } catch (Exception e) {
@@ -147,10 +149,13 @@ public class ClusterMonitor implements Runnable{
             }
         }
     }
-
+    
     public void destroy() {
         ksession.dispose();
         setDestroyed(true);
+        if(log.isDebugEnabled()) {
+            log.debug("Cluster Monitor Drools session has been disposed.");
+        }
     }
 
     public boolean isDestroyed() {

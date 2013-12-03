@@ -62,8 +62,7 @@ public class AutoscalerUtil {
      * @throws PolicyValidationException
      * @throws PartitionValidationException 
      */
-    public static ClusterContext
-        getClusterContext(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
+    public static ClusterContext getClusterContext(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
         // FIXME fix the following code to correctly update
         // AutoscalerContext context = AutoscalerContext.getInstance();
         if (null == cluster) {
