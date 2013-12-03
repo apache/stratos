@@ -120,7 +120,7 @@ public class TopologyManager {
     public synchronized void updateTopology(Topology topology) {
         synchronized (TopologyManager.class) {
              this.topology = topology;
-             CloudControllerUtil.persist(this.topology);
+//             CloudControllerUtil.persist(this.topology);
              if (log.isDebugEnabled()) {
                  Gson gson = new Gson();
                  String message = gson.toJson(topology);
