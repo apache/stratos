@@ -66,7 +66,7 @@ public class LoadBalancerContext {
         clusterMap = new ConcurrentHashMap<String, Cluster>();
     }
 
-    public static synchronized LoadBalancerContext getInstance() {
+    public static LoadBalancerContext getInstance() {
         if (instance == null) {
             synchronized (LoadBalancerContext.class){
                 if (instance == null) {
