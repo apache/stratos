@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
@@ -69,6 +70,32 @@ public class CloudControllerServiceClient {
             }
         }
         return serviceClient;
+    }
+
+    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig)
+            throws Exception {
+
+        try {
+            stub.deployCartridgeDefinition(cartridgeConfig);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in deploying cartridge definition";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+    }
+
+    public void unDeployCartridgeDefinition (String cartridgeType)
+            throws Exception {
+
+        try {
+            stub.undeployCartridgeDefinition(cartridgeType);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in deploying cartridge definition";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
     }
 
 	public boolean register(String clusterId, String cartridgeType,

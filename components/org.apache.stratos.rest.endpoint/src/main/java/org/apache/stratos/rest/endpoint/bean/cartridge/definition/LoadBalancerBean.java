@@ -22,41 +22,23 @@ package org.apache.stratos.rest.endpoint.bean.cartridge.definition;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement (name = "iaasProvider")
-public class IaasProviderBean {
+@XmlRootElement(name = "loadBalancer")
+public class LoadBalancerBean {
 
     public String type;
-
-    public String name;
-
-    public String className;
-
-    public String imageId;
-
-    public int maxInstanceLimit;
-
-    public String provider;
-
-    public String identity;
-
-    public String credential;
 
     public List<PropertyBean> property;
 
     public String toString () {
-        return " [ Type: " + type + ", Name: " + name + ", Class Name: " + className + ", Image Id: " + imageId +
-                ", Max Instance Limit: " + maxInstanceLimit + ", Provider: " + provider + ", Identity: " + identity +
-                ", Credentials: " + credential + ", Properties: " + getIaasProperties() + " ] ";
-    }
 
-    private String getIaasProperties () {
-
-        StringBuilder iaasPropertyBuilder = new StringBuilder();
-        if(property != null) {
-            for (PropertyBean propertyBean : property) {
-                iaasPropertyBuilder.append(propertyBean.name + " : " + propertyBean.value + " | ");
+        StringBuilder lbBuilder = new StringBuilder();
+        lbBuilder.append(" Type: " + type);
+        if(property != null && !property.isEmpty()) {
+            lbBuilder.append(" Properties: ");
+            for(PropertyBean propertyBean : property) {
+                lbBuilder.append(propertyBean.name + " : " + propertyBean.value + " | ");
             }
         }
-        return iaasPropertyBuilder.toString();
+        return lbBuilder.toString();
     }
 }

@@ -40,7 +40,6 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBe
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.rest.endpoint.service.client.CartridgeMgtServiceClient;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.util.ArrayList;
@@ -56,8 +55,8 @@ public class ServiceUtils {
 
         log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
-        CartridgeMgtServiceClient cartridgeMgtServiceClient = getCartridgeMgtServiceClient();
-        if (cartridgeMgtServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
 
             CartridgeConfig cartridgeConfig = populateCartridgeConfigPojo(cartridgeDefinitionBean);
 
@@ -66,7 +65,7 @@ public class ServiceUtils {
             }
 
             try {
-                cartridgeMgtServiceClient.deployCartridgedefinition(cartridgeConfig);
+                cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
 
             } catch (Exception e) {
                 throw new RestAPIException(e);
@@ -100,6 +99,10 @@ public class ServiceUtils {
         //IaaS
         if(cartridgeDefinitionBean.iaasProvider != null & !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
             cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.iaasProvider));
+        }
+        //LB
+        if(cartridgeDefinitionBean.loadBalancer != null) {
+            //cartridgeConfig.set
         }
         //Properties
         if(cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
@@ -139,6 +142,11 @@ public class ServiceUtils {
             iaasConfig.setType(iaasProviderBeansArray[i].type);
             iaasConfig.setImageId(iaasProviderBeansArray[i].imageId);
             iaasConfig.setMaxInstanceLimit(iaasProviderBeansArray[i].maxInstanceLimit);
+            iaasConfig.setName(iaasProviderBeansArray[i].name);
+            iaasConfig.setClassName(iaasProviderBeansArray[i].className);
+            iaasConfig.setCredential(iaasProviderBeansArray[i].credential);
+            iaasConfig.setIdentity(iaasProviderBeansArray[i].identity);
+            iaasConfig.setProvider(iaasProviderBeansArray[i].provider);
 
             if(iaasProviderBeansArray[i].property != null && !iaasProviderBeansArray[i].property.isEmpty()) {
                 //set the Properties instance to IaasConfig instance
@@ -170,10 +178,10 @@ public class ServiceUtils {
 
     static void undeployCartridge (String cartridgeType) throws RestAPIException {
 
-        CartridgeMgtServiceClient cartridgeMgtServiceClient = getCartridgeMgtServiceClient();
-        if (cartridgeMgtServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                cartridgeMgtServiceClient.undeployCartridgeDefinition(cartridgeType);
+                cloudControllerServiceClient.unDeployCartridgeDefinition(cartridgeType);
 
             } catch (Exception e) {
                 throw new RestAPIException(e);
@@ -181,7 +189,19 @@ public class ServiceUtils {
         }
     }
 
-    private static CartridgeMgtServiceClient getCartridgeMgtServiceClient () {
+    private static CloudControllerServiceClient getCloudControllerServiceClient () {
+
+        try {
+            return CloudControllerServiceClient.getServiceClient();
+
+        } catch (AxisFault axisFault) {
+            String errorMsg = "Error in getting CloudControllerServiceClient instance";
+            log.error(errorMsg, axisFault);
+        }
+        return null;
+    }
+
+    /*private static CartridgeMgtServiceClient getCartridgeMgtServiceClient () {
 
         try {
             return CartridgeMgtServiceClient.getServiceClient();
@@ -191,7 +211,7 @@ public class ServiceUtils {
             log.error(errorMsg, axisFault);
         }
         return null;
-    }
+    }*/
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();

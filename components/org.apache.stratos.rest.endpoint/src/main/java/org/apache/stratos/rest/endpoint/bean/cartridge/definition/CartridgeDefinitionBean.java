@@ -45,6 +45,8 @@ public class CartridgeDefinitionBean {
 
     public List<IaasProviderBean> iaasProvider;
 
+    public LoadBalancerBean loadBalancer;
+
     public List<PropertyBean> property;
 
     public String toString () {
@@ -52,13 +54,21 @@ public class CartridgeDefinitionBean {
         return "Type: " + type + ", Provider: " + provider + ", Host: " + host + ", Display Name: " + displayName +
                 ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n Properties: " + getProperties();
+                "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties();
     }
 
     private String getDeploymentDetails () {
 
         if(deployment != null) {
             return deployment.toString();
+        }
+        return null;
+    }
+
+    private String getLoadBalancerInfo() {
+
+        if(loadBalancer != null) {
+            return loadBalancer.toString();
         }
         return null;
     }

@@ -198,7 +198,6 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
 
-
     @PUT
     @Path("/tenant")
     @Consumes("application/json")

@@ -19,19 +19,9 @@
 
 package org.apache.stratos.rest.endpoint.service.client;
 
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cartridge.mgt.stub.CartridgeMgtServiceStub;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.rest.endpoint.ServiceHolder;
-
-import java.rmi.RemoteException;
-
 public class CartridgeMgtServiceClient {
 
-    private CartridgeMgtServiceStub cartridgeMgtServiceStub;
+    /*private CartridgeMgtServiceStub cartridgeMgtServiceStub;
     private static final Log log = LogFactory.getLog(CartridgeMgtServiceClient.class);
     private static volatile CartridgeMgtServiceClient serviceClient;
     private static final String CARTRIDGE_MGT_EPR = "cartridge.mgt.epr";
@@ -85,5 +75,5 @@ public class CartridgeMgtServiceClient {
             log.error(errorMsg, e);
             throw new Exception(errorMsg, e);
         }
-    }
+    } */
 }
