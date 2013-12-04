@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.publish.TopicPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -63,7 +63,7 @@ public class Main {
 		event.setServiceName(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME));
 		event.setClusterId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID));
 		event.setMemberId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
-		TopicPublisher publisher = new TopicPublisher(Constants.INSTANCE_STATUS_TOPIC);
+        EventPublisher publisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
 		publisher.publish(event);
 		log.info("Member started event is sent");		
 

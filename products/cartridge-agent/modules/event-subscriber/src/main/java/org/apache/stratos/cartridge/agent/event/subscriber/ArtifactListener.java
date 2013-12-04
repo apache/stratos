@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.deployment.synchronizer.RepositoryInformation;
 import org.apache.stratos.deployment.synchronizer.git.impl.GitBasedArtifactRepository;
-import org.apache.stratos.messaging.broker.publish.TopicPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -84,7 +84,7 @@ public class ArtifactListener implements MessageListener{
 	    		memberActivatedEvent.setServiceName(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME));
 	    		memberActivatedEvent.setClusterId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID));
 	    		memberActivatedEvent.setMemberId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
-	    		TopicPublisher publisher = new TopicPublisher(Constants.INSTANCE_STATUS_TOPIC);
+	    		EventPublisher publisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
 	    		publisher.publish(memberActivatedEvent);
 	    		log.info("Member activated event is sent");
 	    	}	
