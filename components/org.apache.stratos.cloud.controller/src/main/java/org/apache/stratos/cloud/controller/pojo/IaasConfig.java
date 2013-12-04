@@ -132,8 +132,9 @@ public class IaasConfig implements Serializable {
 
     public String toString () {
 
-        return " [ Type: " + type + ", Image Id: " + imageId + ", Max Instance Limit: " + maxInstanceLimit +
-                " Properties: " + getIaasProperties() + " ] ";
+        return " [ Type: " + type + ", Name: " + name + ", Class Name: " + className + ", Image Id: " + imageId +
+                ", Max Instance Limit: " + maxInstanceLimit + ", Provider: " + provider + ", Identity: " + identity +
+                ", Credentials: " + credential + ", Properties: " + getIaasProperties() + " ] ";
     }
 
     private String getIaasProperties () {

@@ -288,6 +288,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         }
 
+        if(log.isDebugEnabled()){
+            log.debug("Cartridge definition: " + cartridgeConfig.toString());
+        }
+
         Cartridge cartridge = null;
         try {
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);

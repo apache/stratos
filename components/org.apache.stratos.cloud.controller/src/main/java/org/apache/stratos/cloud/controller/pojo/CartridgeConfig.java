@@ -162,10 +162,12 @@ public class CartridgeConfig implements Serializable {
 
         StringBuilder deploymentDetailBuilder = new StringBuilder();
         deploymentDetailBuilder.append("Base direcotry: " + baseDir);
-        if(deploymentDirs.length > 0) {
-            deploymentDetailBuilder.append(" Direcotries: ");
-            for (String directory : deploymentDirs) {
-                deploymentDetailBuilder.append(directory + " | ");
+        if(deploymentDirs != null) {
+            if(deploymentDirs.length > 0) {
+                deploymentDetailBuilder.append(" Direcotries: ");
+                for (String directory : deploymentDirs) {
+                    deploymentDetailBuilder.append(directory + " | ");
+                }
             }
         }
 
@@ -175,9 +177,11 @@ public class CartridgeConfig implements Serializable {
     private String getPortMappingDetails () {
 
         StringBuilder portMappingDetailBuilder = new StringBuilder();
-        if(portMappings.length > 0) {
-            for (PortMapping portMapping : portMappings) {
-                portMappingDetailBuilder.append(portMapping.toString() + " | ");
+        if(portMappings != null) {
+            if(portMappings.length > 0) {
+                for (PortMapping portMapping : portMappings) {
+                    portMappingDetailBuilder.append(portMapping.toString() + " | ");
+                }
             }
         }
         return portMappingDetailBuilder.toString();
@@ -186,9 +190,11 @@ public class CartridgeConfig implements Serializable {
     private String getIaasConfigDetails () {
 
         StringBuilder iaasConfigDetailBuilder = new StringBuilder();
-        if(iaasConfigs.length > 0) {
-            for (IaasConfig iaasConfig : iaasConfigs) {
-                iaasConfigDetailBuilder.append(iaasConfig.toString() + " | ");
+        if(iaasConfigs != null) {
+            if(iaasConfigs.length > 0) {
+                for (IaasConfig iaasConfig : iaasConfigs) {
+                    iaasConfigDetailBuilder.append(iaasConfig.toString() + " | ");
+                }
             }
         }
         return iaasConfigDetailBuilder.toString();
