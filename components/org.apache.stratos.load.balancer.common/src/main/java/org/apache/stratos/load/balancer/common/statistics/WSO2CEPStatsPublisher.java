@@ -30,6 +30,7 @@ import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,10 +50,8 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     public WSO2CEPStatsPublisher() {
         ip = System.getProperty("thrift.receiver.ip");
         port = System.getProperty("thrift.receiver.port");
-        String enabledStr = System.getProperty("load.balancer.cep.stats.publisher.enabled");
-        if(StringUtils.isNotBlank(enabledStr)) {
-            enabled = Boolean.getBoolean(enabledStr);
-        }
+        enabled = Boolean.getBoolean("load.balancer.cep.stats.publisher.enabled");
+
         if(enabled) {
             init();
         }
@@ -102,6 +101,9 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
             Object[] payload = new Object[]{entry.getKey(), entry.getValue()};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Publishing statistics event: [stream] %s [version] %s [payload] %s", CALL_CENTER_DATA_STREAM, VERSION, Arrays.toString(payload)));
+                }
                 asyncDataPublisher.publish(CALL_CENTER_DATA_STREAM, VERSION, event);
             } catch (AgentException e) {
                 log.error("Failed to publish events. ", e);
