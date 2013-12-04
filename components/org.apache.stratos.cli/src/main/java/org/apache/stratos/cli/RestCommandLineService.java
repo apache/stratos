@@ -62,7 +62,23 @@ public class RestCommandLineService {
                 System.out.println("Object is null");
             }
 
+            CartridgeList multiTelentCartridgeList = new CartridgeList();
+            CartridgeList singleTeneCartridgetList = new CartridgeList();
 
+            ArrayList<Cartridge> multiTenetCartridge = new ArrayList<Cartridge>();
+            ArrayList<Cartridge> singleTentCartridge = new ArrayList<Cartridge>();
+
+            for (Cartridge cartridge : cartridgeList.getCartridge()) {
+                if (cartridge.isMultiTenant()) {
+                    multiTenetCartridge.add(cartridge);
+                }
+                else {
+                    singleTentCartridge.add(cartridge);
+                }
+            }
+
+            multiTelentCartridgeList.setCartridge(multiTenetCartridge);
+            singleTeneCartridgetList.setCartridge(singleTentCartridge);
 
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
@@ -76,10 +92,35 @@ public class RestCommandLineService {
                 }
             };
 
-            Cartridge[] cartridges = new Cartridge[cartridgeList.getCartridge().size()];
-            cartridges = cartridgeList.getCartridge().toArray(cartridges);
+            if (multiTenetCartridge.size() == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No multi-tenant cartridges available");
+                }
+                System.out.println("There are no multi-tenant cartridges available");
+            }
+            else {
+                Cartridge[] cartridges = new Cartridge[multiTelentCartridgeList.getCartridge().size()];
+                cartridges = multiTelentCartridgeList.getCartridge().toArray(cartridges);
 
-            CommandLineUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Version");
+                System.out.println("Available Multi-Tenant Cartridges:");
+                CommandLineUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Version");
+                System.out.println();
+            }
+
+            if (singleTentCartridge.size() == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No single-tenant cartridges available");
+                }
+                System.out.println("There are no single-tenant cartridges available");
+            }
+            else {
+                Cartridge[] cartridges1 = new Cartridge[singleTeneCartridgetList.getCartridge().size()];
+                cartridges1 = singleTeneCartridgetList.getCartridge().toArray(cartridges1   );
+
+                System.out.println("Available Single-Tenant Cartridges:");
+                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name", "Version");
+                System.out.println();
+            }
 
         } catch (Exception e) {
                 e.printStackTrace();
