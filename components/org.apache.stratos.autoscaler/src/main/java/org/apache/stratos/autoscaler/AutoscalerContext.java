@@ -14,7 +14,7 @@ public class AutoscalerContext {
         clusterContextMap = new HashMap<String, ClusterContext>();
     }
 
-    public static synchronized AutoscalerContext getInstance() {
+    public static AutoscalerContext getInstance() {
         if (instance == null) {
             synchronized (AutoscalerContext.class){
                 if (instance == null) {
