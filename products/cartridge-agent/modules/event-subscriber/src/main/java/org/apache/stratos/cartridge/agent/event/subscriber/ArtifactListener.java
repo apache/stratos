@@ -19,9 +19,6 @@
 
 package org.apache.stratos.cartridge.agent.event.subscriber;
 
-import java.io.File;
-import java.util.Scanner;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -32,10 +29,12 @@ import javax.jms.TextMessage;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.deployment.synchronizer.ArtifactRepository;
 import org.apache.stratos.deployment.synchronizer.RepositoryInformation;
 import org.apache.stratos.deployment.synchronizer.git.impl.GitBasedArtifactRepository;
+import org.apache.stratos.messaging.broker.publish.TopicPublisher;
 import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
+import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
+import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
 
@@ -57,8 +56,8 @@ public class ArtifactListener implements MessageListener{
 		}
 		
 		ArtifactUpdatedEvent event = (ArtifactUpdatedEvent) Util.jsonToObject(json, ArtifactUpdatedEvent.class);
-		String clusterIdInPayload = readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID);
-		String localRepoPath = readParamValueFromPayload(CartridgeAgentConstants.APP_PATH);
+		String clusterIdInPayload = LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID);
+		String localRepoPath = LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.APP_PATH);
 		String clusterIdInMessage = event.getClusterId();		
 		String repoURL = event.getRepoURL();
 		String repoPassword = decryptPassword(event.getRepoPassword());
@@ -74,44 +73,30 @@ public class ArtifactListener implements MessageListener{
 	    	repoInformation.setRepoPassword(repoPassword);
 	    	repoInformation.setRepoUrl(repoURL);
 	    	repoInformation.setRepoPath(localRepoPath);
-	    	repoInformation.setTenantId(tenantId);    	
-	    	GitBasedArtifactRepository.checkout(repoInformation);			
+	    	repoInformation.setTenantId(tenantId);
+	    	boolean cloneExists = GitBasedArtifactRepository.cloneExists(repoInformation);
+	    	GitBasedArtifactRepository.checkout(repoInformation);	    	
+	    	if(!cloneExists){	    		
+	    		// send member activated event
+	    		log.info("Sending member activated event");
+	    		// Send member activated event
+	    		MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent();
+	    		memberActivatedEvent.setServiceName(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME));
+	    		memberActivatedEvent.setClusterId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID));
+	    		memberActivatedEvent.setMemberId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
+	    		TopicPublisher publisher = new TopicPublisher(Constants.INSTANCE_STATUS_TOPIC);
+	    		publisher.publish(memberActivatedEvent);
+	    		log.info("Member activated event is sent");
+	    	}	
 		}
 		
 	}
-
 	
-	private String readParamValueFromPayload(String param) {
-		String paramValue = null;
-		// read launch params
-		File file = new File(System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH));
-
-		try {
-			Scanner scanner = new Scanner(file);
-
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				String[] params = line.split(",");
-				for (String string : params) {
-					 String[] var = string.split("=");
-					if(param.equals(var[0])){
-						paramValue = var[1];
-					}
-				}
-			}
-			scanner.close();
-		} catch (Exception e) {
-			//e.printStackTrace();
-			log.error("Exception is occurred in reading file. ", e);
-		}
-		
-		return paramValue;
-	}
 	
 	private String decryptPassword(String repoUserPassword) {
 		
 		String decryptPassword = "";
-		String secret = readParamValueFromPayload(CartridgeAgentConstants.CARTRIDGE_KEY); 
+		String secret = LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CARTRIDGE_KEY); 
 		SecretKey key;
 		Cipher cipher;
 		Base64 coder;

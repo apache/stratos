@@ -29,5 +29,8 @@ public class CartridgeAgentConstants implements Serializable{
 	public static final String CARTRIDGE_KEY = "CARTRIDGE_KEY";
 	public static final String CLUSTER_ID = "CLUSTER_ID";
 	public static final String APP_PATH = "APP_PATH";
+	public static final String SERVICE_NAME = "SERVICE_NAME";
+	public static final String MEMBER_ID = "MEMBER_ID";
+	
 	
 }

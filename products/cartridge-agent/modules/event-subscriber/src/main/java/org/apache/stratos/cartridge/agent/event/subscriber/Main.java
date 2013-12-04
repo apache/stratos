@@ -25,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.publish.TopicPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
@@ -46,7 +48,25 @@ public class Main {
         TopicSubscriber subscriber = new TopicSubscriber(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC);
         subscriber.setMessageListener(new ArtifactListener());
         Thread tsubscriber = new Thread(subscriber);
-		tsubscriber.start(); 
+		tsubscriber.start(); 		
+		
+		// 
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		log.info("Sending member started event");
+		// Send member activated event
+		MemberStartedEvent event = new MemberStartedEvent();
+		event.setServiceName(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME));
+		event.setClusterId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID));
+		event.setMemberId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
+		TopicPublisher publisher = new TopicPublisher(Constants.INSTANCE_STATUS_TOPIC);
+		publisher.publish(event);
+		log.info("Member started event is sent");		
+
 		
 		// Start periodical file checker task
 		// TODO -- start this thread only if this node configured as a commit true node
