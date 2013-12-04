@@ -108,6 +108,8 @@ public class LoadBalancerServiceComponent {
             // Configure synapse settings
             LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
             SynapseConfigurator.configure(configuration);
+            // Configure cep settings
+            CEPConfigurator.configure(configuration);
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Configure jndi.properties
@@ -143,11 +145,6 @@ public class LoadBalancerServiceComponent {
                         log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
                     }
                 }
-            }
-
-            if(configuration.isCepStatsPublisherEnabled()) {
-                // Configure cep related settings
-                CEPConfigurator.configure(configuration);
             }
 
             activated = true;

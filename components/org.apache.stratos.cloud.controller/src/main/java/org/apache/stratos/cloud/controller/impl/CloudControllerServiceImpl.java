@@ -23,8 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.InvalidCartridgeDefinitionException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
@@ -33,6 +35,7 @@ import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
@@ -276,6 +279,57 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 	}
 
+    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, InvalidIaasProviderException {
+
+        if (cartridgeConfig == null) {
+            String msg = "Invalid Cartridge Definition: Definition is null.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+
+        }
+
+        Cartridge cartridge = null;
+        try {
+            cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
+        } catch (Exception e) {
+            String msg =
+                         "Invalid Cartridge Definition: Cartridge Type: " +
+                                 cartridgeConfig.getType();
+            log.error(msg, e);
+            throw new InvalidCartridgeDefinitionException(msg, e);
+        }
+
+        for (IaasProvider iaasProvider : cartridge.getIaases()) {
+            try {
+                Iaas iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
+                iaas.buildComputeServiceAndTemplate(iaasProvider);
+                iaasProvider.setIaas(iaas);
+
+            } catch (Exception e) {
+                String msg =
+                             "Unable to build the jclouds object for iaas " + "of type: " +
+                                     iaasProvider.getType();
+                log.error(msg, e);
+                throw new InvalidIaasProviderException(msg, e);
+            }
+        }
+        
+        // TODO transaction begins
+        dataHolder.addCartridge(cartridge);
+
+        List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+        cartridgeList.add(cartridge);
+
+        TopologyBuilder.handleServiceCreated(cartridgeList);
+        // transaction ends
+        
+        log.info("Successfully deployed the Cartridge definition: " + cartridge.getType());
+    }
+
+    public void undeployCartridgeDefinition(String cartridgeType) {
+
+    }
+    
     @Override
     public MemberContext startInstance(MemberContext member) throws IllegalArgumentException,
         UnregisteredCartridgeException {
@@ -875,47 +929,47 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	}
 
-	/**
-	 * Comparator to compare {@link IaasProvider} on different attributes.
-	 */
-	public enum IaasProviderComparator implements Comparator<IaasProvider> {
-		SCALE_UP_SORT {
-			public int compare(IaasProvider o1, IaasProvider o2) {
-				return Integer.valueOf(o1.getScaleUpOrder()).compareTo(
-						o2.getScaleUpOrder());
-			}
-		},
-		SCALE_DOWN_SORT {
-			public int compare(IaasProvider o1, IaasProvider o2) {
-				return Integer.valueOf(o1.getScaleDownOrder()).compareTo(
-						o2.getScaleDownOrder());
-			}
-		};
-
-		public static Comparator<IaasProvider> ascending(
-				final Comparator<IaasProvider> other) {
-			return new Comparator<IaasProvider>() {
-				public int compare(IaasProvider o1, IaasProvider o2) {
-					return other.compare(o1, o2);
-				}
-			};
-		}
-
-		public static Comparator<IaasProvider> getComparator(
-				final IaasProviderComparator... multipleOptions) {
-			return new Comparator<IaasProvider>() {
-				public int compare(IaasProvider o1, IaasProvider o2) {
-					for (IaasProviderComparator option : multipleOptions) {
-						int result = option.compare(o1, o2);
-						if (result != 0) {
-							return result;
-						}
-					}
-					return 0;
-				}
-			};
-		}
-	}
+//	/**
+//	 * Comparator to compare {@link IaasProvider} on different attributes.
+//	 */
+//	public enum IaasProviderComparator implements Comparator<IaasProvider> {
+//		SCALE_UP_SORT {
+//			public int compare(IaasProvider o1, IaasProvider o2) {
+//				return Integer.valueOf(o1.getScaleUpOrder()).compareTo(
+//						o2.getScaleUpOrder());
+//			}
+//		},
+//		SCALE_DOWN_SORT {
+//			public int compare(IaasProvider o1, IaasProvider o2) {
+//				return Integer.valueOf(o1.getScaleDownOrder()).compareTo(
+//						o2.getScaleDownOrder());
+//			}
+//		};
+//
+//		public static Comparator<IaasProvider> ascending(
+//				final Comparator<IaasProvider> other) {
+//			return new Comparator<IaasProvider>() {
+//				public int compare(IaasProvider o1, IaasProvider o2) {
+//					return other.compare(o1, o2);
+//				}
+//			};
+//		}
+//
+//		public static Comparator<IaasProvider> getComparator(
+//				final IaasProviderComparator... multipleOptions) {
+//			return new Comparator<IaasProvider>() {
+//				public int compare(IaasProvider o1, IaasProvider o2) {
+//					for (IaasProviderComparator option : multipleOptions) {
+//						int result = option.compare(o1, o2);
+//						if (result != 0) {
+//							return result;
+//						}
+//					}
+//					return 0;
+//				}
+//			};
+//		}
+//	}
 
 	@Override
 	public boolean registerService(Registrant registrant)

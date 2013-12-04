@@ -109,6 +109,12 @@ public class Cartridge implements Serializable{
     public IaasProvider getIaasProviderOfPartition(String partitionId) {
         return partitionToIaasProvider.get(partitionId);
     }
+    
+    public void addProperty(String key, String val) {
+        if (key != null && val != null) {
+            properties.put(key, val);
+        }
+    }
 
     public Map<String, String> getProperties() {
         return properties;

@@ -411,6 +411,27 @@ public class GitBasedArtifactRepository /*implements ArtifactRepository*/ {
 
         return pullArtifacts(gitRepoCtx);
     }
+    
+    
+    
+    public static boolean cloneExists(RepositoryInformation repositoryInformation) {
+    	
+    	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
+    	
+    	// if context for tenant is not initialized
+    	if(tenantToRepoContextMap.get(tenantId) == null)
+	    	initGitContext(repositoryInformation);
+    	
+        
+		RepositoryContext gitRepoCtx = retrieveCachedGitContext(tenantId);
+        if(gitRepoCtx == null) { 
+            return false;
+        }
+
+        /*if(gitRepoCtx.getTenantId() == GitDeploymentSynchronizerConstants.SUPER_TENANT_ID)
+            return true;  */
+        return gitRepoCtx.cloneExists();
+    }
 
     /**
      * Pulling if any updates are available in the remote git repository. If basic authentication is required,

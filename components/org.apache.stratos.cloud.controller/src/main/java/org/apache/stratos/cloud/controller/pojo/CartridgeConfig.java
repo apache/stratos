@@ -27,6 +27,8 @@ import java.io.Serializable;
  */
 public class CartridgeConfig implements Serializable {
 
+    private static final long serialVersionUID = 3455721779991902731L;
+
     private String type;
 
     private String hostName;

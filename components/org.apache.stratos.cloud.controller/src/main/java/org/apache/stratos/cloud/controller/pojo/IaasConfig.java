@@ -27,14 +27,76 @@ import java.io.Serializable;
  */
 public class IaasConfig implements Serializable {
 
-    private String type;
 
+    private static final long serialVersionUID = 3329046207651171707L;
+
+    private String type;
+   
+    private String className;
+   
+    private String name;
+   
+    private String provider, identity, credential;
+   
     private String imageId;
 
     private int maxInstanceLimit;
 
     private Properties properties;
+    
+    private byte[] payload;
 
+    public String getClassName() {
+        return className;
+    }
+    
+    public void setClassName(String className) {
+        this.className = className;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getProvider() {
+        return provider;
+    }
+    
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+    
+    public String getIdentity() {
+        return identity;
+    }
+    
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+    
+    public String getCredential() {
+        return credential;
+    }
+    
+    public void setCredential(String credential) {
+        this.credential = credential;
+    }
+    
+    public byte[] getPayload() {
+        return payload;
+    }
+    
+    public void setPayload(byte[] payload) {
+        this.payload = payload;
+    }
+    
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
     public String getType() {
         return type;
