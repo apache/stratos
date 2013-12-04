@@ -24,12 +24,18 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.AppType;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.IaasConfig;
+import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,9 +44,104 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+
 public class CloudControllerUtil {
 	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
 
+    @SuppressWarnings("unchecked")
+    public static Cartridge toCartridge(CartridgeConfig config) {
+        if (config == null) {
+            return null;
+        }
+        Cartridge cartridge = new Cartridge();
+        cartridge.setType(config.getType());
+        cartridge.setDisplayName(config.getDisplayName());
+        cartridge.setDescription(config.getDescription());
+        cartridge.setHostName(config.getHostName());
+        cartridge.setDeploymentDirs(Arrays.asList(config.getDeploymentDirs()));
+        cartridge.setProvider(config.getProvider());
+        cartridge.setVersion(config.getVersion());
+        cartridge.setBaseDir(config.getBaseDir());
+        cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
+        cartridge.setMultiTenant(config.isMultiTenant());
+
+        org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
+        if (props != null) {
+            for (Property prop : props.getProperties()) {
+                cartridge.addProperty(prop.getName(), prop.getValue());
+            }
+        }
+
+        List<IaasProvider> iaases = FasterLookUpDataHolder.getInstance().getIaasProviders();
+
+        IaasConfig[] iaasConfigs = config.getIaasConfigs();
+        if (iaasConfigs != null) {
+            for (IaasConfig iaasConfig : iaasConfigs) {
+                if (iaasConfig != null) {
+                    IaasProvider iaasProvider = null;
+                    if (iaases != null) {
+                        // check whether this is a reference to a predefined IaaS.
+                        for (IaasProvider iaas : iaases) {
+                            if (iaas.getType().equals(iaasConfig.getType())) {
+                                iaasProvider = new IaasProvider(iaas);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (iaasProvider == null) {
+                        iaasProvider = new IaasProvider();
+                        iaasProvider.setType(iaasConfig.getType());
+                    }
+
+                    String className = iaasConfig.getClassName();
+                    if (className != null) {
+                        iaasProvider.setClassName(className);
+                    }
+
+                    String name = iaasConfig.getName();
+                    if (name != null) {
+                        iaasProvider.setName(name);
+                    }
+
+                    String identity = iaasConfig.getIdentity();
+                    if (identity != null) {
+                        iaasProvider.setIdentity(identity);
+                    }
+
+                    String credential = iaasConfig.getCredential();
+                    if (credential != null) {
+                        iaasProvider.setCredential(credential);
+                    }
+
+                    String provider = iaasConfig.getProvider();
+                    if (provider != null) {
+                        iaasProvider.setProvider(provider);
+                    }
+                    String imageId = iaasConfig.getImageId();
+                    if (imageId != null) {
+                        iaasProvider.setImage(imageId);
+                    }
+                    
+                    byte[] payload = iaasConfig.getPayload();
+                    if (payload != null) {
+                        iaasProvider.setPayload(payload);
+                    }
+
+                    org.apache.stratos.cloud.controller.pojo.Properties props1 =
+                                                                                 config.getProperties();
+                    if (props1 != null) {
+                        for (Property prop : props1.getProperties()) {
+                            iaasProvider.addProperty(prop.getName(), prop.getValue());
+                        }
+                    }
+                }
+            }
+        }
+
+        return cartridge;
+    }
+	  
     public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
 
 		CartridgeInfo carInfo = new CartridgeInfo();

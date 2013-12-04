@@ -19,12 +19,15 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.exception.InvalidCartridgeDefinitionException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
+import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
@@ -35,6 +38,11 @@ import org.apache.stratos.cloud.controller.pojo.Registrant;
  * 
  */
 public interface CloudControllerService {
+    
+    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) 
+            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
+    
+    public void undeployCartridgeDefinition(String cartridgeType);
 
     /**
      * Validate a given {@link Partition} for basic property existence.
