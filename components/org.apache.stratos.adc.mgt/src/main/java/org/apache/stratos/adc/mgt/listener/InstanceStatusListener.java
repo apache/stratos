@@ -33,34 +33,40 @@ import org.apache.stratos.messaging.util.Util;
 
 public class InstanceStatusListener implements MessageListener {
 
-	private static final Log log = LogFactory
-			.getLog(InstanceStatusListener.class);
+    private static final Log log = LogFactory
+            .getLog(InstanceStatusListener.class);
 
-	@Override
-	public void onMessage(Message message) {
-		TextMessage receivedMessage = (TextMessage) message;
-		String clusterId = null;
+    @Override
+    public void onMessage(Message message) {
+        TextMessage receivedMessage = (TextMessage) message;
+        if(log.isInfoEnabled()) {
+            log.info("Instance status message received");
+        }
 
-		log.info(" --- instance status message received --- ");
-		try {
-			String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
-			// If member started event is received publish artifact update message
-			// To do a git clone
-			if (MemberStartedEvent.class.getName().equals(type)) {
-				String json = receivedMessage.getText();
-				MemberStartedEvent event = (MemberStartedEvent) Util
-						.jsonToObject(json, MemberStartedEvent.class);
-				clusterId = event.getClusterId();
-				log.info("--- cluster id is --- : " + clusterId);
-				
-				CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);				
-				new ArtifactUpdatePublisher(subscription.getRepository(),
-						clusterId,
-						String.valueOf(subscription.getTenantId())).publish();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Event class name: %s ", type));
+            }
+            // If member started event is received publish artifact update message
+            // To do a git clone
+            if (MemberStartedEvent.class.getName().equals(type)) {
+                String json = receivedMessage.getText();
+                MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(json, MemberStartedEvent.class);
+                String clusterId = event.getClusterId();
+                if(log.isInfoEnabled()) {
+                    log.info("Cluster id: " + clusterId);
+                }
+
+                CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
+                ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
+                publisher.publish();
+            }
+        } catch (Exception e) {
+            if(log.isErrorEnabled()) {
+                log.error("Could not process instance status message", e);
+            }
+        }
+    }
 
 }
