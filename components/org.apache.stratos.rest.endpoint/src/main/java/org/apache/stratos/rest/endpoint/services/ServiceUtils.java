@@ -35,11 +35,13 @@ import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.rest.endpoint.service.client.AutoscalerServiceClient;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.util.ArrayList;
@@ -176,6 +178,22 @@ public class ServiceUtils {
         return properties;
     }
 
+    private static List<PropertyBean> getPropertyBeans (Properties properties) {
+
+        List<PropertyBean> propertyBeans = null;
+        if(properties.getProperties() != null && properties.getProperties().length != 0) {
+            Property [] propertyArr = properties.getProperties();
+            propertyBeans = new ArrayList<PropertyBean>();
+            for (int i = 0; i < propertyArr.length ; i++) {
+                PropertyBean propertyBean = new PropertyBean();
+                propertyBean.name = propertyArr[i].getName();
+                propertyBean.value = propertyArr[i].getValue();
+                propertyBeans.add(propertyBean);
+            }
+        }
+        return propertyBeans;
+    }
+
     static void undeployCartridge (String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
@@ -201,17 +219,61 @@ public class ServiceUtils {
         return null;
     }
 
-    /*private static CartridgeMgtServiceClient getCartridgeMgtServiceClient () {
+    public static Partition[] getAvailablePartitions () throws RestAPIException {
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+                partitions = autoscalerServiceClient.getAvailablePartitions();
+
+            } catch (Exception e) {
+                String errorMsg = "Error getting available partitions";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg, e);
+            }
+        }
+
+        return populatePartitionPojo(partitions);
+    }
+
+    private static AutoscalerServiceClient getAutoscalerServiceClient () {
 
         try {
-            return CartridgeMgtServiceClient.getServiceClient();
+            return AutoscalerServiceClient.getServiceClient();
 
         } catch (AxisFault axisFault) {
-            String errorMsg = "Error in getting CartridgeMgtServiceClient instance";
+            String errorMsg = "Error in getting AutoscalerServiceClient instance";
             log.error(errorMsg, axisFault);
         }
         return null;
-    }*/
+    }
+
+    private static Partition[] populatePartitionPojo (org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+                                                       partitions) {
+
+        Partition [] partitionBeans;
+        if(partitions == null) {
+            partitionBeans = new Partition[0];
+            return partitionBeans;
+        }
+
+        partitionBeans = new Partition[partitions.length];
+        for (int i = 0 ; i < partitions.length ; i++) {
+            Partition partition = new Partition();
+            partition.id = partitions[i].getId();
+            partition.provider = partitions[i].getProvider();
+            partition.partitionMin = partitions[i].getPartitionMin();
+            partition.partitionMax = partitions[i].getPartitionMax();
+            //properties are not added currently, TODO if required
+            //if(partitions[i].getProperties() != null) {
+            //    List<PropertyBean> propertyBeans = getPropertyBeans(partitions[i].getProperties());
+            //    partition.property = propertyBeans;
+            //}
+            partitionBeans[i] = partition;
+        }
+        return partitionBeans;
+    }
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
