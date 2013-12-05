@@ -60,12 +60,6 @@ public class IaasProvider implements Serializable{
      */
     private String image;
     
-
-    /**
-     * Scale up order and scale down order of the IaaS.
-     */
-    private int scaleUpOrder = -1, scaleDownOrder = -1;
-    
     private String provider, identity, credential;
     
     private transient ComputeService computeService;
@@ -87,15 +81,13 @@ public class IaasProvider implements Serializable{
     	this.className = anIaasProvider.getClassName();
     	this.properties = anIaasProvider.getProperties();
     	this.image = anIaasProvider.getImage();
-    	this.scaleUpOrder = anIaasProvider.getScaleUpOrder();
-    	this.scaleDownOrder = anIaasProvider.getScaleDownOrder();
     	this.provider = anIaasProvider.getProvider();
     	this.identity = anIaasProvider.getIdentity();
     	this.credential = anIaasProvider.getCredential();
     	this.computeService = anIaasProvider.getComputeService();
     	this.template = anIaasProvider.getTemplate();
-    	this.payload = anIaasProvider.getPayload();
     	this.iaas = anIaasProvider.getIaas();
+    	this.payload = anIaasProvider.getPayload();
     }
     
     public String getType() {
@@ -112,6 +104,12 @@ public class IaasProvider implements Serializable{
 
     public Map<String, String> getProperties() {
         return properties;
+    }
+    
+    public void addProperty(String key, String val) {
+        if (key != null && val != null) {
+            properties.put(key, val);
+        }
     }
     
     public void setProperty(String key, String value) {
@@ -131,22 +129,6 @@ public class IaasProvider implements Serializable{
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public int getScaleUpOrder() {
-        return scaleUpOrder;
-    }
-
-    public void setScaleUpOrder(int scaleUpOrder) {
-        this.scaleUpOrder = scaleUpOrder;
-    }
-
-    public int getScaleDownOrder() {
-        return scaleDownOrder;
-    }
-
-    public void setScaleDownOrder(int scaleDownOrder) {
-        this.scaleDownOrder = scaleDownOrder;
     }
 
     public String getName() {
@@ -225,14 +207,6 @@ public class IaasProvider implements Serializable{
         this.className = className;
     }
 
-    public byte [] getPayload() {
-        return payload;
-    }
-
-    public void setPayload(byte[]payload) {
-        this.payload = payload;
-    }
-
     public Iaas getIaas() {
         return iaas;
     }
@@ -245,6 +219,14 @@ public class IaasProvider implements Serializable{
 //    	nodeIds = new ArrayList<String>();
 //    	nodes = new HashMap<String, NodeMetadata>();
 //    	toBeRemovedNodeIds = new ArrayList<String>();
+    }
+
+    public byte[] getPayload() {
+        return payload;
+    }
+
+    public void setPayload(byte[] payload) {
+        this.payload = payload;
     }
 
 }

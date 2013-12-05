@@ -31,6 +31,8 @@ import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
@@ -51,7 +53,28 @@ import java.util.List;
 public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
 
+    @POST
+    @Path("/cartridge/definition/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
+            throws RestAPIException {
 
+        ServiceUtils.deployCartridge(cartridgeDefinitionBean);
+    }
+
+    @DELETE
+    @Path("/cartridge/definition/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public void unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+
+        ServiceUtils.undeployCartridge(cartridgeType);
+    }
 
     @GET
     @Path("/cartridge/tenanted/list")
@@ -173,7 +196,6 @@ public class StratosAdmin extends AbstractAdmin {
 
         return TenantMgtUtil.prepareStringToShowThemeMgtPage(tenant.getId());
     }
-
 
 
     @PUT
