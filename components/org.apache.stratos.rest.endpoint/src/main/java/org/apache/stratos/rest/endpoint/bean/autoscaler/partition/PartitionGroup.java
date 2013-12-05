@@ -17,14 +17,18 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.policy;
+package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
-public class AutoscalePolicy {
+public class PartitionGroup {
 
     public String id;
-    public String displayName;
-    public String description;
+
+    public String partitionAlgo;
+
+    //partition Ids
+    public List<String> partition;
 }

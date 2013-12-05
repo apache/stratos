@@ -36,7 +36,9 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
@@ -286,7 +288,7 @@ public class ServiceUtils {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partitions";
+                String errorMsg = "Error getting available autoscaling policies";
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg, e);
             }
@@ -314,6 +316,78 @@ public class ServiceUtils {
             autoscalePolicyBeans[i] = autoscalePolicy;
         }
         return autoscalePolicyBeans;
+    }
+
+
+    public static DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
+
+        org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy [] deploymentPolicies = null;
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+                deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
+
+            } catch (Exception e) {
+                String errorMsg = "Error getting available deployment policies";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg, e);
+            }
+        }
+
+        return populateDeploymentPolicyPojo(deploymentPolicies);
+    }
+
+    private static DeploymentPolicy[] populateDeploymentPolicyPojo (org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy []
+                                                                            deploymentPolicies) {
+        DeploymentPolicy[] deploymentPolicyBeans;
+        if(deploymentPolicies == null) {
+            deploymentPolicyBeans = new DeploymentPolicy[0];
+            return deploymentPolicyBeans;
+        }
+
+        deploymentPolicyBeans = new DeploymentPolicy[deploymentPolicies.length];
+        for (int i = 0 ; i < deploymentPolicies.length ; i++) {
+            DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
+            deploymentPolicy.id = deploymentPolicies[i].getId();
+
+            //if(deploymentPolicies[i].getPartitionGroups() != null &&
+            //        deploymentPolicies[i].getPartitionGroups().length > 0) {
+            //    deploymentPolicy.partitionGroup = getPartitionGroups(deploymentPolicies[i].getPartitionGroups());
+            //}
+
+            deploymentPolicyBeans[i] = deploymentPolicy;
+        }
+
+        return deploymentPolicyBeans;
+    }
+
+    private static List<PartitionGroup> getPartitionGroups (org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] partitionGroups) {
+
+        List<PartitionGroup> partitionGroupList = new ArrayList<PartitionGroup>();
+        for (int i = 0 ; i < partitionGroups.length ; i ++) {
+            PartitionGroup partitionGroup = new PartitionGroup();
+            partitionGroup.id = partitionGroups[i].getId();
+            partitionGroup.partitionAlgo = partitionGroups[i].getPartitionAlgo();
+
+            if(partitionGroups[i].getPartitions() != null && partitionGroups[i].getPartitions().length > 0){
+                partitionGroup.partition = getPartitionIdsList(partitionGroups[i].getPartitions());
+            }
+
+            partitionGroupList.add(partitionGroup);
+        }
+
+        return partitionGroupList;
+    }
+
+    private static List<String> getPartitionIdsList(org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+                                                            partitions) {
+
+        ArrayList<String> partitionIdList = new ArrayList<String>();
+        for (int i = 0 ; i < partitions.length ; i++) {
+            partitionIdList.add(partitions[i].getId());
+        }
+
+        return partitionIdList;
     }
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {

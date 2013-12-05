@@ -92,4 +92,20 @@ public class AutoscalerServiceClient {
 
         return autoscalePolicies;
     }
+
+    public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy [] getDeploymentPolicies()
+            throws Exception {
+
+        org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy[] deploymentPolicies;
+        try {
+            deploymentPolicies = stub.getAllDeploymentPolicies();
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available deployment policies";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return deploymentPolicies;
+    }
 }
