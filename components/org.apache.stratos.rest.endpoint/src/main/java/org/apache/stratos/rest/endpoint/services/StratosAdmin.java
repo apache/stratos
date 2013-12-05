@@ -57,6 +57,17 @@ public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
 
     @POST
+    @Path("/init")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public void initialize ()
+            throws RestAPIException {
+
+        //login
+    }
+
+    @POST
     @Path("/cartridge/definition/")
     @Produces("application/json")
     @Consumes("application/json")
