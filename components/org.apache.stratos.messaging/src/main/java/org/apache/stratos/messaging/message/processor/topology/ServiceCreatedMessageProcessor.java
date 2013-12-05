@@ -27,9 +27,9 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceCreatedEventProcessor extends MessageProcessor {
+public class ServiceCreatedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(ServiceCreatedEventProcessor.class);
+    private static final Log log = LogFactory.getLog(ServiceCreatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -39,26 +39,32 @@ public class ServiceCreatedEventProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology)object;
+        Topology topology = (Topology) object;
 
         if (ServiceCreatedEvent.class.getName().equals(type)) {
+            // Return if topology has not been initialized
+            if (!topology.isInitialized())
+                return false;
+
             // Parse complete message and build event
             ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
 
             // Apply service filter
-            if(ServiceFilter.getInstance().isActive()) {
-                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+            if (ServiceFilter.getInstance().isActive()) {
+                if (ServiceFilter.getInstance().excluded(event.getServiceName())) {
                     // Service is excluded, do not update topology or fire event
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
                     }
-                    return true;
+                    return false;
                 }
             }
 
             // Validate event against the existing topology
             if (topology.serviceExists(event.getServiceName())) {
-                throw new RuntimeException(String.format("Service already created: [service] %s", event.getServiceName()));
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Service already created: [service] %s", event.getServiceName()));
+                }
             }
 
             // Apply changes to the topology

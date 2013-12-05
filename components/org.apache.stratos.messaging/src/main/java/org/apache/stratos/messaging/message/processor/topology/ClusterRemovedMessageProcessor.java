@@ -18,18 +18,20 @@
  */
 package org.apache.stratos.messaging.message.processor.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
-public class ServiceRemovedEventProcessor extends MessageProcessor {
+public class ClusterRemovedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(ServiceRemovedEventProcessor.class);
+    private static final Log log = LogFactory.getLog(ClusterRemovedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -39,35 +41,66 @@ public class ServiceRemovedEventProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology)object;
+        Topology topology = (Topology) object;
 
-        if (ServiceRemovedEvent.class.getName().equals(type)) {
+        if (ClusterRemovedEvent.class.getName().equals(type)) {
+            // Return if topology has not been initialized
+            if (!topology.isInitialized())
+                return false;
+
             // Parse complete message and build event
-            ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
+            ClusterRemovedEvent event = (ClusterRemovedEvent) Util.jsonToObject(message, ClusterRemovedEvent.class);
 
             // Apply service filter
-            if(ServiceFilter.getInstance().isActive()) {
-                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+            if (ServiceFilter.getInstance().isActive()) {
+                if (ServiceFilter.getInstance().excluded(event.getServiceName())) {
                     // Service is excluded, do not update topology or fire event
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
                     }
-                    return true;
+                    return false;
                 }
             }
 
+            // Apply cluster filter
+            if (ClusterFilter.getInstance().isActive()) {
+                if (ClusterFilter.getInstance().excluded(event.getClusterId())) {
+                    // Cluster is excluded, do not update topology or fire event
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
+                    }
+                    return false;
+                }
+            }
+
+            // Validate event properties
+            if (StringUtils.isBlank(event.getHostName())) {
+                throw new RuntimeException("Hostname not found in cluster removed event");
+            }
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service does not exist: [service] %s",
-                        event.getServiceName()));
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Service does not exist: [service] %s", event.getServiceName()));
+                }
+                return false;
+            }
+            if (!service.clusterExists(event.getClusterId())) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s [hostname] %s",
+                            event.getServiceName(),
+                            event.getClusterId(),
+                            event.getHostName()));
+                }
+                return false;
             }
 
             // Apply changes to the topology
-            topology.removeService(service);
+            service.removeCluster(event.getClusterId());
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Service removed: [service] %s", event.getServiceName()));
+                log.info(String.format("Cluster removed from service: [service] %s [cluster] %s",
+                        event.getServiceName(), event.getClusterId()));
             }
 
             // Notify event listeners

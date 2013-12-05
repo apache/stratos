@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.topology.TopologyReceiver;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.processor.topology.TopologyEventProcessorChain;
+import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -74,9 +74,8 @@ public class LoadBalancerExtension implements Runnable {
     }
 
     private TopologyEventMessageDelegator createMessageDelegator() {
-        TopologyEventProcessorChain processorChain = createEventProcessorChain();
-        final TopologyEventMessageDelegator messageDelegator = new TopologyEventMessageDelegator(processorChain);
-        messageDelegator.addCompleteTopologyEventListener(new CompleteTopologyEventListener() {
+        TopologyMessageProcessorChain processorChain = createEventProcessorChain();
+        processorChain.addEventListener(new CompleteTopologyEventListener() {
 
             @Override
             protected void onEvent(Event event) {
@@ -87,10 +86,6 @@ public class LoadBalancerExtension implements Runnable {
                     // Start load balancer
                     loadBalancer.start();
                     loadBalancerStarted = true;
-
-                    // Complete topology event is only received once
-                    // Remove event listener
-                    messageDelegator.removeCompleteTopologyEventListener(this);
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
                         log.error("Could not start load balancer", e);
@@ -99,11 +94,11 @@ public class LoadBalancerExtension implements Runnable {
                 }
             }
         });
-        return messageDelegator;
+        return new TopologyEventMessageDelegator(processorChain);
     }
 
-    private TopologyEventProcessorChain createEventProcessorChain() {
-        TopologyEventProcessorChain processorChain = new TopologyEventProcessorChain();
+    private TopologyMessageProcessorChain createEventProcessorChain() {
+        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
         processorChain.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {

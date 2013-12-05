@@ -29,9 +29,9 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
-public class CompleteTopologyEventProcessor extends MessageProcessor {
+public class CompleteTopologyMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(CompleteTopologyEventProcessor.class);
+    private static final Log log = LogFactory.getLog(CompleteTopologyMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -44,6 +44,11 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
         Topology topology = (Topology) object;
 
         if (CompleteTopologyEvent.class.getName().equals(type)) {
+            // Return if topology has already initialized
+            if (topology.isInitialized()) {
+                return false;
+            }
+
             // Parse complete message and build event
             CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
 
@@ -53,9 +58,8 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
                 for (Service service : event.getTopology().getServices()) {
                     if (ServiceFilter.getInstance().included(service.getServiceName())) {
                         topology.addService(service);
-                    }
-                    else {
-                        if(log.isDebugEnabled()) {
+                    } else {
+                        if (log.isDebugEnabled()) {
                             log.debug(String.format("Service is excluded: [service] %s", service.getServiceName()));
                         }
                     }
@@ -71,7 +75,7 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
                     for (Cluster cluster : service.getClusters()) {
                         if (ClusterFilter.getInstance().excluded(cluster.getClusterId())) {
                             service.removeCluster(cluster.getClusterId());
-                            if(log.isDebugEnabled()) {
+                            if (log.isDebugEnabled()) {
                                 log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));
                             }
                         }
@@ -82,6 +86,9 @@ public class CompleteTopologyEventProcessor extends MessageProcessor {
             if (log.isInfoEnabled()) {
                 log.info("Topology initialized");
             }
+
+            // Set topology initialized
+            topology.setInitialized(true);
 
             // Notify event listeners
             notifyEventListeners(event);

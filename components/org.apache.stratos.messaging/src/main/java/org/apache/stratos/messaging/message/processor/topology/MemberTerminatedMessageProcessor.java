@@ -25,15 +25,15 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
-public class MemberActivatedEventProcessor extends MessageProcessor {
+public class MemberTerminatedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(MemberActivatedEventProcessor.class);
+    private static final Log log = LogFactory.getLog(MemberTerminatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -43,85 +43,87 @@ public class MemberActivatedEventProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology)object;
+        Topology topology = (Topology) object;
 
-        if (MemberActivatedEvent.class.getName().equals(type)) {
+        if (MemberTerminatedEvent.class.getName().equals(type)) {
+            // Return if topology has not been initialized
+            if (!topology.isInitialized())
+                return false;
+
             // Parse complete message and build event
-            MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
+            MemberTerminatedEvent event = (MemberTerminatedEvent) Util.jsonToObject(message, MemberTerminatedEvent.class);
 
             // Apply service filter
-            if(ServiceFilter.getInstance().isActive()) {
-                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+            if (ServiceFilter.getInstance().isActive()) {
+                if (ServiceFilter.getInstance().excluded(event.getServiceName())) {
                     // Service is excluded, do not update topology or fire event
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
                     }
-                    return true;
+                    return false;
                 }
             }
 
             // Apply cluster filter
-            if(ClusterFilter.getInstance().isActive()) {
-                if(ClusterFilter.getInstance().excluded(event.getClusterId())) {
+            if (ClusterFilter.getInstance().isActive()) {
+                if (ClusterFilter.getInstance().excluded(event.getClusterId())) {
                     // Cluster is excluded, do not update topology or fire event
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
                     }
-                    return true;
+                    return false;
                 }
             }
 
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service does not exist: [service] %s", event.getServiceName()));
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Service does not exist: [service] %s", event.getServiceName()));
+                }
+                return false;
             }
             Cluster cluster = service.getCluster(event.getClusterId());
             if (cluster == null) {
-                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
-                        event.getServiceName(), event.getClusterId()));
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                            event.getServiceName(), event.getClusterId()));
+                }
+                return false;
             }
             Member member = cluster.getMember(event.getMemberId());
             if (member == null) {
-                throw new RuntimeException(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
+                            event.getServiceName(),
+                            event.getClusterId(),
+                            event.getMemberId()));
+                }
+                return false;
             }
-            if (member.getStatus() == MemberStatus.Activated) {
-                throw new RuntimeException(String.format("Member already activated: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
-            if((event.getMemberIp() == null) || event.getMemberIp().isEmpty()) {
-                throw new RuntimeException(String.format("No ip address found in member activated event: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
-            if ((event.getPorts() == null) || (event.getPorts().size() == 0)) {
-                throw new RuntimeException(String.format("No ports found in member activated event: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
+            if (member.getStatus() == MemberStatus.Terminated) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Member already terminated: [service] %s [cluster] %s [member] %s",
+                            event.getServiceName(),
+                            event.getClusterId(),
+                            event.getMemberId()));
+                }
+                return false;
             }
 
             // Apply changes to the topology
-            member.addPorts(event.getPorts());
-            member.setMemberIp(event.getMemberIp());
-            member.setStatus(MemberStatus.Activated);
+            member.setStatus(MemberStatus.Terminated);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member activated: [service] %s [cluster] %s [member] %s",
+                log.info(String.format("Member terminated: [service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId()));
             }
 
-            // Notify event listeners
             notifyEventListeners(event);
             return true;
+
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.

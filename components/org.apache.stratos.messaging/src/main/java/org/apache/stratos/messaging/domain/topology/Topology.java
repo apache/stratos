@@ -31,6 +31,7 @@ public class Topology implements Serializable {
     private static final long serialVersionUID = -2453583548027402122L;
     // Key: Service.serviceName
     private Map<String, Service> serviceMap;
+    private boolean initialized;
 
     public Topology() {
         this.serviceMap = new HashMap<String, Service>();
@@ -68,5 +69,13 @@ public class Topology implements Serializable {
 
     public void clear() {
         this.serviceMap.clear();
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }

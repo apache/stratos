@@ -31,7 +31,7 @@ import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListe
 import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ServiceRemovedEventListener;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.message.processor.topology.TopologyEventProcessorChain;
+import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -67,9 +67,8 @@ public class LoadBalancerTopologyReceiver implements Runnable {
     }
 
     private TopologyEventMessageDelegator createMessageDelegator() {
-        TopologyEventProcessorChain processorChain = createEventProcessorChain();
-        final TopologyEventMessageDelegator messageDelegator = new TopologyEventMessageDelegator(processorChain);
-        messageDelegator.addCompleteTopologyEventListener(new CompleteTopologyEventListener() {
+        TopologyMessageProcessorChain processorChain = createEventProcessorChain();
+        processorChain.addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -85,8 +84,6 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                 finally {
                     TopologyManager.releaseReadLock();
                 }
-                // Complete topology is only consumed once, remove listener
-                messageDelegator.removeCompleteTopologyEventListener(this);
             }
 
             private boolean hasActiveMembers(Cluster cluster) {
@@ -98,12 +95,12 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                 return false;
             }
         });
-        return messageDelegator;
+        return new TopologyEventMessageDelegator(processorChain);
     }
 
-    private TopologyEventProcessorChain createEventProcessorChain() {
+    private TopologyMessageProcessorChain createEventProcessorChain() {
         // Listen to topology events that affect clusters
-        TopologyEventProcessorChain processorChain = new TopologyEventProcessorChain();
+        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
         processorChain.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
