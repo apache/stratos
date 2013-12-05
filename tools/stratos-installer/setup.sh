@@ -33,11 +33,11 @@ export LOG=$log_path/stratos-setup.log
 
 mb="false"
 cc="false"
-elb="false"
+lb="false"
 agent="false"
 sc="false"
 cep="false"
-product_list="mb;cc;cep;elb;agent;sc"
+product_list="mb;cc;cep;lb;agent;sc"
 enable_internal_git=false
 
 function help {
@@ -51,7 +51,7 @@ function help {
     echo ""
     echo "-u: <host username> The login user of the host."
     echo "-p: <product list> Apache Stratos products to be installed on this node. Provide one or more names of the servers."
-    echo "    The available servers are cc, elb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
+    echo "    The available servers are cc, lb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
     echo "-g: <enable_internal_git> true|false Whether enable internal git repo for Stratos2. Default is false"
     echo ""
 }
@@ -86,8 +86,8 @@ do
     if [[ $x = "cep" ]]; then
         cep="true"
     fi
-    if [[ $x = "elb" ]]; then
-        elb="true"
+    if [[ $x = "lb" ]]; then
+        lb="true"
     fi
     if [[ $x = "agent" ]]; then
         agent="true"
@@ -98,7 +98,7 @@ do
     if [[ $x = "all" ]]; then
         mb="true"
         cc="true"
-        elb="true"
+        lb="true"
         agent="true"
         sc="true"
     fi
@@ -167,8 +167,8 @@ function setup_validate {
     if [[ -z $bam_hostname ]]; then
         bam_hostname=$hostname
     fi
-    if [[ -z $elb_hostname ]]; then
-        elb_hostname=$hostname
+    if [[ -z $lb_hostname ]]; then
+        lb_hostname=$hostname
     fi
     if [[ -z $cep_hostname ]]; then
         cep_hostname=$hostname
@@ -193,14 +193,6 @@ function setup_validate {
     if [[ ( -z $cep_ip ) ]]; then
         cep_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
         if [[ ( -z cep_ip ) ]]; then
-            helpsetup
-            exit 1
-        fi
-    fi
-
-    if [[ ( -z $elb_ip ) ]]; then
-        elb_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
-        if [[ ( -z elb_ip ) ]]; then
             helpsetup
             exit 1
         fi
@@ -258,8 +250,8 @@ function setup_validate {
         fi
     fi
 
-    if [[ $elb = "true" ]]; then
-        if [[ ( -z $hostname || -z $elb_path ) ]]; then
+    if [[ $lb = "true" ]]; then
+        if [[ ( -z $hostname || -z $lb_path ) ]]; then
             helpsetup
             exit 1
         fi
@@ -337,9 +329,9 @@ if [[ $sc = "true" ]]; then
         unzip $sc_pack -d $stratos_path
     fi
 fi
-if [[ $elb = "true" ]]; then
-    if [[ ! -d $elb_path ]]; then
-        unzip $elb_pack -d $stratos_path
+if [[ $lb = "true" ]]; then
+    if [[ ! -d $lb_path ]]; then
+        unzip $lb_pack -d $stratos_path
     fi
 fi
 if [[ $cc = "true" ]]; then
@@ -624,50 +616,33 @@ if [[ $cc = "true" ]]; then
 fi
 
 
-# Setup ELB
-# -------------------------------------------------------------    
-if [[ $elb = "true" ]]; then
-    echo "Setup ELB" >> $LOG
-    echo "Configuring the ELB"
-    #cp -f ./config/elb/bin/stratos.sh $elb_path/bin/
-    cp -f ./config/elb/repository/conf/loadbalancer.conf $elb_path/repository/conf/
-    cp -f ./config/elb/repository/conf/axis2/axis2.xml $elb_path/repository/conf/axis2/
-    cp -f ./config/elb/repository/conf/datasources/master-datasources.xml $elb_path/repository/conf/datasources/
-    cp -f $mysql_connector_jar $elb_path/repository/components/lib/
+# ------------------------------------------------
+# Setup LB
+# ------------------------------------------------    
+if [[ $lb = "true" ]]; then
+    echo "Setup LB" >> $LOG
+    echo "Configuring the Load Balancer"
 
-    pushd $elb_path
-    #If autoscaling enabled
-    echo "Set CC host and port in repository/conf/loadbalancer.conf" >> $LOG
-    # autoscaler_service_epr  https://CC_HOSTNAME:CC_PORT/services/CloudControllerService;
+    cp -f ./config/lb/repository/conf/loadbalancer.conf $lb_path/repository/conf/
+    cp -f ./config/lb/repository/conf/axis2/axis2.xml $lb_path/repository/conf/axis2/
+
+    pushd $lb_path
+
+    echo "In repository/conf/loadbalancer.conf" >> $LOG
     cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@CC_HOSTNAME:CC_PORT@$cc_hostname:$cc_https_port@g" > repository/conf/loadbalancer.conf
+    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_IP@$mb_ip@g" > repository/conf/loadbalancer.conf
 
     cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@ENABLE_AUTOSCALER@$enable_autoscaler@g" > repository/conf/loadbalancer.conf
+    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_LISTEN_PORT@$mb_listen_port@g" > repository/conf/loadbalancer.conf
     
     cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@ENABLE_EMBEDDED_AUTOSCALER@$enable_embedded_autoscaler@g" > repository/conf/loadbalancer.conf
+    cat repository/conf/loadbalancer.conf.orig | sed -e "s@CEP_IP@$cep_ip@g" > repository/conf/loadbalancer.conf
 
     cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/loadbalancer.conf
+    cat repository/conf/loadbalancer.conf.orig | sed -e "s@CEP_LISTEN_PORT@$cep_listen_port@g" > repository/conf/loadbalancer.conf
 
-    echo "Set hostname of the machine where elb run, in repository/conf/axis2/axis2.xml" >> $LOG
-    #<!--parameter name="localMemberHost">ELB_HOSTNAME</parameter-->
-    cp -f repository/conf/axis2/axis2.xml repository/conf/axis2/axis2.xml.orig
-    cat repository/conf/axis2/axis2.xml.orig | sed -e "s@ELB_HOSTNAME@$elb_hostname@g" > repository/conf/axis2/axis2.xml
-
-
-    echo "Set hostname of the machine where elb run, in repository/conf/etc/jmx.xml" >> $LOG
-    cp -f repository/conf/etc/jmx.xml repository/conf/etc/jmx.xml.orig
-    cat repository/conf/etc/jmx.xml.orig | sed -e "s@ELB_HOSTNAME@$elb_hostname@g" > repository/conf/etc/jmx.xml
-
-
-    echo "Change mysql password in repository/conf/datasources/master-datasources.xml" >> $LOG
-    cp -f ./repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
-    cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@USERSTORE_DB_HOSTNAME@$userstore_db_hostname@g" | sed -e "s@USERSTORE_DB_PORT@$userstore_db_port@g"| sed -e "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g"|sed -e "s@USERSTORE_DB_USER@$userstore_db_user@g" |sed -e "s@USERSTORE_DB_PASS@$userstore_db_pass@g" > repository/conf/datasources/master-datasources.xml
-
-    popd #elb_path
-    echo "End configuring the ELB"
+    popd #lb_path
+    echo "End configuring the Load Balancer"
 fi
 
 

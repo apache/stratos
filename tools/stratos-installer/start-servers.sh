@@ -70,8 +70,8 @@ do
     if [[ $x = "cc" ]]; then
         cc="true"
     fi
-    if [[ $x = "elb" ]]; then
-        elb="true"
+    if [[ $x = "lb" ]]; then
+        lb="true"
     fi
     if [[ $x = "agent" ]]; then
         agent="true"
@@ -82,7 +82,7 @@ do
     if [[ $x = "all" ]]; then
 	mb="true"
         cc="true"
-        elb="true"
+        lb="true"
         agent="true"
         sc="true"
         cep="true"
@@ -90,7 +90,7 @@ do
     if [[ $x = "demo" ]]; then
         demo="true"
         cc="true"
-        elb="true"
+        lb="true"
         agent="true"
         sc="true"
 	bam="true"
@@ -132,12 +132,12 @@ if [[ $cc = "true" ]]; then
     sleep $SLEEP
 fi
 
-if [[ $elb = "true" ]]; then
-    echo ${elb_path} 
+if [[ $lb = "true" ]]; then
+    echo ${lb_path} 
 
-    echo "Starting ELB server ..." >> $LOG
-    nohup ${elb_path}/bin/stratos.sh -DportOffset=$elb_port_offset &
-    echo "ELB server started" >> $LOG
+    echo "Starting LB server ..." >> $LOG
+    nohup ${lb_path}/bin/stratos.sh &
+    echo "LB server started" >> $LOG
     sleep $SLEEP
 fi
 
