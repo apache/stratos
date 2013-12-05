@@ -22,13 +22,11 @@ package org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AutoscalePolicy {
+public class LoadThresholds {
 
-    public String id;
+    public RequestsInFlight requestsInFlight;
 
-    public String displayName;
+    public MemoryConsumption memoryConsumption;
 
-    public String description;
-
-    public LoadThresholds loadThresholds;
+    public LoadAverage loadAverage;
 }

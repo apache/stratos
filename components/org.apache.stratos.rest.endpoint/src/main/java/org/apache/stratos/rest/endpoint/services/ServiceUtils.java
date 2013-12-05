@@ -37,7 +37,7 @@ import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
@@ -312,12 +312,53 @@ public class ServiceUtils {
             autoscalePolicy.id = autoscalePolicies[i].getId();
             autoscalePolicy.displayName = autoscalePolicies[i].getDisplayName();
             autoscalePolicy.description = autoscalePolicies[i].getDescription();
-            //other information are not added. TODO add if required
+            if(autoscalePolicies[i].getLoadThresholds() != null) {
+                autoscalePolicy.loadThresholds = populateLoadThresholds(autoscalePolicies[i].getLoadThresholds());
+            }
             autoscalePolicyBeans[i] = autoscalePolicy;
         }
         return autoscalePolicyBeans;
     }
 
+    private static LoadThresholds populateLoadThresholds (org.apache.stratos.autoscaler.policy.model.LoadThresholds
+                                                          loadThresholds) {
+
+        LoadThresholds loadThresholdBean = new LoadThresholds();
+        if(loadThresholds.getLoadAverage() != null) {
+            LoadAverage loadAverage = new LoadAverage();
+            loadAverage.average = loadThresholds.getLoadAverage().getAverage();
+            loadAverage.gradient = loadThresholds.getLoadAverage().getGradient();
+            loadAverage.scaleDownMarginOfGradient = loadThresholds.getLoadAverage().getScaleDownMarginOfGradient();
+            loadAverage.scaleDownMarginOfSecondDerivative = loadThresholds.getLoadAverage().
+                    getScaleDownMarginOfSecondDerivative();
+            loadAverage.secondDerivative = loadThresholds.getLoadAverage().getSecondDerivative();
+            loadThresholdBean.loadAverage = loadAverage;
+        }
+        if(loadThresholds.getMemoryConsumption() != null) {
+            MemoryConsumption memoryConsumption = new MemoryConsumption();
+            memoryConsumption.average = loadThresholds.getMemoryConsumption().getAverage();
+            memoryConsumption.gradient = loadThresholds.getMemoryConsumption().getGradient();
+            memoryConsumption.scaleDownMarginOfGradient = loadThresholds.getMemoryConsumption().
+                    getScaleDownMarginOfGradient();
+            memoryConsumption.scaleDownMarginOfSecondDerivative = loadThresholds.getMemoryConsumption().
+                    getScaleDownMarginOfSecondDerivative();
+            memoryConsumption.secondDerivative = loadThresholds.getMemoryConsumption().getSecondDerivative();
+            loadThresholdBean.memoryConsumption = memoryConsumption;
+        }
+        if(loadThresholds.getRequestsInFlight() != null) {
+            RequestsInFlight requestsInFlight = new RequestsInFlight();
+            requestsInFlight.average = loadThresholds.getRequestsInFlight().getAverage();
+            requestsInFlight.gradient = loadThresholds.getRequestsInFlight().getGradient();
+            requestsInFlight.scaleDownMarginOfGradient = loadThresholds.getRequestsInFlight().
+                    getScaleDownMarginOfGradient();
+            requestsInFlight.scaleDownMarginOfSecondDerivative = loadThresholds.getRequestsInFlight().
+                    getScaleDownMarginOfSecondDerivative();
+            requestsInFlight.secondDerivative = loadThresholds.getRequestsInFlight().getSecondDerivative();
+            loadThresholdBean.requestsInFlight = requestsInFlight;
+        }
+
+        return loadThresholdBean;
+    }
 
     public static DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
 

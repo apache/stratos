@@ -22,13 +22,15 @@ package org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AutoscalePolicy {
+public class MemoryConsumption {
 
-    public String id;
+    public float average;
 
-    public String displayName;
+    public float secondDerivative;
 
-    public String description;
+    public float gradient;
 
-    public LoadThresholds loadThresholds;
+    public float scaleDownMarginOfGradient;
+
+    public float scaleDownMarginOfSecondDerivative;
 }
