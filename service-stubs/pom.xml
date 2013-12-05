@@ -57,7 +57,6 @@
         <module>org.apache.stratos.usage.meteringqueryds.stub</module>
         <module>org.apache.stratos.manager.dashboard.stub</module>
         <module>org.apache.stratos.usage.meteringsummarygenerationds.stub</module>
-	<module>org.apache.stratos.cartridge.mgt.service.stub</module>
     </modules>
 
     <build>
