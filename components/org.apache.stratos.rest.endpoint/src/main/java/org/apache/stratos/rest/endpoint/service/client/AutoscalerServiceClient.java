@@ -76,4 +76,20 @@ public class AutoscalerServiceClient {
 
         return partitions;
     }
+
+    public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] getAutoScalePolicies ()
+            throws Exception {
+
+        org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] autoscalePolicies;
+        try {
+            autoscalePolicies = stub.getAllAutoScalingPolicy();
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return autoscalePolicies;
+    }
 }

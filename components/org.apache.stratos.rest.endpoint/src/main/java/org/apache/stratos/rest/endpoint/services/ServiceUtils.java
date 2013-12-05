@@ -36,6 +36,7 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
@@ -273,6 +274,46 @@ public class ServiceUtils {
             partitionBeans[i] = partition;
         }
         return partitionBeans;
+    }
+
+
+    public static AutoscalePolicy[] getAutoScalePolicies () throws RestAPIException {
+
+        org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] autoscalePolicies = null;
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+                autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
+
+            } catch (Exception e) {
+                String errorMsg = "Error getting available partitions";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg, e);
+            }
+        }
+
+        return populateAutoscalePojo(autoscalePolicies);
+    }
+
+    private static AutoscalePolicy[] populateAutoscalePojo(org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[]
+                                                                   autoscalePolicies) {
+
+        AutoscalePolicy [] autoscalePolicyBeans;
+        if(autoscalePolicies == null) {
+            autoscalePolicyBeans = new AutoscalePolicy[0];
+            return autoscalePolicyBeans;
+        }
+
+        autoscalePolicyBeans = new AutoscalePolicy[autoscalePolicies.length];
+        for (int i = 0 ; i < autoscalePolicies.length ; i++) {
+            AutoscalePolicy autoscalePolicy = new AutoscalePolicy();
+            autoscalePolicy.id = autoscalePolicies[i].getId();
+            autoscalePolicy.displayName = autoscalePolicies[i].getDisplayName();
+            autoscalePolicy.description = autoscalePolicies[i].getDescription();
+            //other information are not added. TODO add if required
+            autoscalePolicyBeans[i] = autoscalePolicy;
+        }
+        return autoscalePolicyBeans;
     }
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {

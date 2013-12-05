@@ -32,6 +32,7 @@ import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
@@ -85,6 +86,16 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition[] getPartitions () throws RestAPIException {
 
         return ServiceUtils.getAvailablePartitions();
+    }
+
+    @GET
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public AutoscalePolicy[] getAutoscalePolicies () throws RestAPIException {
+
+        return ServiceUtils.getAutoScalePolicies();
     }
 
     @GET
