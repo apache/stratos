@@ -39,7 +39,7 @@ public class LoadBalancerExtension implements Runnable {
     private LoadBalancerStatsReader statsReader;
     private boolean loadBalancerStarted;
     private TopologyReceiver topologyReceiver;
-    private LoadBalancerStatsNotifier statsNotifier;
+    private LoadBalancerInFlightRequestCountNotifier statsNotifier;
     private boolean terminated;
 
     public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatsReader statsReader) {
@@ -60,7 +60,7 @@ public class LoadBalancerExtension implements Runnable {
             topologyReceiverThread.start();
 
             // Start stats notifier thread
-            statsNotifier = new LoadBalancerStatsNotifier(statsReader);
+            statsNotifier = new LoadBalancerInFlightRequestCountNotifier(statsReader);
             Thread statsNotifierThread = new Thread(statsNotifier);
             statsNotifierThread.start();
 

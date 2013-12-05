@@ -38,8 +38,8 @@ public interface LoadBalancerStatsPublisher {
     boolean isEnabled();
 
     /**
-     * Publish statistics as a map of Cluster Id, In-flight Request Count.
-     * @param stats
+     * Payload to be published.
+     * @param payload An array of parameter values.
      */
-    void publish(Map<String, Integer> stats);
+    void publish(Object[] payload);
 }
