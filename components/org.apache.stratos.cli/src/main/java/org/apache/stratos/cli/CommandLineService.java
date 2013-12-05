@@ -166,13 +166,16 @@ public class CommandLineService {
 
 	public void listSubscribedCartridges(final boolean full) throws CommandException {
 		try {
+            RestCommandLineService restService = new RestCommandLineService();
+            restService.listSubscribedCartridges(false);
+
 			Cartridge[] cartridges = stub.getSubscribedCartridges();
 
 			if (cartridges == null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("No subscribed cartridges found");
 				}
-				System.out.println("There are no subscribed cartridges");
+				//System.out.println("There are no subscribed cartridges");
 				return;
 			}
 
@@ -209,10 +212,10 @@ public class CommandLineService {
 				headers.add("Repo URL");
 			}
 
-			System.out.println("Subscribed Cartridges:");
-			CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+			//System.out.println("Subscribed Cartridges:");
+			//CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
 
-			System.out.println();
+			//System.out.println();
 
 		} catch (ApplicationManagementServiceADCExceptionException e) {
 			handleException("cannot.list.subscribed.cartridges", e);

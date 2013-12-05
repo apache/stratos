@@ -24,6 +24,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
@@ -76,7 +77,8 @@ public class ListCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
-			CommandLineService.getInstance().listSubscribedCartridges(false);
+            RestCommandLineService.getInstance().listSubscribedCartridges(false);
+			//CommandLineService.getInstance().listSubscribedCartridges(false);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else if (args != null && args.length > 0) {
 			String[] remainingArgs = null;
@@ -100,7 +102,8 @@ public class ListCommand implements Command<StratosCommandContext> {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Listing subscribed cartridges, Full Option: {}", full);
 				}
-				CommandLineService.getInstance().listSubscribedCartridges(full);
+                RestCommandLineService.getInstance().listSubscribedCartridges(full);
+				//CommandLineService.getInstance().listSubscribedCartridges(full);
 				return CliConstants.SUCCESSFUL_CODE;
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {

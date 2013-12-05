@@ -31,6 +31,16 @@ import org.apache.http.entity.StringEntity;
 
 public class RestClient implements GenericRestClient{
 
+    private String url;
+    private String username;
+    private String password;
+
+    RestClient(String url, String username, String password) {
+        this.setUrl(url);
+        this.setUsername(username);
+        this.setPassword(password);
+    }
+
     public String doPost(String resourcePath, String jsonParamString, String userName, String passWord) {
         try {
 
@@ -56,13 +66,15 @@ public class RestClient implements GenericRestClient{
             BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
 
             String output;
+            String result = "";
             System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
+                //System.out.println(output);
+                result += output;
             }
 
             httpClient.getConnectionManager().shutdown();
-            return output;
+            return result;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -117,5 +129,29 @@ public class RestClient implements GenericRestClient{
 
     public void doPut() {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

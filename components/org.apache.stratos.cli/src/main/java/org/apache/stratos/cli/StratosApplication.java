@@ -321,7 +321,8 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		stratosURL = context.getString(CliConstants.STRATOS_URL_ENV_PROPERTY);
 
 		try {
-			success = CommandLineService.getInstance().login(stratosURL, usernameInput, passwordInput, validateLogin);
+            success = RestCommandLineService.getInstance().login(stratosURL, usernameInput, passwordInput, validateLogin);
+			//success = CommandLineService.getInstance().login(stratosURL, usernameInput, passwordInput, validateLogin);
 		} catch (Exception e) {
 			if (logger.isErrorEnabled()) {
 				logger.error("Error when trying to login", e);
