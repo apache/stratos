@@ -18,18 +18,21 @@
  */
 package org.apache.stratos.messaging.message.processor.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.topology.InstanceSpawnedEvent;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
-public class InstanceSpawnedEventProcessor extends MessageProcessor {
+public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(InstanceSpawnedEventProcessor.class);
+    private static final Log log = LogFactory.getLog(ClusterCreatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -39,68 +42,74 @@ public class InstanceSpawnedEventProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology)object;
+        Topology topology = (Topology) object;
 
-        if (InstanceSpawnedEvent.class.getName().equals(type)) {
+        if (ClusterCreatedEvent.class.getName().equals(type)) {
+            // Return if topology has not been initialized
+            if (!topology.isInitialized())
+                return false;
+
             // Parse complete message and build event
-            InstanceSpawnedEvent event = (InstanceSpawnedEvent) Util.jsonToObject(message, InstanceSpawnedEvent.class);
+            ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
 
             // Apply service filter
-            if(ServiceFilter.getInstance().isActive()) {
-                if(ServiceFilter.getInstance().excluded(event.getServiceName())) {
+            if (ServiceFilter.getInstance().isActive()) {
+                if (ServiceFilter.getInstance().excluded(event.getServiceName())) {
                     // Service is excluded, do not update topology or fire event
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
                     }
-                    return true;
+                    return false;
                 }
             }
 
             // Apply cluster filter
-            if(ClusterFilter.getInstance().isActive()) {
-                if(ClusterFilter.getInstance().excluded(event.getClusterId())) {
+            if (ClusterFilter.getInstance().isActive()) {
+                if (ClusterFilter.getInstance().excluded(event.getClusterId())) {
                     // Cluster is excluded, do not update topology or fire event
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
                     }
-                    return true;
+                    return false;
                 }
             }
 
+            // Validate event properties
+            if (StringUtils.isBlank(event.getHostName())) {
+                throw new RuntimeException("Hostname not found in cluster created event");
+            }
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
-                throw new RuntimeException(String.format("Service does not exist: [service] %s",
-                        event.getServiceName()));
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Service does not exist: [service] %s",
+                            event.getServiceName()));
+                }
+                return false;
             }
-            Cluster cluster = service.getCluster(event.getClusterId());
-            if (cluster == null) {
-                throw new RuntimeException(String.format("Cluster does not exist: [service] %s [cluster] %s",
-                        event.getServiceName(), event.getClusterId()));
-            }
-            if (cluster.memberExists(event.getMemberId())) {
-                throw new RuntimeException(String.format("Member already exists: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
+            if (service.clusterExists(event.getClusterId())) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Cluster already exists in service: [service] %s [cluster] %s", event.getServiceName(),
+                            event.getClusterId()));
+                }
+                return false;
             }
 
             // Apply changes to the topology
-            Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId());
-            member.setStatus(MemberStatus.Created);
-            member.setPartitionId(event.getPartitionId());
-            cluster.addMember(member);
+            Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(), event.getAutoscalingPolicyName());
+            cluster.addHostName(event.getHostName());
+            cluster.setTenantRange(event.getTenantRange());
 
+            service.addCluster(cluster);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member created: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
+                log.info(String.format("Cluster created: [service] %s [cluster] %s [hostname] %s",
+                        event.getServiceName(), event.getClusterId(), event.getHostName()));
             }
 
             // Notify event listeners
             notifyEventListeners(event);
             return true;
+
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.

@@ -21,29 +21,25 @@ package org.apache.stratos.load.balancer.extension.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatsPublisher;
-import org.apache.stratos.load.balancer.common.statistics.WSO2CEPStatsPublisher;
+import org.apache.stratos.load.balancer.common.statistics.WSO2CEPInFlightRequestPublisher;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Load balancer statistics notifier thread for publishing statistics periodically to CEP.
  */
-public class LoadBalancerStatsNotifier implements Runnable {
-    private static final Log log = LogFactory.getLog(LoadBalancerStatsNotifier.class);
+public class LoadBalancerInFlightRequestCountNotifier implements Runnable {
+    private static final Log log = LogFactory.getLog(LoadBalancerInFlightRequestCountNotifier.class);
 
     private LoadBalancerStatsReader statsReader;
-    private final LoadBalancerStatsPublisher statsPublisher;
+    private final WSO2CEPInFlightRequestPublisher statsPublisher;
     private long statsPublisherInterval = 15000;
     private boolean terminated;
 
-    public LoadBalancerStatsNotifier(LoadBalancerStatsReader statsReader) {
+    public LoadBalancerInFlightRequestCountNotifier(LoadBalancerStatsReader statsReader) {
         this.statsReader = statsReader;
-        this.statsPublisher = new WSO2CEPStatsPublisher();
+        this.statsPublisher = new WSO2CEPInFlightRequestPublisher();
 
         String interval = System.getProperty("stats.notifier.interval");
         if (interval != null) {
@@ -59,23 +55,19 @@ public class LoadBalancerStatsNotifier implements Runnable {
                     Thread.sleep(statsPublisherInterval);
                 } catch (InterruptedException ignore) {
                 }
-                Map<String, Integer> stats = new HashMap<String, Integer>();
-                for (Service service : TopologyManager.getTopology().getServices()) {
-                    for (Cluster cluster : service.getClusters()) {
-                        stats.put(cluster.getClusterId(), statsReader.getInFlightRequestCount(cluster.getClusterId()));
+
+                if (statsPublisher.isEnabled()) {
+                    for (Service service : TopologyManager.getTopology().getServices()) {
+                        for (Cluster cluster : service.getClusters()) {
+                            statsPublisher.publish(cluster.getClusterId(), statsReader.getInFlightRequestCount(cluster.getClusterId()));
+                        }
                     }
-                }
-                if (stats.size() > 0) {
-                    if(statsPublisher.isEnabled()) {
-                        statsPublisher.publish(stats);
-                    }
-                    else if (log.isWarnEnabled()) {
-                        log.warn("Load balancer statistics publisher is disabled");
-                    }
+                } else if (log.isWarnEnabled()) {
+                    log.warn("CEP statistics publisher is disabled");
                 }
             } catch (Exception e) {
                 if (log.isErrorEnabled()) {
-                    log.error("Could not publish load balancer stats", e);
+                    log.error("Could not publish in-flight request count", e);
                 }
             }
         }

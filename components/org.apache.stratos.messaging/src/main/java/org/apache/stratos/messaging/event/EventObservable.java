@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.event;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 
 import java.util.Observable;
@@ -28,15 +30,23 @@ import java.util.Observable;
  */
 public abstract class EventObservable extends Observable {
 
+    private static final Log log = LogFactory.getLog(EventObservable.class);
+
     public void addEventListener(EventListener eventListener) {
         addObserver(eventListener);
     }
 
     public void removeEventListener(EventListener eventListener) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Removing event listeners: [event-listener] %s", eventListener.getClass().getName()));
+        }
         deleteObserver(eventListener);
     }
 
     public void notifyEventListeners(Event event) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Notifying event listeners: [event] %s", event.getClass().getName()));
+        }
         setChanged();
         notifyObservers(event);
     }

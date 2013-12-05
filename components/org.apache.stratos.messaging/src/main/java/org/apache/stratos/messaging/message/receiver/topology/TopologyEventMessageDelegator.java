@@ -22,7 +22,6 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.topology.*;
 import org.apache.stratos.messaging.util.Constants;
@@ -31,59 +30,26 @@ import org.apache.stratos.messaging.util.Constants;
 /**
  * Implements logic for processing topology event messages based on a given
  * topology process chain.
- *
- * Functionality:
- * - Wait for the complete topology event.
- * - Process messages using the given message processor chain.
  */
 public class TopologyEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
-    private CompleteTopologyEventProcessor completeTopEvMsgProcessor;
     private MessageProcessorChain processorChain;
     private boolean terminated;
 
     public TopologyEventMessageDelegator() {
-        this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
-        this.processorChain = new TopologyEventProcessorChain();
+        this.processorChain = new TopologyMessageProcessorChain();
     }
 
     public TopologyEventMessageDelegator(MessageProcessorChain processorChain) {
-        this.completeTopEvMsgProcessor = new CompleteTopologyEventProcessor();
         this.processorChain = processorChain;
-    }
-
-    public void addCompleteTopologyEventListener(CompleteTopologyEventListener eventListener) {
-        completeTopEvMsgProcessor.addEventListener(eventListener);
-    }
-
-    public void removeCompleteTopologyEventListener(CompleteTopologyEventListener eventListener) {
-        completeTopEvMsgProcessor.removeEventListener(eventListener);
     }
 
     @Override
     public void run() {
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Topology event message delegator started");
-                log.info("Waiting for the complete topology event message...");
-            }
-            while (!terminated) {
-                try {
-                    // First take the complete topology event
-                    TextMessage message = TopologyEventQueue.getInstance().take();
-                    // Retrieve the header
-                    String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
-                    // Retrieve the actual message
-                    String json = message.getText();
-
-                    if (completeTopEvMsgProcessor.process(type, json, TopologyManager.getTopology())) {
-                        break;
-                    }
-
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to retrieve the complete topology", e);
-                }
             }
 
             while (!terminated) {
@@ -92,6 +58,7 @@ public class TopologyEventMessageDelegator implements Runnable {
 
                     // Retrieve the header
                     String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
+
                     // Retrieve the actual message
                     String json = message.getText();
 
@@ -101,20 +68,20 @@ public class TopologyEventMessageDelegator implements Runnable {
 
                     try {
                         TopologyManager.acquireWriteLock();
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Delegating : %s", type));
+                        }
                         processorChain.process(type, json, TopologyManager.getTopology());
                     } finally {
                         TopologyManager.releaseWriteLock();
                     }
 
                 } catch (Exception e) {
-                    String error = "Failed to retrieve topology event message";
-                    log.error(error, e);
-                    throw new RuntimeException(error, e);
+                    log.error("Failed to retrieve topology event message", e);
                 }
             }
-        }
-        catch (Exception e) {
-            if(log.isErrorEnabled()) {
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
                 log.error("Topology event message delegator failed", e);
             }
         }

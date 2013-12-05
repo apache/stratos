@@ -17,29 +17,23 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.messaging.message.processor.tenant;
 
-import java.util.Map;
+import org.apache.stratos.messaging.message.processor.MessageProcessor;
 
 /**
- * Load balancer statistics publisher interface.
+ * Tenant removed message processor for triggering tenant removed event
+ * listener when a tenant removed event message is received.
  */
-public interface LoadBalancerStatsPublisher {
+public class TenantRemovedMessageProcessor extends MessageProcessor {
 
-    /**
-     * Set statistics publisher enabled or disabled.
-     * @param enabled
-     */
-    void setEnabled(boolean enabled);
+    @Override
+    public void setNext(MessageProcessor nextProcessor) {
 
-    /**
-     * Return enabled state of the statistics publisher.
-     */
-    boolean isEnabled();
+    }
 
-    /**
-     * Payload to be published.
-     * @param payload An array of parameter values.
-     */
-    void publish(Object[] payload);
+    @Override
+    public boolean process(String type, String message, Object object) {
+        return false;
+    }
 }

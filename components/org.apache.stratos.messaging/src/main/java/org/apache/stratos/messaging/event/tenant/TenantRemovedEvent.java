@@ -17,29 +17,23 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.messaging.event.tenant;
 
-import java.util.Map;
+import java.io.Serializable;
 
 /**
- * Load balancer statistics publisher interface.
+ * This event is fired when a tenant is removed.
  */
-public interface LoadBalancerStatsPublisher {
+public class TenantRemovedEvent extends TenantEvent implements Serializable {
+    private static final long serialVersionUID = -5759024961420183959L;
 
-    /**
-     * Set statistics publisher enabled or disabled.
-     * @param enabled
-     */
-    void setEnabled(boolean enabled);
+    private int tenantId;
 
-    /**
-     * Return enabled state of the statistics publisher.
-     */
-    boolean isEnabled();
+    public TenantRemovedEvent(int tenantId) {
+        this.tenantId = tenantId;
+    }
 
-    /**
-     * Payload to be published.
-     * @param payload An array of parameter values.
-     */
-    void publish(Object[] payload);
+    public int getTenantId() {
+        return tenantId;
+    }
 }

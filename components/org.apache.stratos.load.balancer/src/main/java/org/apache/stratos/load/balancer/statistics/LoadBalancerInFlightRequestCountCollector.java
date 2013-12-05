@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPStatsObserver;
+import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPInFlightRequestCountObserver;
 
 /**
  * This is the load balancing stats collector and any observer can get registered here 
@@ -34,14 +34,14 @@ import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPStatsObserve
  * @author nirmal
  *
  */
-public class LoadBalancerStatsCollector extends Observable{
-    private static final Log log = LogFactory.getLog(LoadBalancerStatsCollector.class);
+public class LoadBalancerInFlightRequestCountCollector extends Observable{
+    private static final Log log = LogFactory.getLog(LoadBalancerInFlightRequestCountCollector.class);
 
-	private static LoadBalancerStatsCollector collector;
+	private static LoadBalancerInFlightRequestCountCollector collector;
 	private Map<String, Integer> clusterIdToRequestInflightCountMap;
 	private Thread notifier;
 	
-	private LoadBalancerStatsCollector() {
+	private LoadBalancerInFlightRequestCountCollector() {
 		clusterIdToRequestInflightCountMap = new ConcurrentHashMap<String, Integer>();
 		if (notifier == null || (notifier != null && !notifier.isAlive())) {
 			notifier = new Thread(new ObserverNotifier());
@@ -49,13 +49,13 @@ public class LoadBalancerStatsCollector extends Observable{
 		}
     }
 	
-	public static LoadBalancerStatsCollector getInstance() {
+	public static LoadBalancerInFlightRequestCountCollector getInstance() {
 		if (collector == null) {
-			synchronized (LoadBalancerStatsCollector.class) {
+			synchronized (LoadBalancerInFlightRequestCountCollector.class) {
 				if (collector == null) {
-					collector = new LoadBalancerStatsCollector();
+					collector = new LoadBalancerInFlightRequestCountCollector();
 					// add observers
-					collector.addObserver(new WSO2CEPStatsObserver());
+					collector.addObserver(new WSO2CEPInFlightRequestCountObserver());
 				}
 			}
 		}
@@ -121,7 +121,7 @@ public class LoadBalancerStatsCollector extends Observable{
 	                Thread.sleep(15000);
                 } catch (InterruptedException ignore) {
                 }
-				LoadBalancerStatsCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
+				LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
 			}
         }
 	}

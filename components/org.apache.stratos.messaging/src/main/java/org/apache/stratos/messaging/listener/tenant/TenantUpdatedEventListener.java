@@ -17,29 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.messaging.listener.tenant;
 
-import java.util.Map;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- * Load balancer statistics publisher interface.
+ * Tenant updated event listener.
  */
-public interface LoadBalancerStatsPublisher {
-
-    /**
-     * Set statistics publisher enabled or disabled.
-     * @param enabled
-     */
-    void setEnabled(boolean enabled);
-
-    /**
-     * Return enabled state of the statistics publisher.
-     */
-    boolean isEnabled();
-
-    /**
-     * Payload to be published.
-     * @param payload An array of parameter values.
-     */
-    void publish(Object[] payload);
+public abstract class TenantUpdatedEventListener extends EventListener {
 }

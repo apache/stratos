@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.load.balancer.mediators;
 
-import org.apache.stratos.load.balancer.statistics.LoadBalancerStatsCollector;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerInFlightRequestCountCollector;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
@@ -36,7 +36,7 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
             log.debug("Mediation started " + ResponseInterceptor.class.getName());
         }
         String clusterId = (String) synCtx.getProperty(Constants.CLUSTER_ID);
-        LoadBalancerStatsCollector.getInstance().decrementRequestInflightCount(clusterId);
+        LoadBalancerInFlightRequestCountCollector.getInstance().decrementRequestInflightCount(clusterId);
         return true;
     }
 

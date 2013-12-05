@@ -24,10 +24,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
+import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import javax.jms.TextMessage;
@@ -57,6 +59,8 @@ public class HealthEventMessageDelegator implements Runnable {
 				TextMessage message = HealthEventQueue.getInstance().take();
 
 				String messageText = message.getText();
+				if(log.isDebugEnabled())
+					log.debug("Health event message received. Message :" + messageText);
 
                 messageProperties = setEventValues(messageText);
                 this.clusterId = messageProperties.get("cluster_id");
@@ -86,8 +90,8 @@ public class HealthEventMessageDelegator implements Runnable {
                 messageProperties.clear();
                 
 			} catch (Exception e) {
-                String error = "Failed to retrieve the health stat event message.";
-            	log.error(error);
+                String error = "Failed to retrieve the health stat event message." + e.getMessage();
+            	log.error(error );
             }
         }
     }
@@ -99,9 +103,12 @@ public class HealthEventMessageDelegator implements Runnable {
 			ccClient.terminate(memberId);
 			
 			// start a new member in the same Partition
-			ClusterContext clsCtx = AutoscalerContext.getInstance().getClusterContext(clusterId);
-			String partitionId = clsCtx.getPartitonOfMember(memberId);
-			Partition partition = clsCtx.getDeploymentPolicy().getPartitionById(partitionId);
+			ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(this.clusterId);
+			ClusterContext clusCtx = monitor.getClusterCtxt();
+			
+			//ClusterContext clsCtx = AutoscalerContext.getInstance().getClusterContext(clusterId);
+			String partitionId = clusCtx.getPartitonOfMember(memberId);
+			Partition partition = clusCtx.getDeploymentPolicy().getPartitionById(partitionId);
 			ccClient.spawnAnInstance(partition, clusterId);
 			
 		} catch (TerminationException e) {
