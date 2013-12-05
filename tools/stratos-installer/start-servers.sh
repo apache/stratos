@@ -73,8 +73,8 @@ do
     if [[ $x = "lb" ]]; then
         lb="true"
     fi
-    if [[ $x = "agent" ]]; then
-        agent="true"
+    if [[ $x = "as" ]]; then
+        as="true"
     fi
     if [[ $x = "sc" ]]; then
         sc="true"
@@ -83,7 +83,7 @@ do
 	mb="true"
         cc="true"
         lb="true"
-        agent="true"
+        as="true"
         sc="true"
         cep="true"
     fi
@@ -91,7 +91,7 @@ do
         demo="true"
         cc="true"
         lb="true"
-        agent="true"
+        as="true"
         sc="true"
 	bam="true"
     fi
@@ -141,12 +141,12 @@ if [[ $lb = "true" ]]; then
     sleep $SLEEP
 fi
 
-if [[ $agent = "true" ]]; then
-    echo ${agent_path}
+if [[ $as = "true" ]]; then
+    echo ${as_path}
 
-    echo "Starting AGENT server ..." >> $LOG
-    nohup ${agent_path}/bin/stratos.sh -DportOffset=$agent_port_offset &
-    echo "AGENT server started" >> $LOG
+    echo "Starting Auto Scalar server ..." >> $LOG
+    nohup ${as_path}/bin/stratos.sh &
+    echo "Auto Scalar server started" >> $LOG
     sleep $SLEEP
 fi
 

@@ -34,10 +34,10 @@ export LOG=$log_path/stratos-setup.log
 mb="false"
 cc="false"
 lb="false"
-agent="false"
+as="false"
 sc="false"
 cep="false"
-product_list="mb;cc;cep;lb;agent;sc"
+product_list="mb;cc;cep;lb;as;sc"
 enable_internal_git=false
 
 function help {
@@ -51,7 +51,7 @@ function help {
     echo ""
     echo "-u: <host username> The login user of the host."
     echo "-p: <product list> Apache Stratos products to be installed on this node. Provide one or more names of the servers."
-    echo "    The available servers are cc, lb, agent, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
+    echo "    The available servers are cc, lb, as, sc or all. 'all' means you need to setup all servers in this machine. Default is all"
     echo "-g: <enable_internal_git> true|false Whether enable internal git repo for Stratos2. Default is false"
     echo ""
 }
@@ -89,8 +89,8 @@ do
     if [[ $x = "lb" ]]; then
         lb="true"
     fi
-    if [[ $x = "agent" ]]; then
-        agent="true"
+    if [[ $x = "as" ]]; then
+        as="true"
     fi
     if [[ $x = "sc" ]]; then
         sc="true"
@@ -99,7 +99,7 @@ do
         mb="true"
         cc="true"
         lb="true"
-        agent="true"
+        as="true"
         sc="true"
     fi
 done
@@ -152,8 +152,8 @@ function setup_validate {
     if [[ -z $stratos_foundation_db_hostname ]]; then
         stratos_foundation_db_hostname=$hostname
     fi
-    if [[ -z $agent_hostname ]]; then
-        agent_hostname=$hostname
+    if [[ -z $as_hostname ]]; then
+        as_hostname=$hostname
     fi
     if [[ -z $cc_hostname ]]; then
         cc_hostname=$hostname
@@ -198,9 +198,9 @@ function setup_validate {
         fi
     fi
 
-    if [[ ( -z $agent_ip ) ]]; then
-        agent_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
-        if [[ ( -z $agent_ip ) ]]; then
+    if [[ ( -z $as_ip ) ]]; then
+        as_ip=$(ifconfig eth0| sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+        if [[ ( -z $as_ip ) ]]; then
             helpsetup
             exit 1
         fi
@@ -257,8 +257,8 @@ function setup_validate {
         fi
     fi
 
-    if [[ $agent = "true" ]]; then
-        if [[ ( -z $hostname || -z $agent_path ) ]]; then
+    if [[ $as = "true" ]]; then
+        if [[ ( -z $hostname || -z $as_path ) ]]; then
             helpsetup
             exit 1
         fi
@@ -339,9 +339,9 @@ if [[ $cc = "true" ]]; then
         unzip $cc_pack -d $stratos_path
     fi
 fi
-if [[ $agent = "true" ]]; then
-    if [[ ! -d $agent_path ]]; then
-        unzip $agent_pack -d $stratos_path
+if [[ $as = "true" ]]; then
+    if [[ ! -d $as_path ]]; then
+        unzip $as_pack -d $stratos_path
     fi
 fi
 if [[ $cep = "true" ]]; then
@@ -646,51 +646,28 @@ if [[ $lb = "true" ]]; then
 fi
 
 
-# Setup Agent
-# -------------------------------------------------------------    
-if [[ $agent = "true" ]]; then
-    echo "Setup Agent" >> $LOG
-    echo "Configuring the Agent"
-    cp -f ./config/agent/repository/conf/agent.properties $agent_path/repository/conf/
-    cp -f ./config/agent/repository/conf/carbon.xml $agent_path/repository/conf/
-    pushd $agent_path
+# ------------------------------------------------
+# Setup AS
+# ------------------------------------------------   
+if [[ $as = "true" ]]; then
+    echo "Setup AS" >> $LOG
+    echo "Configuring the Auto Scalar"
 
-    rm -rf registrants/
+    cp -f ./config/as/repository/conf/carbon.xml $as_path/repository/conf/
+    cp -f ./config/as/repository/conf/jndi.properties $as_path/repository/conf/
 
-    #Set agent host and ELb host in repository/conf/agent.properties.
-    #Note that loadBalancerDomain=wso2.carbon.lb.domain should be same as elb/repository/conf/axis2/axis2.xml
-    #<parameter name="domain">wso2.carbon.lb.domain</parameter>
-    echo "Set agent hostname in repository/conf/agent.properties." >> $LOG
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@AGENT_HOSTNAME@$agent_hostname@g" > repository/conf/agent.properties
+    pushd $as_path
 
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@AGENT_CLUSTERING_PORT@$agent_clustering_port@g" > repository/conf/agent.properties
-
-    echo "Set ELB hostname in repository/conf/agent.properties." >> $LOG
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@ELB_HOSTNAME@$elb_hostname@g" > repository/conf/agent.properties
-    
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@ELB_CLUSTER_PORT@$elb_cluster_port@g" > repository/conf/agent.properties
-
-    echo "Set SC_PATH in repository/conf/agent.properties." >> $LOG
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@SC_PATH@$sc_path@g" > repository/conf/agent.properties
-
-    echo "Set SC_HOST in repository/conf/agent.properties." >> $LOG
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@SC_HOSTNAME@$sc_hostname@g" > repository/conf/agent.properties
-
-    echo "Set SC_HTTPS_PORT in repository/conf/agent.properties." >> $LOG
-    cp -f ./repository/conf/agent.properties repository/conf/agent.properties.orig
-    cat repository/conf/agent.properties.orig | sed -e "s@SC_HTTPS_PORT@$sc_https_port@g" > repository/conf/agent.properties
-
+    echo "In repository/conf/carbon.xml"
     cp -f repository/conf/carbon.xml repository/conf/carbon.xml.orig
-    cat repository/conf/carbon.xml.orig | sed -e "s@AGENT_PORT_OFFSET@${agent_port_offset}@g" > repository/conf/carbon.xml
+    cat repository/conf/carbon.xml.orig | sed -e "s@AS_PORT_OFFSET@$as_port_offset@g" > repository/conf/carbon.xml
 
-    popd #agent_path
-    echo "End configuring the Agent"
+    echo "In repository/conf/jndi.properties"
+    cp -f repository/conf/jndi.properties repository/conf/jndi.properties.orig
+    cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$mb_listen_port@g" > repository/conf/jndi.properties
+
+    popd #as_path
+    echo "End configuring the Auto Scalar"
 fi
 
 
