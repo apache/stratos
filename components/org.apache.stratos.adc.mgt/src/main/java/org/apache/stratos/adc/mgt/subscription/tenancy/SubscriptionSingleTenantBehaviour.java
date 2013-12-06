@@ -32,6 +32,8 @@ import org.apache.stratos.adc.mgt.subscription.AbstractCartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
+import java.util.Properties;
+
 public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehaviour {
 
     private static Log log = LogFactory.getLog(SubscriptionSingleTenantBehaviour.class);
@@ -49,7 +51,7 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
                 cartridgeSubscription.getCluster().getHostName());
     }
 
-    public void registerSubscription() throws ADCException, UnregisteredCartridgeException {
+    public void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
         ApplicationManagementUtil.registerService(cartridgeSubscription.getType(),
                 cartridgeSubscription.getCluster().getClusterDomain(),
@@ -57,7 +59,7 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
                 cartridgeSubscription.getPayload().createPayload(),
                 cartridgeSubscription.getPayload().getPayloadArg().getTenantRange(),
                 cartridgeSubscription.getCluster().getHostName(),
-                null);
+                properties);
 
         cartridgeSubscription.getPayload().delete();
     }

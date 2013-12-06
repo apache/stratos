@@ -55,7 +55,7 @@ public class FrameworkCartridgeSubscription extends AbstractCartridgeSubscriptio
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        subscriptionTenancyBehaviour.registerSubscription();
+        subscriptionTenancyBehaviour.registerSubscription(null);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

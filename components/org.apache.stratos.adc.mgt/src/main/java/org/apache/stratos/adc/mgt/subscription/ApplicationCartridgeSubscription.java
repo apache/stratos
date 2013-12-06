@@ -20,9 +20,12 @@
 package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
-import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
+import org.apache.stratos.adc.mgt.dto.Policy;
+import org.apache.stratos.adc.mgt.exception.*;
+import org.apache.stratos.adc.mgt.payload.PayloadArg;
+import org.apache.stratos.adc.mgt.repository.Repository;
+import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.Properties;
@@ -39,13 +42,45 @@ public class ApplicationCartridgeSubscription extends AbstractCartridgeSubscript
         super(cartridgeInfo);
     }
 
+    public void createSubscription(Subscriber subscriber, String alias, Policy autoscalingPolicy,
+                                   Repository repository) throws
+            InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException,
+            RepositoryCredentialsRequiredException, RepositoryTransportException, UnregisteredCartridgeException,
+            AlreadySubscribedException, RepositoryRequiredException, InvalidRepositoryException, PolicyException {
+
+        super.createSubscription(subscriber, alias, autoscalingPolicy, repository);
+        subscriptionTenancyBehaviour.createSubscription();
+    }
+
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+        subscriptionTenancyBehaviour.registerSubscription(null);
+
+        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
+                getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
+                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
+                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), null, "PENDING", getSubscriptionKey());
+    }
+
+    public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
+                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
+                                        String tenantDomain) {
+
+        //no repository for application cartridge instances
+        return null;
     }
 
     @Override
     public void removeSubscription() throws ADCException, NotSubscribedException {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        subscriptionTenancyBehaviour.removeSubscription();
+        super.cleanupSubscription();
+    }
+
+    public PayloadArg createPayloadParameters () throws ADCException {
+
+        PayloadArg payloadArg = super.createPayloadParameters();
+        return subscriptionTenancyBehaviour.createPayloadParameters(payloadArg);
     }
 }

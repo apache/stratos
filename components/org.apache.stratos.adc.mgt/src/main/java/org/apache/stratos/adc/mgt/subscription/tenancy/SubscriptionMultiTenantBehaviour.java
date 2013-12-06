@@ -33,6 +33,8 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
 
+import java.util.Properties;
+
 public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehaviour {
 
     private static Log log = LogFactory.getLog(SubscriptionMultiTenantBehaviour.class);
@@ -97,7 +99,7 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
         }
     }
 
-    public void registerSubscription() throws ADCException, UnregisteredCartridgeException {
+    public void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
         //nothing to do
     }

@@ -26,6 +26,8 @@ import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.AbstractCartridgeSubscription;
 
+import java.util.Properties;
+
 public abstract class SubscriptionTenancyBehaviour {
 
     protected AbstractCartridgeSubscription cartridgeSubscription;
@@ -36,7 +38,7 @@ public abstract class SubscriptionTenancyBehaviour {
 
     public abstract void createSubscription() throws ADCException, AlreadySubscribedException;
 
-    public abstract void registerSubscription() throws ADCException, UnregisteredCartridgeException;
+    public abstract void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException;
 
     public abstract void removeSubscription() throws ADCException, NotSubscribedException;
 
