@@ -1,4 +1,4 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax27="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax28="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax25="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax214="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax27="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax25="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
     <wsdl:documentation>AutoScalerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
@@ -6,10 +6,11 @@
                 <xs:sequence/>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax215="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
+        <xs:schema xmlns:ax214="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax217="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
             <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"/>
             <xs:element name="AutoScalerServicePartitionValidationException">
                 <xs:complexType>
@@ -32,6 +33,77 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getPartitions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="depPolicy" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="partitonGroupId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionGroupsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax215:PartitionGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:DeploymentPolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoscalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoscalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax217:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getAllDeploymentPolicies">
                 <xs:complexType>
                     <xs:sequence/>
@@ -44,18 +116,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAllAvailablePartitions">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAllAvailablePartitionsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:Partition"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="getAllAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence/>
@@ -64,18 +124,60 @@
             <xs:element name="getAllAutoScalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax214:AutoscalePolicy"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax217:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax26:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addPartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="depPolicy" nillable="true" type="ax25:DeploymentPolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAutoScalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="aspolicy" nillable="true" type="ax217:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAutoScalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax210="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax211="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
             <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
             <xs:complexType name="PartitionGroup">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax27:Partition"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax211:Partition"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -85,14 +187,14 @@
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax214:LoadThresholds"/>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax216:LoadThresholds"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax214:LoadAverage"/>
-                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax214:MemoryConsumption"/>
-                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax214:RequestsInFlight"/>
+                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax216:LoadAverage"/>
+                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax216:MemoryConsumption"/>
+                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax216:RequestsInFlight"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadAverage">
@@ -123,20 +225,21 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax211="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax29="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax212="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
             <xs:complexType name="DeploymentPolicy">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="allPartitions" nillable="true" type="xs:anyType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax29:Partition"/>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax211:PartitionGroup"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax212:PartitionGroup"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.controller.cloud.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax28:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"/>
                     <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
                 </xs:sequence>
             </xs:complexType>
@@ -149,7 +252,7 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax29="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax28="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"/>
             <xs:complexType name="Partition">
                 <xs:sequence>
@@ -159,7 +262,7 @@
                     <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
                     <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"/>
                     <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"/>
@@ -172,6 +275,24 @@
     </wsdl:message>
     <wsdl:message name="getAllAutoScalingPolicyResponse">
         <wsdl:part name="parameters" element="ns:getAllAutoScalingPolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getDeploymentPolicyRequest">
+        <wsdl:part name="parameters" element="ns:getDeploymentPolicy"/>
+    </wsdl:message>
+    <wsdl:message name="getDeploymentPolicyResponse">
+        <wsdl:part name="parameters" element="ns:getDeploymentPolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addAutoScalingPolicyRequest">
+        <wsdl:part name="parameters" element="ns:addAutoScalingPolicy"/>
+    </wsdl:message>
+    <wsdl:message name="addAutoScalingPolicyResponse">
+        <wsdl:part name="parameters" element="ns:addAutoScalingPolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionsRequest">
+        <wsdl:part name="parameters" element="ns:getPartitions"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionsResponse">
+        <wsdl:part name="parameters" element="ns:getPartitionsResponse"/>
     </wsdl:message>
     <wsdl:message name="getAllDeploymentPoliciesRequest">
         <wsdl:part name="parameters" element="ns:getAllDeploymentPolicies"/>
@@ -188,16 +309,52 @@
     <wsdl:message name="AutoScalerServicePartitionValidationException">
         <wsdl:part name="parameters" element="ns:AutoScalerServicePartitionValidationException"/>
     </wsdl:message>
-    <wsdl:message name="getAllAvailablePartitionsRequest">
-        <wsdl:part name="parameters" element="ns:getAllAvailablePartitions"/>
+    <wsdl:message name="getAutoscalingPolicyRequest">
+        <wsdl:part name="parameters" element="ns:getAutoscalingPolicy"/>
     </wsdl:message>
-    <wsdl:message name="getAllAvailablePartitionsResponse">
-        <wsdl:part name="parameters" element="ns:getAllAvailablePartitionsResponse"/>
+    <wsdl:message name="getAutoscalingPolicyResponse">
+        <wsdl:part name="parameters" element="ns:getAutoscalingPolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionRequest">
+        <wsdl:part name="parameters" element="ns:getPartition"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionResponse">
+        <wsdl:part name="parameters" element="ns:getPartitionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addPartitionRequest">
+        <wsdl:part name="parameters" element="ns:addPartition"/>
+    </wsdl:message>
+    <wsdl:message name="addPartitionResponse">
+        <wsdl:part name="parameters" element="ns:addPartitionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addDeploymentPolicyRequest">
+        <wsdl:part name="parameters" element="ns:addDeploymentPolicy"/>
+    </wsdl:message>
+    <wsdl:message name="addDeploymentPolicyResponse">
+        <wsdl:part name="parameters" element="ns:addDeploymentPolicyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionGroupsRequest">
+        <wsdl:part name="parameters" element="ns:getPartitionGroups"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionGroupsResponse">
+        <wsdl:part name="parameters" element="ns:getPartitionGroupsResponse"/>
     </wsdl:message>
     <wsdl:portType name="AutoScalerServicePortType">
         <wsdl:operation name="getAllAutoScalingPolicy">
             <wsdl:input message="ns:getAllAutoScalingPolicyRequest" wsaw:Action="urn:getAllAutoScalingPolicy"/>
             <wsdl:output message="ns:getAllAutoScalingPolicyResponse" wsaw:Action="urn:getAllAutoScalingPolicyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicy">
+            <wsdl:input message="ns:getDeploymentPolicyRequest" wsaw:Action="urn:getDeploymentPolicy"/>
+            <wsdl:output message="ns:getDeploymentPolicyResponse" wsaw:Action="urn:getDeploymentPolicyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="addAutoScalingPolicy">
+            <wsdl:input message="ns:addAutoScalingPolicyRequest" wsaw:Action="urn:addAutoScalingPolicy"/>
+            <wsdl:output message="ns:addAutoScalingPolicyResponse" wsaw:Action="urn:addAutoScalingPolicyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitions">
+            <wsdl:input message="ns:getPartitionsRequest" wsaw:Action="urn:getPartitions"/>
+            <wsdl:output message="ns:getPartitionsResponse" wsaw:Action="urn:getPartitionsResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
             <wsdl:input message="ns:getAllDeploymentPoliciesRequest" wsaw:Action="urn:getAllDeploymentPolicies"/>
@@ -208,15 +365,58 @@
             <wsdl:output message="ns:getValidDeploymentPoliciesforCartridgeResponse" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeResponse"/>
             <wsdl:fault message="ns:AutoScalerServicePartitionValidationException" name="AutoScalerServicePartitionValidationException" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeAutoScalerServicePartitionValidationException"/>
         </wsdl:operation>
-        <wsdl:operation name="getAllAvailablePartitions">
-            <wsdl:input message="ns:getAllAvailablePartitionsRequest" wsaw:Action="urn:getAllAvailablePartitions"/>
-            <wsdl:output message="ns:getAllAvailablePartitionsResponse" wsaw:Action="urn:getAllAvailablePartitionsResponse"/>
+        <wsdl:operation name="getAutoscalingPolicy">
+            <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"/>
+            <wsdl:output message="ns:getAutoscalingPolicyResponse" wsaw:Action="urn:getAutoscalingPolicyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPartition">
+            <wsdl:input message="ns:getPartitionRequest" wsaw:Action="urn:getPartition"/>
+            <wsdl:output message="ns:getPartitionResponse" wsaw:Action="urn:getPartitionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="addPartition">
+            <wsdl:input message="ns:addPartitionRequest" wsaw:Action="urn:addPartition"/>
+            <wsdl:output message="ns:addPartitionResponse" wsaw:Action="urn:addPartitionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="addDeploymentPolicy">
+            <wsdl:input message="ns:addDeploymentPolicyRequest" wsaw:Action="urn:addDeploymentPolicy"/>
+            <wsdl:output message="ns:addDeploymentPolicyResponse" wsaw:Action="urn:addDeploymentPolicyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitionGroups">
+            <wsdl:input message="ns:getPartitionGroupsRequest" wsaw:Action="urn:getPartitionGroups"/>
+            <wsdl:output message="ns:getPartitionGroupsResponse" wsaw:Action="urn:getPartitionGroupsResponse"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="AutoScalerServiceSoap11Binding" type="ns:AutoScalerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <wsdl:operation name="getAllAutoScalingPolicy">
             <soap:operation soapAction="urn:getAllAutoScalingPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicy">
+            <soap:operation soapAction="urn:getDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitions">
+            <soap:operation soapAction="urn:getPartitions" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addAutoScalingPolicy">
+            <soap:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -245,8 +445,44 @@
                 <soap:fault use="literal" name="AutoScalerServicePartitionValidationException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getAllAvailablePartitions">
-            <soap:operation soapAction="urn:getAllAvailablePartitions" style="document"/>
+        <wsdl:operation name="getAutoscalingPolicy">
+            <soap:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartition">
+            <soap:operation soapAction="urn:getPartition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addPartition">
+            <soap:operation soapAction="urn:addPartition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addDeploymentPolicy">
+            <soap:operation soapAction="urn:addDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitionGroups">
+            <soap:operation soapAction="urn:getPartitionGroups" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -259,6 +495,33 @@
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <wsdl:operation name="getAllAutoScalingPolicy">
             <soap12:operation soapAction="urn:getAllAutoScalingPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicy">
+            <soap12:operation soapAction="urn:getDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitions">
+            <soap12:operation soapAction="urn:getPartitions" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addAutoScalingPolicy">
+            <soap12:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -287,8 +550,44 @@
                 <soap12:fault use="literal" name="AutoScalerServicePartitionValidationException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getAllAvailablePartitions">
-            <soap12:operation soapAction="urn:getAllAvailablePartitions" style="document"/>
+        <wsdl:operation name="getAutoscalingPolicy">
+            <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartition">
+            <soap12:operation soapAction="urn:getPartition" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addPartition">
+            <soap12:operation soapAction="urn:addPartition" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addDeploymentPolicy">
+            <soap12:operation soapAction="urn:addDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitionGroups">
+            <soap12:operation soapAction="urn:getPartitionGroups" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -301,6 +600,33 @@
         <http:binding verb="POST"/>
         <wsdl:operation name="getAllAutoScalingPolicy">
             <http:operation location="getAllAutoScalingPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentPolicy">
+            <http:operation location="getDeploymentPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitions">
+            <http:operation location="getPartitions"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addAutoScalingPolicy">
+            <http:operation location="addAutoScalingPolicy"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -326,8 +652,44 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAllAvailablePartitions">
-            <http:operation location="getAllAvailablePartitions"/>
+        <wsdl:operation name="getAutoscalingPolicy">
+            <http:operation location="getAutoscalingPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartition">
+            <http:operation location="getPartition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addPartition">
+            <http:operation location="addPartition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addDeploymentPolicy">
+            <http:operation location="addDeploymentPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitionGroups">
+            <http:operation location="getPartitionGroups"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
