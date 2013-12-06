@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -97,15 +98,21 @@ public class HealthEventMessageDelegator implements Runnable {
     }
 
     private void handleMemberfaultEvent(String memberId) {
-		try {
+		try {	
+			
+			ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(this.clusterId);
+			ClusterContext clusCtx = monitor.getClusterCtxt();
+								
+			if(!clusCtx.memberExist(memberId)){
+				// member has already terminated. So no action required
+				return;
+			}
+				
 			// terminate the faulty member
 			CloudControllerClient ccClient = CloudControllerClient.getInstance();
 			ccClient.terminate(memberId);
 			
 			// start a new member in the same Partition
-			ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(this.clusterId);
-			ClusterContext clusCtx = monitor.getClusterCtxt();
-			
 			//ClusterContext clsCtx = AutoscalerContext.getInstance().getClusterContext(clusterId);
 			String partitionId = clusCtx.getPartitonOfMember(memberId);
 			Partition partition = clusCtx.getDeploymentPolicy().getPartitionById(partitionId);
