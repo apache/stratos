@@ -23,16 +23,16 @@
     <!-- A partition should at least have a provider -->
     <partition id="P1">
         <!-- A sample provider level partition -->
-        <property name="provider" value="ec2"/>
+	<provider>ec2</provider>
     </partition>
     <partition id="P2">
+	<provider>openstack</provider>
         <!-- A sample region level partition -->
-        <property name="provider" value="openstack"/>
         <property name="region" value="region-x"/>
     </partition>
     <partition id="P3">
         <!-- A sample zone level partition -->
-        <property name="provider" value="ec2"/>
+	<provider>ec2</provider>
         <property name="region" value="region-y"/>
         <property name="zone" value="zone-1"/>
     </partition>
