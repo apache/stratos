@@ -108,7 +108,8 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Partition getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
 
-        return ServiceUtils.getPartition(partitionId);
+        //return ServiceUtils.getPartition(partitionId);
+        return null;
     }
 
     @GET
@@ -119,7 +120,8 @@ public class StratosAdmin extends AbstractAdmin {
     public PartitionGroup[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
-        return ServiceUtils.getPartitionGroups(deploymentPolicyId);
+        //return ServiceUtils.getPartitionGroups(deploymentPolicyId);
+        return null;
     }
 
     @GET
@@ -130,7 +132,8 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition [] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
 
-        return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
+        //return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
+        return null;
     }
 
     @GET
@@ -151,7 +154,8 @@ public class StratosAdmin extends AbstractAdmin {
     public AutoscalePolicy getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
 
-        return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
+        //return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
+        return null;
     }
 
     @GET
@@ -172,7 +176,8 @@ public class StratosAdmin extends AbstractAdmin {
     public DeploymentPolicy getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
-        return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
+        //return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
+        return null;
     }
 
     @GET

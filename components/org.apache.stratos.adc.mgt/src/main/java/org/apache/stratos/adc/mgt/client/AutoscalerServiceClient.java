@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.rmi.RemoteException;
 
@@ -78,7 +77,7 @@ public class AutoscalerServiceClient {
         return partitions;
     }*/
 
-    public org.apache.stratos.cloud.controller.deployment.partition.Partition getPartition (String partitionId)
+    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition getPartition (String partitionId)
             throws Exception{
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition partition;
@@ -92,9 +91,9 @@ public class AutoscalerServiceClient {
         }
 
         return partition;
-    }
+    }*/
 
-    public org.apache.stratos.cloud.controller.deployment.partition.Partition [] getPartitions (String deploymentPolicyId,
+    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition [] getPartitions (String deploymentPolicyId,
                                                                                             String partitionGroupId)
             throws Exception{
 
@@ -125,7 +124,7 @@ public class AutoscalerServiceClient {
         }
 
         return partitionGroups;
-    }
+    }*/
 
     public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] getAutoScalePolicies ()
             throws Exception {
@@ -143,7 +142,7 @@ public class AutoscalerServiceClient {
         return autoscalePolicies;
     }
 
-    public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy getAutoScalePolicy (String autoscalingPolicyId)
+    /*public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy getAutoScalePolicy (String autoscalingPolicyId)
             throws Exception {
 
         org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
@@ -157,7 +156,7 @@ public class AutoscalerServiceClient {
         }
 
         return autoscalePolicy;
-    }
+    }*/
 
     public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy [] getDeploymentPolicies()
             throws Exception {
@@ -191,7 +190,7 @@ public class AutoscalerServiceClient {
         return deploymentPolicies;
     }
 
-    public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId)
+    /*public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId)
             throws Exception {
 
         org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy deploymentPolicy;
@@ -205,5 +204,5 @@ public class AutoscalerServiceClient {
         }
 
         return deploymentPolicy;
-    }
+    }*/
 }

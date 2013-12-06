@@ -37,8 +37,6 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
@@ -102,13 +100,13 @@ public class ServiceUtils {
         return null;
     }
 
-    /*public static Partition[] getAvailablePartitions () throws RestAPIException {
+   /* public static Partition[] getAvailablePartitions () throws RestAPIException {
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                partitions = autoscalerServiceClient.getAvailablePartitions();
+                partitions = autoscalerServiceClient.getPa;
 
             } catch (Exception e) {
                 String errorMsg = "Error getting available partitions";
@@ -120,7 +118,7 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionPojos(partitions);
     }*/
 
-    public static Partition[] getPartitions (String deploymentPolicyId,
+    /*public static Partition[] getPartitions (String deploymentPolicyId,
                                                       String partitionGroupId) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
@@ -155,7 +153,7 @@ public class ServiceUtils {
         }
 
         return PojoConverter.populatePartitionPojo(partition);
-    }
+    }*/
 
     private static AutoscalerServiceClient getAutoscalerServiceClient () {
 
@@ -187,7 +185,7 @@ public class ServiceUtils {
         return PojoConverter.populateAutoscalePojos(autoscalePolicies);
     }
 
-    public static AutoscalePolicy getAutoScalePolicy (String autoscalePolicyId) throws RestAPIException {
+    /*public static AutoscalePolicy getAutoScalePolicy (String autoscalePolicyId) throws RestAPIException {
 
         org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -203,7 +201,7 @@ public class ServiceUtils {
         }
 
         return PojoConverter.populateAutoscalePojo(autoscalePolicy);
-    }
+    }*/
 
     public static DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
 
@@ -241,7 +239,7 @@ public class ServiceUtils {
         return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
 
-    public static DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
+    /*public static DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
 
         org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy deploymentPolicy = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -276,7 +274,7 @@ public class ServiceUtils {
         }
 
         return PojoConverter.populatePartitionGroupPojos(partitionGroups);
-    }
+    }*/
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
