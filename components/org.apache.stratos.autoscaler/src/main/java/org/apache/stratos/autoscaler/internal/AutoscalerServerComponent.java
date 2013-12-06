@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
-import org.apache.stratos.autoscaler.topology.processors.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.topology.AutoscalerTopologyReceiver;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;

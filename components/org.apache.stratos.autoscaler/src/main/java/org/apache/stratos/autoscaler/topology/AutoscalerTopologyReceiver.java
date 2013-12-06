@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.topology.processors;
+package org.apache.stratos.autoscaler.topology;
 
 import java.util.Collection;
 
@@ -47,6 +47,7 @@ import org.apache.stratos.messaging.listener.topology.ServiceRemovedEventListene
 import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 
 /**
  * Load balancer topology receiver.
@@ -64,7 +65,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
     @Override
     public void run() {
-        //FIXME this activated before autoscaler deployer actovated.
+        //FIXME this activated before autoscaler deployer activated.
         try {
             Thread.sleep(30000);
         } catch (InterruptedException ignore) {
@@ -72,13 +73,13 @@ public class AutoscalerTopologyReceiver implements Runnable {
         Thread thread = new Thread(topologyReceiver);
         thread.start();
         if(log.isInfoEnabled()) {
-            log.info("Load balancer topology receiver thread started");
+            log.info("Autoscaler topology receiver thread started");
         }
 
         // Keep the thread live until terminated
         while (!terminated);
         if(log.isInfoEnabled()) {
-            log.info("Load balancer topology receiver thread terminated");
+            log.info("Autoscaler topology receiver thread terminated");
         }
     }
 

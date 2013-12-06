@@ -16,23 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.receiver.topology;
+
+package org.apache.stratos.messaging.message.receiver.tenant;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageQueue;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * Implements functionality for receiving text based event messages from the topology
+ * Implements functionality for receiving text based event messages from the tenant
  * message broker topic and add them to the event queue.
  */
-public class TopologyEventMessageReceiver implements MessageListener {
+public class TenantEventMessageListener implements MessageListener {
 
-    private static final Log log = LogFactory.getLog(TopologyEventMessageReceiver.class);
+    private static final Log log = LogFactory.getLog(TenantEventMessageListener.class);
 
     @Override
     public void onMessage(Message message) {
@@ -40,7 +42,7 @@ public class TopologyEventMessageReceiver implements MessageListener {
             TextMessage receivedMessage = (TextMessage) message;
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Topology message received: %s", ((TextMessage) message).getText()));
+                    log.debug(String.format("Tenant message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
                 TopologyEventMessageQueue.getInstance().add(receivedMessage);

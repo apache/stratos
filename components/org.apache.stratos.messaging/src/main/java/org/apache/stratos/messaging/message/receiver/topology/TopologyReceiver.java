@@ -17,18 +17,16 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.topology;
+package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
- * A thread for receiving topology information from message broker.
+ * A thread for receiving topology information from message broker and
+ * build topology in topology manager.
  */
 public class TopologyReceiver implements Runnable {
     private static final Log log = LogFactory.getLog(TopologyReceiver.class);
@@ -49,7 +47,7 @@ public class TopologyReceiver implements Runnable {
         try {
             // Start topic subscriber thread
             topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+            topicSubscriber.setMessageListener(new TopologyEventMessageListener());
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {

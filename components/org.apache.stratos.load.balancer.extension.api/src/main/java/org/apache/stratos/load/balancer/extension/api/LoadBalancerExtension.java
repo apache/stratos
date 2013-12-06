@@ -21,12 +21,12 @@ package org.apache.stratos.load.balancer.extension.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.topology.TopologyReceiver;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 
 /**
  * Load balancer extension thread for executing load balancer life-cycle according to the topology updates
@@ -39,7 +39,7 @@ public class LoadBalancerExtension implements Runnable {
     private LoadBalancerStatsReader statsReader;
     private boolean loadBalancerStarted;
     private TopologyReceiver topologyReceiver;
-    private LoadBalancerInFlightRequestCountNotifier statsNotifier;
+    private LoadBalancerInFlightRequestCountNotifier inFlightRequestCountNotifier;
     private boolean terminated;
 
     public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatsReader statsReader) {
@@ -60,8 +60,8 @@ public class LoadBalancerExtension implements Runnable {
             topologyReceiverThread.start();
 
             // Start stats notifier thread
-            statsNotifier = new LoadBalancerInFlightRequestCountNotifier(statsReader);
-            Thread statsNotifierThread = new Thread(statsNotifier);
+            inFlightRequestCountNotifier = new LoadBalancerInFlightRequestCountNotifier(statsReader);
+            Thread statsNotifierThread = new Thread(inFlightRequestCountNotifier);
             statsNotifierThread.start();
 
             // Keep the thread live until terminated
@@ -146,7 +146,7 @@ public class LoadBalancerExtension implements Runnable {
 
     public void terminate() {
         topologyReceiver.terminate();
-        statsNotifier.terminate();
+        inFlightRequestCountNotifier.terminate();
         terminated = true;
     }
 }

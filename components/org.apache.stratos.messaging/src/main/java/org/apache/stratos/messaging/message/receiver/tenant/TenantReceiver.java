@@ -17,29 +17,28 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.topology.processors;
+package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
- * A thread for receiving topology information from message broker.
+ * A thread for receiving tenant information from message broker and
+ * build tenant information in tenant manager.
  */
-public class TopologyReceiver implements Runnable {
-    private static final Log log = LogFactory.getLog(TopologyReceiver.class);
-    private TopologyEventMessageDelegator messageDelegator;
+public class TenantReceiver implements Runnable {
+    private static final Log log = LogFactory.getLog(TenantReceiver.class);
+    private TenantEventMessageDelegator messageDelegator;
     private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
-    public TopologyReceiver() {
-        this.messageDelegator = new TopologyEventMessageDelegator();
+    public TenantReceiver() {
+        this.messageDelegator = new TenantEventMessageDelegator();
     }
 
-    public TopologyReceiver(TopologyEventMessageDelegator messageDelegator) {
+    public TenantReceiver(TenantEventMessageDelegator messageDelegator) {
         this.messageDelegator = messageDelegator;
     }
 
@@ -47,26 +46,26 @@ public class TopologyReceiver implements Runnable {
     public void run() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+            topicSubscriber = new TopicSubscriber(Constants.TENANT_TOPIC);
+            topicSubscriber.setMessageListener(new TenantEventMessageListener());
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Topology event message receiver thread started");
+                log.debug("Tenant event message receiver thread started");
             }
 
-            // Start topology event message delegator thread
+            // Start tenant event message delegator thread
             Thread receiverThread = new Thread(messageDelegator);
             receiverThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Topology event message delegator thread started");
+                log.debug("Tenant event message delegator thread started");
             }
 
             // Keep the thread live until terminated
             while (!terminated);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Topology receiver failed", e);
+                log.error("Tenant receiver failed", e);
             }
         }
     }
