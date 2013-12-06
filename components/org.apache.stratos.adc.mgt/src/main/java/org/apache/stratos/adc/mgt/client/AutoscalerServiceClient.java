@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.rmi.RemoteException;
 

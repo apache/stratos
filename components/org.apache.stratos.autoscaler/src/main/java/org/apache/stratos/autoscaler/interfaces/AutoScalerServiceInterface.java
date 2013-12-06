@@ -8,7 +8,7 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 public interface AutoScalerServiceInterface {
 	
-	public Partition[] getPartitions();
+	public Partition[] getAllAvailablePartitions();
 	public boolean addPartition(Partition partition);
 	
 	public DeploymentPolicy[] getAllDeploymentPolicies();
@@ -23,6 +23,6 @@ public interface AutoScalerServiceInterface {
 	public DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId);
 	public AutoscalePolicy getAutoscalingPolicy (String autoscalingPolicyId);
 	public PartitionGroup[] getPartitionGroups (String deploymentPolicyId);	
-	public Partition[] getPartitions(String depPolicy, String partitonGroupId);
+	public Partition[] getPartitionsOfDeploymentPolicy(String depPolicy, String partitonGroupId);
 	
 }

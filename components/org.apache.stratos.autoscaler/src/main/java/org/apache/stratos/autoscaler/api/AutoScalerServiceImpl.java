@@ -39,7 +39,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
 	
-	public Partition[] getPartitions(){
+	public Partition[] getAllAvailablePartitions(){
 		return PartitionManager.getInstance().getAllPartitions();		
 	}
 	
@@ -84,7 +84,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	@Override
 	public Partition getPartition(String partitionId) {
-		for(Partition par: this.getPartitions()){
+		for(Partition par: this.getAllAvailablePartitions()){
 			if(par.getId().equals(partitionId)){
 				return par;
 			}
@@ -118,7 +118,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	}
 
 	@Override
-	public Partition[] getPartitions(String depPolicy, String partitonGroupId) {
+	public Partition[] getPartitionsOfDeploymentPolicy(String depPolicy, String partitonGroupId) {
 		DeploymentPolicy depPol = this.getDeploymentPolicy(depPolicy);
 		if(null == depPol)
 			return null;

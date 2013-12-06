@@ -27,8 +27,8 @@ import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant created message processor for triggering tenant created event
- * listener when a tenant created event message is received.
+ * Tenant created message processor for adding tenant to the tenant manager and
+ * triggering tenant created event listeners when a tenant created event message is received.
  */
 public class TenantCreatedMessageProcessor extends MessageProcessor {
 
@@ -44,6 +44,11 @@ public class TenantCreatedMessageProcessor extends MessageProcessor {
     @Override
     public boolean process(String type, String message, Object object) {
         if (TenantCreatedEvent.class.getName().equals(type)) {
+            // Return if tenant manager has not initialized
+            if(!TenantManager.getInstance().isInitialized()) {
+                return false;
+            }
+
             // Parse complete message and build event
             TenantCreatedEvent event = (TenantCreatedEvent) Util.jsonToObject(message, TenantCreatedEvent.class);
 

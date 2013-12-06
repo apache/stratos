@@ -28,8 +28,8 @@ import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant removed message processor for triggering tenant removed event
- * listener when a tenant removed event message is received.
+ * Tenant removed message processor for removing a given tenant from tenant manager
+ * and triggering tenant removed event listeners when a tenant removed event message is received.
  */
 public class TenantRemovedMessageProcessor extends MessageProcessor {
 
@@ -45,6 +45,11 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
     @Override
     public boolean process(String type, String message, Object object) {
         if (TenantRemovedEvent.class.getName().equals(type)) {
+            // Return if tenant manager has not initialized
+            if(!TenantManager.getInstance().isInitialized()) {
+                return false;
+            }
+
             // Parse complete message and build event
             TenantRemovedEvent event = (TenantRemovedEvent) Util.jsonToObject(message, TenantRemovedEvent.class);
 

@@ -30,9 +30,9 @@ import org.apache.commons.logging.LogFactory;
  * Implements functionality for receiving text based event messages from the topology
  * message broker topic and add them to the event queue.
  */
-public class TopologyEventMessageReceiver implements MessageListener {
+public class TopologyEventMessageListener implements MessageListener {
 
-    private static final Log log = LogFactory.getLog(TopologyEventMessageReceiver.class);
+    private static final Log log = LogFactory.getLog(TopologyEventMessageListener.class);
 
     @Override
     public void onMessage(Message message) {
@@ -40,10 +40,10 @@ public class TopologyEventMessageReceiver implements MessageListener {
             TextMessage receivedMessage = (TextMessage) message;
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug("Message received: " + ((TextMessage) message).getText());
+                    log.debug(String.format("Topology message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
-                TopologyEventQueue.getInstance().add(receivedMessage);
+                TopologyEventMessageQueue.getInstance().add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);

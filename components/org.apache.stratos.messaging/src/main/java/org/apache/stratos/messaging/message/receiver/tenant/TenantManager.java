@@ -44,6 +44,7 @@ public class TenantManager {
 
     private Map<Integer, Tenant> tenantIdTenantMap;
     private Map<String, Tenant> tenantDomainTenantMap;
+    private boolean initialized;
 
     public static void acquireReadLock() {
         if(log.isDebugEnabled()) {
@@ -111,5 +112,13 @@ public class TenantManager {
             tenantIdTenantMap.remove(tenant.getTenantId());
             tenantDomainTenantMap.remove(tenant.getTenantDomain());
         }
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }
