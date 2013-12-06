@@ -87,6 +87,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
+			    org.apache.stratos.autoscaler.stub.*; version=${project.version},
                             org.apache.stratos.autoscaler.deployment.policy.*; version=${project.version},
                             org.apache.stratos.autoscaler.policy.model.*; version=${project.version},
                             org.apache.stratos.autoscaler.exception.*; version=${project.version},

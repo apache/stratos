@@ -100,11 +100,11 @@
             <version>4.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.cartridge.mgt.service.stub</artifactId>
+            <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
             <version>4.0.0-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency-->
+        </dependency>
     </dependencies>
 </project>

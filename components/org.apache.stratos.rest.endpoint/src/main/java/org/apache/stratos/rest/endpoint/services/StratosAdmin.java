@@ -31,6 +31,9 @@ import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
@@ -54,6 +57,17 @@ public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
 
     @POST
+    @Path("/init")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public void initialize ()
+            throws RestAPIException {
+
+        //login
+    }
+
+    @POST
     @Path("/cartridge/definition/")
     @Produces("application/json")
     @Consumes("application/json")
@@ -74,6 +88,36 @@ public class StratosAdmin extends AbstractAdmin {
     public void unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         ServiceUtils.undeployCartridge(cartridgeType);
+    }
+
+    @GET
+    @Path("/partition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition[] getPartitions () throws RestAPIException {
+
+        return ServiceUtils.getAvailablePartitions();
+    }
+
+    @GET
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public AutoscalePolicy[] getAutoscalePolicies () throws RestAPIException {
+
+        return ServiceUtils.getAutoScalePolicies();
+    }
+
+    @GET
+    @Path("/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
+
+        return ServiceUtils.getDeploymentPolicies();
     }
 
     @GET
