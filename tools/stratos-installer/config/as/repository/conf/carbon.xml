@@ -114,7 +114,7 @@
          the define value + Offset.
          e.g. Offset=2 and HTTPS port=9443 will set the effective HTTPS port to 9445
          -->
-        <Offset>AGENT_PORT_OFFSET</Offset>
+        <Offset>AS_PORT_OFFSET</Offset>
 
         <!-- The JMX Ports -->
         <JMX>

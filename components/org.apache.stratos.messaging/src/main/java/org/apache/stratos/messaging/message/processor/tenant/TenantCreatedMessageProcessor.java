@@ -19,7 +19,12 @@
 
 package org.apache.stratos.messaging.message.processor.tenant;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
+import org.apache.stratos.messaging.util.Util;
 
 /**
  * Tenant created message processor for triggering tenant created event
@@ -27,13 +32,40 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
  */
 public class TenantCreatedMessageProcessor extends MessageProcessor {
 
+    private static final Log log = LogFactory.getLog(TenantCreatedMessageProcessor.class);
+
+    private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
     public boolean process(String type, String message, Object object) {
-        return false;
+        if (TenantCreatedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            TenantCreatedEvent event = (TenantCreatedEvent) Util.jsonToObject(message, TenantCreatedEvent.class);
+
+            try {
+                TenantManager.acquireWriteLock();
+                TenantManager.getInstance().addTenant(event.getTenant());
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Tenant created: [tenant-id] %d [tenant-domain] %s", event.getTenant().getTenantId(), event.getTenant().getTenantDomain()));
+                }
+                return true;
+            }
+            finally {
+                TenantManager.releaseWriteLock();
+            }
+        }
+        else {
+            if(nextProcessor != null) {
+                return nextProcessor.process(type, message, object);
+            }
+            else {
+                throw new RuntimeException(String.format("Failed to process tenant message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
     }
 }

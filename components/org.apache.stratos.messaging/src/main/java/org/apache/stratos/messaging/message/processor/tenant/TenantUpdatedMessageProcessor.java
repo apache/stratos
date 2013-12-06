@@ -19,7 +19,13 @@
 
 package org.apache.stratos.messaging.message.processor.tenant;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.tenant.Tenant;
+import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
+import org.apache.stratos.messaging.util.Util;
 
 /**
  * Tenant updated message processor for triggering tenant updated event
@@ -27,13 +33,48 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
  */
 public class TenantUpdatedMessageProcessor extends MessageProcessor {
 
+    private static final Log log = LogFactory.getLog(TenantUpdatedMessageProcessor.class);
+
+    private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
     public boolean process(String type, String message, Object object) {
-        return false;
+        if (TenantUpdatedEvent.class.getName().equals(type)) {
+            // Parse complete message and build event
+            TenantUpdatedEvent event = (TenantUpdatedEvent) Util.jsonToObject(message, TenantUpdatedEvent.class);
+
+            try {
+                TenantManager.acquireWriteLock();
+                Tenant tenant = TenantManager.getInstance().getTenant(event.getTenantId());
+                if(tenant == null) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Tenant not found: [tenant-id] %d", event.getTenantId()));
+                    }
+                    return false;
+                }
+                tenant.setTenantDomain(event.getTenantDomain());
+
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Tenant updated: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
+                }
+                return true;
+            }
+            finally {
+                TenantManager.releaseWriteLock();
+            }
+        }
+        else {
+            if(nextProcessor != null) {
+                return nextProcessor.process(type, message, object);
+            }
+            else {
+                throw new RuntimeException(String.format("Failed to process tenant message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
     }
 }

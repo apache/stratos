@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.event.tenant;
 
+import org.apache.stratos.messaging.domain.tenant.Tenant;
+
 import java.io.Serializable;
 
 /**
@@ -27,19 +29,13 @@ import java.io.Serializable;
 public class TenantCreatedEvent extends TenantEvent implements Serializable {
     private static final long serialVersionUID = -5954900215964894383L;
 
-    private int tenantId;
-    private String tenantDomain;
+    private Tenant tenant;
 
-    public TenantCreatedEvent(int tenantId, String tenantDomain) {
-        this.tenantId = tenantId;
-        this.tenantDomain = tenantDomain;
+    public TenantCreatedEvent(Tenant tenant) {
+        this.tenant = tenant;
     }
 
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public String getTenantDomain() {
-        return tenantDomain;
+    public Tenant getTenant() {
+        return tenant;
     }
 }
