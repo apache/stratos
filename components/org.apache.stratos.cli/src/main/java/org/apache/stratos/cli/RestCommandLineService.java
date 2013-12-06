@@ -29,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.exception.CommandException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ public class RestCommandLineService {
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
+    private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -369,24 +372,37 @@ public class RestCommandLineService {
     }
 
     public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email, String active) {
-        TenantInfoBean tenantInfo = new TenantInfoBean();
-        tenantInfo.setAdmin(admin);
-        tenantInfo.setFirstname(firstName);
-        tenantInfo.setLastname(lastaName);
-        tenantInfo.setAdminPassword(password);
-        tenantInfo.setTenantDomain(domain);
-        tenantInfo.setEmail(email);
-        tenantInfo.setActive(active);
+        try {
+            TenantInfoBean tenantInfo = new TenantInfoBean();
+            tenantInfo.setAdmin(admin);
+            tenantInfo.setFirstname(firstName);
+            tenantInfo.setLastname(lastaName);
+            tenantInfo.setAdminPassword(password);
+            tenantInfo.setTenantDomain(domain);
+            tenantInfo.setEmail(email);
+            tenantInfo.setActive(active);
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
 
-        String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
-        String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
+            String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
+            String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
 
-        String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint, completeJsonString, restClientService.getUsername(), restClientService.getPassword());
+            String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint, completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
-        System.out.println(result);
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unsubscribe(String alias) throws CommandException {
+        try {
+            restClientService.doPost(restClientService.getUrl() + unsubscribeTenantEndPoint, alias, restClientService.getUsername(), restClientService.getPassword());
+            System.out.println("You have successfully unsubscribed " + alias);
+        } catch ( Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private class CartridgeList  {

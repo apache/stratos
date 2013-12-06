@@ -59,6 +59,9 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(postRequest);
 
+            if (response.getStatusLine().getStatusCode() == 204) {
+                return "";
+            }
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
