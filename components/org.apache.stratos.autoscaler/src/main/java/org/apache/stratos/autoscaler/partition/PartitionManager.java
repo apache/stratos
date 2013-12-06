@@ -75,8 +75,9 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 			return null;
 	}
 	
-	public List<Partition> getAllPartitions(){
-		return Collections.unmodifiableList(new ArrayList<Partition>(partitionListMap.values()));
+	public Partition[] getAllPartitions(){
+		//return Collections.unmodifiableList(new ArrayList<Partition>(partitionListMap.values()));
+		return partitionListMap.values().toArray(new Partition[0]);
 		
 	}
 

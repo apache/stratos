@@ -19,6 +19,8 @@
 
 package org.apache.stratos.autoscaler.topology.processors;
 
+import java.util.Collection;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ClusterContext;
@@ -31,6 +33,10 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ClusterRemovedEventListener;
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
@@ -38,12 +44,9 @@ import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListen
 import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
 import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ServiceRemovedEventListener;
-import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-
-import java.util.Collection;
 
 /**
  * Load balancer topology receiver.
@@ -56,7 +59,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
     private boolean terminated;
 
     public AutoscalerTopologyReceiver() {
-        this.topologyReceiver = new TopologyReceiver(createMessageDelegator());
+		this.topologyReceiver = new TopologyReceiver(createMessageDelegator());
     }
 
     @Override

@@ -36,7 +36,7 @@ public class DeploymentPolicy implements Serializable{
     private static final long serialVersionUID = 5675507196284400099L;
     private String id;
 	private PartitionGroup[] partitionGroups;
-	private List<Partition> allPartitions;
+	private Partition[] allPartitions;
 
     /**
      * Gets the value of the id property.
@@ -64,22 +64,27 @@ public class DeploymentPolicy implements Serializable{
     
     @SuppressWarnings("unchecked")
     public void setPartitionGroups(PartitionGroup[] groups) {
+    	ArrayList<Partition> partitionslist = new ArrayList<Partition>();
         this.partitionGroups = groups;
+        /*
         if(allPartitions == null) {
             allPartitions = new ArrayList<Partition>();
         }
+        */
         for (PartitionGroup partitionGroup : groups) {
             Partition[] partitions = partitionGroup.getPartitions();
             if(partitions != null) {
-                allPartitions.addAll(Arrays.asList(partitions));
+            	partitionslist.addAll(Arrays.asList(partitions));
             }
         }
+        
+       this.allPartitions = partitionslist.toArray(new Partition[0]);
     }
     
-    public List<Partition> getAllPartitions() {
+    public Partition[] getAllPartitions() {
         return allPartitions;
     }
-    
+        
     public Partition getPartitionById(String id){
     	for(Partition p : this.getAllPartitions()){
     		if(p.getId().equalsIgnoreCase(id))
@@ -87,6 +92,7 @@ public class DeploymentPolicy implements Serializable{
     	}
     	 return null;
     }
+    
     /**
      * Gets the value of the partition-groups.
      */
@@ -95,8 +101,17 @@ public class DeploymentPolicy implements Serializable{
         return this.partitionGroups;
     }
     
+    public PartitionGroup getPartitionGroup(String partitionGrpId){
+    	for(PartitionGroup parGrp : this.getPartitionGroups()){
+    		if(parGrp.getId().equals(partitionGrpId))
+    			return parGrp;
+    		
+    	}
+    	return null;
+    }
+    
     public String toString() {
-        return "Deployment Policy: "+this.id;
+        return "Deployment Policy: " + this.id;
     }
 
 }

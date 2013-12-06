@@ -50,6 +50,9 @@ public class PartitionContext {
     // members to be terminated
     private List<String> obsoletedMembers;
     
+    // Contains the members that CEP notified as faulty members.
+    private List<String> faultyMembers;
+    
     // active members
     private List<MemberContext> activeMembers;
     
@@ -59,6 +62,7 @@ public class PartitionContext {
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.obsoletedMembers = new CopyOnWriteArrayList<String>(); 
+        this.faultyMembers = new CopyOnWriteArrayList<String>();
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
     }
@@ -160,6 +164,18 @@ public class PartitionContext {
     public boolean removeObsoleteMember(String memberId) {
         return this.obsoletedMembers.remove(memberId);
     }
+    
+    public void addFaultyMember(String memberId) {
+        this.faultyMembers.add(memberId);
+    }
+    
+    public boolean removeFaultyMember(String memberId) {
+        return this.faultyMembers.remove(memberId);
+    }
+    
+    public List<String> getFaultyMembers() {
+        return this.faultyMembers;
+    }
 
     public long getExpiryTime() {
         return expiryTime;
@@ -172,7 +188,7 @@ public class PartitionContext {
     public List<String> getObsoletedMembers() {
         return obsoletedMembers;
     }
-
+        
     public void setObsoletedMembers(List<String> obsoletedMembers) {
         this.obsoletedMembers = obsoletedMembers;
     }
@@ -218,5 +234,5 @@ public class PartitionContext {
             }
         }
 
-    }
+    } 
 }
