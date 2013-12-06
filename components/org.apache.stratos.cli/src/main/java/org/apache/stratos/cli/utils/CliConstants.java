@@ -64,6 +64,11 @@ public class CliConstants {
 	 */
 	public static final String CARTRIDGES_ACTION = "cartridges";
 
+    /**
+     * Add tenant
+     */
+    public static final String ADD_TENANT = "add-tenant";
+
 	/**
 	 * Give information of a cartridge.
 	 */
@@ -127,4 +132,19 @@ public class CliConstants {
 	
 	public static final String DEBUG_OPTION = "debug";
 
+    // Add tenant options
+    public static final String FIRST_NAME_OPTION = "f";
+    public static final String FIRST_NAME_LONG_OPTION = "first-name";
+
+    public static final String LAST_NAME_OPTION = "l";
+    public static final String LAST_NAME_LONG_OPTION = "last-name";
+
+    public static final String DOMAIN_NAME_OPTION = "d";
+    public static final String DOMAIN_NAME_LONG_OPTION = "domain-name";
+
+    public static final String EMAIL_OPTION = "e";
+    public static final String EMAIL_LONG_OPTION = "email";
+
+    public static final String ACTIVE_OPTION = "a";
+    public static final String ACTIVE_LONG_OPTION = "active";
 }

@@ -40,19 +40,9 @@ import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.stratos.cli.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.stratos.cli.commands.AddDomainMappingCommand;
-import org.apache.stratos.cli.commands.CartridgesCommand;
-import org.apache.stratos.cli.commands.ExitCommand;
-import org.apache.stratos.cli.commands.HelpCommand;
-import org.apache.stratos.cli.commands.InfoCommand;
-import org.apache.stratos.cli.commands.ListCommand;
-import org.apache.stratos.cli.commands.PoliciesCommand;
-import org.apache.stratos.cli.commands.RemoveDomainMappingCommand;
-import org.apache.stratos.cli.commands.SubscribeCommand;
-import org.apache.stratos.cli.commands.SyncCommand;
-import org.apache.stratos.cli.commands.UnsubscribeCommand;
 import org.apache.stratos.cli.completer.CommandCompleter;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
@@ -114,6 +104,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		
 		command = new CartridgesCommand();
 		commands.put(command.getName(), command);
+
+        command = new AddTenantCommand();
+        commands.put(command.getName(), command);
 		
 		command = new ListCommand();
 		commands.put(command.getName(), command);

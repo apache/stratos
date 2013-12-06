@@ -38,7 +38,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ListCommand.class);
 
-	private final Options options;;
+	private final Options options;
 
 	public SubscribeCommand() {
 		options = constructOptions();

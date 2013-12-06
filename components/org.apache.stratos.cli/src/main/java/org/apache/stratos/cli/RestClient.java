@@ -56,10 +56,10 @@ public class RestClient implements GenericRestClient{
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             postRequest.addHeader("Authorization", basicAuth);
 
+            httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(postRequest);
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                System.out.println("Error");
                 throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
 
@@ -67,9 +67,7 @@ public class RestClient implements GenericRestClient{
 
             String output;
             String result = "";
-            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                //System.out.println(output);
                 result += output;
             }
 
@@ -95,6 +93,7 @@ public class RestClient implements GenericRestClient{
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             getRequest.addHeader("Authorization", basicAuth);
 
+            httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(getRequest);
 
             if (response.getStatusLine().getStatusCode() != 200) {
@@ -105,9 +104,7 @@ public class RestClient implements GenericRestClient{
 
             String output;
             String result = "";
-            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                //System.out.println(output);
                 result += output;
             }
 

@@ -166,16 +166,13 @@ public class CommandLineService {
 
 	public void listSubscribedCartridges(final boolean full) throws CommandException {
 		try {
-            RestCommandLineService restService = new RestCommandLineService();
-            restService.listSubscribedCartridges(false);
-
 			Cartridge[] cartridges = stub.getSubscribedCartridges();
 
 			if (cartridges == null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("No subscribed cartridges found");
 				}
-				//System.out.println("There are no subscribed cartridges");
+				System.out.println("There are no subscribed cartridges");
 				return;
 			}
 
@@ -212,10 +209,10 @@ public class CommandLineService {
 				headers.add("Repo URL");
 			}
 
-			//System.out.println("Subscribed Cartridges:");
-			//CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+			System.out.println("Subscribed Cartridges:");
+			CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
 
-			//System.out.println();
+			System.out.println();
 
 		} catch (ApplicationManagementServiceADCExceptionException e) {
 			handleException("cannot.list.subscribed.cartridges", e);
@@ -226,18 +223,13 @@ public class CommandLineService {
 
 	public void listAvailableCartridges() throws CommandException {
 		try {
-            System.out.println("Custom called");
-            RestCommandLineService restService = new RestCommandLineService();
-            restService.listAvailableCartridges();
-            System.out.println("Custom end");
-
             Cartridge[] multiTenantCatridges = stub.getAvailableCartridges(true);
 
 			if (multiTenantCatridges == null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("No multi-tenant cartridges available");
 				}
-				//System.out.println("There are no multi-tenant cartridges available");
+				System.out.println("There are no multi-tenant cartridges available");
 			}
 
 			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
@@ -252,9 +244,9 @@ public class CommandLineService {
 				}
 			};
 
-			//System.out.println("Available Multi-Tenant Cartridges:");
-			//CommandLineUtils.printTable(multiTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
-			//System.out.println();
+			System.out.println("Available Multi-Tenant Cartridges:");
+			CommandLineUtils.printTable(multiTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
+			System.out.println();
 			
 			Cartridge[] singleTenantCatridges = stub.getAvailableCartridges(false);
 
@@ -262,12 +254,12 @@ public class CommandLineService {
 				if (logger.isDebugEnabled()) {
 					logger.debug("No single-tenant cartridges available");
 				}
-				//System.out.println("There are no single-tenant cartridges available");
+				System.out.println("There are no single-tenant cartridges available");
 			}
 			
-			//System.out.println("Available Single-Tenant Cartridges:");
-			//CommandLineUtils.printTable(singleTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
-			//System.out.println();
+			System.out.println("Available Single-Tenant Cartridges:");
+			CommandLineUtils.printTable(singleTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
+			System.out.println();
 		} catch (ApplicationManagementServiceADCExceptionException e) {
 			handleException("cannot.list.available.cartridges", e);
 		} catch (RemoteException e) {

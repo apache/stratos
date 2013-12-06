@@ -29,12 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.exception.CommandException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.cli.utils.CommandLineUtils;
 
@@ -46,10 +43,12 @@ public class RestCommandLineService {
 
     private RestClient restClientService;
 
-	RestCommandLineService() {
-	}
+    private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
+    private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
+    private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
+    private final String addTenantEndPoint = "/stratos/admin/tenant";
 
-	private static class SingletonHolder {
+    private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
 	}
 
@@ -59,7 +58,6 @@ public class RestCommandLineService {
 
     public boolean login(String serverURL, String username, String password, boolean validateLogin) throws CommandException {
         try {
-            System.out.println("Login called");
             // Following code will avoid validating certificate
             SSLContext sc;
             // Get SSL context
@@ -98,7 +96,6 @@ public class RestCommandLineService {
             throw new CommandException(e);
         }
 
-        System.out.println("End initialization, Login successfull");
         return true;
         /*
         try {
@@ -151,13 +148,15 @@ public class RestCommandLineService {
 
     public void listAvailableCartridges() throws CommandException {
         try {
-            String resultString = restClientService.doGet("http://ec2-54-254-71-178.ap-southeast-1.compute.amazonaws.com:9765/stratos/admin/cartridge/list", restClientService.getUsername(), restClientService.getPassword());
+            String resultString = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
 
             if (cartridgeList == null) {
-                System.out.println("Object is null");
+                System.out.println("Available cartridge list is null");
             }
 
             CartridgeList multiTelentCartridgeList = new CartridgeList();
@@ -219,7 +218,6 @@ public class RestCommandLineService {
                 CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name", "Version");
                 System.out.println();
             }
-
         } catch (Exception e) {
                 e.printStackTrace();
         }
@@ -228,14 +226,15 @@ public class RestCommandLineService {
     public void listSubscribedCartridges(final boolean full) throws CommandException {
         try {
 
-            String resultString = restClientService.doGet("http://ec2-54-254-71-178.ap-southeast-1.compute.amazonaws.com:9765/stratos/admin/cartridge/list/subscribed", restClientService.getUsername(), restClientService.getPassword());
+            String resultString = restClientService.doGet(restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
+                    restClientService.getUsername(), restClientService.getPassword());
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
 
             if (cartridgeList == null) {
-                System.out.println("Object is null");
+                System.out.println("Subscribe cartridge list is null");
             }
 
             Cartridge[] cartridges = new Cartridge[cartridgeList.getCartridge().size()];
@@ -282,11 +281,9 @@ public class RestCommandLineService {
                 headers.add("Repo URL");
             }
 
-            System.out.println("Subscribed Cartridges: 1");
+            System.out.println("Subscribed Cartridges:");
             CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
-
             System.out.println();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -309,10 +306,9 @@ public class RestCommandLineService {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
+
         String jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
-        System.out.println("\n" + jsonSubscribeString + "\n");
         String completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
-        System.out.println("\n" + jsonSubscribeString + "\n");
 
         SubscriptionInfo subcriptionConnectInfo = null;
         if (StringUtils.isNotBlank(dataCartridgeType) && StringUtils.isNotBlank(dataCartridgeAlias)) {
@@ -320,8 +316,8 @@ public class RestCommandLineService {
                     dataCartridgeAlias);
             try {
                 System.out.println("First try");
-                String subscription = restClientService.doPost("http://ec2-54-254-71-178.ap-southeast-1.compute.amazonaws.com:9765/stratos/admin/cartridge/subscribe", completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
-                System.out.println(subscription);
+                String subscription = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
+                        completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
                 subcriptionConnectInfo = gson.fromJson(subscription, SubscriptionInfo.class);
                 System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n",
                         dataCartridgeType, dataCartridgeAlias);
@@ -334,9 +330,8 @@ public class RestCommandLineService {
 
         try {
             System.out.println("Second try");
-            String subscriptionOutput = restClientService.doPost("http://ec2-54-254-71-178.ap-southeast-1.compute.amazonaws.com:9765/stratos/admin/cartridge/subscribe", completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
+            String subscriptionOutput = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint, completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
             SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutput, SubscriptionInfo.class);
-            System.out.println(subscriptionOutput);
 
             System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
 
@@ -371,6 +366,27 @@ public class RestCommandLineService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email, String active) {
+        TenantInfoBean tenantInfo = new TenantInfoBean();
+        tenantInfo.setAdmin(admin);
+        tenantInfo.setFirstname(firstName);
+        tenantInfo.setLastname(lastaName);
+        tenantInfo.setAdminPassword(password);
+        tenantInfo.setTenantDomain(domain);
+        tenantInfo.setEmail(email);
+        tenantInfo.setActive(active);
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+
+        String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
+        String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
+
+        String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint, completeJsonString, restClientService.getUsername(), restClientService.getPassword());
+
+        System.out.println(result);
     }
 
     private class CartridgeList  {
