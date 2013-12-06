@@ -109,7 +109,18 @@
                                 <featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
                                 </featureArtifactDef>                               
-                               
+
+                              <!-- Registry -->
+				<featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.registry.core.feature:${carbon.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.registry.ui.menu.feature:${carbon.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.registry.resource.properties.feature:${carbon.version}
+                                </featureArtifactDef>
+ 
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -140,6 +151,22 @@
                                 <feature>
                                     <id>org.apache.stratos.messaging.feature.group</id>
                                     <version>${project.version}</version>
+                                </feature>
+			<!-- Registry feature -->
+				<feature>
+                                    <id>org.wso2.carbon.registry.core.feature.group</id>
+                                    <version>${carbon.version}</version>
+                                </feature>
+
+                                <feature>
+                                    <id>org.wso2.carbon.registry.ui.menu.feature.group</id>
+                                    <version>${carbon.version}</version>
+                                </feature>
+
+                                <feature>
+                                    <id>org.wso2.carbon.registry.resource.properties.feature.group
+                                    </id>
+                                    <version>${carbon.version}</version>
                                 </feature>
                                 
                             </features>
