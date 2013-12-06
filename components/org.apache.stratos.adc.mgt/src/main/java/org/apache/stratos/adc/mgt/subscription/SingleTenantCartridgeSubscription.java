@@ -108,7 +108,7 @@ public class SingleTenantCartridgeSubscription extends CartridgeSubscription {
         log.info("Unregistered service cluster, domain " + getCluster().getClusterDomain() + ", sub domain " +
                 getCluster().getClusterSubDomain());
 
-        cleanupSubscription();
+        super.cleanupSubscription();
     }
 
     @Override
