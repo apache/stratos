@@ -70,11 +70,11 @@ do
     if [[ $x = "cc" ]]; then
         cc="true"
     fi
-    if [[ $x = "elb" ]]; then
-        elb="true"
+    if [[ $x = "lb" ]]; then
+        lb="true"
     fi
-    if [[ $x = "agent" ]]; then
-        agent="true"
+    if [[ $x = "as" ]]; then
+        as="true"
     fi
     if [[ $x = "sc" ]]; then
         sc="true"
@@ -82,16 +82,16 @@ do
     if [[ $x = "all" ]]; then
 	mb="true"
         cc="true"
-        elb="true"
-        agent="true"
+        lb="true"
+        as="true"
         sc="true"
         cep="true"
     fi
     if [[ $x = "demo" ]]; then
         demo="true"
         cc="true"
-        elb="true"
-        agent="true"
+        lb="true"
+        as="true"
         sc="true"
 	bam="true"
     fi
@@ -132,21 +132,21 @@ if [[ $cc = "true" ]]; then
     sleep $SLEEP
 fi
 
-if [[ $elb = "true" ]]; then
-    echo ${elb_path} 
+if [[ $lb = "true" ]]; then
+    echo ${lb_path} 
 
-    echo "Starting ELB server ..." >> $LOG
-    nohup ${elb_path}/bin/stratos.sh -DportOffset=$elb_port_offset &
-    echo "ELB server started" >> $LOG
+    echo "Starting LB server ..." >> $LOG
+    nohup ${lb_path}/bin/stratos.sh &
+    echo "LB server started" >> $LOG
     sleep $SLEEP
 fi
 
-if [[ $agent = "true" ]]; then
-    echo ${agent_path}
+if [[ $as = "true" ]]; then
+    echo ${as_path}
 
-    echo "Starting AGENT server ..." >> $LOG
-    nohup ${agent_path}/bin/stratos.sh -DportOffset=$agent_port_offset &
-    echo "AGENT server started" >> $LOG
+    echo "Starting Auto Scalar server ..." >> $LOG
+    nohup ${as_path}/bin/stratos.sh &
+    echo "Auto Scalar server started" >> $LOG
     sleep $SLEEP
 fi
 

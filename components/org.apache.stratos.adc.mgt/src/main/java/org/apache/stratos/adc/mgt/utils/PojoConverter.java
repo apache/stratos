@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.bean.util.convert;
+package org.apache.stratos.adc.mgt.utils;
 
 public class PojoConverter {
 

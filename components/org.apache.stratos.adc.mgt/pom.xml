@@ -46,7 +46,11 @@
 			<artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.adc.topology.mgt</artifactId>

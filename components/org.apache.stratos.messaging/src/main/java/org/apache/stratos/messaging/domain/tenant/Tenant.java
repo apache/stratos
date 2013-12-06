@@ -42,4 +42,8 @@ public class Tenant implements Serializable{
     public String getTenantDomain() {
         return tenantDomain;
     }
+
+    public void setTenantDomain(String tenantDomain) {
+        this.tenantDomain = tenantDomain;
+    }
 }

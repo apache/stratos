@@ -17,14 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.service.client;
+package org.apache.stratos.adc.mgt.client;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
-import org.apache.stratos.rest.endpoint.ServiceHolder;
 
 import java.rmi.RemoteException;
 
@@ -38,7 +38,7 @@ public class AutoscalerServiceClient {
 
     public AutoscalerServiceClient(String epr) throws AxisFault {
 
-        ConfigurationContext clientConfigContext = ServiceHolder.getConfigurationContext().getClientConfigContext();
+        ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
         try {
             stub = new AutoScalerServiceStub(clientConfigContext, epr);
             stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(300000);
@@ -66,7 +66,7 @@ public class AutoscalerServiceClient {
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
         try {
-             partitions = stub.getAllAvailablePartitions();
+            partitions = stub.getAllAvailablePartitions();
 
         } catch (RemoteException e) {
             String errorMsg = "Error in getting available partitions";
