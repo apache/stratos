@@ -37,11 +37,15 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.rest.endpoint.Constants;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -69,7 +73,28 @@ public class ServiceUtils {
             }
 
             try {
+                // call CC
                 cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
+                // is a LB Cartridge?
+                Properties properties = cartridgeConfig.getProperties();
+                if (properties != null && properties.getProperties() != null) {
+                    for (org.apache.stratos.cloud.controller.pojo.Property prop : 
+                        properties.getProperties()) {
+
+                        if (Constants.IS_LOAD_BALANCER.equals(prop.getName())) {
+                            if ("true".equals(prop.getValue())) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("This is a load balancer Cartridge definition. " +
+                                            "Type: " + cartridgeConfig.getType());
+                                }
+                                return;
+                            }
+                        }
+
+                    }
+                }
+                // if not an LB Cartridge
+                LoadbalancerConfig lbConfig = cartridgeConfig.getLbConfig();
 
             } catch (Exception e) {
                 throw new RestAPIException(e);
