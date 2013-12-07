@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -96,6 +97,12 @@ public class TenantManager {
     public void addTenant(Tenant tenant) {
         this.tenantIdTenantMap.put(tenant.getTenantId(), tenant);
         this.tenantDomainTenantMap.put(tenant.getTenantDomain(), tenant);
+    }
+
+    public void addTenants(List<Tenant> tenants) {
+        for(Tenant tenant : tenants) {
+            addTenant(tenant);
+        }
     }
 
     public Tenant getTenant(int tenantId) {

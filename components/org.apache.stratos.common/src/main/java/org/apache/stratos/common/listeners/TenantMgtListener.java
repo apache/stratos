@@ -27,6 +27,8 @@ public interface TenantMgtListener {
 
     public void onTenantUpdate(TenantInfoBean tenantInfo) throws StratosException;
 
+    public void onTenantDelete(int tenantId);
+
     public void onTenantRename(int tenantId, String oldDomainName, 
                              String newDomainName)throws StratosException;
     

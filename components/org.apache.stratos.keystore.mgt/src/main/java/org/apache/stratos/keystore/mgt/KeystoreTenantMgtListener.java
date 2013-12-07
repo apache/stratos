@@ -52,6 +52,10 @@ public class KeystoreTenantMgtListener implements TenantMgtListener {
         // It is not required to implement this method for keystore mgt. 
     }
 
+    public void onTenantDelete(int tenantId) {
+        // It is not required to implement this method for keystore mgt.
+    }
+
     public void onTenantRename(int tenantId, String oldDomainName,
                              String newDomainName) throws StratosException {
         // It is not required to implement this method for keystore mgt.
