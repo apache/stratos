@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
@@ -44,7 +45,7 @@ public class TopologyEventSender {
     public static void sendServiceCreateEvent(List<Cartridge> cartridgeList) {
         ServiceCreatedEvent serviceCreatedEvent;
         for(Cartridge cartridge : cartridgeList) {
-            serviceCreatedEvent = new ServiceCreatedEvent(cartridge.getType());
+            serviceCreatedEvent = new ServiceCreatedEvent(cartridge.getType(), (cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant));
 
             // Add ports to the event
             Port port;
@@ -127,7 +128,7 @@ public class TopologyEventSender {
     }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt) {
-        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getHostName());
+        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(ctxt.getCartridgeType(), ctxt.getClusterId());
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster removed event: [service] %s [cluster] %s", ctxt.getCartridgeType(), ctxt.getClusterId()));
