@@ -22,10 +22,7 @@ package org.apache.stratos.messaging.message.processor.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantCreatedEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantRemovedEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantUpdatedEventListener;
+import org.apache.stratos.messaging.listener.tenant.*;
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
@@ -40,6 +37,7 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     private TenantUpdatedMessageProcessor tenantUpdatedMessageProcessor;
     private TenantRemovedMessageProcessor tenantRemovedMessageProcessor;
     private TenantSubscribedMessageProcessor tenantSubscribedMessageProcessor;
+    private TenantUnSubscribedMessageProcessor tenantUnSubscribedMessageProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -58,6 +56,9 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
         tenantSubscribedMessageProcessor = new TenantSubscribedMessageProcessor();
         add(tenantSubscribedMessageProcessor);
 
+        tenantUnSubscribedMessageProcessor = new TenantUnSubscribedMessageProcessor();
+        add(tenantUnSubscribedMessageProcessor);
+
         if (log.isDebugEnabled()) {
             log.debug("Tenant message processor chain initialized");
         }
@@ -74,7 +75,10 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
             tenantRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof TenantSubscribedEventListener) {
             tenantSubscribedMessageProcessor.addEventListener(eventListener);
-        } else {
+        } else if (eventListener instanceof TenantUnSubscribedEventListener) {
+            tenantUnSubscribedMessageProcessor.addEventListener(eventListener);
+        }
+        else {
             throw new RuntimeException("Unknown event listener");
         }
     }
