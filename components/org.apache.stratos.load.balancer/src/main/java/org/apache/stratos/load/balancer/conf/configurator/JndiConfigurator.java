@@ -33,8 +33,11 @@ import java.io.IOException;
  */
 public class JndiConfigurator {
 
+    private static boolean configured;
+
     public static void configure(LoadBalancerConfiguration configuration) {
         generateJndiPropertiesFile(configuration);
+        configured = true;
     }
 
     private static void generateJndiPropertiesFile(LoadBalancerConfiguration configuration) {
@@ -72,5 +75,9 @@ public class JndiConfigurator {
     private static void writeFileContent(String content, String filePath) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(filePath);
         IOUtils.write(content, outputStream);
+    }
+
+    public static boolean isConfigured() {
+        return configured;
     }
 }

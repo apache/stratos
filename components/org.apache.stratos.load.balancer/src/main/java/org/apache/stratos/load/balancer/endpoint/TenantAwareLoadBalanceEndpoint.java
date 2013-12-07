@@ -189,7 +189,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         if(!requestDelegator.isTargetHostValid(targetHost)) {
             throwSynapseException(synCtx, 404, String.format("Unknown host name %s", targetHost));
         }
-        Member member = requestDelegator.findNextMember(targetHost);
+        Member member = requestDelegator.findNextMemberFromHostName(targetHost);
         if (member == null)
             return null;
 

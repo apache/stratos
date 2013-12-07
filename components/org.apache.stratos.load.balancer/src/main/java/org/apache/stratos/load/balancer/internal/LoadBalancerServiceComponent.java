@@ -21,15 +21,17 @@ package org.apache.stratos.load.balancer.internal;
 
 import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.stratos.load.balancer.LoadBalancerContext;
-import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
-import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.EndpointDeployer;
+import org.apache.stratos.load.balancer.LoadBalancerTenantReceiver;
+import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
+import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
-import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
+import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
@@ -46,10 +48,9 @@ import org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService;
 import org.wso2.carbon.mediation.initializer.services.SynapseRegistrationsService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.wso2.carbon.user.core.service.RealmService;
-import org.apache.stratos.load.balancer.EndpointDeployer;
 
 import java.io.File;
 import java.util.Map;
@@ -96,6 +97,7 @@ public class LoadBalancerServiceComponent {
 
     private boolean activated = false;
     private LoadBalancerTopologyReceiver topologyReceiver;
+    private LoadBalancerTenantReceiver tenantReceiver;
 
     protected void activate(ComponentContext ctxt) {
         try {
@@ -112,9 +114,23 @@ public class LoadBalancerServiceComponent {
             // Configure cep settings
             CEPConfigurator.configure(configuration);
 
-            if (configuration.isTopologyEventListenerEnabled()) {
+            if (configuration.isMultiTenancyEnabled()) {
                 // Configure jndi.properties
                 JndiConfigurator.configure(configuration);
+
+                tenantReceiver = new LoadBalancerTenantReceiver();
+                Thread tenantReceiverThread = new Thread(tenantReceiver);
+                tenantReceiverThread.start();
+                if (log.isInfoEnabled()) {
+                    log.info("Tenant receiver thread started");
+                }
+            }
+
+            if (configuration.isTopologyEventListenerEnabled()) {
+                if (!JndiConfigurator.isConfigured()) {
+                    // Configure jndi.properties
+                    JndiConfigurator.configure(configuration);
+                }
 
                 // Start topology receiver
                 topologyReceiver = new LoadBalancerTopologyReceiver();
@@ -153,7 +169,7 @@ public class LoadBalancerServiceComponent {
                 log.info("Load balancer service component is activated ");
             }
         } catch (Exception e) {
-            if(log.isFatalEnabled()) {
+            if (log.isFatalEnabled()) {
                 log.fatal("Failed to activate load balancer service component", e);
             }
         }
@@ -162,7 +178,7 @@ public class LoadBalancerServiceComponent {
     protected void deactivate(ComponentContext context) {
         try {
             Set<Map.Entry<Integer, SynapseEnvironmentService>> entrySet = LoadBalancerContext
-                    .getInstance().getSynapseEnvironmentServiceMap().entrySet();
+                    .getInstance().getTenantIdSynapseEnvironmentServiceMap().entrySet();
             for (Map.Entry<Integer, SynapseEnvironmentService> entry : entrySet) {
                 unregisterDeployer(entry.getValue().getConfigurationContext()
                         .getAxisConfiguration(), entry.getValue()
@@ -171,6 +187,8 @@ public class LoadBalancerServiceComponent {
         } catch (Exception e) {
             log.warn("Couldn't remove the endpoint deployer");
         }
+        // Terminate tenant receiver
+        tenantReceiver.terminate();
         // Terminate topology receiver
         topologyReceiver.terminate();
     }
@@ -258,7 +276,7 @@ public class LoadBalancerServiceComponent {
      */
     protected void setSynapseEnvironmentService(SynapseEnvironmentService synapseEnvironmentService) {
         boolean alreadyCreated = LoadBalancerContext.getInstance()
-                .getSynapseEnvironmentServiceMap()
+                .getTenantIdSynapseEnvironmentServiceMap()
                 .containsKey(synapseEnvironmentService.getTenantId());
 
         LoadBalancerContext.getInstance().addSynapseEnvironmentService(
@@ -337,7 +355,7 @@ public class LoadBalancerServiceComponent {
     protected void unsetSynapseRegistrationsService(
             SynapseRegistrationsService synapseRegistrationsService) {
         int tenantId = synapseRegistrationsService.getTenantId();
-        if (LoadBalancerContext.getInstance().getSynapseEnvironmentServiceMap()
+        if (LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
                 .containsKey(tenantId)) {
             SynapseEnvironment env = LoadBalancerContext.getInstance()
                     .getSynapseEnvironmentService(tenantId)

@@ -21,24 +21,27 @@ package org.apache.stratos.load.balancer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
 import org.apache.stratos.messaging.listener.topology.ClusterRemovedEventListener;
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ServiceRemovedEventListener;
-import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 
-import java.util.Collection;
-
 /**
- * Load balancer topology receiver.
+ * Load balancer topology receiver updates load balancer context according to
+ * incoming topology events.
  */
 public class LoadBalancerTopologyReceiver implements Runnable {
 
@@ -55,52 +58,51 @@ public class LoadBalancerTopologyReceiver implements Runnable {
     public void run() {
         Thread thread = new Thread(topologyReceiver);
         thread.start();
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
         }
 
         // Keep the thread live until terminated
-        while (!terminated);
-        if(log.isInfoEnabled()) {
+        while (!terminated) ;
+        if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread terminated");
         }
     }
 
     private TopologyEventMessageDelegator createMessageDelegator() {
         TopologyMessageProcessorChain processorChain = createEventProcessorChain();
-        processorChain.addEventListener(new CompleteTopologyEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    TopologyManager.acquireReadLock();
-                    for(Service service : TopologyManager.getTopology().getServices()) {
-                        for(Cluster cluster : service.getClusters()) {
-                            if(hasActiveMembers(cluster)) {
-                                addClusterToLbContext(cluster);
-                            }
-                        }
-                    }
-                }
-                finally {
-                    TopologyManager.releaseReadLock();
-                }
-            }
-
-            private boolean hasActiveMembers(Cluster cluster) {
-                for(Member member : cluster.getMembers()) {
-                    if(member.isActive()) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
         return new TopologyEventMessageDelegator(processorChain);
     }
 
     private TopologyMessageProcessorChain createEventProcessorChain() {
         // Listen to topology events that affect clusters
         TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
+        processorChain.addEventListener(new CompleteTopologyEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                    TopologyManager.acquireReadLock();
+                    for (Service service : TopologyManager.getTopology().getServices()) {
+                        for (Cluster cluster : service.getClusters()) {
+                            if (hasActiveMembers(cluster)) {
+                                addClusterToLbContext(cluster);
+                            }
+                        }
+                    }
+                } finally {
+                    TopologyManager.releaseReadLock();
+                }
+            }
+
+            private boolean hasActiveMembers(Cluster cluster) {
+                for (Member member : cluster.getMembers()) {
+                    if (member.isActive()) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         processorChain.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -108,16 +110,17 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
 
                     // Add cluster to the context when its first member is activated
-                    MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent)event;
-                    Cluster cluster = findCluster(memberActivatedEvent.getClusterId());
-                    if(cluster == null) {
-                        if(log.isErrorEnabled()) {
-                            log.error(String.format("Cluster not found in topology: [cluster] %s", memberActivatedEvent.getClusterId()));
+                    MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
+                    Cluster cluster = LoadBalancerContext.getInstance().getCluster(memberActivatedEvent.getClusterId());
+                    if (cluster != null) {
+                        addClusterToLbContext(cluster);
+                    }
+                    else {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Cluster not found in cluster id cluster map: [cluster] %s", memberActivatedEvent.getClusterId()));
                         }
                     }
-                    addClusterToLbContext(cluster);
-                }
-                finally {
+                } finally {
                     TopologyManager.releaseReadLock();
                 }
             }
@@ -129,10 +132,19 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
 
                     // Remove cluster from context
-                    ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent)event;
-                    removeClusterFromLbContext(clusterRemovedEvent.getHostName());
-                }
-                finally {
+                    ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
+                    Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterRemovedEvent.getClusterId());
+                    if (cluster != null) {
+                        for (String hostName : cluster.getHostNames()) {
+                            removeClusterFromLbContext(hostName);
+                        }
+                    }
+                    else {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Cluster not found in cluster id cluster map: [cluster] %s", clusterRemovedEvent.getClusterId()));
+                        }
+                    }
+                } finally {
                     TopologyManager.releaseReadLock();
                 }
             }
@@ -144,16 +156,21 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
 
                     // Remove all clusters of given service from context
-                    ServiceRemovedEvent serviceRemovedEvent = (ServiceRemovedEvent)event;
-                    for(Service service : TopologyManager.getTopology().getServices()) {
-                        for(Cluster cluster : service.getClusters()) {
-                            for(String hostName : cluster.getHostNames()) {
+                    ServiceRemovedEvent serviceRemovedEvent = (ServiceRemovedEvent) event;
+                    Service service = TopologyManager.getTopology().getService(serviceRemovedEvent.getServiceName());
+                    if (service != null) {
+                        for (Cluster cluster : service.getClusters()) {
+                            for (String hostName : cluster.getHostNames()) {
                                 removeClusterFromLbContext(hostName);
                             }
                         }
                     }
-                }
-                finally {
+                    else {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Service not found in topology: [service] %s", serviceRemovedEvent.getServiceName()));
+                        }
+                    }
+                } finally {
                     TopologyManager.releaseReadLock();
                 }
             }
@@ -162,40 +179,42 @@ public class LoadBalancerTopologyReceiver implements Runnable {
     }
 
     private void addClusterToLbContext(Cluster cluster) {
-        for(String hostName : cluster.getHostNames()) {
-            if(!LoadBalancerContext.getInstance().clusterExists(hostName)) {
-                LoadBalancerContext.getInstance().addCluster(hostName, cluster);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster added to load balancer context: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
+        // Add cluster to Map<ClusterId, Cluster>
+        LoadBalancerContext.getInstance().addCluster(cluster);
+
+        Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
+        if (service.getServiceType() == ServiceType.SingleTenant) {
+            // Add cluster to SingleTenantClusterMap
+            for (String hostName : cluster.getHostNames()) {
+                if (!LoadBalancerContext.getInstance().singleTenantClusterExists((hostName))) {
+                    LoadBalancerContext.getInstance().addSingleTenantCluster(hostName, cluster);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster added to single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
+                    }
                 }
             }
         }
+        // MultiTenantClusterMap is updated by tenant receiver.
     }
 
-    private void removeClusterFromLbContext(String hostName) {
-        if(LoadBalancerContext.getInstance().clusterExists(hostName)) {
-            Cluster cluster = LoadBalancerContext.getInstance().getCluster(hostName);
-            LoadBalancerContext.getInstance().removeCluster(hostName);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Cluster removed from load balancer context: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
-            }
-        }
-    }
-
-    private Cluster findCluster(String clusterId) {
-        if(clusterId == null) {
-            return null;
-        }
-
-        Collection<Service> services = TopologyManager.getTopology().getServices();
-        for (Service service : services) {
-            for (Cluster cluster : service.getClusters()) {
-                if (clusterId.equals(cluster.getClusterId())) {
-                    return cluster;
+    private void removeClusterFromLbContext(String clusterId) {
+        Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterId);
+        Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
+        if (service.getServiceType() == ServiceType.SingleTenant) {
+            // Remove cluster from SingleTenantClusterMap
+            for (String hostName : cluster.getHostNames()) {
+                if (LoadBalancerContext.getInstance().singleTenantClusterExists(hostName)) {
+                    LoadBalancerContext.getInstance().removeSingleTenantCluster(hostName);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster removed from single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
+                    }
                 }
             }
         }
-        return null;
+        // MultiTenantClusterMap is updated by tenant receiver.
+
+        // Remove cluster from Map<ClusterId,Cluster>
+        LoadBalancerContext.getInstance().removeCluster(clusterId);
     }
 
     /**

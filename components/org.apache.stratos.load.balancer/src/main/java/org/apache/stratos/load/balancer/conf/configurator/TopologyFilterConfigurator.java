@@ -19,7 +19,6 @@
 
 package org.apache.stratos.load.balancer.conf.configurator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 
 /**

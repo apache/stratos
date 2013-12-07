@@ -18,14 +18,14 @@
  */
 package org.apache.stratos.load.balancer.statistics;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPInFlightRequestCountObserver;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPInFlightRequestCountObserver;
 
 /**
  * This is the load balancing stats collector and any observer can get registered here 
