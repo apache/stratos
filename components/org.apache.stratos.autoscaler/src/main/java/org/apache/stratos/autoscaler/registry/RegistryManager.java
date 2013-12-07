@@ -56,9 +56,10 @@ public class RegistryManager {
     public void persist(Object dataObj, String resourcePath) throws RegistryException {
     	
         try {
+        	/*
         	if (registryService.resourceExists(resourcePath)) {
                 throw new AutoScalerException("Resource already exist in the registry: " + resourcePath);
-            }
+            }*/
             registryService.beginTransaction();
 
             Resource nodeResource = registryService.newResource();

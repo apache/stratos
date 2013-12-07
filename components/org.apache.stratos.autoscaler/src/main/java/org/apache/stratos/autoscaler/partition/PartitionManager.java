@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
@@ -44,6 +43,9 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	
 	private static PartitionManager instance;
 	
+	String partitionResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
+			+ AutoScalerConstants.PARTITION_RESOURCE + "/";
+	
 	private PartitionManager(){}
 	
 	public static PartitionManager getInstance(){
@@ -62,8 +64,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		if(this.partitionExist(partition.getId()))
 			throw new AutoScalerException("A parition with the ID " +  partitionId + " already exist.");
 				
-		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
-    			+ AutoScalerConstants.PARTITION_RESOURCE + "/" + partition.getId();
+		String resourcePath= this.partitionResourcePath + partition.getId();
 		
         RegistryManager regManager = RegistryManager.getInstance();     
         
@@ -81,6 +82,8 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		return true;
 	}
 	
+	
+	
 	public Partition getPartitionById(String partitionId){
 		if(partitionExist(partitionId))
 			return partitionListMap.get(partitionId);
@@ -95,7 +98,18 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	}
 	
 	public boolean validatePartition(Partition partition) throws PartitionValidationException{
-		return CloudControllerClient.getInstance().validatePartition(partition);
+		return true;
+		//return CloudControllerClient.getInstance().validatePartition(partition);
+	}
+
+	public void updatePartition(Partition newPartition,Partition oldPartition) throws RegistryException {
+		if(!oldPartition.getId().equals(newPartition.getId()))
+			throw new AutoScalerException("Can not update.Id s of the two partitions did not match.");
+		
+		oldPartition=newPartition;
+		//overwrite the registry resource.
+		RegistryManager.getInstance().persist(
+				newPartition, this.partitionResourcePath + newPartition.getId());
 	}
 
 }
