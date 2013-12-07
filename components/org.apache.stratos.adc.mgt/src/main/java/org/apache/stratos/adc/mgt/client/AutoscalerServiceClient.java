@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.rmi.RemoteException;
 
@@ -62,22 +61,70 @@ public class AutoscalerServiceClient {
         return serviceClient;
     }
 
-    public org.apache.stratos.cloud.controller.deployment.partition.Partition[] getAvailablePartitions ()
+    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition[] getAvailablePartitions ()
             throws Exception {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = new Partition[0];
-//        TODO: Commented out to fix the build error
-//        try {
-//            partitions = stub.getAllAvailablePartitions();
-//
-//        } catch (RemoteException e) {
-//            String errorMsg = "Error in getting available partitions";
-//            log.error(errorMsg, e);
-//            throw new Exception(errorMsg, e);
-//        }
+        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
+        try {
+            partitions = stub.get;
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return partitions;
+    }*/
+
+    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition getPartition (String partitionId)
+            throws Exception{
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition partition;
+        try {
+            partition = stub.getPartition(partitionId);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return partition;
+    }*/
+
+    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition [] getPartitions (String deploymentPolicyId,
+                                                                                            String partitionGroupId)
+            throws Exception{
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
+        try {
+            partitions = stub.getPartitions(deploymentPolicyId, partitionGroupId);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
 
         return partitions;
     }
+
+    public org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] getPartitionGroups (String deploymentPolicyId)
+            throws Exception{
+
+        org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] partitionGroups;
+        try {
+            partitionGroups = stub.getPartitionGroups(deploymentPolicyId);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return partitionGroups;
+    }*/
 
     public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] getAutoScalePolicies ()
             throws Exception {
@@ -95,6 +142,22 @@ public class AutoscalerServiceClient {
         return autoscalePolicies;
     }
 
+    /*public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy getAutoScalePolicy (String autoscalingPolicyId)
+            throws Exception {
+
+        org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
+        try {
+            autoscalePolicy = stub.getAutoscalingPolicy(autoscalingPolicyId);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return autoscalePolicy;
+    }*/
+
     public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy [] getDeploymentPolicies()
             throws Exception {
 
@@ -110,4 +173,36 @@ public class AutoscalerServiceClient {
 
         return deploymentPolicies;
     }
+
+    public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy [] getDeploymentPolicies(String cartridgeType)
+            throws Exception {
+
+        org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy[] deploymentPolicies;
+        try {
+            deploymentPolicies = stub.getValidDeploymentPoliciesforCartridge(cartridgeType);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available deployment policies";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return deploymentPolicies;
+    }
+
+    /*public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId)
+            throws Exception {
+
+        org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy deploymentPolicy;
+        try {
+            deploymentPolicy = stub.getDeploymentPolicy(deploymentPolicyId);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available deployment policies";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return deploymentPolicy;
+    }*/
 }

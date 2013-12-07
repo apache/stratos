@@ -137,8 +137,8 @@ public class PojoConverter {
         return properties;
     }
 
-    public static Partition[] populatePartitionPojo (org.apache.stratos.cloud.controller.deployment.partition.Partition[]
-                                                              partitions) {
+    public static Partition[] populatePartitionPojos (org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+                                                             partitions) {
 
         Partition [] partitionBeans;
         if(partitions == null) {
@@ -148,18 +148,39 @@ public class PojoConverter {
 
         partitionBeans = new Partition[partitions.length];
         for (int i = 0 ; i < partitions.length ; i++) {
-            Partition partition = new Partition();
+            /*Partition partition = new Partition();
             partition.id = partitions[i].getId();
             partition.provider = partitions[i].getProvider();
             partition.partitionMin = partitions[i].getPartitionMin();
-            partition.partitionMax = partitions[i].getPartitionMax();
+            partition.partitionMax = partitions[i].getPartitionMax();*/
             //properties are not added currently, TODO if required
             //if(partitions[i].getProperties() != null) {
             //    List<PropertyBean> propertyBeans = getPropertyBeans(partitions[i].getProperties());
             //    partition.property = propertyBeans;
             //}
-            partitionBeans[i] = partition;
+            partitionBeans[i] = populatePartitionPojo(partitions[i]);
         }
+        return partitionBeans;
+    }
+
+    public static Partition populatePartitionPojo (org.apache.stratos.cloud.controller.deployment.partition.Partition
+                                                             partition) {
+
+        Partition partitionBeans = new Partition();
+        if(partition == null) {
+            return partitionBeans;
+        }
+
+        partitionBeans.id = partition.getId();
+        partitionBeans.provider = partition.getProvider();
+        partitionBeans.partitionMin = partition.getPartitionMin();
+        partitionBeans.partitionMax = partition.getPartitionMax();
+        //properties are not added currently, TODO if required
+        //if(partition[i].getProperties() != null) {
+        //    List<PropertyBean> propertyBeans = getPropertyBeans(partition[i].getProperties());
+        //    partition.property = propertyBeans;
+        //}
+
         return partitionBeans;
     }
 
@@ -179,7 +200,7 @@ public class PojoConverter {
         return propertyBeans;
     }
 
-    public static AutoscalePolicy[] populateAutoscalePojo(org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[]
+    public static AutoscalePolicy[] populateAutoscalePojos(org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[]
                                                                    autoscalePolicies) {
 
         AutoscalePolicy [] autoscalePolicyBeans;
@@ -190,16 +211,34 @@ public class PojoConverter {
 
         autoscalePolicyBeans = new AutoscalePolicy[autoscalePolicies.length];
         for (int i = 0 ; i < autoscalePolicies.length ; i++) {
-            AutoscalePolicy autoscalePolicy = new AutoscalePolicy();
+            /*AutoscalePolicy autoscalePolicy = new AutoscalePolicy();
             autoscalePolicy.id = autoscalePolicies[i].getId();
             autoscalePolicy.displayName = autoscalePolicies[i].getDisplayName();
             autoscalePolicy.description = autoscalePolicies[i].getDescription();
             if(autoscalePolicies[i].getLoadThresholds() != null) {
                 autoscalePolicy.loadThresholds = populateLoadThresholds(autoscalePolicies[i].getLoadThresholds());
-            }
-            autoscalePolicyBeans[i] = autoscalePolicy;
+            }*/
+            autoscalePolicyBeans[i] = populateAutoscalePojo(autoscalePolicies[i]);
         }
         return autoscalePolicyBeans;
+    }
+
+    public static AutoscalePolicy populateAutoscalePojo(org.apache.stratos.autoscaler.policy.model.AutoscalePolicy
+                                                                   autoscalePolicy) {
+
+        AutoscalePolicy autoscalePolicyBean = new AutoscalePolicy();
+        if(autoscalePolicy == null) {
+            return autoscalePolicyBean;
+        }
+
+        autoscalePolicyBean.id = autoscalePolicy.getId();
+        autoscalePolicyBean.displayName = autoscalePolicy.getDisplayName();
+        autoscalePolicyBean.description = autoscalePolicy.getDescription();
+        if(autoscalePolicy.getLoadThresholds() != null) {
+            autoscalePolicyBean.loadThresholds = populateLoadThresholds(autoscalePolicy.getLoadThresholds());
+        }
+
+        return autoscalePolicyBean;
     }
 
     private static LoadThresholds populateLoadThresholds (org.apache.stratos.autoscaler.policy.model.LoadThresholds
@@ -242,8 +281,8 @@ public class PojoConverter {
         return loadThresholdBean;
     }
 
-    public static DeploymentPolicy[] populateDeploymentPolicyPojo (org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy []
-                                                                            deploymentPolicies) {
+    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy[]
+                                                                           deploymentPolicies) {
         DeploymentPolicy[] deploymentPolicyBeans;
         if(deploymentPolicies == null) {
             deploymentPolicyBeans = new DeploymentPolicy[0];
@@ -252,42 +291,81 @@ public class PojoConverter {
 
         deploymentPolicyBeans = new DeploymentPolicy[deploymentPolicies.length];
         for (int i = 0 ; i < deploymentPolicies.length ; i++) {
-            DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
-            deploymentPolicy.id = deploymentPolicies[i].getId();
+            //DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
+            //deploymentPolicy.id = deploymentPolicies[i].getId();
 
             //if(deploymentPolicies[i].getPartitionGroups() != null &&
             //        deploymentPolicies[i].getPartitionGroups().length > 0) {
             //    deploymentPolicy.partitionGroup = getPartitionGroups(deploymentPolicies[i].getPartitionGroups());
             //}
 
-            deploymentPolicyBeans[i] = deploymentPolicy;
+            deploymentPolicyBeans[i] = populateDeploymentPolicyPojo(deploymentPolicies[i]);
         }
 
         return deploymentPolicyBeans;
     }
 
-    private static List<PartitionGroup> getPartitionGroups (org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] partitionGroups) {
+    public static DeploymentPolicy populateDeploymentPolicyPojo (org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy
+                                                                 deploymentPolicy) {
 
-        List<PartitionGroup> partitionGroupList = new ArrayList<PartitionGroup>();
+        DeploymentPolicy deploymentPolicyBean = new DeploymentPolicy();
+        if(deploymentPolicy == null) {
+            return deploymentPolicyBean;
+        }
+
+        deploymentPolicyBean.id = deploymentPolicy.getId();
+        //if(deploymentPolicy.getPartitionGroups() != null &&
+        //        deploymentPolicy.getPartitionGroups().length > 0) {
+        //    deploymentPolicy.partitionGroup = getPartitionGroups(deploymentPolicy.getPartitionGroups());
+        //}
+
+        return deploymentPolicyBean;
+    }
+
+    public static PartitionGroup populatePartitionGroupPojo (org.apache.stratos.autoscaler.partition.xsd.PartitionGroup
+                                                                         partitionGroup) {
+
+        PartitionGroup partitionGroupBean = new PartitionGroup();
+        if(partitionGroup == null){
+            return partitionGroupBean;
+        }
+
+        partitionGroupBean.id = partitionGroup.getId();
+        partitionGroupBean.partitionAlgo = partitionGroup.getPartitionAlgo();
+        if(partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
+            partitionGroupBean.partition = getPartitionIdsList(partitionGroup.getPartitions());
+        }
+
+        return partitionGroupBean;
+    }
+
+    public static PartitionGroup [] populatePartitionGroupPojos (org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] partitionGroups) {
+
+        PartitionGroup[] partitionGroupsBeans;
+        if(partitionGroups == null) {
+            partitionGroupsBeans = new PartitionGroup[0];
+            return partitionGroupsBeans;
+        }
+
+        partitionGroupsBeans = new PartitionGroup[partitionGroups.length];
         for (int i = 0 ; i < partitionGroups.length ; i ++) {
-            PartitionGroup partitionGroup = new PartitionGroup();
+            /*PartitionGroup partitionGroup = new PartitionGroup();
             partitionGroup.id = partitionGroups[i].getId();
             partitionGroup.partitionAlgo = partitionGroups[i].getPartitionAlgo();
 
             if(partitionGroups[i].getPartitions() != null && partitionGroups[i].getPartitions().length > 0){
                 partitionGroup.partition = getPartitionIdsList(partitionGroups[i].getPartitions());
-            }
-
-            partitionGroupList.add(partitionGroup);
+            }*/
+            partitionGroupsBeans[i] = populatePartitionGroupPojo(partitionGroups[i]);
         }
 
-        return partitionGroupList;
+        return partitionGroupsBeans;
     }
 
     private static List<String> getPartitionIdsList(org.apache.stratos.cloud.controller.deployment.partition.Partition[]
                                                             partitions) {
 
-        ArrayList<String> partitionIdList = new ArrayList<String>();
+        List<String> partitionIdList = new ArrayList<String>();
         for (int i = 0 ; i < partitions.length ; i++) {
             partitionIdList.add(partitions[i].getId());
         }
