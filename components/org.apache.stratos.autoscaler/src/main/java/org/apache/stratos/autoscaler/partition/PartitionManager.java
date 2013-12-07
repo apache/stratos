@@ -19,15 +19,18 @@
 
 package org.apache.stratos.autoscaler.partition;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.PartitionValidationException;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
  * The model class for managing Partitions.
@@ -54,18 +57,28 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		return partitionListMap.containsKey(partitionId);
 	}
 	
-	public void addPartition(String partitionId, Partition partition){
-		if(partitionExist(partitionId))
-			log.error("A partition with the ID " + partitionId +" already exist.");
-		else
-			partitionListMap.put(partitionId, partition);		 
-	}
-	
-	public void removePartition(String partitionId){
-		if(partitionExist(partitionId))
-			partitionListMap.remove(partitionId);
-		else
-			log.error("A partition with the ID " + partitionId +" already does not exist."); 
+	public boolean addPartition( Partition partition) throws AutoScalerException{
+		String partitionId = partition.getId();
+		if(this.partitionExist(partition.getId()))
+			throw new AutoScalerException("A parition with the ID " +  partitionId + " already exist.");
+				
+		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
+    			+ AutoScalerConstants.PARTITION_RESOURCE + "/" + partition.getId();
+		
+        RegistryManager regManager = RegistryManager.getInstance();     
+        
+        try {
+        	this.validatePartition(partition);
+			regManager.persist(partition, resourcePath);
+	        partitionListMap.put(partitionId, partition);	
+		} catch (RegistryException e) {
+			throw new AutoScalerException(e);
+		} catch(PartitionValidationException e){
+			throw new AutoScalerException(e);
+		}
+                
+		log.info("Partition :" + partition.getId() + " is deployed successfully.");
+		return true;
 	}
 	
 	public Partition getPartitionById(String partitionId){
@@ -79,6 +92,10 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		//return Collections.unmodifiableList(new ArrayList<Partition>(partitionListMap.values()));
 		return partitionListMap.values().toArray(new Partition[0]);
 		
+	}
+	
+	public boolean validatePartition(Partition partition) throws PartitionValidationException{
+		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
 
 }

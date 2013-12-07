@@ -29,13 +29,12 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
  * 
- * The Axis2 deployer class for party definitions definitions.
+ * The Axis2 deployer class for partition definitions definitions.
  */
 public class PartitionDeployer extends AbstractDeployer {
 	
@@ -85,18 +84,11 @@ public class PartitionDeployer extends AbstractDeployer {
             while (it.hasNext()) {
                 Partition partition = it.next();
                 try {
-                    if (PartitionManager.getInstance().partitionExist(partition.getId())) {
-                        log.warn("Partition already exists in the system " + partition.getId());
-                        continue;
-                    }
-
-                    CloudControllerClient.getInstance().validatePartition(partition);
-                    PartitionManager.getInstance().addPartition(partition.getId(), partition);
-                    log.info("Partition :" + partition.getId() + " is deployed successfully.");
+                    PartitionManager.getInstance().addPartition(partition);                  
                 } catch (Exception e) {
                     String msg =
                                  "Invalid partition: " + partition.getId() + " in file: " +
-                                         partitionFile.getAbsolutePath()+". Cause: "+e.getMessage();
+                                         partitionFile.getAbsolutePath()+". Cause: "+ e.getMessage();
                     log.error(msg, e);
                     continue;
                 }
