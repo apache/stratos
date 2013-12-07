@@ -32,12 +32,17 @@ import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.Properties;
 
-public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription {
+public class DataCartridgeSubscription extends CartridgeSubscription {
 
     private String host;
     private String username;
     private String password;
 
+    /**
+     * Constructor
+     *
+     * @param cartridgeInfo CartridgeInfo subscription
+     */
     public DataCartridgeSubscription(CartridgeInfo cartridgeInfo) {
 
         super(cartridgeInfo);
@@ -55,14 +60,7 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
             RepositoryRequiredException, InvalidRepositoryException, PolicyException {
 
         super.createSubscription(subscriber, alias, autoscalingPolicy, repository);
-    }
-
-    public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
-                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
-                                        String tenantDomain) {
-
-        //no repository for data cartridge instances
-        return null;
+        subscriptionTenancyBehaviour.createSubscription();
     }
 
     public PayloadArg createPayloadParameters() throws ADCException {
@@ -72,22 +70,15 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
         payloadArg.setDataCartridgeAdminUser(getUsername());
         payloadArg.setDataCartridgeAdminPassword(getPassword());
 
-        return payloadArg;
+        return subscriptionTenancyBehaviour.createPayloadParameters(payloadArg);
     }
 
-    public CartridgeSubscriptionInfo registerSubscription(Properties payloadProperties)
-            throws ADCException, UnregisteredCartridgeException {
+    @Override
+    public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException,
+            UnregisteredCartridgeException {
 
-        ApplicationManagementUtil.registerService(getType(),
-                getCluster().getClusterDomain(),
-                getCluster().getClusterSubDomain(),
-                getPayload().createPayload(),
-                getPayload().getPayloadArg().getTenantRange(),
-                getCluster().getHostName(),
-                ApplicationManagementUtil.setRegisterServiceProperties(getAutoscalingPolicy(),
-                        getSubscriber().getTenantId(), getAlias()));
-
-        getPayload().delete();
+        subscriptionTenancyBehaviour.registerSubscription(ApplicationManagementUtil.
+                setRegisterServiceProperties(getAutoscalingPolicy(), getSubscriber().getTenantId(), getAlias()));
 
         DataCartridge dataCartridge = new DataCartridge();
         dataCartridge.setUserName(getUsername());
@@ -98,7 +89,21 @@ public class DataCartridgeSubscription extends SingleTenantCartridgeSubscription
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
                 getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
                 getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), dataCartridge, "PENDING",getSubscriptionKey());
+    }
 
+    public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
+                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
+                                        String tenantDomain) {
+
+        //no repository for data cartridge instances
+        return null;
+    }
+
+    @Override
+    public void removeSubscription() throws ADCException, NotSubscribedException {
+
+        subscriptionTenancyBehaviour.removeSubscription();
+        super.cleanupSubscription();
     }
 
     public String getHost() {

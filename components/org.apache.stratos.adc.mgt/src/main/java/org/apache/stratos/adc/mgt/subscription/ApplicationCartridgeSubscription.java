@@ -30,7 +30,7 @@ import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.Properties;
 
-public class ApplicationCartridgeSubscription extends AbstractCartridgeSubscription {
+public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
 
     /**

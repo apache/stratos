@@ -20,10 +20,7 @@
 package org.apache.stratos.adc.mgt.subscription.factory;
 
 import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-import org.apache.stratos.adc.mgt.subscription.DataCartridgeSubscription;
-import org.apache.stratos.adc.mgt.subscription.MultiTenantCartridgeSubscription;
-import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.*;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
@@ -36,7 +33,7 @@ public class CartridgeSubscriptionFactory {
      * @return CartridgeSubscription subscription
      * @throws ADCException if no matching criteria is there to create a CartridgeSubscription object
      */
-    public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo)
+    /*public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo)
             throws ADCException {
 
         CartridgeSubscription cartridgeSubscription = null;
@@ -53,6 +50,32 @@ public class CartridgeSubscriptionFactory {
         }
 
 
+
+        if(cartridgeSubscription == null) {
+            throw new ADCException("Unable to create a CartridgeSubscription subscription for "
+                    + cartridgeInfo);
+        }
+
+        return cartridgeSubscription;
+    }*/
+
+    public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo)
+            throws ADCException {
+
+        //TODO: fix the logic properly
+        CartridgeSubscription cartridgeSubscription = null;
+        if(cartridgeInfo.getMultiTenant()) {
+            cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo);
+
+        } else {
+            if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
+                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo);
+            }
+            else {
+                //cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
+                cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo);
+            }
+        }
 
         if(cartridgeSubscription == null) {
             throw new ADCException("Unable to create a CartridgeSubscription subscription for "

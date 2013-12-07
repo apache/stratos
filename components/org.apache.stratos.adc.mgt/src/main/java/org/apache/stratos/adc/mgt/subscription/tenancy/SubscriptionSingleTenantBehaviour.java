@@ -28,7 +28,7 @@ import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
-import org.apache.stratos.adc.mgt.subscription.AbstractCartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
@@ -38,7 +38,7 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
 
     private static Log log = LogFactory.getLog(SubscriptionSingleTenantBehaviour.class);
 
-    public SubscriptionSingleTenantBehaviour(AbstractCartridgeSubscription cartridgeSubscription) {
+    public SubscriptionSingleTenantBehaviour(CartridgeSubscription cartridgeSubscription) {
         super(cartridgeSubscription);
     }
 
