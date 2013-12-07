@@ -17,26 +17,28 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.message.receiver.tenant;
 
-import org.apache.stratos.messaging.domain.topology.Topology;
-
-import java.io.Serializable;
+import javax.jms.TextMessage;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- *  This event is fired periodically with the complete topology. It would be a
- *  starting point for subscribers to initialize the current state of the topology
- *  before receiving other topology events.
+ * Implements a blocking queue for managing tenant event messages.
  */
-public class CompleteTopologyEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = 8580862188444892004L;
-	private Topology topology;
+public class TenantEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
+    private static volatile TenantEventMessageQueue instance;
 
-    public Topology getTopology() {
-        return topology;
+    private TenantEventMessageQueue(){
     }
 
-    public void setTopology(Topology topology) {
-        this.topology = topology;
+    public static synchronized TenantEventMessageQueue getInstance() {
+        if (instance == null) {
+            synchronized (TenantEventMessageQueue.class){
+                if (instance == null) {
+                    instance = new TenantEventMessageQueue();
+                }
+            }
+        }
+        return instance;
     }
 }

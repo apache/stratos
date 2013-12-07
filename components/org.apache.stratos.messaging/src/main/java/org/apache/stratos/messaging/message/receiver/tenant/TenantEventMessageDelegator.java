@@ -16,32 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.receiver.topology;
 
-import javax.jms.TextMessage;
+package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.topology.*;
+import org.apache.stratos.messaging.message.processor.tenant.TenantMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
+
+import javax.jms.TextMessage;
 
 
 /**
  * Implements logic for processing topology event messages based on a given
  * topology process chain.
  */
-public class TopologyEventMessageDelegator implements Runnable {
+public class TenantEventMessageDelegator implements Runnable {
 
-    private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
+    private static final Log log = LogFactory.getLog(TenantEventMessageDelegator.class);
     private MessageProcessorChain processorChain;
     private boolean terminated;
 
-    public TopologyEventMessageDelegator() {
-        this.processorChain = new TopologyMessageProcessorChain();
+    public TenantEventMessageDelegator() {
+        this.processorChain = new TenantMessageProcessorChain();
     }
 
-    public TopologyEventMessageDelegator(MessageProcessorChain processorChain) {
+    public TenantEventMessageDelegator(MessageProcessorChain processorChain) {
         this.processorChain = processorChain;
     }
 
@@ -49,12 +50,12 @@ public class TopologyEventMessageDelegator implements Runnable {
     public void run() {
         try {
             if (log.isInfoEnabled()) {
-                log.info("Topology event message delegator started");
+                log.info("Tenant event message delegator started");
             }
 
             while (!terminated) {
                 try {
-                    TextMessage message = TopologyEventMessageQueue.getInstance().take();
+                    TextMessage message = TenantEventMessageQueue.getInstance().take();
 
                     // Retrieve the header
                     String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
@@ -63,26 +64,26 @@ public class TopologyEventMessageDelegator implements Runnable {
                     String json = message.getText();
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Topology event message received from queue: %s", type));
+                        log.debug(String.format("Tenant event message received from queue: %s", type));
                     }
 
                     try {
-                        TopologyManager.acquireWriteLock();
+                        TenantManager.acquireWriteLock();
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("Delegating topology event message: %s", type));
+                            log.debug(String.format("Delegating tenant event message: %s", type));
                         }
-                        processorChain.process(type, json, TopologyManager.getTopology());
+                        processorChain.process(type, json, null);
                     } finally {
-                        TopologyManager.releaseWriteLock();
+                        TenantManager.releaseWriteLock();
                     }
 
                 } catch (Exception e) {
-                    log.error("Failed to retrieve topology event message", e);
+                    log.error("Failed to retrieve tenant event message", e);
                 }
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Topology event message delegator failed", e);
+                log.error("Tenant event message delegator failed", e);
             }
         }
     }
