@@ -67,22 +67,26 @@ public class EmailSenderListener implements TenantMgtListener {
         }
     }
 
+    public void onTenantDelete(int tenantId) {
+        // Do nothing
+    }
+
     public void onTenantInitialActivation(int tenantId) throws StratosException {
      // send the notification message to the tenant admin
         TenantMgtEmailSenderUtil.notifyTenantInitialActivation(tenantId);
     }
 
     public void onTenantActivation(int tenantId) throws StratosException {
-        // Do nothing. 
+        // Do nothing
     }
 
     public void onTenantDeactivation(int tenantId) throws StratosException {
-        // Do nothing. 
+        // Do nothing
     }
 
     public void onSubscriptionPlanChange(int tenentId, String oldPlan, 
                                          String newPlan) throws StratosException {
-        // Do nothing. 
+        // Do nothing
     }
 
 }

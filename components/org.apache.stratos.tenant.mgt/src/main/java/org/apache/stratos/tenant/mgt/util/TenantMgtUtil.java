@@ -102,13 +102,20 @@ public class TenantMgtUtil {
      * Triggers an update for the tenant for TenantMgtListener
      *
      * @param tenantInfoBean tenantInfoBean
-     * @throws org.wso2.carbon.stratos.common.exception.StratosException, if update failed
+     * @throws org.apache.stratos.common.exception.StratosException, if update failed
      */
     public static void triggerUpdateTenant(
             TenantInfoBean tenantInfoBean) throws StratosException {
         for (TenantMgtListener tenantMgtListener :
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
             tenantMgtListener.onTenantUpdate(tenantInfoBean);
+        }
+    }
+
+    public static void triggerDeleteTenant(int tenantId) throws StratosException {
+        for (TenantMgtListener tenantMgtListener :
+                TenantMgtServiceComponent.getTenantMgtListeners()) {
+            tenantMgtListener.onTenantDelete(tenantId);
         }
     }
     

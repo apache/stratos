@@ -42,12 +42,16 @@ public class ThemeLoadingListener implements TenantMgtListener {
     }
     
     public void onTenantUpdate(TenantInfoBean tenantInfo) throws StratosException {
-        // doing nothing
+        // do nothing
     }
-    
+
+    public void onTenantDelete(int tenantId) {
+        // do nothing
+    }
+
     public void onTenantRename(int tenantId, String oldDomainName,
                              String newDomainName) throws StratosException {
-        // doing nothing
+        // do nothing
     }
 
     public int getListenerOrder() {
@@ -55,23 +59,21 @@ public class ThemeLoadingListener implements TenantMgtListener {
     }
 
     public void onTenantInitialActivation(int tenantId) throws StratosException {
-        // doing nothing
-        
+        // do nothing
     }
 
     public void onTenantActivation(int tenantId) throws StratosException {
-        // doing nothing
+        // do nothing
         
     }
 
     public void onTenantDeactivation(int tenantId) throws StratosException {
-        // doing nothing
+        // do nothing
         
     }
 
     public void onSubscriptionPlanChange(int tenentId, String oldPlan, 
                                          String newPlan) throws StratosException {
-        // doing nothing
-        
+        // do nothing
     }
 }
