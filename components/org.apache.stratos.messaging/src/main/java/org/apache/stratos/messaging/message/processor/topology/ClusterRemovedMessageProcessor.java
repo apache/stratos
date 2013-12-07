@@ -73,10 +73,6 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
                 }
             }
 
-            // Validate event properties
-            if (StringUtils.isBlank(event.getHostName())) {
-                throw new RuntimeException("Hostname not found in cluster removed event");
-            }
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
@@ -87,10 +83,9 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
             }
             if (!service.clusterExists(event.getClusterId())) {
                 if (log.isWarnEnabled()) {
-                    log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s [hostname] %s",
+                    log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s",
                             event.getServiceName(),
-                            event.getClusterId(),
-                            event.getHostName()));
+                            event.getClusterId()));
                 }
                 return false;
             }

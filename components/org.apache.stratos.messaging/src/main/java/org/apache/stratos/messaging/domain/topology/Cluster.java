@@ -155,5 +155,28 @@ public class Cluster implements Serializable {
     public void setLoadBalanceAlgorithmName(String loadBalanceAlgorithmName) {
         this.loadBalanceAlgorithmName = loadBalanceAlgorithmName;
     }
+
+    public boolean tenantIdInRange(int tenantId) {
+        if("*".equals(getTenantRange())) {
+            return true;
+        }
+        else {
+            String[] array = getTenantRange().split("-");
+            int tenantStart = Integer.parseInt(array[0]);
+            if(tenantStart <= tenantId) {
+                String tenantEndStr = array[1];
+                if("*".equals(tenantEndStr)) {
+                    return true;
+                }
+                else {
+                    int tenantEnd = Integer.parseInt(tenantEndStr);
+                    if(tenantId <= tenantEnd) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
 

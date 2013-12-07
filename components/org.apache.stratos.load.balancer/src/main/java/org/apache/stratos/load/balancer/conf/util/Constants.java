@@ -36,10 +36,10 @@ public class Constants {
     public static final String CONF_PROPERTY_FAILOVER = "failover";
     public static final String CONF_PROPERTY_SESSION_AFFINITY = "session-affinity";
     public static final String CONF_PROPERTY_SESSION_TIMEOUT = "session-timeout";
-    public static final String CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER_ENABLED = "topology-event-listener-enabled";
+    public static final String CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER = "topology-event-listener";
     public static final String CONF_PROPERTY_MB_IP = "mb-ip";
     public static final String CONF_PROPERTY_MB_PORT = "mb-port";
-    public static final String CONF_PROPERTY_CEP_STATS_PUBLISHER_ENABLED = "cep-stats-publisher-enabled";
+    public static final String CONF_PROPERTY_CEP_STATS_PUBLISHER = "cep-stats-publisher";
     public static final String CONF_PROPERTY_CEP_IP = "cep-ip";
     public static final String CONF_PROPERTY_CEP_PORT = "cep-port";
     public static final String CONF_PROPERTY_CLASS_NAME = "class-name";
@@ -48,6 +48,11 @@ public class Constants {
     public static final String CONF_PROPERTY_PROXY = "proxy";
     public static final String CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER = "topology-service-filter";
     public static final String CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER = "topology-cluster-filter";
+    public static final String CONF_PROPERTY_MULTI_TENANCY = "multi-tenancy";
+    public static final String CONF_PROPERTY_TENANT_IDENTIFIER = "tenant-identifier";
+    public static final String CONF_PROPERTY_VALUE_TENANT_ID = "tenant-id";
+    public static final String CONF_PROPERTY_VALUE_TENANT_DOMAIN = "tenant-domain";
+    public static final String CONF_PROPERTY_TENANT_IDENTIFIER_REGEX = "tenant-identifier-regex";
 
     public static final String CONF_DELIMITER_HOSTS = ",";
     public static final long DEFAULT_SESSION_TIMEOUT = 90000;

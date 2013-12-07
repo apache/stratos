@@ -17,36 +17,29 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.event.tenant;
 
 import java.io.Serializable;
 
 /**
- * This event is fired by Cloud Controller when a cluster is removed from the topology.
+ * This event is fired when a tenant is subscribed to a service.
  */
-public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = -1335777148602870262L;
-	private String serviceName;
-    private String clusterId;
+public class TenantSubscribedEvent extends TenantEvent implements Serializable {
+    private static final long serialVersionUID = -4023221432696893312L;
 
-    public ClusterRemovedEvent(String serviceName, String clusterId) {
+    private final int tenantId;
+    private final String serviceName;
+
+    public TenantSubscribedEvent(int tenantId, String serviceName) {
+        this.tenantId = tenantId;
         this.serviceName = serviceName;
-        this.clusterId = clusterId;
+    }
+
+    public int getTenantId() {
+        return tenantId;
     }
 
     public String getServiceName() {
         return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
     }
 }

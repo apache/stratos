@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.autoscaler.util.Serializer;
@@ -42,8 +43,7 @@ public class RegistryManager {
                     "Failed to create the registry resource " +
                     		AutoScalerConstants.AUTOSCALER_RESOURCE;
             log.error(msg, e);
-            //throw new CloudControllerException(msg, e);
-            
+            throw new AutoScalerException(msg, e);            
         }
     }
     
@@ -51,30 +51,31 @@ public class RegistryManager {
      * Persist an object in the local registry.
      *
      * @param dataObj object to be persisted.
-     * @param path resource path to be persisted.
+     * @param resourcePath resource path to be persisted.
      */
-    public void persist(Object dataObj, String path) throws RegistryException {
+    public void persist(Object dataObj, String resourcePath) throws RegistryException {
     	
         try {
+        	if (registryService.resourceExists(resourcePath)) {
+                throw new AutoScalerException("Resource already exist in the registry: " + resourcePath);
+            }
             registryService.beginTransaction();
 
             Resource nodeResource = registryService.newResource();
-
             nodeResource.setContent(Serializer.serializeToByteArray(dataObj));            
-
-            //registryService.put(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DATA_RESOURCE + "/"+id, nodeResource);
-            registryService.put(path, nodeResource);
+            
+            registryService.put(resourcePath, nodeResource);
             registryService.commitTransaction();
             
             if(log.isDebugEnabled()){
             	
             }
-
+        
         } catch (Exception e) {
             String msg = "Failed to persist the cloud controller data in registry.";
             registryService.rollbackTransaction();
             log.error(msg, e);
-            //throw new CloudControllerException(msg, e);
+            throw new AutoScalerException(msg, e);
 
         }
     }

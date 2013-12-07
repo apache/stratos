@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.domain.topology;
 
 import java.io.Serializable;
 import java.util.*;
-import com.jamesmurty.utils.XMLBuilder;
 
 /**
  * Defines a service in the topology. A service represents a cartridge type.
@@ -30,15 +29,18 @@ import com.jamesmurty.utils.XMLBuilder;
 public class Service implements Serializable{
 
     private static final long serialVersionUID = -8835648141999889756L;
-    private String serviceName;
+
+    private final String serviceName;
+    private final ServiceType serviceType;
     // Key: Cluster.clusterId
-    private Map<String, Cluster> clusterMap;
+    private Map<String, Cluster> clusterIdClusterMap;
     private Map<String, Port> portMap;
     private Properties properties;
 
-    public Service(String serviceName) {
+    public Service(String serviceName, ServiceType serviceType) {
         this.serviceName = serviceName;
-        this.clusterMap = new HashMap<String, Cluster>();
+        this.serviceType = serviceType;
+        this.clusterIdClusterMap = new HashMap<String, Cluster>();
         this.portMap = new HashMap<String, Port>();
     }
 
@@ -46,28 +48,32 @@ public class Service implements Serializable{
         return serviceName;
     }
 
+    public ServiceType getServiceType() {
+        return serviceType;
+    }
+
     public Collection<Cluster> getClusters() {
-        return clusterMap.values();
+        return clusterIdClusterMap.values();
     }
 
     public void addCluster(Cluster cluster) {
-        this.clusterMap.put(cluster.getClusterId(), cluster);
+        this.clusterIdClusterMap.put(cluster.getClusterId(), cluster);
     }
 
     public void removeCluster(Cluster cluster) {
-        this.clusterMap.remove(cluster.getClusterId());
+        this.clusterIdClusterMap.remove(cluster.getClusterId());
     }
 
     public void removeCluster(String clusterId) {
-        this.clusterMap.remove(clusterId);
+        this.clusterIdClusterMap.remove(clusterId);
     }
 
     public boolean clusterExists(String clusterId) {
-        return this.clusterMap.containsKey(clusterId);
+        return this.clusterIdClusterMap.containsKey(clusterId);
     }
 
     public Cluster getCluster(String clusterId) {
-        return this.clusterMap.get(clusterId);
+        return this.clusterIdClusterMap.get(clusterId);
     }
 
     public Collection<Port> getPorts() {
@@ -100,7 +106,6 @@ public class Service implements Serializable{
         return this.portMap.get(protocol);
     }
 
-
     public Properties getProperties() {
         return properties;
     }
@@ -108,5 +113,4 @@ public class Service implements Serializable{
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
-    
 }

@@ -68,7 +68,7 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
             }
 
             // Apply changes to the topology
-            Service service = new Service(event.getServiceName());
+            Service service = new Service(event.getServiceName(), event.getServiceType());
             service.addPorts(event.getPorts());
             topology.addService(service);
 

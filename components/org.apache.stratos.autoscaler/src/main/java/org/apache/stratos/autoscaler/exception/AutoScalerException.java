@@ -16,24 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.util;
+package org.apache.stratos.autoscaler.exception;
 
-public final class AutoScalerConstants {
+public class AutoScalerException extends RuntimeException {
 
-    /**
-     * Constant values for Auto Scaler
-     */
-    public static final String ID_ELEMENT = "id";
-    public static final String PARTITION_ELEMENT = "partition";
-    public static final String PARTITIONS_ELEMENT = "partitions";
-    public static final String PROPERTY_ELEMENT = "property";
-    public static final String PROPERTY_NAME_ATTR= "name";
-    public static final String PROPERTY_VALUE_ATTR = "value";
+	private static final long serialVersionUID = 3131046757663797684L;
+
+	public AutoScalerException(String msg) {
+        super(msg);
+    }
     
-    /**
-	 * Persistence
-	 */
-	public static final String AUTOSCALER_RESOURCE = "/autoscaler";
-	public static final String PARTITION_RESOURCE = "/partitions";
-       
+    public AutoScalerException(String msg, Exception ex) {
+        super(msg, ex);
+    }
+    
+    public AutoScalerException(Exception ex) {
+        super(ex);
+    }
+
 }

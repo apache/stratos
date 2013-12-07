@@ -21,15 +21,14 @@ package org.apache.stratos.messaging.message.processor.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
+import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
  * Complete tenant message processor for initializing the tenant manager and
- * triggering complete tenant event listeners when the complete tenant event
- * message is received.
+ * triggering complete tenant event listeners.
  */
 public class CompleteTenantMessageProcessor extends MessageProcessor {
 
@@ -44,22 +43,25 @@ public class CompleteTenantMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (TenantCreatedEvent.class.getName().equals(type)) {
+        if (CompleteTenantEvent.class.getName().equals(type)) {
             // Return if tenant manager has already initialized
             if(TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            TenantCreatedEvent event = (TenantCreatedEvent) Util.jsonToObject(message, TenantCreatedEvent.class);
+            CompleteTenantEvent event = (CompleteTenantEvent) Util.jsonToObject(message, CompleteTenantEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
-                TenantManager.getInstance().addTenant(event.getTenant());
+                TenantManager.getInstance().addTenants(event.getTenants());
                 if(log.isInfoEnabled()) {
                     log.info("Tenant initialized");
                 }
                 TenantManager.getInstance().setInitialized(true);
+
+                // Notify event listeners
+                notifyEventListeners(event);
                 return true;
             }
             finally {

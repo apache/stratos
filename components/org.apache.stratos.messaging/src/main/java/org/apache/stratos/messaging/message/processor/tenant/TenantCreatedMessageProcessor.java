@@ -27,8 +27,8 @@ import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant created message processor for adding tenant to the tenant manager and
- * triggering tenant created event listeners when a tenant created event message is received.
+ * Tenant created message processor for adding a tenant to the tenant manager and
+ * triggering tenant created event listeners.
  */
 public class TenantCreatedMessageProcessor extends MessageProcessor {
 
@@ -58,6 +58,9 @@ public class TenantCreatedMessageProcessor extends MessageProcessor {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Tenant created: [tenant-id] %d [tenant-domain] %s", event.getTenant().getTenantId(), event.getTenant().getTenantDomain()));
                 }
+
+                // Notify event listeners
+                notifyEventListeners(event);
                 return true;
             }
             finally {

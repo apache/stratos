@@ -108,6 +108,7 @@ public class LoadBalancerServiceComponent {
             // Configure synapse settings
             LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
             SynapseConfigurator.configure(configuration);
+
             // Configure cep settings
             CEPConfigurator.configure(configuration);
 
@@ -148,11 +149,13 @@ public class LoadBalancerServiceComponent {
             }
 
             activated = true;
-            if (log.isDebugEnabled()) {
-                log.debug("LoadBalancerServiceComponent is activated ");
+            if (log.isInfoEnabled()) {
+                log.info("Load balancer service component is activated ");
             }
-        } catch (Throwable e) {
-            log.error("Failed to activate LoadBalancerServiceComponent", e);
+        } catch (Exception e) {
+            if(log.isFatalEnabled()) {
+                log.fatal("Failed to activate load balancer service component", e);
+            }
         }
     }
 
@@ -166,7 +169,7 @@ public class LoadBalancerServiceComponent {
                         .getSynapseEnvironment());
             }
         } catch (Exception e) {
-            log.warn("Couldn't remove the EndpointDeployer");
+            log.warn("Couldn't remove the endpoint deployer");
         }
         // Terminate topology receiver
         topologyReceiver.terminate();
@@ -268,10 +271,10 @@ public class LoadBalancerServiceComponent {
                             .getConfigurationContext().getAxisConfiguration(),
                             synapseEnvironmentService.getSynapseEnvironment());
                     if (log.isDebugEnabled()) {
-                        log.debug("Endpoint Admin bundle is activated ");
+                        log.debug("Endpoint admin bundle is activated ");
                     }
                 } catch (Throwable e) {
-                    log.error("Failed to activate Endpoint Admin bundle ", e);
+                    log.error("Failed to activate endpoint admin bundle ", e);
                 }
             }
         }
@@ -349,7 +352,7 @@ public class LoadBalancerServiceComponent {
                 try {
                     unregisterDeployer(axisConfig, env);
                 } catch (Exception e) {
-                    log.warn("Couldn't remove the EndpointDeployer");
+                    log.warn("Couldn't remove the endpoint deployer");
                 }
             }
         }

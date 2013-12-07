@@ -21,6 +21,7 @@ package org.apache.stratos.load.balancer.test;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,15 +69,18 @@ public class LoadBalancerConfigurationTest {
             LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
 
             Assert.assertEquals(String.format("%s, algorithm not valid", validationError), "round-robin", configuration.getDefaultAlgorithmName());
-            Assert.assertTrue(String.format("%s, failover is not true", validationError), configuration.isFailOver());
-            Assert.assertTrue(String.format("%s, session affinity is not true", validationError), configuration.isSessionAffinity());
+            Assert.assertTrue(String.format("%s, failover is not true", validationError), configuration.isFailOverEnabled());
+            Assert.assertTrue(String.format("%s, session affinity is not true", validationError), configuration.isSessionAffinityEnabled());
             Assert.assertEquals(String.format("%s, session timeout is not valid", validationError), 90000, configuration.getSessionTimeout());
-            Assert.assertTrue(String.format("%s, topology event listener enabled is not true", validationError), configuration.isTopologyEventListenerEnabled());
+            Assert.assertTrue(String.format("%s, topology event listener is not true", validationError), configuration.isTopologyEventListenerEnabled());
             Assert.assertEquals(String.format("%s, mb ip is not valid", validationError), "localhost", configuration.getMbIp());
             Assert.assertEquals(String.format("%s, mb port is not valid", validationError), 5677, configuration.getMbPort());
-            Assert.assertTrue(String.format("%s, cep stats publisher enabled is not true", validationError), configuration.isCepStatsPublisherEnabled());
+            Assert.assertTrue(String.format("%s, cep stats publisher is not true", validationError), configuration.isCepStatsPublisherEnabled());
             Assert.assertEquals(String.format("%s, cep ip is not valid", validationError), "localhost", configuration.getCepIp());
             Assert.assertEquals(String.format("%s, cep port is not valid", validationError), 7615, configuration.getCepPort());
+            Assert.assertTrue(String.format("%s, multi-tenancy is not true", validationError), configuration.isMultiTenancyEnabled());
+            Assert.assertEquals(String.format("%s, tenant-identifier is not valid", validationError), TenantIdentifier.TenantDomain, configuration.getTenantIdentifier());
+            Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/(.+)/", configuration.getTenantIdentifierRegex());
         } finally {
             LoadBalancerConfiguration.clear();
         }

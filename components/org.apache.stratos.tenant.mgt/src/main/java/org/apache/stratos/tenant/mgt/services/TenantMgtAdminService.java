@@ -495,5 +495,14 @@ public class TenantMgtAdminService extends AbstractAdmin {
             log.error(msg, e);
             throw new Exception(msg, e);
         }
+
+        //Notify tenant delete to all listeners
+        try {
+            TenantMgtUtil.triggerDeleteTenant(tenantId);
+        } catch (StratosException e) {
+            String msg = "Error in notifying tenant delete";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
     }
 }

@@ -115,14 +115,14 @@ public class SynapseConfigurator {
                     node.setTextContent(algorithmClassName);
                     updated = true;
                 } else if (parameter.getNodeValue().equals("failover")) {
-                    String value = String.valueOf(configuration.isFailOver());
+                    String value = String.valueOf(configuration.isFailOverEnabled());
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Setting failover = %s", value));
                     }
                     node.setTextContent(value);
                     updated = true;
                 } else if (parameter.getNodeValue().equals("sessionAffinity")) {
-                    String value = String.valueOf(configuration.isSessionAffinity());
+                    String value = String.valueOf(configuration.isSessionAffinityEnabled());
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Setting sessionAffinity = %s", value));
                     }
