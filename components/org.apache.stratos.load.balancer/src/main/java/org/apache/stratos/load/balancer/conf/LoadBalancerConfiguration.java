@@ -22,20 +22,19 @@ package org.apache.stratos.load.balancer.conf;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.LoadBalancerContext;
+import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.conf.domain.Algorithm;
+import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.load.balancer.conf.structure.Node;
 import org.apache.stratos.load.balancer.conf.structure.NodeBuilder;
 import org.apache.stratos.load.balancer.conf.util.Constants;
 import org.apache.stratos.load.balancer.exception.InvalidConfigurationException;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Port;
-import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Load balancer configuration definition.
@@ -45,8 +44,8 @@ public class LoadBalancerConfiguration {
     private static volatile LoadBalancerConfiguration instance;
 
     private String defaultAlgorithmName;
-    private boolean failOver;
-    private boolean sessionAffinity;
+    private boolean failOverEnabled;
+    private boolean sessionAffinityEnabled;
     private long sessionTimeout;
     private boolean cepStatsPublisherEnabled;
     private String mbIp;
@@ -54,10 +53,12 @@ public class LoadBalancerConfiguration {
     private String cepIp;
     private int cepPort;
     private boolean topologyEventListenerEnabled;
-    private boolean usePublicIpAddresses;
     private Map<String, Algorithm> algorithmMap;
     private String topologyServiceFilter;
     private String topologyClusterFilter;
+    private boolean multiTenancyEnabled;
+    private TenantIdentifier tenantIdentifier;
+    private String tenantIdentifierRegex;
 
     /**
      * Load balancer configuration is singleton.
@@ -104,20 +105,20 @@ public class LoadBalancerConfiguration {
         this.defaultAlgorithmName = defaultAlgorithmName;
     }
 
-    public boolean isFailOver() {
-        return failOver;
+    public boolean isFailOverEnabled() {
+        return failOverEnabled;
     }
 
-    public void setFailOver(boolean failOver) {
-        this.failOver = failOver;
+    public void setFailOverEnabled(boolean failOverEnabled) {
+        this.failOverEnabled = failOverEnabled;
     }
 
-    public boolean isSessionAffinity() {
-        return sessionAffinity;
+    public boolean isSessionAffinityEnabled() {
+        return sessionAffinityEnabled;
     }
 
-    public void setSessionAffinity(boolean sessionAffinity) {
-        this.sessionAffinity = sessionAffinity;
+    public void setSessionAffinityEnabled(boolean sessionAffinityEnabled) {
+        this.sessionAffinityEnabled = sessionAffinityEnabled;
     }
 
     public long getSessionTimeout() {
@@ -176,14 +177,6 @@ public class LoadBalancerConfiguration {
         this.topologyEventListenerEnabled = topologyEventListenerEnabled;
     }
 
-    public boolean isUsePublicIpAddresses() {
-        return usePublicIpAddresses;
-    }
-
-    public void setUsePublicIpAddresses(boolean usePublicIpAddresses) {
-        this.usePublicIpAddresses = usePublicIpAddresses;
-    }
-
     public Collection<Algorithm> getAlgorithms() {
         return algorithmMap.values();
     }
@@ -210,6 +203,30 @@ public class LoadBalancerConfiguration {
 
     public String getTopologyClusterFilter() {
         return topologyClusterFilter;
+    }
+
+    public boolean isMultiTenancyEnabled() {
+        return multiTenancyEnabled;
+    }
+
+    public void setMultiTenancyEnabled(boolean multiTenancyEnabled) {
+        this.multiTenancyEnabled = multiTenancyEnabled;
+    }
+
+    public void setTenantIdentifier(TenantIdentifier tenantIdentifier) {
+        this.tenantIdentifier = tenantIdentifier;
+    }
+
+    public TenantIdentifier getTenantIdentifier() {
+        return tenantIdentifier;
+    }
+
+    public void setTenantIdentifierRegex(String tenantIdentifierRegex) {
+        this.tenantIdentifierRegex = tenantIdentifierRegex;
+    }
+
+    public String getTenantIdentifierRegex() {
+        return tenantIdentifierRegex;
     }
 
     private static class LoadBalancerConfigurationReader {
@@ -249,19 +266,17 @@ public class LoadBalancerConfiguration {
 
             // Set load balancer properties
             String defaultAlgorithm = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_ALGORITHM);
-            if (StringUtils.isBlank(defaultAlgorithm)) {
-                throw new InvalidConfigurationException("algorithm property was not found in loadbalancer node");
-            }
+            validateRequiredPropertyInNode(Constants.CONF_PROPERTY_ALGORITHM, defaultAlgorithm, "loadbalancer");
             configuration.setDefaultAlgorithmName(defaultAlgorithm);
 
             String failOver = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_FAILOVER);
             if (StringUtils.isNotBlank(failOver)) {
-                configuration.setFailOver(Boolean.parseBoolean(failOver));
+                configuration.setFailOverEnabled(Boolean.parseBoolean(failOver));
             }
 
             String sessionAffinity = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_SESSION_AFFINITY);
             if (StringUtils.isNotBlank(sessionAffinity)) {
-                configuration.setSessionAffinity(Boolean.parseBoolean(sessionAffinity));
+                configuration.setSessionAffinityEnabled(Boolean.parseBoolean(sessionAffinity));
             }
             String sessionTimeout = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_SESSION_TIMEOUT);
             if (StringUtils.isNotBlank(sessionTimeout)) {
@@ -270,35 +285,36 @@ public class LoadBalancerConfiguration {
                 // Session timeout is not found, set default value
                 configuration.setSessionTimeout(Constants.DEFAULT_SESSION_TIMEOUT);
             }
-            String topologyEventListenerEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER_ENABLED);
+
+            String topologyEventListenerEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER);
             if (StringUtils.isNotBlank(topologyEventListenerEnabled)) {
                 configuration.setTopologyEventListenerEnabled(Boolean.parseBoolean(topologyEventListenerEnabled));
             }
-            String statsPublisherEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_STATS_PUBLISHER_ENABLED);
+            String statsPublisherEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_STATS_PUBLISHER);
             if (StringUtils.isNotBlank(statsPublisherEnabled)) {
                 configuration.setCepStatsPublisherEnabled(Boolean.parseBoolean(statsPublisherEnabled));
+            }
+            String multiTenancyEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MULTI_TENANCY);
+            if (StringUtils.isNotBlank(multiTenancyEnabled)) {
+                configuration.setMultiTenancyEnabled(Boolean.parseBoolean(multiTenancyEnabled));
             }
 
             // Read mb ip, port, topology service filter and topology cluster filter if topology event listener is enabled
             if (configuration.isTopologyEventListenerEnabled()) {
                 String mbIp = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_IP);
-                String mbPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_PORT);
-                if (StringUtils.isBlank(mbIp)) {
-                    throw new InvalidConfigurationException(String.format("%s property was not found in loadbalancer node", Constants.CONF_PROPERTY_MB_IP));
-                }
-                if (StringUtils.isBlank(mbPort)) {
-                    throw new InvalidConfigurationException(String.format("%s property was not found in loadbalancer node", Constants.CONF_PROPERTY_MB_PORT));
-                }
-
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_IP, mbIp, "loadbalancer");
                 configuration.setMbIp(mbIp);
+
+                String mbPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_PORT);
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_PORT, mbPort, "loadbalancer");
                 configuration.setMbPort(Integer.parseInt(mbPort));
 
                 String serviceFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER);
-                if(StringUtils.isNotBlank(serviceFilter)) {
+                if (StringUtils.isNotBlank(serviceFilter)) {
                     configuration.setTopologyServiceFilter(serviceFilter);
                 }
                 String clusterFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER);
-                if(StringUtils.isNotBlank(clusterFilter)) {
+                if (StringUtils.isNotBlank(clusterFilter)) {
                     configuration.setTopologyClusterFilter(clusterFilter);
                 }
             }
@@ -306,39 +322,54 @@ public class LoadBalancerConfiguration {
             // Read cep ip and port if cep stats publisher is enabled
             if (configuration.isCepStatsPublisherEnabled()) {
                 String cepIp = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_IP);
-                String cepPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_PORT);
-                if (StringUtils.isBlank(cepIp)) {
-                    throw new InvalidConfigurationException(String.format("%s property was not found in loadbalancer node", Constants.CONF_PROPERTY_CEP_IP));
-                }
-                if (StringUtils.isBlank(cepPort)) {
-                    throw new InvalidConfigurationException(String.format("%s property was not found in loadbalancer node", Constants.CONF_PROPERTY_CEP_PORT));
-                }
-
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_CEP_IP, cepIp, "loadbalancer");
                 configuration.setCepIp(cepIp);
+
+                String cepPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_PORT);
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_CEP_PORT, cepPort, "loadbalancer");
                 configuration.setCepPort(Integer.parseInt(cepPort));
             }
 
-            Node algorithmsNode = loadBalancerNode.findChildNodeByName(Constants.CONF_ELEMENT_ALGORITHMS);
-            if (loadBalancerNode == null) {
-                throw new RuntimeException(String.format("%s node was node found", Constants.CONF_ELEMENT_ALGORITHMS));
+            if (configuration.isMultiTenancyEnabled()) {
+                String tenantIdentifierStr = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TENANT_IDENTIFIER);
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TENANT_IDENTIFIER, tenantIdentifierStr, "loadbalancer");
+
+                if (tenantIdentifierStr.equals(Constants.CONF_PROPERTY_VALUE_TENANT_ID)) {
+                    configuration.setTenantIdentifier(TenantIdentifier.TenantId);
+                } else if (tenantIdentifierStr.equals(Constants.CONF_PROPERTY_VALUE_TENANT_DOMAIN)) {
+                    configuration.setTenantIdentifier(TenantIdentifier.TenantDomain);
+                } else {
+                    throw new InvalidConfigurationException(String.format("Tenant identifier %s is not valid", tenantIdentifierStr));
+                }
+
+                String tenantIdentifierRegex = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TENANT_IDENTIFIER_REGEX);
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TENANT_IDENTIFIER_REGEX, tenantIdentifierRegex, "loadbalancer");
+                try {
+                    Pattern.compile(tenantIdentifierRegex);
+                }
+                catch (Exception e) {
+                    throw new InvalidConfigurationException(String.format("Invalid tenant identifier regular expression: %s", tenantIdentifierRegex), e);
+                }
+                configuration.setTenantIdentifierRegex(tenantIdentifierRegex);
             }
+
+            Node algorithmsNode = loadBalancerNode.findChildNodeByName(Constants.CONF_ELEMENT_ALGORITHMS);
+            validateRequiredNode(loadBalancerNode, Constants.CONF_ELEMENT_ALGORITHMS);
+
             for (Node algorithmNode : algorithmsNode.getChildNodes()) {
                 String className = algorithmNode.getProperty(Constants.CONF_PROPERTY_CLASS_NAME);
-                if (StringUtils.isBlank(className)) {
-                    throw new InvalidConfigurationException(String.format("%s property was not found in algorithm %s", Constants.CONF_PROPERTY_CLASS_NAME, algorithmNode.getName()));
-                }
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_CLASS_NAME, className, "algorithm", algorithmNode.getName());
                 Algorithm algorithm = new Algorithm(algorithmNode.getName(), className);
                 configuration.addAlgorithm(algorithm);
             }
 
             if (!configuration.isTopologyEventListenerEnabled()) {
                 Node servicesNode = loadBalancerNode.findChildNodeByName(Constants.CONF_ELEMENT_SERVICES);
-                if (loadBalancerNode == null) {
-                    throw new RuntimeException(String.format("%s node was not found", Constants.CONF_ELEMENT_SERVICES));
-                }
+                validateRequiredNode(servicesNode, Constants.CONF_ELEMENT_SERVICES);
 
                 for (Node serviceNode : servicesNode.getChildNodes()) {
-                    Service service = new Service(serviceNode.getName());
+                    // TODO: Add service type to service node
+                    Service service = new Service(serviceNode.getName(), ServiceType.SingleTenant);
                     Node clustersNode = serviceNode.findChildNodeByName(Constants.CONF_ELEMENT_CLUSTERS);
 
                     for (Node clusterNode : clustersNode.getChildNodes()) {
@@ -346,45 +377,38 @@ public class LoadBalancerConfiguration {
                         Cluster cluster = new Cluster(service.getServiceName(), clusterId, null);
 
                         String algorithm = clusterNode.getProperty(Constants.CONF_PROPERTY_ALGORITHM);
-                        if(StringUtils.isNotBlank(algorithm)) {
+                        if (StringUtils.isNotBlank(algorithm)) {
                             cluster.setLoadBalanceAlgorithmName(algorithm);
                         }
 
                         String hosts = clusterNode.getProperty(Constants.CONF_ELEMENT_HOSTS);
-                        if (StringUtils.isBlank(hosts)) {
-                            throw new InvalidConfigurationException(String.format("%s node was not found in cluster %s", Constants.CONF_ELEMENT_HOSTS, clusterNode.getName()));
-                        }
+                        validateRequiredPropertyInNode(Constants.CONF_ELEMENT_HOSTS, hosts, "cluster", clusterNode.getName());
+
                         String[] hostsArray = hosts.split(",");
-                        for(String hostsName : hostsArray) {
+                        for (String hostsName : hostsArray) {
                             cluster.addHostName(hostsName.trim());
                         }
 
                         Node membersNode = clusterNode.findChildNodeByName(Constants.CONF_ELEMENT_MEMBERS);
-                        if (membersNode == null) {
-                            throw new InvalidConfigurationException(String.format("%s node was not found in cluster %s", Constants.CONF_ELEMENT_MEMBERS, clusterId));
-                        }
+                        validateRequiredNode(membersNode, Constants.CONF_ELEMENT_MEMBERS, String.format("cluster %s", clusterId));
 
                         for (Node memberNode : membersNode.getChildNodes()) {
                             String memberId = memberNode.getName();
                             Member member = new Member(cluster.getServiceName(), cluster.getClusterId(), memberId);
                             String ip = memberNode.getProperty(Constants.CONF_PROPERTY_IP);
-                            if (StringUtils.isBlank(ip)) {
-                                throw new InvalidConfigurationException(String.format("%s property was not found in member %s", Constants.CONF_PROPERTY_IP, memberId));
-                            }
+                            validateRequiredPropertyInNode(Constants.CONF_PROPERTY_IP, ip, String.format("member %s", memberId));
+
                             member.setMemberIp(ip);
                             Node portsNode = memberNode.findChildNodeByName(Constants.CONF_ELEMENT_PORTS);
-                            if (portsNode == null) {
-                                throw new InvalidConfigurationException(String.format("%s node was not found in member %s", Constants.CONF_ELEMENT_PORTS, memberId));
-                            }
+                            validateRequiredNode(portsNode, Constants.CONF_ELEMENT_PORTS, String.format("member %s", memberId));
+
                             for (Node portNode : portsNode.getChildNodes()) {
                                 String value = portNode.getProperty(Constants.CONF_PROPERTY_VALUE);
-                                if (StringUtils.isBlank(value)) {
-                                    throw new InvalidConfigurationException(String.format("%s property was not found in port %s in member %s", Constants.CONF_PROPERTY_VALUE, portNode.getName(), memberId));
-                                }
+                                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_VALUE, value, "port", String.format("member %s", memberId));
+
                                 String proxy = portNode.getProperty(Constants.CONF_PROPERTY_PROXY);
-                                if (StringUtils.isBlank(proxy)) {
-                                    throw new InvalidConfigurationException(String.format("%s property was not found in port %s in member %s", Constants.CONF_PROPERTY_PROXY, portNode.getName(), memberId));
-                                }
+                                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_PROXY, proxy, "port", String.format("member %s", memberId));
+
                                 Port port = new Port(portNode.getName(), Integer.valueOf(value), Integer.valueOf(proxy));
                                 member.addPort(port);
                             }
@@ -406,6 +430,28 @@ public class LoadBalancerConfiguration {
                 }
             }
             return configuration;
+        }
+
+        private void validateRequiredNode(Node node, String nodeName) {
+            if (node == null) {
+                throw new RuntimeException(String.format("%s node was not found", nodeName));
+            }
+        }
+
+        private void validateRequiredNode(Node node, String nodeName, String parentNodeName) {
+            if (node == null) {
+                throw new RuntimeException(String.format("%s node was not found in %s", nodeName, parentNodeName));
+            }
+        }
+
+        private void validateRequiredPropertyInNode(String propertyName, String value, String nodeName) {
+            validateRequiredPropertyInNode(propertyName, value, nodeName, "");
+        }
+
+        private void validateRequiredPropertyInNode(String propertyName, String value, String nodeName, String nodeItem) {
+            if (StringUtils.isBlank(value)) {
+                throw new InvalidConfigurationException(String.format("%s property was not found in %s node %s", propertyName, nodeName, nodeItem));
+            }
         }
     }
 }
