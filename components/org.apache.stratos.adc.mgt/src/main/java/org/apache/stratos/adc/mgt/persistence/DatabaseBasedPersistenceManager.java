@@ -31,7 +31,7 @@ import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.DataCartridgeSubscription;
-import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
+//import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PolicyHolder;
@@ -523,14 +523,15 @@ public class DatabaseBasedPersistenceManager extends PersistenceManager {
         cartridgeSubscription.setCluster(cluster);
 
         //data cartridge specific information
-        if (resultSet.getInt("DATA_CARTRIDGE_ID") != -1 && cartridgeSubscription instanceof
-                SingleTenantCartridgeSubscription) {
-            DataCartridgeSubscription dataCartridgeSubscription = (DataCartridgeSubscription)cartridgeSubscription;
-            dataCartridgeSubscription.setHost(resultSet.getString("HOST"));
-            dataCartridgeSubscription.setUsername(resultSet.getString("ADMIN_USERNAME"));
-            dataCartridgeSubscription.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.
-                    getString("ADMIN_PASSWORD")));
-        }
+        //TODO: temporarily removed
+//        if (resultSet.getInt("DATA_CARTRIDGE_ID") != -1 && cartridgeSubscription instanceof
+//                SingleTenantCartridgeSubscription) {
+//            DataCartridgeSubscription dataCartridgeSubscription = (DataCartridgeSubscription)cartridgeSubscription;
+//            dataCartridgeSubscription.setHost(resultSet.getString("HOST"));
+//            dataCartridgeSubscription.setUsername(resultSet.getString("ADMIN_USERNAME"));
+//            dataCartridgeSubscription.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.
+//                    getString("ADMIN_PASSWORD")));
+//        }
 
         //Subscriber related data
         CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();

@@ -20,7 +20,6 @@
 package org.apache.stratos.adc.mgt.test;
 
 import junit.framework.TestCase;
-
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;

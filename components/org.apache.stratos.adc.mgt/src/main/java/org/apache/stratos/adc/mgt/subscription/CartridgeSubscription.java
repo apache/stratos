@@ -33,6 +33,9 @@ import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionMultiTenantBehaviour;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionSingleTenantBehaviour;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.*;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
@@ -57,6 +60,7 @@ public abstract class CartridgeSubscription {
     private String mappedDomain;
     private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
+    protected SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
 
     /**
      * Constructor
@@ -75,6 +79,12 @@ public abstract class CartridgeSubscription {
         getCluster().setHostName(cartridgeInfo.getHostName());
         this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         this.connectedSubscriptionAliases = new ArrayList<String>();
+        if(getCartridgeInfo().getMultiTenant()) {
+            subscriptionTenancyBehaviour = new SubscriptionMultiTenantBehaviour(this);
+        }
+        else {
+            subscriptionTenancyBehaviour = new SubscriptionSingleTenantBehaviour(this);
+        }
     }
 
     /**
@@ -85,19 +95,19 @@ public abstract class CartridgeSubscription {
      * @param autoscalingPolicy Auto scaling policy
      * @param repository Relevenat Repository subscription
      *
-     * @throws ADCException
-     * @throws PolicyException
-     * @throws UnregisteredCartridgeException
-     * @throws InvalidCartridgeAliasException
-     * @throws DuplicateCartridgeAliasException
-     * @throws RepositoryRequiredException
-     * @throws AlreadySubscribedException
-     * @throws RepositoryCredentialsRequiredException
-     * @throws InvalidRepositoryException
-     * @throws RepositoryTransportException
+     * @throws org.apache.stratos.adc.mgt.exception.ADCException
+     * @throws org.apache.stratos.adc.mgt.exception.PolicyException
+     * @throws org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException
+     * @throws org.apache.stratos.adc.mgt.exception.InvalidCartridgeAliasException
+     * @throws org.apache.stratos.adc.mgt.exception.DuplicateCartridgeAliasException
+     * @throws org.apache.stratos.adc.mgt.exception.RepositoryRequiredException
+     * @throws org.apache.stratos.adc.mgt.exception.AlreadySubscribedException
+     * @throws org.apache.stratos.adc.mgt.exception.RepositoryCredentialsRequiredException
+     * @throws org.apache.stratos.adc.mgt.exception.InvalidRepositoryException
+     * @throws org.apache.stratos.adc.mgt.exception.RepositoryTransportException
      */
     public void createSubscription (Subscriber subscriber, String alias, Policy autoscalingPolicy,
-                                   Repository repository)
+                                    Repository repository)
             throws ADCException, PolicyException, UnregisteredCartridgeException, InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
@@ -412,14 +422,14 @@ public abstract class CartridgeSubscription {
         this.subscriptionStatus = subscriptionStatus;
     }
 
-	public String getSubscriptionKey() {
-		return subscriptionKey;
-	}
+    public String getSubscriptionKey() {
+        return subscriptionKey;
+    }
 
-	public void setSubscriptionKey(String subscriptionKey) {
-		this.subscriptionKey = subscriptionKey;
-	}
-	
+    public void setSubscriptionKey(String subscriptionKey) {
+        this.subscriptionKey = subscriptionKey;
+    }
+
     public Cluster getCluster() {
         return cluster;
     }
