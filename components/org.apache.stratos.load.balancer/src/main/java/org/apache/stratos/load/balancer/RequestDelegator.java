@@ -55,8 +55,8 @@ public class RequestDelegator {
             if (cluster != null) {
                 Member member = findNextMemberInCluster(cluster);
                 if (member != null) {
-                    long endTime = System.currentTimeMillis();
                     if (log.isDebugEnabled()) {
+                        long endTime = System.currentTimeMillis();
                         log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [member] %s", (endTime - startTime), member.getServiceName(), member.getClusterId(), member.getMemberId()));
                     }
                 }
@@ -78,8 +78,8 @@ public class RequestDelegator {
             if (cluster != null) {
                 Member member = findNextMemberInCluster(cluster);
                 if (member != null) {
-                    long endTime = System.currentTimeMillis();
                     if (log.isDebugEnabled()) {
+                        long endTime = System.currentTimeMillis();
                         log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [tenant-id] %d [member] %s",
                                 (endTime - startTime), member.getServiceName(), member.getClusterId(), tenantId, member.getMemberId()));
                     }

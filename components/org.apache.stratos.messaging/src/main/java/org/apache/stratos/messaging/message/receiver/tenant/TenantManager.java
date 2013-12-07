@@ -113,6 +113,10 @@ public class TenantManager {
         return this.tenantDomainTenantMap.get(tenantDomain);
     }
 
+    public boolean tenantExists(int tenantId) {
+        return tenantIdTenantMap.containsKey(tenantId);
+    }
+
     public void removeTenant(int tenantId) {
         Tenant tenant = getTenant(tenantId);
         if(tenant != null) {
