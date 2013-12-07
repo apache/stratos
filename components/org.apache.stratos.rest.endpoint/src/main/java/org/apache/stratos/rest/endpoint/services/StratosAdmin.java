@@ -32,6 +32,7 @@ import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
@@ -90,7 +91,7 @@ public class StratosAdmin extends AbstractAdmin {
         ServiceUtils.undeployCartridge(cartridgeType);
     }
 
-    @GET
+    /*@GET
     @Path("/partition")
     @Produces("application/json")
     @Consumes("application/json")
@@ -98,6 +99,41 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition[] getPartitions () throws RestAPIException {
 
         return ServiceUtils.getAvailablePartitions();
+    }*/
+
+    @GET
+    @Path("/partition/{partitionId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
+
+        //return ServiceUtils.getPartition(partitionId);
+        return null;
+    }
+
+    @GET
+    @Path("/partition/group/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public PartitionGroup[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+
+        //return ServiceUtils.getPartitionGroups(deploymentPolicyId);
+        return null;
+    }
+
+    @GET
+    @Path("/partition/{deploymentPolicyId}/{partitionGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition [] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
+                                       @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
+
+        //return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
+        return null;
     }
 
     @GET
@@ -111,6 +147,18 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
+    @Path("/policy/autoscale/{autoscalePolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public AutoscalePolicy getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
+            throws RestAPIException {
+
+        //return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
+        return null;
+    }
+
+    @GET
     @Path("/policy/deployment")
     @Produces("application/json")
     @Consumes("application/json")
@@ -118,6 +166,29 @@ public class StratosAdmin extends AbstractAdmin {
     public DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
 
         return ServiceUtils.getDeploymentPolicies();
+    }
+
+    @GET
+    @Path("/policy/deployment/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public DeploymentPolicy getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+
+        //return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
+        return null;
+    }
+
+    @GET
+    @Path("{cartridgeType}/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public DeploymentPolicy[] getValidDeploymentPolicies (@PathParam("cartridgeType") String cartridgeType)
+            throws RestAPIException {
+
+        return ServiceUtils.getDeploymentPolicies(cartridgeType);
     }
 
     @GET

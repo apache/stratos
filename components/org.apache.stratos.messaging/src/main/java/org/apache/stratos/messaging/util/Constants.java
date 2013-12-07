@@ -24,6 +24,7 @@ public class Constants {
 	public static final String HEALTH_STAT_TOPIC = "summarized-health-stats";
     public static final String INSTANCE_STATUS_TOPIC = "instance-status";
     public static final String ARTIFACT_SYNCHRONIZATION_TOPIC = "artifact-synchronization";
+    public static final String TENANT_TOPIC = "tenant";
 
     public static final String TENANT_RANGE_DELIMITER = "-";
     public static final String EVENT_CLASS_NAME = "event-class-name";

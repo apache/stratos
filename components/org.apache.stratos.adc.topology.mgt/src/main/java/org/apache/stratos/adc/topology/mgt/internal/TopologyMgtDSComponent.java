@@ -26,7 +26,7 @@ import org.apache.stratos.adc.topology.mgt.service.impl.TopologyManagementServic
 import org.apache.stratos.adc.topology.mgt.util.ConfigHolder;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageReceiver;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageListener;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
@@ -49,7 +49,7 @@ public class TopologyMgtDSComponent {
 		try {
             // Start topic subscriber thread
             TopicSubscriber topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topicSubscriber.setMessageListener(new TopologyEventMessageReceiver());
+            topicSubscriber.setMessageListener(new TopologyEventMessageListener());
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {

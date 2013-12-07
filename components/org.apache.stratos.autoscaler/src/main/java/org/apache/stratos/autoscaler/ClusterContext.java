@@ -65,7 +65,7 @@ public class ClusterContext {
     private Map<String, String> memberPartitionMap;
     private DeploymentPolicy deploymentPolicy;
 
-    public ClusterContext(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy, List<Partition> partitions) {
+    public ClusterContext(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy, Partition[] partitions) {
 
         this.clusterId = clusterId;
         this.serviceId = serviceId;
@@ -273,6 +273,10 @@ public class ClusterContext {
 	
 	public String getPartitonOfMember(String memberId){
 		return this.memberPartitionMap.get(memberId);
+	}
+	
+	public boolean memberExist(String memberId){
+		return this.memberPartitionMap.containsKey(memberId);
 	}
 
 }

@@ -21,19 +21,19 @@ package org.apache.stratos.messaging.message.processor.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant updated message processor for updating a given tenant in tenant manager and
- * triggering tenant updated event listeners when a tenant updated event message is received.
+ * Complete tenant message processor for initializing the tenant manager and
+ * triggering complete tenant event listeners when the complete tenant event
+ * message is received.
  */
-public class TenantUpdatedMessageProcessor extends MessageProcessor {
+public class CompleteTenantMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(TenantUpdatedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(CompleteTenantMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -44,29 +44,22 @@ public class TenantUpdatedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (TenantUpdatedEvent.class.getName().equals(type)) {
-            // Return if tenant manager has not initialized
-            if(!TenantManager.getInstance().isInitialized()) {
+        if (TenantCreatedEvent.class.getName().equals(type)) {
+            // Return if tenant manager has already initialized
+            if(TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            TenantUpdatedEvent event = (TenantUpdatedEvent) Util.jsonToObject(message, TenantUpdatedEvent.class);
+            TenantCreatedEvent event = (TenantCreatedEvent) Util.jsonToObject(message, TenantCreatedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
-                Tenant tenant = TenantManager.getInstance().getTenant(event.getTenantId());
-                if(tenant == null) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Tenant not found: [tenant-id] %d", event.getTenantId()));
-                    }
-                    return false;
-                }
-                tenant.setTenantDomain(event.getTenantDomain());
-
+                TenantManager.getInstance().addTenant(event.getTenant());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant updated: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
+                    log.info("Tenant initialized");
                 }
+                TenantManager.getInstance().setInitialized(true);
                 return true;
             }
             finally {

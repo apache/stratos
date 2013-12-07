@@ -29,5 +29,11 @@ public final class AutoScalerConstants {
     public static final String PROPERTY_ELEMENT = "property";
     public static final String PROPERTY_NAME_ATTR= "name";
     public static final String PROPERTY_VALUE_ATTR = "value";
+    
+    /**
+	 * Persistence
+	 */
+	public static final String AUTOSCALER_RESOURCE = "/autoscaler";
+	public static final String DATA_RESOURCE = "/data";
        
 }

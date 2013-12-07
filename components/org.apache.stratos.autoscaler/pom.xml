@@ -35,6 +35,13 @@
 	<url>http://apache.org</url>
 
 	<dependencies>
+		 <dependency>
+		    <groupId>org.wso2.carbon</groupId>
+		    <artifactId>org.wso2.carbon.registry.core</artifactId>
+		    <version>${carbon.platform.version}</version>
+		    <scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-core</artifactId>
@@ -175,9 +182,6 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Bundle-Activator>
-							org.apache.stratos.autoscaler.internal.AutoscalerActivator
-                        </Bundle-Activator>
                         <Private-Package>org.apache.stratos.autoscaler.internal.*</Private-Package>
 						<Export-Package>!org.apache.stratos.autoscaler.internal.*,org.apache.stratos.autoscaler.*</Export-Package>
 						<Import-Package>

@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -39,7 +40,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
 	
 	public Partition[] getAllAvailablePartitions(){
-		return PartitionManager.getInstance().getAllPartitions().toArray(new Partition[0]);		
+		return PartitionManager.getInstance().getAllPartitions();		
 	}
 	
 	public DeploymentPolicy[] getAllDeploymentPolicies(){
@@ -55,12 +56,78 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 		ArrayList<DeploymentPolicy> validPolicies = new ArrayList<DeploymentPolicy>();
 		
 		for(DeploymentPolicy deploymentPolicy : this.getAllDeploymentPolicies()){
-			Partition[] policyPartitions = deploymentPolicy.getAllPartitions().toArray(new Partition[0]);
+			Partition[] policyPartitions = deploymentPolicy.getAllPartitions();;
 			boolean isValid = CloudControllerClient.getInstance().validatePartitionsOfPolicy(cartridgeType, policyPartitions);
 			if(isValid)
 				validPolicies.add(deploymentPolicy);			
 		}
 		return validPolicies.toArray(new DeploymentPolicy[0]);
+	}
+
+	@Override
+	public boolean addPartition(Partition partition) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Partition getPartition(String partitionId) {
+		for(Partition par: this.getAllAvailablePartitions()){
+			if(par.getId().equals(partitionId)){
+				return par;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) {
+		for(DeploymentPolicy depPol : this.getAllDeploymentPolicies()){
+			if(depPol.getId().equals(deploymentPolicyId)){
+				return depPol;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId) {
+		for(AutoscalePolicy asPol : this.getAllAutoScalingPolicy()){
+			if(asPol.getId().equals(autoscalingPolicyId))
+				return asPol;
+		}
+		return null;
+	}
+
+	@Override
+	public PartitionGroup[] getPartitionGroups(String deploymentPolicyId) {	
+		this.getDeploymentPolicy(deploymentPolicyId).getAllPartitions();
+		return null;
+	}
+
+	@Override
+	public Partition[] getPartitionsOfDeploymentPolicy(String depPolicy, String partitonGroupId) {
+		DeploymentPolicy depPol = this.getDeploymentPolicy(depPolicy);
+		if(null == depPol)
+			return null;
+		
+		PartitionGroup partGrp = depPol.getPartitionGroup(partitonGroupId);
+		if(null == partGrp)
+			return null;
+		
+		return partGrp.getPartitions();
 	}
 
 }

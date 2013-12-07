@@ -23,15 +23,24 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
-import org.apache.stratos.autoscaler.topology.processors.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.topology.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.registry.api.RegistryException;
+import org.wso2.carbon.registry.core.service.RegistryService;
 
 /**
  * @scr.component name=
  * "org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
  * immediate="true"
+ * 
+ * @scr.reference name="registry.service"
+ *                interface=
+ *                "org.wso2.carbon.registry.core.service.RegistryService"
+ *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
+ *                unbind="unsetRegistryService" 
  */
 
 public class AutoscalerServerComponent {
@@ -87,4 +96,24 @@ public class AutoscalerServerComponent {
             log.info("Autoscaler Server Component activated");
         }
     }
+    
+    protected void setRegistryService(RegistryService registryService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting the Registry Service");
+		}
+		try {
+	        ServiceReferenceHolder.getInstance().setRegistry(registryService.getGovernanceSystemRegistry());
+        } catch (RegistryException e) {
+        	String msg = "Failed when retrieving Governance System Registry.";
+        	log.error(msg, e);
+        	//throw new CloudControllerException(msg, e);
+        }
+	 }
+
+	protected void unsetRegistryService(RegistryService registryService) {
+		if (log.isDebugEnabled()) {
+            log.debug("Unsetting the Registry Service");
+        }
+        ServiceReferenceHolder.getInstance().setRegistry(null);
+	}
 }

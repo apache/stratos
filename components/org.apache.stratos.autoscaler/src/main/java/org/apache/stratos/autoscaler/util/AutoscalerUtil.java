@@ -90,7 +90,7 @@ public class AutoscalerUtil {
             throw new PolicyValidationException(msg);
         }
 
-        List<Partition> allPartitions = deploymentPolicy.getAllPartitions();
+        Partition[] allPartitions = deploymentPolicy.getAllPartitions();
         if (allPartitions == null) {
             String msg =
                          "Deployment Policy's Partitions are null. Policy name: " +
@@ -109,7 +109,7 @@ public class AutoscalerUtil {
 
         CloudControllerClient.getInstance()
                              .validatePartitionsOfPolicy(cluster.getServiceName(),
-                                                         allPartitions.toArray(new Partition[0]));
+                                                         allPartitions);
         ClusterContext clusterContext =
                                         new ClusterContext(cluster.getClusterId(),
                                                            cluster.getServiceName(),
@@ -132,7 +132,7 @@ public class AutoscalerUtil {
         return clusterContext;
     }
 
-    private static void validateExistenceOfPartions(List<Partition> partitions) throws InvalidPartitionException {
+    private static void validateExistenceOfPartions(Partition[] partitions) throws InvalidPartitionException {
         PartitionManager partitionMgr = PartitionManager.getInstance();
         for (Partition partition : partitions) {
             String partitionId = partition.getId();
