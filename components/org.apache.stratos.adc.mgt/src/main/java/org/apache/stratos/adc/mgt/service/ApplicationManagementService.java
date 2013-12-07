@@ -36,6 +36,10 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
+import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -54,14 +58,10 @@ import java.util.regex.Pattern;
  */
 public class ApplicationManagementService extends AbstractAdmin {
 
-
     private static final Log log = LogFactory.getLog(ApplicationManagementService.class);
-    RegistryManager registryManager = new RegistryManager();
+    private RegistryManager registryManager = new RegistryManager();
     private CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
 
-    PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-    String tenantDomain = carbonContext.getTenantDomain();
-    
     /*
      * Instantiate RepoNotificationService. Since this service is in the same 
      * component (org.apache.stratos.adc.mgt), a new object is created.
@@ -261,7 +261,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 					TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
 					String[] ips = topologyMgtService.getActiveIPs(subscription.getCartridge(),
 							subscription.getClusterDomain(), subscription.getClusterSubdomain());
-					Cartridge cartridge = ApplicationManagementUtil.populateCartridgeInfo(cartridgeInfo, subscription, ips, tenantDomain);
+					Cartridge cartridge = ApplicationManagementUtil.populateCartridgeInfo(cartridgeInfo, subscription, ips, getTenantDomain());
 					cartridges.add(cartridge);
 				}
 			} else {
@@ -404,13 +404,15 @@ public class ApplicationManagementService extends AbstractAdmin {
             try {
                 connectingCartridgeSubscription = cartridgeSubsciptionManager.getCartridgeSubscription(getTenantDomain(),
                         dataCartridgeAlias);
-
             } catch (NotSubscribedException e) {
                 log.error(e.getMessage(), e);
             }
             if (connectingCartridgeSubscription != null) {
+                // Publish tenant subscribed event
+                publishTenantSubscribedEvent(getTenantId(), connectingCartridgeSubscription.getCartridgeInfo().getType());
+
                 try {
-                    cartridgeSubsciptionManager.connectCartridges(tenantDomain, cartridgeSubscription,
+                    cartridgeSubsciptionManager.connectCartridges(getTenantDomain(), cartridgeSubscription,
                             connectingCartridgeSubscription.getAlias());
 
                 } catch (NotSubscribedException e) {
@@ -429,6 +431,35 @@ public class ApplicationManagementService extends AbstractAdmin {
 
 	}
 
+    private void publishTenantSubscribedEvent(int tenantId, String serviceName) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+            }
+            TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
+            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+            eventPublisher.publish(subscribedEvent);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+            }
+        }
+    }
+
+    private void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+            }
+            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName);
+            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+            eventPublisher.publish(event);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not publish tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+            }
+        }
+    }
 
     /**
      * Unsubscribing the cartridge
@@ -439,19 +470,38 @@ public class ApplicationManagementService extends AbstractAdmin {
 
         checkSuperTenant();
 
+        // Find subscription of alias
+        CartridgeSubscriptionInfo subscription;
+        String errorMessage = String.format("Tenant %s is not subscribed for %s", getTenantDomain(), alias);
+        try {
+            subscription = PersistenceManager.getSubscription(getTenantDomain(), alias);
+            if(subscription == null) {
+                throw new ADCException(errorMessage);
+            }
+        } catch (Exception e) {
+            throw new ADCException(errorMessage);
+        }
+
+        // Un-subscribe from cartridge
         cartridgeSubsciptionManager.unsubscribeFromCartridge(getTenantDomain(), alias);
+
+        // Publish tenant un-subscribed event
+        String serviceName = subscription.getCartridge();
+        publishTenantUnSubscribedEvent(getTenantId(), serviceName);
+
+
         /*CartridgeSubscriptionInfo subscription = null;
         
         try {
-			subscription = PersistenceManager.getSubscription(tenantDomain, alias);
+			subscription = PersistenceManager.getSubscription(getTenantDomain(), alias);
 		} catch (Exception e) {
-			String msg = "Failed to get subscription for " + tenantDomain + " and alias " + alias;
+			String msg = "Failed to get subscription for " + getTenantDomain() + " and alias " + alias;
             log.error(msg, e);
 			throw new ADCException(msg, e);
 		}
 
         if (subscription == null) {
-            String msg = "Tenant " + tenantDomain + " is not subscribed for " + alias;
+            String msg = "Tenant " + getTenantDomain() + " is not subscribed for " + alias;
             log.error(msg);
             throw new NotSubscribedException("You have not subscribed for " + alias, alias);
         }
@@ -482,7 +532,7 @@ public class ApplicationManagementService extends AbstractAdmin {
                 }
             }
 
-            new RepositoryFactory().destroyRepository(alias, tenantDomain, getUsername());
+            new RepositoryFactory().destroyRepository(alias, getTenantDomain(), getUsername());
             log.info("Repo is destroyed successfully.. ");
 
             PersistenceManager.updateSubscriptionState(subscription.getSubscriptionId(), "UNSUBSCRIBED");
@@ -516,14 +566,14 @@ public class ApplicationManagementService extends AbstractAdmin {
         String actualHost = null;
         
         try {
-			subscription = PersistenceManager.getSubscription(tenantDomain, cartridgeAlias);
+			subscription = PersistenceManager.getSubscription(getTenantDomain(), cartridgeAlias);
 		} catch (Exception e) {
-			String msg = "Failed to get subscription for " + tenantDomain + " and alias " + cartridgeAlias;
+			String msg = "Failed to get subscription for " + getTenantDomain() + " and alias " + cartridgeAlias;
             log.error(msg, e);
 			throw new ADCException(msg, e);
 		}
         if (subscription == null) {
-        	String msg = "Tenant " + tenantDomain + " is not subscribed for " + cartridgeAlias;
+        	String msg = "Tenant " + getTenantDomain() + " is not subscribed for " + cartridgeAlias;
             log.error(msg);
             throw new NotSubscribedException("You have not subscribed for " + cartridgeAlias, cartridgeAlias);
         }
@@ -531,7 +581,7 @@ public class ApplicationManagementService extends AbstractAdmin {
         try {
         	actualHost = getActualHost(cartridgeAlias);
             registryManager.addDomainMappingToRegistry(mappedDomain, actualHost);
-            log.info("Domain mapping is added for " + mappedDomain + " tenant: " + tenantDomain);
+            log.info("Domain mapping is added for " + mappedDomain + " tenant: " + getTenantDomain());
             PersistenceManager.updateDomainMapping(
                     ApplicationManagementUtil.getTenantId(getConfigContext()), cartridgeAlias, mappedDomain);
         } catch (RegistryException e) {
@@ -561,14 +611,14 @@ public class ApplicationManagementService extends AbstractAdmin {
         String actualHost = null;
         
         try {
-			subscription = PersistenceManager.getSubscription(tenantDomain, cartridgeAlias);
+			subscription = PersistenceManager.getSubscription(getTenantDomain(), cartridgeAlias);
 		} catch (Exception e) {
-			String msg = "Failed to get subscription for " + tenantDomain + " and alias " + cartridgeAlias;
+			String msg = "Failed to get subscription for " + getTenantDomain() + " and alias " + cartridgeAlias;
             log.error(msg, e);
 			throw new ADCException(msg, e);
 		}
         if (subscription == null) {
-        	String msg = "Tenant " + tenantDomain + " is not subscribed for " + cartridgeAlias;
+        	String msg = "Tenant " + getTenantDomain() + " is not subscribed for " + cartridgeAlias;
             log.error(msg);
             throw new NotSubscribedException("You have not subscribed for " + cartridgeAlias, cartridgeAlias);
         }
@@ -576,7 +626,7 @@ public class ApplicationManagementService extends AbstractAdmin {
         try {
         	actualHost = getActualHost(cartridgeAlias);
             registryManager.removeDomainMappingFromRegistry(actualHost);
-            log.info("Domain mapping is removed for " + actualHost + " tenant: " + tenantDomain);
+            log.info("Domain mapping is removed for " + actualHost + " tenant: " + getTenantDomain());
             PersistenceManager.updateDomainMapping(ApplicationManagementUtil.getTenantId(getConfigContext()),
                     cartridgeAlias, null);
         } catch (RegistryException e) {
@@ -596,38 +646,34 @@ public class ApplicationManagementService extends AbstractAdmin {
         
         // Validating subscription
         try {
-			subscription = PersistenceManager.getSubscription(tenantDomain, cartridgeAlias);
+			subscription = PersistenceManager.getSubscription(getTenantDomain(), cartridgeAlias);
 		} catch (Exception e) {
-			String msg = "Failed to get subscription for " + tenantDomain + " and alias " + cartridgeAlias;
+			String msg = "Failed to get subscription for " + getTenantDomain() + " and alias " + cartridgeAlias;
             log.error(msg, e);
 			throw new ADCException(msg, e);
 		}
         if (subscription == null) {
-        	String msg = "Tenant " + tenantDomain + " is not subscribed for " + cartridgeAlias;
+        	String msg = "Tenant " + getTenantDomain() + " is not subscribed for " + cartridgeAlias;
             log.error(msg);
             throw new NotSubscribedException("You have not subscribed for " + cartridgeAlias, cartridgeAlias);
         }
 		
 		try {
-			repoNotificationService.notifyRepoUpdate(tenantDomain, cartridgeAlias);
+			repoNotificationService.notifyRepoUpdate(getTenantDomain(), cartridgeAlias);
 		} catch (Exception e) {
 			throw new ADCException(e.getMessage() != null ? e.getMessage() : "Failed to synchronize repository", e);
 		}
 	}
 
-    /**
-     * Validate authentication.
-     * First call of cli tool in the prompt mode after log in.
-     *
-     * @return The tenant domain
-     */
 	public String getTenantDomain() {
-		if (tenantDomain != null) {
-			// This means, authentication is successful
-			log.info("Tenant " + tenantDomain + " is authorized to access Application Management Service!");
-		}
-		return tenantDomain;
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        return carbonContext.getTenantDomain();
 	}
+
+    public int getTenantId() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        return carbonContext.getTenantId();
+    }
     
 	/**
 	 * Allow to check whether features are enabled in the back-end
@@ -654,7 +700,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 	private void checkSuperTenant() throws ADCException {
 		if (log.isDebugEnabled()) {
 			log.debug("Checking whether super tenant accesses the service methods. Tenant ID: "
-					+ ApplicationManagementUtil.getTenantId(getConfigContext()) + ", Tenant Domain: " + carbonContext.getTenantDomain());
+					+ ApplicationManagementUtil.getTenantId(getConfigContext()) + ", Tenant Domain: " + getTenantDomain());
 		}
 		if (MultitenantConstants.SUPER_TENANT_ID == ApplicationManagementUtil.getTenantId(getConfigContext())) {
 			throw new ADCException("Super Tenant is not allowed to complete requested operation");
