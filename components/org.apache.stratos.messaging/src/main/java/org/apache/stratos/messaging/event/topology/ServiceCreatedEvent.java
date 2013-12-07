@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.event.topology;
 
 import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.domain.topology.ServiceType;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,18 +32,26 @@ import java.util.Properties;
  * This event is fired by Cloud Controller when a service is added to a topology.
  */
 public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
+
     private static final long serialVersionUID = 3480876570877127669L;
-	private String serviceName;
+
+    private final String serviceName;
+    private final ServiceType serviceType;
     private Map<String, Port> portMap;
     private Properties properties;
 
-    public ServiceCreatedEvent(String serviceName) {
+    public ServiceCreatedEvent(String serviceName, ServiceType serviceType) {
         this.serviceName = serviceName;
+        this.serviceType = serviceType;
         this.portMap = new HashMap<String, Port>();
     }
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 
     public Collection<Port> getPorts() {

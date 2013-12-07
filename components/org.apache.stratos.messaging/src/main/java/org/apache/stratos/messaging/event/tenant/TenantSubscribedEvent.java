@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,24 +19,27 @@
 
 package org.apache.stratos.messaging.event.tenant;
 
-import org.apache.stratos.messaging.domain.tenant.Tenant;
-
-import java.util.List;
+import java.io.Serializable;
 
 /**
- *  This event is fired periodically with all the available tenants. It would be a
- *  starting point for subscribers to initialize the list of tenants before receiving
- *  other tenant events.
+ * This event is fired when a tenant is subscribed to a service.
  */
-public class CompleteTenantEvent extends TenantEvent {
+public class TenantSubscribedEvent extends TenantEvent implements Serializable {
+    private static final long serialVersionUID = -4023221432696893312L;
 
-    private List<Tenant> tenants;
+    private final int tenantId;
+    private final String serviceName;
 
-    public CompleteTenantEvent(List<Tenant> tenants) {
-        this.tenants = tenants;
+    public TenantSubscribedEvent(int tenantId, String serviceName) {
+        this.tenantId = tenantId;
+        this.serviceName = serviceName;
     }
 
-    public List<Tenant> getTenants() {
-        return tenants;
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 }

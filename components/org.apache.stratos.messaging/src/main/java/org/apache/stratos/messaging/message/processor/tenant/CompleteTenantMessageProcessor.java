@@ -28,8 +28,7 @@ import org.apache.stratos.messaging.util.Util;
 
 /**
  * Complete tenant message processor for initializing the tenant manager and
- * triggering complete tenant event listeners when the complete tenant event
- * message is received.
+ * triggering complete tenant event listeners.
  */
 public class CompleteTenantMessageProcessor extends MessageProcessor {
 
@@ -60,6 +59,9 @@ public class CompleteTenantMessageProcessor extends MessageProcessor {
                     log.info("Tenant initialized");
                 }
                 TenantManager.getInstance().setInitialized(true);
+
+                // Notify event listeners
+                notifyEventListeners(event);
                 return true;
             }
             finally {

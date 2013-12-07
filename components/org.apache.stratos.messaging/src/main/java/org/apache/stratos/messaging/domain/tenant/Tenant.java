@@ -20,6 +20,8 @@
 package org.apache.stratos.messaging.domain.tenant;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tenant definition.
@@ -29,10 +31,13 @@ public class Tenant implements Serializable{
 
     private int tenantId;
     private String tenantDomain;
+    // Map<ServiceName, Subscribed>
+    private Map<String, Boolean> serviceNameMap;
 
     public Tenant(int tenantId, String tenantDomain) {
         this.tenantId = tenantId;
         this.tenantDomain = tenantDomain;
+        this.serviceNameMap = new HashMap<String, Boolean>();
     }
 
     public int getTenantId() {
@@ -45,5 +50,17 @@ public class Tenant implements Serializable{
 
     public void setTenantDomain(String tenantDomain) {
         this.tenantDomain = tenantDomain;
+    }
+
+    public boolean isServiceSubscribed(String serviceName) {
+        return serviceNameMap.containsKey(serviceName);
+    }
+
+    public void addServiceSubscription(String serviceName) {
+        serviceNameMap.put(serviceName, true);
+    }
+
+    public void removeServiceSubscription(String serviceName) {
+        serviceNameMap.remove(serviceName);
     }
 }

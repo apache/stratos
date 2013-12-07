@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantCreatedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantRemovedEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantUpdatedEventListener;
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
@@ -38,6 +39,7 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     private TenantCreatedMessageProcessor tenantCreatedMessageProcessor;
     private TenantUpdatedMessageProcessor tenantUpdatedMessageProcessor;
     private TenantRemovedMessageProcessor tenantRemovedMessageProcessor;
+    private TenantSubscribedMessageProcessor tenantSubscribedMessageProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -53,6 +55,9 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
         tenantRemovedMessageProcessor = new TenantRemovedMessageProcessor();
         add(tenantRemovedMessageProcessor);
 
+        tenantSubscribedMessageProcessor = new TenantSubscribedMessageProcessor();
+        add(tenantSubscribedMessageProcessor);
+
         if (log.isDebugEnabled()) {
             log.debug("Tenant message processor chain initialized");
         }
@@ -67,6 +72,8 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
             tenantUpdatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof TenantRemovedEventListener) {
             tenantRemovedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof TenantSubscribedEventListener) {
+            tenantSubscribedMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");
         }

@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,26 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.tenant;
+package org.apache.stratos.messaging.listener.tenant;
 
-import org.apache.stratos.messaging.domain.tenant.Tenant;
-
-import java.util.List;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  This event is fired periodically with all the available tenants. It would be a
- *  starting point for subscribers to initialize the list of tenants before receiving
- *  other tenant events.
+ * Complete tenant event listener.
  */
-public class CompleteTenantEvent extends TenantEvent {
-
-    private List<Tenant> tenants;
-
-    public CompleteTenantEvent(List<Tenant> tenants) {
-        this.tenants = tenants;
-    }
-
-    public List<Tenant> getTenants() {
-        return tenants;
-    }
+public abstract class CompleteTenantEventListener extends EventListener {
 }

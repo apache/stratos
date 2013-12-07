@@ -22,18 +22,18 @@ package org.apache.stratos.messaging.message.processor.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant removed message processor for removing a tenant from tenant manager
- * and triggering tenant removed event listeners.
+ * Tenant un-subscribed message processor for updating a tenant in tenant manager and
+ * triggering tenant subscribed event listeners.
  */
-public class TenantRemovedMessageProcessor extends MessageProcessor {
+public class TenantUnSubscribedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(TenantRemovedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(TenantUnSubscribedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -44,14 +44,14 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (TenantRemovedEvent.class.getName().equals(type)) {
+        if (TenantUnSubscribedEvent.class.getName().equals(type)) {
             // Return if tenant manager has not initialized
             if(!TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            TenantRemovedEvent event = (TenantRemovedEvent) Util.jsonToObject(message, TenantRemovedEvent.class);
+            TenantUnSubscribedEvent event = (TenantUnSubscribedEvent) Util.jsonToObject(message, TenantUnSubscribedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
@@ -62,10 +62,10 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
                     }
                     return false;
                 }
-                TenantManager.getInstance().removeTenant(event.getTenantId());
-
+                tenant.removeServiceSubscription(event.getServiceName());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant removed: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
+                    log.info(String.format("Tenant un-subscribed from service: [tenant-id] %d [tenant-domain] %s [service] %s",
+                            tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName()));
                 }
 
                 // Notify event listeners

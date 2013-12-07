@@ -28,8 +28,8 @@ import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant updated message processor for updating a given tenant in tenant manager and
- * triggering tenant updated event listeners when a tenant updated event message is received.
+ * Tenant updated message processor for updating a tenant in tenant manager and
+ * triggering tenant updated event listeners.
  */
 public class TenantUpdatedMessageProcessor extends MessageProcessor {
 
@@ -67,6 +67,9 @@ public class TenantUpdatedMessageProcessor extends MessageProcessor {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Tenant updated: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
                 }
+
+                // Notify event listeners
+                notifyEventListeners(event);
                 return true;
             }
             finally {
