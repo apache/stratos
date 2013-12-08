@@ -420,18 +420,21 @@ public class LoadBalancerConfiguration {
                             }
                             cluster.addMember(member);
                         }
+                        // Add cluster to service
                         service.addCluster(cluster);
+
+                        // Add service to topology manager if not exists
+                        try {
+                            TopologyManager.acquireWriteLock();
+                            if(!TopologyManager.getTopology().serviceExists(service.getServiceName())) {
+                                TopologyManager.getTopology().addService(service);
+                            }
+                        } finally {
+                            TopologyManager.releaseWriteLock();
+                        }
 
                         // Add cluster to load balancer context
                         LoadBalancerContextUtil.addClusterToLbContext(cluster);
-                    }
-
-                    // Add service to topology manager
-                    try {
-                        TopologyManager.acquireWriteLock();
-                        TopologyManager.getTopology().addService(service);
-                    } finally {
-                        TopologyManager.releaseWriteLock();
                     }
                 }
             }

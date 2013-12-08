@@ -33,10 +33,17 @@ public class LoadBalancerContextUtil {
     private static final Log log = LogFactory.getLog(LoadBalancerContextUtil.class);
 
     public static void addClusterToLbContext(Cluster cluster) {
+        if(cluster == null)
+            return;
+
         // Add cluster to Map<ClusterId, Cluster>
         LoadBalancerContext.getInstance().addCluster(cluster);
 
         Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
+        if(service == null) {
+            throw new RuntimeException(String.format("Service not found: [cluster] %s", cluster.getClusterId()));
+        }
+
         if (service.getServiceType() == ServiceType.SingleTenant) {
             // Add cluster to SingleTenantClusterMap
             for (String hostName : cluster.getHostNames()) {
@@ -53,7 +60,14 @@ public class LoadBalancerContextUtil {
 
     public static void removeClusterFromLbContext(String clusterId) {
         Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterId);
+        if(cluster == null) {
+            return;
+        }
+
         Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
+        if(service == null) {
+            throw new RuntimeException(String.format("Service not found: [cluster] %s", cluster.getClusterId()));
+        }
         if (service.getServiceType() == ServiceType.SingleTenant) {
             // Remove cluster from SingleTenantClusterMap
             for (String hostName : cluster.getHostNames()) {
