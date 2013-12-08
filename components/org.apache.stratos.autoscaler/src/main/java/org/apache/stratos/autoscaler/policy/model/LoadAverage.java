@@ -19,12 +19,15 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
+import java.io.Serializable;
+
 /**
  * The model class for LoadAverage definition.
  */
-public class LoadAverage {
+public class LoadAverage implements Serializable{
 
-    private float average;
+	private static final long serialVersionUID = -2109860338694123343L;
+	private float average;
     private float secondDerivative;
     private float gradient;
     private float scaleDownMarginOfGradient;

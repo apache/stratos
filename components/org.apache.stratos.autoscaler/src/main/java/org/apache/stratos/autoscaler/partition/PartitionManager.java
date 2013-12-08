@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
@@ -97,19 +98,22 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		
 	}
 	
-	public boolean validatePartition(Partition partition) throws PartitionValidationException{
-		return true;
-		//return CloudControllerClient.getInstance().validatePartition(partition);
+	public boolean validatePartition(Partition partition) throws PartitionValidationException{		
+		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
 
-	public void updatePartition(Partition newPartition,Partition oldPartition) throws RegistryException {
+	public void updatePartition(Partition newPartition,Partition oldPartition){
 		if(!oldPartition.getId().equals(newPartition.getId()))
 			throw new AutoScalerException("Can not update.Id s of the two partitions did not match.");
 		
 		oldPartition=newPartition;
 		//overwrite the registry resource.
-		RegistryManager.getInstance().persist(
-				newPartition, this.partitionResourcePath + newPartition.getId());
+		try {
+			RegistryManager.getInstance().persist(
+					newPartition, this.partitionResourcePath + newPartition.getId());
+		} catch (RegistryException e) {
+			throw new AutoScalerException(e);
+		}
 	}
 
 }

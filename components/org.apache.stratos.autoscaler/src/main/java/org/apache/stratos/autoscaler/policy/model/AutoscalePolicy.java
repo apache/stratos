@@ -19,11 +19,14 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
+import java.io.Serializable;
+
 /**
  * The model class for Autoscale-policy definition.
  */
-public class AutoscalePolicy {
+public class AutoscalePolicy implements Serializable {
 
+	private static final long serialVersionUID = 1754373171598089271L;
 	private LoadThresholds loadThresholds;
 	private String id;
 	private String displayName;

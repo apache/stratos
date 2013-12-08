@@ -35,5 +35,6 @@ public final class AutoScalerConstants {
 	 */
 	public static final String AUTOSCALER_RESOURCE = "/autoscaler";
 	public static final String PARTITION_RESOURCE = "/partitions";
+	public static final String AS_POLICY_RESOURCE = "/policies/autoscalingPolicies";
        
 }

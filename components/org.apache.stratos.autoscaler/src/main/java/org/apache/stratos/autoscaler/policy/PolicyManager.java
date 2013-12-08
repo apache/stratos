@@ -29,8 +29,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
  * 
@@ -39,6 +43,8 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 public class PolicyManager {
 	
 	private static final Log log = LogFactory.getLog(PolicyManager.class);
+
+	private static final String asResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE+ AutoScalerConstants.AS_POLICY_RESOURCE + "/";
 	
 	private static Map<String,AutoscalePolicy> autoscalePolicyListMap = new HashMap<String, AutoscalePolicy>();
 	private static Map<File,String> autoscalePolicyfileNameMap = new HashMap<File, String>();
@@ -76,12 +82,21 @@ public class PolicyManager {
 				log.debug("Adding policy :" + policy.getId());
 			}
 			autoscalePolicyListMap.put(policy.getId(), policy);
+			this.persitASPolicy(asResourcePath+policy.getId(), policy);
 		} else {
 			throw new InvalidPolicyException("Specified policy [" + policy.getId()
 					+ "] already exists");
 		}
 	}
 	
+	private void persitASPolicy(String asResourcePath, AutoscalePolicy policy){		
+		try {
+			RegistryManager.getInstance().persist(policy, asResourcePath);
+		} catch (RegistryException e) {
+			throw new AutoScalerException(e);
+		}
+	}
+
 	/**
 	 * Appends the specified policy
 	 * @param policy
