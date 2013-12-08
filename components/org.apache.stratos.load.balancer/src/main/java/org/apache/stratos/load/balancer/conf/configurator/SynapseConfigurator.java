@@ -51,37 +51,41 @@ public class SynapseConfigurator {
 
     /**
      * Configure Synapse using load balancer configuration.
+     *
      * @param configuration
      */
     public static void configure(LoadBalancerConfiguration configuration) {
         configureMainSequence(configuration);
     }
+
     /**
      * Configure main sequence send mediator endpoint.
+     *
      * @param configuration Load balancer configuration.
      */
     public static void configureMainSequence(LoadBalancerConfiguration configuration) {
         String filePath = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "deployment" + File.separator + "server" + File.separator
-                          + "synapse-configs" + File.separator + "default" + File.separator + "sequences" + File.separator + "main.xml";
+                + "synapse-configs" + File.separator + "default" + File.separator + "sequences" + File.separator + "main.xml";
         configureMainSequence(configuration, filePath, filePath);
     }
 
     /**
      * Configure main sequence send mediator endpoint.
-     * @param configuration Load balancer configuration.
-     * @param inputFilePath Input file path.
+     *
+     * @param configuration  Load balancer configuration.
+     * @param inputFilePath  Input file path.
      * @param outputFilePath Output file path.
      */
     public static void configureMainSequence(LoadBalancerConfiguration configuration, String inputFilePath, String outputFilePath) {
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Configuring synapse main sequence...");
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Reading synapse main sequence: %s", inputFilePath));
             }
             File inputFile = new File(inputFilePath);
-            if(!inputFile.exists()) {
+            if (!inputFile.exists()) {
                 throw new RuntimeException(String.format("File not found: %s", inputFilePath));
             }
             FileInputStream file = new FileInputStream(inputFile);
@@ -142,11 +146,10 @@ public class SynapseConfigurator {
                     log.debug(String.format("Updating synapse main sequence: %s", outputFilePath));
                 }
                 write(xmlDocument, outputFilePath);
-                if(log.isInfoEnabled()) {
+                if (log.isInfoEnabled()) {
                     log.info("Synapse main sequence configured successfully");
                 }
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Send mediator endpoint configuration not found: %s", inputFilePath));
             }
         } catch (Exception e) {
@@ -156,6 +159,7 @@ public class SynapseConfigurator {
 
     /**
      * Write xml document to file.
+     *
      * @param document
      * @param outputFilePath
      * @throws IOException

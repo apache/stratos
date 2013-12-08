@@ -27,13 +27,11 @@ import org.apache.stratos.load.balancer.conf.util.Constants;
  * Every closing brace should be in a new line.
  */
 public class NodeBuilder {
-    
+
     private static final Log log = LogFactory.getLog(NodeBuilder.class);
 
     /**
      * Construct a node structure for the given content.
-     * @param content
-     *            Sample content format:
      *
      *            # comment
      *            property_1 value1;
@@ -56,10 +54,10 @@ public class NodeBuilder {
 
     private static Node buildNode(Node node, String content) {
 
-    	if(content == null || content.isEmpty()){
-    		return node;
-    	}
-    	
+        if (content == null || content.isEmpty()) {
+            return node;
+        }
+
         String[] lines = content.split("\n");
 
         for (int i = 0; i < lines.length; i++) {
@@ -69,13 +67,13 @@ public class NodeBuilder {
             if (!line.startsWith(Constants.NGINX_COMMENT)) {
 
                 // Skip inline comments
-                if(line.contains(Constants.NGINX_COMMENT)){
+                if (line.contains(Constants.NGINX_COMMENT)) {
                     line = line.substring(0, line.indexOf(Constants.NGINX_COMMENT));
                 }
-                
+
                 // A node is detected and it is not a variable starting from $
                 if (line.contains(Constants.NGINX_NODE_START_BRACE) && !line.contains(Constants.NGINX_VARIABLE)) {
-                    
+
                     try {
                         Node childNode = new Node();
                         childNode.setName(line.substring(0, line.indexOf(Constants.NGINX_NODE_START_BRACE)).trim());
@@ -100,20 +98,19 @@ public class NodeBuilder {
                         }
 
                         childNode = buildNode(childNode, sb.toString());
-						if (node == null) {
-							node = childNode;
-						} else {
-							node.appendChild(childNode);
-						}
+                        if (node == null) {
+                            node = childNode;
+                        } else {
+                            node.appendChild(childNode);
+                        }
 
                     } catch (Exception e) {
                         String msg = "Malformed element found in configuration: [" + i + "] \n";
-                        log.error(msg , e);
+                        log.error(msg, e);
                         throw new RuntimeException(msg + line, e);
                     }
 
-                }
-                else {
+                } else {
                     if (!line.isEmpty() && !Constants.NGINX_NODE_END_BRACE.equals(line)) {
                         // Add property
                         String[] prop = line.split(Constants.NGINX_SPACE_REGEX);
@@ -128,7 +125,6 @@ public class NodeBuilder {
                         }
                     }
                 }
-            
             }
         }
         return node;

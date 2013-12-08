@@ -27,12 +27,11 @@ import org.apache.synapse.mediators.AbstractMediator;
 
 /**
  * This Synapse mediator counts the responses that are going across LB.
- * 
  */
 public class ResponseInterceptor extends AbstractMediator implements ManagedLifecycle {
 
     public boolean mediate(MessageContext synCtx) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Mediation started " + ResponseInterceptor.class.getName());
         }
         String clusterId = (String) synCtx.getProperty(Constants.CLUSTER_ID);
@@ -42,14 +41,14 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
 
     @Override
     public void destroy() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("ResponseInterceptor mediator destroyed");
         }
     }
 
     @Override
     public void init(SynapseEnvironment arg0) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("ResponseInterceptor mediator initiated");
         }
     }

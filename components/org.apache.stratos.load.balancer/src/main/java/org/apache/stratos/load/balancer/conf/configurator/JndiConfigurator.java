@@ -43,7 +43,7 @@ public class JndiConfigurator {
     private static void generateJndiPropertiesFile(LoadBalancerConfiguration configuration) {
         String templateFilePath = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf" + File.separator + "templates" + File.separator + "jndi.properties.template";
         File templateFile = new File(templateFilePath);
-        if(!templateFile.exists()) {
+        if (!templateFile.exists()) {
             throw new RuntimeException("jndi.properties.template file not found");
         }
         try {
@@ -57,8 +57,7 @@ public class JndiConfigurator {
             // Write jndi.properties file
             String jndiFilePath = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf" + File.separator + "jndi.properties";
             writeFileContent(content, jndiFilePath);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Could not write jndi.properties file", e);
         }
     }

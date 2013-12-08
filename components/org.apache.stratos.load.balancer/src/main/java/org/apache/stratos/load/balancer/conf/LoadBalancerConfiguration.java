@@ -73,6 +73,7 @@ public class LoadBalancerConfiguration {
 
     /**
      * Get load balancer configuration singleton instance.
+     *
      * @return
      */
     public static synchronized LoadBalancerConfiguration getInstance() {

@@ -111,7 +111,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
 
                     // Add cluster to the context when its first member is activated
                     MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
-                    Cluster cluster = LoadBalancerContext.getInstance().getCluster(memberActivatedEvent.getClusterId());
+                    Cluster cluster = LoadBalancerContext.getInstance().getClusterIdClusterMap().getCluster(memberActivatedEvent.getClusterId());
                     if (cluster != null) {
                         LoadBalancerContextUtil.addClusterToLbContext(cluster);
                     } else {
@@ -132,7 +132,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
 
                     // Remove cluster from context
                     ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
-                    Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterRemovedEvent.getClusterId());
+                    Cluster cluster = LoadBalancerContext.getInstance().getClusterIdClusterMap().getCluster(clusterRemovedEvent.getClusterId());
                     if (cluster != null) {
                         for (String hostName : cluster.getHostNames()) {
                             LoadBalancerContextUtil.removeClusterFromLbContext(hostName);
