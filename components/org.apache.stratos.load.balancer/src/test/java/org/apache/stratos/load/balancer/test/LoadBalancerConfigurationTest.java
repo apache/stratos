@@ -80,7 +80,7 @@ public class LoadBalancerConfigurationTest {
             Assert.assertEquals(String.format("%s, cep port is not valid", validationError), 7615, configuration.getCepPort());
             Assert.assertTrue(String.format("%s, multi-tenancy is not true", validationError), configuration.isMultiTenancyEnabled());
             Assert.assertEquals(String.format("%s, tenant-identifier is not valid", validationError), TenantIdentifier.TenantDomain, configuration.getTenantIdentifier());
-            Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/(.+)/", configuration.getTenantIdentifierRegex());
+            Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/([^/]*)/", configuration.getTenantIdentifierRegex());
         } finally {
             LoadBalancerConfiguration.clear();
         }
@@ -108,9 +108,12 @@ public class LoadBalancerConfigurationTest {
             Service appServer = topology.getService(serviceName);
             Assert.assertNotNull(String.format("%s, service not found: [service] %s", validationError, serviceName), appServer);
 
+            Assert.assertTrue(String.format("%s, multi-tenant is not true: [service] %s", validationError, serviceName), appServer.getServiceType() == ServiceType.MultiTenant);
+
             String clusterId = "app-server-cluster1";
             Cluster cluster1 = appServer.getCluster(clusterId);
             Assert.assertNotNull(String.format("%s, cluster not found: [cluster] %s", validationError, clusterId), cluster1);
+            Assert.assertEquals(String.format("%s, tenant range is not valid: [cluster] %s", validationError, clusterId), cluster1.getTenantRange(), "1-100");
 
             String hostName = "cluster1.appserver.foo.org";
             Assert.assertTrue(String.format("%s, hostname not found: [hostname] %s", validationError, hostName), hostNameExist(cluster1, hostName));
