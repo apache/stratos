@@ -231,7 +231,8 @@ public class StratosAdmin extends AbstractAdmin {
         try {
             return ServiceUtils.subscribe(cartridgeInfoBean.getCartridgeType(),
                     cartridgeInfoBean.getAlias(),
-                    cartridgeInfoBean.getPolicy(),
+                    cartridgeInfoBean.getAutoscalePolicy(),
+                    cartridgeInfoBean.getDeploymentPolicy(),
                     cartridgeInfoBean.getRepoURL(),
                     cartridgeInfoBean.isPrivateRepo(),
                     cartridgeInfoBean.getRepoUsername(),

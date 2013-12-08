@@ -482,7 +482,7 @@ public class ServiceUtils {
     }
 
 
-    static SubscriptionInfo subscribe(String cartridgeType, String alias, String policy, String repoURL,
+    static SubscriptionInfo subscribe(String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, String repoURL,
                                boolean privateRepo, String repoUsername, String repoPassword, String dataCartridgeType,
                                String dataCartridgeAlias, ConfigurationContext configurationContext, String userName, String tenantDomain) throws ADCException, PolicyException, UnregisteredCartridgeException,
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, RepositoryRequiredException,
@@ -491,7 +491,7 @@ public class ServiceUtils {
 
 
         CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
-                alias.trim(), policy, tenantDomain, ApplicationManagementUtil.getTenantId(configurationContext),
+                alias.trim(), autoscalingPolicy, deploymentPolicy ,tenantDomain, ApplicationManagementUtil.getTenantId(configurationContext),
                 userName, "git", repoURL, privateRepo, repoUsername, repoPassword);
 
         if(dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
