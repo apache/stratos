@@ -84,7 +84,7 @@
 //                getPayload().createPayload(),
 //                getPayload().getPayloadArg().getTenantRange(),
 //                getCluster().getHostName(),
-//                ApplicationManagementUtil.setRegisterServiceProperties(getAutoscalingPolicy(),
+//                ApplicationManagementUtil.setRegisterServiceProperties(getAutoscalingPolicyName(),
 //                        getSubscriber().getTenantId(), getAlias()));
 //
 //        getPayload().delete();
@@ -94,7 +94,7 @@
 //        dataCartridge.setPassword(getPassword());
 //        dataCartridge.setDataCartridgeType(getType());
 //
-//        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
+//        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
 //                getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
 //                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
 //                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), dataCartridge, "PENDING",getSubscriptionKey());

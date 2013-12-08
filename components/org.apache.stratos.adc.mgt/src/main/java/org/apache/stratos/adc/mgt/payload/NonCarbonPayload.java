@@ -19,11 +19,8 @@
 
 package org.apache.stratos.adc.mgt.payload;
 
-import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-
-import java.text.DecimalFormat;
 
 public class NonCarbonPayload extends Payload {
 
@@ -59,10 +56,11 @@ public class NonCarbonPayload extends Payload {
         payloadBuilder.append(",");
         payloadBuilder.append("BAM_PORT=" + System.getProperty(CartridgeConstants.BAM_PORT));
 
+        //TODO: remove
         //Autoscale policy specific
-        if(payloadArg.getPolicy() != null) {
+        /*if(payloadArg.getPolicy() != null) {
             payloadBuilder.append(getAutoscalingParams(payloadArg.getPolicy()));
-        }
+        }*/
                 
     }
 
@@ -99,7 +97,8 @@ public class NonCarbonPayload extends Payload {
         return gitRepoURL;
     }
 
-    private String getAutoscalingParams (Policy policy) {
+    //TODO: remove
+    /*private String getAutoscalingParams (Policy policy) {
 
         DecimalFormat df = new DecimalFormat("##.##");
         df.setParseBigDecimal(true);
@@ -122,5 +121,5 @@ public class NonCarbonPayload extends Payload {
         autoscalingPayloadBuilder.append("SCALE_DOWN_FACTOR=" + policy.getScaleDownFactor());
 
         return autoscalingPayloadBuilder.toString();
-    }
+    }*/
 }

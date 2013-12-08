@@ -24,17 +24,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.dao.Cluster;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
-import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.DataCartridgeSubscription;
-//import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.adc.mgt.utils.RepoPasswordMgtUtil;
 import org.apache.stratos.adc.mgt.utils.StratosDBUtils;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
@@ -43,6 +40,8 @@ import org.wso2.carbon.context.CarbonContext;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+//import org.apache.stratos.adc.mgt.subscription.SingleTenantCartridgeSubscription;
 
 public class DatabaseBasedPersistenceManager extends PersistenceManager {
 
@@ -102,7 +101,7 @@ public class DatabaseBasedPersistenceManager extends PersistenceManager {
             persistSubscriptionStmt.setString(4, cartridgeSubscription.getSubscriptionStatus());
             persistSubscriptionStmt.setBoolean(5, cartridgeSubscription.getCartridgeInfo().getMultiTenant());
             persistSubscriptionStmt.setString(6, cartridgeSubscription.getCartridgeInfo().getProvider());
-            persistSubscriptionStmt.setString(7, cartridgeSubscription.getAutoscalingPolicy().getName());
+            persistSubscriptionStmt.setString(7, cartridgeSubscription.getAutoscalingPolicyName());
             persistSubscriptionStmt.setString(8, cartridgeSubscription.getHostName());
             persistSubscriptionStmt.setString(9, cartridgeSubscription.getClusterDomain());
             persistSubscriptionStmt.setString(10, cartridgeSubscription.getClusterSubDomain());
@@ -486,11 +485,11 @@ public class DatabaseBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
 
-        Policy autoScalingPolicy = PolicyHolder.getInstance().getPolicy(resultSet.getString("AUTOSCALING_POLICY"));
+        /*Policy autoScalingPolicy = PolicyHolder.getInstance().getPolicy(resultSet.getString("AUTOSCALING_POLICY"));
         if(autoScalingPolicy == null) {
             //get the default AutoScaling policy
             autoScalingPolicy = PolicyHolder.getInstance().getDefaultPolicy();
-        }
+        }*/
 
         //populate data
         cartridgeSubscription.setSubscriptionId(resultSet.getInt("SUBSCRIPTION_ID"));
@@ -498,7 +497,7 @@ public class DatabaseBasedPersistenceManager extends PersistenceManager {
         cartridgeSubscription.setAlias(resultSet.getString("CARTRIDGE_ALIAS"));
         cartridgeSubscription.setMappedDomain(resultSet.getString("MAPPED_DOMAIN"));
         cartridgeSubscription.setSubscriptionStatus(resultSet.getString("SUBSCRIPTION_STATUS"));
-        cartridgeSubscription.setAutoscalingPolicy(autoScalingPolicy);
+        cartridgeSubscription.setAutoscalingPolicyName(resultSet.getString("AUTOSCALING_POLICY"));
 
         //Repository related data
         if (resultSet.getInt("REPOSITORY_ID") != -1) {

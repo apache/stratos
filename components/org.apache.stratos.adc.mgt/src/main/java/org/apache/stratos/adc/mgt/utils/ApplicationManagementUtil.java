@@ -540,7 +540,7 @@ public class ApplicationManagementUtil {
     }
 
     public static CartridgeSubscriptionInfo createCartridgeSubscription(CartridgeInfo cartridgeInfo,
-                                                                    Policy policy,
+                                                                    String policyName,
                                                                     String cartridgeType,
                                                                     String cartridgeName,
                                                                     int tenantId,
@@ -563,7 +563,7 @@ public class ApplicationManagementUtil {
         cartridgeSubscriptionInfo.setMgtClusterDomain(mgtClusterDomain);
         cartridgeSubscriptionInfo.setMgtClusterSubDomain(mgtClusterSubDomain);
         cartridgeSubscriptionInfo.setHostName(hostName);
-        cartridgeSubscriptionInfo.setPolicy(policy.getName());
+        cartridgeSubscriptionInfo.setPolicy(policyName);
         cartridgeSubscriptionInfo.setRepository(repository);
         cartridgeSubscriptionInfo.setPortMappings(createPortMappings(cartridgeInfo));
         cartridgeSubscriptionInfo.setProvider(cartridgeInfo.getProvider());
@@ -940,12 +940,14 @@ public class ApplicationManagementUtil {
     }
 
     public static void registerService(String cartridgeType, String domain, String subDomain,
-                                        StringBuilder payload, String tenantRange, String hostName, Properties properties)
+                                        StringBuilder payload, String tenantRange, String hostName,
+                                        String autoscalingPoliyName, String deploymentPolicyName,
+                                        Properties properties)
             throws ADCException, UnregisteredCartridgeException {
         log.info("Register service..");
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
-                    hostName, properties, "economyPolicy");
+                    hostName, properties, autoscalingPoliyName, deploymentPolicyName);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);
