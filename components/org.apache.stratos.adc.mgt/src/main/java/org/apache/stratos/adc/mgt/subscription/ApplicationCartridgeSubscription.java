@@ -20,7 +20,6 @@
 package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
@@ -42,13 +41,13 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
         super(cartridgeInfo);
     }
 
-    public void createSubscription(Subscriber subscriber, String alias, Policy autoscalingPolicy,
-                                   Repository repository) throws
+    public void createSubscription(Subscriber subscriber, String alias, String autoscalingPolicyName,
+                                   String deploymentPolicyName, Repository repository) throws
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException,
             RepositoryCredentialsRequiredException, RepositoryTransportException, UnregisteredCartridgeException,
             AlreadySubscribedException, RepositoryRequiredException, InvalidRepositoryException, PolicyException {
 
-        super.createSubscription(subscriber, alias, autoscalingPolicy, repository);
+        super.createSubscription(subscriber, alias, autoscalingPolicyName, deploymentPolicyName, repository);
         subscriptionTenancyBehaviour.createSubscription();
     }
 
@@ -57,7 +56,7 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
         subscriptionTenancyBehaviour.registerSubscription(null);
 
-        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicy(),
+        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
                 getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
                 getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), null, "PENDING", getSubscriptionKey());

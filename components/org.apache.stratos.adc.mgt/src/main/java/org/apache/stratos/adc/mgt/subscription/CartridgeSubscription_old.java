@@ -104,7 +104,7 @@
 //
 //        setSubscriber(subscriber);
 //        setAlias(alias);
-//        setAutoscalingPolicy(autoscalingPolicy);
+//        setAutoscalingPolicyName(autoscalingPolicy);
 //        setRepository(repository);
 //    }
 //
@@ -156,7 +156,7 @@
 //
 //        PayloadArg payloadArg = new PayloadArg();
 //        payloadArg.setCartridgeInfo(getCartridgeInfo());
-//        payloadArg.setPolicy(getAutoscalingPolicy());
+//        payloadArg.setPolicy(getAutoscalingPolicyName());
 //        payloadArg.setMultitenant(getCartridgeInfo().getMultiTenant());
 //        payloadArg.setTenantId(getSubscriber().getTenantId());
 //        payloadArg.setTenantDomain(getSubscriber().getTenantDomain());
@@ -360,11 +360,11 @@
 //        getCluster().setHostName(hostName);
 //    }
 //
-//    public Policy getAutoscalingPolicy() {
+//    public Policy getAutoscalingPolicyName() {
 //        return autoscalingPolicy;
 //    }
 //
-//    public void setAutoscalingPolicy(Policy autoscalingPolicy) {
+//    public void setAutoscalingPolicyName(Policy autoscalingPolicy) {
 //        this.autoscalingPolicy = autoscalingPolicy;
 //    }
 //

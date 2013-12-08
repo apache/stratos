@@ -32,6 +32,7 @@ public class Registrant {
     private String payload;
     private Properties properties;
     private String autoScalerPolicyName;
+    private String deploymentPolicyName;
     
     public String getTenantRange() {
         return tenantRange;
@@ -75,5 +76,12 @@ public class Registrant {
     public void setPayload(String payload) {
         this.payload = payload;
     }
-    
+
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
+    }
+
+    public void setDeploymentPolicyName(String deploymentPolicyName) {
+        this.deploymentPolicyName = deploymentPolicyName;
+    }
 }

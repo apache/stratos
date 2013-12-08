@@ -393,7 +393,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 		//		ApplicationManagementUtil.getTenantId(getConfigContext()), getTenantDomain());
 
         CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
-                alias.trim(), policy, getTenantDomain(), ApplicationManagementUtil.getTenantId(configurationContext),
+                alias.trim(), "economyPolicy", "economy-deployment", getTenantDomain(), ApplicationManagementUtil.getTenantId(configurationContext),
                 getUsername(), "git", repoURL, privateRepo, repoUsername, repoPassword);
 
         if(dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {

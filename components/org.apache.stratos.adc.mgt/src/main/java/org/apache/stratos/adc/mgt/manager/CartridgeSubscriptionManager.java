@@ -27,7 +27,6 @@ import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.connector.CartridgeSubscriptionConnector;
 import org.apache.stratos.adc.mgt.connector.CartridgeSubscriptionConnectorFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.Payload;
@@ -40,7 +39,6 @@ import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFact
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.wso2.carbon.context.CarbonContext;
@@ -63,6 +61,7 @@ public class CartridgeSubscriptionManager {
      * @param cartridgeType Cartridge type
      * @param cartridgeAlias Cartridge alias
      * @param autoscalingPolicyName Autoscaling policy name
+     * @param deploymentPolicyName Deployment Policy name
      * @param tenantDomain Subscriing tenant's domain
      * @param tenantId Subscribing tenant's Id
      * @param tenantAdminUsername Subscribing tenant's admin user name
@@ -85,7 +84,8 @@ public class CartridgeSubscriptionManager {
      * @throws InvalidRepositoryException
      */
     public CartridgeSubscription subscribeToCartridge (String cartridgeType, String cartridgeAlias,
-                                                  String autoscalingPolicyName, String tenantDomain, int tenantId,
+                                                  String autoscalingPolicyName, String deploymentPolicyName,
+                                                  String tenantDomain, int tenantId,
                                                   String tenantAdminUsername, String repositoryType,
                                                   String repositoryURL, boolean isPrivateRepository,
                                                   String repositoryUsername, String repositoryPassword)
@@ -97,7 +97,8 @@ public class CartridgeSubscriptionManager {
         //validate cartridge alias
         ApplicationManagementUtil.validateCartridgeAlias(cartridgeAlias, cartridgeType);
 
-        Policy autoScalingPolicy;
+        //TODO - remove, now autoscaling policy is at autoscaler. Just need to pass the name
+        /*Policy autoScalingPolicy;
         if(autoscalingPolicyName != null && !autoscalingPolicyName.isEmpty()) {
             autoScalingPolicy = PolicyHolder.getInstance().getPolicy(autoscalingPolicyName);
         } else {
@@ -106,7 +107,7 @@ public class CartridgeSubscriptionManager {
 
         if(autoScalingPolicy == null) {
             throw new PolicyException("Could not load the auto scaling policy.");
-        }
+        } */
 
         CartridgeInfo cartridgeInfo;
         try {
@@ -131,7 +132,7 @@ public class CartridgeSubscriptionManager {
         Repository repository = cartridgeSubscription.manageRepository(repositoryURL, repositoryUsername,
                 repositoryPassword, isPrivateRepository, cartridgeAlias, cartridgeInfo, tenantDomain);
         
-        cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoScalingPolicy, repository);
+        cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName, deploymentPolicyName, repository);
         cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey()); // TODO ---- fix properly
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
@@ -424,13 +425,13 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.setClusterSubDomain(cartridgeSubscriptionInfo.getClusterSubdomain());
         cartridgeSubscription.setMgtClusterDomain(cartridgeSubscriptionInfo.getMgtClusterDomain());
         cartridgeSubscription.setMgtClusterSubDomain(cartridgeSubscriptionInfo.getMgtClusterSubDomain());
-        Policy autoScalingPolicy;
+        /*Policy autoScalingPolicy;
         if(cartridgeSubscriptionInfo.getPolicy() != null && !cartridgeSubscriptionInfo.getPolicy().isEmpty()) {
             autoScalingPolicy = PolicyHolder.getInstance().getPolicy(cartridgeSubscriptionInfo.getPolicy());
         } else {
             autoScalingPolicy = PolicyHolder.getInstance().getDefaultPolicy();
-        }
-        cartridgeSubscription.setAutoscalingPolicy(autoScalingPolicy);
+        }*/
+        cartridgeSubscription.setAutoscalingPolicyName(cartridgeSubscriptionInfo.getPolicy());
         Subscriber subscriber = new Subscriber(CarbonContext.getThreadLocalCarbonContext().getUsername(),
                 cartridgeSubscriptionInfo.getTenantId(), cartridgeSubscriptionInfo.getTenantDomain());
         cartridgeSubscription.setSubscriber(subscriber);
