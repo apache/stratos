@@ -244,7 +244,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private String extractUrl(MessageContext synCtx) {
         Axis2MessageContext axis2smc = (Axis2MessageContext) synCtx;
         org.apache.axis2.context.MessageContext axis2MessageCtx = axis2smc.getAxis2MessageContext();
-        return (String) axis2MessageCtx.getProperty(org.apache.axis2.context.MessageContext.REMOTE_ADDR);
+        return (String) axis2MessageCtx.getProperty(Constants.AXIS2_MSG_CTX_TRANSPORT_IN_URL);
     }
 
     private int scanUrlForTenantId(String url) {

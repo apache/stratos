@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.messaging.util.Util;
 
 import java.io.Serializable;
@@ -157,6 +158,10 @@ public class Cluster implements Serializable {
     }
 
     public boolean tenantIdInRange(int tenantId) {
+        if(StringUtils.isBlank(getTenantRange())) {
+            return false;
+        }
+
         if("*".equals(getTenantRange())) {
             return true;
         }
