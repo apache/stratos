@@ -28,6 +28,7 @@ import org.apache.stratos.adc.mgt.utils.StratosDBUtils;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -95,6 +96,11 @@ public class ADCManagementServerComponent {
             subscriber.setMessageListener(new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
+
+            //Starting Topology Receiver
+            TopologyReceiver topologyReceiver = new TopologyReceiver();
+            Thread topologyReceiverThread = new Thread(topologyReceiver);
+            topologyReceiverThread.start();
 
             if (log.isInfoEnabled()) {
                 log.info("ADC management server component is activated");
