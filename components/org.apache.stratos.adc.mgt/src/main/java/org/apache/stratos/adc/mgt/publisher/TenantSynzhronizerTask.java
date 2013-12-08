@@ -21,7 +21,9 @@ package org.apache.stratos.adc.mgt.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
+import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
@@ -48,20 +50,34 @@ public class TenantSynzhronizerTask implements Task {
     @Override
     public void execute() {
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Publishing complete tenant event"));
             }
+            Tenant tenant;
             List<Tenant> tenants = new ArrayList<Tenant>();
             TenantManager tenantManager = DataHolder.getRealmService().getTenantManager();
             org.wso2.carbon.user.api.Tenant[] carbonTenants = tenantManager.getAllTenants();
-            for(org.wso2.carbon.user.api.Tenant carbonTenant : carbonTenants) {
-                tenants.add(new Tenant(carbonTenant.getId(), carbonTenant.getDomain()));
+            for (org.wso2.carbon.user.api.Tenant carbonTenant : carbonTenants) {
+                // Create tenant
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Tenant found: [tenant-id] %d [tenant-domain] %s", carbonTenant.getId(), carbonTenant.getDomain()));
+                }
+                tenant = new Tenant(carbonTenant.getId(), carbonTenant.getDomain());
+                // Add subscriptions
+                List<CartridgeSubscriptionInfo> subscriptions = PersistenceManager.getSubscriptionsForTenant(tenant.getTenantId());
+                for (CartridgeSubscriptionInfo subscription : subscriptions) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Tenant subscription found: [tenant-id] %d [tenant-domain] %s [service] %s",
+                                   carbonTenant.getId(), carbonTenant.getDomain(), subscription.getCartridge()));
+                    }
+                    tenant.addServiceSubscription(subscription.getCartridge());
+                }
+                tenants.add(tenant);
             }
             CompleteTenantEvent event = new CompleteTenantEvent(tenants);
             EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
             eventPublisher.publish(event);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Could not publish complete tenant event", e);
             }

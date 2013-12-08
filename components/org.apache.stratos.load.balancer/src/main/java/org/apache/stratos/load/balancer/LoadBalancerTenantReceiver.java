@@ -22,11 +22,14 @@ package org.apache.stratos.load.balancer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
+import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
+import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantUnSubscribedEventListener;
 import org.apache.stratos.messaging.message.processor.tenant.TenantMessageProcessorChain;
@@ -59,64 +62,80 @@ public class LoadBalancerTenantReceiver implements Runnable {
 
     private TenantMessageProcessorChain createEventProcessorChain() {
         TenantMessageProcessorChain messageProcessorChain = new TenantMessageProcessorChain();
+        messageProcessorChain.addEventListener(new CompleteTenantEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
+                for(Tenant tenant : completeTenantEvent.getTenants()) {
+                    for(String serviceName : tenant.getServiceSubscriptions()) {
+                        addTenantSubscriptionToLbContext(serviceName, tenant.getTenantId());
+                    }
+                }
+            }
+        });
         messageProcessorChain.addEventListener(new TenantSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TenantSubscribedEvent tenantSubscribedEvent = (TenantSubscribedEvent) event;
-
-                // Find cluster of tenant
-                Cluster cluster = findCluster(tenantSubscribedEvent.getServiceName(), tenantSubscribedEvent.getTenantId());
-                if(cluster != null) {
-                    for(String hostName : cluster.getHostNames()) {
-                        // Add hostName, tenantId, cluster to multi-tenant map
-                        Map<Integer, Cluster> clusterMap = LoadBalancerContext.getInstance().getMultiTenantClusters(hostName);
-                        if(clusterMap == null) {
-                            clusterMap = new HashMap<Integer, Cluster>();
-                            clusterMap.put(tenantSubscribedEvent.getTenantId(), cluster);
-                            LoadBalancerContext.getInstance().addMultiTenantClusters(hostName, clusterMap);
-                        }
-                        else {
-                            clusterMap.put(tenantSubscribedEvent.getTenantId(), cluster);
-                        }
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Cluster added to multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
-                                       hostName, tenantSubscribedEvent.getTenantId(), cluster.getClusterId()));
-                        }
-                    }
-                }
-                else {
-                    if(log.isErrorEnabled()) {
-                        log.error(String.format("Could not find cluster of tenant: [service] %s [tenant-id] %d",
-                                tenantSubscribedEvent.getServiceName(), tenantSubscribedEvent.getTenantId()));
-                    }
-                }
+                addTenantSubscriptionToLbContext(tenantSubscribedEvent.getServiceName(), tenantSubscribedEvent.getTenantId());
             }
         });
         messageProcessorChain.addEventListener(new TenantUnSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TenantUnSubscribedEvent tenantUnSubscribedEvent = (TenantUnSubscribedEvent) event;
-
-                // Find cluster of tenant
-                Cluster cluster = findCluster(tenantUnSubscribedEvent.getServiceName(), tenantUnSubscribedEvent.getTenantId());
-                if(cluster != null) {
-                    for(String hostName : cluster.getHostNames()) {
-                        LoadBalancerContext.getInstance().removeMultiTenantClusters(hostName);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Cluster removed from multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
-                                      hostName, tenantUnSubscribedEvent.getTenantId(), cluster.getClusterId()));
-                        }
-                    }
-                }
-                else {
-                    if(log.isErrorEnabled()) {
-                        log.error(String.format("Could not find cluster of tenant: [service] %s [tenant-id] %d",
-                                tenantUnSubscribedEvent.getServiceName(), tenantUnSubscribedEvent.getTenantId()));
-                    }
-                }
+                removeTenantSubscriptionFromLbContext(tenantUnSubscribedEvent.getServiceName(), tenantUnSubscribedEvent.getTenantId());
             }
         });
         return messageProcessorChain;
+    }
+
+    private void addTenantSubscriptionToLbContext(String serviceName, int tenantId) {
+        // Find cluster of tenant
+        Cluster cluster = findCluster(serviceName, tenantId);
+        if(cluster != null) {
+            for(String hostName : cluster.getHostNames()) {
+                // Add hostName, tenantId, cluster to multi-tenant map
+                Map<Integer, Cluster> clusterMap = LoadBalancerContext.getInstance().getMultiTenantClusters(hostName);
+                if(clusterMap == null) {
+                    clusterMap = new HashMap<Integer, Cluster>();
+                    clusterMap.put(tenantId, cluster);
+                    LoadBalancerContext.getInstance().addMultiTenantClusters(hostName, clusterMap);
+                }
+                else {
+                    clusterMap.put(tenantId, cluster);
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster added to multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
+                               hostName, tenantId, cluster.getClusterId()));
+                }
+            }
+        }
+        else {
+            if(log.isErrorEnabled()) {
+                log.error(String.format("Could not find cluster of tenant: [service] %s [tenant-id] %d",
+                           serviceName, tenantId));
+            }
+        }
+    }
+
+    private void removeTenantSubscriptionFromLbContext(String serviceName, int tenantId) {
+        // Find cluster of tenant
+        Cluster cluster = findCluster(serviceName, tenantId);
+        if (cluster != null) {
+            for (String hostName : cluster.getHostNames()) {
+                LoadBalancerContext.getInstance().removeMultiTenantClusters(hostName);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster removed from multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
+                            hostName, tenantId, cluster.getClusterId()));
+                }
+            }
+        } else {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not find cluster of tenant: [service] %s [tenant-id] %d",
+                        serviceName, tenantId));
+            }
+        }
     }
 
     private Cluster findCluster(String serviceName, int tenantId) {
