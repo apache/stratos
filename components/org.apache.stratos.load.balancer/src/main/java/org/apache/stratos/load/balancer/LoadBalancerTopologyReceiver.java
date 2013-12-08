@@ -22,10 +22,10 @@ package org.apache.stratos.load.balancer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
+import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
@@ -85,7 +85,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     for (Service service : TopologyManager.getTopology().getServices()) {
                         for (Cluster cluster : service.getClusters()) {
                             if (hasActiveMembers(cluster)) {
-                                addClusterToLbContext(cluster);
+                                LoadBalancerContextUtil.addClusterToLbContext(cluster);
                             }
                         }
                     }
@@ -113,10 +113,9 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
                     Cluster cluster = LoadBalancerContext.getInstance().getCluster(memberActivatedEvent.getClusterId());
                     if (cluster != null) {
-                        addClusterToLbContext(cluster);
-                    }
-                    else {
-                        if(log.isWarnEnabled()) {
+                        LoadBalancerContextUtil.addClusterToLbContext(cluster);
+                    } else {
+                        if (log.isWarnEnabled()) {
                             log.warn(String.format("Cluster not found in cluster id cluster map: [cluster] %s", memberActivatedEvent.getClusterId()));
                         }
                     }
@@ -136,11 +135,10 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterRemovedEvent.getClusterId());
                     if (cluster != null) {
                         for (String hostName : cluster.getHostNames()) {
-                            removeClusterFromLbContext(hostName);
+                            LoadBalancerContextUtil.removeClusterFromLbContext(hostName);
                         }
-                    }
-                    else {
-                        if(log.isWarnEnabled()) {
+                    } else {
+                        if (log.isWarnEnabled()) {
                             log.warn(String.format("Cluster not found in cluster id cluster map: [cluster] %s", clusterRemovedEvent.getClusterId()));
                         }
                     }
@@ -161,12 +159,11 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     if (service != null) {
                         for (Cluster cluster : service.getClusters()) {
                             for (String hostName : cluster.getHostNames()) {
-                                removeClusterFromLbContext(hostName);
+                                LoadBalancerContextUtil.removeClusterFromLbContext(hostName);
                             }
                         }
-                    }
-                    else {
-                        if(log.isWarnEnabled()) {
+                    } else {
+                        if (log.isWarnEnabled()) {
                             log.warn(String.format("Service not found in topology: [service] %s", serviceRemovedEvent.getServiceName()));
                         }
                     }
@@ -176,45 +173,6 @@ public class LoadBalancerTopologyReceiver implements Runnable {
             }
         });
         return processorChain;
-    }
-
-    private void addClusterToLbContext(Cluster cluster) {
-        // Add cluster to Map<ClusterId, Cluster>
-        LoadBalancerContext.getInstance().addCluster(cluster);
-
-        Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
-        if (service.getServiceType() == ServiceType.SingleTenant) {
-            // Add cluster to SingleTenantClusterMap
-            for (String hostName : cluster.getHostNames()) {
-                if (!LoadBalancerContext.getInstance().singleTenantClusterExists((hostName))) {
-                    LoadBalancerContext.getInstance().addSingleTenantCluster(hostName, cluster);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster added to single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
-                    }
-                }
-            }
-        }
-        // MultiTenantClusterMap is updated by tenant receiver.
-    }
-
-    private void removeClusterFromLbContext(String clusterId) {
-        Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterId);
-        Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
-        if (service.getServiceType() == ServiceType.SingleTenant) {
-            // Remove cluster from SingleTenantClusterMap
-            for (String hostName : cluster.getHostNames()) {
-                if (LoadBalancerContext.getInstance().singleTenantClusterExists(hostName)) {
-                    LoadBalancerContext.getInstance().removeSingleTenantCluster(hostName);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster removed from single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
-                    }
-                }
-            }
-        }
-        // MultiTenantClusterMap is updated by tenant receiver.
-
-        // Remove cluster from Map<ClusterId,Cluster>
-        LoadBalancerContext.getInstance().removeCluster(clusterId);
     }
 
     /**

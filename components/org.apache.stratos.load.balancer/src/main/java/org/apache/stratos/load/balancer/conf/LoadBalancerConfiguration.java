@@ -28,6 +28,7 @@ import org.apache.stratos.load.balancer.conf.structure.Node;
 import org.apache.stratos.load.balancer.conf.structure.NodeBuilder;
 import org.apache.stratos.load.balancer.conf.util.Constants;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
+import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.load.balancer.exception.InvalidConfigurationException;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -238,7 +239,7 @@ public class LoadBalancerConfiguration {
 
         public LoadBalancerConfiguration readFromFile() {
             String configFilePath = System.getProperty("loadbalancer.conf.file");
-            if(configFilePath == null){
+            if (configFilePath == null) {
                 throw new RuntimeException("loadbalancer.conf.file' system property is not set");
             }
 
@@ -302,8 +303,8 @@ public class LoadBalancerConfiguration {
                 configuration.setMultiTenancyEnabled(Boolean.parseBoolean(multiTenancyEnabled));
             }
 
-            // Read mb ip, port, topology service filter and topology cluster filter if topology event listener is enabled
-            if (configuration.isTopologyEventListenerEnabled()) {
+            // Read mb ip and port
+            if (configuration.isTopologyEventListenerEnabled() || configuration.isMultiTenancyEnabled()) {
                 String mbIp = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_IP);
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_IP, mbIp, "loadbalancer");
                 configuration.setMbIp(mbIp);
@@ -311,7 +312,10 @@ public class LoadBalancerConfiguration {
                 String mbPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_PORT);
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_PORT, mbPort, "loadbalancer");
                 configuration.setMbPort(Integer.parseInt(mbPort));
+            }
 
+            // Read topology service filter and topology cluster filter
+            if (configuration.isTopologyEventListenerEnabled()) {
                 String serviceFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER);
                 if (StringUtils.isNotBlank(serviceFilter)) {
                     configuration.setTopologyServiceFilter(serviceFilter);
@@ -349,8 +353,7 @@ public class LoadBalancerConfiguration {
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TENANT_IDENTIFIER_REGEX, tenantIdentifierRegex, "loadbalancer");
                 try {
                     Pattern.compile(tenantIdentifierRegex);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new InvalidConfigurationException(String.format("Invalid tenant identifier regular expression: %s", tenantIdentifierRegex), e);
                 }
                 configuration.setTenantIdentifierRegex(tenantIdentifierRegex);
@@ -419,8 +422,8 @@ public class LoadBalancerConfiguration {
                         }
                         service.addCluster(cluster);
 
-                        // Add cluster to load balancer context Map<Hostname,Cluster>
-                        LoadBalancerContext.getInstance().addCluster(cluster);
+                        // Add cluster to load balancer context
+                        LoadBalancerContextUtil.addClusterToLbContext(cluster);
                     }
 
                     // Add service to topology manager

@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.domain.tenant;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,10 @@ public class Tenant implements Serializable{
 
     public void setTenantDomain(String tenantDomain) {
         this.tenantDomain = tenantDomain;
+    }
+
+    public Collection<String> getServiceSubscriptions() {
+        return serviceNameMap.keySet();
     }
 
     public boolean isServiceSubscribed(String serviceName) {

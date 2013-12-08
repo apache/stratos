@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.algorithm.AlgorithmContext;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithm;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -116,14 +117,13 @@ public class RequestDelegator {
     }
 
     public boolean isTargetHostValid(String hostName) {
-        try {
-            if (hostName == null)
-                return false;
+        if (hostName == null)
+            return false;
 
-            TopologyManager.acquireReadLock();
-            return LoadBalancerContext.getInstance().clusterExists(hostName);
-        } finally {
-            TopologyManager.releaseReadLock();
+        boolean valid = LoadBalancerContext.getInstance().singleTenantClusterExists(hostName);
+        if ((!valid) && (LoadBalancerConfiguration.getInstance().isMultiTenancyEnabled())) {
+            valid = LoadBalancerContext.getInstance().multiTenantClustersExists(hostName);
         }
+        return valid;
     }
 }
