@@ -45,7 +45,7 @@ public class TenantEventMessageListener implements MessageListener {
                     log.debug(String.format("Tenant message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
-                TopologyEventMessageQueue.getInstance().add(receivedMessage);
+                TenantEventMessageQueue.getInstance().add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);

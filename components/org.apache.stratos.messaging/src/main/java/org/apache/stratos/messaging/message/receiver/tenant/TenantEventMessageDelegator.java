@@ -62,21 +62,15 @@ public class TenantEventMessageDelegator implements Runnable {
 
                     // Retrieve the actual message
                     String json = message.getText();
-
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Tenant event message received from queue: %s", type));
                     }
 
-                    try {
-                        TenantManager.acquireWriteLock();
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Delegating tenant event message: %s", type));
-                        }
-                        processorChain.process(type, json, null);
-                    } finally {
-                        TenantManager.releaseWriteLock();
+                    // Delegate message to message processor chain
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Delegating tenant event message: %s", type));
                     }
-
+                    processorChain.process(type, json, null);
                 } catch (Exception e) {
                     log.error("Failed to retrieve tenant event message", e);
                 }
