@@ -19,29 +19,29 @@
 
 package org.apache.stratos.autoscaler.rule;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ClusterMonitor;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.PartitionGroupOneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.wso2.carbon.utils.CarbonUtils;
-import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
-import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.algorithm.PartitionGroupOneAfterAnother;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.drools.runtime.rule.FactHandle;
+import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is responsible for evaluating the current details of topology, statistics, and health
@@ -154,11 +154,15 @@ public class AutoscalerRuleEvaluator {
 //		return false;
 //	}
 
-    public static synchronized AutoscalerRuleEvaluator getInstance() {
-            if (instance == null) {
-                    instance = new AutoscalerRuleEvaluator ();
+    public static AutoscalerRuleEvaluator getInstance() {
+        if (instance == null) {
+            synchronized (AutoscalerRuleEvaluator.class){
+                if (instance == null) {
+                    instance = new AutoscalerRuleEvaluator();
+                }
             }
-            return instance;
+        }
+        return instance;
     }
     
     private KnowledgeBase readKnowledgeBase() throws Exception {
