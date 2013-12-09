@@ -137,6 +137,133 @@ public class PojoConverter {
         return properties;
     }
 
+    public static org.apache.stratos.cloud.controller.deployment.partition.Partition convertToCCPartitionPojo
+            (Partition partitionBean) {
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition partition = new
+                org.apache.stratos.cloud.controller.deployment.partition.Partition();
+
+        partition.setId(partitionBean.id);
+        partition.setProvider(partitionBean.provider);
+        partition.setPartitionMin(partitionBean.partitionMin);
+        partition.setPartitionMax(partitionBean.partitionMax);
+
+        if(partitionBean.property != null && !partitionBean.property.isEmpty()) {
+            partition.setProperties(getProperties(partitionBean.property));
+        }
+
+        return partition;
+    }
+
+    public static org.apache.stratos.autoscaler.policy.model.AutoscalePolicy convertToCCAutoscalerPojo (AutoscalePolicy
+                                                                                                                autoscalePolicyBean) {
+
+        org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy = new
+                org.apache.stratos.autoscaler.policy.model.AutoscalePolicy();
+
+        autoscalePolicy.setId(autoscalePolicyBean.id);
+        autoscalePolicy.setDescription(autoscalePolicyBean.description);
+        autoscalePolicy.setDisplayName(autoscalePolicyBean.displayName);
+
+        if (autoscalePolicyBean.loadThresholds != null) {
+
+            org.apache.stratos.autoscaler.policy.model.LoadThresholds loadThresholds = new
+                    org.apache.stratos.autoscaler.policy.model.LoadThresholds();
+
+            if(autoscalePolicyBean.loadThresholds.loadAverage != null) {
+
+                //set load average information
+                org.apache.stratos.autoscaler.policy.model.LoadAverage loadAverage = new
+                        org.apache.stratos.autoscaler.policy.model.LoadAverage();
+                loadAverage.setAverage(autoscalePolicyBean.loadThresholds.loadAverage.average);
+                loadAverage.setGradient(autoscalePolicyBean.loadThresholds.loadAverage.gradient);
+                loadAverage.setSecondDerivative(autoscalePolicyBean.loadThresholds.loadAverage.secondDerivative);
+                loadAverage.setScaleDownMarginOfGradient(autoscalePolicyBean.loadThresholds.loadAverage.scaleDownMarginOfGradient);
+                loadAverage.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.loadThresholds.loadAverage.scaleDownMarginOfSecondDerivative);
+                //set load average
+                loadThresholds.setLoadAverage(loadAverage);
+            }
+            if (autoscalePolicyBean.loadThresholds.requestsInFlight != null) {
+
+                org.apache.stratos.autoscaler.policy.model.RequestsInFlight requestsInFlight = new
+                        org.apache.stratos.autoscaler.policy.model.RequestsInFlight();
+                //set request in flight information
+                requestsInFlight.setAverage(autoscalePolicyBean.loadThresholds.requestsInFlight.average);
+                requestsInFlight.setGradient(autoscalePolicyBean.loadThresholds.requestsInFlight.gradient);
+                requestsInFlight.setSecondDerivative(autoscalePolicyBean.loadThresholds.requestsInFlight.secondDerivative);
+                requestsInFlight.setScaleDownMarginOfGradient(autoscalePolicyBean.loadThresholds.requestsInFlight.scaleDownMarginOfGradient);
+                requestsInFlight.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.loadThresholds.requestsInFlight.scaleDownMarginOfSecondDerivative);
+                //set request in flight
+                loadThresholds.setRequestsInFlight(requestsInFlight);
+            }
+            if (autoscalePolicyBean.loadThresholds.memoryConsumption != null) {
+
+                org.apache.stratos.autoscaler.policy.model.MemoryConsumption memoryConsumption = new
+                        org.apache.stratos.autoscaler.policy.model.MemoryConsumption();
+
+                //set memory consumption information
+                memoryConsumption.setAverage(autoscalePolicyBean.loadThresholds.memoryConsumption.average);
+                memoryConsumption.setGradient(autoscalePolicyBean.loadThresholds.memoryConsumption.gradient);
+                memoryConsumption.setSecondDerivative(autoscalePolicyBean.loadThresholds.memoryConsumption.secondDerivative);
+                memoryConsumption.setScaleDownMarginOfGradient(autoscalePolicyBean.loadThresholds.memoryConsumption.scaleDownMarginOfGradient);
+                memoryConsumption.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.loadThresholds.memoryConsumption.scaleDownMarginOfSecondDerivative);
+                //set memory consumption
+                loadThresholds.setMemoryConsumption(memoryConsumption);
+            }
+
+            autoscalePolicy.setLoadThresholds(loadThresholds);
+        }
+
+        return autoscalePolicy;
+    }
+
+    public static org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy convetToCCDeploymentPolicyPojo (DeploymentPolicy
+                                                                                                                           deploymentPolicyBean) {
+
+        org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy deploymentPolicy = new
+                org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy();
+
+        deploymentPolicy.setId(deploymentPolicyBean.id);
+        if(deploymentPolicyBean.partitionGroup != null && !deploymentPolicyBean.partitionGroup.isEmpty()) {
+            deploymentPolicy.setPartitionGroups(convertToCCPartitionGroup(deploymentPolicyBean.partitionGroup));
+        }
+
+        return deploymentPolicy;
+    }
+
+    private static org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] convertToCCPartitionGroup (List<PartitionGroup> partitionGroupBeans) {
+
+        org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] partitionGroups = new
+                org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[partitionGroupBeans.size()];
+
+        for (int i = 0 ; i < partitionGroupBeans.size() ; i++) {
+            org.apache.stratos.autoscaler.partition.xsd.PartitionGroup partitionGroup = new
+                    org.apache.stratos.autoscaler.partition.xsd.PartitionGroup();
+            partitionGroup.setId(partitionGroupBeans.get(i).id);
+            partitionGroup.setPartitionAlgo(partitionGroupBeans.get(i).partitionAlgo);
+
+            if(partitionGroupBeans.get(i).partition != null && !partitionGroupBeans.get(i).partition.isEmpty()) {
+                partitionGroup.setPartitions(convertToCCPartitionPojos(partitionGroupBeans.get(i).partition));
+            }
+
+            partitionGroups[i] = partitionGroup;
+        }
+
+        return partitionGroups;
+    }
+
+    private static org.apache.stratos.cloud.controller.deployment.partition.Partition[] convertToCCPartitionPojos
+            (List<Partition> partitionList) {
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions =
+                new org.apache.stratos.cloud.controller.deployment.partition.Partition[partitionList.size()];
+        for (int i = 0; i < partitionList.size() ; i++) {
+            partitions[i] = convertToCCPartitionPojo(partitionList.get(i));
+        }
+
+        return partitions;
+    }
+
     public static Partition[] populatePartitionPojos (org.apache.stratos.cloud.controller.deployment.partition.Partition[]
                                                              partitions) {
 
@@ -333,7 +460,7 @@ public class PojoConverter {
         partitionGroupBean.id = partitionGroup.getId();
         partitionGroupBean.partitionAlgo = partitionGroup.getPartitionAlgo();
         if(partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
-            partitionGroupBean.partition = getPartitionIdsList(partitionGroup.getPartitions());
+            partitionGroupBean.partition = getPartitionList(partitionGroup.getPartitions());
         }
 
         return partitionGroupBean;
@@ -354,7 +481,7 @@ public class PojoConverter {
             partitionGroup.partitionAlgo = partitionGroups[i].getPartitionAlgo();
 
             if(partitionGroups[i].getPartitions() != null && partitionGroups[i].getPartitions().length > 0){
-                partitionGroup.partition = getPartitionIdsList(partitionGroups[i].getPartitions());
+                partitionGroup.partition = getPartitionList(partitionGroups[i].getPartitions());
             }*/
             partitionGroupsBeans[i] = populatePartitionGroupPojo(partitionGroups[i]);
         }
@@ -362,14 +489,22 @@ public class PojoConverter {
         return partitionGroupsBeans;
     }
 
-    private static List<String> getPartitionIdsList(org.apache.stratos.cloud.controller.deployment.partition.Partition[]
-                                                            partitions) {
+    private static List<Partition> getPartitionList(org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+                                                         partitions) {
 
-        List<String> partitionIdList = new ArrayList<String>();
+        List<Partition> partitionList = new ArrayList<Partition>();
         for (int i = 0 ; i < partitions.length ; i++) {
-            partitionIdList.add(partitions[i].getId());
+            Partition partition = new Partition();
+            partition.id = partitions[i].getId();
+            partition.provider = partitions[i].getProvider();
+            partition.partitionMin = partitions[i].getPartitionMin();
+            partition.partitionMax = partitions[i].getPartitionMax();
+            if (partitions[i].getProperties() != null) {
+                partition.property = getPropertyBeans(partitions[i].getProperties());
+            }
+            partitionList.add(partition);
         }
 
-        return partitionIdList;
+        return partitionList;
     }
 }

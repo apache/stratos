@@ -52,10 +52,14 @@ public class PolicyManager {
     }
 
     public static PolicyManager getInstance() {
-            if (instance == null) {
-                    instance = new PolicyManager ();
+        if (instance == null) {
+            synchronized (PolicyManager.class){
+                if (instance == null) {
+                    instance = new PolicyManager();
+                }
             }
-            return instance;
+        }
+        return instance;
     }
     
     /**
