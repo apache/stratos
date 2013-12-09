@@ -39,9 +39,6 @@ public class Cluster implements Serializable {
     private String tenantRange;
     private String autoscalePolicyName;
     private String deploymentPolicyName = "economy-deployment";
-    private Cloud cloud;
-    private Region region;
-    private Zone zone;
     
     // Key: Member.memberId
     private Map<String, Member> memberMap;
@@ -79,30 +76,6 @@ public class Cluster implements Serializable {
     public void setTenantRange(String tenantRange) {
         Util.validateTenantRange(tenantRange);
         this.tenantRange = tenantRange;
-    }
-
-    public Cloud getCloud() {
-        return cloud;
-    }
-
-    public void setCloud(Cloud cloud) {
-        this.cloud = cloud;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public Zone getZone() {
-        return zone;
-    }
-
-    public void setZone(Zone zone) {
-        this.zone = zone;
     }
 
     public Collection<Member> getMembers() {
