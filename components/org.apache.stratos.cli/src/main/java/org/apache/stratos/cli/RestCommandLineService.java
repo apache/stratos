@@ -30,7 +30,6 @@ import org.apache.stratos.cli.exception.CommandException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +49,7 @@ public class RestCommandLineService {
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
+    private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -401,6 +401,15 @@ public class RestCommandLineService {
             restClientService.doPost(restClientService.getUrl() + unsubscribeTenantEndPoint, alias, restClientService.getUsername(), restClientService.getPassword());
             System.out.println("You have successfully unsubscribed " + alias);
         } catch ( Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deployCartridgeDefinition (String cartridgeDefinition) {
+        try {
+            restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint, cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
+            System.out.println("You have successfully deployed the cartridge");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
