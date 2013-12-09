@@ -19,10 +19,7 @@
 
 package org.apache.stratos.adc.mgt.persistence;
 
-import org.apache.stratos.adc.mgt.dao.Cluster;
-import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
-import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
 import java.util.List;
@@ -41,7 +38,10 @@ public abstract class PersistenceManager {
     public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
             throws PersistenceManagerException;
 
-    public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
+    public abstract CartridgeSubscription getCartridgeSubscription (String clusterDomain)
+            throws PersistenceManagerException;
+
+    /*public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
             throws PersistenceManagerException;
 
     public abstract Repository getRepository (int tenantId, String alias)
@@ -75,5 +75,5 @@ public abstract class PersistenceManager {
             throws PersistenceManagerException;
 
     public abstract void updateServiceStatus (int tenantId, String cartridgeAlias, String newStatus)
-            throws PersistenceManagerException;
+            throws PersistenceManagerException;   */
 }

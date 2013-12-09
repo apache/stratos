@@ -26,9 +26,10 @@ import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
+import java.io.Serializable;
 import java.util.Properties;
 
-public abstract class SubscriptionTenancyBehaviour {
+public abstract class SubscriptionTenancyBehaviour implements Serializable {
 
     protected CartridgeSubscription cartridgeSubscription;
 

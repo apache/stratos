@@ -19,7 +19,9 @@
 
 package org.apache.stratos.adc.mgt.repository;
 
-public class Repository {
+import java.io.Serializable;
+
+public class Repository implements Serializable {
 
     private int id;
     private String url;
