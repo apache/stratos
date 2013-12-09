@@ -72,7 +72,7 @@ public class RegistryManager {
             }
         
         } catch (Exception e) {
-            String msg = "Failed to persist the cloud controller data in registry.";
+            String msg = "Failed to persist the Autoscaler data in registry.";
             registryService.rollbackTransaction();
             log.error(msg, e);
             throw new AutoScalerException(msg, e);
