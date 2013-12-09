@@ -91,7 +91,43 @@ public class StratosAdmin extends AbstractAdmin {
         ServiceUtils.undeployCartridge(cartridgeType);
     }
 
-    /*@GET
+    @POST
+    @Path("/policy/deployment/partition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployPartition (Partition partition)
+            throws RestAPIException {
+
+        return ServiceUtils.deployPartition(partition);
+    }
+
+    @POST
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
+            throws RestAPIException {
+
+        return ServiceUtils.deployAutoscalingPolicy(autoscalePolicy);
+    }
+
+    @POST
+    @Path("/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
+            throws RestAPIException {
+
+        return ServiceUtils.deployDeploymentPolicy(deploymentPolicy);
+    }
+
+    @GET
     @Path("/partition")
     @Produces("application/json")
     @Consumes("application/json")
@@ -99,7 +135,7 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition[] getPartitions () throws RestAPIException {
 
         return ServiceUtils.getAvailablePartitions();
-    }*/
+    }
 
     @GET
     @Path("/partition/{partitionId}")
@@ -108,8 +144,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Partition getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
 
-        //return ServiceUtils.getPartition(partitionId);
-        return null;
+        return ServiceUtils.getPartition(partitionId);
     }
 
     @GET
@@ -120,8 +155,7 @@ public class StratosAdmin extends AbstractAdmin {
     public PartitionGroup[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
-        //return ServiceUtils.getPartitionGroups(deploymentPolicyId);
-        return null;
+        return ServiceUtils.getPartitionGroups(deploymentPolicyId);
     }
 
     @GET
@@ -132,8 +166,7 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition [] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
 
-        //return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
-        return null;
+        return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
     }
 
     @GET
@@ -154,8 +187,7 @@ public class StratosAdmin extends AbstractAdmin {
     public AutoscalePolicy getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
 
-        //return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
-        return null;
+        return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
     }
 
     @GET
@@ -176,8 +208,7 @@ public class StratosAdmin extends AbstractAdmin {
     public DeploymentPolicy getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
-        //return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
-        return null;
+        return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
     }
 
     @GET
@@ -259,8 +290,6 @@ public class StratosAdmin extends AbstractAdmin {
             log.error(exception);
         }
     }
-
-
 
     @POST
     @Path("/tenant")
