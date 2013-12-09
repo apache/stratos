@@ -19,6 +19,7 @@
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
@@ -55,7 +56,8 @@ public class CartridgesCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
-			CommandLineService.getInstance().listAvailableCartridges();
+			//CommandLineService.getInstance().listAvailableCartridges();
+            RestCommandLineService.getInstance().listAvailableCartridges();
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());

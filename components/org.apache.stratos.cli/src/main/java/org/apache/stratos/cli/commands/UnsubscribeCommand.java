@@ -24,6 +24,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
@@ -106,7 +107,8 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 				}
 				if (force || context.getApplication().getConfirmation("Are you sure you want to unsubscribe?")) {
 					System.out.format("Unsubscribing the cartridge %s%n", alias);
-					CommandLineService.getInstance().unsubscribe(alias);
+					//CommandLineService.getInstance().unsubscribe(alias);
+                    RestCommandLineService.getInstance().unsubscribe(alias);
 				}
 				return CliConstants.SUCCESSFUL_CODE;
 			} catch (ParseException e) {

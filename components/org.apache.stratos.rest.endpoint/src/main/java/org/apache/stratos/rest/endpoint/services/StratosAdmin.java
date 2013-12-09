@@ -595,9 +595,6 @@ public class StratosAdmin extends AbstractAdmin {
         }
     }
 
-
-
-
     private List<TenantInfoBean> getAllTenants() throws Exception {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         Tenant[] tenants;
@@ -635,6 +632,4 @@ public class StratosAdmin extends AbstractAdmin {
         }
         return tenantList;
     }
-
-
 }

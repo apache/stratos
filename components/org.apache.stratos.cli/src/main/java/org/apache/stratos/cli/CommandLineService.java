@@ -40,9 +40,9 @@ import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.stratos.adc.mgt.dto.xsd.Cartridge;
-import org.apache.stratos.adc.mgt.dto.xsd.PolicyDefinition;
-import org.apache.stratos.adc.mgt.dto.xsd.SubscriptionInfo;
+import org.apache.stratos.adc.mgt.dto.Cartridge;
+import org.apache.stratos.adc.mgt.dto.PolicyDefinition;
+import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
 import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceADCExceptionException;
 import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceAlreadySubscribedExceptionException;
 import org.apache.stratos.adc.mgt.stub.ApplicationManagementServiceDomainMappingExistsExceptionException;
@@ -223,7 +223,7 @@ public class CommandLineService {
 
 	public void listAvailableCartridges() throws CommandException {
 		try {
-			Cartridge[] multiTenantCatridges = stub.getAvailableCartridges(true);
+            Cartridge[] multiTenantCatridges = stub.getAvailableCartridges(true);
 
 			if (multiTenantCatridges == null) {
 				if (logger.isDebugEnabled()) {
