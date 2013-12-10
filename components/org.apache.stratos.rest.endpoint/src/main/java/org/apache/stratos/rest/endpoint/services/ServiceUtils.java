@@ -216,6 +216,7 @@ public class ServiceUtils {
                                 }
                                 return;
                             }
+                        }
                     }
                 }
 
@@ -300,7 +301,9 @@ public class ServiceUtils {
         return false;
     }
 
-    public static boolean deployDeploymentPolicy (DeploymentPolicy deploymentPolicyBean) throws RestAPIException {
+    public static boolean deployDeploymentPolicy (
+        org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean) 
+                throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
@@ -495,7 +498,8 @@ public class ServiceUtils {
         return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
 
-    public static DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
+    public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy 
+    getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
 
         DeploymentPolicy deploymentPolicy = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
