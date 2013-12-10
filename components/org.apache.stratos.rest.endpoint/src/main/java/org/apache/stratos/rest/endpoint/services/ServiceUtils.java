@@ -351,14 +351,35 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionPojos(partitions);
     }
 
-    public static Partition[] getPartitions (String deploymentPolicyId,
-                                                      String partitionGroupId) throws RestAPIException {
+    public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId) 
+                throws RestAPIException {
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                partitions = autoscalerServiceClient.getPartitions(deploymentPolicyId, partitionGroupId);
+                partitions =
+                             autoscalerServiceClient.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+
+            } catch (Exception e) {
+                String errorMsg = "Error getting available partitions";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg, e);
+            }
+        }
+
+        return PojoConverter.populatePartitionPojos(partitions);
+    }
+    
+    public static Partition[]
+        getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+                partitions =
+                             autoscalerServiceClient.getPartitionsOfGroup(deploymentPolicyId, groupId);
 
             } catch (Exception e) {
                 String errorMsg = "Error getting available partitions";

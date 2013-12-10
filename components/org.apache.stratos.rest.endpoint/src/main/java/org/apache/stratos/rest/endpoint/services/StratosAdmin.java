@@ -167,7 +167,18 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition [] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
 
-        return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
+        return ServiceUtils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId);
+    }
+    
+    @GET
+    @Path("/partition/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition [] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+
+        return ServiceUtils.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
     }
 
     @GET
