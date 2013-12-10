@@ -81,7 +81,8 @@ public abstract class CartridgeSubscription implements Serializable {
         getCluster().setHostName(cartridgeInfo.getHostName());
         this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         this.connectedSubscriptionAliases = new ArrayList<String>();
-        if(getCartridgeInfo().getMultiTenant()) {
+        boolean isMultiTenant = getCartridgeInfo().getMultiTenant();
+        if(isMultiTenant) {
             subscriptionTenancyBehaviour = new SubscriptionMultiTenantBehaviour(this);
         }
         else {

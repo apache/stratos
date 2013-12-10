@@ -26,6 +26,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
 
@@ -45,6 +46,8 @@ public class PojoConverter {
         cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
         cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
+        cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
+        
         //deployment information
         if(cartridgeDefinitionBean.deployment != null) {
             cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
@@ -63,7 +66,7 @@ public class PojoConverter {
         }
         //LB
         if(cartridgeDefinitionBean.loadBalancer != null) {
-            //cartridgeConfig.set
+            cartridgeConfig.setLbConfig(getLBConfig(cartridgeDefinitionBean.loadBalancer));
         }
         //Properties
         if(cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
@@ -71,6 +74,13 @@ public class PojoConverter {
         }
 
         return cartridgeConfig;
+    }
+
+    private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
+        LoadbalancerConfig lbConfig = new LoadbalancerConfig();
+        lbConfig.setType(loadBalancer.type);
+        lbConfig.setProperties(getProperties(loadBalancer.property));
+        return lbConfig;
     }
 
     private static PortMapping[] getPortMappingsAsArray(List<PortMappingBean> portMappingBeans) {

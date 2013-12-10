@@ -19,22 +19,21 @@
 package org.apache.stratos.autoscaler.api;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.NonExistingLBException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -42,6 +41,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
+	PartitionManager partitionManager = PartitionManager.getInstance();
 	
 	public Partition[] getAllAvailablePartitions(){
 		return PartitionManager.getInstance().getAllPartitions();		
@@ -121,16 +121,46 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	}
 
 	@Override
-	public Partition[] getPartitionsOfDeploymentPolicy(String depPolicy, String partitonGroupId) {
-		DeploymentPolicy depPol = this.getDeploymentPolicy(depPolicy);
-		if(null == depPol)
+	public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId) {
+		DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
+		if(null == depPol) {
 			return null;
+		}
 		
-		PartitionGroup partGrp = depPol.getPartitionGroup(partitonGroupId);
-		if(null == partGrp)
-			return null;
-		
-		return partGrp.getPartitions();
+		return depPol.getAllPartitions();
+	}
+	
+	@Override
+    public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String groupId) {
+        DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
+        if(null == depPol) {
+            return null;
+        }
+        
+        PartitionGroup group = depPol.getPartitionGroup(groupId);
+        
+        if(group == null) {
+            return null;
+        }
+        
+        return group.getPartitions();
+    }
+	
+	public void checkLBExistence(String clusterId) throws NonExistingLBException {
+        List<NetworkPartitionContext> nwPartitions = partitionManager.getAllNetworkPartitions();
+        boolean exist = false;
+        for (NetworkPartitionContext networkPartition : nwPartitions) {
+            if(networkPartition.isLBExist(clusterId)) {
+                exist = true;
+                break;
+            }
+        }
+        
+        if(!exist) {
+            String msg = "LB with [cluster id] "+clusterId+" does not exist.";
+            log.error(msg);
+            throw new NonExistingLBException(msg);
+        }
 	}
 
 }

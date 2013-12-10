@@ -48,10 +48,14 @@ public class CartridgeConfig implements Serializable {
     private String[] deploymentDirs;
 
     private PortMapping[] portMappings;
+    
+    private String defaultAutoscalingPolicy;
 
     private Properties properties;
 
     private IaasConfig[] iaasConfigs;
+    
+    private LoadbalancerConfig lbConfig;
 
 
     public String getType() {
@@ -212,5 +216,21 @@ public class CartridgeConfig implements Serializable {
             }
         }
         return propertyDetailBuilder.toString();
+    }
+
+    public LoadbalancerConfig getLbConfig() {
+        return lbConfig;
+    }
+
+    public void setLbConfig(LoadbalancerConfig lbConfig) {
+        this.lbConfig = lbConfig;
+    }
+
+    public String getDefaultAutoscalingPolicy() {
+        return defaultAutoscalingPolicy;
+    }
+
+    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
 }

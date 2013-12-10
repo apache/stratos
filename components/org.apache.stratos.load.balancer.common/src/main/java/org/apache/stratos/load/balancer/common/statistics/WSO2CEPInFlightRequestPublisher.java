@@ -30,12 +30,11 @@ import java.util.List;
  * WSO2 CEP in flight request count publisher.
  *
  * In-flight request count:
- * Number of requests being served at a given moment could be identified as
- * in-flight request count.
+ * Number of requests being served at a given moment could be identified as in-flight request count.
  */
 public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
 
-    private static final String DATA_STREAM_NAME = "stratos.lb.stats";
+    private static final String DATA_STREAM_NAME = "stratos.lb.in.flight.req.count";
     private static final String VERSION = "1.0.0";
 
     private static StreamDefinition createStreamDefinition() {
@@ -46,7 +45,8 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
             List<Attribute> payloadData = new ArrayList<Attribute>();
             // Payload definition
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
-            payloadData.add(new Attribute("in_flight_requests", AttributeType.INT));
+            payloadData.add(new Attribute("partition_id", AttributeType.STRING));
+            payloadData.add(new Attribute("in_flight_request_count", AttributeType.INT));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         }
@@ -61,13 +61,16 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
 
     /**
      * Publish in-flight request count of a cluster.
+     *
      * @param clusterId
+     * @param partitionId
      * @param inFlightRequestCount
      */
-    public void publish(String clusterId, int inFlightRequestCount) {
+    public void publish(String clusterId, String partitionId, int inFlightRequestCount) {
         List<Object> payload = new ArrayList<Object>();
         // Payload values
         payload.add(clusterId);
+        payload.add(partitionId);
         payload.add(inFlightRequestCount);
         super.publish(payload.toArray());
     }
