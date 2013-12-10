@@ -40,6 +40,21 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getPartitionsOfGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionsOfGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getPartitionsOfDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
@@ -308,6 +323,12 @@
     <wsdl:message name="getPartitionsOfDeploymentPolicyResponse">
         <wsdl:part name="parameters" element="ns:getPartitionsOfDeploymentPolicyResponse"/>
     </wsdl:message>
+    <wsdl:message name="getPartitionsOfGroupRequest">
+        <wsdl:part name="parameters" element="ns:getPartitionsOfGroup"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionsOfGroupResponse">
+        <wsdl:part name="parameters" element="ns:getPartitionsOfGroupResponse"/>
+    </wsdl:message>
     <wsdl:message name="getAllAutoScalingPolicyRequest">
         <wsdl:part name="parameters" element="ns:getAllAutoScalingPolicy"/>
     </wsdl:message>
@@ -388,6 +409,10 @@
             <wsdl:input message="ns:getPartitionsOfDeploymentPolicyRequest" wsaw:Action="urn:getPartitionsOfDeploymentPolicy"/>
             <wsdl:output message="ns:getPartitionsOfDeploymentPolicyResponse" wsaw:Action="urn:getPartitionsOfDeploymentPolicyResponse"/>
         </wsdl:operation>
+        <wsdl:operation name="getPartitionsOfGroup">
+            <wsdl:input message="ns:getPartitionsOfGroupRequest" wsaw:Action="urn:getPartitionsOfGroup"/>
+            <wsdl:output message="ns:getPartitionsOfGroupResponse" wsaw:Action="urn:getPartitionsOfGroupResponse"/>
+        </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
             <wsdl:input message="ns:getAllAutoScalingPolicyRequest" wsaw:Action="urn:getAllAutoScalingPolicy"/>
             <wsdl:output message="ns:getAllAutoScalingPolicyResponse" wsaw:Action="urn:getAllAutoScalingPolicyResponse"/>
@@ -451,6 +476,15 @@
         </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
             <soap:operation soapAction="urn:getAllAutoScalingPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitionsOfGroup">
+            <soap:operation soapAction="urn:getPartitionsOfGroup" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -581,6 +615,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="getPartitionsOfGroup">
+            <soap12:operation soapAction="urn:getPartitionsOfGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
             <soap12:operation soapAction="urn:getDeploymentPolicy" style="document"/>
             <wsdl:input>
@@ -697,6 +740,15 @@
         </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
             <http:operation location="getAllAutoScalingPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPartitionsOfGroup">
+            <http:operation location="getPartitionsOfGroup"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
