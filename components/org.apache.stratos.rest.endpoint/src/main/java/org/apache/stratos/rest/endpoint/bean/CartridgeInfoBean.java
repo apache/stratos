@@ -23,7 +23,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CartridgeInfoBean {
     String cartridgeType;
     String alias;
-    String policy;
+    String autoscalePolicy;
+    String deploymentPolicy;
     String repoURL;
     boolean privateRepo;
     String repoUsername;
@@ -48,12 +49,12 @@ public class CartridgeInfoBean {
         this.alias = alias;
     }
 
-    public String getPolicy() {
-        return policy;
+    public String getAutoscalePolicy() {
+        return autoscalePolicy;
     }
 
-    public void setPolicy(String policy) {
-        this.policy = policy;
+    public void setAutoscalePolicy(String autoscalePolicy) {
+        this.autoscalePolicy = autoscalePolicy;
     }
 
     public String getRepoURL() {
@@ -102,5 +103,13 @@ public class CartridgeInfoBean {
 
     public void setDataCartridgeAlias(String dataCartridgeAlias) {
         this.dataCartridgeAlias = dataCartridgeAlias;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }

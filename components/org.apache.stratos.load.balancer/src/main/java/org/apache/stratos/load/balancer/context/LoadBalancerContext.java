@@ -23,19 +23,12 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.ClusterContext;
-import org.apache.stratos.load.balancer.ServiceContext;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.load.balancer.context.map.*;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
-import org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Defines load balancer context information.
@@ -53,37 +46,40 @@ public class LoadBalancerContext {
     private DependencyManagementService dependencyManager;
 
     // Following map is updated by the service component.
-    // <TenantId, SynapseEnvironmentService> Map
-    private Map<Integer, SynapseEnvironmentService> tenantIdSynapseEnvironmentServiceMap;
+    // Map<TenantId, SynapseEnvironmentService>
+    private TenantIdSynapseEnvironmentServiceMap tenantIdSynapseEnvironmentServiceMap;
 
     // Following maps are updated on demand by the request delegator.
-    // <ServiceName, ServiceContext> Map
-    private Map<String, ServiceContext> serviceNameServiceContextMap;
-    // <ClusterId, ClusterContext> Map
-    private Map<String, ClusterContext> clusterIdClusterContextMap;
+    // Map<ServiceName, ServiceContext>
+    private ServiceNameServiceContextMap serviceNameServiceContextMap;
+    // Map<ClusterId, ClusterContext>
+    private ClusterIdClusterContextMap clusterIdClusterContextMap;
 
-    // Following maps are updated by load balancer topology receiver.
-    // <ClusterId, Cluster> Map
-    private Map<String, Cluster> clusterIdClusterMap;
-    // <Hostname, Cluster> Map
-    private Map<String, Cluster> singleTenantClusterMap;
-    // <Hostname, Map<TenantId, Cluster>> Map
-    private Map<String, Map<Integer, Cluster>> multiTenantClusterMap;
+    // Following maps are updated by load balancer topology & tenant receivers.
+    // Map<ClusterId, Cluster>
+    // Keep track of all clusters
+    private ClusterIdClusterMap clusterIdClusterMap;
+    // Map<HostName, Cluster>
+    // Keep tack of all clusters
+    private HostNameClusterMap hostNameClusterMap;
+    // Map<HostName, Map<TenantId, Cluster>>
+    // Keep track of multi-tenant service clusters
+    private MultiTenantClusterMap multiTenantClusterMap;
 
     private LoadBalancerContext() {
-        tenantIdSynapseEnvironmentServiceMap = new ConcurrentHashMap<Integer, SynapseEnvironmentService>();
-        serviceNameServiceContextMap = new ConcurrentHashMap<String, ServiceContext>();
-        clusterIdClusterContextMap = new ConcurrentHashMap<String, ClusterContext>();
-        clusterIdClusterMap = new ConcurrentHashMap<String, Cluster>();
-        singleTenantClusterMap = new ConcurrentHashMap<String, Cluster>();
-        multiTenantClusterMap = new ConcurrentHashMap<String, Map<Integer, Cluster>>();
+        tenantIdSynapseEnvironmentServiceMap = new TenantIdSynapseEnvironmentServiceMap();
+        serviceNameServiceContextMap = new ServiceNameServiceContextMap();
+        clusterIdClusterContextMap = new ClusterIdClusterContextMap();
+        clusterIdClusterMap = new ClusterIdClusterMap();
+        hostNameClusterMap = new HostNameClusterMap();
+        multiTenantClusterMap = new MultiTenantClusterMap();
     }
 
     public static LoadBalancerContext getInstance() {
         if (instance == null) {
-            synchronized (LoadBalancerContext.class){
+            synchronized (LoadBalancerContext.class) {
                 if (instance == null) {
-                    instance = new LoadBalancerContext ();
+                    instance = new LoadBalancerContext();
                 }
             }
         }
@@ -158,19 +154,7 @@ public class LoadBalancerContext {
         this.governanceRegistry = governanceRegistry;
     }
 
-    public SynapseEnvironmentService getSynapseEnvironmentService(int tenantId) {
-        return tenantIdSynapseEnvironmentServiceMap.get(tenantId);
-    }
-
-    public void addSynapseEnvironmentService(int tenantId, SynapseEnvironmentService synapseEnvironmentService) {
-        tenantIdSynapseEnvironmentServiceMap.put(tenantId, synapseEnvironmentService);
-    }
-
-    public void removeSynapseEnvironmentService(int tenantId) {
-        tenantIdSynapseEnvironmentServiceMap.remove(tenantId);
-    }
-
-    public Map<Integer, SynapseEnvironmentService> getTenantIdSynapseEnvironmentServiceMap() {
+    public TenantIdSynapseEnvironmentServiceMap getTenantIdSynapseEnvironmentServiceMap() {
         return tenantIdSynapseEnvironmentServiceMap;
     }
 
@@ -182,110 +166,23 @@ public class LoadBalancerContext {
         this.configCtxt = configCtxt;
     }
 
-    // ServiceNameServiceContextMap methods START
-    public Collection<ServiceContext> getServiceContexts() {
-        return serviceNameServiceContextMap.values();
+    public ServiceNameServiceContextMap getServiceNameServiceContextMap() {
+        return serviceNameServiceContextMap;
     }
 
-    public ServiceContext getServiceContext(String serviceName) {
-        return serviceNameServiceContextMap.get(serviceName);
+    public ClusterIdClusterContextMap getClusterIdClusterContextMap() {
+        return clusterIdClusterContextMap;
     }
 
-    public void addServiceContext(ServiceContext serviceContext) {
-        serviceNameServiceContextMap.put(serviceContext.getServiceName(), serviceContext);
+    public ClusterIdClusterMap getClusterIdClusterMap() {
+        return clusterIdClusterMap;
     }
 
-    public void removeServiceContext(String serviceName) {
-        serviceNameServiceContextMap.remove(serviceName);
-    }
-    // ServiceNameServiceContextMap methods END
-
-    // ClusterIdClusterContextMap methods START
-    public Collection<ClusterContext> getClusterContexts() {
-        return clusterIdClusterContextMap.values();
+    public HostNameClusterMap getHostNameClusterMap() {
+        return hostNameClusterMap;
     }
 
-    public ClusterContext getClusterContext(String clusterId) {
-        return clusterIdClusterContextMap.get(clusterId);
+    public MultiTenantClusterMap getMultiTenantClusterMap() {
+        return multiTenantClusterMap;
     }
-
-    public void addClusterContext(ClusterContext clusterContext) {
-        clusterIdClusterContextMap.put(clusterContext.getClusterId(), clusterContext);
-    }
-
-    public void removeClusterContext(String clusterId) {
-        clusterIdClusterContextMap.remove(clusterId);
-    }
-    // ClusterIdClusterContextMap methods END
-
-    // ClusterIdClusterMap methods START
-    public Cluster getCluster(String clusterId) {
-        return clusterIdClusterMap.get(clusterId);
-    }
-
-    public boolean clusterExists(String clusterId) {
-        return clusterIdClusterMap.containsKey(clusterId);
-    }
-
-    public void addCluster(Cluster cluster) {
-        clusterIdClusterMap.put(cluster.getClusterId(), cluster);
-    }
-
-    public void removeCluster(String clusterId) {
-        clusterIdClusterMap.remove(clusterId);
-    }
-    // ClusterIdClusterMap methods END
-
-    // SingleTenantClusterMap methods START
-    public Cluster getSingleTenantCluster(String hostName) {
-        return singleTenantClusterMap.get(hostName);
-    }
-
-    public boolean singleTenantClusterExists(String hostName) {
-        return singleTenantClusterMap.containsKey(hostName);
-    }
-
-    public void addSingleTenantCluster(String hostName, Cluster cluster) {
-        singleTenantClusterMap.put(hostName, cluster);
-    }
-
-    public void removeSingleTenantCluster(Cluster cluster) {
-        for(String hostName : cluster.getHostNames()) {
-            removeSingleTenantCluster(hostName);
-        }
-    }
-
-    public void removeSingleTenantCluster(String hostName) {
-        singleTenantClusterMap.remove(hostName);
-    }
-    // SingleTenantClusterMap methods END
-
-    // MultiTenantClusterMap methods START
-    public Cluster getMultiTenantCluster(String hostName, int tenantId) {
-        Map<Integer, Cluster> clusterMap = getMultiTenantClusters(hostName);
-        if(clusterMap != null) {
-            return clusterMap.get(tenantId);
-        }
-        return null;
-    }
-
-    public Map<Integer, Cluster> getMultiTenantClusters(String hostName) {
-        if(multiTenantClustersExists(hostName)) {
-            return null;
-        }
-        return multiTenantClusterMap.get(hostName);
-    }
-
-    public boolean multiTenantClustersExists(String hostName) {
-        return multiTenantClusterMap.containsKey(hostName);
-    }
-
-    public void addMultiTenantClusters(String hostname, Map<Integer, Cluster> clusters) {
-        multiTenantClusterMap.put(hostname, clusters);
-    }
-
-    public void removeMultiTenantClusters(String hostName) {
-        multiTenantClusterMap.remove(hostName);
-    }
-    // MultiTenantClusterMap methods END
 }

@@ -41,8 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  Load balancer tenant receiver updates load balancer context according to
- *  incoming tenant events.
+ * Load balancer tenant receiver updates load balancer context according to
+ * incoming tenant events.
  */
 public class LoadBalancerTenantReceiver implements Runnable {
 
@@ -66,8 +66,8 @@ public class LoadBalancerTenantReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
-                for(Tenant tenant : completeTenantEvent.getTenants()) {
-                    for(String serviceName : tenant.getServiceSubscriptions()) {
+                for (Tenant tenant : completeTenantEvent.getTenants()) {
+                    for (String serviceName : tenant.getServiceSubscriptions()) {
                         addTenantSubscriptionToLbContext(serviceName, tenant.getTenantId());
                     }
                 }
@@ -93,28 +93,26 @@ public class LoadBalancerTenantReceiver implements Runnable {
     private void addTenantSubscriptionToLbContext(String serviceName, int tenantId) {
         // Find cluster of tenant
         Cluster cluster = findCluster(serviceName, tenantId);
-        if(cluster != null) {
-            for(String hostName : cluster.getHostNames()) {
+        if (cluster != null) {
+            for (String hostName : cluster.getHostNames()) {
                 // Add hostName, tenantId, cluster to multi-tenant map
-                Map<Integer, Cluster> clusterMap = LoadBalancerContext.getInstance().getMultiTenantClusters(hostName);
-                if(clusterMap == null) {
+                Map<Integer, Cluster> clusterMap = LoadBalancerContext.getInstance().getMultiTenantClusterMap().getClusters(hostName);
+                if (clusterMap == null) {
                     clusterMap = new HashMap<Integer, Cluster>();
                     clusterMap.put(tenantId, cluster);
-                    LoadBalancerContext.getInstance().addMultiTenantClusters(hostName, clusterMap);
-                }
-                else {
+                    LoadBalancerContext.getInstance().getMultiTenantClusterMap().addClusters(hostName, clusterMap);
+                } else {
                     clusterMap.put(tenantId, cluster);
                 }
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster added to multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
-                               hostName, tenantId, cluster.getClusterId()));
+                            hostName, tenantId, cluster.getClusterId()));
                 }
             }
-        }
-        else {
-            if(log.isErrorEnabled()) {
+        } else {
+            if (log.isErrorEnabled()) {
                 log.error(String.format("Could not find cluster of tenant: [service] %s [tenant-id] %d",
-                           serviceName, tenantId));
+                        serviceName, tenantId));
             }
         }
     }
@@ -124,7 +122,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
         Cluster cluster = findCluster(serviceName, tenantId);
         if (cluster != null) {
             for (String hostName : cluster.getHostNames()) {
-                LoadBalancerContext.getInstance().removeMultiTenantClusters(hostName);
+                LoadBalancerContext.getInstance().getMultiTenantClusterMap().removeClusters(hostName);
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster removed from multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
                             hostName, tenantId, cluster.getClusterId()));
@@ -142,17 +140,16 @@ public class LoadBalancerTenantReceiver implements Runnable {
         try {
             TopologyManager.acquireReadLock();
             Service service = TopologyManager.getTopology().getService(serviceName);
-            if(service == null) {
+            if (service == null) {
                 throw new RuntimeException(String.format("Service not found: %s", serviceName));
             }
-            for(Cluster cluster : service.getClusters()) {
-                if(cluster.tenantIdInRange(tenantId)) {
+            for (Cluster cluster : service.getClusters()) {
+                if (cluster.tenantIdInRange(tenantId)) {
                     return cluster;
                 }
             }
             return null;
-        }
-        finally {
+        } finally {
             TopologyManager.releaseReadLock();
         }
     }
@@ -163,7 +160,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
         tenantReceiverThread.start();
 
         // Keep the thread live until terminated
-        while (!terminated);
+        while (!terminated) ;
         if (log.isInfoEnabled()) {
             log.info("Load balancer tenant receiver thread terminated");
         }

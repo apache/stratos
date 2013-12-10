@@ -59,6 +59,8 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
                 cartridgeSubscription.getPayload().createPayload(),
                 cartridgeSubscription.getPayload().getPayloadArg().getTenantRange(),
                 cartridgeSubscription.getCluster().getHostName(),
+                cartridgeSubscription.getAutoscalingPolicyName(),
+                cartridgeSubscription.getDeploymentPolicyName(),
                 properties);
 
         cartridgeSubscription.getPayload().delete();

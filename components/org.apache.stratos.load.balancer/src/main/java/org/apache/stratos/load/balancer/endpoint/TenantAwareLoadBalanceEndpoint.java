@@ -244,13 +244,13 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private String extractUrl(MessageContext synCtx) {
         Axis2MessageContext axis2smc = (Axis2MessageContext) synCtx;
         org.apache.axis2.context.MessageContext axis2MessageCtx = axis2smc.getAxis2MessageContext();
-        return (String) axis2MessageCtx.getProperty(org.apache.axis2.context.MessageContext.REMOTE_ADDR);
+        return (String) axis2MessageCtx.getProperty(Constants.AXIS2_MSG_CTX_TRANSPORT_IN_URL);
     }
 
     private int scanUrlForTenantId(String url) {
         int tenantId = -1;
         String regex = LoadBalancerConfiguration.getInstance().getTenantIdentifierRegex();
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Request URL: %s ", url));
             log.debug(String.format("Tenant identifier regex: %s ", regex));
         }
@@ -258,16 +258,15 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
             if (LoadBalancerConfiguration.getInstance().getTenantIdentifier() == TenantIdentifier.TenantId) {
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Identifying tenant using tenant id...");
                 }
                 tenantId = Integer.parseInt(matcher.group(1));
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Tenant identifier found: [tenant-id] %d", tenantId));
                 }
-            }
-            else if (LoadBalancerConfiguration.getInstance().getTenantIdentifier() == TenantIdentifier.TenantDomain) {
-                if(log.isDebugEnabled()) {
+            } else if (LoadBalancerConfiguration.getInstance().getTenantIdentifier() == TenantIdentifier.TenantDomain) {
+                if (log.isDebugEnabled()) {
                     log.debug("Identifying tenant using tenant domain...");
                 }
                 String tenantDomain = matcher.group(1);
@@ -276,9 +275,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                     log.debug(String.format("Tenant identifier found: [tenant-domain] %s [tenant-id] %d", tenantDomain, tenantId));
                 }
             }
-        }
-        else {
-            if(log.isDebugEnabled()) {
+        } else {
+            if (log.isDebugEnabled()) {
                 log.debug("Tenant identifier not found in URL");
             }
         }
@@ -298,7 +296,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         try {
             TenantManager.acquireReadLock();
             Tenant tenant = TenantManager.getInstance().getTenant(tenantDomain);
-            if(tenant != null) {
+            if (tenant != null) {
                 return tenant.getTenantId();
             }
             return -1;

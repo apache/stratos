@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.tenant.*;
-import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
@@ -32,7 +31,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class TenantMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(TenantMessageProcessorChain.class);
 
-    private CompleteTenantMessageProcessor completeTopologyMessageProcessor;
+    private CompleteTenantMessageProcessor completeTenantMessageProcessor;
     private TenantCreatedMessageProcessor tenantCreatedMessageProcessor;
     private TenantUpdatedMessageProcessor tenantUpdatedMessageProcessor;
     private TenantRemovedMessageProcessor tenantRemovedMessageProcessor;
@@ -40,9 +39,9 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     private TenantUnSubscribedMessageProcessor tenantUnSubscribedMessageProcessor;
 
     public void initialize() {
-        // Add topology event processors
-        completeTopologyMessageProcessor = new CompleteTenantMessageProcessor();
-        add(completeTopologyMessageProcessor);
+        // Add tenant event processors
+        completeTenantMessageProcessor = new CompleteTenantMessageProcessor();
+        add(completeTenantMessageProcessor);
 
         tenantCreatedMessageProcessor = new TenantCreatedMessageProcessor();
         add(tenantCreatedMessageProcessor);
@@ -65,8 +64,8 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     }
 
     public void addEventListener(EventListener eventListener) {
-        if (eventListener instanceof CompleteTopologyEventListener) {
-            completeTopologyMessageProcessor.addEventListener(eventListener);
+        if (eventListener instanceof CompleteTenantEventListener) {
+            completeTenantMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof TenantCreatedEventListener) {
             tenantCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof TenantUpdatedEventListener) {

@@ -52,7 +52,7 @@ public class RequestDelegator {
             TopologyManager.acquireReadLock();
             long startTime = System.currentTimeMillis();
 
-            Cluster cluster = LoadBalancerContext.getInstance().getSingleTenantCluster(hostName);
+            Cluster cluster = LoadBalancerContext.getInstance().getHostNameClusterMap().getCluster(hostName);
             if (cluster != null) {
                 Member member = findNextMemberInCluster(cluster);
                 if (member != null) {
@@ -75,7 +75,7 @@ public class RequestDelegator {
             long startTime = System.currentTimeMillis();
 
             // Find cluster from host name and tenant id
-            Cluster cluster = LoadBalancerContext.getInstance().getMultiTenantCluster(hostName, tenantId);
+            Cluster cluster = LoadBalancerContext.getInstance().getMultiTenantClusterMap().getCluster(hostName, tenantId);
             if (cluster != null) {
                 Member member = findNextMemberInCluster(cluster);
                 if (member != null) {
@@ -95,10 +95,10 @@ public class RequestDelegator {
 
     private Member findNextMemberInCluster(Cluster cluster) {
         // Find algorithm context of the cluster
-        ClusterContext clusterContext = LoadBalancerContext.getInstance().getClusterContext(cluster.getClusterId());
+        ClusterContext clusterContext = LoadBalancerContext.getInstance().getClusterIdClusterContextMap().getClusterContext(cluster.getClusterId());
         if (clusterContext == null) {
             clusterContext = new ClusterContext(cluster.getServiceName(), cluster.getClusterId());
-            LoadBalancerContext.getInstance().addClusterContext(clusterContext);
+            LoadBalancerContext.getInstance().getClusterIdClusterContextMap().addClusterContext(clusterContext);
         }
 
         AlgorithmContext algorithmContext = clusterContext.getAlgorithmContext();
@@ -120,9 +120,9 @@ public class RequestDelegator {
         if (hostName == null)
             return false;
 
-        boolean valid = LoadBalancerContext.getInstance().singleTenantClusterExists(hostName);
+        boolean valid = LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster(hostName);
         if ((!valid) && (LoadBalancerConfiguration.getInstance().isMultiTenancyEnabled())) {
-            valid = LoadBalancerContext.getInstance().multiTenantClustersExists(hostName);
+            valid = LoadBalancerContext.getInstance().getMultiTenantClusterMap().containsClusters(hostName);
         }
         return valid;
     }

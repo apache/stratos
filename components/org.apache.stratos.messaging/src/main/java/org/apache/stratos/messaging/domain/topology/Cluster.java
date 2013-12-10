@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.messaging.util.Util;
 
 import java.io.Serializable;
@@ -38,9 +39,6 @@ public class Cluster implements Serializable {
     private String tenantRange;
     private String autoscalePolicyName;
     private String deploymentPolicyName = "economy-deployment";
-    private Cloud cloud;
-    private Region region;
-    private Zone zone;
     
     // Key: Member.memberId
     private Map<String, Member> memberMap;
@@ -78,30 +76,6 @@ public class Cluster implements Serializable {
     public void setTenantRange(String tenantRange) {
         Util.validateTenantRange(tenantRange);
         this.tenantRange = tenantRange;
-    }
-
-    public Cloud getCloud() {
-        return cloud;
-    }
-
-    public void setCloud(Cloud cloud) {
-        this.cloud = cloud;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public Zone getZone() {
-        return zone;
-    }
-
-    public void setZone(Zone zone) {
-        this.zone = zone;
     }
 
     public Collection<Member> getMembers() {
@@ -157,6 +131,10 @@ public class Cluster implements Serializable {
     }
 
     public boolean tenantIdInRange(int tenantId) {
+        if(StringUtils.isBlank(getTenantRange())) {
+            return false;
+        }
+
         if("*".equals(getTenantRange())) {
             return true;
         }

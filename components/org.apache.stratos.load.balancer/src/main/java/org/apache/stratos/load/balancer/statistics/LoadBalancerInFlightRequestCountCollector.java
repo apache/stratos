@@ -28,42 +28,42 @@ import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This is the load balancing stats collector and any observer can get registered here 
+ * This is the load balancing stats collector and any observer can get registered here
  * and receive notifications periodically.
  * This is a Singleton object.
- * @author nirmal
  *
+ * @author nirmal
  */
-public class LoadBalancerInFlightRequestCountCollector extends Observable{
+public class LoadBalancerInFlightRequestCountCollector extends Observable {
     private static final Log log = LogFactory.getLog(LoadBalancerInFlightRequestCountCollector.class);
 
-	private static LoadBalancerInFlightRequestCountCollector collector;
-	private Map<String, Integer> clusterIdToRequestInflightCountMap;
-	private Thread notifier;
-	
-	private LoadBalancerInFlightRequestCountCollector() {
-		clusterIdToRequestInflightCountMap = new ConcurrentHashMap<String, Integer>();
-		if (notifier == null || (notifier != null && !notifier.isAlive())) {
-			notifier = new Thread(new ObserverNotifier());
-			notifier.start();
-		}
+    private static LoadBalancerInFlightRequestCountCollector collector;
+    private Map<String, Integer> clusterIdToRequestInflightCountMap;
+    private Thread notifier;
+
+    private LoadBalancerInFlightRequestCountCollector() {
+        clusterIdToRequestInflightCountMap = new ConcurrentHashMap<String, Integer>();
+        if (notifier == null || (notifier != null && !notifier.isAlive())) {
+            notifier = new Thread(new ObserverNotifier());
+            notifier.start();
+        }
     }
-	
-	public static LoadBalancerInFlightRequestCountCollector getInstance() {
-		if (collector == null) {
-			synchronized (LoadBalancerInFlightRequestCountCollector.class) {
-				if (collector == null) {
-					collector = new LoadBalancerInFlightRequestCountCollector();
-					// add observers
-					collector.addObserver(new WSO2CEPInFlightRequestCountObserver());
-				}
-			}
-		}
-		return collector;
-	}
+
+    public static LoadBalancerInFlightRequestCountCollector getInstance() {
+        if (collector == null) {
+            synchronized (LoadBalancerInFlightRequestCountCollector.class) {
+                if (collector == null) {
+                    collector = new LoadBalancerInFlightRequestCountCollector();
+                    // add observers
+                    collector.addObserver(new WSO2CEPInFlightRequestCountObserver());
+                }
+            }
+        }
+        return collector;
+    }
 
     public void setRequestInflightCount(String clusterId, int value) {
-        if(clusterId == null) {
+        if (clusterId == null) {
             return;
         }
 
@@ -74,55 +74,55 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable{
     public void incrementRequestInflightCount(String clusterId) {
         incrementRequestInflightCount(clusterId, 1);
     }
-	
-	public void incrementRequestInflightCount(String clusterId, int value) {
-		if(clusterId == null) {
-			return;
-		}
 
-		if(clusterIdToRequestInflightCountMap.get(clusterId) != null) {
-			value += clusterIdToRequestInflightCountMap.get(clusterId);
-		}
-		clusterIdToRequestInflightCountMap.put(clusterId, value);
-		setChanged();
-	}
+    public void incrementRequestInflightCount(String clusterId, int value) {
+        if (clusterId == null) {
+            return;
+        }
+
+        if (clusterIdToRequestInflightCountMap.get(clusterId) != null) {
+            value += clusterIdToRequestInflightCountMap.get(clusterId);
+        }
+        clusterIdToRequestInflightCountMap.put(clusterId, value);
+        setChanged();
+    }
 
     public void decrementRequestInflightCount(String clusterId) {
-        decrementRequestInflightCount(clusterId , 1);
+        decrementRequestInflightCount(clusterId, 1);
     }
-	
-	public void decrementRequestInflightCount(String clusterId, int value) {
-		if(clusterId == null) {
-			return;
-		}
 
-		if(clusterIdToRequestInflightCountMap.get(clusterId) != null) {
-			value += clusterIdToRequestInflightCountMap.get(clusterId);
-		}
-		clusterIdToRequestInflightCountMap.put(clusterId, value);
-		setChanged();
-	}
+    public void decrementRequestInflightCount(String clusterId, int value) {
+        if (clusterId == null) {
+            return;
+        }
+
+        if (clusterIdToRequestInflightCountMap.get(clusterId) != null) {
+            value += clusterIdToRequestInflightCountMap.get(clusterId);
+        }
+        clusterIdToRequestInflightCountMap.put(clusterId, value);
+        setChanged();
+    }
 
 
-	/**
-	 * This thread will notify all the observers of this subject.
-	 * @author nirmal
-	 *
-	 */
-	private class ObserverNotifier implements Runnable {
+    /**
+     * This thread will notify all the observers of this subject.
+     *
+     * @author nirmal
+     */
+    private class ObserverNotifier implements Runnable {
 
-		@Override
+        @Override
         public void run() {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Load balancing statistics notifier thread started");
             }
-			while(true) {
-				try {
-	                Thread.sleep(15000);
+            while (true) {
+                try {
+                    Thread.sleep(15000);
                 } catch (InterruptedException ignore) {
                 }
-				LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
-			}
+                LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
+            }
         }
-	}
+    }
 }

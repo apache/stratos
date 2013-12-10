@@ -73,6 +73,7 @@ public class LoadBalancerConfiguration {
 
     /**
      * Get load balancer configuration singleton instance.
+     *
      * @return
      */
     public static synchronized LoadBalancerConfiguration getInstance() {
@@ -374,13 +375,26 @@ public class LoadBalancerConfiguration {
                 validateRequiredNode(servicesNode, Constants.CONF_ELEMENT_SERVICES);
 
                 for (Node serviceNode : servicesNode.getChildNodes()) {
-                    // TODO: Add service type to service node
-                    Service service = new Service(serviceNode.getName(), ServiceType.SingleTenant);
+                    ServiceType serviceType = ServiceType.SingleTenant;
+                    String multiTenant = serviceNode.getProperty(Constants.CONF_PROPERTY_MULTI_TENANT);
+                    if (StringUtils.isNotBlank(multiTenant) && (Boolean.parseBoolean(multiTenant))) {
+                        serviceType = ServiceType.MultiTenant;
+                    }
+                    Service service = new Service(serviceNode.getName(), serviceType);
                     Node clustersNode = serviceNode.findChildNodeByName(Constants.CONF_ELEMENT_CLUSTERS);
 
                     for (Node clusterNode : clustersNode.getChildNodes()) {
                         String clusterId = clusterNode.getName();
                         Cluster cluster = new Cluster(service.getServiceName(), clusterId, null);
+
+                        String tenantRange = clusterNode.getProperty(Constants.CONF_PROPERTY_TENANT_RANGE);
+                        if (StringUtils.isNotBlank(tenantRange)) {
+                            if (service.getServiceType() != ServiceType.MultiTenant) {
+                                throw new InvalidConfigurationException(String.format("%s property is not valid for non multi-tenant service cluster: [service] %s [cluster] %s",
+                                        Constants.CONF_PROPERTY_TENANT_RANGE, service.getServiceName(), cluster.getClusterId()));
+                            }
+                            cluster.setTenantRange(tenantRange);
+                        }
 
                         String algorithm = clusterNode.getProperty(Constants.CONF_PROPERTY_ALGORITHM);
                         if (StringUtils.isNotBlank(algorithm)) {
@@ -420,18 +434,21 @@ public class LoadBalancerConfiguration {
                             }
                             cluster.addMember(member);
                         }
+                        // Add cluster to service
                         service.addCluster(cluster);
+
+                        // Add service to topology manager if not exists
+                        try {
+                            TopologyManager.acquireWriteLock();
+                            if (!TopologyManager.getTopology().serviceExists(service.getServiceName())) {
+                                TopologyManager.getTopology().addService(service);
+                            }
+                        } finally {
+                            TopologyManager.releaseWriteLock();
+                        }
 
                         // Add cluster to load balancer context
                         LoadBalancerContextUtil.addClusterToLbContext(cluster);
-                    }
-
-                    // Add service to topology manager
-                    try {
-                        TopologyManager.acquireWriteLock();
-                        TopologyManager.getTopology().addService(service);
-                    } finally {
-                        TopologyManager.releaseWriteLock();
                     }
                 }
             }

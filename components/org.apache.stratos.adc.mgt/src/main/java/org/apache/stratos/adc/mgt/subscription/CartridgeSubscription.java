@@ -25,7 +25,6 @@ import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.Cluster;
 import org.apache.stratos.adc.mgt.dns.DNSManager;
-import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.payload.Payload;
@@ -40,23 +39,26 @@ import org.apache.stratos.adc.mgt.utils.*;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public abstract class CartridgeSubscription {
+public abstract class CartridgeSubscription implements Serializable {
 
     private static Log log = LogFactory.getLog(CartridgeSubscription.class);
     private int subscriptionId;
     private String type;
     private String alias;
-    private Policy autoscalingPolicy;
+    private String autoscalingPolicyName;
+    private String deploymentPolicyName;
     private Subscriber subscriber;
     private Repository repository;
     private CartridgeInfo cartridgeInfo;
     private Payload payload;
     private Cluster cluster;
     private String subscriptionStatus;
+    private String serviceStatus;
     private String mappedDomain;
     private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
@@ -93,6 +95,7 @@ public abstract class CartridgeSubscription {
      * @param subscriber Subscriber subscription
      * @param alias Alias of the cartridge subscription
      * @param autoscalingPolicy Auto scaling policy
+     * @param deploymentPolicyName Deployment policy
      * @param repository Relevenat Repository subscription
      *
      * @throws org.apache.stratos.adc.mgt.exception.ADCException
@@ -106,15 +109,16 @@ public abstract class CartridgeSubscription {
      * @throws org.apache.stratos.adc.mgt.exception.InvalidRepositoryException
      * @throws org.apache.stratos.adc.mgt.exception.RepositoryTransportException
      */
-    public void createSubscription (Subscriber subscriber, String alias, Policy autoscalingPolicy,
-                                    Repository repository)
+    public void createSubscription (Subscriber subscriber, String alias, String autoscalingPolicy,
+                                    String deploymentPolicyName, Repository repository)
             throws ADCException, PolicyException, UnregisteredCartridgeException, InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
 
         setSubscriber(subscriber);
         setAlias(alias);
-        setAutoscalingPolicy(autoscalingPolicy);
+        setAutoscalingPolicyName(autoscalingPolicy);
+        setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
     }
 
@@ -166,7 +170,7 @@ public abstract class CartridgeSubscription {
 
         PayloadArg payloadArg = new PayloadArg();
         payloadArg.setCartridgeInfo(getCartridgeInfo());
-        payloadArg.setPolicy(getAutoscalingPolicy());
+        //payloadArg.setPolicy(getAutoscalingPolicyName());
         payloadArg.setMultitenant(getCartridgeInfo().getMultiTenant());
         payloadArg.setTenantId(getSubscriber().getTenantId());
         payloadArg.setTenantDomain(getSubscriber().getTenantDomain());
@@ -370,12 +374,12 @@ public abstract class CartridgeSubscription {
         getCluster().setHostName(hostName);
     }
 
-    public Policy getAutoscalingPolicy() {
-        return autoscalingPolicy;
+    public String getAutoscalingPolicyName() {
+        return autoscalingPolicyName;
     }
 
-    public void setAutoscalingPolicy(Policy autoscalingPolicy) {
-        this.autoscalingPolicy = autoscalingPolicy;
+    public void setAutoscalingPolicyName(String autoscalingPolicyName) {
+        this.autoscalingPolicyName = autoscalingPolicyName;
     }
 
     public void setSubscriber(Subscriber subscriber) {
@@ -438,4 +442,19 @@ public abstract class CartridgeSubscription {
         this.cluster = cluster;
     }
 
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
+    }
+
+    public void setDeploymentPolicyName(String deploymentPolicyName) {
+        this.deploymentPolicyName = deploymentPolicyName;
+    }
+
+    public String getServiceStatus() {
+        return serviceStatus;
+    }
+
+    public void setServiceStatus(String serviceStatus) {
+        this.serviceStatus = serviceStatus;
+    }
 }

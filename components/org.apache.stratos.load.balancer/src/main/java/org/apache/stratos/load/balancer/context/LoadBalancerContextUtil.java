@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
@@ -33,41 +32,50 @@ public class LoadBalancerContextUtil {
     private static final Log log = LogFactory.getLog(LoadBalancerContextUtil.class);
 
     public static void addClusterToLbContext(Cluster cluster) {
-        // Add cluster to Map<ClusterId, Cluster>
-        LoadBalancerContext.getInstance().addCluster(cluster);
+        if (cluster == null)
+            return;
+
+        // Add cluster to ClusterIdClusterMap
+        LoadBalancerContext.getInstance().getClusterIdClusterMap().addCluster(cluster);
 
         Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
-        if (service.getServiceType() == ServiceType.SingleTenant) {
-            // Add cluster to SingleTenantClusterMap
-            for (String hostName : cluster.getHostNames()) {
-                if (!LoadBalancerContext.getInstance().singleTenantClusterExists((hostName))) {
-                    LoadBalancerContext.getInstance().addSingleTenantCluster(hostName, cluster);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster added to single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
-                    }
+        if (service == null) {
+            throw new RuntimeException(String.format("Service not found: [cluster] %s", cluster.getClusterId()));
+        }
+
+        // Add cluster to HostNameClusterMap
+        for (String hostName : cluster.getHostNames()) {
+            if (!LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster((hostName))) {
+                LoadBalancerContext.getInstance().getHostNameClusterMap().addCluster(hostName, cluster);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster added to single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
                 }
             }
         }
-        // MultiTenantClusterMap is updated by tenant receiver.
     }
 
     public static void removeClusterFromLbContext(String clusterId) {
-        Cluster cluster = LoadBalancerContext.getInstance().getCluster(clusterId);
+        Cluster cluster = LoadBalancerContext.getInstance().getClusterIdClusterMap().getCluster(clusterId);
+        if (cluster == null) {
+            return;
+        }
+
         Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
-        if (service.getServiceType() == ServiceType.SingleTenant) {
-            // Remove cluster from SingleTenantClusterMap
-            for (String hostName : cluster.getHostNames()) {
-                if (LoadBalancerContext.getInstance().singleTenantClusterExists(hostName)) {
-                    LoadBalancerContext.getInstance().removeSingleTenantCluster(hostName);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster removed from single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
-                    }
+        if (service == null) {
+            throw new RuntimeException(String.format("Service not found: [cluster] %s", cluster.getClusterId()));
+        }
+
+        // Remove cluster from HostNameClusterMap
+        for (String hostName : cluster.getHostNames()) {
+            if (LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster(hostName)) {
+                LoadBalancerContext.getInstance().getHostNameClusterMap().removeCluster(hostName);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster removed from single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
                 }
             }
         }
-        // MultiTenantClusterMap is updated by tenant receiver.
 
-        // Remove cluster from Map<ClusterId,Cluster>
-        LoadBalancerContext.getInstance().removeCluster(clusterId);
+        // Remove cluster from ClusterIdClusterMap
+        LoadBalancerContext.getInstance().getClusterIdClusterMap().removeCluster(clusterId);
     }
 }

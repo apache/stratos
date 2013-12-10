@@ -102,8 +102,8 @@ public class LoadBalancerServiceComponent {
     protected void activate(ComponentContext ctxt) {
         try {
             // Register endpoint deployer
-            SynapseEnvironmentService synEnvService = LoadBalancerContext.getInstance().getSynapseEnvironmentService(
-                    MultitenantConstants.SUPER_TENANT_ID);
+            SynapseEnvironmentService synEnvService = LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
+                    .getSynapseEnvironmentService(MultitenantConstants.SUPER_TENANT_ID);
             registerDeployer(LoadBalancerContext.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
 
@@ -178,7 +178,7 @@ public class LoadBalancerServiceComponent {
     protected void deactivate(ComponentContext context) {
         try {
             Set<Map.Entry<Integer, SynapseEnvironmentService>> entrySet = LoadBalancerContext
-                    .getInstance().getTenantIdSynapseEnvironmentServiceMap().entrySet();
+                    .getInstance().getTenantIdSynapseEnvironmentServiceMap().getTenantIdSynapseEnvironmentServiceMap().entrySet();
             for (Map.Entry<Integer, SynapseEnvironmentService> entry : entrySet) {
                 unregisterDeployer(entry.getValue().getConfigurationContext()
                         .getAxisConfiguration(), entry.getValue()
@@ -277,11 +277,11 @@ public class LoadBalancerServiceComponent {
     protected void setSynapseEnvironmentService(SynapseEnvironmentService synapseEnvironmentService) {
         boolean alreadyCreated = LoadBalancerContext.getInstance()
                 .getTenantIdSynapseEnvironmentServiceMap()
-                .containsKey(synapseEnvironmentService.getTenantId());
+                .containsSynapseEnvironmentService(synapseEnvironmentService.getTenantId());
 
-        LoadBalancerContext.getInstance().addSynapseEnvironmentService(
-                synapseEnvironmentService.getTenantId(),
-                synapseEnvironmentService);
+        LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
+                .addSynapseEnvironmentService(synapseEnvironmentService.getTenantId(),
+                        synapseEnvironmentService);
         if (activated) {
             if (!alreadyCreated) {
                 try {
@@ -306,7 +306,7 @@ public class LoadBalancerServiceComponent {
      */
     protected void unsetSynapseEnvironmentService(
             SynapseEnvironmentService synapseEnvironmentService) {
-        LoadBalancerContext.getInstance().removeSynapseEnvironmentService(
+        LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap().removeSynapseEnvironmentService(
                 synapseEnvironmentService.getTenantId());
     }
 
@@ -356,13 +356,15 @@ public class LoadBalancerServiceComponent {
             SynapseRegistrationsService synapseRegistrationsService) {
         int tenantId = synapseRegistrationsService.getTenantId();
         if (LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
-                .containsKey(tenantId)) {
+                .containsSynapseEnvironmentService(tenantId)) {
             SynapseEnvironment env = LoadBalancerContext.getInstance()
+                    .getTenantIdSynapseEnvironmentServiceMap()
                     .getSynapseEnvironmentService(tenantId)
                     .getSynapseEnvironment();
 
-            LoadBalancerContext.getInstance().removeSynapseEnvironmentService(
-                    synapseRegistrationsService.getTenantId());
+            LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
+                    .removeSynapseEnvironmentService(
+                            synapseRegistrationsService.getTenantId());
 
             AxisConfiguration axisConfig = synapseRegistrationsService
                     .getConfigurationContext().getAxisConfiguration();

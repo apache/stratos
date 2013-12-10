@@ -47,7 +47,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/AutoScalerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.autoscaler.stub -ns2p http://policy.deployment.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.deployment.policy,http://model.policy.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.policy.model,http://exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.exception,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.deployment.partition"/>
+                                    <arg line="-uri src/main/resources/AutoScalerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.autoscaler.stub -ns2p http://policy.deployment.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.deployment.policy,http://model.policy.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.policy.model,http://exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.exception,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.deployment.partition,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.pojo,http://partition.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.partition"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -93,6 +93,9 @@
                             org.apache.stratos.autoscaler.exception.*; version=${project.version},
 			    org.apache.stratos.cloud.controller.deployment.*; version=${project.version}
                         </Export-Package>
+			<Private-Package>
+			    org.apache.stratos.cloud.controller.deployment.partition.*; version=${project.version}
+			</Private-Package>
                         <Import-Package>
                             *;resolution:=optional
                         </Import-Package>
