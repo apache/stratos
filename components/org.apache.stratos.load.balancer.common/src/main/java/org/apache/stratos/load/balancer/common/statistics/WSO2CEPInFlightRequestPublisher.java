@@ -46,7 +46,7 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
             // Payload definition
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("partition_id", AttributeType.STRING));
-            payloadData.add(new Attribute("in_flight_requests", AttributeType.INT));
+            payloadData.add(new Attribute("in_flight_request_count", AttributeType.INT));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         }

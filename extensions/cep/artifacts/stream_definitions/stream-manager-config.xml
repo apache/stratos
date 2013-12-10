@@ -9,7 +9,8 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="in_flight_requests" type="int"/>
+             <property name="partition_id" type="String"/>
+             <property name="in_flight_request_count" type="int"/>
          </payloadData>
      </streamDefinition> 
 
