@@ -326,7 +326,7 @@ public class ServiceUtils {
     public static PartitionGroup[] getPartitionGroups (String deploymentPolicyId)
             throws RestAPIException{
 
-        org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] partitionGroups = null;
+        org.apache.stratos.autoscaler.partition.PartitionGroup [] partitionGroups = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
