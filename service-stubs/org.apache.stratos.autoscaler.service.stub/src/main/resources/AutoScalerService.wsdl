@@ -5,6 +5,13 @@
             <xs:complexType name="PartitionValidationException">
                 <xs:sequence/>
             </xs:complexType>
+            <xs:complexType name="NonExistingLBException">
+                <xs:complexContent>
+                    <xs:extension base="xs:RuntimeException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax214="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax217="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
             <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
@@ -36,8 +43,7 @@
             <xs:element name="getPartitionsOfDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="depPolicy" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="partitonGroupId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -137,6 +143,20 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax217:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoScalerServiceNonExistingLBException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingLBException" nillable="true" type="ax23:NonExistingLBException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="checkLBExistence">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -321,6 +341,12 @@
     <wsdl:message name="AutoScalerServicePartitionValidationException">
         <wsdl:part name="parameters" element="ns:AutoScalerServicePartitionValidationException"/>
     </wsdl:message>
+    <wsdl:message name="checkLBExistenceRequest">
+        <wsdl:part name="parameters" element="ns:checkLBExistence"/>
+    </wsdl:message>
+    <wsdl:message name="AutoScalerServiceNonExistingLBException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingLBException"/>
+    </wsdl:message>
     <wsdl:message name="getAllAvailablePartitionsRequest">
         <wsdl:part name="parameters" element="ns:getAllAvailablePartitions"/>
     </wsdl:message>
@@ -382,6 +408,10 @@
             <wsdl:input message="ns:getValidDeploymentPoliciesforCartridgeRequest" wsaw:Action="urn:getValidDeploymentPoliciesforCartridge"/>
             <wsdl:output message="ns:getValidDeploymentPoliciesforCartridgeResponse" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeResponse"/>
             <wsdl:fault message="ns:AutoScalerServicePartitionValidationException" name="AutoScalerServicePartitionValidationException" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeAutoScalerServicePartitionValidationException"/>
+        </wsdl:operation>
+        <wsdl:operation name="checkLBExistence">
+            <wsdl:input message="ns:checkLBExistenceRequest" wsaw:Action="urn:checkLBExistence"/>
+            <wsdl:fault message="ns:AutoScalerServiceNonExistingLBException" name="AutoScalerServiceNonExistingLBException" wsaw:Action="urn:checkLBExistenceAutoScalerServiceNonExistingLBException"/>
         </wsdl:operation>
         <wsdl:operation name="getAllAvailablePartitions">
             <wsdl:input message="ns:getAllAvailablePartitionsRequest" wsaw:Action="urn:getAllAvailablePartitions"/>
@@ -475,6 +505,15 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="checkLBExistence">
+            <soap:operation soapAction="urn:checkLBExistence" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceNonExistingLBException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
@@ -590,6 +629,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="checkLBExistence">
+            <soap12:operation soapAction="urn:checkLBExistence" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceNonExistingLBException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
             <wsdl:input>
@@ -701,6 +749,12 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="checkLBExistence">
+            <http:operation location="checkLBExistence"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <http:operation location="getAutoscalingPolicy"/>
             <wsdl:input>
@@ -749,22 +803,22 @@
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
         <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://10.144.132.229:9766/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://10.100.1.154:9766/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://10.144.132.229:9446/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://10.100.1.154:9446/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://10.144.132.229:9446/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://10.100.1.154:9446/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://10.144.132.229:9766/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://10.100.1.154:9766/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://10.144.132.229:9766/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
+            <http:address location="http://10.100.1.154:9766/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://10.144.132.229:9446/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
+            <http:address location="https://10.100.1.154:9446/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
