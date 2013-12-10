@@ -40,6 +40,7 @@ import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.rest.endpoint.Constants;
+import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -54,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -61,11 +63,14 @@ public class ServiceUtils {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
 
-    static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean) throws RestAPIException {
+    static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+        String userName, String tenantDomain) throws RestAPIException {
 
         log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        
         if (cloudControllerServiceClient != null) {
 
             CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
@@ -111,6 +116,9 @@ public class ServiceUtils {
                     return;
                 }
                 
+                // retrieve lb Cartridge info
+                CartridgeInfo cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbConfig.getType());
+                
                 properties = lbConfig.getProperties();
                 
                 for (org.apache.stratos.cloud.controller.pojo.Property prop : 
@@ -136,8 +144,6 @@ public class ServiceUtils {
                         String[] clusterIds = clusterIdsVal.split(",");
 
                         for (String clusterId : clusterIds) {
-                            AutoscalerServiceClient autoscalerServiceClient =
-                                                                              getAutoscalerServiceClient();
                             if (autoscalerServiceClient != null) {
                                 try {
                                     autoscalerServiceClient.checkLBExistence(clusterId);
@@ -147,6 +153,7 @@ public class ServiceUtils {
                                 }
                             }
                         }
+                        return;
 
                     } else if (Constants.DEFAULT_LOAD_BALANCER.equals(prop.getName())) {
                         if ("true".equals(prop.getValue())) {
@@ -154,8 +161,6 @@ public class ServiceUtils {
                                 log.debug("This cartridge uses default load balancer. " +
                                           "[Type] " + cartridgeType);
                             }
-                            AutoscalerServiceClient autoscalerServiceClient =
-                                                                              getAutoscalerServiceClient();
                             if (autoscalerServiceClient != null) {
                                 try {
                                     // get the valid policies of this cartridge
@@ -168,7 +173,10 @@ public class ServiceUtils {
                                             intersection(cartridgeDepPolicies, lbCartridgeDepPolicies);
                                     
                                     for (DeploymentPolicy deploymentPolicy : validDepPolicies) {
-                                        subscribe(cartridgeType, alias, policy, repoURL, privateRepo, repoUsername, repoPassword, dataCartridgeType, dataCartridgeAlias, configurationContext, userName, tenantDomain)
+                                        String alias = "lb"+new Random().nextInt();
+                                        subscribe(cartridgeType, alias, cartridgeInfo.getDefaultAutoscalingPolicy(), 
+                                                  deploymentPolicy.getId(), null, false, null, null, null, null, 
+                                                  ctxt, userName, tenantDomain);
                                     }
                                     
                                 } catch (Exception ex) {
@@ -177,7 +185,37 @@ public class ServiceUtils {
                                 }
                             }
                             return;
-                        }
+                        } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(prop.getName())) {
+                            if ("true".equals(prop.getValue())) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("This cartridge uses a service aware load balancer. " +
+                                              "[Type] " + cartridgeType);
+                                }
+                                if (autoscalerServiceClient != null) {
+                                    try {
+                                        // get the valid policies of this cartridge
+                                        DeploymentPolicy[] cartridgeDepPolicies = 
+                                                autoscalerServiceClient.getDeploymentPolicies(cartridgeType);
+                                        DeploymentPolicy[] lbCartridgeDepPolicies = 
+                                                autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
+                                        // valid deployment policies for this cartridge
+                                        DeploymentPolicy[] validDepPolicies = 
+                                                intersection(cartridgeDepPolicies, lbCartridgeDepPolicies);
+                                        
+                                        for (DeploymentPolicy deploymentPolicy : validDepPolicies) {
+                                            String alias = "lb"+new Random().nextInt();
+                                            subscribe(cartridgeType, alias, cartridgeInfo.getDefaultAutoscalingPolicy(), 
+                                                      deploymentPolicy.getId(), null, false, null, null, null, null, 
+                                                      ctxt, userName, tenantDomain);
+                                        }
+                                        
+                                    } catch (Exception ex) {
+                                        // we don't need to throw the error here.
+                                        log.error(ex.getMessage(), ex);
+                                    }
+                                }
+                                return;
+                            }
                     }
                 }
 
@@ -205,7 +243,7 @@ public class ServiceUtils {
         }
         return commonPolicies.toArray(new DeploymentPolicy[0]);
     }
-
+    
     static void undeployCartridge (String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();

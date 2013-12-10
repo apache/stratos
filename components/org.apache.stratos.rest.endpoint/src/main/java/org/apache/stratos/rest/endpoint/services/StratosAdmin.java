@@ -77,7 +77,8 @@ public class StratosAdmin extends AbstractAdmin {
     public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
 
-        ServiceUtils.deployCartridge(cartridgeDefinitionBean);
+        ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
+                                     getTenantDomain());
     }
 
     @DELETE

@@ -46,6 +46,8 @@ public class PojoConverter {
         cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
         cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
+        cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
+        
         //deployment information
         if(cartridgeDefinitionBean.deployment != null) {
             cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
