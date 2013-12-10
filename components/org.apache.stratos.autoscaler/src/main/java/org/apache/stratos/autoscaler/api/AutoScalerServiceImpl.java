@@ -76,9 +76,8 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	}
 
 	@Override
-	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException {
+		return PolicyManager.getInstance().deployAutoscalePolicy(aspolicy);
 	}
 
 	@Override

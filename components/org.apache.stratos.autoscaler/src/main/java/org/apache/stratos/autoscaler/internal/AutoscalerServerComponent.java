@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
@@ -120,9 +121,16 @@ public class AutoscalerServerComponent {
 			Iterator<AutoscalePolicy> asItr = asPolicies.iterator();
 			while (asItr.hasNext()) {
 				AutoscalePolicy asPolicy = asItr.next();
-				PolicyManager.getInstance().addASPolicyToInformationModel(
-						asPolicy);
+				PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);
 			}
+			
+			ArrayList<DeploymentPolicy> depPolicies = this.retreiveDeploymentPolicies();
+			Iterator<DeploymentPolicy> depItr = depPolicies.iterator();
+			while (depItr.hasNext()) {
+				DeploymentPolicy depPolicy = depItr.next();
+				PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
+			}
+			
 			if (log.isInfoEnabled()) {
 				log.info("Autoscaler Server Component activated");
 			}
@@ -170,7 +178,7 @@ public class AutoscalerServerComponent {
 								return null;
 							}
 						} catch (Exception e) {
-							String msg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+							String msg = "Unable to retrieve data from Registry. Hence, any historical partitions will not get reflected.";
 							log.warn(msg, e);
 						}
 					}
@@ -198,13 +206,41 @@ public class AutoscalerServerComponent {
 								return null;
 							}
 						} catch (Exception e) {
-							String msg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+							String msg = "Unable to retrieve data from Registry. Hence, any historical autoscaler policies will not get reflected.";
 							log.warn(msg, e);
 						}
 					}
 				}
 			}
 			return asPolicyList;	        
+	}
+	
+	private ArrayList<DeploymentPolicy> retreiveDeploymentPolicies(){
+		ArrayList<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
+		 String [] depPolicyResourceList = (String [])registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE);
+		 
+	        if (depPolicyResourceList != null) {
+				for (String resourcePath : depPolicyResourceList) {
+					Object asPolicy = registryManager.retrieve(resourcePath);
+
+					if (asPolicy != null) {
+						try {
+
+							Object dataObj = Deserializer
+									.deserializeFromByteArray((byte[]) asPolicy);
+							if (dataObj instanceof DeploymentPolicy) {
+								depPolicyList.add((DeploymentPolicy) dataObj);
+							} else {
+								return null;
+							}
+						} catch (Exception e) {
+							String msg = "Unable to retrieve data from Registry. Hence, any historical deployment policies will not get reflected.";
+							log.warn(msg, e);
+						}
+					}
+				}
+			}
+			return depPolicyList;	        
 	}
 	
 	

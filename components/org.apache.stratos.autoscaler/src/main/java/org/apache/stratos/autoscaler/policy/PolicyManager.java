@@ -68,9 +68,10 @@ public class PolicyManager {
     }
     
     // Add the policy to information model and persist.
-	public void deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {	
+	public boolean deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {	
 		this.addASPolicyToInformationModel(policy);
-		this.persitASPolicy(asResourcePath+policy.getId(), policy);		
+		this.persitASPolicy(asResourcePath+ policy.getId(), policy);	
+		return true;
 	}
 	
 	// Add the policy to information model and persist.
@@ -102,7 +103,7 @@ public class PolicyManager {
 	
 	private void persitDeploymentPolicy(String depResourcePath, DeploymentPolicy policy){		
 		try {
-			RegistryManager.getInstance().persist(policy, asResourcePath);
+			RegistryManager.getInstance().persist(policy, depResourcePath);
 		} catch (RegistryException e) {
 			throw new AutoScalerException(e);
 		}
