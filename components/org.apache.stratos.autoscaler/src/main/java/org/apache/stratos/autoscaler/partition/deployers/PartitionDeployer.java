@@ -84,7 +84,7 @@ public class PartitionDeployer extends AbstractDeployer {
             while (it.hasNext()) {
                 Partition partition = it.next();
                 try {
-                    PartitionManager.getInstance().addPartition(partition);                  
+                    PartitionManager.getInstance().deployNewPartitoion(partition);                  
                 } catch (Exception e) {
                     String msg =
                                  "Invalid partition: " + partition.getId() + " in file: " +

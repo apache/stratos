@@ -1,6 +1,7 @@
 package org.apache.stratos.autoscaler.interfaces;
 
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -12,7 +13,7 @@ public interface AutoScalerServiceInterface {
 	public boolean addPartition(Partition partition);
 	
 	public DeploymentPolicy[] getAllDeploymentPolicies();
-	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy);
+	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
 	
 	public AutoscalePolicy[] getAllAutoScalingPolicy();
 	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy);
