@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.listener.InstanceStatusListener;
+import org.apache.stratos.adc.mgt.listener.TopologyEventListner;
 import org.apache.stratos.adc.mgt.publisher.TenantEventPublisher;
 import org.apache.stratos.adc.mgt.publisher.TenantSynchronizerTaskScheduler;
 import org.apache.stratos.adc.mgt.utils.CartridgeConfigFileReader;
@@ -96,6 +97,12 @@ public class ADCManagementServerComponent {
             subscriber.setMessageListener(new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
+
+            //initializing the topology event subscriber
+            TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
+            topologyTopicSubscriber.setMessageListener(new TopologyEventListner());
+            Thread topologyTopicSubscriberThread = new Thread(topologyTopicSubscriber);
+            topologyTopicSubscriberThread.start();
 
             //Starting Topology Receiver
             TopologyReceiver topologyReceiver = new TopologyReceiver();
