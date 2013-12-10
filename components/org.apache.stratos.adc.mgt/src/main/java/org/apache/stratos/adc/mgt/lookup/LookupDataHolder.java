@@ -23,16 +23,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
-import java.util.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class LookupDataHolder {
+public class LookupDataHolder implements Serializable {
 
     private static final Log log = LogFactory.getLog(LookupDataHolder.class);
 
     private Map<Integer, SubscriptionAliasToCartridgeSubscriptionMap> tenantIdToCartridgeSubscriptionCache;
-    private Map<String, CartridgeSubscription> clusterItToCartridgeSubscrptionMatch;
+    //private Map<String, CartridgeSubscription> clusterItToCartridgeSubscrptionMap;
     //private static LookupDataHolder lookupDataHolder;
+    private ClusterIdToCartridgeSubscriptionMap clusterIdToCartridgeSubscriptionMap;
 
     //locks
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -41,7 +45,8 @@ public class LookupDataHolder {
 
     public LookupDataHolder () {
         tenantIdToCartridgeSubscriptionCache = new HashMap<Integer, SubscriptionAliasToCartridgeSubscriptionMap>();
-        clusterItToCartridgeSubscrptionMatch = new HashMap<String, CartridgeSubscription>();
+        //clusterItToCartridgeSubscrptionMap = new HashMap<String, CartridgeSubscription>();
+        clusterIdToCartridgeSubscriptionMap = new ClusterIdToCartridgeSubscriptionMap();
     }
 
     /*public static LookupDataHolder getInstance ()  {
@@ -77,10 +82,31 @@ public class LookupDataHolder {
                 aliasToSubscriptionMap.addSubscription(subscriptionAlias, cartridgeSubscription);
             }
 
-            if(clusterItToCartridgeSubscrptionMatch.put(cartridgeSubscription.getClusterDomain(), cartridgeSubscription)
-                    != null) {
-                log.info("Overwrote the CartridgeSubscription value for cluster Id " +
-                        cartridgeSubscription.getClusterDomain());
+            clusterIdToCartridgeSubscriptionMap.addSubscription(cartridgeSubscription.getClusterDomain(), cartridgeSubscription);
+
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public void addCartridgeSubscriptions (int tenantId, SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap) {
+
+    }
+
+    private void addSubscriptions (int tenantId, SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap) {
+
+        writeLock.lock();
+
+        try {
+            if(tenantIdToCartridgeSubscriptionCache.put(tenantId, aliasToSubscriptionMap) != null) {
+                log.info("Existing SubscriptionAliasToCartridgeSubscriptionMap instance overwritten for tenant " +
+                        tenantId);
+            }
+
+            Collection<CartridgeSubscription> cartridgeSubscriptions = aliasToSubscriptionMap.getCartridgeSubscriptions();
+            for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                clusterIdToCartridgeSubscriptionMap.addSubscription(cartridgeSubscription.getCluster().getClusterDomain(),
+                        cartridgeSubscription);
             }
 
         } finally {
@@ -110,8 +136,37 @@ public class LookupDataHolder {
                 log.info("No SubscriptionAliasToCartridgeSubscriptionMap entry found for tenant Id " + tenantId);
             }
 
-            if(clusterItToCartridgeSubscrptionMatch.remove(clusterId) != null) {
-                log.info("No CartridgeSubscription entry found for cluster Id " + clusterId);
+            clusterIdToCartridgeSubscriptionMap.removeSubscription(clusterId);
+
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public void removeCartridgeSubscriptions (int tenantId) {
+        removeSubscriptions(tenantId);
+    }
+
+    private void removeSubscriptions (int tenantId) {
+
+        writeLock.lock();
+
+        try {
+            SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap = tenantIdToCartridgeSubscriptionCache.
+                    get(tenantId);
+
+            if(aliasToSubscriptionMap != null) {
+                //remove the subscriptions referenced by cluster domain for this tenant
+                Collection<CartridgeSubscription> cartridgeSubscriptions = aliasToSubscriptionMap.getCartridgeSubscriptions();
+
+                for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                    clusterIdToCartridgeSubscriptionMap.removeSubscription(cartridgeSubscription.getClusterDomain());
+                }
+                //remove the map for this tenant ID
+                tenantIdToCartridgeSubscriptionCache.remove(tenantId);
+
+            } else {
+                log.info("No SubscriptionAliasToCartridgeSubscriptionMap entry found for tenant Id " + tenantId);
             }
 
         } finally {
@@ -154,7 +209,7 @@ public class LookupDataHolder {
 
         readLock.lock();
         try {
-            return clusterItToCartridgeSubscrptionMatch.get(clusterId);
+            return clusterIdToCartridgeSubscriptionMap.getCartridgeSubscription(clusterId);
 
         } finally {
             readLock.unlock();
@@ -194,45 +249,6 @@ public class LookupDataHolder {
 
         } finally {
              readLock.unlock();
-        }
-    }
-
-    private class SubscriptionAliasToCartridgeSubscriptionMap {
-
-        private Map<String, CartridgeSubscription> subscriptionAliasToCartridgeSubscriptionMap;
-
-        public SubscriptionAliasToCartridgeSubscriptionMap () {
-            subscriptionAliasToCartridgeSubscriptionMap = new HashMap<String, CartridgeSubscription>();
-        }
-
-        public Map<String, CartridgeSubscription> getSubscriptionAliasToCartridgeSubscriptionMap() {
-            return subscriptionAliasToCartridgeSubscriptionMap;
-        }
-
-        public void addSubscription(String subscriptionAlias, CartridgeSubscription cartridgeSubscription) {
-
-            if(subscriptionAliasToCartridgeSubscriptionMap.put(subscriptionAlias, cartridgeSubscription) != null) {
-                log.info("Overwrote the previous CartridgeSubscription value for subscription alias" + subscriptionAlias);
-            }
-        }
-
-        public boolean isEmpty () {
-            return subscriptionAliasToCartridgeSubscriptionMap.isEmpty();
-        }
-
-        public void removeSubscription (String subscriptionAlias) {
-
-            if(subscriptionAliasToCartridgeSubscriptionMap.remove(subscriptionAlias) == null) {
-                log.info("No CartridgeSubscription entry found for subscription alias " + subscriptionAlias);
-            }
-        }
-
-        public CartridgeSubscription getCartridgeSubscription (String cartridgeSubscriptionAlias) {
-            return subscriptionAliasToCartridgeSubscriptionMap.get(cartridgeSubscriptionAlias);
-        }
-
-        public Collection<CartridgeSubscription> getCartridgeSubscriptions () {
-            return subscriptionAliasToCartridgeSubscriptionMap.values();
         }
     }
 }

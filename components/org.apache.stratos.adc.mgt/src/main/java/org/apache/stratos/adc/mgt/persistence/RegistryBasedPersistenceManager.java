@@ -19,35 +19,107 @@
 
 package org.apache.stratos.adc.mgt.persistence;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
-import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-
-import java.util.List;
+import org.apache.stratos.adc.mgt.lookup.ClusterIdToCartridgeSubscriptionMap;
+import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
+import org.apache.stratos.adc.mgt.registry.RegistryManager;
+import org.apache.stratos.adc.mgt.utils.Deserializer;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 public class RegistryBasedPersistenceManager extends PersistenceManager {
 
+    private static final Log log = LogFactory.getLog(RegistryBasedPersistenceManager.class);
+
     @Override
-    public void persistCartridgeSubscription(CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void persistCartridgeSubscriptions(int tenantId, SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap) throws PersistenceManagerException {
+
+        try {
+            RegistryManager.getInstance().persistAliastoSubscriptionMap(tenantId, aliasToSubscriptionMap);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (ADCException e) {
+            throw new PersistenceManagerException(e);
+        }
     }
 
     @Override
-    public void removeCartridgeSubscription(int tenantId, String alias) throws PersistenceManagerException {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public SubscriptionAliasToCartridgeSubscriptionMap retrieveCartridgeSubscriptions(int tenantId) throws PersistenceManagerException {
+
+        Object aliasToSubscriptionMapObj;
+
+        try {
+            aliasToSubscriptionMapObj = RegistryManager.getInstance().getAliastoSubscriptionMap(tenantId);
+
+        } catch (ADCException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (aliasToSubscriptionMapObj != null) {
+            try {
+                Object dataObj = Deserializer
+                        .deserializeFromByteArray((byte[]) aliasToSubscriptionMapObj);
+                if(dataObj instanceof SubscriptionAliasToCartridgeSubscriptionMap) {
+                    return (SubscriptionAliasToCartridgeSubscriptionMap) dataObj;
+                } else {
+                    return null;
+                }
+
+            } catch (Exception e) {
+                String errorMsg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+                log.warn(errorMsg, e);
+            }
+        }
+
+        return null;
     }
 
     @Override
-    public CartridgeSubscription getCartridgeSubscription(int tenantId, String alias) throws PersistenceManagerException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void persistCartridgeSubscriptions(String clusterId, ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap) throws PersistenceManagerException {
+
+        try {
+            RegistryManager.getInstance().persistClusterIdToSubscriptionMap(clusterIdToSubscriptionMap);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (ADCException e) {
+            throw new PersistenceManagerException(e);
+        }
     }
 
     @Override
-    public List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId) throws PersistenceManagerException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public ClusterIdToCartridgeSubscriptionMap retrieveCartridgeSubscriptions(String clusterId) throws PersistenceManagerException {
 
-    @Override
-    public CartridgeSubscription getCartridgeSubscription(String clusterDomain) throws PersistenceManagerException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Object clusterIdToSubscriptionMapObj;
+
+        try {
+            clusterIdToSubscriptionMapObj = RegistryManager.getInstance().getClusterIdtoSubscriptionMap();
+
+        } catch (ADCException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (clusterIdToSubscriptionMapObj != null) {
+            try {
+                Object dataObj = Deserializer
+                        .deserializeFromByteArray((byte[]) clusterIdToSubscriptionMapObj);
+                if(dataObj instanceof ClusterIdToCartridgeSubscriptionMap) {
+                    return (ClusterIdToCartridgeSubscriptionMap) dataObj;
+                } else {
+                    return null;
+                }
+
+            } catch (Exception e) {
+                String errorMsg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+                log.warn(errorMsg, e);
+            }
+        }
+
+        return null;
     }
 }

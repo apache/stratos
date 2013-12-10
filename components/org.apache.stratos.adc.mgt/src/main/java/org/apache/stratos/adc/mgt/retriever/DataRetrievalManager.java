@@ -19,8 +19,11 @@
 
 package org.apache.stratos.adc.mgt.retriever;
 
+import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
+import org.apache.stratos.adc.mgt.lookup.ClusterIdToCartridgeSubscriptionMap;
 import org.apache.stratos.adc.mgt.lookup.LookupDataHolder;
+import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
 import org.apache.stratos.adc.mgt.persistence.PersistenceManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.jgroups.logging.Log;
@@ -46,46 +49,45 @@ public class DataRetrievalManager {
         cartridgeSubscriptionUpdateThreadPool = Executors.newCachedThreadPool();
     }
 
-    public CartridgeSubscription getCartridgeSubscription (int tenantId, String subscriptionAlias)
-            throws PersistenceManagerException {
+    public CartridgeSubscription getCartridgeSubscriptionByAlias (int tenantId, String subscriptionAlias)
+            throws PersistenceManagerException, ADCException {
 
         CartridgeSubscription cartridgeSubscription = null;
 
         if(lookupDataHolder != null) {
-            //look in the local cache
-            cartridgeSubscription = lookupDataHolder.getCartridgeSubscription(tenantId, subscriptionAlias);
+            cartridgeSubscription = lookupDataHolder.getCartridgeSubscription(subscriptionAlias);
         }
-        //if not found in the local cache, look in the Persistence Manager
-        if (cartridgeSubscription == null) {
-            persistenceManager.getCartridgeSubscription(tenantId, subscriptionAlias);
-        } else {
-            if(log.isDebugEnabled()) {
-                log.debug("Cartridge subscription entry for tenant Id " + tenantId + ", subscription alias " +
-                        subscriptionAlias + " found in the local cache");
+        else {
+            //look in the persistence manager
+            SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap =
+                    persistenceManager.retrieveCartridgeSubscriptions(tenantId);
+
+            if(aliasToSubscriptionMap != null) {
+                cartridgeSubscription = aliasToSubscriptionMap.getCartridgeSubscription(subscriptionAlias);
+                populateLookupDataHolder(aliasToSubscriptionMap);
             }
         }
 
         return cartridgeSubscription;
     }
 
-    public CartridgeSubscription getCartridgeSubscription (String clusterId)
-            throws PersistenceManagerException {
+    public CartridgeSubscription getCartridgeSubscriptionByClusterId (String clusterId)
+            throws PersistenceManagerException, ADCException {
 
         CartridgeSubscription cartridgeSubscription = null;
 
         if(lookupDataHolder != null) {
-            //look in the local cache
             cartridgeSubscription = lookupDataHolder.getCartridgeSubscription(clusterId);
         }
-        //if not found in the local cache, look in the Persistence Manager
-        if (cartridgeSubscription == null) {
-            persistenceManager.getCartridgeSubscription(clusterId);
-
-        } else {
-            if(log.isDebugEnabled()) {
-                log.debug("Cartridge subscription entry for cluster domain " + clusterId +
-                        " found in the local cache");
+        else {
+            //look in the persistence manager
+            ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap =
+                    persistenceManager.retrieveCartridgeSubscriptions(clusterId);
+            if(clusterIdToSubscriptionMap != null) {
+                cartridgeSubscription = clusterIdToSubscriptionMap.getCartridgeSubscription(clusterId);
+                populateLookupDataHolder(clusterIdToSubscriptionMap);
             }
+
         }
 
         return cartridgeSubscription;
@@ -101,7 +103,10 @@ public class DataRetrievalManager {
         }
         //if not found in the local cache, look in the Persistence Manager
         if (cartridgeSubscriptionCollection == null) {
-            persistenceManager.getCartridgeSubscriptions(tenantId);
+            SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap = persistenceManager.
+                    retrieveCartridgeSubscriptions(tenantId);
+            //populate the LookupDataHolder
+            populateLookupDataHolder(aliasToSubscriptionMap);
 
         } else {
             if(log.isDebugEnabled()) {
@@ -118,29 +123,51 @@ public class DataRetrievalManager {
         return cartridgeSubscriptionList;
     }
 
-    public void putCartridgeSubscription (CartridgeSubscription cartridgeSubscription) {
+    private void populateLookupDataHolder (SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap) {
 
-        cartridgeSubscriptionUpdateThreadPool.submit(new CartridgeSubscriptionUpdater(cartridgeSubscription,
+        //populate the cache
+        Collection<CartridgeSubscription> cartridgeSubscriptions = aliasToSubscriptionMap.getCartridgeSubscriptions();
+        for (CartridgeSubscription subscription : cartridgeSubscriptions) {
+            lookupDataHolder.addCartridgeSubscription(subscription.getSubscriber().getTenantId(),
+                    subscription.getAlias(),
+                    subscription);
+        }
+    }
+
+    private void populateLookupDataHolder (ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap) {
+
+        //populate the cache
+        Collection<CartridgeSubscription> cartridgeSubscriptions = clusterIdToSubscriptionMap.getCartridgeSubscriptions();
+        for (CartridgeSubscription subscription : cartridgeSubscriptions) {
+            lookupDataHolder.addCartridgeSubscription(subscription.getSubscriber().getTenantId(),
+                    subscription.getAlias(),
+                    subscription);
+        }
+    }
+
+    public void putCartridgeSubscriptions (SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap) {
+
+        cartridgeSubscriptionUpdateThreadPool.submit(new CartridgeSubscriptionUpdater(aliasToSubscriptionMap,
                 lookupDataHolder, persistenceManager));
     }
 
     private class CartridgeSubscriptionUpdater implements Runnable {
 
-        CartridgeSubscription cartridgeSubscription;
+        SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap;
         LookupDataHolder lookupDataHolder;
         PersistenceManager persistenceManager;
 
-        public CartridgeSubscriptionUpdater (CartridgeSubscription cartridgeSubscription, LookupDataHolder
-                lookupDataHolder, PersistenceManager persistenceManager) {
+        public CartridgeSubscriptionUpdater (SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap,
+                                             LookupDataHolder lookupDataHolder, PersistenceManager persistenceManager) {
 
-            this.cartridgeSubscription = cartridgeSubscription;
+            this.aliasToSubscriptionMap = aliasToSubscriptionMap;
             this.lookupDataHolder = lookupDataHolder;
             this.persistenceManager = persistenceManager;
         }
 
         public void run() {
 
-            if(lookupDataHolder != null) {
+            /*if(lookupDataHolder != null) {
                 lookupDataHolder.addCartridgeSubscription(cartridgeSubscription.getSubscriber().getTenantId(),
                         cartridgeSubscription.getAlias(), cartridgeSubscription);
             }
@@ -150,7 +177,7 @@ public class DataRetrievalManager {
             } catch (PersistenceManagerException e) {
                 String errorMsg = "Error in persisting Cartridge Subscription instance";
                 log.error(errorMsg, e);
-            }
+            }*/
         }
     }
 
