@@ -19,17 +19,26 @@
 
 package org.apache.stratos.adc.mgt.persistence;
 
-import org.apache.stratos.adc.mgt.dao.Cluster;
-import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
-import org.apache.stratos.adc.mgt.repository.Repository;
-import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-
-import java.util.List;
+import org.apache.stratos.adc.mgt.lookup.ClusterIdToCartridgeSubscriptionMap;
+import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
 
 public abstract class PersistenceManager {
 
-    public abstract void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription)
+    public abstract void persistCartridgeSubscriptions (int tenantId, SubscriptionAliasToCartridgeSubscriptionMap
+                                                                aliasToSubscriptionMap)
+            throws PersistenceManagerException;
+
+    public abstract SubscriptionAliasToCartridgeSubscriptionMap retrieveCartridgeSubscriptions (int tenantId)
+            throws PersistenceManagerException;
+
+    public abstract void persistCartridgeSubscriptions (String clusterId, ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap)
+            throws PersistenceManagerException;
+
+    public abstract ClusterIdToCartridgeSubscriptionMap retrieveCartridgeSubscriptions (String clusterId)
+            throws PersistenceManagerException;
+
+    /*public abstract void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription)
             throws PersistenceManagerException;
 
     public abstract void removeCartridgeSubscription (int tenantId, String alias)
@@ -39,6 +48,9 @@ public abstract class PersistenceManager {
             throws PersistenceManagerException;
 
     public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
+            throws PersistenceManagerException;
+
+    public abstract CartridgeSubscription getCartridgeSubscription (String clusterDomain)
             throws PersistenceManagerException;
 
     public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
@@ -75,5 +87,5 @@ public abstract class PersistenceManager {
             throws PersistenceManagerException;
 
     public abstract void updateServiceStatus (int tenantId, String cartridgeAlias, String newStatus)
-            throws PersistenceManagerException;
+            throws PersistenceManagerException;   */
 }

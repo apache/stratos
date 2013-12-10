@@ -1,6 +1,8 @@
 package org.apache.stratos.adc.mgt.dao;
 
-public class Cluster {
+import java.io.Serializable;
+
+public class Cluster implements Serializable {
 
     private int id;
     private String clusterDomain;
