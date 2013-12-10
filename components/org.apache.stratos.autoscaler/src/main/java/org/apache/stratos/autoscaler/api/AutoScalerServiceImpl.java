@@ -130,6 +130,22 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 		return depPol.getAllPartitions();
 	}
 	
+	@Override
+    public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String groupId) {
+        DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
+        if(null == depPol) {
+            return null;
+        }
+        
+        PartitionGroup group = depPol.getPartitionGroup(groupId);
+        
+        if(group == null) {
+            return null;
+        }
+        
+        return group.getPartitions();
+    }
+	
 	public void checkLBExistence(String clusterId) throws NonExistingLBException {
         List<NetworkPartitionContext> nwPartitions = partitionManager.getAllNetworkPartitions();
         boolean exist = false;
