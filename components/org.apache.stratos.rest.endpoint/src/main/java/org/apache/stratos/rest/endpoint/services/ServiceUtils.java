@@ -84,7 +84,6 @@ public class ServiceUtils {
                 // call CC
                 cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
                 
-                org.apache.stratos.cloud.controller.pojo.Property lbRefType;
                 // analyze properties and pick up, if not a LB.
                 Properties properties = cartridgeConfig.getProperties();
                 String cartridgeType = cartridgeConfig.getType();
@@ -203,7 +202,7 @@ public class ServiceUtils {
                                                 intersection(cartridgeDepPolicies, lbCartridgeDepPolicies);
                                         
                                         for (DeploymentPolicy deploymentPolicy : validDepPolicies) {
-                                            String alias = "lb"+new Random().nextInt();
+                                            String alias = "lb"+cartridgeType+new Random().nextInt();
                                             subscribe(cartridgeType, alias, cartridgeInfo.getDefaultAutoscalingPolicy(), 
                                                       deploymentPolicy.getId(), null, false, null, null, null, null, 
                                                       ctxt, userName, tenantDomain);
