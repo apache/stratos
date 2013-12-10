@@ -231,14 +231,14 @@ public class PojoConverter {
         return deploymentPolicy;
     }
 
-    private static org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] convertToCCPartitionGroup (List<PartitionGroup> partitionGroupBeans) {
+    private static org.apache.stratos.autoscaler.partition.PartitionGroup[] convertToCCPartitionGroup (List<PartitionGroup> partitionGroupBeans) {
 
-        org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] partitionGroups = new
-                org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[partitionGroupBeans.size()];
+        org.apache.stratos.autoscaler.partition.PartitionGroup[] partitionGroups = new
+                org.apache.stratos.autoscaler.partition.PartitionGroup[partitionGroupBeans.size()];
 
         for (int i = 0 ; i < partitionGroupBeans.size() ; i++) {
-            org.apache.stratos.autoscaler.partition.xsd.PartitionGroup partitionGroup = new
-                    org.apache.stratos.autoscaler.partition.xsd.PartitionGroup();
+            org.apache.stratos.autoscaler.partition.PartitionGroup partitionGroup = new
+                    org.apache.stratos.autoscaler.partition.PartitionGroup();
             partitionGroup.setId(partitionGroupBeans.get(i).id);
             partitionGroup.setPartitionAlgo(partitionGroupBeans.get(i).partitionAlgo);
 
@@ -449,7 +449,7 @@ public class PojoConverter {
         return deploymentPolicyBean;
     }
 
-    public static PartitionGroup populatePartitionGroupPojo (org.apache.stratos.autoscaler.partition.xsd.PartitionGroup
+    public static PartitionGroup populatePartitionGroupPojo (org.apache.stratos.autoscaler.partition.PartitionGroup
                                                                          partitionGroup) {
 
         PartitionGroup partitionGroupBean = new PartitionGroup();
@@ -466,7 +466,7 @@ public class PojoConverter {
         return partitionGroupBean;
     }
 
-    public static PartitionGroup [] populatePartitionGroupPojos (org.apache.stratos.autoscaler.partition.xsd.PartitionGroup[] partitionGroups) {
+    public static PartitionGroup [] populatePartitionGroupPojos (org.apache.stratos.autoscaler.partition.PartitionGroup[] partitionGroups) {
 
         PartitionGroup[] partitionGroupsBeans;
         if(partitionGroups == null) {
