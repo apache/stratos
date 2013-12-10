@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
 
-    private static final String DATA_STREAM_NAME = "stratos.lb.stats";
+    private static final String DATA_STREAM_NAME = "stratos.lb.in.flight.req.count";
     private static final String VERSION = "1.0.0";
 
     private static StreamDefinition createStreamDefinition() {

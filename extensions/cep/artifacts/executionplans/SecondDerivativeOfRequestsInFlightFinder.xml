@@ -7,7 +7,7 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="lbStats3" name="stratos.lb.stats" version="1.0.0"/>
+    <stream as="lbStats3" name="stratos.lb.in.flight.req.count" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[define partition lbStats1Partition by cluster_id; 
 from lbStats3#window.stratos:secondDerivative(1 min, in_flight_request_count)
