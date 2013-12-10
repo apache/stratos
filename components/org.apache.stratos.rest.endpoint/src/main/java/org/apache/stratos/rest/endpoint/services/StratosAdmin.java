@@ -27,6 +27,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
@@ -289,6 +290,37 @@ public class StratosAdmin extends AbstractAdmin {
             log.error(exception);
             return null;
         }
+    }
+
+    @GET
+    @Path("/cluster")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getClustersForTenant() throws ADCException {
+
+        return ServiceUtils.getClustersForTenant(getConfigContext());
+    }
+
+    @GET
+    @Path("/cluster/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getClusters(@PathParam("cartridgeType") String cartridgeType) throws ADCException {
+
+        return ServiceUtils.getClustersForTenantAndCartridgeType(getConfigContext(), cartridgeType);
+    }
+
+    @GET
+    @Path("/cluster/{cartridgeType}/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster getCluster(@PathParam("cartridgeType") String cartridgeType,
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+
+        return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
     }
 
     @POST

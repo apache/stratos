@@ -31,32 +31,27 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.topology.model.TopologyClusterModel;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.Constants;
-import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class ServiceUtils {
@@ -785,6 +780,33 @@ public class ServiceUtils {
 
         return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
 
+    }
+
+
+    public static Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
+
+        return TopologyClusterModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+                ,cartridgeType , subscriptionAlias);
+    }
+
+    public static Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
+
+        Set<Cluster> clusterSet = TopologyClusterModel.getInstance().getClusters(ApplicationManagementUtil.
+                getTenantId(configurationContext));
+
+        return (clusterSet != null && clusterSet.size() > 0 ) ?
+                clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
+
+    }
+
+    public static Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
+                                                                  String cartridgeType) {
+
+        Set<Cluster> clusterSet = TopologyClusterModel.getInstance().getClusters(ApplicationManagementUtil.
+                getTenantId(configurationContext), cartridgeType);
+
+        return (clusterSet != null && clusterSet.size() > 0 ) ?
+                clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
     }
 
     static void unsubscribe(String alias, String tenantDomain) throws ADCException, NotSubscribedException {

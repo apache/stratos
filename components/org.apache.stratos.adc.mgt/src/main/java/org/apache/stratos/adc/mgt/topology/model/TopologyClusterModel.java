@@ -23,18 +23,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TopologyClusterModel {
 
     private static final Log log = LogFactory.getLog(TopologyClusterModel.class);
-    private Map<TenantIdAndAliasTopologyKey, Cluster> tenantIdAndAliasTopologyKeyToClusterMap;
-    private Map<Integer, List<Cluster>> tenantIdToClusterMap;
-    private Map<TenantIdAndTypeTopologyKey , List<Cluster>> tenantIdAndTypeTopologyKeyToClusterMap;
+
+    private Map<Integer, Set<CartridgeTypeContext>> tenantIdToCartridgeTypeContextMap;
+    //private Map<TenantIdAndAliasTopologyKey, Cluster> tenantIdAndAliasTopologyKeyToClusterMap;
+    //private Map<Integer, List<Cluster>> tenantIdToClusterMap;
+    //private Map<TenantIdAndTypeTopologyKey , List<Cluster>> tenantIdAndTypeTopologyKeyToClusterMap;
     private static TopologyClusterModel topologyClusterModel;
 
     //locks
@@ -43,9 +42,10 @@ public class TopologyClusterModel {
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
     private TopologyClusterModel() {
-        tenantIdAndAliasTopologyKeyToClusterMap = new HashMap<TenantIdAndAliasTopologyKey, Cluster>();
-        tenantIdAndTypeTopologyKeyToClusterMap = new HashMap<TenantIdAndTypeTopologyKey, List<Cluster>>();
-        tenantIdToClusterMap = new HashMap<Integer, List<Cluster>>();
+        //tenantIdAndAliasTopologyKeyToClusterMap = new HashMap<TenantIdAndAliasTopologyKey, Cluster>();
+        //tenantIdAndTypeTopologyKeyToClusterMap = new HashMap<TenantIdAndTypeTopologyKey, List<Cluster>>();
+        //tenantIdToClusterMap = new HashMap<Integer, List<Cluster>>();
+        tenantIdToCartridgeTypeContextMap = new HashMap<Integer, Set<CartridgeTypeContext>>();
     }
 
     public static TopologyClusterModel getInstance () {
@@ -60,7 +60,7 @@ public class TopologyClusterModel {
         return topologyClusterModel;
     }
 
-    public void addCluster (int tenantId, String cartridgeType, String subscriptionAlias, Cluster cluster) {
+    /*public void addCluster (int tenantId, String cartridgeType, String subscriptionAlias, Cluster cluster) {
 
         List<Cluster> clusters;
         writeLock.lock();
@@ -92,43 +92,317 @@ public class TopologyClusterModel {
         } finally {
             writeLock.unlock();
         }
+    } */
+
+    public void addCluster (int tenantId, String cartridgeType, String subscriptionAlias, Cluster cluster) {
+
+        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
+        Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
+
+        writeLock.lock();
+        try {
+            //check if a set of CartridgeTypeContext instances already exist for given tenant Id
+            cartridgeTypeContextSet = tenantIdToCartridgeTypeContextMap.get(tenantId);
+            if(cartridgeTypeContextSet != null) {
+                CartridgeTypeContext cartridgeTypeContext = null;
+                //iterate through the set
+                Iterator<CartridgeTypeContext> typeCtxIterator = cartridgeTypeContextSet.iterator();
+                while (typeCtxIterator.hasNext()) {
+                    //see if the set contains a CartridgeTypeContext instance with the given cartridge type
+                    cartridgeTypeContext = typeCtxIterator.next();
+                    if (cartridgeTypeContext.getType().equals(cartridgeType)){
+                        //if so, get the SubscriptionAliasContext set
+                        subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
+                        break;
+                    }
+                }
+                //check if a SubscriptionAliasContext set is not found
+                if(subscriptionAliasContextSet == null) {
+                    //no SubscriptionAliasContext instance
+                    //create a new SubscriptionAliasContext instance
+                    SubscriptionAliasContext subscriptionAliasContext = new SubscriptionAliasContext(subscriptionAlias,
+                            cluster);
+                    //create a SubscriptionAliasContext set
+                    subscriptionAliasContextSet = new HashSet<SubscriptionAliasContext>();
+                    //add the created SubscriptionAliasContext instance to SubscriptionAliasContext set
+                    subscriptionAliasContextSet.add(subscriptionAliasContext);
+                    //set it to the CartridgeTypeContext instance
+                    cartridgeTypeContext = new CartridgeTypeContext(cartridgeType);
+                    cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+                    //add to the cartridgeTypeContextSet
+                    cartridgeTypeContextSet.add(cartridgeTypeContext);
+
+                } else {
+                    //iterate through the set
+                    Iterator<SubscriptionAliasContext> aliasIterator = subscriptionAliasContextSet.iterator();
+                    while (aliasIterator.hasNext()) {
+                        //see if the set contains a SubscriptionAliasContext instance with the given alias
+                        SubscriptionAliasContext subscriptionAliasContext = aliasIterator.next();
+                        if (subscriptionAliasContext.getSubscriptionAlias().equals(subscriptionAlias)) {
+                            //remove the existing one
+                            aliasIterator.remove();
+                            break;
+                        }
+                    }
+                    //now, add the new cluster object
+                    subscriptionAliasContextSet.add(new SubscriptionAliasContext(subscriptionAlias, cluster));
+                }
+
+            } else {
+                //no entries for this tenant, go from down to top creating relevant objects and populating them
+                //create a new SubscriptionAliasContext instance
+                SubscriptionAliasContext subscriptionAliasContext = new SubscriptionAliasContext(subscriptionAlias,
+                        cluster);
+                //create a SubscriptionAliasContext set
+                subscriptionAliasContextSet = new HashSet<SubscriptionAliasContext>();
+                //add the created SubscriptionAliasContext instance to SubscriptionAliasContext set
+                subscriptionAliasContextSet.add(subscriptionAliasContext);
+
+                //create a new CartridgeTypeContext instance
+                CartridgeTypeContext cartridgeTypeContext = new CartridgeTypeContext(cartridgeType);
+                //link the SubscriptionAliasContextSet to it
+                cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+
+                //Create CartridgeTypeContext instance
+                cartridgeTypeContextSet = new HashSet<CartridgeTypeContext>();
+                //link the SubscriptionAliasContext set to CartridgeTypeContext instance
+                cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+
+                //link the CartridgeTypeContext set to the [tenant Id -> CartridgeTypeContext] map
+                tenantIdToCartridgeTypeContextMap.put(tenantId, cartridgeTypeContextSet);
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
     }
 
-    public Cluster getCluster (int tenantId, String subscriptionAlias) {
+    public Cluster getCluster (int tenantId, String cartridgeType, String subscriptionAlias) {
+
+        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
+        Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
 
         readLock.lock();
         try {
-            return tenantIdAndAliasTopologyKeyToClusterMap.get(new TenantIdAndAliasTopologyKey(tenantId, subscriptionAlias));
+            //check if a set of CartridgeTypeContext instances already exist for given tenant Id
+            cartridgeTypeContextSet = tenantIdToCartridgeTypeContextMap.get(tenantId);
+            if(cartridgeTypeContextSet != null) {
+                CartridgeTypeContext cartridgeTypeContext = null;
+                //iterate through the set
+                Iterator<CartridgeTypeContext> typeCtxIterator = cartridgeTypeContextSet.iterator();
+                while (typeCtxIterator.hasNext()) {
+                    //see if the set contains a CartridgeTypeContext instance with the given cartridge type
+                    cartridgeTypeContext = typeCtxIterator.next();
+                    if (cartridgeTypeContext.getType().equals(cartridgeType)){
+                        //if so, get the SubscriptionAliasContext set
+                        subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
+                        break;
+                    }
+                }
+                if(subscriptionAliasContextSet != null) {
+                    //iterate through the set
+                    Iterator<SubscriptionAliasContext> aliasIterator = subscriptionAliasContextSet.iterator();
+                    while (aliasIterator.hasNext()) {
+                        //see if the set contains a SubscriptionAliasContext instance with the given alias
+                        SubscriptionAliasContext subscriptionAliasContext = aliasIterator.next();
+                        if (subscriptionAliasContext.getSubscriptionAlias().equals(subscriptionAlias)) {
+                            return subscriptionAliasContext.getCluster();
+                        }
+                    }
+                }
+            }
 
         } finally {
             readLock.unlock();
         }
+
+        return null;
     }
 
-    public List<Cluster> getClusters (int tenantId, String cartridgeType) {
+    public Set<Cluster> getClusters (int tenantId, String cartridgeType) {
+
+        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
+        Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
+        Set<Cluster> clusterSet = null;
 
         readLock.lock();
         try {
-            return tenantIdAndTypeTopologyKeyToClusterMap.get(new TenantIdAndTypeTopologyKey(tenantId, cartridgeType));
+            cartridgeTypeContextSet = tenantIdToCartridgeTypeContextMap.get(tenantId);
+            if(cartridgeTypeContextSet != null) {
+                //iterate through the set
+                Iterator<CartridgeTypeContext> typeCtxIterator = cartridgeTypeContextSet.iterator();
+                while (typeCtxIterator.hasNext()) {
+                    //iterate and get each of SubscriptionAliasContext sets
+                    CartridgeTypeContext cartridgeTypeContext = typeCtxIterator.next();
+                    subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
+
+                    if (subscriptionAliasContextSet != null) {
+                        //iterate and convert to Cluster set
+                        Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
+                        clusterSet = new HashSet<Cluster>();
+                        while (aliasCtxIterator.hasNext()) {
+                            clusterSet.add(aliasCtxIterator.next().getCluster());
+                        }
+                    }
+                }
+            }
 
         } finally {
             readLock.unlock();
         }
+
+        return clusterSet;
     }
 
-    public List<Cluster> getClusters (int tenantId) {
+    public Set<Cluster> getClusters (int tenantId) {
+
+        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
+        Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
+        Set<Cluster> clusterSet = null;
 
         readLock.lock();
         try {
-            return tenantIdToClusterMap.get(tenantId);
+            cartridgeTypeContextSet = tenantIdToCartridgeTypeContextMap.get(tenantId);
+            if(cartridgeTypeContextSet != null) {
+                CartridgeTypeContext cartridgeTypeContext = null;
+                //iterate through the set
+                Iterator<CartridgeTypeContext> typeCtxIterator = cartridgeTypeContextSet.iterator();
+                while (typeCtxIterator.hasNext()) {
+                    //see if the set contains a CartridgeTypeContext instance with the given cartridge type
+                }
+
+                if (subscriptionAliasContextSet != null) {
+                    //iterate and convert to Cluster set
+                    Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
+                    clusterSet = new HashSet<Cluster>();
+                    while (aliasCtxIterator.hasNext()) {
+                        clusterSet.add(aliasCtxIterator.next().getCluster());
+                    }
+                }
+            }
 
         } finally {
             readLock.unlock();
         }
+
+        return clusterSet;
     }
 
-    public void removeCluster (int tenantId, String subscriptionAlias) {
-        tenantIdAndAliasTopologyKeyToClusterMap.remove(new TenantIdAndAliasTopologyKey(tenantId, subscriptionAlias));
+    public void removeCluster (int tenantId, String cartridgeType, String subscriptionAlias) {
+
+        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
+        Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
+
+        writeLock.lock();
+        try {
+            //check if a set of CartridgeTypeContext instances already exist for given tenant Id
+            cartridgeTypeContextSet = tenantIdToCartridgeTypeContextMap.get(tenantId);
+            if(cartridgeTypeContextSet != null) {
+                CartridgeTypeContext cartridgeTypeContext = null;
+                //iterate through the set
+                Iterator<CartridgeTypeContext> typeCtxIterator = cartridgeTypeContextSet.iterator();
+                while (typeCtxIterator.hasNext()) {
+                    //see if the set contains a CartridgeTypeContext instance with the given cartridge type
+                    cartridgeTypeContext = typeCtxIterator.next();
+                    if (cartridgeTypeContext.getType().equals(cartridgeType)){
+                        //if so, get the SubscriptionAliasContext set
+                        subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
+                        break;
+                    }
+                }
+                if(subscriptionAliasContextSet != null) {
+                    //iterate through the set
+                    Iterator<SubscriptionAliasContext> aliasIterator = subscriptionAliasContextSet.iterator();
+                    while (aliasIterator.hasNext()) {
+                        //see if the set contains a SubscriptionAliasContext instance with the given alias
+                        SubscriptionAliasContext subscriptionAliasContext = aliasIterator.next();
+                        if (subscriptionAliasContext.getSubscriptionAlias().equals(subscriptionAlias)) {
+                            //remove the existing one
+                            aliasIterator.remove();
+                            break;
+                        }
+                    }
+                }
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    private class CartridgeTypeContext {
+
+        private String type;
+        private Set<SubscriptionAliasContext> subscriptionAliasContextSet;
+
+        public CartridgeTypeContext (String type) {
+            this.type = type;
+        }
+
+        public void setSubscriptionAliasContextSet (Set<SubscriptionAliasContext> subscriptionAliasContextSet) {
+            this.subscriptionAliasContextSet = subscriptionAliasContextSet;
+        }
+
+        public String getType () {
+            return type;
+        }
+
+        public Set<SubscriptionAliasContext> getSubscriptionAliasContextSet () {
+            return subscriptionAliasContextSet;
+        }
+
+        public boolean equals(Object other) {
+
+            if(this == other) {
+                return true;
+            }
+            if(!(other instanceof CartridgeTypeContext)) {
+                return false;
+            }
+
+            CartridgeTypeContext that = (CartridgeTypeContext)other;
+            return this.type.equals(that.type);
+        }
+
+        public int hashCode () {
+            return type.hashCode();
+        }
+    }
+
+    private class SubscriptionAliasContext {
+
+        private String subscriptionAlias;
+        private Cluster cluster;
+
+        public SubscriptionAliasContext(String subscriptionAlias, Cluster cluster) {
+            this.subscriptionAlias = subscriptionAlias;
+            this.cluster = cluster;
+        }
+
+        public String getSubscriptionAlias () {
+            return subscriptionAlias;
+        }
+
+        public Cluster getCluster () {
+            return cluster;
+        }
+
+        public boolean equals(Object other) {
+
+            if(this == other) {
+                return true;
+            }
+            if(!(other instanceof SubscriptionAliasContext)) {
+                return false;
+            }
+
+            SubscriptionAliasContext that = (SubscriptionAliasContext)other;
+            return this.subscriptionAlias.equals(that.subscriptionAlias);
+        }
+
+        public int hashCode () {
+            return subscriptionAlias.hashCode();
+        }
     }
 
     private class TenantIdAndAliasTopologyKey {
