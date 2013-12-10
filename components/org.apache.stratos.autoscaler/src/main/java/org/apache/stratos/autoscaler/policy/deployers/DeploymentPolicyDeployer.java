@@ -28,7 +28,6 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 
 /**
@@ -78,7 +77,7 @@ public class DeploymentPolicyDeployer extends AbstractDeployer {
 			DeploymentPolicyReader reader = new DeploymentPolicyReader(policyFile);
 			
 			DeploymentPolicy policy = reader.read();
-			PolicyManager.getInstance().addDeploymentPolicy(policyFile,policy);
+			PolicyManager.getInstance().addDeploymentPolicy(policy);
 
 			log.info("Successfully deployed the policy specified at "
 					+ deploymentFileData.getAbsolutePath());
@@ -95,6 +94,7 @@ public class DeploymentPolicyDeployer extends AbstractDeployer {
 	
 	@Override
 	public void undeploy(String fileName) throws DeploymentException {
+		/*
 		File policyFile = new File(fileName);
 		String policyName = policyFile.getName().replaceAll("." + fileExt + "$", "");
 		try {
@@ -104,7 +104,7 @@ public class DeploymentPolicyDeployer extends AbstractDeployer {
 			log.error("unable to remove policy " + policyName , e);
 			throw new DeploymentException("unable to remove policy " + policyName ,e);
 		}
-
+		*/
 	}
 	
 	

@@ -70,7 +70,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	@Override
 	public boolean addPartition(Partition partition) {
-        return PartitionManager.getInstance().addPartition(partition);
+        return PartitionManager.getInstance().deployNewPartitoion(partition);
 	}
 
 	@Override

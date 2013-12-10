@@ -18,15 +18,27 @@
  */
 package org.apache.stratos.autoscaler.internal;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.apache.commons.collections.IterableMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
+import org.apache.stratos.autoscaler.partition.PartitionManager;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
 import org.apache.stratos.autoscaler.topology.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;
+import org.drools.lang.DRLExpressions.type_return;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -91,7 +103,23 @@ public class AutoscalerServerComponent {
         if(log.isDebugEnabled()) {
             log.debug("Rules executor thread started");
         }
-
+        
+        // Adding the registry stored partitions to the information model.
+        ArrayList<Partition> partitions = this.retreivePartitions();
+        Iterator<Partition> it = partitions.iterator();
+        while(it.hasNext()){
+        	Partition par = it.next();
+        	PartitionManager.getInstance().addPartitionToInformationModel(par);
+        }
+        
+        // Adding the registry stored AS policies to the information model.
+        ArrayList<AutoscalePolicy> asPolicies = this.retreiveASPolicies();
+        Iterator<AutoscalePolicy> asItr = asPolicies.iterator();
+        while(asItr.hasNext()){
+        	AutoscalePolicy asPolicy = asItr.next();
+        	PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);        	
+        }        
+        
         if(log.isInfoEnabled()) {
             log.info("Autoscaler Server Component activated");
         }
@@ -116,4 +144,59 @@ public class AutoscalerServerComponent {
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
 	}
+	
+	private ArrayList<Partition> retreivePartitions(){
+		ArrayList<Partition> partitionList = new ArrayList<Partition>();
+		 String [] partitionsResourceList = (String [])RegistryManager.getInstance().retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.PARTITION_RESOURCE);
+		 
+	        for(String resourcePath : partitionsResourceList){
+	        	 Object partition = RegistryManager.getInstance().retrieve(resourcePath);
+	        			 
+	        	 if (partition != null) {
+	                 try {
+	                	 
+	                     Object dataObj = Deserializer
+	                             .deserializeFromByteArray((byte[]) partition);
+	                     if(dataObj instanceof Partition) {
+	                         partitionList.add( (Partition) dataObj);
+	                     } else {
+	                         return null;
+	                     }
+	                 } catch (Exception e) {
+	                   String msg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+	                   log.warn(msg, e);
+	               }
+	             }	        		        	
+	        }
+	        return partitionList;	        
+	}
+	
+	private ArrayList<AutoscalePolicy> retreiveASPolicies(){
+		ArrayList<AutoscalePolicy> asPolicyList = new ArrayList<AutoscalePolicy>();
+		 String [] partitionsResourceList = (String [])RegistryManager.getInstance().retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE);
+		 
+	        for(String resourcePath : partitionsResourceList){
+	        	 Object asPolicy = RegistryManager.getInstance().retrieve(resourcePath);
+	        			 
+	        	 if (asPolicy != null) {
+	                 try {
+	                	 
+	                     Object dataObj = Deserializer
+	                             .deserializeFromByteArray((byte[]) asPolicy);
+	                     if(dataObj instanceof AutoscalePolicy) {
+	                    	 asPolicyList.add( (AutoscalePolicy) dataObj);
+	                     } else {
+	                         return null;
+	                     }
+	                 } catch (Exception e) {
+	                   String msg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
+	                   log.warn(msg, e);
+	               }
+	             }	        		        	
+	        }
+	        return asPolicyList;	        
+	}
+	
+	
+	
 }

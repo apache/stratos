@@ -47,10 +47,8 @@ public class PolicyManager {
 	private static final String asResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE+ AutoScalerConstants.AS_POLICY_RESOURCE + "/";
 	
 	private static Map<String,AutoscalePolicy> autoscalePolicyListMap = new HashMap<String, AutoscalePolicy>();
-	private static Map<File,String> autoscalePolicyfileNameMap = new HashMap<File, String>();
 	
 	private static Map<String,DeploymentPolicy> deploymentPolicyListMap = new HashMap<String, DeploymentPolicy>();
-	private static Map<File,String> deploymentPolicyfileNameMap = new HashMap<File, String>();
 	
 	private static PolicyManager instance = null;
 	 
@@ -70,21 +68,19 @@ public class PolicyManager {
      * @param policy
      * @throws InvalidPolicyException
      */
-	public void addAutoscalePolicy(File policyFile,AutoscalePolicy policy) throws InvalidPolicyException {
-		if(autoscalePolicyfileNameMap.containsKey(policyFile)){
-			removeAutoscalePolicy(autoscalePolicyfileNameMap.get(policyFile));
-			autoscalePolicyfileNameMap.remove(policyFile);
-		} else{
-			autoscalePolicyfileNameMap.put(policyFile, policy.getId());
-		}
-		if (!autoscalePolicyListMap.containsKey(policy.getId())) {
+	public void deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {			
+		this.persitASPolicy(asResourcePath+policy.getId(), policy);
+		this.addASPolicyToInformationModel(policy);
+	}
+	
+	public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException{
+		if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
 			if(log.isDebugEnabled()){
-				log.debug("Adding policy :" + policy.getId());
-			}
-			autoscalePolicyListMap.put(policy.getId(), policy);
-			this.persitASPolicy(asResourcePath+policy.getId(), policy);
+				log.debug("Adding policy :" + asPolicy.getId());
+			}			
+			autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
 		} else {
-			throw new InvalidPolicyException("Specified policy [" + policy.getId()
+			throw new InvalidPolicyException("Specified policy [" + asPolicy.getId()
 					+ "] already exists");
 		}
 	}
@@ -95,15 +91,6 @@ public class PolicyManager {
 		} catch (RegistryException e) {
 			throw new AutoScalerException(e);
 		}
-	}
-
-	/**
-	 * Appends the specified policy
-	 * @param policy
-	 * @throws InvalidPolicyException
-	 */
-	public void addAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
-		addAutoscalePolicy(new File(policy.getId().concat(".xml")), policy);
 	}
 	
 	/**
@@ -120,18 +107,6 @@ public class PolicyManager {
 		} else {
 			throw new InvalidPolicyException("No such policy [" + policy + "] exists");
 		}
-	}
-	
-	/**
-	 * Removes the specified policy
-	 * @param policyFile
-	 * @throws InvalidPolicyException
-	 */
-	public void removeAutoscalePolicy(File policyFile) throws InvalidPolicyException {
-		if(autoscalePolicyfileNameMap.containsKey(policyFile)){
-			removeAutoscalePolicy(autoscalePolicyfileNameMap.get(policyFile));
-			autoscalePolicyfileNameMap.remove(policyFile);
-		} 
 	}
 	
 	/**
@@ -157,13 +132,7 @@ public class PolicyManager {
      * @param policy
      * @throws InvalidPolicyException
      */
-	public void addDeploymentPolicy(File policyFile,DeploymentPolicy policy) throws InvalidPolicyException {
-		if(deploymentPolicyfileNameMap.containsKey(policyFile)){
-			removeDeploymentPolicy(deploymentPolicyfileNameMap.get(policyFile));
-			deploymentPolicyfileNameMap.remove(policyFile);
-		} else{
-			deploymentPolicyfileNameMap.put(policyFile, policy.getId());
-		}
+	public void addDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
 		if (!deploymentPolicyListMap.containsKey(policy.getId())) {
 			if(log.isDebugEnabled()){
 				log.debug("Adding policy :" + policy.getId());
@@ -174,16 +143,7 @@ public class PolicyManager {
 					+ "] already exists");
 		}
 	}
-	
-	/**
-	 * Appends the specified policy
-	 * @param policy
-	 * @throws InvalidPolicyException
-	 */
-	public void addDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-		addDeploymentPolicy(new File(policy.getId().concat(".xml")), policy);
-	}
-	
+		
 	/**
 	 * Removes the specified policy
 	 * @param policy
@@ -198,18 +158,6 @@ public class PolicyManager {
 		} else {
 			throw new InvalidPolicyException("No such policy [" + policy + "] exists");
 		}
-	}
-	
-	/**
-	 * Removes the specified policy
-	 * @param policyFile
-	 * @throws InvalidPolicyException
-	 */
-	public void removeDeploymentPolicy(File policyFile) throws InvalidPolicyException {
-		if(deploymentPolicyfileNameMap.containsKey(policyFile)){
-			removeDeploymentPolicy(deploymentPolicyfileNameMap.get(policyFile));
-			deploymentPolicyfileNameMap.remove(policyFile);
-		} 
 	}
 	
 	/**

@@ -60,7 +60,10 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		return partitionListMap.containsKey(partitionId);
 	}
 	
-	public boolean addPartition( Partition partition) throws AutoScalerException{
+	/*
+	 * Deploy a new partition to Auto Scaler.
+	 */
+	public boolean deployNewPartitoion( Partition partition) throws AutoScalerException{
 		String partitionId = partition.getId();
 		if(this.partitionExist(partition.getId()))
 			throw new AutoScalerException("A parition with the ID " +  partitionId + " already exist.");
@@ -83,6 +86,10 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		return true;
 	}
 	
+	public void addPartitionToInformationModel(Partition partition) {
+		partitionListMap.put(partition.getId(), partition);
+	}
+	
 	
 	
 	public Partition getPartitionById(String partitionId){
@@ -98,22 +105,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		
 	}
 	
-	public boolean validatePartition(Partition partition) throws PartitionValidationException{		
+	public boolean validatePartition(Partition partition) throws PartitionValidationException{				
 		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
-
-	public void updatePartition(Partition newPartition,Partition oldPartition){
-		if(!oldPartition.getId().equals(newPartition.getId()))
-			throw new AutoScalerException("Can not update.Id s of the two partitions did not match.");
-		
-		oldPartition=newPartition;
-		//overwrite the registry resource.
-		try {
-			RegistryManager.getInstance().persist(
-					newPartition, this.partitionResourcePath + newPartition.getId());
-		} catch (RegistryException e) {
-			throw new AutoScalerException(e);
-		}
-	}
-
 }

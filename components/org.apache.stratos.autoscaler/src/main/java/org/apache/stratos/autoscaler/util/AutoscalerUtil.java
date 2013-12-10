@@ -163,9 +163,6 @@ public class AutoscalerUtil {
         if (!destPartition.isPropertiesSpecified()) {
             destPartition.setProperties(srcPartition.getProperties());
         }
-        
-        // update the partitions with the extra properties in the deployment policy.
-		PartitionManager.getInstance().updatePartition(destPartition, srcPartition);
     }
 
     public static Properties getProperties(final OMElement elt) {
