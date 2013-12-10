@@ -53,22 +53,18 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
         return options;
     }
 
-    @Override
     public String getName() {
         return CliConstants.CARTRIDGE_DEPLOYMENT;
     }
 
-    @Override
     public String getDescription() {
         return "Add new cartridge deployment";
     }
 
-    @Override
     public String getArgumentSyntax() {
         return null;
     }
 
-    @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
@@ -111,7 +107,8 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
                 System.out.println(e.getMessage());
                 return CliConstants.BAD_ARGS_CODE;
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.out.println("Invalid resource path");
                 return CliConstants.BAD_ARGS_CODE;
             }
 

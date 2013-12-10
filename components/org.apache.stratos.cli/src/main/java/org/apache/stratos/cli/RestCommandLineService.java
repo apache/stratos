@@ -182,7 +182,6 @@ public class RestCommandLineService {
 
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
-                @Override
                 public String[] getData(Cartridge cartridge) {
                     String[] data = new String[3];
                     data[0] = cartridge.getCartridgeType();
@@ -253,7 +252,6 @@ public class RestCommandLineService {
 
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
-                @Override
                 public String[] getData(Cartridge cartridge) {
                     String[] data = full ? new String[9] : new String[7];
                     data[0] = cartridge.getCartridgeType();
