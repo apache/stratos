@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.load.balancer.mediators;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerInFlightRequestCountCollector;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.synapse.ManagedLifecycle;
@@ -30,19 +31,32 @@ import org.apache.synapse.mediators.AbstractMediator;
  */
 public class ResponseInterceptor extends AbstractMediator implements ManagedLifecycle {
 
-    public boolean mediate(MessageContext synCtx) {
-        if (log.isDebugEnabled()) {
-            log.debug("Mediation started " + ResponseInterceptor.class.getName());
+    public boolean mediate(MessageContext messageContext) {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Response interceptor mediation started");
+            }
+            String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
+            if (StringUtils.isBlank(clusterId)) {
+                throw new RuntimeException("Cluster id not found in message context");
+            }
+            String partitionId = (String) messageContext.getProperty(Constants.PARTITION_ID);
+            if (StringUtils.isBlank(partitionId)) {
+                throw new RuntimeException("Partition id not found in message context");
+            }
+            LoadBalancerInFlightRequestCountCollector.getInstance().decrementInFlightRequestCount(clusterId, partitionId);
+        } catch (Exception e) {
+            if(log.isErrorEnabled()) {
+                log.error("Could not decrement in-flight request count", e);
+            }
         }
-        String clusterId = (String) synCtx.getProperty(Constants.CLUSTER_ID);
-        LoadBalancerInFlightRequestCountCollector.getInstance().decrementRequestInflightCount(clusterId);
         return true;
     }
 
     @Override
     public void destroy() {
         if (log.isDebugEnabled()) {
-            log.debug("ResponseInterceptor mediator destroyed");
+            log.debug("Response interceptor mediator destroyed");
         }
     }
 

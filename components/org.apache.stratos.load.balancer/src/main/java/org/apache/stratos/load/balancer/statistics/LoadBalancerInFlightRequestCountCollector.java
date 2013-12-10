@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.load.balancer.statistics;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPInFlightRequestCountObserver;
@@ -28,7 +30,7 @@ import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This is the load balancing stats collector and any observer can get registered here
+ * This is the load balancing in-flight request count collector and any observer can get registered here
  * and receive notifications periodically.
  * This is a Singleton object.
  *
@@ -38,11 +40,12 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
     private static final Log log = LogFactory.getLog(LoadBalancerInFlightRequestCountCollector.class);
 
     private static LoadBalancerInFlightRequestCountCollector collector;
-    private Map<String, Integer> clusterIdToRequestInflightCountMap;
+    // Map<ClusterId, Map<PartitionId, InFlightRequestCount>
+    private Map<String, Map<String, Integer>> inFlightRequestCountMap;
     private Thread notifier;
 
     private LoadBalancerInFlightRequestCountCollector() {
-        clusterIdToRequestInflightCountMap = new ConcurrentHashMap<String, Integer>();
+        inFlightRequestCountMap = new ConcurrentHashMap<String, Map<String, Integer>>();
         if (notifier == null || (notifier != null && !notifier.isAlive())) {
             notifier = new Thread(new ObserverNotifier());
             notifier.start();
@@ -62,45 +65,63 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
         return collector;
     }
 
-    public void setRequestInflightCount(String clusterId, int value) {
-        if (clusterId == null) {
+    public int getInFlightRequestCount(String clusterId, String partitionId) {
+        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
+            return -1;
+        }
+
+        Map<String, Integer> partitionMap = inFlightRequestCountMap.get(clusterId);
+        if (partitionMap == null) {
+            return 0;
+        }
+        if (partitionMap.containsKey(partitionId)) {
+            return partitionMap.get(partitionId);
+        }
+        return 0;
+    }
+
+    public void setInFlightRequestCount(String clusterId, String partitionId, int value) {
+        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
             return;
         }
 
-        clusterIdToRequestInflightCountMap.put(clusterId, value);
+        Map<String, Integer> partitionMap = inFlightRequestCountMap.get(clusterId);
+        if (partitionMap == null) {
+            partitionMap = new HashMap<String, Integer>();
+            inFlightRequestCountMap.put(clusterId, partitionMap);
+        }
+        partitionMap.put(partitionId, value);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("In-flight request count updated: [cluster] %s [partition] $s [value] %d", clusterId, partitionId, value));
+        }
         setChanged();
     }
 
-    public void incrementRequestInflightCount(String clusterId) {
-        incrementRequestInflightCount(clusterId, 1);
+    public void incrementInFlightRequestCount(String clusterId, String partitionId) {
+        incrementInFlightRequestCount(clusterId, partitionId, 1);
     }
 
-    public void incrementRequestInflightCount(String clusterId, int value) {
-        if (clusterId == null) {
+    public void incrementInFlightRequestCount(String clusterId, String partitionId, int value) {
+        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
             return;
         }
 
-        if (clusterIdToRequestInflightCountMap.get(clusterId) != null) {
-            value += clusterIdToRequestInflightCountMap.get(clusterId);
-        }
-        clusterIdToRequestInflightCountMap.put(clusterId, value);
-        setChanged();
+        int count = getInFlightRequestCount(clusterId, partitionId);
+        setInFlightRequestCount(clusterId, partitionId, (count + value));
     }
 
-    public void decrementRequestInflightCount(String clusterId) {
-        decrementRequestInflightCount(clusterId, 1);
+    public void decrementInFlightRequestCount(String clusterId, String partitionId) {
+        decrementInFlightRequestCount(clusterId, partitionId, 1);
     }
 
-    public void decrementRequestInflightCount(String clusterId, int value) {
-        if (clusterId == null) {
+    public void decrementInFlightRequestCount(String clusterId, String partitionId, int value) {
+        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
             return;
         }
 
-        if (clusterIdToRequestInflightCountMap.get(clusterId) != null) {
-            value += clusterIdToRequestInflightCountMap.get(clusterId);
-        }
-        clusterIdToRequestInflightCountMap.put(clusterId, value);
-        setChanged();
+        int count = getInFlightRequestCount(clusterId, partitionId);
+        int newValue = (count - value) < 0 ? 0 : (count - value);
+        setInFlightRequestCount(clusterId, partitionId, newValue);
     }
 
 
@@ -121,7 +142,7 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
                     Thread.sleep(15000);
                 } catch (InterruptedException ignore) {
                 }
-                LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Integer>(clusterIdToRequestInflightCountMap));
+                LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Map<String, Integer>>(inFlightRequestCountMap));
             }
         }
     }
