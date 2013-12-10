@@ -113,10 +113,10 @@ public class AutoscalerServiceClient {
         return partitions;
     }
 
-    public org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] getPartitionGroups (String deploymentPolicyId)
+    public org.apache.stratos.autoscaler.partition.PartitionGroup [] getPartitionGroups (String deploymentPolicyId)
             throws Exception{
 
-        org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] partitionGroups;
+        org.apache.stratos.autoscaler.partition.PartitionGroup [] partitionGroups;
         try {
             partitionGroups = stub.getPartitionGroups(deploymentPolicyId);
 

@@ -39,11 +39,12 @@ import org.apache.stratos.adc.mgt.utils.*;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public abstract class CartridgeSubscription {
+public abstract class CartridgeSubscription implements Serializable {
 
     private static Log log = LogFactory.getLog(CartridgeSubscription.class);
     private int subscriptionId;
@@ -57,6 +58,7 @@ public abstract class CartridgeSubscription {
     private Payload payload;
     private Cluster cluster;
     private String subscriptionStatus;
+    private String serviceStatus;
     private String mappedDomain;
     private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
@@ -446,5 +448,13 @@ public abstract class CartridgeSubscription {
 
     public void setDeploymentPolicyName(String deploymentPolicyName) {
         this.deploymentPolicyName = deploymentPolicyName;
+    }
+
+    public String getServiceStatus() {
+        return serviceStatus;
+    }
+
+    public void setServiceStatus(String serviceStatus) {
+        this.serviceStatus = serviceStatus;
     }
 }
