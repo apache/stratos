@@ -21,6 +21,7 @@ package org.apache.stratos.load.balancer.endpoint;
 
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.TransportInDescription;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.stratos.load.balancer.RequestDelegator;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
@@ -238,6 +239,9 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         if (httpsPort != null)
             axis2Member.setHttpsPort(httpsPort.getValue());
         axis2Member.setActive(member.isActive());
+        // Set cluster id and partition id in message context
+        synCtx.setProperty(Constants.CLUSTER_ID, member.getClusterId());
+        synCtx.setProperty(Constants.PARTITION_ID, member.getPartitionId());
         return axis2Member;
     }
 
@@ -499,22 +503,39 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         setupTransportHeaders(synCtx);
         setupLoadBalancerContextProperties(synCtx);
 
-        // Update health stats
-        LoadBalancerInFlightRequestCountCollector.getInstance().incrementRequestInflightCount(currentMember.getDomain());
-        // Set the cluster id in the message context
-        synCtx.setProperty(Constants.CLUSTER_ID, currentMember.getDomain());
-
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Sending request to endpoint: %s", to.getAddress()));
             }
             endpoint.send(synCtx);
+
+            // Increment in-flight request count
+            incrementInFlightRequestCount(synCtx);
         } catch (Exception e) {
             if (e.getMessage().toLowerCase().contains("io reactor shutdown")) {
                 log.fatal("System cannot continue normal operation. Restarting", e);
                 System.exit(121); // restart
             } else {
                 throw new SynapseException(e);
+            }
+        }
+    }
+
+    private void incrementInFlightRequestCount(MessageContext messageContext) {
+        try {
+            String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
+            if(StringUtils.isBlank(clusterId)) {
+                throw new RuntimeException("Cluster id not found in message context");
+            }
+            String partitionId = (String) messageContext.getProperty(Constants.PARTITION_ID);
+            if(StringUtils.isBlank(partitionId)) {
+                throw new RuntimeException("Partition id not found in message context");
+            }
+            LoadBalancerInFlightRequestCountCollector.getInstance().incrementInFlightRequestCount(clusterId, partitionId);
+        }
+        catch (Exception e) {
+            if(log.isDebugEnabled()) {
+                log.debug("Could not increment in-flight request count", e);
             }
         }
     }
