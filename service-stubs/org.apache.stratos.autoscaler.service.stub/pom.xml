@@ -91,7 +91,8 @@
                             org.apache.stratos.autoscaler.deployment.policy.*; version=${project.version},
                             org.apache.stratos.autoscaler.policy.model.*; version=${project.version},
                             org.apache.stratos.autoscaler.exception.*; version=${project.version},
-			    org.apache.stratos.cloud.controller.deployment.*; version=${project.version}
+			    org.apache.stratos.cloud.controller.deployment.*; version=${project.version},
+			    org.apache.stratos.autoscaler.partition.*; version=${project.version}
                         </Export-Package>
 			<Private-Package>
 			    org.apache.stratos.cloud.controller.deployment.partition.*; version=${project.version}
