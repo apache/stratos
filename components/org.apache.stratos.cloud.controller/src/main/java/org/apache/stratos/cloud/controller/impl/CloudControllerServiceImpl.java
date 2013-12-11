@@ -396,8 +396,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             member.setMemberId(memberID);
             // have to add memberID to the payload
             StringBuilder payload = new StringBuilder(ctxt.getPayload());
-            payload.append(",");
-            payload.append("MEMBER_ID=" + memberID);
+            addToPayload(payload, "MEMBER_ID", memberID);
+            addToPayload(payload, "LB_CLUSTER_ID", member.getLbClusterId());
+            
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
@@ -520,7 +521,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //    }
 
 
-	/**
+	private void addToPayload(StringBuilder payload, String name, String value) {
+	    payload.append(",");
+        payload.append(name+"=" + value);
+    }
+
+    /**
 	 * Persist data in registry.
 	 */
 	private void persist() {
