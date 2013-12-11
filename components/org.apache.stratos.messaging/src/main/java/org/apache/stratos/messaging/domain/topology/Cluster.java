@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.*;
 
@@ -29,6 +32,7 @@ import java.util.*;
  * Defines a cluster of a service.
  * Key: serviceName, clusterId
  */
+@XmlRootElement
 public class Cluster implements Serializable {
 
 	private static final long serialVersionUID = -361960242360176077L;
@@ -41,8 +45,10 @@ public class Cluster implements Serializable {
     private String deploymentPolicyName = "economy-deployment";
     private boolean isLbCluster;
     // Key: Member.memberId
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
     private String loadBalanceAlgorithmName;
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
 
     public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
