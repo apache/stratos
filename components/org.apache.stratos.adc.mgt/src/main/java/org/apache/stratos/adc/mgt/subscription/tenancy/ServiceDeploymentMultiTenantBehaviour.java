@@ -19,21 +19,17 @@
 
 package org.apache.stratos.adc.mgt.subscription.tenancy;
 
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
-import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
 public class ServiceDeploymentMultiTenantBehaviour extends
 		SubscriptionMultiTenantBehaviour {
@@ -111,8 +107,8 @@ public class ServiceDeploymentMultiTenantBehaviour extends
                 cartridgeSubscription.getAutoscalingPolicyName(),
                 cartridgeSubscription.getDeploymentPolicyName(),
                 properties);
-		// TODO -- Commented out for testing. Uncomment for release. 
-        //cartridgeSubscription.getPayload().delete();
+		
+        cartridgeSubscription.getPayload().delete();
 	}
 	
 	@Override

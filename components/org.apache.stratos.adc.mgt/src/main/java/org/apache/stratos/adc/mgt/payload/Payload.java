@@ -24,14 +24,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public abstract class Payload {
+public abstract class Payload implements Serializable {
 
     private static Log log = LogFactory.getLog(Payload.class);
 

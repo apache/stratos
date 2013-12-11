@@ -25,10 +25,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
@@ -37,7 +37,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ListCommand.class);
 
-	private final Options options;;
+	private final Options options;
 
 	public SubscribeCommand() {
 		options = constructOptions();
@@ -184,8 +184,10 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					context.getStratosApplication().printUsage(getName());
 					return CliConstants.BAD_ARGS_CODE;
 				}
-				CommandLineService.getInstance().subscribe(type, alias, policy, repoURL, privateRepo, username,
-						password, dataCartridgeType, dataCartridgeAlias);
+                RestCommandLineService.getInstance().subscribe(type, alias, policy, repoURL, privateRepo, username,
+                		password, dataCartridgeType, dataCartridgeAlias);
+				//CommandLineService.getInstance().subscribe(type, alias, policy, repoURL, privateRepo, username,
+				//		password, dataCartridgeType, dataCartridgeAlias);
 				return CliConstants.SUCCESSFUL_CODE;
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {

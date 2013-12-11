@@ -35,22 +35,30 @@ public class WSO2CEPInFlightRequestCountObserver implements Observer {
     }
 
     public void update(Observable observable, Object object) {
-        if (object != null && object instanceof Map<?, ?>) {
-            try {
-                if (publisher.isEnabled()) {
-                    Map<String, Integer> stats = (Map<String, Integer>) object;
-                    // Publish event per cluster id
-                    for (String clusterId : stats.keySet()) {
-                        // Publish event
-                        publisher.publish(clusterId, stats.get(clusterId));
+        try {
+            if (publisher.isEnabled()) {
+                Map<String, Map<String, Integer>> inFlightRequestCountMap = (Map<String, Map<String, Integer>>) object;
+                // Publish event per cluster id
+                Map<String, Integer> partitionMap = null;
+                for (String clusterId : inFlightRequestCountMap.keySet()) {
+                    partitionMap = inFlightRequestCountMap.get(clusterId);
+                    if (partitionMap != null) {
+                        for (String partitionId : partitionMap.keySet()) {
+                            // Publish event
+                            publisher.publish(clusterId, partitionId, partitionMap.get(partitionId));
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [partition] %s [value] %d",
+                                        clusterId, partitionId, partitionMap.get(partitionId)));
+                            }
+                        }
                     }
-                } else if (log.isWarnEnabled()) {
-                    log.warn("CEP statistics publisher is disabled");
                 }
-            } catch (Exception e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Could not publish in-flight request count", e);
-                }
+            } else if (log.isWarnEnabled()) {
+                log.warn("CEP statistics publisher is disabled");
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not publish in-flight request count to cep", e);
             }
         }
     }

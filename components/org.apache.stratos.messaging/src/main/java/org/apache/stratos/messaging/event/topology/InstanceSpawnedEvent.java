@@ -27,25 +27,17 @@ import java.io.Serializable;
  */
 public class InstanceSpawnedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2672909702971355178L;
-    private String serviceName;
-    private String clusterId;
-    private String memberId;
-    private String partitionId;
 
+    private final String serviceName;
+    private final String clusterId;
+    private final String memberId;
+    private final String partitionId;
 
-    public InstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String iaasNodeId) {
+    public InstanceSpawnedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.memberId = memberId;
-        this.partitionId = iaasNodeId;
-    }
-    
-    public String getPartitionId() {
-        return partitionId;
-    }
-    
-    public void setPartitionId(String partitionId) {
         this.partitionId = partitionId;
+        this.memberId = memberId;
     }
 
     public String getServiceName() {
@@ -54,6 +46,10 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public String getPartitionId() {
+        return partitionId;
     }
 
     public String getMemberId() {

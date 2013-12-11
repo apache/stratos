@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -42,6 +43,7 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
  * This class contains utility methods used by Autoscaler.

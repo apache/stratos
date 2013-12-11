@@ -24,7 +24,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.apache.stratos.cartridge.mgt.ui.CartridgeAdminClient" %>
-<%@ page import="org.apache.stratos.adc.mgt.dto.xsd.PolicyDefinition" %>
+<%@ page import="org.apache.stratos.adc.mgt.dto.PolicyDefinition" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.ResourceBundle" %>

@@ -19,8 +19,6 @@
 
 package org.apache.stratos.load.balancer.common.statistics;
 
-import java.util.Map;
-
 /**
  * Load balancer statistics publisher interface.
  */
@@ -28,6 +26,7 @@ public interface LoadBalancerStatsPublisher {
 
     /**
      * Set statistics publisher enabled or disabled.
+     *
      * @param enabled
      */
     void setEnabled(boolean enabled);
@@ -39,6 +38,7 @@ public interface LoadBalancerStatsPublisher {
 
     /**
      * Payload to be published.
+     *
      * @param payload An array of parameter values.
      */
     void publish(Object[] payload);

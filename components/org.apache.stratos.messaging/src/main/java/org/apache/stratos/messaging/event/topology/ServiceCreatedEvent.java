@@ -37,7 +37,7 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 
     private final String serviceName;
     private final ServiceType serviceType;
-    private Map<String, Port> portMap;
+    private final Map<String, Port> portMap;
     private Properties properties;
 
     public ServiceCreatedEvent(String serviceName, ServiceType serviceType) {

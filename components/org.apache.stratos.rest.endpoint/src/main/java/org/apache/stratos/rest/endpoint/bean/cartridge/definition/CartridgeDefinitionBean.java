@@ -20,6 +20,7 @@
 package org.apache.stratos.rest.endpoint.bean.cartridge.definition;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.List;
 
 @XmlRootElement(name = "cartridgeDefinitionBean")
@@ -48,6 +49,8 @@ public class CartridgeDefinitionBean {
     public LoadBalancerBean loadBalancer;
 
     public List<PropertyBean> property;
+    
+    public String defaultAutoscalingPolicy;
 
     public String toString () {
 

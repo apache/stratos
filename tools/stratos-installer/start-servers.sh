@@ -156,7 +156,7 @@ if [[ $sc = "true" ]]; then
     echo ${sc_path}
 
     echo "Starting SC server ..." >> $LOG
-    nohup ${sc_path}/bin/stratos.sh -DportOffset=$sc_port_offset &
+    nohup ${sc_path}/bin/stratos.sh &
     echo "SC server started" >> $LOG
     sleep $SLEEP
 

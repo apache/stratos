@@ -23,8 +23,13 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceNonExistingLBExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.rmi.RemoteException;
 
@@ -61,12 +66,12 @@ public class AutoscalerServiceClient {
         return serviceClient;
     }
 
-    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition[] getAvailablePartitions ()
+    public org.apache.stratos.cloud.controller.deployment.partition.Partition[] getAvailablePartitions ()
             throws Exception {
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
         try {
-            partitions = stub.get;
+            partitions = stub.getAllAvailablePartitions();
 
         } catch (RemoteException e) {
             String errorMsg = "Error in getting available partitions";
@@ -75,9 +80,9 @@ public class AutoscalerServiceClient {
         }
 
         return partitions;
-    }*/
+    }
 
-    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition getPartition (String partitionId)
+    public org.apache.stratos.cloud.controller.deployment.partition.Partition getPartition (String partitionId)
             throws Exception{
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition partition;
@@ -91,15 +96,31 @@ public class AutoscalerServiceClient {
         }
 
         return partition;
-    }*/
+    }
 
-    /*public org.apache.stratos.cloud.controller.deployment.partition.Partition [] getPartitions (String deploymentPolicyId,
+    public org.apache.stratos.cloud.controller.deployment.partition.Partition [] getPartitionsOfGroup (String deploymentPolicyId,
                                                                                             String partitionGroupId)
             throws Exception{
 
         org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
         try {
-            partitions = stub.getPartitions(deploymentPolicyId, partitionGroupId);
+            partitions = stub.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in getting available partitions";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+
+        return partitions;
+    }
+    
+    public org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+        getPartitionsOfDeploymentPolicy(String deploymentPolicyId) throws Exception {
+
+        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
+        try {
+            partitions = stub.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
 
         } catch (RemoteException e) {
             String errorMsg = "Error in getting available partitions";
@@ -110,10 +131,10 @@ public class AutoscalerServiceClient {
         return partitions;
     }
 
-    public org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] getPartitionGroups (String deploymentPolicyId)
+    public org.apache.stratos.autoscaler.partition.PartitionGroup [] getPartitionGroups (String deploymentPolicyId)
             throws Exception{
 
-        org.apache.stratos.autoscaler.partition.xsd.PartitionGroup [] partitionGroups;
+        org.apache.stratos.autoscaler.partition.PartitionGroup [] partitionGroups;
         try {
             partitionGroups = stub.getPartitionGroups(deploymentPolicyId);
 
@@ -124,7 +145,7 @@ public class AutoscalerServiceClient {
         }
 
         return partitionGroups;
-    }*/
+    }
 
     public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] getAutoScalePolicies ()
             throws Exception {
@@ -142,7 +163,7 @@ public class AutoscalerServiceClient {
         return autoscalePolicies;
     }
 
-    /*public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy getAutoScalePolicy (String autoscalingPolicyId)
+    public org.apache.stratos.autoscaler.policy.model.AutoscalePolicy getAutoScalePolicy (String autoscalingPolicyId)
             throws Exception {
 
         org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
@@ -156,7 +177,7 @@ public class AutoscalerServiceClient {
         }
 
         return autoscalePolicy;
-    }*/
+    }
 
     public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy [] getDeploymentPolicies()
             throws Exception {
@@ -189,8 +210,42 @@ public class AutoscalerServiceClient {
 
         return deploymentPolicies;
     }
+    
+    public void checkLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) throws ADCException {
+        try {
+            stub.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyId);
+        } catch (RemoteException e) {
+            String errorMsg = "Error connecting to Auto-scaler Service.";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        } catch (AutoScalerServiceNonExistingLBExceptionException e) {
+            String errorMsg = "LB Cluster doesn't exist. Cluster id: "+clusterId;
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+    
+    public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) throws ADCException {
+        try {
+            return stub.checkDefaultLBExistenceAgainstPolicy(deploymentPolicyId);
+        } catch (RemoteException e) {
+            String errorMsg = "Error connecting to Auto-scaler Service.";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+    
+    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) throws ADCException {
+        try {
+            return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
+        } catch (RemoteException e) {
+            String errorMsg = "Error connecting to Auto-scaler Service.";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
 
-    /*public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId)
+    public org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId)
             throws Exception {
 
         org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy deploymentPolicy;
@@ -204,5 +259,41 @@ public class AutoscalerServiceClient {
         }
 
         return deploymentPolicy;
-    }*/
+    }
+
+    public boolean deployDeploymentPolicy (DeploymentPolicy deploymentPolicy) throws Exception {
+
+        try {
+            return stub.addDeploymentPolicy(deploymentPolicy);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in deploying new deployment policy definition";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+    }
+
+    public boolean deployAutoscalingPolicy (AutoscalePolicy autoScalePolicy) throws Exception {
+
+        try {
+            return stub.addAutoScalingPolicy(autoScalePolicy);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in deploying new autoscaling policy definition";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+    }
+
+    public boolean deployPartition (Partition partition) throws Exception {
+
+        try {
+            return stub.addPartition(partition);
+
+        } catch (RemoteException e) {
+            String errorMsg = "Error in deploying new partition definition";
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
+    }
 }

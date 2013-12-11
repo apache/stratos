@@ -26,8 +26,9 @@ import java.io.Serializable;
  */
 public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -1335777148602870262L;
-	private String serviceName;
-    private String clusterId;
+
+    private final String serviceName;
+    private final String clusterId;
 
     public ClusterRemovedEvent(String serviceName, String clusterId) {
         this.serviceName = serviceName;
@@ -38,15 +39,7 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getClusterId() {
         return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
     }
 }

@@ -29,11 +29,15 @@ import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
-import java.util.Properties;
 
 public class FrameworkCartridgeSubscription extends CartridgeSubscription {
+
 	private static Log log = LogFactory.getLog(FrameworkCartridgeSubscription.class);
+    private static final long serialVersionUID = 1633832232416272756L;
+
+    
     /**
      * Constructor
      *
@@ -58,7 +62,10 @@ public class FrameworkCartridgeSubscription extends CartridgeSubscription {
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        subscriptionTenancyBehaviour.registerSubscription(null);
+        Properties props = new Properties();
+        props.setProperties(getCartridgeInfo().getProperties());
+        
+        subscriptionTenancyBehaviour.registerSubscription(props);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

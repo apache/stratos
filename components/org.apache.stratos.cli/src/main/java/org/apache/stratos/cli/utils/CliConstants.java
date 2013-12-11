@@ -64,6 +64,31 @@ public class CliConstants {
 	 */
 	public static final String CARTRIDGES_ACTION = "cartridges";
 
+    /**
+     * Add tenant
+     */
+    public static final String ADD_TENANT = "add-tenant";
+
+    /**
+     * Cartridge deployment
+     */
+    public static final String CARTRIDGE_DEPLOYMENT = "cartridge-deployment";
+
+    /**
+     * Partition deployment
+     */
+    public static final String PARTITION_DEPLOYMENT = "partition-deployment";
+
+    /**
+     * Autoscaling policy deployment
+     */
+    public static final String AUTOSCALING_POLICY_DEPLOYMENT = "autoscaling-policy-deployment";
+
+    /**
+     * Deployment policy deployment
+     */
+    public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deployment-policy-deployment";
+
 	/**
 	 * Give information of a cartridge.
 	 */
@@ -127,4 +152,27 @@ public class CliConstants {
 	
 	public static final String DEBUG_OPTION = "debug";
 
+    // Add tenant options
+    public static final String FIRST_NAME_OPTION = "f";
+    public static final String FIRST_NAME_LONG_OPTION = "first-name";
+
+    public static final String LAST_NAME_OPTION = "l";
+    public static final String LAST_NAME_LONG_OPTION = "last-name";
+
+    public static final String DOMAIN_NAME_OPTION = "d";
+    public static final String DOMAIN_NAME_LONG_OPTION = "domain-name";
+
+    public static final String EMAIL_OPTION = "e";
+    public static final String EMAIL_LONG_OPTION = "email";
+
+    public static final String ACTIVE_OPTION = "a";
+    public static final String ACTIVE_LONG_OPTION = "active";
+
+    // Deployment options
+    public static final String RESOURCE_PATH = "p";
+    public static final String RESOURCE_PATH_LONG_OPTION = "resource-path";
+
+    public static final int RESPONSE_INTERNAL_SERVER_ERROR = 500;
+    public static final int RESPONSE_AUTHORIZATION_FAIL = 403;
+    public static final int RESPONSE_NO_CONTENT = 204;
 }

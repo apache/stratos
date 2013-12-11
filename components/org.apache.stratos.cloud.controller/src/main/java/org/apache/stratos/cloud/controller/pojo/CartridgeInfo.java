@@ -50,6 +50,10 @@ public class CartridgeInfo {
     
     private Property[] properties;
     
+    private String defaultAutoscalingPolicy;
+    
+    private LoadbalancerConfig lbConfig;
+    
     public CartridgeInfo(){
     	
     }
@@ -159,5 +163,21 @@ public class CartridgeInfo {
 
 	public void setProperties(Property[] properties) {
 	    this.properties = properties;
+    }
+
+    public String getDefaultAutoscalingPolicy() {
+        return defaultAutoscalingPolicy;
+    }
+
+    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
+    }
+
+    public LoadbalancerConfig getLbConfig() {
+        return lbConfig;
+    }
+
+    public void setLbConfig(LoadbalancerConfig lbConfig) {
+        this.lbConfig = lbConfig;
     }
 }

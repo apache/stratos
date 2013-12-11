@@ -39,13 +39,16 @@ import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.adc.mgt.utils.*;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-public abstract class CartridgeSubscription /*implements TempBehaviourInterface*/ {
+public abstract class CartridgeSubscription implements Serializable {
 
+
+    private static final long serialVersionUID = -5197430500059231924L;
     private static Log log = LogFactory.getLog(CartridgeSubscription.class);
     private int subscriptionId;
     private String type;
@@ -58,11 +61,13 @@ public abstract class CartridgeSubscription /*implements TempBehaviourInterface*
     private Payload payload;
     private Cluster cluster;
     private String subscriptionStatus;
+    private String serviceStatus;
     private String mappedDomain;
     private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
     protected SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
 
+    
     /**
      * Constructor
      *
@@ -81,12 +86,12 @@ public abstract class CartridgeSubscription /*implements TempBehaviourInterface*
         getCluster().setHostName(cartridgeInfo.getHostName());
         this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         this.connectedSubscriptionAliases = new ArrayList<String>();
+        boolean isMultiTenant = getCartridgeInfo().getMultiTenant();
         if(isServiceDeployment) {
         	subscriptionTenancyBehaviour = new ServiceDeploymentMultiTenantBehaviour(this);
-        } else if(getCartridgeInfo().getMultiTenant()) {
+        } else if(isMultiTenant) {
             subscriptionTenancyBehaviour = new SubscriptionMultiTenantBehaviour(this);
-        }
-        else {
+        } else {
             subscriptionTenancyBehaviour = new SubscriptionSingleTenantBehaviour(this);
         } 
     }
@@ -455,5 +460,13 @@ public abstract class CartridgeSubscription /*implements TempBehaviourInterface*
 
     public void setDeploymentPolicyName(String deploymentPolicyName) {
         this.deploymentPolicyName = deploymentPolicyName;
+    }
+
+    public String getServiceStatus() {
+        return serviceStatus;
+    }
+
+    public void setServiceStatus(String serviceStatus) {
+        this.serviceStatus = serviceStatus;
     }
 }

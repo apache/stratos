@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
@@ -56,9 +57,10 @@ public class RegistryManager {
     public void persist(Object dataObj, String resourcePath) throws RegistryException {
     	
         try {
+        	/*
         	if (registryService.resourceExists(resourcePath)) {
                 throw new AutoScalerException("Resource already exist in the registry: " + resourcePath);
-            }
+            }*/
             registryService.beginTransaction();
 
             Resource nodeResource = registryService.newResource();
@@ -72,11 +74,28 @@ public class RegistryManager {
             }
         
         } catch (Exception e) {
-            String msg = "Failed to persist the cloud controller data in registry.";
+            String msg = "Failed to persist the Autoscaler data in registry.";
             registryService.rollbackTransaction();
             log.error(msg, e);
             throw new AutoScalerException(msg, e);
 
         }
+    }
+    
+    public Object retrieve(String resourcePath) {
+        try {
+            Resource resource = registryService.get(resourcePath);
+           
+            return resource.getContent();
+
+        } catch (ResourceNotFoundException ignore) {
+            // this means, we've never persisted info in registry
+            return null;
+        } catch (RegistryException e) {
+            String msg = "Failed to retrieve data from registry.";
+            log.error(msg, e);
+            throw new AutoScalerException(msg, e);
+        }
+
     }
 }

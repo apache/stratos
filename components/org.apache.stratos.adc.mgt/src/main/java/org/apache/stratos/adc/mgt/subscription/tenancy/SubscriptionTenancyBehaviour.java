@@ -25,11 +25,13 @@ import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
-import java.util.Properties;
+import java.io.Serializable;
 
-public abstract class SubscriptionTenancyBehaviour {
+public abstract class SubscriptionTenancyBehaviour implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     protected CartridgeSubscription cartridgeSubscription;
 
     public SubscriptionTenancyBehaviour(CartridgeSubscription cartridgeSubscription) {

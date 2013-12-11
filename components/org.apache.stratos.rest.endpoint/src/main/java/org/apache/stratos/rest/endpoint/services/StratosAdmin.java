@@ -27,6 +27,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
@@ -79,7 +80,8 @@ public class StratosAdmin extends AbstractAdmin {
     public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
 
-        ServiceUtils.deployCartridge(cartridgeDefinitionBean);
+        ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
+                                     getTenantDomain());
     }
 
     @DELETE
@@ -93,7 +95,43 @@ public class StratosAdmin extends AbstractAdmin {
         ServiceUtils.undeployCartridge(cartridgeType);
     }
 
-    /*@GET
+    @POST
+    @Path("/policy/deployment/partition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployPartition (Partition partition)
+            throws RestAPIException {
+
+        return ServiceUtils.deployPartition(partition);
+    }
+
+    @POST
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
+            throws RestAPIException {
+
+        return ServiceUtils.deployAutoscalingPolicy(autoscalePolicy);
+    }
+
+    @POST
+    @Path("/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
+            throws RestAPIException {
+
+        return ServiceUtils.deployDeploymentPolicy(deploymentPolicy);
+    }
+
+    @GET
     @Path("/partition")
     @Produces("application/json")
     @Consumes("application/json")
@@ -101,7 +139,7 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition[] getPartitions () throws RestAPIException {
 
         return ServiceUtils.getAvailablePartitions();
-    }*/
+    }
 
     @GET
     @Path("/partition/{partitionId}")
@@ -110,8 +148,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Partition getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
 
-        //return ServiceUtils.getPartition(partitionId);
-        return null;
+        return ServiceUtils.getPartition(partitionId);
     }
 
     @GET
@@ -122,8 +159,7 @@ public class StratosAdmin extends AbstractAdmin {
     public PartitionGroup[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
-        //return ServiceUtils.getPartitionGroups(deploymentPolicyId);
-        return null;
+        return ServiceUtils.getPartitionGroups(deploymentPolicyId);
     }
 
     @GET
@@ -134,8 +170,18 @@ public class StratosAdmin extends AbstractAdmin {
     public Partition [] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
 
-        //return ServiceUtils.getPartitions(deploymentPolicyId, partitionGroupId);
-        return null;
+        return ServiceUtils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId);
+    }
+    
+    @GET
+    @Path("/partition/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition [] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+
+        return ServiceUtils.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
     }
 
     @GET
@@ -156,8 +202,7 @@ public class StratosAdmin extends AbstractAdmin {
     public AutoscalePolicy getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
 
-        //return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
-        return null;
+        return ServiceUtils.getAutoScalePolicy(autoscalePolicyId);
     }
 
     @GET
@@ -178,8 +223,7 @@ public class StratosAdmin extends AbstractAdmin {
     public DeploymentPolicy getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
-        //return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
-        return null;
+        return ServiceUtils.getDeploymentPolicy(deploymentPolicyId);
     }
 
     @GET
@@ -250,6 +294,37 @@ public class StratosAdmin extends AbstractAdmin {
         }
     }
 
+    @GET
+    @Path("/cluster")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getClustersForTenant() throws ADCException {
+
+        return ServiceUtils.getClustersForTenant(getConfigContext());
+    }
+
+    @GET
+    @Path("/cluster/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getClusters(@PathParam("cartridgeType") String cartridgeType) throws ADCException {
+
+        return ServiceUtils.getClustersForTenantAndCartridgeType(getConfigContext(), cartridgeType);
+    }
+
+    @GET
+    @Path("/cluster/{cartridgeType}/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster getCluster(@PathParam("cartridgeType") String cartridgeType,
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+
+        return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
+    }
+
     @POST
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
@@ -261,8 +336,6 @@ public class StratosAdmin extends AbstractAdmin {
             log.error(exception);
         }
     }
-
-
 
     @POST
     @Path("/tenant")
@@ -609,7 +682,7 @@ public class StratosAdmin extends AbstractAdmin {
 
     	log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
     	// super tenant Deploying service (MT) 
-    	// -- note -- here an alias is generated
+    	// here an alias is generated
        ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
     		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getTenantId(),
     		   serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
@@ -654,6 +727,4 @@ public class StratosAdmin extends AbstractAdmin {
         }
         return tenantList;
     }
-
-
 }

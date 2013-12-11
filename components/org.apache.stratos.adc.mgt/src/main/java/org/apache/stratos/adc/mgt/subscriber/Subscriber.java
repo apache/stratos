@@ -19,7 +19,9 @@
 
 package org.apache.stratos.adc.mgt.subscriber;
 
-public class Subscriber {
+import java.io.Serializable;
+
+public class Subscriber implements Serializable {
 
     private String adminUserName;
     private int tenantId;
