@@ -466,13 +466,10 @@ public class RestCommandLineService {
             String result = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
                     partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
 
-            System.out.println(result);
-
-            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
-                System.out.println("Invalid operations. Authorization failed");
-            }
-            else {
+            if (result.equals("true")) {
                 System.out.println("You have successfully deployed the partition");
+            }else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operations. Authorization failed");
             }
 
         } catch (Exception e) {
@@ -485,13 +482,10 @@ public class RestCommandLineService {
             String result = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
                     autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-            System.out.println(result);
-
-            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
-                System.out.println("Invalid operations. Authorization failed");
-            }
-            else {
+            if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
+            }else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operations. Authorization failed");
             }
 
         } catch (Exception e) {
@@ -504,13 +498,10 @@ public class RestCommandLineService {
             String result = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-            System.out.println(result);
-
-            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
-                System.out.println("Invalid operations. Authorization failed");
-            }
-            else {
+            if (result.equals("true")) {
                 System.out.println("You have successfully deployed the deployment policy");
+            }else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operations. Authorization failed");
             }
 
         } catch (Exception e) {
