@@ -7,11 +7,11 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="lbStats2" name="stratos.lb.in.flight.req.count" version="1.0.0"/>
+    <stream as="lbStats2" name="stratos.lb.stats" version="1.0.0"/>
   </importedStreams>
-  <queryExpressions><![CDATA[define partition lbStats1Partition by cluster_id; 
-from lbStats2#window.stratos:gradient(1 min, in_flight_request_count)
-select cluster_id, in_flight_request_count as count insert into gradient_stats partition by lbStats1Partition;]]></queryExpressions>
+  <queryExpressions><![CDATA[ 
+from lbStats2#window.stratos:gradient(1 min, in_flight_requests)
+select cluster_id,partition_id,in_flight_requests as count group by cluster_id,partition_id insert into gradient_stats;]]></queryExpressions>
   <exportedStreams>
     <stream name="gradient_stats" valueOf="gradient_stats" version="1.0.0"/>
   </exportedStreams>
