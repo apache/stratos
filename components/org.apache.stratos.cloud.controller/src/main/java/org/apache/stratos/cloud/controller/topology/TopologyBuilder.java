@@ -118,7 +118,7 @@ public class TopologyBuilder {
 //            } else {
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
             
-            String property = props.getProperty(CloudControllerConstants.IS_LOAD_BALANCER);
+            String property = props.getProperty(Constants.IS_LOAD_BALANCER);
             boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
             
             Cluster cluster;
