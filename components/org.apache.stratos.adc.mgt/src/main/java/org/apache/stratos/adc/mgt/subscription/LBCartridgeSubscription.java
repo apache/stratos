@@ -24,8 +24,7 @@ import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-
-import java.util.Properties;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
 public class LBCartridgeSubscription extends CartridgeSubscription {
 

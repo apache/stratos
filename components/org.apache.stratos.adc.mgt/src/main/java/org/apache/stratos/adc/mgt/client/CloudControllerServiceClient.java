@@ -28,6 +28,7 @@ import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
@@ -36,7 +37,6 @@ import org.apache.stratos.cloud.controller.pojo.Property;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.Properties;
 
 public class CloudControllerServiceClient {
 
@@ -103,15 +103,13 @@ public class CloudControllerServiceClient {
                             String hostName, Properties properties,
                             String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException,
                             CloudControllerServiceUnregisteredCartridgeExceptionException, 
-                            CloudControllerServiceIllegalArgumentExceptionException
-	                                                                                  {		
+                            CloudControllerServiceIllegalArgumentExceptionException {		
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
 	    registrant.setCartridgeType(cartridgeType);
 	    registrant.setTenantRange(tenantRange);
 	    registrant.setHostName(hostName);
-	    org.apache.stratos.cloud.controller.pojo.Properties props = extractProperties(properties);
-	    registrant.setProperties(props);
+	    registrant.setProperties(properties);
 	    registrant.setPayload(payload);
 	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
         registrant.setDeploymentPolicyName(deploymentPolicyName);
@@ -119,8 +117,9 @@ public class CloudControllerServiceClient {
 
 	}
 
+    @SuppressWarnings("unused")
     private org.apache.stratos.cloud.controller.pojo.Properties
-        extractProperties(Properties properties) {
+        extractProperties(java.util.Properties properties) {
         org.apache.stratos.cloud.controller.pojo.Properties props =
                                                                  new org.apache.stratos.cloud.controller.pojo.Properties();
         if (properties != null) {

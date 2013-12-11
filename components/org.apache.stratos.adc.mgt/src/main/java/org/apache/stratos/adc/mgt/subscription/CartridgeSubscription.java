@@ -38,14 +38,15 @@ import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.adc.mgt.utils.*;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public abstract class CartridgeSubscription implements Serializable {
 
+    private static final long serialVersionUID = -5197430500059231924L;
     private static Log log = LogFactory.getLog(CartridgeSubscription.class);
     private int subscriptionId;
     private String type;
