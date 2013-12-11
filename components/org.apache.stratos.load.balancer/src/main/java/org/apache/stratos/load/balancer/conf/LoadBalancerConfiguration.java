@@ -63,6 +63,7 @@ public class LoadBalancerConfiguration {
     private boolean multiTenancyEnabled;
     private TenantIdentifier tenantIdentifier;
     private String tenantIdentifierRegex;
+    private String topologyMemberFilter;
 
     /**
      * Load balancer configuration is singleton.
@@ -210,6 +211,14 @@ public class LoadBalancerConfiguration {
         return topologyClusterFilter;
     }
 
+    public void setTopologyMemberFilter(String topologyMemberFilter) {
+        this.topologyMemberFilter = topologyMemberFilter;
+    }
+
+    public String getTopologyMemberFilter() {
+        return topologyMemberFilter;
+    }
+
     public boolean isMultiTenancyEnabled() {
         return multiTenancyEnabled;
     }
@@ -324,6 +333,10 @@ public class LoadBalancerConfiguration {
                 String clusterFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER);
                 if (StringUtils.isNotBlank(clusterFilter)) {
                     configuration.setTopologyClusterFilter(clusterFilter);
+                }
+                String memberFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_FILTER);
+                if (StringUtils.isNotBlank(memberFilter)) {
+                    configuration.setTopologyMemberFilter(memberFilter);
                 }
             }
 

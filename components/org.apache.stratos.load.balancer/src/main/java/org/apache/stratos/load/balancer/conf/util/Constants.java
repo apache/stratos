@@ -48,6 +48,7 @@ public class Constants {
     public static final String CONF_PROPERTY_PROXY = "proxy";
     public static final String CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER = "topology-service-filter";
     public static final String CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER = "topology-cluster-filter";
+    public static final String CONF_PROPERTY_TOPOLOGY_MEMBER_FILTER = "topology-member-filter";
     public static final String CONF_PROPERTY_MULTI_TENANCY = "multi-tenancy";
     public static final String CONF_PROPERTY_MULTI_TENANT = "multi-tenant";
     public static final String CONF_PROPERTY_TENANT_IDENTIFIER = "tenant-identifier";
