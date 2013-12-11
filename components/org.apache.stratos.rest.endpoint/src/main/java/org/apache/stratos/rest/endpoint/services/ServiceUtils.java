@@ -31,7 +31,7 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-import org.apache.stratos.adc.mgt.topology.model.TopologyClusterModel;
+import org.apache.stratos.adc.mgt.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
@@ -784,13 +784,13 @@ public class ServiceUtils {
 
     public static Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
 
-        return TopologyClusterModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+        return TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , subscriptionAlias);
     }
 
     public static Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
 
-        Set<Cluster> clusterSet = TopologyClusterModel.getInstance().getClusters(ApplicationManagementUtil.
+        Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext));
 
         return (clusterSet != null && clusterSet.size() > 0 ) ?
@@ -801,7 +801,7 @@ public class ServiceUtils {
     public static Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
                                                                   String cartridgeType) {
 
-        Set<Cluster> clusterSet = TopologyClusterModel.getInstance().getClusters(ApplicationManagementUtil.
+        Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), cartridgeType);
 
         return (clusterSet != null && clusterSet.size() > 0 ) ?
