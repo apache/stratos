@@ -22,7 +22,7 @@ package org.apache.stratos.adc.mgt.topology.event.processor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.adc.mgt.topology.model.TopologyClusterModel;
+import org.apache.stratos.adc.mgt.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
@@ -53,6 +53,7 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
     public void process(Message message) {
 
         //new InstanceStatusListenerThread(message).start();
+        doProcessing(message);
         //go to next processor in the chain
         if(nextTopologyEventProcessor != null) {
             nextTopologyEventProcessor.process(message);
@@ -82,7 +83,7 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
             if(cartridgeSubscriptionInfo != null) {
                 Cluster cluster = TopologyManager.getTopology().
                         getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
-                TopologyClusterModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
+                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
             }
@@ -99,7 +100,7 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
             if(cartridgeSubscriptionInfo != null) {
                 Cluster cluster = TopologyManager.getTopology().
                         getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
-                TopologyClusterModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
+                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
             }
@@ -116,7 +117,7 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
             if(cartridgeSubscriptionInfo != null) {
                 Cluster cluster = TopologyManager.getTopology().
                         getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
-                TopologyClusterModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
+                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
             }
@@ -132,7 +133,7 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
             if(cartridgeSubscriptionInfo != null) {
                 Cluster cluster = TopologyManager.getTopology().
                         getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
-                TopologyClusterModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
+                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
             }
