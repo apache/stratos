@@ -130,6 +130,12 @@ public class Cluster implements Serializable {
         this.loadBalanceAlgorithmName = loadBalanceAlgorithmName;
     }
 
+    /**
+     * Check whether a given tenant id is in tenant range of the cluster.
+     *
+     * @param tenantId
+     * @return
+     */
     public boolean tenantIdInRange(int tenantId) {
         if(StringUtils.isBlank(getTenantRange())) {
             return false;
@@ -155,6 +161,21 @@ public class Cluster implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Find partitions used by the cluster and return their ids as a collection.
+     *
+     * @return
+     */
+    public Collection<String> findPartitionIds() {
+        Map<String, Boolean> partitionIds = new HashMap<String, Boolean>();
+        for(Member member : getMembers()) {
+            if((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
+                partitionIds.put(member.getPartitionId(), true);
+            }
+        }
+        return partitionIds.keySet();
     }
 }
 

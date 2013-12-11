@@ -26,6 +26,8 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.Collection;
+
 /**
  * Load balancer statistics notifier thread for publishing statistics periodically to CEP.
  */
@@ -57,9 +59,13 @@ public class LoadBalancerInFlightRequestCountNotifier implements Runnable {
                 }
 
                 if (statsPublisher.isEnabled()) {
+                    Collection<String> partitionIds;
                     for (Service service : TopologyManager.getTopology().getServices()) {
                         for (Cluster cluster : service.getClusters()) {
-                            statsPublisher.publish(cluster.getClusterId(), statsReader.getInFlightRequestCount(cluster.getClusterId()));
+                            partitionIds =  cluster.findPartitionIds();
+                            for(String partitionId : partitionIds) {
+                                statsPublisher.publish(cluster.getClusterId(), partitionId, statsReader.getInFlightRequestCount(cluster.getClusterId(), partitionId));
+                            }
                         }
                     }
                 } else if (log.isWarnEnabled()) {
