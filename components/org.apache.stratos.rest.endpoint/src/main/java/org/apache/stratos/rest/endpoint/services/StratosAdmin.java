@@ -36,6 +36,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -52,6 +53,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/admin/")
 public class StratosAdmin extends AbstractAdmin {
@@ -596,6 +598,23 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
 
+    @POST
+    @Path("/service/definition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public void deployService (ServiceDefinitionBean serviceDefinitionBean)
+            throws RestAPIException {
+
+    	log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
+    	// super tenant Deploying service (MT) 
+    	// -- note -- here an alias is generated
+       ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
+    		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getTenantId(),
+    		   serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
+    		   serviceDefinitionBean.getTenantRange());
+    }
 
 
     private List<TenantInfoBean> getAllTenants() throws Exception {

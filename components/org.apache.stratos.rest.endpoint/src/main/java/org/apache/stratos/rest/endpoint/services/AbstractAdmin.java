@@ -61,4 +61,8 @@ public class AbstractAdmin {
     protected String getUsername(){
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
     }
+    
+    protected int getTenantId(){
+        return CarbonContext.getThreadLocalCarbonContext().getTenantId();
+    }
 }

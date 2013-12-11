@@ -65,15 +65,15 @@ public class CartridgeSubscriptionFactory {
         //TODO: fix the logic properly
         CartridgeSubscription cartridgeSubscription = null;
         if(cartridgeInfo.getMultiTenant()) {
-            cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo);
+            cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, false);
 
         } else {
             if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
-                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo);
+                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo, false);
             }
             else {
                 //cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
-                cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo);
+                cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, false);
             }
         }
 

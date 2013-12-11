@@ -25,6 +25,7 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
@@ -42,9 +43,9 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
      *
      * @param cartridgeInfo CartridgeInfo subscription
      */
-    public DataCartridgeSubscription(CartridgeInfo cartridgeInfo) {
+    public DataCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
 
-        super(cartridgeInfo);
+        super(cartridgeInfo, isServiceDeployment);
         this.setHost("localhost");
         this.setUsername(CartridgeConstants.MYSQL_DEFAULT_USER);
         this.setPassword(ApplicationManagementUtil.generatePassword());

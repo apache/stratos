@@ -23,6 +23,7 @@ import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 import java.util.Properties;
@@ -34,8 +35,8 @@ public class LBCartridgeSubscription extends CartridgeSubscription {
      *
      * @param cartridgeInfo CartridgeInfo subscription
      */
-    public LBCartridgeSubscription(CartridgeInfo cartridgeInfo) {
-        super(cartridgeInfo);
+    public LBCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
+        super(cartridgeInfo, isServiceDeployment);
     }
 
     @Override

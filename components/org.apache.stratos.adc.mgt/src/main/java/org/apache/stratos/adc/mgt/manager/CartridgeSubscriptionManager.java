@@ -35,6 +35,7 @@ import org.apache.stratos.adc.mgt.payload.PayloadFactory;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
+import org.apache.stratos.adc.mgt.subscription.FrameworkCartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
@@ -366,6 +367,119 @@ public class CartridgeSubscriptionManager {
         }
 
         return populateCartridgeSubscriptionInformation(cartridgeInfo, cartridgeSubscriptionInfo);
+    }
+    
+    
+    /****
+     *  TODO - complete method...
+     * 
+     * 
+     * @param cartridgeType
+     * @param cartridgeAlias
+     * @param autoscalingPolicyName
+     * @param deploymentPolicyName
+     * @param tenantDomain
+     * @param tenantId
+     * @param tenantAdminUsername
+     * @param repositoryType
+     * @param repositoryURL
+     * @param isPrivateRepository
+     * @param repositoryUsername
+     * @param repositoryPassword
+     */
+    
+    public CartridgeSubscription deployMultitenantService(String cartridgeType, String cartridgeAlias,
+            String autoscalingPolicyName, String deploymentPolicyName,
+            String tenantDomain, int tenantId,
+            String tenantAdminUsername,
+            String clusterDomain, String clusterSubdomain,
+            String repositoryURL, boolean isPrivateRepository,
+            String repositoryUsername, String repositoryPassword, String tenantRange) throws ADCException, InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException,
+            UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
+            RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
+    	
+    	log.info(" ---- in deploy multitenant service ---- ");
+    	//validate cartridge alias
+        ApplicationManagementUtil.validateCartridgeAlias(cartridgeAlias, cartridgeType);
+
+        CartridgeInfo cartridgeInfo;
+        try {
+            cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+
+        } catch (UnregisteredCartridgeException e) {
+            String message = cartridgeType
+                    + " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
+            log.error(message);
+            throw e;
+
+        } catch (Exception e) {
+            String message = "Error getting info for " + cartridgeType;
+            log.error(message, e);
+            throw new ADCException(message, e);
+        }
+
+        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
+
+        CartridgeSubscription cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo,true);
+        log.info("-- Cartridge subscription is created --- ");
+        Repository repository = cartridgeSubscription.manageRepository(repositoryURL, repositoryUsername,
+                repositoryPassword, isPrivateRepository, cartridgeAlias, cartridgeInfo, tenantDomain);
+        log.info("-- Repository creation is done --- ");
+        cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName, deploymentPolicyName, repository);
+        cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey());
+        
+        //cartridgeSubscription.setClusterDomain(clusterDomain);
+        //cartridgeSubscription.setClusterSubDomain(clusterDomain);        
+        
+        log.info("-- subscription key is generated --- ");
+        log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
+                " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " + cartridgeType +
+                ", Repo URL: " + repositoryURL + ", Policy: " + autoscalingPolicyName);
+        
+        // TODO -- payload would need some additional params - like Puppet master IP .. etc
+        
+        Payload payload = PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(), cartridgeType,
+                "/tmp/" + tenantDomain + "-" + cartridgeAlias + ".zip");
+        PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
+
+        if (payloadArg != null) {
+            //populate the payload
+            payload.populatePayload(payloadArg);
+            
+            // populate payload from UI here
+            payloadArg.setTenantRange(tenantRange);
+            payloadArg.setDeployment("default");   
+            payloadArg.setServiceDomain(cartridgeAlias+"."+cartridgeInfo.getHostName()+".domain"); // This is cluster id
+            cartridgeSubscription.setPayload(payload);
+        }
+
+        //get the payload parameters defined in the cartridge definition file for this cartridge type
+        if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
+
+            StringBuilder customPayloadParamsBuilder = new StringBuilder();
+            for(Property property : cartridgeInfo.getProperties()) {
+                //check if a property is related to the payload. Currently this is done by checking if the
+                //property name starts with 'payload_parameter.' suffix. If so the payload param name will
+                //be taken as the substring from the index of '.' to the end of the property name.
+                if(property.getName().startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
+                    String payloadParamName = property.getName();
+                    customPayloadParamsBuilder.append(",");
+                    customPayloadParamsBuilder.append(payloadParamName.
+                            substring(payloadParamName.indexOf(".") + 1));
+                    customPayloadParamsBuilder.append("=");
+                    customPayloadParamsBuilder.append(property.getValue());
+                }
+            }
+            //if valid payload related parameters are found in the cartridge definition file, add them to the payload
+            String customPayloadParamString = customPayloadParamsBuilder.toString();
+            if(!customPayloadParamString.isEmpty()) {
+                payload.populatePayload(customPayloadParamString);
+                cartridgeSubscription.setPayload(payload);
+            }
+        }
+        
+        return cartridgeSubscription;
+    	
     }
 
     private CartridgeSubscriptionInfo getCartridgeSubscriptionInfo(String tenantDomain, String alias)

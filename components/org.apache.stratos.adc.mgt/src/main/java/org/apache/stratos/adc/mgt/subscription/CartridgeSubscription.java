@@ -32,6 +32,7 @@ import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.subscription.tenancy.ServiceDeploymentMultiTenantBehaviour;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionMultiTenantBehaviour;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionSingleTenantBehaviour;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
@@ -43,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public abstract class CartridgeSubscription {
+public abstract class CartridgeSubscription /*implements TempBehaviourInterface*/ {
 
     private static Log log = LogFactory.getLog(CartridgeSubscription.class);
     private int subscriptionId;
@@ -67,7 +68,8 @@ public abstract class CartridgeSubscription {
      *
      * @param cartridgeInfo CartridgeInfo subscription
      */
-    public CartridgeSubscription(CartridgeInfo cartridgeInfo) {
+    // TODO - temp fix to identify service deployment
+    public CartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
 
         this.setCartridgeInfo(cartridgeInfo);
         this.setType(cartridgeInfo.getType());
@@ -79,12 +81,14 @@ public abstract class CartridgeSubscription {
         getCluster().setHostName(cartridgeInfo.getHostName());
         this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         this.connectedSubscriptionAliases = new ArrayList<String>();
-        if(getCartridgeInfo().getMultiTenant()) {
+        if(isServiceDeployment) {
+        	subscriptionTenancyBehaviour = new ServiceDeploymentMultiTenantBehaviour(this);
+        } else if(getCartridgeInfo().getMultiTenant()) {
             subscriptionTenancyBehaviour = new SubscriptionMultiTenantBehaviour(this);
         }
         else {
             subscriptionTenancyBehaviour = new SubscriptionSingleTenantBehaviour(this);
-        }
+        } 
     }
 
     /**
@@ -113,11 +117,14 @@ public abstract class CartridgeSubscription {
             DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
 
+    	log.info(" ---- in super type cartridge subscription --");
         setSubscriber(subscriber);
         setAlias(alias);
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
+        // TODOOO... remove followig
+        //subscriptionTenancyBehaviour.createSubscription(this);
     }
 
     /**
@@ -210,8 +217,9 @@ public abstract class CartridgeSubscription {
             }
         }
 
-        Repository repository = new Repository();
+        Repository repository = null;
         if (repoURL != null && repoURL.trim().length() > 0) {
+        	repository = new Repository();
             log.info("External REPO URL is provided as [" + repoURL +
                     "]. Therefore not creating a new repo.");
             //repository.setRepoName(repoURL.substring(0, repoURL.length()-4)); // remove .git part
@@ -220,12 +228,13 @@ public abstract class CartridgeSubscription {
             repository.setPassword(repoUserPassword);
             repository.setPrivateRepository(privateRepo);
 
-        } else {
+        } 
+        // Commenting out, since internal git repos are no longer used
+        /*else {
 
             log.info("External git repo url not provided for tenant "
                     + tenantDomain + ", creating an git internal repository");
 
-            // for internal repos  internal git server username and password is used.
             repository.setUserName(System.getProperty(CartridgeConstants.INTERNAL_GIT_USERNAME));
             repository.setPassword(System.getProperty(CartridgeConstants.INTERNAL_GIT_PASSWORD));
             try {
@@ -239,7 +248,7 @@ public abstract class CartridgeSubscription {
             String repoName = tenantDomain + "/" + cartridgeAlias;
             repository.setUrl("https://" + System.getProperty(CartridgeConstants.GIT_HOST_NAME) + ":8443/git/" +
                     repoName);
-        }
+        }*/
 
         // Validate Remote Repository.
         ApplicationManagementUtil.validateRepository(repoURL, repoUserName, repoUserPassword, privateRepo,
