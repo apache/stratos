@@ -132,17 +132,7 @@ public class AutoscalerRuleEvaluator {
                                            PartitionManager.getInstance()
                                                            .getNetworkPartition(nwPartitionId);
 
-            Properties props = partitionContext.getProperties();
-            String value =
-                           (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
-            String lbClusterId = null;
-
-            if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-                lbClusterId = ctxt.getDefaultLbClusterId();
-            } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-                String serviceName = partitionContext.getServiceName();
-                lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
-            }
+            String lbClusterId = getLbClusterId(partitionContext, ctxt);
 
             MemberContext memberContext =
                                           CloudControllerClient.getInstance()
@@ -159,6 +149,23 @@ public class AutoscalerRuleEvaluator {
 			throw new RuntimeException(message, e);
 		}
 	}
+
+
+
+    public static String getLbClusterId(PartitionContext partitionContext, NetworkPartitionContext ctxt) {
+        Properties props = partitionContext.getProperties();
+        String value =
+                       (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+        String lbClusterId = null;
+
+        if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+            lbClusterId = ctxt.getDefaultLbClusterId();
+        } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+            String serviceName = partitionContext.getServiceName();
+            lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
+        }
+        return lbClusterId;
+    }
 
     public void delegateTerminate(Partition partition, String clusterId) {
    		log.info("terminate from partition " + partition.getId() + " cluster " + clusterId );
