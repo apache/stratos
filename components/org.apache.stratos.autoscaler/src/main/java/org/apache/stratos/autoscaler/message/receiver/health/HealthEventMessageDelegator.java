@@ -282,7 +282,7 @@ public class HealthEventMessageDelegator implements Runnable {
             // start a new member in the same Partition
             String partitionId = monitor.getPartitonOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
-            ccClient.spawnAnInstance(partition, clusterId);
+            ccClient.spawnAnInstance(partition, clusterId, null);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s", partitionId, clusterId));
             }
