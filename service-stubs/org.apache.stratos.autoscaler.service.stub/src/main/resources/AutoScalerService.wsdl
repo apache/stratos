@@ -161,6 +161,21 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="checkServiceLBExistenceAgainstPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="checkServiceLBExistenceAgainstPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="AutoScalerServiceNonExistingLBException">
                 <xs:complexType>
                     <xs:sequence>
@@ -428,6 +443,12 @@
     <wsdl:message name="addPartitionResponse">
         <wsdl:part name="parameters" element="ns:addPartitionResponse"/>
     </wsdl:message>
+    <wsdl:message name="checkServiceLBExistenceAgainstPolicyRequest">
+        <wsdl:part name="parameters" element="ns:checkServiceLBExistenceAgainstPolicy"/>
+    </wsdl:message>
+    <wsdl:message name="checkServiceLBExistenceAgainstPolicyResponse">
+        <wsdl:part name="parameters" element="ns:checkServiceLBExistenceAgainstPolicyResponse"/>
+    </wsdl:message>
     <wsdl:message name="addDeploymentPolicyRequest">
         <wsdl:part name="parameters" element="ns:addDeploymentPolicy"/>
     </wsdl:message>
@@ -499,6 +520,10 @@
         <wsdl:operation name="addPartition">
             <wsdl:input message="ns:addPartitionRequest" wsaw:Action="urn:addPartition"/>
             <wsdl:output message="ns:addPartitionResponse" wsaw:Action="urn:addPartitionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
+            <wsdl:input message="ns:checkServiceLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkServiceLBExistenceAgainstPolicy"/>
+            <wsdl:output message="ns:checkServiceLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkServiceLBExistenceAgainstPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
             <wsdl:input message="ns:addDeploymentPolicyRequest" wsaw:Action="urn:addDeploymentPolicy"/>
@@ -628,6 +653,15 @@
         </wsdl:operation>
         <wsdl:operation name="addPartition">
             <soap:operation soapAction="urn:addPartition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
+            <soap:operation soapAction="urn:checkServiceLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -785,6 +819,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
+            <soap12:operation soapAction="urn:checkServiceLBExistenceAgainstPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
             <soap12:operation soapAction="urn:addDeploymentPolicy" style="document"/>
             <wsdl:input>
@@ -925,6 +968,15 @@
         </wsdl:operation>
         <wsdl:operation name="addPartition">
             <http:operation location="addPartition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
+            <http:operation location="checkServiceLBExistenceAgainstPolicy"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
