@@ -36,6 +36,9 @@ public class NetworkPartitionContext {
     private Map<String, String> clusterIdToLBClusterIdMap;
 
     private String partitionAlgorithm;
+    
+    //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
+    private int minInstanceCount = 1, maxInstanceCount = 1;
 
 
     //Following information will keep events details
@@ -134,6 +137,22 @@ public class NetworkPartitionContext {
         return this.clusterIdToLBClusterIdMap.containsKey(clusterId) &&
                 this.clusterIdToLBClusterIdMap.get(clusterId) != null;
 
+    }
+
+    public int getMinInstanceCount() {
+        return minInstanceCount;
+    }
+
+    public void setMinInstanceCount(int minInstanceCount) {
+        this.minInstanceCount = minInstanceCount;
+    }
+
+    public int getMaxInstanceCount() {
+        return maxInstanceCount;
+    }
+
+    public void setMaxInstanceCount(int maxInstanceCount) {
+        this.maxInstanceCount = maxInstanceCount;
     }
 
     public int hashCode() {

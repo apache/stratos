@@ -42,6 +42,10 @@ public class AutoscalerContext {
     public ClusterMonitor getMonitor(String clusterId) {
         return monitors.get(clusterId);
     }
+    
+    public LbClusterMonitor getLBMonitor(String clusterId) {
+        return lbMonitors.get(clusterId);
+    }
 
     public ClusterMonitor removeMonitor(String clusterId) {
         return monitors.remove(clusterId);

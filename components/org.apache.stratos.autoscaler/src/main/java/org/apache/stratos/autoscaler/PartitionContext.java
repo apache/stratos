@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -42,10 +43,15 @@ public class PartitionContext {
 
     private static final Log log = LogFactory.getLog(PartitionContext.class);
     private String partitionId;
+    private String serviceName;
     private String networkPartitionId;
     private Partition partition;
     private int currentMemberCount = 0;
     private int minimumMemberCount = 0;
+    
+    // properties
+    private Properties properties;
+    
     // 5 mints as the default
     private long expiryTime = 300000;
     // pending members
@@ -233,6 +239,22 @@ public class PartitionContext {
 //        return memberStatsContexts.containsKey(memberId);
 //    }
 
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
