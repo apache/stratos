@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.autoscaler.api;
 
-import java.util.ArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
@@ -34,6 +32,8 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
+import java.util.ArrayList;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -70,7 +70,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	@Override
 	public boolean addPartition(Partition partition) {
-        return PartitionManager.getInstance().deployNewPartitoion(partition);
+        return PartitionManager.getInstance().deployNewPartiotion(partition);
 	}
 
 	@Override

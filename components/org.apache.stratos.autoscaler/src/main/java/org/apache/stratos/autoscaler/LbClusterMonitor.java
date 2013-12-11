@@ -35,15 +35,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * rules engine.
  *
  */
-public class ClusterMonitor implements Runnable{
+public class LbClusterMonitor implements Runnable{
 
-    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
+    private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
     private String clusterId;
-
     private String serviceId;
 
     private Map<String, NetworkPartitionContext> networkPartitionCtxts;
-
 
     private StatefulKnowledgeSession minCheckKnowledgeSession;
     private StatefulKnowledgeSession scaleCheckKnowledgeSession;
@@ -60,8 +58,8 @@ public class ClusterMonitor implements Runnable{
 
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
-    public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
-                          AutoscalePolicy autoscalePolicy) {
+    public LbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
+                            AutoscalePolicy autoscalePolicy) {
         this.clusterId = clusterId;
         this.serviceId = serviceId;
 
@@ -147,30 +145,11 @@ public class ClusterMonitor implements Runnable{
             //TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
 
-            //minimum check per partition
-            for(PartitionContext partitionContext: networkPartitionContext.getPartitionCtxts().values()){
-
                 minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
-                }
-
+                log.info("partition " + networkPartitionContext.getId());
                 minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession
-                        , minCheckFactHandle, partitionContext);
+                        , minCheckFactHandle, networkPartitionContext);
 
-            }
-
-            scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-            scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
-            scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
-            }
-
-            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
-                    , scaleCheckFactHandle, networkPartitionContext);
 
         }
     }

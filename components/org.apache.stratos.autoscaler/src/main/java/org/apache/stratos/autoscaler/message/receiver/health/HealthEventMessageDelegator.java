@@ -19,22 +19,17 @@
 package org.apache.stratos.autoscaler.message.receiver.health;
 
 import com.google.gson.stream.JsonReader;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import javax.jms.TextMessage;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -50,6 +45,7 @@ public class HealthEventMessageDelegator implements Runnable {
     private static final Log log = LogFactory.getLog(HealthEventMessageDelegator.class);
     private String eventName;
     private String clusterId;
+    private String networkPartitionId;
     private Map<String, String> messageProperties;
     @Override
     public void run() {
@@ -69,15 +65,18 @@ public class HealthEventMessageDelegator implements Runnable {
 
                 if(Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)){                	
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).setAverageRequestsInFlight(messageValue);
+                    AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
+                            .setAverageRequestsInFlight(messageValue);
 
                 }  else if(Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(eventName)){                	
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightGradient(messageValue);
+                    AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
+                            .setRequestsInFlightGradient(messageValue);
 
                 }  else if(Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(eventName)){
                 	Float messageValue = Float.parseFloat(messageProperties.get("value"));
-                    AutoscalerContext.getInstance().getClusterContext(clusterId).setRequestsInFlightSecondDerivative(messageValue);
+                    AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
+                            .setRequestsInFlightSecondDerivative(messageValue);
 
                 }else if (Constants.MEMBER_FAULT_EVENT_NAME.equals(eventName)){
                 	
@@ -100,10 +99,9 @@ public class HealthEventMessageDelegator implements Runnable {
     private void handleMemberfaultEvent(String memberId) {
 		try {	
 			
-			ClusterMonitor monitor = AutoscalerRuleEvaluator.getInstance().getMonitor(this.clusterId);
-			ClusterContext clusCtx = monitor.getClusterCtxt();
-								
-			if(!clusCtx.memberExist(memberId)){
+			ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(this.clusterId);
+//            TopologyManager.getTopology().get
+			if(!monitor.memberExist(memberId)){
 				// member has already terminated. So no action required
 				return;
 			}
@@ -113,9 +111,9 @@ public class HealthEventMessageDelegator implements Runnable {
 			ccClient.terminate(memberId);
 			
 			// start a new member in the same Partition
-			//ClusterContext clsCtx = AutoscalerContext.getInstance().getClusterContext(clusterId);
-			String partitionId = clusCtx.getPartitonOfMember(memberId);
-			Partition partition = clusCtx.getDeploymentPolicy().getPartitionById(partitionId);
+			//ClusterContext clsCtx = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+			String partitionId = monitor.getPartitonOfMember(memberId);
+			Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
 			ccClient.spawnAnInstance(partition, clusterId);
 			
 		} catch (TerminationException e) {
@@ -132,7 +130,6 @@ public class HealthEventMessageDelegator implements Runnable {
         JsonReader reader = new JsonReader(bufferedReader);
         try {
 
-           
             reader.beginObject();
 
             if(reader.hasNext()) {

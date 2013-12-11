@@ -18,15 +18,17 @@
  */
 package org.apache.stratos.autoscaler;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -35,10 +37,12 @@ import org.apache.stratos.cloud.controller.pojo.MemberContext;
  * @author nirmal
  *
  */
+
 public class PartitionContext {
 
     private static final Log log = LogFactory.getLog(PartitionContext.class);
     private String partitionId;
+    private String networkPartitionId;
     private Partition partition;
     private int currentMemberCount = 0;
     private int minimumMemberCount = 0;
@@ -55,6 +59,8 @@ public class PartitionContext {
     
     // active members
     private List<MemberContext> activeMembers;
+
+    private Map<String, MemberStatsContext> memberStatsContexts;
     
     public PartitionContext(Partition partition) {
         this.setPartition(partition);
@@ -63,6 +69,7 @@ public class PartitionContext {
         this.activeMembers = new ArrayList<MemberContext>();
         this.obsoletedMembers = new CopyOnWriteArrayList<String>(); 
         this.faultyMembers = new CopyOnWriteArrayList<String>();
+        memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
     }
@@ -192,6 +199,40 @@ public class PartitionContext {
     public void setObsoletedMembers(List<String> obsoletedMembers) {
         this.obsoletedMembers = obsoletedMembers;
     }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
+    }
+
+    
+    public Map<String, MemberStatsContext> getMemberStatsContexts() {
+        return memberStatsContexts;
+    }
+
+    public MemberStatsContext getMemberStatsContext(String memberId) {
+        return memberStatsContexts.get(networkPartitionId);
+    }
+
+    public void addMemberStatsContext(MemberStatsContext ctxt) {
+        this.memberStatsContexts.put(ctxt.getMemberId(), ctxt);
+    }
+
+    public void removeMemberStatsContext(String memberId) {
+        this.memberStatsContexts.remove(memberId);
+    }
+
+    public MemberStatsContext getPartitionCtxt(String id) {
+        return this.memberStatsContexts.get(id);
+    }
+
+//    public boolean memberExist(String memberId) {
+//        return memberStatsContexts.containsKey(memberId);
+//    }
+
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;

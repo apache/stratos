@@ -19,13 +19,16 @@
 
 package org.apache.stratos.autoscaler;
 
+import org.apache.stratos.autoscaler.policy.model.LoadAverage;
+import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+
 /**
  * This class will keep additional parameters such as load average and memory consumption
  */
 
 public class MemberStatsContext {
-    private float loadAverage;
-    private float memoryConsumption;
+    private LoadAverage loadAverage;
+    private MemoryConsumption memoryConsumption;
     private String memberId;
 
     public MemberStatsContext(String memberId){
@@ -40,19 +43,20 @@ public class MemberStatsContext {
         this.memberId = memberId;
     }
 
-    public float getMemoryConsumption() {
-        return memoryConsumption;
-    }
 
-    public void setMemoryConsumption(float memoryConsumption) {
-        this.memoryConsumption = memoryConsumption;
-    }
-
-    public float getLoadAverage() {
+    public LoadAverage getLoadAverage() {
         return loadAverage;
     }
 
-    public void setLoadAverage(float loadAverage) {
+    public void setLoadAverage(LoadAverage loadAverage) {
         this.loadAverage = loadAverage;
+    }
+
+    public MemoryConsumption getMemoryConsumption() {
+        return memoryConsumption;
+    }
+
+    public void setMemoryConsumption(MemoryConsumption memoryConsumption) {
+        this.memoryConsumption = memoryConsumption;
     }
 }

@@ -33,7 +33,7 @@ public class HealthEventQueue extends LinkedBlockingQueue<TextMessage>{
     private HealthEventQueue(){
     }
 
-    public static synchronized HealthEventQueue getInstance() {
+    public static HealthEventQueue getInstance() {
         if (instance == null) {
             synchronized (HealthEventQueue.class){
                 if (instance == null) {

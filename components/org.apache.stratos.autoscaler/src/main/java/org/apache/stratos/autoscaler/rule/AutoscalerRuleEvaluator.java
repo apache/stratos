@@ -21,11 +21,10 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.PartitionGroupOneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
@@ -40,8 +39,6 @@ import org.drools.runtime.rule.FactHandle;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is responsible for evaluating the current details of topology, statistics, and health
@@ -52,23 +49,53 @@ public class AutoscalerRuleEvaluator {
 	private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
 	
 	private static AutoscalerRuleEvaluator instance = null;
-	private static final String DRL_FILE_NAME = "autoscaler.drl";
-	private Map<String, ClusterMonitor> monitors;
-	private static KnowledgeBase kbase;
+	private static final String DRL_FILE_NAME = "mincheck.drl";
+	private static final String SCALING_DRL_FILE_NAME = "scaling.drl";
 
-	private AutoscalerRuleEvaluator() {
-        try {
-            kbase = readKnowledgeBase();
-            setMonitors(new HashMap<String, ClusterMonitor>());
-        } catch (Exception e) {
-            log.error("Rule evaluate error", e);
+	private static KnowledgeBase minCheckKbase;
+	private static KnowledgeBase scaleCheckKbase;
+
+
+    public static double scaleUpFactor = 0.8;   //get from config
+    public static double scaleDownFactor = 0.2;
+    public static double scaleDownLowerRate = 0.8;
+
+    public AutoscalerRuleEvaluator(){
+
+        minCheckKbase = readKnowledgeBase(DRL_FILE_NAME);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Minimum check rule is parsed successfully");
+        }
+
+        scaleCheckKbase = readKnowledgeBase(SCALING_DRL_FILE_NAME);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Scale check rule is parsed successfully");
         }
     }
+
     
     
-    public static FactHandle evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+    public static FactHandle evaluateMinCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
 
         if (handle == null) {
+
+            ksession.setGlobal("$evaluator", new AutoscalerRuleEvaluator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        ksession.fireAllRules();
+        log.info("fired all rules "+obj);
+        return handle;
+    }
+
+
+    public static FactHandle evaluateScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+
+        if (handle == null) {
+            ksession.setGlobal("$evaluator", new AutoscalerRuleEvaluator());
 
             handle = ksession.insert(obj);
         } else {
@@ -79,38 +106,26 @@ public class AutoscalerRuleEvaluator {
         return handle;
     }
 
-    public void addMonitor(ClusterMonitor monitor) {
-        monitors.put(monitor.getClusterId(), monitor);
-    }
-    
-    public ClusterMonitor getMonitor(String clusterId) {
-        return monitors.get(clusterId);
-    }
-    
-    public ClusterMonitor removeMonitor(String clusterId) {
-        return monitors.remove(clusterId);
-    }
 
-    public StatefulKnowledgeSession getStatefulSession() {
+
+    public StatefulKnowledgeSession getMinCheckStatefulSession() {
         StatefulKnowledgeSession ksession;
-        ksession = kbase.newStatefulKnowledgeSession();
-//        ksession.setGlobal("$partitions", ctxt.getPartitionsOfThisCluster());
-//        ksession.setGlobal("log", log);
-//        ksession.setGlobal("$manager", PolicyManager.getInstance());
-//        ksession.setGlobal("$topology", TopologyManager.getTopology());
-//        ksession.setGlobal("$evaluator", this);
+        ksession = minCheckKbase.newStatefulKnowledgeSession();
         return ksession;
-//        ksession.insert(clusterCtxt);
-//        ksession.fireAllRules();
+    }
+    public StatefulKnowledgeSession getScaleCheckStatefulSession() {
+        StatefulKnowledgeSession ksession;
+        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+        return ksession;
     }
     
-	public static MemberContext delegateSpawn(Partition partition, String clusterId) {
+	public void delegateSpawn(PartitionContext partitionContext, String clusterId) {
 		try {
-//            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
-
-//            if(currentMemberCount < partition.getPartitionMembersMax())       {
-//                AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(1);
-    			return CloudControllerClient.getInstance().spawnAnInstance(partition, clusterId);
+                MemberContext memberContext = CloudControllerClient.getInstance()
+                        .spawnAnInstance(partitionContext.getPartition(), clusterId);
+                if( memberContext!= null){
+                    partitionContext.addPendingMember(memberContext);
+                }
 
 		} catch (Throwable e) {
 			String message = "Cannot spawn an instance";
@@ -119,16 +134,20 @@ public class AutoscalerRuleEvaluator {
 		}
 	}
 
-	public static void delegateTerminate(String memberId) {
-		try {
+    public void delegateTerminate(Partition partition, String clusterId) {
+   		log.info("terminate from partition " + partition.getId() + " cluster " + clusterId );
+   	}
 
-			CloudControllerClient.getInstance().terminate(memberId);
-		} catch (Throwable e) {
-			log.error("Cannot terminate instance", e);
-		}
-	}
+    public void delegateTerminate(String memberId) {
+   		try {
+
+   			CloudControllerClient.getInstance().terminate(memberId);
+   		} catch (Throwable e) {
+   			log.error("Cannot terminate instance", e);
+   		}
+   	}
 	
-	public static void delegateTerminateAll(String clusterId) {
+	public void delegateTerminateAll(String clusterId) {
         try {
 
             CloudControllerClient.getInstance().terminateAllInstances(clusterId);
@@ -140,11 +159,11 @@ public class AutoscalerRuleEvaluator {
 //	public boolean delegateSpawn(Partition partition, String clusterId, int memberCountToBeIncreased) {
 //		CloudControllerClient cloudControllerClient = new CloudControllerClient();
 //		try {
-//            int currentMemberCount = AutoscalerContext.getInstance().getClusterContext(clusterId).getMemberCount();
+//            int currentMemberCount = AutoscalerContext.getInstance().getClusterMonitor(clusterId).getMemberCount();
 //            log.info("Current member count is " + currentMemberCount );
 //
 //            if(currentMemberCount < partition.getPartitionMembersMax()) {
-//                AutoscalerContext.getInstance().getClusterContext(clusterId).increaseMemberCount(memberCountToBeIncreased);
+//                AutoscalerContext.getInstance().getClusterMonitor(clusterId).increaseMemberCount(memberCountToBeIncreased);
 //                cloudControllerClient.spawnInstances(partition, clusterId, memberCountToBeIncreased);
 //            }
 //			return true;
@@ -154,21 +173,11 @@ public class AutoscalerRuleEvaluator {
 //		return false;
 //	}
 
-    public static AutoscalerRuleEvaluator getInstance() {
-        if (instance == null) {
-            synchronized (AutoscalerRuleEvaluator.class){
-                if (instance == null) {
-                    instance = new AutoscalerRuleEvaluator();
-                }
-            }
-        }
-        return instance;
-    }
-    
-    private KnowledgeBase readKnowledgeBase() throws Exception {
+    private static KnowledgeBase readKnowledgeBase(String drlFileName) {
+        
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         String configDir = CarbonUtils.getCarbonConfigDirPath();
-        Resource resource = ResourceFactory.newFileResource(configDir + File.separator + DRL_FILE_NAME);
+        Resource resource = ResourceFactory.newFileResource(configDir + File.separator + drlFileName );
 		kbuilder.add(resource, ResourceType.DRL);
         KnowledgeBuilderErrors errors = kbuilder.getErrors();
         if (errors.size() > 0) {
@@ -194,23 +203,15 @@ public class AutoscalerRuleEvaluator {
         return autoscaleAlgorithm;
     }
 
-    public Partition getNextScaleUpPartition(String clusterID)
-    {
-    	return new PartitionGroupOneAfterAnother().getNextScaleUpPartition(clusterID);
-    }
-    
-    public Partition getNextScaleDownPartition(String clusterID)
-    {
-    	return new PartitionGroupOneAfterAnother().getNextScaleDownPartition(clusterID);
-    }
-
-
-    public Map<String, ClusterMonitor> getMonitors() {
-        return monitors;
+    public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative){
+        double predictedValue;
+//        s = u * t + 0.5 * a * t * t
+        if(log.isDebugEnabled()) {
+            log.debug((String.format("Calculating predicted value, gradient %s ", gradient)));
+        }
+        predictedValue = average + gradient + 0.5 * secondDerivative;
+        return predictedValue;
     }
 
 
-    public void setMonitors(Map<String, ClusterMonitor> monitors) {
-        this.monitors = monitors;
-    }
 }
