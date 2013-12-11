@@ -125,29 +125,35 @@ public class AutoscalerRuleEvaluator {
     }
     
 	public void delegateSpawn(PartitionContext partitionContext, String clusterId) {
-		try {
-		    
-		    String nwPartitionId = partitionContext.getNetworkPartitionId();
-		    NetworkPartitionContext ctxt = PartitionManager.getInstance().getNetworkPartition(nwPartitionId);
-		    
-		    Properties props = partitionContext.getProperties();
-		    String value = (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
-		    String lbClusterId;
-		    
-		    if(value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-		        lbClusterId = ctxt.getDefaultLbClusterId();
-		    } else if(value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-		        String serviceName = partitionContext.getServiceName();
-		        lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
-		    }
-		   
-                MemberContext memberContext = CloudControllerClient.getInstance()
-                        .spawnAnInstance(partitionContext.getPartition(), clusterId, lbClusterId);
-                if( memberContext!= null){
-                    partitionContext.addPendingMember(memberContext);
-                }
+        try {
 
-		} catch (Throwable e) {
+            String nwPartitionId = partitionContext.getNetworkPartitionId();
+            NetworkPartitionContext ctxt =
+                                           PartitionManager.getInstance()
+                                                           .getNetworkPartition(nwPartitionId);
+
+            Properties props = partitionContext.getProperties();
+            String value =
+                           (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+            String lbClusterId = null;
+
+            if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+                lbClusterId = ctxt.getDefaultLbClusterId();
+            } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+                String serviceName = partitionContext.getServiceName();
+                lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
+            }
+
+            MemberContext memberContext =
+                                          CloudControllerClient.getInstance()
+                                                               .spawnAnInstance(partitionContext.getPartition(),
+                                                                                clusterId,
+                                                                                lbClusterId);
+            if (memberContext != null) {
+                partitionContext.addPendingMember(memberContext);
+            }
+
+        } catch (Throwable e) {
 			String message = "Cannot spawn an instance";
             log.error(message, e);
 			throw new RuntimeException(message, e);
