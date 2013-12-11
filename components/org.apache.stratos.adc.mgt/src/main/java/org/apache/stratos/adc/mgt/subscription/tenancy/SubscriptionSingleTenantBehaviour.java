@@ -31,8 +31,8 @@ import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
-import java.util.Properties;
 
 public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehaviour {
 

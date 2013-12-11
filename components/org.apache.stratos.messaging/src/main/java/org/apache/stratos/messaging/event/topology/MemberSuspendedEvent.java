@@ -26,9 +26,11 @@ import java.io.Serializable;
  */
 public class MemberSuspendedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -6374918444978329986L;
-	private String serviceName;
-    private String clusterId;
-    private String memberId;
+
+    private final String serviceName;
+    private final String clusterId;
+    private final String memberId;
+    private String lbClusterId;
 
     public MemberSuspendedEvent(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
@@ -46,5 +48,13 @@ public class MemberSuspendedEvent extends TopologyEvent implements Serializable 
 
     public String getMemberId() {
         return memberId;
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
 }

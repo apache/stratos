@@ -18,41 +18,60 @@
  */
 package org.apache.stratos.autoscaler;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
- * @author nirmal
  *
  */
 public class ClusterMonitor implements Runnable{
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String clusterId;
-    private ClusterContext clusterCtxt;
-    private List<MemberStatsContext> memberCtxt;
-    private Map<String, PartitionContext> partitionCtxts;
-    private StatefulKnowledgeSession ksession;
+
+    private String serviceId;
+
+    private Map<String, NetworkPartitionContext> networkPartitionCtxts;
+
+
+    private StatefulKnowledgeSession minCheckKnowledgeSession;
+    private StatefulKnowledgeSession scaleCheckKnowledgeSession;
     private boolean isDestroyed;
-    
-    private FactHandle facthandle;
-    
-    public ClusterMonitor(String clusterId, ClusterContext ctxt, StatefulKnowledgeSession ksession) {
+
+    private DeploymentPolicy deploymentPolicy;
+    private AutoscalePolicy autoscalePolicy;
+
+        // Key- MemberId Value- partitionId
+    private Map<String, String> memberPartitionMap;
+
+    private FactHandle minCheckFactHandle;
+    private FactHandle scaleCheckFactHandle;
+
+    private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+
+    public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
+                          AutoscalePolicy autoscalePolicy) {
         this.clusterId = clusterId;
-        this.clusterCtxt = ctxt;
-        this.ksession = ksession;
-        partitionCtxts = new ConcurrentHashMap<String, PartitionContext>();
+        this.serviceId = serviceId;
+
+        this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
+        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
+        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
+
+        this.deploymentPolicy = deploymentPolicy;
+        this.deploymentPolicy = deploymentPolicy;
+        networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
 
     public String getClusterId() {
@@ -63,52 +82,44 @@ public class ClusterMonitor implements Runnable{
         this.clusterId = clusterId;
     }
 
-    public ClusterContext getClusterCtxt() {
-        return clusterCtxt;
+    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
+        return networkPartitionCtxts;
     }
 
-    public void setClusterCtxt(ClusterContext clusterCtxt) {
-        this.clusterCtxt = clusterCtxt;
+    public NetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
+        return networkPartitionCtxts.get(networkPartitionId);
     }
 
-    public List<MemberStatsContext> getMemberCtxt() {
-        return memberCtxt;
+    public void setPartitionCtxt(Map<String, NetworkPartitionContext> partitionCtxt) {
+        this.networkPartitionCtxts = partitionCtxt;
     }
 
-    public void setMemberCtxt(List<MemberStatsContext> memberCtxt) {
-        this.memberCtxt = memberCtxt;
+    public boolean partitionCtxtAvailable(String partitionId) {
+        return networkPartitionCtxts.containsKey(partitionId);
     }
 
-    public Map<String, PartitionContext> getPartitionCtxt() {
-        return partitionCtxts;
-    }
-
-    public void setPartitionCtxt(Map<String, PartitionContext> partitionCtxt) {
-        this.partitionCtxts = partitionCtxt;
+    public void addNetworkPartitionCtxt(NetworkPartitionContext ctxt) {
+        this.networkPartitionCtxts.put(ctxt.getId(), ctxt);
     }
     
-    public void addPartitionCtxt(PartitionContext ctxt) {
-        this.partitionCtxts.put(ctxt.getPartitionId(), ctxt);
-    }
-    
-    public PartitionContext getPartitionCtxt(String id) {
-        return this.partitionCtxts.get(id);
+    public NetworkPartitionContext getPartitionCtxt(String id) {
+        return this.networkPartitionCtxts.get(id);
     }
 
-    public StatefulKnowledgeSession getKsession() {
-        return ksession;
+    public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
+        return minCheckKnowledgeSession;
     }
 
-    public void setKsession(StatefulKnowledgeSession ksession) {
-        this.ksession = ksession;
+    public void setMinCheckKnowledgeSession(StatefulKnowledgeSession minCheckKnowledgeSession) {
+        this.minCheckKnowledgeSession = minCheckKnowledgeSession;
     }
 
-    public FactHandle getFacthandle() {
-        return facthandle;
+    public FactHandle getMinCheckFactHandle() {
+        return minCheckFactHandle;
     }
 
-    public void setFacthandle(FactHandle facthandle) {
-        this.facthandle = facthandle;
+    public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
+        this.minCheckFactHandle = minCheckFactHandle;
     }
 
     @Override
@@ -119,11 +130,10 @@ public class ClusterMonitor implements Runnable{
                 log.debug("Cluster monitor is running..");
             }
             try {
-                minInstanceCountCheck();
+                monitor();
             } catch (Exception e) {
-                log.error("Cluster monitor: min instance count check failed.", e);
+                log.error("Cluster monitor: Monitor failed.", e);
             }
-            // TODO scale
             try {
                 // TODO make this configurable
                 Thread.sleep(30000);
@@ -132,26 +142,43 @@ public class ClusterMonitor implements Runnable{
         }
     }
     
-    private void minInstanceCountCheck() {
-        if(clusterCtxt != null ) {
-            ksession.setGlobal("clusterId", clusterId);
+    private void monitor() {
+//        if(clusterCtxt != null ) {
             //TODO make this concurrent
-            for (Partition partition : clusterCtxt.getAllPartitions()) {
-                String id = partition.getId();
-                PartitionContext ctxt = partitionCtxts.get(id);
-                if(ctxt == null) {
-                    ctxt = new PartitionContext(partition);
-                    partitionCtxts.put(id, ctxt);
+        for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+
+            //minimum check per partition
+            for(PartitionContext partitionContext: networkPartitionContext.getPartitionCtxts().values()){
+
+                minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
                 }
-                ctxt.setMinimumMemberCount(partition.getPartitionMin());
-                
-                facthandle = AutoscalerRuleEvaluator.evaluate(ksession, facthandle, ctxt);
+
+                minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession
+                        , minCheckFactHandle, partitionContext);
+
             }
+
+            scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
+            scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
+            scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+            }
+
+            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
+                    , scaleCheckFactHandle, networkPartitionContext);
+
         }
     }
+
     
     public void destroy() {
-        ksession.dispose();
+        minCheckKnowledgeSession.dispose();
+        scaleCheckKnowledgeSession.dispose();
         setDestroyed(true);
         if(log.isDebugEnabled()) {
             log.debug("Cluster Monitor Drools session has been disposed.");
@@ -165,4 +192,36 @@ public class ClusterMonitor implements Runnable{
     public void setDestroyed(boolean isDestroyed) {
         this.isDestroyed = isDestroyed;
     }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public DeploymentPolicy getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public AutoscalePolicy getAutoscalePolicy() {
+        return autoscalePolicy;
+    }
+
+    public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
+        this.autoscalePolicy = autoscalePolicy;
+    }
+
+    public String getPartitonOfMember(String memberId){
+   		return this.memberPartitionMap.get(memberId);
+   	}
+
+   	public boolean memberExist(String memberId){
+   		return this.memberPartitionMap.containsKey(memberId);
+   	}
 }

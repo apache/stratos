@@ -20,8 +20,8 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
@@ -45,12 +45,12 @@ public class TopologyEventMessageDelegator implements Runnable {
 
                 log.info(String.format("Event message received from queue: %s", type));
 
-                if(MemberStartedEvent.class.getName().equals(type)) {
-                     TopologyBuilder.handleMemberStarted((MemberStartedEvent)Util.
-                                                        jsonToObject(json, MemberStartedEvent.class));
-                } else if(MemberActivatedEvent.class.getName().equals(type)) {
-                     TopologyBuilder.handleMemberActivated((MemberActivatedEvent) Util.
-                                                        jsonToObject(json, MemberActivatedEvent.class));
+                if(InstanceStartedEvent.class.getName().equals(type)) {
+                     TopologyBuilder.handleMemberStarted((InstanceStartedEvent)Util.
+                                                        jsonToObject(json, InstanceStartedEvent.class));
+                } else if(InstanceActivatedEvent.class.getName().equals(type)) {
+                     TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) Util.
+                                                        jsonToObject(json, InstanceActivatedEvent.class));
                 }
 
 				if (log.isDebugEnabled()) {

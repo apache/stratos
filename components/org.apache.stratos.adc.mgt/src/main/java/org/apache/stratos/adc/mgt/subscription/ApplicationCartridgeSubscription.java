@@ -24,10 +24,10 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-
-import java.util.Properties;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
 public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
@@ -37,8 +37,8 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
      *
      * @param cartridgeInfo CartridgeInfo subscription
      */
-    public ApplicationCartridgeSubscription(CartridgeInfo cartridgeInfo) {
-        super(cartridgeInfo);
+    public ApplicationCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
+        super(cartridgeInfo, isServiceDeployment);
     }
 
     public void createSubscription(Subscriber subscriber, String alias, String autoscalingPolicyName,
@@ -54,7 +54,10 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        subscriptionTenancyBehaviour.registerSubscription(null);
+        Properties props = new Properties();
+        props.setProperties(getCartridgeInfo().getProperties());
+        
+        subscriptionTenancyBehaviour.registerSubscription(props);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
@@ -82,4 +85,6 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
         PayloadArg payloadArg = super.createPayloadParameters();
         return subscriptionTenancyBehaviour.createPayloadParameters(payloadArg);
     }
+
+	
 }

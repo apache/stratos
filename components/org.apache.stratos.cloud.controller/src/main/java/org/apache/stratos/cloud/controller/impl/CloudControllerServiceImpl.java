@@ -47,12 +47,8 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.cloud.controller.topology.TopologyListener;
 import org.apache.stratos.cloud.controller.util.*;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -920,7 +916,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //		serviceCtxt.setProperty(ipProp, newIpStr.length() == 0 ? "" : newIpStr
 //				.substring(0, newIpStr.length() - 1).toString());
         //updating the topology
-        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getMemberId());
+        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getPartition().getId(), ctxt.getMemberId());
 
 		// remove the reference
 //		ctxt.removeNodeIdToPublicIp(nodeId);

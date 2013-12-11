@@ -28,12 +28,14 @@ import java.util.Properties;
  */
 public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -2207722159444875880L;
-	private String serviceName;
-    private String clusterId;
-    private String memberId;
+
+    private final String serviceName;
+    private final String clusterId;
+    private final String memberId;
     private MemberStatus status;
     private Properties properties;
     private String partitionId;
+    private String lbClusterId;
 
     public MemberStartedEvent(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
@@ -82,4 +84,12 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 	public void setPartitionId(String partitionId) {
 		this.partitionId = partitionId;
 	}
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
+    }
 }

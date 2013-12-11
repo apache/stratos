@@ -19,10 +19,6 @@
 
 package org.apache.stratos.autoscaler.partition.deployers;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.AbstractDeployer;
 import org.apache.axis2.deployment.DeploymentException;
@@ -31,6 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -84,7 +84,7 @@ public class PartitionDeployer extends AbstractDeployer {
             while (it.hasNext()) {
                 Partition partition = it.next();
                 try {
-                    PartitionManager.getInstance().addPartition(partition);                  
+                    PartitionManager.getInstance().deployNewPartiotion(partition);
                 } catch (Exception e) {
                     String msg =
                                  "Invalid partition: " + partition.getId() + " in file: " +

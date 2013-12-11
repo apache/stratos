@@ -19,14 +19,12 @@
 
 package org.apache.stratos.autoscaler.deployment.policy;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The model class for Deployment-Policy definition.
@@ -36,7 +34,6 @@ public class DeploymentPolicy implements Serializable{
     private static final long serialVersionUID = 5675507196284400099L;
     private String id;
 	private PartitionGroup[] partitionGroups;
-	private Partition[] allPartitions;
 
     /**
      * Gets the value of the id property.
@@ -62,27 +59,20 @@ public class DeploymentPolicy implements Serializable{
         this.id = value;
     }
     
-    @SuppressWarnings("unchecked")
     public void setPartitionGroups(PartitionGroup[] groups) {
-    	ArrayList<Partition> partitionslist = new ArrayList<Partition>();
         this.partitionGroups = groups;
-        /*
-        if(allPartitions == null) {
-            allPartitions = new ArrayList<Partition>();
-        }
-        */
-        for (PartitionGroup partitionGroup : groups) {
+    }
+    
+    @SuppressWarnings("unchecked")
+	public Partition[] getAllPartitions() {
+    	ArrayList<Partition> partitionslist = new ArrayList<Partition>();
+    	for (PartitionGroup partitionGroup : this.getPartitionGroups()) {
             Partition[] partitions = partitionGroup.getPartitions();
             if(partitions != null) {
             	partitionslist.addAll(Arrays.asList(partitions));
             }
         }
-        
-       this.allPartitions = partitionslist.toArray(new Partition[0]);
-    }
-    
-    public Partition[] getAllPartitions() {
-        return allPartitions;
+        return partitionslist.toArray(new Partition[0]);
     }
         
     public Partition getPartitionById(String id){

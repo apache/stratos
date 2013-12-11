@@ -24,9 +24,9 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
-import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
 import org.apache.stratos.messaging.util.Util;
 
 public class CompleteTopologyMessageProcessor extends MessageProcessor {
@@ -53,10 +53,10 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
 
             // Apply service filter
-            if (ServiceFilter.getInstance().isActive()) {
+            if (TopologyServiceFilter.getInstance().isActive()) {
                 // Add services included in service filter
                 for (Service service : event.getTopology().getServices()) {
-                    if (ServiceFilter.getInstance().included(service.getServiceName())) {
+                    if (TopologyServiceFilter.getInstance().serviceNameExcluded(service.getServiceName())) {
                         topology.addService(service);
                     } else {
                         if (log.isDebugEnabled()) {
@@ -70,10 +70,10 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             }
 
             // Apply cluster filter
-            if (ClusterFilter.getInstance().isActive()) {
+            if (TopologyClusterFilter.getInstance().isActive()) {
                 for (Service service : topology.getServices()) {
                     for (Cluster cluster : service.getClusters()) {
-                        if (ClusterFilter.getInstance().excluded(cluster.getClusterId())) {
+                        if (TopologyClusterFilter.getInstance().clusterIdExcluded(cluster.getClusterId())) {
                             service.removeCluster(cluster.getClusterId());
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));

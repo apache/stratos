@@ -1,5 +1,8 @@
 package org.apache.stratos.autoscaler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,11 +11,18 @@ import java.util.Map;
  */
 public class AutoscalerContext {
     private static volatile AutoscalerContext instance;
-    Map<String, ClusterContext> clusterContextMap;
+//    Map<String, ClusterContext> clusterContextMap;
 
+    private static final Log log = LogFactory.getLog(AutoscalerContext.class);
     private AutoscalerContext() {
-        clusterContextMap = new HashMap<String, ClusterContext>();
+        try {
+            setMonitors(new HashMap<String, ClusterMonitor>());
+        } catch (Exception e) {
+            log.error("Rule evaluateMinCheck error", e);
+        }
     }
+    private Map<String, ClusterMonitor> monitors;
+    private Map<String, LbClusterMonitor> lbMonitors;
 
     public static AutoscalerContext getInstance() {
         if (instance == null) {
@@ -25,34 +35,32 @@ public class AutoscalerContext {
         return instance;
     }
 
-    /**
-     *
-     * @param clusterContext will be added to map
-     */
-    public void addClusterContext(ClusterContext clusterContext) {
-
-        clusterContextMap.put(clusterContext.getClusterId(), clusterContext);
+    public void addMonitor(ClusterMonitor monitor) {
+        monitors.put(monitor.getClusterId(), monitor);
     }
 
-    /**
-     * {@link ClusterContext} which carries clusterId will be removed from map
-     * @param clusterId
-     */
-    public void removeClusterContext(String clusterId){
-
-        clusterContextMap.remove(clusterId);
-    }
-    
-    public boolean clusterExists(String clusterId){
-        return clusterContextMap.containsKey(clusterId);
+    public ClusterMonitor getMonitor(String clusterId) {
+        return monitors.get(clusterId);
     }
 
-    public ClusterContext getClusterContext(String clusterId) {
-
-        return clusterContextMap.get(clusterId);
+    public ClusterMonitor removeMonitor(String clusterId) {
+        return monitors.remove(clusterId);
     }
 
-	public Map<String, ClusterContext> getClusterContexes() {
-		return clusterContextMap;
-	}
+    public Map<String, ClusterMonitor> getMonitors() {
+        return monitors;
+    }
+
+
+    public void setMonitors(Map<String, ClusterMonitor> monitors) {
+        this.monitors = monitors;
+    }
+
+    public void setLbMonitors(Map<String, LbClusterMonitor> monitors) {
+        this.lbMonitors = monitors;
+    }
+
+    public void addLbMonitor(LbClusterMonitor monitor) {
+        lbMonitors.put(monitor.getClusterId(), monitor);
+    }
 }

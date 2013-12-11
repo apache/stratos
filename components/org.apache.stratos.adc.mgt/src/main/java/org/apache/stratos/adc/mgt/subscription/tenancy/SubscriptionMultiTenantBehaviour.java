@@ -25,15 +25,14 @@ import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
-import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
+import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.Properties;
 
 public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehaviour {
 
@@ -71,7 +70,7 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
             }
         }
 
-        TopologyManagementService topologyService = DataHolder.getTopologyMgtService();
+        /*TopologyManagementService topologyService = DataHolder.getTopologyMgtService();
         DomainContext[] domainContexts = topologyService.getDomainsAndSubdomains(cartridgeSubscription.getType(),
                 cartridgeSubscription.getSubscriber().getTenantId());
         log.info("Retrieved " + domainContexts.length + " domain and corresponding subdomain pairs");
@@ -96,6 +95,24 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
                     cartridgeSubscription.getSubscriber().getTenantId();
             log.warn(msg);
             throw new ADCException(msg);
+        }*/
+        TopologyManager.acquireReadLock();
+
+        try {
+            Service service = TopologyManager.getTopology().getService(cartridgeSubscription.getType());
+            if(service == null) {
+                TopologyManager.releaseReadLock();
+                String errorMsg = "Error in subscribing, no service found with the name " + cartridgeSubscription.getType();
+                log.error(errorMsg);
+                throw new ADCException(errorMsg);
+            }
+
+            //TODO: fix properly
+            //cartridgeSubscription.getCluster().setClusterDomain(service.getCluster().);
+            //cartridgeSubscription.getCluster().setClusterSubDomain(domainContext.getSubDomain());
+
+        } finally {
+            TopologyManager.releaseReadLock();
         }
     }
 
@@ -115,5 +132,5 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
 
         //payload not used
         return null;
-    }
+    }	
 }

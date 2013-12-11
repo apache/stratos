@@ -78,7 +78,7 @@ public class AutoscalerPolicyDeployer extends AbstractDeployer {
 			AutoscalerPolicyReader reader = new AutoscalerPolicyReader(policyFile);
 			
 			AutoscalePolicy policy = reader.read();
-			PolicyManager.getInstance().addAutoscalePolicy(policyFile,policy);
+			PolicyManager.getInstance().deployAutoscalePolicy(policy);
 
 			log.info("Successfully deployed the policy specified at "
 					+ deploymentFileData.getAbsolutePath());
@@ -95,7 +95,8 @@ public class AutoscalerPolicyDeployer extends AbstractDeployer {
 	
 	@Override
 	public void undeploy(String fileName) throws DeploymentException {
-		File policyFile = new File(fileName);
+		/*
+		 
 		String policyName = policyFile.getName().replaceAll("." + fileExt + "$", "");
 		try {
 			PolicyManager.getInstance().removeAutoscalePolicy(policyFile);
@@ -104,7 +105,7 @@ public class AutoscalerPolicyDeployer extends AbstractDeployer {
 			log.error("unable to remove policy " + policyName , e);
 			throw new DeploymentException("unable to remove policy " + policyName ,e);
 		}
-
+		*/
 	}
 	
 	

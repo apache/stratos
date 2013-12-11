@@ -19,9 +19,12 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Represents status of a member during its lifecycle.
  */
+@XmlRootElement
 public enum MemberStatus {
     Created, Starting, Activated, Suspended, Terminated
 }

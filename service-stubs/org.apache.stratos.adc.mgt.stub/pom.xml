@@ -51,8 +51,11 @@
                                     <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar"/>
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ApplicationManagementService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.adc.mgt.stub"/>
+                                    <arg line="-uri src/main/resources/ApplicationManagementService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.adc.mgt.stub -ns2p http://exception.mgt.adc.stratos.apache.org/xsd=org.apache.stratos.adc.mgt.exception,http://dto.mgt.adc.stratos.apache.org/xsd=org.apache.stratos.adc.mgt.dto"/>
                                     <classpath refid="wsdl2java.classpath"/>
+				    <classpath refid="maven.dependency.classpath"/>
+                                    <classpath refid="maven.compile.classpath"/>
+                                    <classpath refid="maven.runtime.classpath"/>
                                 </java>
                             </tasks>
                         </configuration>
@@ -93,8 +96,8 @@
                         <Export-Package>
                             org.apache.stratos.adc.mgt.stub.*; version="${project.version}",
                             org.apache.stratos.adc.mgt.service.*; version="${project.version}",
-                            org.apache.stratos.adc.mgt.dto.xsd*; version="${project.version}",
-                            org.apache.stratos.adc.mgt.exception.xsd.*; version="${project.version}"
+                            org.apache.stratos.adc.mgt.dto.*; version="${project.version}",
+                            org.apache.stratos.adc.mgt.exception.*; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.adc.mgt.stub.*

@@ -246,5 +246,5 @@ public final class CloudControllerConstants {
     public static final String AUTO_ASSIGN_IP = "autoAssignIp";
     public static final String INSTANCE_TYPE = "instanceType";
 
-    
+    public static final String IS_LOAD_BALANCER = "load.balancer";
 }

@@ -46,6 +46,7 @@ import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
@@ -69,7 +70,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -745,12 +751,12 @@ public class ApplicationManagementUtil {
         log.info(" Payload file is deleted. ");
     }
 
-    public static Properties setRegisterServiceProperties(Policy policy, int tenantId, String alias) {
+    public static java.util.Properties setRegisterServiceProperties(Policy policy, int tenantId, String alias) {
     	
     	DecimalFormat df = new DecimalFormat("##.##");
         df.setParseBigDecimal(true);
 
-        Properties properties = new Properties();
+        java.util.Properties properties = new java.util.Properties();
         List<Property> allProperties = new ArrayList<Property>();
         // min_app_instances
         Property property = new Property();
@@ -810,8 +816,8 @@ public class ApplicationManagementUtil {
         return addToJavaUtilProperties(allProperties);
     }
 
-    private static Properties addToJavaUtilProperties(List<Property> allProperties) {
-        Properties properties = new Properties();
+    private static java.util.Properties addToJavaUtilProperties(List<Property> allProperties) {
+        java.util.Properties properties = new java.util.Properties();
         for (Property property : allProperties) {
             properties.put(property.getName(), property.getValue());
         }

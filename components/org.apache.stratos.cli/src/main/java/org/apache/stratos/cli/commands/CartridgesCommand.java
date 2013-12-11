@@ -19,10 +19,10 @@
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
@@ -34,28 +34,25 @@ public class CartridgesCommand implements Command<StratosCommandContext> {
 	public CartridgesCommand() {
 	}
 
-	@Override
 	public String getName() {
 		return CliConstants.CARTRIDGES_ACTION;
 	}
 
-	@Override
 	public String getDescription() {
 		return "List available cartridges";
 	}
 
-	@Override
 	public String getArgumentSyntax() {
 		return null;
 	}
 
-	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
-			CommandLineService.getInstance().listAvailableCartridges();
+			//CommandLineService.getInstance().listAvailableCartridges();
+            RestCommandLineService.getInstance().listAvailableCartridges();
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());
@@ -63,7 +60,6 @@ public class CartridgesCommand implements Command<StratosCommandContext> {
 		}
 	}
 
-	@Override
 	public Options getOptions() {
 		return null;
 	}

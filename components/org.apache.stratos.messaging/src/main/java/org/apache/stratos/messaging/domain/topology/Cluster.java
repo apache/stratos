@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.*;
 
@@ -29,6 +32,7 @@ import java.util.*;
  * Defines a cluster of a service.
  * Key: serviceName, clusterId
  */
+@XmlRootElement
 public class Cluster implements Serializable {
 
 	private static final long serialVersionUID = -361960242360176077L;
@@ -39,10 +43,12 @@ public class Cluster implements Serializable {
     private String tenantRange;
     private String autoscalePolicyName;
     private String deploymentPolicyName = "economy-deployment";
-    
+    private boolean isLbCluster;
     // Key: Member.memberId
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
     private String loadBalanceAlgorithmName;
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
 
     public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
@@ -130,6 +136,20 @@ public class Cluster implements Serializable {
         this.loadBalanceAlgorithmName = loadBalanceAlgorithmName;
     }
 
+    public boolean isLbCluster() {
+        return isLbCluster;
+    }
+
+    public void setLbCluster(boolean isLbCluster) {
+        this.isLbCluster = isLbCluster;
+    }
+
+    /**
+     * Check whether a given tenant id is in tenant range of the cluster.
+     *
+     * @param tenantId
+     * @return
+     */
     public boolean tenantIdInRange(int tenantId) {
         if(StringUtils.isBlank(getTenantRange())) {
             return false;
@@ -155,6 +175,21 @@ public class Cluster implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Find partitions used by the cluster and return their ids as a collection.
+     *
+     * @return
+     */
+    public Collection<String> findPartitionIds() {
+        Map<String, Boolean> partitionIds = new HashMap<String, Boolean>();
+        for(Member member : getMembers()) {
+            if((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
+                partitionIds.put(member.getPartitionId(), true);
+            }
+        }
+        return partitionIds.keySet();
     }
 }
 

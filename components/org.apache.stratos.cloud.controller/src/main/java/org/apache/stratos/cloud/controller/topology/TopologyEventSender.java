@@ -30,6 +30,7 @@ import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 
 import java.util.List;
@@ -64,43 +65,10 @@ public class TopologyEventSender {
         }
     }
 
-//     public static void sendPartitionCreatedEvent(Partition partition) {
-//         PartitionCreatedEvent partitionCreatedEvent =
-//                 new PartitionCreatedEvent(partition);
-//
-//         if(log.isInfoEnabled()) {
-//             log.info(String.format("Publishing partition created event: [partition] %s", partition.getId()));
-//         }
-//         publishEvent(partitionCreatedEvent);
-//     }
-
-//    public static void sendPartitionUpdatedEvent(Partition partition, String oldPartitionId) {
-//        PartitionUpdatedEvent partitionUpdatedEvent =
-//                new PartitionUpdatedEvent(partition.getId(),
-//                                          partition.getScope(),
-//                                          oldPartitionId);
-//        partitionUpdatedEvent.setProperties(partition.getProperties());
-//
-//        if(log.isInfoEnabled()) {
-//            log.info(String.format("Publishing partition updated event: [partition] %s", partition.getId()));
-//        }
-//        publishEvent(partitionUpdatedEvent);
-//    }
-//
-//    public static void sendPartitionRemovedEvent(Partition partition) {
-//        PartitionRemovedEvent partitionRemovedEvent = new PartitionRemovedEvent(partition.getId());
-//
-//        if(log.isInfoEnabled()) {
-//            log.info(String.format("Publishing partition removed event: [partition] %s", partition.getId()));
-//        }
-//        publishEvent(partitionRemovedEvent);
-//    }
-
     public static void sendServiceRemovedEvent(List<Cartridge> cartridgeList) {
         ServiceRemovedEvent serviceRemovedEvent;
         for(Cartridge cartridge : cartridgeList) {
-            serviceRemovedEvent = new ServiceRemovedEvent();
-            serviceRemovedEvent.setServiceName(cartridge.getType());
+            serviceRemovedEvent = new ServiceRemovedEvent(cartridge.getType());
             if(log.isInfoEnabled()) {
                 log.info(String.format("Publishing service removed event: [service] %s", serviceRemovedEvent.getServiceName()));
             }
@@ -116,12 +84,14 @@ public class TopologyEventSender {
         clusterCreatedEvent.setTenantRange(registrant.getTenantRange());
         clusterCreatedEvent.setAutoscalingPolicyName(registrant.getAutoScalerPolicyName());
         clusterCreatedEvent.setProperties(props);
+        clusterCreatedEvent.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster created event: " +
-                    "[service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s",
+                    "[service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s [deployment-policy] %s ",
                                    registrant.getCartridgeType(), registrant.getClusterId(), 
-                                   registrant.getHostName(), registrant.getTenantRange(), registrant.getAutoScalerPolicyName()));
+                                   registrant.getHostName(), registrant.getTenantRange(), registrant.getAutoScalerPolicyName(),
+                                   registrant.getDeploymentPolicyName()));
         }
         publishEvent(clusterCreatedEvent);
 
@@ -137,23 +107,20 @@ public class TopologyEventSender {
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String memberId, String nodeId) {
-        InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName,
-                                                                             clusterId,
-                                                                             memberId,
-                                                                             nodeId);
+    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+        InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName, clusterId, partitionId, memberId);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [member] %s [node] %s", serviceName, clusterId, memberId, nodeId));
+            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [partition] %s [member] %s", serviceName, clusterId, partitionId, memberId));
         }
         publishEvent(instanceSpawnedEvent);
     }
 
-    public static void sendMemberStartedEvent(org.apache.stratos.messaging.event.instance.status.MemberStartedEvent memberStartedEvent) {
-        MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(memberStartedEvent.getServiceName(),
-                           memberStartedEvent.getClusterId(), memberStartedEvent.getMemberId());
+    public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {
+        MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(instanceStartedEvent.getServiceName(),
+                           instanceStartedEvent.getClusterId(), instanceStartedEvent.getMemberId());
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member started event: [service] %s [cluster] %s [member] %s", memberStartedEvent.getServiceName(), memberStartedEvent.getClusterId(), memberStartedEvent.getMemberId()));
+            log.info(String.format("Publishing member started event: [service] %s [cluster] %s [member] %s", instanceStartedEvent.getServiceName(), instanceStartedEvent.getClusterId(), instanceStartedEvent.getMemberId()));
         }
         publishEvent(memberStartedEventTopology);
     }
@@ -165,19 +132,16 @@ public class TopologyEventSender {
          publishEvent(memberActivatedEvent);
     }
 
-    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
-        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName,
-                                                                                clusterId,
-                                                                                memberId);
+    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, partitionId, memberId);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [member] %s", serviceName, clusterId, memberId));
+            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [partition] %s [member] %s", serviceName, clusterId, partitionId, memberId));
         }
         publishEvent(memberTerminatedEvent);
     }
 
     public static void sendCompleteTopologyEvent(Topology topology) {
-        CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent();
-        completeTopologyEvent.setTopology(topology);
+        CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing complete topology event"));

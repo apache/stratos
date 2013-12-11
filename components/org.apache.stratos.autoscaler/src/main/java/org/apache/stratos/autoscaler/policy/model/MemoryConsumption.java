@@ -19,12 +19,15 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
+import java.io.Serializable;
+
 /**
  * The model class for MemoryConsumption definition.
  */
-public class MemoryConsumption {
+public class MemoryConsumption implements Serializable {
 
-    private float average;
+	private static final long serialVersionUID = 5755634390464664663L;
+	private float average;
     private float secondDerivative;
     private float gradient;
     private float scaleDownMarginOfGradient;

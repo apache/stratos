@@ -36,7 +36,7 @@ public class LoadBalancerCommonServiceComponent {
 
     protected void activate(ComponentContext context) {
         try {
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Load Balancer Common Service bundle activated");
             }
         } catch (Exception e) {
