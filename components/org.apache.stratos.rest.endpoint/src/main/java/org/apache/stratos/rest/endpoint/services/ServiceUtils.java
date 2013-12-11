@@ -79,141 +79,6 @@ public class ServiceUtils {
                 // call CC
                 cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
                 
-                // analyze properties and pick up, if not a LB.
-                Properties properties = cartridgeConfig.getProperties();
-                String cartridgeType = cartridgeConfig.getType();
-                if (properties != null && properties.getProperties() != null) {
-                    for (org.apache.stratos.cloud.controller.pojo.Property prop : 
-                        properties.getProperties()) {
-
-                        if (Constants.IS_LOAD_BALANCER.equals(prop.getName())) {
-                            if ("true".equals(prop.getValue())) {
-                                if (log.isDebugEnabled()) {
-                                    log.debug("This is a load balancer Cartridge definition. " +
-                                            "[Type] " + cartridgeType);
-                                }
-                                return;
-                            }
-                        } 
-
-                    }
-                }
-                
-                // if not an LB Cartridge
-                LoadbalancerConfig lbConfig = cartridgeConfig.getLbConfig();
-                
-                if(lbConfig == null || lbConfig.getProperties() == null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("This cartridge does not require a load balancer. " +
-                                "[Type] " + cartridgeType);
-                    }
-                    return;
-                }
-                
-                // retrieve lb Cartridge info
-                CartridgeInfo cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbConfig.getType());
-                
-                properties = lbConfig.getProperties();
-                
-                for (org.apache.stratos.cloud.controller.pojo.Property prop : 
-                        properties.getProperties()) {
-                    
-                    // TODO make following a chain of responsibility pattern
-                    if (Constants.NO_LOAD_BALANCER.equals(prop.getName())) {
-                        if ("true".equals(prop.getValue())) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("This cartridge does not require a load balancer. " +
-                                          "[Type] " + cartridgeType);
-                            }
-                            return;
-                        }
-                    } else if (Constants.EXISTING_LOAD_BALANCERS.equals(prop.getName())) {
-                        String clusterIdsVal = prop.getValue();
-                        if (log.isDebugEnabled()) {
-                            log.debug("This cartridge refers to existing load balancers. " +
-                                      "[Type] " + cartridgeType +
-                                      "[Referenced Cluster Ids] " + clusterIdsVal);
-                        }
-
-                        String[] clusterIds = clusterIdsVal.split(",");
-
-                        for (String clusterId : clusterIds) {
-                            if (autoscalerServiceClient != null) {
-                                try {
-                                    autoscalerServiceClient.checkLBExistence(clusterId);
-                                } catch (Exception ex) {
-                                    // we don't need to throw the error here.
-                                    log.error(ex.getMessage(), ex);
-                                }
-                            }
-                        }
-                        return;
-
-                    } else if (Constants.DEFAULT_LOAD_BALANCER.equals(prop.getName())) {
-                        if ("true".equals(prop.getValue())) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("This cartridge uses default load balancer. " +
-                                          "[Type] " + cartridgeType);
-                            }
-                            if (autoscalerServiceClient != null) {
-                                try {
-                                    // get the valid policies of this cartridge
-                                    DeploymentPolicy[] cartridgeDepPolicies = 
-                                            autoscalerServiceClient.getDeploymentPolicies(cartridgeType);
-                                    DeploymentPolicy[] lbCartridgeDepPolicies = 
-                                            autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
-                                    // valid deployment policies for this cartridge
-                                    DeploymentPolicy[] validDepPolicies = 
-                                            intersection(cartridgeDepPolicies, lbCartridgeDepPolicies);
-                                    
-                                    for (DeploymentPolicy deploymentPolicy : validDepPolicies) {
-                                        String alias = "lb"+new Random().nextInt();
-                                        subscribe(cartridgeType, alias, cartridgeInfo.getDefaultAutoscalingPolicy(), 
-                                                  deploymentPolicy.getId(), null, false, null, null, null, null, 
-                                                  ctxt, userName, tenantDomain);
-                                    }
-                                    
-                                } catch (Exception ex) {
-                                    // we don't need to throw the error here.
-                                    log.error(ex.getMessage(), ex);
-                                }
-                            }
-                            return;
-                        } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(prop.getName())) {
-                            if ("true".equals(prop.getValue())) {
-                                if (log.isDebugEnabled()) {
-                                    log.debug("This cartridge uses a service aware load balancer. " +
-                                              "[Type] " + cartridgeType);
-                                }
-                                if (autoscalerServiceClient != null) {
-                                    try {
-                                        // get the valid policies of this cartridge
-                                        DeploymentPolicy[] cartridgeDepPolicies = 
-                                                autoscalerServiceClient.getDeploymentPolicies(cartridgeType);
-                                        DeploymentPolicy[] lbCartridgeDepPolicies = 
-                                                autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
-                                        // valid deployment policies for this cartridge
-                                        DeploymentPolicy[] validDepPolicies = 
-                                                intersection(cartridgeDepPolicies, lbCartridgeDepPolicies);
-                                        
-                                        for (DeploymentPolicy deploymentPolicy : validDepPolicies) {
-                                            String alias = "lb"+cartridgeType+new Random().nextInt();
-                                            subscribe(cartridgeType, alias, cartridgeInfo.getDefaultAutoscalingPolicy(), 
-                                                      deploymentPolicy.getId(), null, false, null, null, null, null, 
-                                                      ctxt, userName, tenantDomain);
-                                        }
-                                        
-                                    } catch (Exception ex) {
-                                        // we don't need to throw the error here.
-                                        log.error(ex.getMessage(), ex);
-                                    }
-                                }
-                                return;
-                            }
-                        }
-                    }
-                }
-
             } catch (Exception e) {
                 throw new RestAPIException(e);
             }
@@ -743,6 +608,172 @@ public class ServiceUtils {
             AlreadySubscribedException, RepositoryCredentialsRequiredException, InvalidRepositoryException,
             RepositoryTransportException {
 
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        CartridgeInfo cartridgeConfig;
+        
+        try {
+            cartridgeConfig = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
+        } catch (Exception e) {
+            String msg = "Cannot get cartridge info: " + cartridgeType;
+            log.error(msg, e);
+            throw new ADCException(msg, e);
+        }
+        
+        boolean isLb = false;
+        
+        // analyze properties and pick up, if not a LB.
+        org.apache.stratos.cloud.controller.pojo.Property[] properties = cartridgeConfig.getProperties();
+        if (properties != null ) {
+            for (org.apache.stratos.cloud.controller.pojo.Property prop : 
+                properties) {
+
+                if (Constants.IS_LOAD_BALANCER.equals(prop.getName())) {
+                    if ("true".equals(prop.getValue())) {
+                        isLb = true;
+                        if (log.isDebugEnabled()) {
+                            log.debug("This is a load balancer Cartridge definition. " +
+                                    "[Type] " + cartridgeType);
+                        }
+                    }
+                } 
+
+            }
+        }
+        
+        if (!isLb) {
+            // if not an LB Cartridge
+            LoadbalancerConfig lbConfig = cartridgeConfig.getLbConfig();
+
+            if (lbConfig == null || lbConfig.getProperties() == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("This cartridge does not require a load balancer. " + "[Type] " +
+                              cartridgeType);
+                }
+            } else {
+
+                CartridgeInfo lbCartridgeInfo;
+                try {
+                    // retrieve lb Cartridge info
+                    lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbConfig.getType());
+                } catch (Exception e) {
+                    String msg = "Cannot get cartridge info: " + cartridgeType;
+                    log.error(msg, e);
+                    throw new ADCException(msg, e);
+                }
+
+                Properties lbProperties = lbConfig.getProperties();
+
+                for (org.apache.stratos.cloud.controller.pojo.Property prop : lbProperties.getProperties()) {
+
+                    // TODO make following a chain of responsibility pattern
+                    if (Constants.NO_LOAD_BALANCER.equals(prop.getName())) {
+                        if ("true".equals(prop.getValue())) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("This cartridge does not require a load balancer. " +
+                                          "[Type] " + cartridgeType);
+                            }
+                            break;
+                        }
+                    } else if (Constants.EXISTING_LOAD_BALANCERS.equals(prop.getName())) {
+                        String clusterIdsVal = prop.getValue();
+                        if (log.isDebugEnabled()) {
+                            log.debug("This cartridge refers to existing load balancers. " +
+                                      "[Type] " + cartridgeType + "[Referenced Cluster Ids] " +
+                                      clusterIdsVal);
+                        }
+
+                        String[] clusterIds = clusterIdsVal.split(",");
+
+                        for (String clusterId : clusterIds) {
+                            if (autoscalerServiceClient != null) {
+                                try {
+                                    autoscalerServiceClient.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicy);
+                                } catch (Exception ex) {
+                                    // we don't need to throw the error here.
+                                    log.error(ex.getMessage(), ex);
+                                }
+                            }
+                        }
+                        break;
+
+                    } else if (Constants.DEFAULT_LOAD_BALANCER.equals(prop.getName())) {
+                        if ("true".equals(prop.getValue())) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("This cartridge uses default load balancer. " +
+                                          "[Type] " + cartridgeType);
+                            }
+                            if (autoscalerServiceClient != null) {
+                                try {
+                                    // get the valid policies for lb cartridge
+                                    DeploymentPolicy[] lbCartridgeDepPolicies =
+                                                                                autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
+                                    // traverse deployment policies of lb cartridge
+                                    for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+                                        // check existence of the subscribed policy
+                                        if (deploymentPolicy.equals(policy.getId())) {
+
+                                            if (!autoscalerServiceClient.checkDefaultLBExistenceAgainstPolicy(deploymentPolicy)) {
+
+                                                // if lb cluster doesn't exist
+                                                String lbAlias = "lb" + new Random().nextInt();
+                                                subscribeToLb(cartridgeType,
+                                                          lbAlias,
+                                                          lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                          deploymentPolicy, configurationContext,
+                                                          userName, tenantDomain);
+                                            }
+                                        }
+                                    }
+
+                                } catch (Exception ex) {
+                                    // we don't need to throw the error here.
+                                    log.error(ex.getMessage(), ex);
+                                }
+                            }
+                            break;
+                        } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(prop.getName())) {
+                            if ("true".equals(prop.getValue())) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("This cartridge uses a service aware load balancer. " +
+                                              "[Type] " + cartridgeType);
+                                }
+                                if (autoscalerServiceClient != null) {
+                                    try {
+                                        
+                                        // get the valid policies for lb cartridge
+                                        DeploymentPolicy[] lbCartridgeDepPolicies =
+                                                                                    autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
+                                        // traverse deployment policies of lb cartridge
+                                        for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+                                            // check existence of the subscribed policy
+                                            if (deploymentPolicy.equals(policy.getId())) {
+
+                                                if (!autoscalerServiceClient.checkServiceLBExistenceAgainstPolicy(cartridgeType, deploymentPolicy)) {
+
+                                                    // if lb cluster doesn't exist
+                                                    String lbAlias = "lb" + cartridgeType + new Random().nextInt();
+                                                    subscribeToLb(cartridgeType,
+                                                              lbAlias,
+                                                              lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                              deploymentPolicy, configurationContext,
+                                                              userName, tenantDomain);
+                                                }
+                                            }
+                                        }
+
+                                    } catch (Exception ex) {
+                                        // we don't need to throw the error here.
+                                        log.error(ex.getMessage(), ex);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
                 alias.trim(), autoscalingPolicy, deploymentPolicy ,tenantDomain, ApplicationManagementUtil.getTenantId(configurationContext),
@@ -781,7 +812,6 @@ public class ServiceUtils {
 
     }
 
-
     public static Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
 
         return TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
@@ -806,6 +836,26 @@ public class ServiceUtils {
 
         return (clusterSet != null && clusterSet.size() > 0 ) ?
                 clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
+
+    }
+    
+    private static void subscribeToLb(String cartridgeType, String lbAlias,
+        String defaultAutoscalingPolicy, String deploymentPolicy,
+        ConfigurationContext configurationContext, String userName, String tenantDomain) throws ADCException {
+        
+        try {
+            CartridgeSubscription cartridgeSubscription = 
+                    cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType, lbAlias.trim(), defaultAutoscalingPolicy, 
+                                                                     deploymentPolicy ,tenantDomain, 
+                                                                     ApplicationManagementUtil.getTenantId(configurationContext),
+                                                                     userName, "git", null, false, null, null);
+            
+            cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+        } catch (Exception e) {
+            String msg = "Error while subscribing to load balancer cartridge [type] "+cartridgeType;
+            log.error(msg, e);
+            throw new ADCException(msg, e);
+        }
     }
 
     static void unsubscribe(String alias, String tenantDomain) throws ADCException, NotSubscribedException {
