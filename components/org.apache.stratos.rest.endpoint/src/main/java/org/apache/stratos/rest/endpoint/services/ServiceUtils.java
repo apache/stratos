@@ -51,6 +51,7 @@ import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
+import java.beans.PropertyVetoException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -610,10 +611,10 @@ public class ServiceUtils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-        CartridgeInfo cartridgeConfig;
+        CartridgeInfo cartridgeInfo;
         
         try {
-            cartridgeConfig = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
+            cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
         } catch (Exception e) {
             String msg = "Cannot get cartridge info: " + cartridgeType;
             log.error(msg, e);
@@ -623,7 +624,7 @@ public class ServiceUtils {
         boolean isLb = false;
         
         // analyze properties and pick up, if not a LB.
-        org.apache.stratos.cloud.controller.pojo.Property[] properties = cartridgeConfig.getProperties();
+        org.apache.stratos.cloud.controller.pojo.Property[] properties = cartridgeInfo.getProperties();
         if (properties != null ) {
             for (org.apache.stratos.cloud.controller.pojo.Property prop : 
                 properties) {
@@ -641,9 +642,11 @@ public class ServiceUtils {
             }
         }
         
+        org.apache.stratos.cloud.controller.pojo.Property lbRefProp = null; 
+        
         if (!isLb) {
             // if not an LB Cartridge
-            LoadbalancerConfig lbConfig = cartridgeConfig.getLbConfig();
+            LoadbalancerConfig lbConfig = cartridgeInfo.getLbConfig();
 
             if (lbConfig == null || lbConfig.getProperties() == null) {
                 if (log.isDebugEnabled()) {
@@ -665,7 +668,9 @@ public class ServiceUtils {
                 Properties lbProperties = lbConfig.getProperties();
 
                 for (org.apache.stratos.cloud.controller.pojo.Property prop : lbProperties.getProperties()) {
-
+                    // lb ref prop
+                    lbRefProp = prop;
+                    
                     // TODO make following a chain of responsibility pattern
                     if (Constants.NO_LOAD_BALANCER.equals(prop.getName())) {
                         if ("true".equals(prop.getValue())) {
@@ -775,9 +780,10 @@ public class ServiceUtils {
             }
         }
 
-        CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
+        CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType,
                 alias.trim(), autoscalingPolicy, deploymentPolicy ,tenantDomain, ApplicationManagementUtil.getTenantId(configurationContext),
-                userName, "git", repoURL, privateRepo, repoUsername, repoPassword);
+                userName, "git", repoURL, privateRepo, repoUsername, repoPassword, 
+                lbRefProp != null ? new org.apache.stratos.cloud.controller.pojo.Property[]{lbRefProp}:null);
 
         if(dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
 
