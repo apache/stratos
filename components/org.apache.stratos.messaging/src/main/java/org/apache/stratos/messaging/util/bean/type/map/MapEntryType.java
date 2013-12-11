@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,14 +17,16 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology;
+package org.apache.stratos.messaging.util.bean.type.map;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
-/**
- * Represents status of a member during its lifecycle.
- */
-@XmlRootElement
-public enum MemberStatus {
-    Created, Starting, Activated, Suspended, Terminated
+public class MapEntryType<S, T> {
+
+    @XmlAttribute
+    public S key;
+
+    @XmlValue
+    public T value;
 }

@@ -19,6 +19,10 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,6 +33,7 @@ import java.util.Properties;
  * Defines a member node in a cluster.
  * Key: serviceName, clusterId, memberId
  */
+@XmlRootElement
 public class Member implements Serializable {
     private static final long serialVersionUID = 4179661867903664661L;
 	private String serviceName;
@@ -36,7 +41,9 @@ public class Member implements Serializable {
     private String memberId;
     private MemberStatus status;
     private String memberIp;
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Port> portMap;
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private String partitionId;
 
