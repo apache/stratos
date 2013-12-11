@@ -916,7 +916,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //		serviceCtxt.setProperty(ipProp, newIpStr.length() == 0 ? "" : newIpStr
 //				.substring(0, newIpStr.length() - 1).toString());
         //updating the topology
-        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getMemberId());
+        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getPartition().getId(), ctxt.getMemberId());
 
 		// remove the reference
 //		ctxt.removeNodeIdToPublicIp(nodeId);

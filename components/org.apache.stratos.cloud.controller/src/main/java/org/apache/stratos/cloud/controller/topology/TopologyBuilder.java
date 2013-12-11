@@ -283,7 +283,7 @@ public class TopologyBuilder {
         TopologyEventSender.sendMemberActivatedEvent(memberActivatedEvent);
     }
 
-    public static void handleMemberTerminated(String serviceName, String clusterId, String memberId) {
+    public static void handleMemberTerminated(String serviceName, String clusterId, String partitionId, String memberId) {
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
@@ -301,7 +301,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendMemberTerminatedEvent(serviceName, clusterId, memberId);
+        TopologyEventSender.sendMemberTerminatedEvent(serviceName, clusterId, partitionId, memberId);
     }
 
     public static void handleMemberSuspended() {

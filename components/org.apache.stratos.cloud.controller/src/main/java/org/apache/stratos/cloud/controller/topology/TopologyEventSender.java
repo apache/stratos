@@ -132,12 +132,10 @@ public class TopologyEventSender {
          publishEvent(memberActivatedEvent);
     }
 
-    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
-        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName,
-                                                                                clusterId,
-                                                                                memberId);
+    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, partitionId, memberId);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [member] %s", serviceName, clusterId, memberId));
+            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [partition] %s [member] %s", serviceName, clusterId, partitionId, memberId));
         }
         publishEvent(memberTerminatedEvent);
     }

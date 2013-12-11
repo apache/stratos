@@ -29,12 +29,14 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
 
     private final String serviceName;
     private final String clusterId;
+    private final String partitionId;
     private final String memberId;
     private String lbClusterId;
 
-    public MemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
+    public MemberTerminatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.partitionId = partitionId;
         this.memberId = memberId;
     }
 
@@ -44,6 +46,10 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public String getPartitionId() {
+        return partitionId;
     }
 
     public String getMemberId() {
