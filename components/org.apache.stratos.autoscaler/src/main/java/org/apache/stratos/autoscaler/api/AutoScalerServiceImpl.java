@@ -41,7 +41,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
 	
 	public Partition[] getAllAvailablePartitions(){
-		return PartitionManager.getInstance().getAllPartitions();		
+		return PartitionManager.getInstance().getAllPartitions();
 	}
 	
 	public DeploymentPolicy[] getAllDeploymentPolicies(){
@@ -82,42 +82,27 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	@Override
 	public Partition getPartition(String partitionId) {
-		for(Partition par: this.getAllAvailablePartitions()){
-			if(par.getId().equals(partitionId)){
-				return par;
-			}
-		}
-		return null;
+		return PartitionManager.getInstance().getPartitionById(partitionId);		
 	}
 
 	@Override
 	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) {
-		for(DeploymentPolicy depPol : this.getAllDeploymentPolicies()){
-			if(depPol.getId().equals(deploymentPolicyId)){
-				return depPol;
-			}
-		}
-		return null;
+		return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
 	}
 
 	@Override
 	public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId) {
-		for(AutoscalePolicy asPol : this.getAllAutoScalingPolicy()){
-			if(asPol.getId().equals(autoscalingPolicyId))
-				return asPol;
-		}
-		return null;
+		return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
 	}
 
 	@Override
 	public PartitionGroup[] getPartitionGroups(String deploymentPolicyId) {	
-		this.getDeploymentPolicy(deploymentPolicyId).getAllPartitions();
-		return null;
+		return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups();
 	}
 
 	@Override
 	public Partition[] getPartitionsOfDeploymentPolicy(String depPolicy, String partitonGroupId) {
-		DeploymentPolicy depPol = this.getDeploymentPolicy(depPolicy);
+		DeploymentPolicy depPol = PolicyManager.getInstance().getDeploymentPolicy(depPolicy);
 		if(null == depPol)
 			return null;
 		

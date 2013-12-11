@@ -71,13 +71,17 @@ public class PolicyManager {
 	public boolean deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {	
 		this.addASPolicyToInformationModel(policy);
 		this.persitASPolicy(asResourcePath+ policy.getId(), policy);	
+		
+		log.info("AutoScaling policy  :" + policy.getId() + " is deployed successfully.");
 		return true;
 	}
 	
 	// Add the policy to information model and persist.
 	public boolean deployDeploymentscalePolicy(DeploymentPolicy policy) throws InvalidPolicyException {	
 		this.addDeploymentPolicyToInformationModel(policy);
-		this.persitDeploymentPolicy(deploymentPolicyResourcePath+ policy.getId(), policy);	
+		this.persitDeploymentPolicy(deploymentPolicyResourcePath+ policy.getId(), policy);
+		
+		log.info("Deployment policy  :" + policy.getId() + " is deployed successfully.");
 		return true;
 	}
 		
