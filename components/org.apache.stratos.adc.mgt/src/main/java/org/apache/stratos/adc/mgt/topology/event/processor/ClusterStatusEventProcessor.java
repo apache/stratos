@@ -24,7 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
@@ -60,23 +63,62 @@ public class ClusterStatusEventProcessor extends TopologyEventProcessor {
 
         log.info("Received Cluster Status message: " + messageType);
 
-        if (ClusterRemovedEvent.class.getName().equals(messageType)) {
+        if (ClusterCreatedEvent.class.getName().equals(messageType)) {
+
+            log.info("Received message: " + messageType);
+
+            ClusterCreatedEvent event = getClusterCreatedEvent(message);
+            CartridgeSubscriptionInfo cartridgeSubscriptionInfo =
+                    getCartridgeSubscriptionInfo(event.getClusterId());
+
+            if (cartridgeSubscriptionInfo != null) {
+
+                Cluster cluster = TopologyManager.getTopology().
+                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                //add the new cluster to the  Topology Cluster Info. model
+                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
+                        cartridgeSubscriptionInfo.getCartridge(),
+                        cartridgeSubscriptionInfo.getAlias(),
+                        cluster);
+            }
+
+        } else if (ClusterRemovedEvent.class.getName().equals(messageType)) {
 
             log.info("Received message: " + messageType);
 
             ClusterRemovedEvent event = getClusterRemovedEvent(message);
-
             CartridgeSubscriptionInfo cartridgeSubscriptionInfo =
                     getCartridgeSubscriptionInfo(event.getClusterId());
 
             if (cartridgeSubscriptionInfo != null) {
                 //remove the information from Topology Cluster Info. model
-
                 TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias());
             }
         }
+    }
+
+    private ClusterCreatedEvent getClusterCreatedEvent (Message message) {
+
+        String json = null;
+        try {
+            json = ((TextMessage)message).getText();
+
+        } catch (JMSException e) {
+            log.error("Error in getting Json message type from received Message ", e);
+            return null;
+        }
+        ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(json, ClusterCreatedEvent.class);
+
+        if(log.isDebugEnabled()) {
+            log.debug("Received message details: [ " +
+                    "Cluster Id: " + event.getClusterId() +
+                    "\nHost name: " + event.getHostName() +
+                    "\nService name: " + event.getServiceName() + " ]");
+        }
+
+        return event;
     }
 
     private ClusterRemovedEvent getClusterRemovedEvent (Message message) {
