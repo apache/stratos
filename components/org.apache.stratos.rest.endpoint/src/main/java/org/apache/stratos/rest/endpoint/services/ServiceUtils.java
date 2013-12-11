@@ -63,7 +63,6 @@ public class ServiceUtils {
 
         log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         
         if (cloudControllerServiceClient != null) {
@@ -85,6 +84,7 @@ public class ServiceUtils {
         }
     }
 
+    @SuppressWarnings("unused")
     private static DeploymentPolicy[] intersection(
         DeploymentPolicy[] cartridgeDepPolicies,
         DeploymentPolicy[] lbCartridgeDepPolicies) {
@@ -173,7 +173,7 @@ public class ServiceUtils {
                     PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
-                return autoscalerServiceClient.deployDeploymentPolicy(null);
+                return autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
 
             } catch (Exception e) {
                 throw new RestAPIException(e);

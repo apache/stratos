@@ -72,6 +72,8 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
             return;
         }
 
+        log.info("Received Topology message: " + messageType);
+
         if (MemberStartedEvent.class.getName().equals(messageType)) {
 
             log.info("Received message: " + messageType);
