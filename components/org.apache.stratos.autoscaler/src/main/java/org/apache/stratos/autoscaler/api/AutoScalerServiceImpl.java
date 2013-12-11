@@ -129,21 +129,75 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
         return group.getPartitions();
     }
 	
-	public void checkLBExistence(String clusterId) throws NonExistingLBException {
-        List<NetworkPartitionContext> nwPartitions = partitionManager.getAllNetworkPartitions();
-        boolean exist = false;
-        for (NetworkPartitionContext networkPartition : nwPartitions) {
-            if(networkPartition.isLBExist(clusterId)) {
-                exist = true;
-                break;
+	public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException {
+	    
+	    boolean exist = false;
+	    Partition[] partitions = getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+        
+        for (Partition partition : partitions) {
+            if (partition != null) {
+                NetworkPartitionContext nwPartitionCtxt =
+                                                          partitionManager.getNetworkPartitionOfPartition(partition.getId());
+                if (nwPartitionCtxt.isLBExist(lbClusterId)) {
+                    exist = true;
+                    break;
+                }
             }
         }
-        
+	    
         if(!exist) {
-            String msg = "LB with [cluster id] "+clusterId+" does not exist.";
+            String msg = "LB with [cluster id] "+lbClusterId+
+                    " does not exist in any network partition of [Deployment Policy] "+deploymentPolicyId;
             log.error(msg);
             throw new NonExistingLBException(msg);
         }
 	}
+	
+	public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) {
+	    Partition[] partitions = getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+	    
+        for (Partition partition : partitions) {
+            if (partition != null) {
+                NetworkPartitionContext nwPartitionCtxt =
+                                                          partitionManager.getNetworkPartitionOfPartition(partition.getId());
+                if (!nwPartitionCtxt.isDefaultLBExist()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Default LB does not exist in [network partition] " +
+                                  nwPartitionCtxt.getId() + " of [Deployment Policy] " +
+                                  deploymentPolicyId);
+
+                    }
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+	    
+    }
+	
+	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
+        Partition[] partitions = getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+        
+        for (Partition partition : partitions) {
+            if (partition != null) {
+                NetworkPartitionContext nwPartitionCtxt =
+                                                          partitionManager.getNetworkPartitionOfPartition(partition.getId());
+                if (!nwPartitionCtxt.isClusterLBExist(clusterId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster LB [cluster id] "+clusterId+" does not exist in [network partition] " +
+                                  nwPartitionCtxt.getId() + " of [Deployment Policy] " +
+                                  deploymentPolicyId);
+
+                    }
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    }
+
 
 }
