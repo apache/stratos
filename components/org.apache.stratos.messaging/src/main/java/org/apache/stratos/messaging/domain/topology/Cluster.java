@@ -39,7 +39,7 @@ public class Cluster implements Serializable {
     private String tenantRange;
     private String autoscalePolicyName;
     private String deploymentPolicyName = "economy-deployment";
-    
+    private boolean isLbCluster;
     // Key: Member.memberId
     private Map<String, Member> memberMap;
     private String loadBalanceAlgorithmName;
@@ -128,6 +128,14 @@ public class Cluster implements Serializable {
 
     public void setLoadBalanceAlgorithmName(String loadBalanceAlgorithmName) {
         this.loadBalanceAlgorithmName = loadBalanceAlgorithmName;
+    }
+
+    public boolean isLbCluster() {
+        return isLbCluster;
+    }
+
+    public void setLbCluster(boolean isLbCluster) {
+        this.isLbCluster = isLbCluster;
     }
 
     /**

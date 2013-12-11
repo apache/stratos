@@ -50,6 +50,8 @@ public class CartridgeInfo {
     
     private Property[] properties;
     
+    private String defaultAutoscalingPolicy;
+    
     public CartridgeInfo(){
     	
     }
@@ -159,5 +161,13 @@ public class CartridgeInfo {
 
 	public void setProperties(Property[] properties) {
 	    this.properties = properties;
+    }
+
+    public String getDefaultAutoscalingPolicy() {
+        return defaultAutoscalingPolicy;
+    }
+
+    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
 }

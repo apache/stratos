@@ -116,12 +116,14 @@ public class TopologyEventSender {
         clusterCreatedEvent.setTenantRange(registrant.getTenantRange());
         clusterCreatedEvent.setAutoscalingPolicyName(registrant.getAutoScalerPolicyName());
         clusterCreatedEvent.setProperties(props);
+        clusterCreatedEvent.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster created event: " +
-                    "[service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s",
+                    "[service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s [deployment-policy] %s ",
                                    registrant.getCartridgeType(), registrant.getClusterId(), 
-                                   registrant.getHostName(), registrant.getTenantRange(), registrant.getAutoScalerPolicyName()));
+                                   registrant.getHostName(), registrant.getTenantRange(), registrant.getAutoScalerPolicyName(),
+                                   registrant.getDeploymentPolicyName()));
         }
         publishEvent(clusterCreatedEvent);
 

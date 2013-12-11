@@ -16,17 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.rest.endpoint;
 
-/**
- * Global constants used in this module
- */
-public class Constants {
+package org.apache.stratos.adc.mgt.topology.event.processor;
 
-    public static final String SUPER_TENANT_SERVICE = "super.tenant.service";
-    public static final String IS_LOAD_BALANCER = "load.balancer";
-    public static final String SERVICE_AWARE_LOAD_BALANCER = "service.aware.load.balancer";
-    public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
-    public static final String NO_LOAD_BALANCER = "no.load.balancer";
-    public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
+import javax.jms.Message;
+
+public abstract class TopologyEventProcessor {
+
+    protected TopologyEventProcessor nextTopologyEventProcessor = null;
+
+    public void setNext (TopologyEventProcessor nextTopologyEventProcessor) {
+        this.nextTopologyEventProcessor = nextTopologyEventProcessor;
+    }
+
+    public abstract void process (Message message);
 }

@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.listener.InstanceStatusListener;
+import org.apache.stratos.adc.mgt.listener.TopologyEventListner;
 import org.apache.stratos.adc.mgt.publisher.TenantEventPublisher;
 import org.apache.stratos.adc.mgt.publisher.TenantSynchronizerTaskScheduler;
 import org.apache.stratos.adc.mgt.utils.CartridgeConfigFileReader;
@@ -28,6 +29,7 @@ import org.apache.stratos.adc.mgt.utils.StratosDBUtils;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -95,6 +97,17 @@ public class ADCManagementServerComponent {
             subscriber.setMessageListener(new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
+
+            //initializing the topology event subscriber
+            TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
+            topologyTopicSubscriber.setMessageListener(new TopologyEventListner());
+            Thread topologyTopicSubscriberThread = new Thread(topologyTopicSubscriber);
+            topologyTopicSubscriberThread.start();
+
+            //Starting Topology Receiver
+            TopologyReceiver topologyReceiver = new TopologyReceiver();
+            Thread topologyReceiverThread = new Thread(topologyReceiver);
+            topologyReceiverThread.start();
 
             if (log.isInfoEnabled()) {
                 log.info("ADC management server component is activated");
