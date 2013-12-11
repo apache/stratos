@@ -26,8 +26,7 @@ import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-
-import java.util.Properties;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 
 public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
@@ -54,7 +53,10 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        subscriptionTenancyBehaviour.registerSubscription(null);
+        Properties props = new Properties();
+        props.setProperties(getCartridgeInfo().getProperties());
+        
+        subscriptionTenancyBehaviour.registerSubscription(props);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

@@ -29,10 +29,10 @@ import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.Properties;
 
 public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehaviour {
 

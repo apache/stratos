@@ -211,15 +211,35 @@ public class AutoscalerServiceClient {
         return deploymentPolicies;
     }
     
-    public void checkLBExistence(String clusterId) throws ADCException {
+    public void checkLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) throws ADCException {
         try {
-            stub.checkLBExistence(clusterId);
+            stub.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyId);
         } catch (RemoteException e) {
             String errorMsg = "Error connecting to Auto-scaler Service.";
             log.error(errorMsg, e);
             throw new ADCException(errorMsg, e);
         } catch (AutoScalerServiceNonExistingLBExceptionException e) {
             String errorMsg = "LB Cluster doesn't exist. Cluster id: "+clusterId;
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+    
+    public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) throws ADCException {
+        try {
+            return stub.checkDefaultLBExistenceAgainstPolicy(deploymentPolicyId);
+        } catch (RemoteException e) {
+            String errorMsg = "Error connecting to Auto-scaler Service.";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+    
+    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) throws ADCException {
+        try {
+            return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
+        } catch (RemoteException e) {
+            String errorMsg = "Error connecting to Auto-scaler Service.";
             log.error(errorMsg, e);
             throw new ADCException(errorMsg, e);
         }

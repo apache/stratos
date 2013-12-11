@@ -48,6 +48,8 @@ public class MemberContext implements Serializable{
     private String allocatedIpAddress;
     // member initiated time
     private long initTime;
+    // lb cluster id of this member
+    private String lbClusterId;
     
     public MemberContext(String id, String clusterId, Partition partition) {
         this.memberId = id;
@@ -120,6 +122,14 @@ public class MemberContext implements Serializable{
 
     public void setInitTime(long initTime) {
         this.initTime = initTime;
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
     
     

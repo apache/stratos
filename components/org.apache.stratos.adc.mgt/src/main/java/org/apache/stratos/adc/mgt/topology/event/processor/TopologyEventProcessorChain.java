@@ -23,11 +23,15 @@ import javax.jms.Message;
 
 public class TopologyEventProcessorChain {
 
-    private TopologyEventProcessor firstTopologyEventProcessor = null;
+    private TopologyEventProcessor completeTopologyEventProcessor = null;
+    private TopologyEventProcessor instanceStatusEventProcessor = null;
+    private TopologyEventProcessor clusterStatusEventProcessor = null;
     private static TopologyEventProcessorChain topologyEventProcessorChain;
 
     private TopologyEventProcessorChain () {
-        firstTopologyEventProcessor = new InstanceStatusProcessor();
+        completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
+        instanceStatusEventProcessor = new InstanceStatusEventProcessor();
+        clusterStatusEventProcessor = new ClusterStatusEventProcessor();
     }
 
     public static TopologyEventProcessorChain getInstance () {
@@ -46,13 +50,15 @@ public class TopologyEventProcessorChain {
     public void initProcessorChain () {
 
         //if any other topology event processors are added, link them as follows
-        //firstTopologyEventProcessor.setNext(secondTopologyeventProcessor);
-        //secondTopologyeventProcessor.setNext(null);
-        firstTopologyEventProcessor.setNext(null);
+        //instanceStatusEventProcessor.setNext(nextTopologyeventProcessor);
+        //nextTopologyeventProcessor.setNext(null);
+        completeTopologyEventProcessor.setNext(instanceStatusEventProcessor);
+        instanceStatusEventProcessor.setNext(clusterStatusEventProcessor);
+        clusterStatusEventProcessor.setNext(null);
     }
 
     public void startProcessing (Message message) {
-        firstTopologyEventProcessor.process(message);
+        completeTopologyEventProcessor.process(message);
     }
 
 

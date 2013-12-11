@@ -96,7 +96,7 @@
                         <Export-Package>
                             org.apache.stratos.adc.reponotification.stub.*; version="${project.version}",
                             org.apache.stratos.adc.mgt.service.*; version="${project.version}",
-                            org.apache.stratos.adc.mgt.dto.xsd.*; version="${project.version}",
+                            org.apache.stratos.adc.mgt.dto.*; version="${project.version}",
                             org.apache.stratos.adc.mgt.exception.xsd.*; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
