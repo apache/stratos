@@ -19,14 +19,12 @@
 
 package org.apache.stratos.autoscaler.deployment.policy;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The model class for Deployment-Policy definition.

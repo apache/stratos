@@ -28,13 +28,7 @@ import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.*;
 
 import java.rmi.RemoteException;
 
@@ -77,6 +71,7 @@ public class CloudControllerClient {
     public void spawnInstances(Partition partition, String clusterId, int memberCountToBeIncreased) throws SpawningException {
         //call CC spawnInstances method
 
+
         log.info("Calling CC for spawning instances in cluster " + clusterId);
         log.info("Member count to be increased: " + memberCountToBeIncreased);
 
@@ -103,7 +98,8 @@ public class CloudControllerClient {
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
             log.error(e.getMessage());
             throw new PartitionValidationException(e);
-        } 
+        }
+
     }
     
     /*
@@ -119,6 +115,7 @@ public class CloudControllerClient {
         } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
         	throw new PartitionValidationException(e.getMessage(),e);
 		}
+
     }
 
     public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId) throws SpawningException {

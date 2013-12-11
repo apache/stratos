@@ -95,7 +95,7 @@ public class AutoscalePolicy implements Serializable {
 	 /**
      * Sets the value of the displayName property.
      * 
-     * @param value
+     * @param displayName
      *     allowed object is
      *     {@link String }
      *     
@@ -119,7 +119,7 @@ public class AutoscalePolicy implements Serializable {
 	 /**
      * Sets the value of the description property.
      * 
-     * @param value
+     * @param description
      *     allowed object is
      *     {@link String }
      *     

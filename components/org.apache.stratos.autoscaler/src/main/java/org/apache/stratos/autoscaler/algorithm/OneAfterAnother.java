@@ -19,22 +19,22 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterContext;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
+import java.util.Arrays;
 import java.util.List;
+
+//import org.apache.stratos.autoscaler.partition.networkPartitionContext;
 
 /**
  *
  */
 /**
 * This class is used for selecting a {@link Partition} one after another and checking availability of
- * partitions of a {@link PartitionGroup}
+ * partitions of a {@link NetworkPartitionContext}
  * One after another means it completes partitions in the order defined in
  * {@link org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy}, and go to next  if current one
  * reached the max limit
@@ -44,27 +44,26 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 	
 	private static final Log log = LogFactory.getLog(OneAfterAnother.class);
 
-    public Partition getNextScaleUpPartition(PartitionGroup partitionGroup, String clusterId) {
-    	
-    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-    	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    	List<?> partitions = Arrays.asList(partitionGroup.getPartitions());
-    	int noOfPartitions = partitions.size();    	
+    public Partition getNextScaleUpPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
+
+    	int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
+    	List<?> partitionContexts = Arrays.asList(networkPartitionContext.getPartitionCtxts());
+    	int noOfPartitions = partitionContexts.size();
     	
     	for(int i=currentPartitionIndex; i< noOfPartitions; i++)
     	{
-            if (partitions.get(currentPartitionIndex) instanceof Partition) {
-                currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+            if (partitionContexts.get(currentPartitionIndex) instanceof Partition) {
+                currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
+                Partition currentPartition = (Partition) partitionContexts.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
-                if (clusterContext.partitionCountExists(currentPartitionId)) {
-                    clusterContext.addPartitionCount(currentPartitionId, 0);
+                if (networkPartitionContext.partitionCountExists(currentPartitionId)) {
+                    networkPartitionContext.addPartitionCount(currentPartitionId, 0);
                 }
 
-                if (clusterContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMax()) {
+                if (networkPartitionContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMax()) {
                     // current partition is free
-                    clusterContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
+                    networkPartitionContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
                     if (log.isDebugEnabled())
                         log.debug("Free space found in partition " + currentPartition.getId());
 
@@ -77,34 +76,33 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                         return null;
                     }
 
-                    clusterContext.setCurrentPartitionIndex(currentPartitionIndex + 1);
+                    networkPartitionContext.setCurrentPartitionIndex(currentPartitionIndex + 1);
                 }
             }
     	}
     	
     	if(log.isDebugEnabled())
-    		log.debug("No free partition found at partition group" + partitionGroup);
+    		log.debug("No free partition found at network partition " + networkPartitionContext);
     	
     	return null;
     }
 
-    public Partition getNextScaleDownPartition(PartitionGroup partitionGroup, String clusterId) {
+    public Partition getNextScaleDownPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
 
-    	ClusterContext clusterContext = AutoscalerContext.getInstance().getClusterContext(clusterId);
-    	int currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-    	List<?> partitions = Arrays.asList(partitionGroup.getPartitions());
+    	int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
+    	List<?> partitionContexts = Arrays.asList(networkPartitionContext.getPartitionCtxts());
     	
     	for(int i = currentPartitionIndex; i >= 0; i--)
     	{
-            if (partitions.get(currentPartitionIndex) instanceof Partition) {
-                currentPartitionIndex = clusterContext.getCurrentPartitionIndex();
-                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+            if (partitionContexts.get(currentPartitionIndex) instanceof Partition) {
+                currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
+                Partition currentPartition = (Partition) partitionContexts.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
                 // has more than minimum instances.
-                if (clusterContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMin()) {
+                if (networkPartitionContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMin()) {
                     // current partition is free
-                    clusterContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+                    networkPartitionContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
                     if (log.isDebugEnabled())
                         log.debug("A free space found for scale down in partition" +
                                   currentPartition.getId());
@@ -117,13 +115,13 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                     }
                     // Set next partition as current partition in Autoscaler Context
                     currentPartitionIndex = currentPartitionIndex - 1;
-                    clusterContext.setCurrentPartitionIndex(currentPartitionIndex);
+                    networkPartitionContext.setCurrentPartitionIndex(currentPartitionIndex);
                 }
             }
 	        
     	}
     	if(log.isDebugEnabled())
-    		log.debug("No space found in this partition group " + partitionGroup.getId());
+    		log.debug("No space found in this network partition " + networkPartitionContext.getId());
     	return null;
     }
     

@@ -18,9 +18,6 @@
  */
 package org.apache.stratos.autoscaler.internal;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -42,6 +39,9 @@ import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
 * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
@@ -79,11 +79,12 @@ public class AutoscalerServerComponent {
         // Adding the registry stored AS policies to the information model.
         
         try {
-			Thread th = new Thread(new AutoscalerTopologyReceiver());
-			th.start();
+			Thread topologyTopicSubscriberThread = new Thread(new AutoscalerTopologyReceiver());
+			topologyTopicSubscriberThread.start();
 			if (log.isDebugEnabled()) {
 				log.debug("Topology message processor thread started");
 			}
+
 			TopicSubscriber healthStatTopicSubscriber = new TopicSubscriber(
 					Constants.HEALTH_STAT_TOPIC);
 			healthStatTopicSubscriber

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,10 +28,6 @@ import java.util.*;
 public class NetworkPartitionContext {
 
     private String id;
-    
-    private String provider;
-
-    private String region;
 
     private String defaultLbClusterId;
 
@@ -39,65 +35,27 @@ public class NetworkPartitionContext {
 
     private Map<String, String> clusterIdToLBClusterIdMap;
 
-    public NetworkPartitionContext(final String provider, final String region) {
+    private String partitionAlgorithm;
+
+
+    //Following information will keep events details
+    private float averageRequestsInFlight;
+    private float requestsInFlightSecondDerivative;
+    private float requestsInFlightGradient;
+
+    //details required for partition selection algorithms
+    private int currentPartitionIndex;
+    private Map<String, Integer> partitionCountMap;
+
+    //partitions of this network partition
+    private Map<String, PartitionContext> partitionCtxts;
+
+    public NetworkPartitionContext(String id) {
 
         super();
-        this.provider = provider;
-        this.region = region;
+        this.id = id;
         this.setServiceToLBClusterId(new HashMap<String, String>());
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
-
-    }
-
-    public boolean isLBExist(final String clusterId) {
-
-        return clusterId != null &&
-               (clusterId.equals(this.defaultLbClusterId) ||
-                this.serviceNameToLBClusterIdMap.containsValue(clusterId) || this.clusterIdToLBClusterIdMap.containsValue(clusterId));
-
-    }
-    
-    public boolean isDefaultLBExist() {
-
-        return defaultLbClusterId != null;
-
-    }
-    
-    public boolean isServiceLBExist(String serviceName) {
-
-        return this.serviceNameToLBClusterIdMap.containsKey(serviceName) && 
-                this.serviceNameToLBClusterIdMap.get(serviceName) != null;
-
-    }
-    
-    public boolean isClusterLBExist(String clusterId) {
-
-        return this.clusterIdToLBClusterIdMap.containsKey(clusterId) &&
-                this.clusterIdToLBClusterIdMap.get(clusterId) != null;
-
-    }
-
-    public String getProvider() {
-
-        return this.provider;
-
-    }
-
-    public void setProvider(final String provider) {
-
-        this.provider = provider;
-
-    }
-
-    public String getRegion() {
-
-        return this.region;
-
-    }
-
-    public void setRegion(final String region) {
-
-        this.region = region;
 
     }
 
@@ -149,20 +107,40 @@ public class NetworkPartitionContext {
 
     }
 
-    public String getId() {
-        return id;
+
+    public boolean isLBExist(final String clusterId) {
+
+        return clusterId != null &&
+               (clusterId.equals(this.defaultLbClusterId) ||
+                this.serviceNameToLBClusterIdMap.containsValue(clusterId) || this.clusterIdToLBClusterIdMap.containsValue(clusterId));
+
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public boolean isDefaultLBExist() {
+
+        return defaultLbClusterId != null;
+
+    }
+
+    public boolean isServiceLBExist(String serviceName) {
+
+        return this.serviceNameToLBClusterIdMap.containsKey(serviceName) &&
+                this.serviceNameToLBClusterIdMap.get(serviceName) != null;
+
+    }
+
+    public boolean isClusterLBExist(String clusterId) {
+
+        return this.clusterIdToLBClusterIdMap.containsKey(clusterId) &&
+                this.clusterIdToLBClusterIdMap.get(clusterId) != null;
+
     }
 
     public int hashCode() {
 
         final int prime = 31;
         int result = 1;
-        result = 31 * result + ((this.provider == null) ? 0 : this.provider.hashCode());
-        result = 31 * result + ((this.region == null) ? 0 : this.region.hashCode());
+        result = 31 * result + ((this.id == null) ? 0 : this.id.hashCode());
         return result;
 
     }
@@ -179,23 +157,111 @@ public class NetworkPartitionContext {
             return false;
         }
         final NetworkPartitionContext other = (NetworkPartitionContext) obj;
-        if (this.provider == null) {
-            if (other.provider != null) {
+        if (this.id == null) {
+            if (other.id != null) {
                 return false;
             }
         }
-        else if (!this.provider.equals(other.provider)) {
-            return false;
-        }
-        if (this.region == null) {
-            if (other.region != null) {
-                return false;
-            }
-        }
-        else if (!this.region.equals(other.region)) {
+        else if (!this.id.equals(other.id)) {
             return false;
         }
         return true;
     }
 
+
+
+    public int getCurrentPartitionIndex() {
+        return currentPartitionIndex;
+    }
+
+    public void setCurrentPartitionIndex(int currentPartitionIndex) {
+        this.currentPartitionIndex = currentPartitionIndex;
+    }
+
+    public float getAverageRequestsInFlight() {
+        return averageRequestsInFlight;
+    }
+
+    public void setAverageRequestsInFlight(float averageRequestsInFlight) {
+        this.averageRequestsInFlight = averageRequestsInFlight;
+    }
+
+    public float getRequestsInFlightSecondDerivative() {
+        return requestsInFlightSecondDerivative;
+    }
+
+    public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
+        this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
+    }
+
+    public float getRequestsInFlightGradient() {
+        return requestsInFlightGradient;
+    }
+
+    public void setRequestsInFlightGradient(float requestsInFlightGradient) {
+        this.requestsInFlightGradient = requestsInFlightGradient;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void increaseMemberCountInPartitionBy(String partitionId, int count){
+
+         partitionCountMap.put(partitionId, getMemberCount(partitionId) + count);
+     }
+
+     public void decreaseMemberCountInPartitionBy(String partitionId, int count){
+
+         partitionCountMap.put(partitionId, getMemberCount(partitionId) - count);
+     }
+
+     public void addPartitionCount(String partitionId, int count){
+         partitionCountMap.put(partitionId, count);
+     }
+
+     public void removePartitionCount(String partitionId){
+
+         partitionCountMap.remove(partitionId);
+     }
+
+     public boolean partitionCountExists(String partitionId){
+         return partitionCountMap.containsKey(partitionId);
+     }
+
+     public int getMemberCount(String partitionId){
+         if(partitionCountMap.containsKey(partitionId)) {
+             return partitionCountMap.get(partitionId);
+         }
+         return 0;
+     }
+
+    public Map<String, PartitionContext> getPartitionCtxts() {
+        return partitionCtxts;
+    }
+
+    public PartitionContext getPartitionCtxt(String partitionId) {
+        return partitionCtxts.get(partitionId);
+    }
+
+    public void setPartitionCtxts(Map<String, PartitionContext> partitionCtxts) {
+        this.partitionCtxts = partitionCtxts;
+    }
+
+    public void addPartitionContext(PartitionContext partitionContext) {
+        partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
+    }
+
+    public String getPartitionAlgorithm() {
+        return partitionAlgorithm;
+    }
+
+    public void setPartitionAlgorithm(String partitionAlgorithm) {
+        this.partitionAlgorithm = partitionAlgorithm;
+    }
 }
