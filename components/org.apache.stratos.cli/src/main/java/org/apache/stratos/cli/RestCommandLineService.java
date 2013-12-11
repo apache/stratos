@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.cli.utils.CommandLineUtils;
-
 import javax.net.ssl.*;
 
 public class RestCommandLineService {
@@ -45,6 +44,7 @@ public class RestCommandLineService {
 
     private RestClient restClientService;
 
+    // REST endpoints
     private final String initializeEndpoint = "/stratos/admin/init";
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
@@ -64,6 +64,7 @@ public class RestCommandLineService {
 		return SingletonHolder.INSTANCE;
 	}
 
+    // Loing method. This will authenticate the user
     public boolean login(String serverURL, String username, String password, boolean validateLogin) throws Exception {
         try {
             // Following code will avoid validating certificate
@@ -123,6 +124,7 @@ public class RestCommandLineService {
         }
     }
 
+    // Initialize the rest client and set username and password of the user
     private void initializeRestClient(String serverURL, String username, String password) throws AxisFault {
         HttpTransportProperties.Authenticator authenticator = new HttpTransportProperties.Authenticator();
         authenticator.setUsername(username);
@@ -153,6 +155,7 @@ public class RestCommandLineService {
         this.restClientService = restClient;
     }
 
+    // List currently available multi tenant and single tenant cartridges
     public void listAvailableCartridges() throws CommandException {
         try {
             String resultString = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
@@ -229,6 +232,7 @@ public class RestCommandLineService {
         }
     }
 
+    // List subscribe cartridges
     public void listSubscribedCartridges(final boolean full) throws CommandException {
         try {
 
@@ -294,6 +298,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method does the cartridge subscription
     public void subscribe(String cartridgeType, String alias, String policy, String externalRepoURL,
                           boolean privateRepo, String username, String password, String dataCartridgeType, String dataCartridgeAlias)
             throws CommandException {
@@ -403,6 +408,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to create the new tenant
     public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email, String active){
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
@@ -435,6 +441,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
         try {
             restClientService.doPost(restClientService.getUrl() + unsubscribeTenantEndPoint, alias,
@@ -445,6 +452,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to deploy cartridge definitions
     public void deployCartridgeDefinition (String cartridgeDefinition) {
         try {
             String result = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
@@ -461,6 +469,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to deploy partitions
     public void deployPartition (String partitionDefinition) {
         try {
             String result = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
@@ -468,8 +477,10 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the partition");
-            }else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
                 System.out.println("Invalid operations. Authorization failed");
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                System.out.println("Specified policy already exists");
             }
 
         } catch (Exception e) {
@@ -477,6 +488,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to deploy autoscalling polices
     public void deployAutoscalingPolicy (String autoScalingPolicy) {
         try {
             String result = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
@@ -484,8 +496,10 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
-            }else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
                 System.out.println("Invalid operations. Authorization failed");
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                System.out.println("Specified policy already exists");
             }
 
         } catch (Exception e) {
@@ -493,6 +507,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to deploy deployment polices
     public void deployDeploymentPolicy (String deploymentPolicy) {
         try {
             String result = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
@@ -500,8 +515,10 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the deployment policy");
-            }else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
                 System.out.println("Invalid operations. Authorization failed");
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                System.out.println("Specified policy already exists");
             }
 
         } catch (Exception e) {
@@ -509,6 +526,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This class is for convert JSON string to CartridgeList object
     private class CartridgeList  {
         private ArrayList<Cartridge> cartridge;
 
@@ -525,6 +543,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This will return access url from a given cartridge
     private String getAccessURLs(Cartridge cartridge) {
         String[] accessURLs = cartridge.getAccessURLs();
         StringBuilder urlBuilder = new StringBuilder();

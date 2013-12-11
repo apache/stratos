@@ -41,6 +41,21 @@ public class RestClient implements GenericRestClient{
         this.setPassword(password);
     }
 
+    /**
+     * Handle http post request. Return String
+     *
+     * @param resourcePath
+     *              This should be REST endpoint
+     * @param jsonParamString
+     *              The json string which should be executed from the post request
+     * @param userName
+     *              User name for basic auth
+     * @param passWord
+     *              Password for basic auth
+     * @return The status of the executed request
+     * @throws org.apache.http.client.ClientProtocolException and IOException
+     *             if any errors occur when executing the request
+     */
     public String doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
         try {
 
@@ -90,6 +105,19 @@ public class RestClient implements GenericRestClient{
         }
     }
 
+    /**
+     * Handle http get request. Return String
+     *
+     * @param resourcePath
+     *              This should be REST endpoint
+     * @param userName
+     *              User name for basic auth
+     * @param passWord
+     *              Password for basic auth
+     * @return The status of the executed request
+     * @throws org.apache.http.client.ClientProtocolException and IOException
+     *             if any errors occur when executing the request
+     */
     public String doGet(String resourcePath, String userName, String passWord) {
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();

@@ -28,7 +28,6 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;

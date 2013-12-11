@@ -123,20 +123,20 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		command = new ListCommand();
 		commands.put(command.getName(), command);
 		
-		command = new InfoCommand();
-		commands.put(command.getName(), command);
+		//command = new InfoCommand();
+		//commands.put(command.getName(), command);
 		
-		command = new AddDomainMappingCommand();
-		commands.put(command.getName(), command);
+		//command = new AddDomainMappingCommand();
+		//commands.put(command.getName(), command);
 		
-		command = new RemoveDomainMappingCommand();
-		commands.put(command.getName(), command);
+		//command = new RemoveDomainMappingCommand();
+		//commands.put(command.getName(), command);
 		
-		command = new SyncCommand();
-		commands.put(command.getName(), command);
+		//command = new SyncCommand();
+		//commands.put(command.getName(), command);
 		
-		command = new PoliciesCommand();
-		commands.put(command.getName(), command);
+		//command = new PoliciesCommand();
+		//commands.put(command.getName(), command);
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());

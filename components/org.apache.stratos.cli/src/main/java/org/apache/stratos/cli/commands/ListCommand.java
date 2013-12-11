@@ -28,7 +28,6 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
@@ -56,22 +55,18 @@ public class ListCommand implements Command<StratosCommandContext> {
 		return options;
 	}
 
-	@Override
 	public String getName() {
 		return CliConstants.LIST_ACTION;
 	}
 
-	@Override
 	public String getDescription() {
 		return "List subscribed cartridges with details";
 	}
 
-	@Override
 	public String getArgumentSyntax() {
 		return null;
 	}
 
-	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
@@ -118,7 +113,6 @@ public class ListCommand implements Command<StratosCommandContext> {
 		}
 	}
 
-	@Override
 	public Options getOptions() {
 		return options;
 	}

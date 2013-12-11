@@ -178,7 +178,6 @@ public class CommandLineService {
 
 			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
-				@Override
 				public String[] getData(Cartridge cartridge) {
 					String[] data = full ? new String[9] : new String[7];
 					data[0] = cartridge.getCartridgeType();
@@ -234,7 +233,6 @@ public class CommandLineService {
 
 			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
-				@Override
 				public String[] getData(Cartridge cartridge) {
 					String[] data = new String[3];
 					data[0] = cartridge.getCartridgeType();
@@ -280,7 +278,6 @@ public class CommandLineService {
 
 			RowMapper<PolicyDefinition> policyMapper = new RowMapper<PolicyDefinition>() {
 
-				@Override
 				public String[] getData(PolicyDefinition policyDefinition) {
 					String[] data = new String[3];
 					data[0] = policyDefinition.getName();

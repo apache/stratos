@@ -80,22 +80,18 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
         return options;
     }
 
-    @Override
     public String getName() {
         return CliConstants.ADD_TENANT;
     }
 
-    @Override
     public String getDescription() {
         return "Add new tenant";
     }
 
-    @Override
     public String getArgumentSyntax() {
         return null;
     }
 
-    @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
@@ -186,7 +182,6 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
         }
     }
 
-    @Override
     public Options getOptions() {
         return options;
     }
