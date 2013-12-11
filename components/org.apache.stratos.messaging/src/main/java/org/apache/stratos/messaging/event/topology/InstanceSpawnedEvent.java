@@ -32,6 +32,7 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
     private final String clusterId;
     private final String memberId;
     private final String partitionId;
+    private String lbClusterId;
 
     public InstanceSpawnedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -56,4 +57,11 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
         return memberId;
     }
 
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
+    }
 }

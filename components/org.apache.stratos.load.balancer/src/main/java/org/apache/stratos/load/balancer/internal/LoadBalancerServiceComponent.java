@@ -32,8 +32,8 @@ import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
-import org.apache.stratos.messaging.message.filter.topology.ClusterFilter;
-import org.apache.stratos.messaging.message.filter.topology.ServiceFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -141,9 +141,9 @@ public class LoadBalancerServiceComponent {
                 }
 
                 if (log.isInfoEnabled()) {
-                    if (ServiceFilter.getInstance().isActive()) {
+                    if (TopologyServiceFilter.getInstance().isActive()) {
                         StringBuilder sb = new StringBuilder();
-                        for (String serviceName : ServiceFilter.getInstance().getIncludedServiceNames()) {
+                        for (String serviceName : TopologyServiceFilter.getInstance().getIncludedServiceNames()) {
                             if (sb.length() > 0) {
                                 sb.append(", ");
                             }
@@ -151,9 +151,9 @@ public class LoadBalancerServiceComponent {
                         }
                         log.info(String.format("Service filter activated: [services] %s", sb.toString()));
                     }
-                    if (ClusterFilter.getInstance().isActive()) {
+                    if (TopologyClusterFilter.getInstance().isActive()) {
                         StringBuilder sb = new StringBuilder();
-                        for (String clusterId : ClusterFilter.getInstance().getIncludedClusterIds()) {
+                        for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
                             if (sb.length() > 0) {
                                 sb.append(", ");
                             }

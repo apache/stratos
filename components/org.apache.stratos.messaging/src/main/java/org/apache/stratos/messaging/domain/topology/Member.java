@@ -36,20 +36,24 @@ import java.util.Properties;
 @XmlRootElement
 public class Member implements Serializable {
     private static final long serialVersionUID = 4179661867903664661L;
-	private String serviceName;
-    private String clusterId;
-    private String memberId;
+
+    private final String serviceName;
+    private final String clusterId;
+    private final String partitionId;
+    private final String memberId;
+
     private MemberStatus status;
     private String memberIp;
     @XmlJavaTypeAdapter(MapAdapter.class)
-    private Map<String, Port> portMap;
+    private final Map<String, Port> portMap;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
-    private String partitionId;
+    private String lbClusterId;
 
-    public Member(String serviceName, String clusterId, String memberId) {
+    public Member(String serviceName, String clusterId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.partitionId = partitionId;
         this.memberId = memberId;
         this.portMap = new HashMap<String, Port>();
     }
@@ -128,9 +132,12 @@ public class Member implements Serializable {
         return partitionId;
     }
 
-    public void setPartitionId(String partitionId) {
-        this.partitionId = partitionId;
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
 
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
 }
 

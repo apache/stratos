@@ -30,6 +30,7 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
     private final String serviceName;
     private final String clusterId;
     private final String memberId;
+    private String lbClusterId;
 
     public MemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;
@@ -47,5 +48,13 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
 
     public String getMemberId() {
         return memberId;
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
 }
