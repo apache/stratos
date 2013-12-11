@@ -51,6 +51,10 @@ public class Cartridge implements Serializable{
     
     private boolean multiTenant;
     
+    private String defaultAutoscalingPolicy;
+    
+    private LoadbalancerConfig lbConfig;
+    
     private List<PortMapping> portMappings = new ArrayList<PortMapping>();
     
     private List<AppType> appTypeMappings = new ArrayList<AppType>();
@@ -289,6 +293,22 @@ public class Cartridge implements Serializable{
 
     public void setPartitionToIaasProvider(Map<String, IaasProvider> partitionToIaasProvider) {
         this.partitionToIaasProvider = partitionToIaasProvider;
+    }
+
+    public LoadbalancerConfig getLbConfig() {
+        return lbConfig;
+    }
+
+    public void setLbConfig(LoadbalancerConfig lbConfig) {
+        this.lbConfig = lbConfig;
+    }
+
+    public String getDefaultAutoscalingPolicy() {
+        return defaultAutoscalingPolicy;
+    }
+
+    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
     
 }

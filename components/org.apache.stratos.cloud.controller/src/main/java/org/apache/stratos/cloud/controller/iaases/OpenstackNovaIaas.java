@@ -79,12 +79,6 @@ public class OpenstackNovaIaas extends Iaas {
 							+ iaas.getName());
 		}
 
-		// // if domain to template map is null
-		// if (entity.getDomainToTemplateMap() == null) {
-		// // we initialize it
-		// entity.setDomainToTemplateMap(new HashMap<String, Template>());
-		// }
-
 		TemplateBuilder templateBuilder = iaas.getComputeService()
 				.templateBuilder();
 		templateBuilder.imageId(iaas.getImage());
@@ -92,12 +86,8 @@ public class OpenstackNovaIaas extends Iaas {
            templateBuilder.locationId(iaas.getType());
         }
 
-		// to avoid creation of template objects in each and every time, we
-		// create all
-		// at once!
-		// for (org.apache.cartridge.autoscaler.service.util.ServiceContext temp
-		// :
-		// serviceContexts) {
+        // to avoid creation of template objects in each and every time, we
+        // create all at once!
 
 		String instanceType;
 
@@ -131,19 +121,9 @@ public class OpenstackNovaIaas extends Iaas {
 									CloudControllerConstants.ENTRY_SEPARATOR));
 		}
 
-		/*if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
-			template.getOptions()
-					.as(NovaTemplateOptions.class)
-					.userData(
-							ComputeServiceBuilderUtil.getUserData(CarbonUtils
-									.getCarbonHome()
-									+ File.separator
-									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
-		}
-*/
 		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
-					.keyPairName(CloudControllerConstants.KEY_PAIR);
+					.keyPairName(iaas.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
 		
 		//TODO

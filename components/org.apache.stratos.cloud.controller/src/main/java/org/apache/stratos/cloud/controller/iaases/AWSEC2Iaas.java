@@ -146,16 +146,6 @@ public class AWSEC2Iaas extends Iaas {
         }
 
 
-		/*if (iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER) != null) {
-			template.getOptions()
-					.as(AWSEC2TemplateOptions.class)
-					.userData(
-							ComputeServiceBuilderUtil.getUserData(CarbonUtils
-									.getCarbonHome()
-									+ File.separator
-									+ iaas.getProperty(CloudControllerConstants.PAYLOAD_FOLDER)));
-		}*/
-
 		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
 					.keyPair(iaas.getProperty(CloudControllerConstants.KEY_PAIR));

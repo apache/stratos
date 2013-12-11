@@ -54,6 +54,8 @@ public class CloudControllerUtil {
             return null;
         }
         Cartridge cartridge = new Cartridge();
+        
+        // populate cartridge
         cartridge.setType(config.getType());
         cartridge.setDisplayName(config.getDisplayName());
         cartridge.setDescription(config.getDescription());
@@ -64,6 +66,7 @@ public class CloudControllerUtil {
         cartridge.setBaseDir(config.getBaseDir());
         cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
         cartridge.setMultiTenant(config.isMultiTenant());
+        cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
 
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
@@ -71,9 +74,13 @@ public class CloudControllerUtil {
                 cartridge.addProperty(prop.getName(), prop.getValue());
             }
         }
+        
+        // populate LB config
+        cartridge.setLbConfig(config.getLbConfig());
 
         List<IaasProvider> iaases = FasterLookUpDataHolder.getInstance().getIaasProviders();
 
+        // populate IaaSes
         IaasConfig[] iaasConfigs = config.getIaasConfigs();
         if (iaasConfigs != null) {
             for (IaasConfig iaasConfig : iaasConfigs) {
@@ -154,6 +161,7 @@ public class CloudControllerUtil {
 		carInfo.setVersion(cartridge.getVersion());
 		carInfo.setMultiTenant(cartridge.isMultiTenant());
 		carInfo.setBaseDir(cartridge.getBaseDir());
+		carInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
 		carInfo.setPortMappings(cartridge.getPortMappings()
 		                                 .toArray(new PortMapping[cartridge.getPortMappings()
 		                                                                   .size()]));
