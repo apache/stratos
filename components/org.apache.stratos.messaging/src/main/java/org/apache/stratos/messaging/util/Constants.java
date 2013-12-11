@@ -31,15 +31,18 @@ public class Constants {
 
     /* Topology filter constants */
     public static final String FILTER_VALUE_ASSIGN_OPERATOR="=";
-    public static final String FILTER_KEY_VALUE_SEPARATOR = ";";
+    public static final String FILTER_KEY_VALUE_PAIR_SEPARATOR = "|";
     public static final String FILTER_VALUE_SEPARATOR = ",";
 
     public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
-    public static final String TOPOLOGY_SERVICE_FILTER_SERVICE_NAME = "service.name";
+    public static final String TOPOLOGY_SERVICE_FILTER_SERVICE_NAME = "service-name";
 
     public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
-    public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster.id";
+    public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster-id";
 
     public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
-    public static final String TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID = "lb.cluster.id";
+    public static final String TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID = "lb-cluster-id";
+
+    // to identify a lb cluster
+    public static final String IS_LOAD_BALANCER = "load.balancer";
 }

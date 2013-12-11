@@ -20,6 +20,7 @@
 package org.apache.stratos.load.balancer.conf.configurator;
 
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
+import org.apache.stratos.messaging.util.Constants;
 
 /**
  * Topology filter configurator to configure topology filters.
@@ -27,7 +28,8 @@ import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 public class TopologyFilterConfigurator {
 
     public static void configure(LoadBalancerConfiguration configuration) {
-        System.setProperty("stratos.messaging.topology.service.filter", configuration.getTopologyServiceFilter());
-        System.setProperty("stratos.messaging.topology.cluster.filter", configuration.getTopologyClusterFilter());
+        System.setProperty(Constants.TOPOLOGY_SERVICE_FILTER, configuration.getTopologyServiceFilter());
+        System.setProperty(Constants.TOPOLOGY_CLUSTER_FILTER, configuration.getTopologyClusterFilter());
+        System.setProperty(Constants.TOPOLOGY_MEMBER_FILTER, configuration.getTopologyMemberFilter());
     }
 }

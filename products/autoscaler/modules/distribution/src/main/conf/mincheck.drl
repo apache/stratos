@@ -22,7 +22,6 @@ package org.apache.stratos.autoscaler.rule;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterContext;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -49,10 +48,6 @@ global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
 global org.apache.stratos.messaging.domain.topology.Topology $topology;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
-global java.lang.boolean clusterRemoved;
-
-import function org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator.delegateSpawn;
-import function org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator.delegateTerminate;
 
 rule "Minimum Rule"
 dialect "mvel"
@@ -61,10 +56,7 @@ dialect "mvel"
 	       eval($ctxt.getCurrentMemberCount() < $ctxt.getMinimumMemberCount())
 
        then
-	       memberContext = delegateSpawn($ctxt.getPartition(),clusterId);
-           if(memberContext != null) {
-	            $ctxt.addPendingMember(memberContext); 
-           }
+	       $evaluator.delegateSpawn($ctxt, clusterId);
 	       
 end
 
@@ -76,6 +68,6 @@ dialect "mvel"
             memberId : String() from $ctxt.getObsoletedMembers()
             eval($ctxt.removeObsoleteMember(memberId))
         then
-            delegateTerminate(memberId);
+           $evaluator.delegateTerminate(memberId);
 end
 

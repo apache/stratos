@@ -24,7 +24,6 @@ package org.apache.stratos.rest.endpoint;
 public class Constants {
 
     public static final String SUPER_TENANT_SERVICE = "super.tenant.service";
-    public static final String IS_LOAD_BALANCER = "load.balancer";
     public static final String SERVICE_AWARE_LOAD_BALANCER = "service.aware.load.balancer";
     public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
     public static final String NO_LOAD_BALANCER = "no.load.balancer";

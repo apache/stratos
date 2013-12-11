@@ -7,9 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.util.Constants;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Message filter for filtering incoming messages in message processors.
@@ -29,14 +27,25 @@ public class MessageFilter {
 
     private Map<String, String> splitToMap(String filter) {
         HashMap<String, String> keyValuePairMap = new HashMap<String, String>();
-        String[] keyValuePairArray = filter.split(Constants.FILTER_KEY_VALUE_SEPARATOR);
-        for(String keyValuePair : keyValuePairArray) {
-            String [] keyValueArray = keyValuePair.split(Constants.FILTER_VALUE_ASSIGN_OPERATOR);
-            if(keyValueArray.length == 2) {
-                keyValuePairMap.put(keyValueArray[0].trim(), keyValueArray[1].trim());
+        List<String> keyValuePairList = splitUsingTokenizer(filter, Constants.FILTER_KEY_VALUE_PAIR_SEPARATOR);
+        for (String keyValuePair : keyValuePairList) {
+            List<String> keyValueList = splitUsingTokenizer(keyValuePair, Constants.FILTER_VALUE_ASSIGN_OPERATOR);
+            if (keyValueList.size() == 2) {
+                keyValuePairMap.put(keyValueList.get(0).trim(), keyValueList.get(1).trim());
+            } else {
+                throw new RuntimeException(String.format("Invalid key-value pair: %s", keyValuePair));
             }
         }
         return keyValuePairMap;
+    }
+
+    public static List<String> splitUsingTokenizer(String Subject, String Delimiters) {
+        StringTokenizer tokenizer = new StringTokenizer(Subject, Delimiters);
+        List<String> list = new ArrayList<String>(Subject.length());
+        while (tokenizer.hasMoreTokens()) {
+            list.add(tokenizer.nextToken());
+        }
+        return list;
     }
 
     /**
@@ -44,8 +53,8 @@ public class MessageFilter {
      */
     public void init() {
         String filter = System.getProperty(filterName);
-        if(StringUtils.isNotBlank(filter)) {
-            if(log.isDebugEnabled()) {
+        if (StringUtils.isNotBlank(filter)) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("Initializing filter: %s", filterName));
             }
 
@@ -54,13 +63,13 @@ public class MessageFilter {
             String[] propertyValueArray;
             Map<String, String> keyValuePairMap = splitToMap(filter);
 
-            for(String propertyName : keyValuePairMap.keySet()) {
+            for (String propertyName : keyValuePairMap.keySet()) {
                 propertyValue = keyValuePairMap.get(propertyName);
                 propertyValueMap = new HashMap<String, Boolean>();
                 propertyValueArray = propertyValue.split(Constants.FILTER_VALUE_SEPARATOR);
-                for(String value : propertyValueArray) {
+                for (String value : propertyValueArray) {
                     propertyValueMap.put(value, true);
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Filter property value found: [property] %s [value] %s", propertyName, value));
                     }
                 }
@@ -74,7 +83,7 @@ public class MessageFilter {
     }
 
     public boolean included(String propertyName, String propertyValue) {
-        if(filterMap.containsKey(propertyName)) {
+        if (filterMap.containsKey(propertyName)) {
             Map<String, Boolean> propertyValueMap = filterMap.get(propertyName);
             return propertyValueMap.containsKey(propertyValue);
         }
@@ -86,7 +95,7 @@ public class MessageFilter {
     }
 
     public Collection<String> getIncludedPropertyValues(String propertyName) {
-        if(filterMap.containsKey(propertyName)) {
+        if (filterMap.containsKey(propertyName)) {
             return filterMap.get(propertyName).keySet();
         }
         return CollectionUtils.EMPTY_COLLECTION;
