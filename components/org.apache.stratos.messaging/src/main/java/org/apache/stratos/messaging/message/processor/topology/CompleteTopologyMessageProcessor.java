@@ -21,10 +21,12 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
@@ -77,6 +79,22 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
                             service.removeCluster(cluster.getClusterId());
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Apply member filter
+            if (TopologyMemberFilter.getInstance().isActive()) {
+                for (Service service : topology.getServices()) {
+                    for (Cluster cluster : service.getClusters()) {
+                        for(Member member : cluster.getMembers()) {
+                            if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Member is excluded: [member] %s [lb-cluster-id] %s", member.getMemberId(), member.getLbClusterId()));
+                                }
+                                cluster.removeMember(member);
                             }
                         }
                     }
