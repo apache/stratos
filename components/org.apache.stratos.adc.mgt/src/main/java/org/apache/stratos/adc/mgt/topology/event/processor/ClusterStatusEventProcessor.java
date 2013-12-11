@@ -73,8 +73,17 @@ public class ClusterStatusEventProcessor extends TopologyEventProcessor {
 
             if (cartridgeSubscriptionInfo != null) {
 
-                Cluster cluster = TopologyManager.getTopology().
-                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                Cluster cluster;
+                //acquire read lock
+                TopologyManager.acquireReadLock();
+                try {
+                    cluster = TopologyManager.getTopology().
+                            getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                } finally {
+                    //release read lock
+                     TopologyManager.releaseReadLock();
+                }
+
                 //add the new cluster to the  Topology Cluster Info. model
                 TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
