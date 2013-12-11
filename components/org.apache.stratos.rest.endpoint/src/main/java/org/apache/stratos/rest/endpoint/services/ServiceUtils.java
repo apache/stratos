@@ -628,7 +628,7 @@ public class ServiceUtils {
             for (org.apache.stratos.cloud.controller.pojo.Property prop : 
                 properties) {
 
-                if (Constants.IS_LOAD_BALANCER.equals(prop.getName())) {
+                if (org.apache.stratos.messaging.util.Constants.IS_LOAD_BALANCER.equals(prop.getName())) {
                     if ("true".equals(prop.getValue())) {
                         isLb = true;
                         if (log.isDebugEnabled()) {
