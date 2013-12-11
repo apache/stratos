@@ -19,11 +19,14 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
+import java.io.Serializable;
+
 /**
  * The model class for LoadThresholds definition.
  */
-public class LoadThresholds {
+public class LoadThresholds implements Serializable{
 
+	private static final long serialVersionUID = -8148571245537655867L;
 	private RequestsInFlight requestsInFlight;
 	private MemoryConsumption memoryConsumption;
 	private LoadAverage loadAverage;

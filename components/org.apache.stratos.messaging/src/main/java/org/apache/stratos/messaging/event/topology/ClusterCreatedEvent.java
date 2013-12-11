@@ -35,7 +35,7 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private String hostName;
     private String tenantRange;
     private String autoscalingPolicyName;
-    private String deploymentPolicyName = "economy-deployment";
+    private String deploymentPolicyName;
     private Properties properties;
 
     public ClusterCreatedEvent(String serviceName, String clusterId, String hostName) {

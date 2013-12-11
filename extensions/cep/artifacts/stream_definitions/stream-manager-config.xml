@@ -1,15 +1,16 @@
 <streamManagerConfiguration xmlns="http://wso2.org/carbon/streammanager">
 
-    <streamDefinition name="stratos.lb.stats" version="1.0.0">
-         <description>lb stats</description>
-         <nickName>lb stats</nickName>
+    <streamDefinition name="stratos.lb.in.flight.req.count" version="1.0.0">
+         <description>cluster partition in-flight request count</description>
+         <nickName>in-flight request count</nickName>
          <metaData>
          </metaData>
          <correlationData>
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="in_flight_requests" type="int"/>
+             <property name="partition_id" type="String"/>
+             <property name="in_flight_request_count" type="int"/>
          </payloadData>
      </streamDefinition> 
 
