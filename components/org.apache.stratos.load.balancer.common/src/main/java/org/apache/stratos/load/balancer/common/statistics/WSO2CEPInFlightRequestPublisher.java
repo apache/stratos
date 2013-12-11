@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * WSO2 CEP in flight request count publisher.
- *
+ * <p/>
  * In-flight request count:
  * Number of requests being served at a given moment could be identified as in-flight request count.
  */
@@ -49,8 +49,7 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
             payloadData.add(new Attribute("in_flight_request_count", AttributeType.INT));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Could not create stream definition", e);
         }
     }
