@@ -24,9 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
@@ -72,13 +70,11 @@ public class ClusterStatusEventProcessor extends TopologyEventProcessor {
                     getCartridgeSubscriptionInfo(event.getClusterId());
 
             if (cartridgeSubscriptionInfo != null) {
-                //add the information to Topology Cluster Info. model
-                Cluster cluster = TopologyManager.getTopology().
-                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(event.getClusterId());
+                //remove the information from Topology Cluster Info. model
 
-                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
+                TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
-                        cartridgeSubscriptionInfo.getAlias(), cluster);
+                        cartridgeSubscriptionInfo.getAlias());
             }
         }
     }
