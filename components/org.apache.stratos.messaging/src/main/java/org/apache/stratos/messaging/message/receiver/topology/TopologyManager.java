@@ -35,7 +35,7 @@ public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
 
     private static volatile Topology topology;
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
