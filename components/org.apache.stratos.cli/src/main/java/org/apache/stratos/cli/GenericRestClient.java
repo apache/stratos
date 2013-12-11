@@ -18,9 +18,11 @@
  */
 package org.apache.stratos.cli;
 
+import java.rmi.RemoteException;
+
 public interface GenericRestClient {
 
-    public String doPost(String resourcePath, String jsonParamString, String userName, String passWord);
+    public String doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception;
     public String doGet(String resourcePath, String userName, String passWord);
     public void doDelete();
     public void doPut();

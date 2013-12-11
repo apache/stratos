@@ -25,7 +25,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import java.net.MalformedURLException;
+import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
@@ -41,7 +41,7 @@ public class RestClient implements GenericRestClient{
         this.setPassword(password);
     }
 
-    public String doPost(String resourcePath, String jsonParamString, String userName, String passWord) {
+    public String doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
         try {
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -59,11 +59,16 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(postRequest);
 
-            if (response.getStatusLine().getStatusCode() == 204) {
-                return "";
-            }
+            System.out.println("Response : " + response.getStatusLine().getStatusCode());
+            int responseCode = response.getStatusLine().getStatusCode();
 
-            if (response.getStatusLine().getStatusCode() != 200) {
+            if (responseCode == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                return "" + CliConstants.RESPONSE_AUTHORIZATION_FAIL;
+            } else if (responseCode == CliConstants.RESPONSE_NO_CONTENT) {
+                return "" + CliConstants.RESPONSE_NO_CONTENT;
+            } else if (responseCode == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                return "" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR;
+            } else if (response.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
 
@@ -78,9 +83,8 @@ public class RestClient implements GenericRestClient{
             httpClient.getConnectionManager().shutdown();
             return result;
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
+        } catch (ClientProtocolException e) {
+            throw new ClientProtocolException();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -99,6 +103,8 @@ public class RestClient implements GenericRestClient{
 
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(getRequest);
+
+            System.out.println("Response : " + response.getStatusLine().getStatusCode());
 
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());

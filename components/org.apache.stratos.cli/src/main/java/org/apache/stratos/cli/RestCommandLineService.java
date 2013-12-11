@@ -26,10 +26,11 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ public class RestCommandLineService {
 
     private RestClient restClientService;
 
+    private final String initializeEndpoint = "/stratos/admin/init";
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
@@ -59,7 +61,7 @@ public class RestCommandLineService {
 		return SingletonHolder.INSTANCE;
 	}
 
-    public boolean login(String serverURL, String username, String password, boolean validateLogin) throws CommandException {
+    public boolean login(String serverURL, String username, String password, boolean validateLogin) throws Exception {
         try {
             // Following code will avoid validating certificate
             SSLContext sc;
@@ -91,7 +93,7 @@ public class RestCommandLineService {
             throw new RuntimeException("Error while authentication process!", e);
         }
 
-        // Initialize Service Stub
+        // Initialized client
         try {
             initializeRestClient(serverURL, username, password);
         } catch (AxisFault e) {
@@ -99,24 +101,22 @@ public class RestCommandLineService {
             throw new CommandException(e);
         }
 
-        return true;
-        /*
         try {
             if (validateLogin) {
-                String tenantDomain = stub.getTenantDomain();
+                restClientService.doPost(restClientService.getUrl() + initializeEndpoint, "", restClientService.getUsername(), restClientService.getPassword());
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Tenant Domain {}", tenantDomain);
+                    logger.debug("Tenant Domain {}", restClientService.getUsername());
                 }
-                return (tenantDomain != null);
+                System.out.println("Loggin successfull");
+                return true;
             } else {
                 // Just return true as we don't need to validate
                 return true;
             }
-        } catch (RemoteException e) {
+        } catch (ClientProtocolException e) {
             System.out.println("Authentication failed!");
-            throw new CommandException(e);
+            return false;
         }
-        */
     }
 
     private void initializeRestClient(String serverURL, String username, String password) throws AxisFault {
@@ -295,13 +295,13 @@ public class RestCommandLineService {
             throws CommandException {
 
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
-        cartridgeInfoBean.setCartridgeType(cartridgeType);
-        cartridgeInfoBean.setAlias(alias);
-        cartridgeInfoBean.setPolicy(policy);
-        cartridgeInfoBean.setRepoURL(externalRepoURL);
-        cartridgeInfoBean.setPrivateRepo(privateRepo);
-        cartridgeInfoBean.setRepoUsername(username);
-        cartridgeInfoBean.setRepoPassword(password);
+        cartridgeInfoBean.setCartridgeType(null);
+        cartridgeInfoBean.setAlias(null);
+        cartridgeInfoBean.setPolicy(null);
+        cartridgeInfoBean.setRepoURL(null);
+        cartridgeInfoBean.setPrivateRepo(false);
+        cartridgeInfoBean.setRepoUsername(null);
+        cartridgeInfoBean.setRepoPassword(null);
         cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
         cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
 
@@ -319,7 +319,15 @@ public class RestCommandLineService {
                 System.out.println("First try");
                 String subscription = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
-                subcriptionConnectInfo = gson.fromJson(subscription, SubscriptionInfo.class);
+
+                if (subscription.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
+                    System.out.println("Duplicate alias. Please choose different alias");
+                    return;
+                }
+
+                String subscriptionJSON =  subscription.substring(20, subscription.length() -1);
+                subcriptionConnectInfo = gson.fromJson(subscriptionJSON, SubscriptionInfo.class);
+
                 System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n",
                         dataCartridgeType, dataCartridgeAlias);
                 System.out.format("%nSubscribing to %s cartridge and connecting with %s data cartridge.%n", alias,
@@ -330,9 +338,31 @@ public class RestCommandLineService {
         }
 
         try {
+            cartridgeInfoBean.setCartridgeType(cartridgeType);
+            cartridgeInfoBean.setAlias(alias);
+            cartridgeInfoBean.setPolicy(policy);
+            cartridgeInfoBean.setRepoURL(externalRepoURL);
+            cartridgeInfoBean.setPrivateRepo(privateRepo);
+            cartridgeInfoBean.setRepoUsername(username);
+            cartridgeInfoBean.setRepoPassword(password);
+            cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
+            cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
+
             System.out.println("Second try");
-            String subscriptionOutput = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint, completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
-            SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutput, SubscriptionInfo.class);
+
+            jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
+            completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
+
+            String subscriptionOutput = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
+                    completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
+
+            if (subscriptionOutput.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("Duplicate alias. Please choose different alias");
+                return;
+            }
+
+            String  subscriptionOutputJSON=  subscriptionOutput.substring(20, subscriptionOutput.length() -1);
+            SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutputJSON, SubscriptionInfo.class);
 
             System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
 
@@ -369,7 +399,7 @@ public class RestCommandLineService {
         }
     }
 
-    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email, String active) {
+    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email, String active){
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
             tenantInfo.setAdmin(admin);
@@ -388,7 +418,13 @@ public class RestCommandLineService {
 
             String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint, completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
-            System.out.println(result);
+            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operation. Authorization failed");
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_NO_CONTENT) {
+                System.out.println("Tenant added successfully");
+            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                System.out.println("Domain is not available to register. Please check domain name");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -405,8 +441,14 @@ public class RestCommandLineService {
 
     public void deployCartridgeDefinition (String cartridgeDefinition) {
         try {
-            restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint, cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
-            System.out.println("You have successfully deployed the cartridge");
+            String result = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint, cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
+
+            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operations. Authorization failed");
+            }
+            else {
+                System.out.println("You have successfully deployed the cartridge");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

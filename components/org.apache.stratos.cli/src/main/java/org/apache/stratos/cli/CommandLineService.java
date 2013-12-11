@@ -447,8 +447,7 @@ public class CommandLineService {
 			SubscriptionInfo subcriptionInfo = stub.subscribe(cartridgeType, alias, policy, externalRepoURL,
 					privateRepo, username, password, dataCartridgeType, dataCartridgeAlias);
 
-			System.out
-					.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
+			System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
 
 			String repoURL = null;
 			String hostnames = null;

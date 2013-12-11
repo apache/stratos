@@ -156,4 +156,8 @@ public class CliConstants {
     // Cartridge deployment options
     public static final String RESOURCE_PATH = "p";
     public static final String RESOURCE_PATH_LONG_OPTION = "resource-path";
+
+    public static final int RESPONSE_INTERNAL_SERVER_ERROR = 500;
+    public static final int RESPONSE_AUTHORIZATION_FAIL = 403;
+    public static final int RESPONSE_NO_CONTENT = 204;
 }
