@@ -42,4 +42,7 @@ public class Constants {
 
     public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
     public static final String TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID = "lb-cluster-id";
+
+    // to identify a lb cluster
+    public static final String IS_LOAD_BALANCER = "load.balancer";
 }
