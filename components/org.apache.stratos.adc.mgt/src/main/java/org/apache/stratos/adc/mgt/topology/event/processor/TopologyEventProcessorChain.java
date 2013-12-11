@@ -25,11 +25,13 @@ public class TopologyEventProcessorChain {
 
     private TopologyEventProcessor completeTopologyEventProcessor = null;
     private TopologyEventProcessor instanceStatusEventProcessor = null;
+    private TopologyEventProcessor clusterStatusEventProcessor = null;
     private static TopologyEventProcessorChain topologyEventProcessorChain;
 
     private TopologyEventProcessorChain () {
         completeTopologyEventProcessor = new CompleteTopologyEventProcessor();
-        instanceStatusEventProcessor = new InstanceStatusProcessor();
+        instanceStatusEventProcessor = new InstanceStatusEventProcessor();
+        clusterStatusEventProcessor = new ClusterStatusEventProcessor();
     }
 
     public static TopologyEventProcessorChain getInstance () {
@@ -51,7 +53,8 @@ public class TopologyEventProcessorChain {
         //instanceStatusEventProcessor.setNext(nextTopologyeventProcessor);
         //nextTopologyeventProcessor.setNext(null);
         completeTopologyEventProcessor.setNext(instanceStatusEventProcessor);
-        instanceStatusEventProcessor.setNext(null);
+        instanceStatusEventProcessor.setNext(clusterStatusEventProcessor);
+        clusterStatusEventProcessor.setNext(null);
     }
 
     public void startProcessing (Message message) {

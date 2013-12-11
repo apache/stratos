@@ -39,13 +39,13 @@ import javax.jms.TextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InstanceStatusProcessor extends TopologyEventProcessor {
+public class InstanceStatusEventProcessor extends TopologyEventProcessor {
 
-    private static final Log log = LogFactory.getLog(InstanceStatusProcessor.class);
+    private static final Log log = LogFactory.getLog(InstanceStatusEventProcessor.class);
 
     private Map<String, Integer> clusterIdToActiveInstanceCountMap;
 
-    public InstanceStatusProcessor () {
+    public InstanceStatusEventProcessor() {
         clusterIdToActiveInstanceCountMap = new HashMap<String, Integer>();
     }
 
@@ -247,7 +247,7 @@ public class InstanceStatusProcessor extends TopologyEventProcessor {
     }
 
     /**
-     * Message Processing Thread class for InstanceStatusProcessor
+     * Message Processing Thread class for InstanceStatusEventProcessor
      */
     /*private class InstanceStatusListenerThread extends Thread {
 
