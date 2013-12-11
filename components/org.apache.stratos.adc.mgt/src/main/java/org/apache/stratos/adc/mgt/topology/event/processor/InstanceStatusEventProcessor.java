@@ -83,8 +83,18 @@ public class InstanceStatusEventProcessor extends TopologyEventProcessor {
             CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(clusterDomain);
 
             if(cartridgeSubscriptionInfo != null) {
-                Cluster cluster = TopologyManager.getTopology().
-                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
+
+                Cluster cluster;
+                //acquire read lock
+                TopologyManager.acquireReadLock();
+                try {
+                    cluster = TopologyManager.getTopology().
+                            getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                } finally {
+                    //release read lock
+                    TopologyManager.releaseReadLock();
+                }
+
                 TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
@@ -100,8 +110,18 @@ public class InstanceStatusEventProcessor extends TopologyEventProcessor {
             CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(clusterDomain);
 
             if(cartridgeSubscriptionInfo != null) {
-                Cluster cluster = TopologyManager.getTopology().
-                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
+
+                Cluster cluster;
+                //acquire read lock
+                TopologyManager.acquireReadLock();
+                try {
+                    cluster = TopologyManager.getTopology().
+                            getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                } finally {
+                    //release read lock
+                    TopologyManager.releaseReadLock();
+                }
+                //update the model
                 TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
@@ -117,8 +137,18 @@ public class InstanceStatusEventProcessor extends TopologyEventProcessor {
             CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(clusterDomain);
 
             if(cartridgeSubscriptionInfo != null) {
-                Cluster cluster = TopologyManager.getTopology().
-                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
+
+                Cluster cluster;
+                //acquire read lock
+                TopologyManager.acquireReadLock();
+                try {
+                    cluster = TopologyManager.getTopology().
+                            getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                } finally {
+                    //release read lock
+                    TopologyManager.releaseReadLock();
+                }
+                //update the model
                 TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
@@ -133,8 +163,18 @@ public class InstanceStatusEventProcessor extends TopologyEventProcessor {
             CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(clusterDomain);
 
             if(cartridgeSubscriptionInfo != null) {
-                Cluster cluster = TopologyManager.getTopology().
-                        getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(clusterDomain);
+
+                Cluster cluster;
+                //acquire read lock
+                TopologyManager.acquireReadLock();
+                try {
+                    cluster = TopologyManager.getTopology().
+                            getService(cartridgeSubscriptionInfo.getCartridge()).getCluster(cartridgeSubscriptionInfo.getClusterDomain());
+                } finally {
+                    //release read lock
+                    TopologyManager.releaseReadLock();
+                }
+                //update the model
                 TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscriptionInfo.getTenantId(),
                         cartridgeSubscriptionInfo.getCartridge(),
                         cartridgeSubscriptionInfo.getAlias(), cluster);
