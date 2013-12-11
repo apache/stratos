@@ -28,11 +28,8 @@ import org.wso2.carbon.databridge.agent.thrift.conf.AgentConfiguration;
 import org.wso2.carbon.databridge.agent.thrift.exception.AgentException;
 import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * WSO2 CEP statistics publisher for the load balancer.
