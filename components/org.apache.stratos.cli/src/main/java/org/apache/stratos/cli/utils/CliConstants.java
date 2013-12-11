@@ -84,6 +84,11 @@ public class CliConstants {
      */
     public static final String AUTOSCALING_POLICY_DEPLOYMENT = "autoscaling-policy-deployment";
 
+    /**
+     * Deployment policy deployment
+     */
+    public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deployment-policy-deployment";
+
 	/**
 	 * Give information of a cartridge.
 	 */

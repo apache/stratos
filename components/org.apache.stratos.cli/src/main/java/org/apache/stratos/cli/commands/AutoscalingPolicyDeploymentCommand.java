@@ -30,15 +30,14 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-public class CartridgeDeploymentCommand implements Command<StratosCommandContext> {
+public class AutoscalingPolicyDeploymentCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CartridgeDeploymentCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(AutoscalingPolicyDeploymentCommand.class);
 
     private final Options options;
 
-    public CartridgeDeploymentCommand(){
+    public AutoscalingPolicyDeploymentCommand(){
         options = constructOptions();
     }
 
@@ -46,7 +45,7 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Cartridge deployment resource path");
+                "Autoscaling policy deployment resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 
@@ -54,11 +53,11 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
     }
 
     public String getName() {
-        return CliConstants.CARTRIDGE_DEPLOYMENT;
+        return CliConstants.AUTOSCALING_POLICY_DEPLOYMENT;
     }
 
     public String getDescription() {
-        return "Add new cartridge deployment";
+        return "Add new autoscaling policy deployment";
     }
 
     public String getArgumentSyntax() {
@@ -72,7 +71,7 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
 
         if (args != null || args.length > 0) {
             String resourcePath = null;
-            String cartridgeDeploymentJSON = null;
+            String autoscalingPolicyDeployment = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -81,7 +80,7 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Cartridge deployment");
+                    logger.debug("Autoscaling policy deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -89,7 +88,7 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    cartridgeDeploymentJSON = readResource(resourcePath);
+                    autoscalingPolicyDeployment = readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
@@ -97,7 +96,7 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
                     return CliConstants.BAD_ARGS_CODE;
                 }
 
-                RestCommandLineService.getInstance().deployCartridgeDefinition(cartridgeDeploymentJSON);
+                RestCommandLineService.getInstance().deployAutoscalingPolicy(autoscalingPolicyDeployment);
                 return CliConstants.SUCCESSFUL_CODE;
 
             } catch (ParseException e) {
@@ -111,8 +110,6 @@ public class CartridgeDeploymentCommand implements Command<StratosCommandContext
                 System.out.println("Invalid resource path");
                 return CliConstants.BAD_ARGS_CODE;
             }
-
-
         } else {
             context.getStratosApplication().printUsage(getName());
             return CliConstants.BAD_ARGS_CODE;

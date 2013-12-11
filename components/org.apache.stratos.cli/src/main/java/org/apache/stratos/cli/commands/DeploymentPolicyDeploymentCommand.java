@@ -30,15 +30,14 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-public class AutoScalingDeploymentCommand implements Command<StratosCommandContext> {
+public class DeploymentPolicyDeploymentCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AutoScalingDeploymentCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeploymentPolicyDeploymentCommand.class);
 
     private final Options options;
 
-    public AutoScalingDeploymentCommand(){
+    public DeploymentPolicyDeploymentCommand(){
         options = constructOptions();
     }
 
@@ -46,7 +45,7 @@ public class AutoScalingDeploymentCommand implements Command<StratosCommandConte
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Autoscaling policy deployment resource path");
+                "Deployment policy deployment resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 
@@ -54,11 +53,11 @@ public class AutoScalingDeploymentCommand implements Command<StratosCommandConte
     }
 
     public String getName() {
-        return CliConstants.AUTOSCALING_POLICY_DEPLOYMENT;
+        return CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT;
     }
 
     public String getDescription() {
-        return "Add new autoscaling policy deployment";
+        return "Add new deployment policy";
     }
 
     public String getArgumentSyntax() {
@@ -72,7 +71,7 @@ public class AutoScalingDeploymentCommand implements Command<StratosCommandConte
 
         if (args != null || args.length > 0) {
             String resourcePath = null;
-            String autoscalingPolicyDeployment = null;
+            String deploymentPolicyDeployment = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -81,7 +80,7 @@ public class AutoScalingDeploymentCommand implements Command<StratosCommandConte
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Autoscaling policy deployment");
+                    logger.debug("Deployment policy deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -89,7 +88,7 @@ public class AutoScalingDeploymentCommand implements Command<StratosCommandConte
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    autoscalingPolicyDeployment = readResource(resourcePath);
+                    deploymentPolicyDeployment = readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
@@ -97,8 +96,7 @@ public class AutoScalingDeploymentCommand implements Command<StratosCommandConte
                     return CliConstants.BAD_ARGS_CODE;
                 }
 
-                System.out.println(autoscalingPolicyDeployment);
-                RestCommandLineService.getInstance().deployAutoscalingPolicy(autoscalingPolicyDeployment);
+                RestCommandLineService.getInstance().deployDeploymentPolicy(deploymentPolicyDeployment);
                 return CliConstants.SUCCESSFUL_CODE;
 
             } catch (ParseException e) {
