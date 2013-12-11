@@ -58,6 +58,9 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	
 	private static PartitionManager instance;
 	
+	private String partitionResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
+			+ AutoScalerConstants.PARTITION_RESOURCE + "/";
+	
 	private PartitionManager(){
 	    networkPartitions = new ArrayList<NetworkPartitionContext>();
 	    partitionIdToNetworkPartition = new HashMap<String, NetworkPartitionContext>();
@@ -74,21 +77,24 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		return partitionListMap.containsKey(partitionId);
 	}
 	
-	public boolean addPartition( Partition partition) throws AutoScalerException{
+	/*
+	 * Deploy a new partition to Auto Scaler.
+	 */
+	public boolean deployNewPartitoion( Partition partition) throws AutoScalerException{
 		String partitionId = partition.getId();
 		if(this.partitionExist(partition.getId()))
 			throw new AutoScalerException("A parition with the ID " +  partitionId + " already exist.");
 				
-		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
-    			+ AutoScalerConstants.PARTITION_RESOURCE + "/" + partition.getId();
+		String resourcePath= this.partitionResourcePath + partition.getId();
 		
         RegistryManager regManager = RegistryManager.getInstance();     
         
         try {
         	this.validatePartition(partition);
-			regManager.persist(partition, resourcePath);
-	        partitionListMap.put(partitionId, partition);	
-	        
+
+        	regManager.persist(partition, resourcePath);
+			addPartitionToInformationModel(partition);	
+				              
 	        // register network partition
 	        NetworkPartitionContext nwPartition = getOrAddNetworkPartition(partition);
 	        this.partitionIdToNetworkPartition.put(partitionId, nwPartition);
@@ -103,6 +109,11 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		return true;
 	}
 	
+	
+	public void addPartitionToInformationModel(Partition partition) {
+		partitionListMap.put(partition.getId(), partition);
+	}
+		
 	public NetworkPartitionContext getNetworkPartitionOfPartition(String partitionId) {
 	    return this.partitionIdToNetworkPartition.get(partitionId);
 	}
@@ -155,8 +166,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		
 	}
 	
-	public boolean validatePartition(Partition partition) throws PartitionValidationException{
+	public boolean validatePartition(Partition partition) throws PartitionValidationException{				
 		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
-
 }

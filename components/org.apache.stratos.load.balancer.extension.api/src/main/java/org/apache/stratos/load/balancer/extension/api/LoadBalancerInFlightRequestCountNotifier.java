@@ -26,6 +26,8 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.Collection;
+
 /**
  * Load balancer statistics notifier thread for publishing statistics periodically to CEP.
  */
@@ -57,10 +59,27 @@ public class LoadBalancerInFlightRequestCountNotifier implements Runnable {
                 }
 
                 if (statsPublisher.isEnabled()) {
-                    for (Service service : TopologyManager.getTopology().getServices()) {
-                        for (Cluster cluster : service.getClusters()) {
-                            statsPublisher.publish(cluster.getClusterId(), statsReader.getInFlightRequestCount(cluster.getClusterId()));
+                    try {
+                        TopologyManager.acquireReadLock();
+                        Collection<String> partitionIds;
+                        int requestCount;
+                        for (Service service : TopologyManager.getTopology().getServices()) {
+                            for (Cluster cluster : service.getClusters()) {
+                                partitionIds =  cluster.findPartitionIds();
+                                for(String partitionId : partitionIds) {
+                                    // Publish in-flight request count of each cluster partition
+                                    requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId(), partitionId);
+                                    statsPublisher.publish(cluster.getClusterId(), partitionId, requestCount);
+                                    if (log.isDebugEnabled()) {
+                                        log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [partition] %s [value] %d",
+                                                cluster.getClusterId(), partitionId, requestCount));
+                                    }
+                                }
+                            }
                         }
+                    }
+                    finally {
+                        TopologyManager.releaseReadLock();
                     }
                 } else if (log.isWarnEnabled()) {
                     log.warn("CEP statistics publisher is disabled");

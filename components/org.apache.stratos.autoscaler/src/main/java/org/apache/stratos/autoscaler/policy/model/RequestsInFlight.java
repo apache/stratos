@@ -19,12 +19,15 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
+import java.io.Serializable;
+
 /**
  * The model class for RequestsInFlight definition.
  */
-public class RequestsInFlight {
+public class RequestsInFlight implements Serializable{
 
-    private float average;
+	private static final long serialVersionUID = 8113964958155294290L;
+	private float average;
     private float secondDerivative;
     private float gradient;
     private float scaleDownMarginOfGradient;

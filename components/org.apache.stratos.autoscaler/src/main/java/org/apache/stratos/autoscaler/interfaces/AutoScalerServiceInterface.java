@@ -1,6 +1,7 @@
 package org.apache.stratos.autoscaler.interfaces;
 
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
@@ -13,10 +14,10 @@ public interface AutoScalerServiceInterface {
 	public boolean addPartition(Partition partition);
 	
 	public DeploymentPolicy[] getAllDeploymentPolicies();
-	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy);
+	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
 	
 	public AutoscalePolicy[] getAllAutoScalingPolicy();
-	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy);
+	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException;
 	
 	public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType) throws  PartitionValidationException;
 	
