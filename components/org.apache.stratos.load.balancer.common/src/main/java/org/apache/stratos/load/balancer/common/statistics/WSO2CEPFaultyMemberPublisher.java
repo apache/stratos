@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * WSO2 CEP faulty member publisher.
- *
+ * <p/>
  * Faulty members:
  * If a request was rejected by some of the members in a cluster while at least
  * one member could serve it, those members could be identified as faulty.
@@ -49,8 +49,7 @@ public class WSO2CEPFaultyMemberPublisher extends WSO2CEPStatsPublisher {
             payloadData.add(new Attribute("member_id", AttributeType.STRING));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Could not create stream definition", e);
         }
     }
@@ -61,6 +60,7 @@ public class WSO2CEPFaultyMemberPublisher extends WSO2CEPStatsPublisher {
 
     /**
      * Publish faulty members.
+     *
      * @param clusterId
      * @param memberId
      */
