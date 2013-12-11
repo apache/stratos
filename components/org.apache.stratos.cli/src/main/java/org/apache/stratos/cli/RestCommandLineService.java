@@ -52,6 +52,7 @@ public class RestCommandLineService {
     private final String addTenantEndPoint = "/stratos/admin/tenant";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
     private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
+    private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -103,7 +104,8 @@ public class RestCommandLineService {
 
         try {
             if (validateLogin) {
-                restClientService.doPost(restClientService.getUrl() + initializeEndpoint, "", restClientService.getUsername(), restClientService.getPassword());
+                restClientService.doPost(restClientService.getUrl() + initializeEndpoint, "",
+                        restClientService.getUsername(), restClientService.getPassword());
                 if (logger.isDebugEnabled()) {
                     logger.debug("Tenant Domain {}", restClientService.getUsername());
                 }
@@ -416,7 +418,8 @@ public class RestCommandLineService {
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
             String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
 
-            String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint, completeJsonString, restClientService.getUsername(), restClientService.getPassword());
+            String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint,
+                    completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
             if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
                 System.out.println("Invalid operation. Authorization failed");
@@ -432,7 +435,8 @@ public class RestCommandLineService {
 
     public void unsubscribe(String alias) throws CommandException {
         try {
-            restClientService.doPost(restClientService.getUrl() + unsubscribeTenantEndPoint, alias, restClientService.getUsername(), restClientService.getPassword());
+            restClientService.doPost(restClientService.getUrl() + unsubscribeTenantEndPoint, alias,
+                    restClientService.getUsername(), restClientService.getPassword());
             System.out.println("You have successfully unsubscribed " + alias);
         } catch ( Exception e) {
             e.printStackTrace();
@@ -441,7 +445,8 @@ public class RestCommandLineService {
 
     public void deployCartridgeDefinition (String cartridgeDefinition) {
         try {
-            String result = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint, cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
+            String result = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
+                    cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
 
             if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
                 System.out.println("Invalid operations. Authorization failed");
@@ -449,6 +454,33 @@ public class RestCommandLineService {
             else {
                 System.out.println("You have successfully deployed the cartridge");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deployPartition (String partitionDefinition) {
+        try {
+            String result = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
+                    partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
+
+            System.out.println(result);
+
+            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operations. Authorization failed");
+            }
+            else {
+                System.out.println("You have successfully deployed the cartridge");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deployAutoscalingPolicy (String autoScalingPolicy) {
+        try {
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -110,6 +110,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         command = new CartridgeDeploymentCommand();
         commands.put(command.getName(), command);
+
+        command = new PartitionDeploymentCommand();
+        commands.put(command.getName(), command);
 		
 		command = new ListCommand();
 		commands.put(command.getName(), command);

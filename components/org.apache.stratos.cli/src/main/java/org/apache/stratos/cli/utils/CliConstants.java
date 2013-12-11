@@ -74,6 +74,11 @@ public class CliConstants {
      */
     public static final String CARTRIDGE_DEPLOYMENT = "cartridge-deployment";
 
+    /**
+     * Partition deployment
+     */
+    public static final String PARTITION_DEPLOYMENT = "partition-deployment";
+
 	/**
 	 * Give information of a cartridge.
 	 */
@@ -153,7 +158,7 @@ public class CliConstants {
     public static final String ACTIVE_OPTION = "a";
     public static final String ACTIVE_LONG_OPTION = "active";
 
-    // Cartridge deployment options
+    // Deployment options
     public static final String RESOURCE_PATH = "p";
     public static final String RESOURCE_PATH_LONG_OPTION = "resource-path";
 
