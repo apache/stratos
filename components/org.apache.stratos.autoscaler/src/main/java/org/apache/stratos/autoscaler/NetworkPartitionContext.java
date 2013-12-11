@@ -18,11 +18,13 @@
  */
 package org.apache.stratos.autoscaler;
 
-import java.util.*;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holds runtime data of a network partition.
- * @author nirmal
  *
  */
 public class NetworkPartitionContext {
@@ -40,6 +42,7 @@ public class NetworkPartitionContext {
     //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
     private int minInstanceCount = 1, maxInstanceCount = 1;
 
+    private Partition[] partitions;
 
     //Following information will keep events details
     private float averageRequestsInFlight;
@@ -282,5 +285,13 @@ public class NetworkPartitionContext {
 
     public void setPartitionAlgorithm(String partitionAlgorithm) {
         this.partitionAlgorithm = partitionAlgorithm;
+    }
+
+    public Partition[] getPartitions() {
+        return partitions;
+    }
+
+    public void setPartitions(Partition[] partitions) {
+        this.partitions = partitions;
     }
 }
