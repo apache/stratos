@@ -32,16 +32,19 @@ import org.apache.stratos.messaging.domain.topology.Port;
  */
 public class MemberActivatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 5493702477320416932L;
-	private String serviceName;
-    private String clusterId;
-    private String memberId;
+
+    private final String serviceName;
+    private final String clusterId;
+    private final String partitionId;
+    private final String memberId;
     private Map<String, Port> portMap;
     private String memberIp;
-	private String partitionId;
+    private String lbClusterId;
 
-    public MemberActivatedEvent(String serviceName, String clusterId, String memberId) {
+    public MemberActivatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.partitionId = partitionId;
         this.memberId = memberId;
     	this.portMap = new HashMap<String, Port>();
     }
@@ -89,13 +92,16 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 	public void setMemberIp(String memberIp) {
 	    this.memberIp = memberIp;
     }
-
-	public void setPartitionId(String partitionId) {
-		this.partitionId = partitionId;
-		
-	}
 	
 	public String getPartitionId(){
 		return this.partitionId;
 	}
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
+    }
 }

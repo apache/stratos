@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.messaging.event.instance.status.MemberStartedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
@@ -50,9 +50,9 @@ public class InstanceStatusListener implements MessageListener {
             }
             // If member started event is received publish artifact update message
             // To do a git clone
-            if (MemberStartedEvent.class.getName().equals(type)) {
+            if (InstanceStartedEvent.class.getName().equals(type)) {
                 String json = receivedMessage.getText();
-                MemberStartedEvent event = (MemberStartedEvent) Util.jsonToObject(json, MemberStartedEvent.class);
+                InstanceStartedEvent event = (InstanceStartedEvent) Util.jsonToObject(json, InstanceStartedEvent.class);
                 String clusterId = event.getClusterId();
                 if(log.isInfoEnabled()) {
                     log.info("Cluster id: " + clusterId);

@@ -26,9 +26,10 @@ import java.io.Serializable;
  */
 public class MemberTerminatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -7899511757547631157L;
-	private String serviceName;
-    private String clusterId;
-    private String memberId;
+
+    private final String serviceName;
+    private final String clusterId;
+    private final String memberId;
 
     public MemberTerminatedEvent(String serviceName, String clusterId, String memberId) {
         this.serviceName = serviceName;

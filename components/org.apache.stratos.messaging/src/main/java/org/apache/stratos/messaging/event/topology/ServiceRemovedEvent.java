@@ -26,13 +26,14 @@ import java.io.Serializable;
  */
 public class ServiceRemovedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -4835613174531768139L;
-	private String serviceName;
+
+    private final String serviceName;
+
+    public ServiceRemovedEvent(String serviceName) {
+        this.serviceName = serviceName;
+    }
 
     public String getServiceName() {
         return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
     }
 }

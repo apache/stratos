@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.messaging.event.instance.status;
 
 import org.apache.stratos.messaging.event.topology.TopologyEvent;
@@ -23,37 +24,37 @@ import org.apache.stratos.messaging.event.topology.TopologyEvent;
 import java.io.Serializable;
 
 /**
- * This event is fired by Instance when it has started it's server and
+ * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class MemberActivatedEvent extends TopologyEvent implements Serializable {
+public class InstanceActivatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
-    private String serviceName;
-    private String clusterId;
-    private String memberId;
+    private final String serviceName;
+    private final String clusterId;
+    private final String partitionId;
+    private final String memberId;
+
+    public InstanceActivatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.partitionId = partitionId;
+        this.memberId = memberId;
+    }
 
     public String getServiceName() {
         return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
+    public String getPartitionId() {
+        return partitionId;
     }
 
     public String getMemberId() {
         return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
     }
 }

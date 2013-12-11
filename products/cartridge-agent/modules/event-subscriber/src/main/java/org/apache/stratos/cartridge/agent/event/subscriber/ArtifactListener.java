@@ -33,7 +33,7 @@ import org.apache.stratos.deployment.synchronizer.RepositoryInformation;
 import org.apache.stratos.deployment.synchronizer.git.impl.GitBasedArtifactRepository;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.event.instance.status.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
@@ -80,12 +80,13 @@ public class ArtifactListener implements MessageListener{
 	    		// send member activated event
 	    		log.info("Sending member activated event");
 	    		// Send member activated event
-	    		MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent();
-	    		memberActivatedEvent.setServiceName(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME));
-	    		memberActivatedEvent.setClusterId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID));
-	    		memberActivatedEvent.setMemberId(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
+	    		InstanceActivatedEvent instanceActivatedEvent = new InstanceActivatedEvent(
+                        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME),
+	    		        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID),
+                        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.PARTITION_ID),
+	    		        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
 	    		EventPublisher publisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
-	    		publisher.publish(memberActivatedEvent);
+	    		publisher.publish(instanceActivatedEvent);
 	    		log.info("Member activated event is sent");
 	    	}	
 		}

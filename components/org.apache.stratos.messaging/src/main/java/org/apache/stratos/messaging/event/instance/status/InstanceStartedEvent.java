@@ -16,22 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.event.instance.status;
+
+
+import org.apache.stratos.messaging.event.topology.TopologyEvent;
 
 import java.io.Serializable;
 
-public class PartitionRemovedEvent extends TopologyEvent implements Serializable {
-    private String partitionId;
+/**
+ * This event is fired by cartridge agent when the its started.
+ */
+public class InstanceStartedEvent extends TopologyEvent implements Serializable {
+    private static final long serialVersionUID = 7447068435627208619L;
 
-    public PartitionRemovedEvent(String partitionId) {
+    private final String serviceName;
+    private final String clusterId;
+    private final String partitionId;
+    private final String memberId;
+
+    public InstanceStartedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
         this.partitionId = partitionId;
+        this.memberId = memberId;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public String getClusterId() {
+        return clusterId;
     }
 
     public String getPartitionId() {
         return partitionId;
     }
 
-    public void setPartitionId(String partitionId) {
-        this.partitionId = partitionId;
+    public String getMemberId() {
+        return memberId;
     }
 }

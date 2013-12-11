@@ -30,9 +30,9 @@ import java.util.Properties;
 public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2080623816272047762L;
 
-	private String serviceName;
-    private String clusterId;
-    private String hostName;
+	private final String serviceName;
+    private final String clusterId;
+    private final String hostName;
     private String tenantRange;
     private String autoscalingPolicyName;
     private String deploymentPolicyName;
@@ -54,10 +54,6 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
 
     public String getHostName() {
         return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
     }
 
     public String getTenantRange() {

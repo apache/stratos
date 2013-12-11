@@ -30,13 +30,14 @@ import java.io.Serializable;
  */
 public class CompleteTopologyEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 8580862188444892004L;
-	private Topology topology;
+
+    private final Topology topology;
+
+    public CompleteTopologyEvent(Topology topology) {
+        this.topology = topology;
+    }
 
     public Topology getTopology() {
         return topology;
-    }
-
-    public void setTopology(Topology topology) {
-        this.topology = topology;
     }
 }
