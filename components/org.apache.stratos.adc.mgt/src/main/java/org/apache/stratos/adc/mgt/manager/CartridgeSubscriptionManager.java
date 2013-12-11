@@ -95,28 +95,58 @@ public class CartridgeSubscriptionManager {
             UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
             RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
 
-        //validate cartridge alias
+        return subscribeToCartridgeWithProperties(cartridgeType, cartridgeAlias, autoscalingPolicyName, 
+                                                  deploymentPolicyName, tenantDomain, tenantId, tenantAdminUsername, 
+                                                  repositoryType, repositoryURL, isPrivateRepository, repositoryUsername, 
+                                                  repositoryPassword, null);
+    }
+    
+    public CartridgeSubscription subscribeToCartridgeWithProperties(String cartridgeType, String cartridgeAlias,
+        String autoscalingPolicyName, String deploymentPolicyName, String tenantDomain,
+        int tenantId, String tenantAdminUsername, String repositoryType, String repositoryURL,
+        boolean isPrivateRepository, String repositoryUsername, String repositoryPassword, Property[] props)
+
+    throws ADCException,
+        InvalidCartridgeAliasException,
+        DuplicateCartridgeAliasException,
+        PolicyException,
+        UnregisteredCartridgeException,
+        RepositoryRequiredException,
+        RepositoryCredentialsRequiredException,
+        RepositoryTransportException,
+        AlreadySubscribedException,
+        InvalidRepositoryException {
+
+        // validate cartridge alias
         ApplicationManagementUtil.validateCartridgeAlias(cartridgeAlias, cartridgeType);
 
-        //TODO - remove, now autoscaling policy is at autoscaler. Just need to pass the name
-        /*Policy autoScalingPolicy;
-        if(autoscalingPolicyName != null && !autoscalingPolicyName.isEmpty()) {
-            autoScalingPolicy = PolicyHolder.getInstance().getPolicy(autoscalingPolicyName);
-        } else {
-            autoScalingPolicy = PolicyHolder.getInstance().getDefaultPolicy();
-        }
-
-        if(autoScalingPolicy == null) {
-            throw new PolicyException("Could not load the auto scaling policy.");
-        } */
+        // TODO - remove, now autoscaling policy is at autoscaler. Just need to pass the name
+        /*
+         * Policy autoScalingPolicy;
+         * if(autoscalingPolicyName != null && !autoscalingPolicyName.isEmpty()) {
+         * autoScalingPolicy = PolicyHolder.getInstance().getPolicy(autoscalingPolicyName);
+         * } else {
+         * autoScalingPolicy = PolicyHolder.getInstance().getDefaultPolicy();
+         * }
+         * 
+         * if(autoScalingPolicy == null) {
+         * throw new PolicyException("Could not load the auto scaling policy.");
+         * }
+         */
 
         CartridgeInfo cartridgeInfo;
         try {
-            cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+            cartridgeInfo =
+                            CloudControllerServiceClient.getServiceClient()
+                                                        .getCartridgeInfo(cartridgeType);
+            if (props != null) {
+                cartridgeInfo.setProperties(props);
+            }
 
         } catch (UnregisteredCartridgeException e) {
-            String message = cartridgeType
-                    + " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
+            String message =
+                             cartridgeType +
+                                     " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
             log.error(message);
             throw e;
 
@@ -128,55 +158,72 @@ public class CartridgeSubscriptionManager {
 
         Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
 
-        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
-        
-        Repository repository = cartridgeSubscription.manageRepository(repositoryURL, repositoryUsername,
-                repositoryPassword, isPrivateRepository, cartridgeAlias, cartridgeInfo, tenantDomain);
-        
-        cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName, deploymentPolicyName, repository);
-        cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey()); // TODO ---- fix properly
+        CartridgeSubscription cartridgeSubscription =
+                                                      CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
+
+        Repository repository =
+                                cartridgeSubscription.manageRepository(repositoryURL,
+                                                                       repositoryUsername,
+                                                                       repositoryPassword,
+                                                                       isPrivateRepository,
+                                                                       cartridgeAlias,
+                                                                       cartridgeInfo, tenantDomain);
+
+        cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
+                                                 deploymentPolicyName, repository);
+        cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey()); // TODO ---- fix
+                                                                             // properly
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
-                " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " + cartridgeType +
-                ", Repo URL: " + repositoryURL + ", Policy: " + autoscalingPolicyName);
+                 " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " +
+                 cartridgeType + ", Repo URL: " + repositoryURL + ", Policy: " +
+                 autoscalingPolicyName);
 
-        Payload payload = PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(), cartridgeType,
-                "/tmp/" + tenantDomain + "-" + cartridgeAlias + ".zip");
+        Payload payload =
+                          PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(),
+                                                            cartridgeType, "/tmp/" + tenantDomain +
+                                                                           "-" + cartridgeAlias +
+                                                                           ".zip");
         PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
 
         if (payloadArg != null) {
-            //populate the payload
+            // populate the payload
             payload.populatePayload(payloadArg);
             cartridgeSubscription.setPayload(payload);
         }
 
-        //get the payload parameters defined in the cartridge definition file for this cartridge type
+        // get the payload parameters defined in the cartridge definition file for this cartridge
+        // type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
             StringBuilder customPayloadParamsBuilder = new StringBuilder();
-            for(Property property : cartridgeInfo.getProperties()) {
-                //check if a property is related to the payload. Currently this is done by checking if the
-                //property name starts with 'payload_parameter.' suffix. If so the payload param name will
-                //be taken as the substring from the index of '.' to the end of the property name.
-                if(property.getName().startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
+            for (Property property : cartridgeInfo.getProperties()) {
+                // check if a property is related to the payload. Currently this is done by checking
+                // if the
+                // property name starts with 'payload_parameter.' suffix. If so the payload param
+                // name will
+                // be taken as the substring from the index of '.' to the end of the property name.
+                if (property.getName()
+                            .startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
                     String payloadParamName = property.getName();
                     customPayloadParamsBuilder.append(",");
-                    customPayloadParamsBuilder.append(payloadParamName.
-                            substring(payloadParamName.indexOf(".") + 1));
+                    customPayloadParamsBuilder.append(payloadParamName.substring(payloadParamName.indexOf(".") + 1));
                     customPayloadParamsBuilder.append("=");
                     customPayloadParamsBuilder.append(property.getValue());
                 }
             }
-            //if valid payload related parameters are found in the cartridge definition file, add them to the payload
+            // if valid payload related parameters are found in the cartridge definition file, add
+            // them to the payload
             String customPayloadParamString = customPayloadParamsBuilder.toString();
-            if(!customPayloadParamString.isEmpty()) {
+            if (!customPayloadParamString.isEmpty()) {
                 payload.populatePayload(customPayloadParamString);
                 cartridgeSubscription.setPayload(payload);
             }
         }
 
-        //CartridgeInstanceCache.getCartridgeInstanceCache().
-        //        addCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeAlias), cartridgeSubscription);
+        // CartridgeInstanceCache.getCartridgeInstanceCache().
+        // addCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeAlias),
+        // cartridgeSubscription);
 
         return cartridgeSubscription;
     }
