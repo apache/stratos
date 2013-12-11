@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eventBuilder name="stratos.instance.stats_1.0.0_builder"
+<eventBuilder name="InstanceStatusStatisticsBuilder"
     statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventbuilder">
     <from eventAdaptorName="DefaultWSO2EventInputAdaptor" eventAdaptorType="wso2event">
         <property name="stream">stratos.instance.stats</property>
