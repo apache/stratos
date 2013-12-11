@@ -32,6 +32,8 @@ import org.apache.stratos.cloud.controller.pojo.Properties;
 public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
 
+    private static final long serialVersionUID = 3969055979835359336L;
+
     /**
      * Constructor
      *
