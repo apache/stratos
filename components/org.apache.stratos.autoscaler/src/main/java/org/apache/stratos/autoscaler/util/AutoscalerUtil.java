@@ -41,8 +41,10 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
 import javax.xml.namespace.QName;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * This class contains utility methods used by Autoscaler.
@@ -124,7 +126,9 @@ public class AutoscalerUtil {
 
             for(Partition partition: deploymentPolicy.getAllPartitions()){
                 PartitionContext partitionContext = new PartitionContext(partition);
-
+                partitionContext.setServiceName(cluster.getServiceName());
+                partitionContext.setProperties(cluster.getProperties());
+                
                 for (Member member: cluster.getMembers()){
                     String memberId = member.getMemberId();
                     if(member.getPartitionId().equalsIgnoreCase(partition.getId())){
@@ -147,6 +151,114 @@ public class AutoscalerUtil {
                 }
                 networkPartitionContext.addPartitionContext(partitionContext);
             }
+
+            clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+        }
+//        if (policy != null) {
+//
+//            // get values from policy
+//            LoadThresholds loadThresholds = policy.getLoadThresholds();
+//            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
+//            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
+//            float secondDerivativeLimit = loadThresholds.getRequestsInFlight().getSecondDerivative();
+//
+//            clusterMonitor.setRequestsInFlightGradientThreshold(gradientLimit);
+//            clusterMonitor.setRequestsInFlightSecondDerivativeThreshold(secondDerivativeLimit);
+//            clusterMonitor.setAverageRequestsInFlightThreshold(averageLimit);
+//
+//        }
+
+        return clusterMonitor;
+    }
+    
+    public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
+        // FIXME fix the following code to correctly update
+        // AutoscalerContext context = AutoscalerContext.getInstance();
+        if (null == cluster) {
+            return null;
+        }
+
+        String autoscalePolicyName = cluster.getAutoscalePolicyName();
+        String deploymentPolicyName = cluster.getDeploymentPolicyName();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Deployment policy name: " + deploymentPolicyName);
+            log.debug("Autoscaler policy name: " + autoscalePolicyName);
+        }
+
+        AutoscalePolicy policy =
+                                 PolicyManager.getInstance()
+                                              .getAutoscalePolicy(autoscalePolicyName);
+        DeploymentPolicy deploymentPolicy =
+                                            PolicyManager.getInstance()
+                                                         .getDeploymentPolicy(deploymentPolicyName);
+
+        if (deploymentPolicy == null) {
+            String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
+            log.error(msg);
+            throw new PolicyValidationException(msg);
+        }
+
+//        Partition[] allPartitions = deploymentPolicy.getAllPartitions();
+//        if (allPartitions == null) {
+//            String msg =
+//                         "Deployment Policy's Partitions are null. Policy name: " +
+//                                 deploymentPolicyName;
+//            log.error(msg);
+//            throw new PolicyValidationException(msg);
+//        }
+//
+//        try {
+//            validateExistenceOfPartions(allPartitions);
+//        } catch (InvalidPartitionException e) {
+//            String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
+//            log.error(msg, e);
+//            throw new PolicyValidationException(msg, e);
+//        }
+//
+//        CloudControllerClient.getInstance()
+//                             .validatePartitionsOfPolicy(cluster.getServiceName(),
+//                                                         allPartitions);
+
+        LbClusterMonitor clusterMonitor =
+                                        new LbClusterMonitor(cluster.getClusterId(),
+                                                           cluster.getServiceName(),
+                                                           deploymentPolicy, policy);
+        // partition group = network partition context
+        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+
+            NetworkPartitionContext networkPartitionContext =
+                                                              PartitionManager.getInstance()
+                                                                              .getNetworkPartition(partitionGroup.getId());
+            // FIXME pick a random partition
+            Partition partition =
+                                  partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
+            PartitionContext partitionContext = new PartitionContext(partition);
+            partitionContext.setServiceName(cluster.getServiceName());
+            partitionContext.setProperties(cluster.getProperties());
+
+            for (Member member : cluster.getMembers()) {
+                String memberId = member.getMemberId();
+                if (member.getPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
+                    MemberContext memberContext = new MemberContext();
+                    memberContext.setClusterId(member.getClusterId());
+                    memberContext.setMemberId(memberId);
+                    memberContext.setPartition(partition);
+
+                    if (MemberStatus.Activated.equals(member.getStatus())) {
+                        partitionContext.addActiveMember(memberContext);
+                    } else if (MemberStatus.Created.equals(member.getStatus()) ||
+                               MemberStatus.Starting.equals(member.getStatus())) {
+                        partitionContext.addPendingMember(memberContext);
+                    } else if (MemberStatus.Suspended.equals(member.getStatus())) {
+                        partitionContext.addFaultyMember(memberId);
+                    }
+
+                    partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                }
+
+            }
+            networkPartitionContext.addPartitionContext(partitionContext);
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
         }
@@ -239,63 +351,63 @@ public class AutoscalerUtil {
         return properties;
     }
 
-    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
-        if (null == cluster) {
-               return null;
-           }
-
-           String autoscalePolicyName = cluster.getAutoscalePolicyName();
-           String deploymentPolicyName = cluster.getDeploymentPolicyName();
-
-           if (log.isDebugEnabled()) {
-               log.debug("Deployment policy name: " + deploymentPolicyName);
-               log.debug("Autoscaler policy name: " + autoscalePolicyName);
-           }
-
-           AutoscalePolicy policy =
-                                    PolicyManager.getInstance()
-                                                 .getAutoscalePolicy(autoscalePolicyName);
-           DeploymentPolicy deploymentPolicy =
-                                               PolicyManager.getInstance()
-                                                            .getDeploymentPolicy(deploymentPolicyName);
-
-           if (deploymentPolicy == null) {
-               String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
-               log.error(msg);
-               throw new PolicyValidationException(msg);
-           }
-
-           Partition[] allPartitions = deploymentPolicy.getAllPartitions();
-           if (allPartitions == null) {
-               String msg =
-                            "Deployment Policy's Partitions are null. Policy name: " +
-                                    deploymentPolicyName;
-               log.error(msg);
-               throw new PolicyValidationException(msg);
-           }
-
-           try {
-               validateExistenceOfPartions(allPartitions);
-           } catch (InvalidPartitionException e) {
-               String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
-               log.error(msg, e);
-               throw new PolicyValidationException(msg, e);
-           }
-
-           CloudControllerClient.getInstance()
-                                .validatePartitionsOfPolicy(cluster.getServiceName(),
-                                                            allPartitions);
-
-           LbClusterMonitor clusterMonitor =
-                                           new LbClusterMonitor(cluster.getClusterId(),
-                                                              cluster.getServiceName(),
-                                                              deploymentPolicy, policy);
-           for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
-
-               NetworkPartitionContext networkPartitionContext
-                       = PartitionManager.getInstance().getNetworkPartition(partitionGroup.getId());
-               clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
-           }
-        return null;
-    }
+//    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
+//        if (null == cluster) {
+//               return null;
+//           }
+//
+//           String autoscalePolicyName = cluster.getAutoscalePolicyName();
+//           String deploymentPolicyName = cluster.getDeploymentPolicyName();
+//
+//           if (log.isDebugEnabled()) {
+//               log.debug("Deployment policy name: " + deploymentPolicyName);
+//               log.debug("Autoscaler policy name: " + autoscalePolicyName);
+//           }
+//
+//           AutoscalePolicy policy =
+//                                    PolicyManager.getInstance()
+//                                                 .getAutoscalePolicy(autoscalePolicyName);
+//           DeploymentPolicy deploymentPolicy =
+//                                               PolicyManager.getInstance()
+//                                                            .getDeploymentPolicy(deploymentPolicyName);
+//
+//           if (deploymentPolicy == null) {
+//               String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
+//               log.error(msg);
+//               throw new PolicyValidationException(msg);
+//           }
+//
+//           Partition[] allPartitions = deploymentPolicy.getAllPartitions();
+//           if (allPartitions == null) {
+//               String msg =
+//                            "Deployment Policy's Partitions are null. Policy name: " +
+//                                    deploymentPolicyName;
+//               log.error(msg);
+//               throw new PolicyValidationException(msg);
+//           }
+//
+//           try {
+//               validateExistenceOfPartions(allPartitions);
+//           } catch (InvalidPartitionException e) {
+//               String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
+//               log.error(msg, e);
+//               throw new PolicyValidationException(msg, e);
+//           }
+//
+//           CloudControllerClient.getInstance()
+//                                .validatePartitionsOfPolicy(cluster.getServiceName(),
+//                                                            allPartitions);
+//
+//           LbClusterMonitor clusterMonitor =
+//                                           new LbClusterMonitor(cluster.getClusterId(),
+//                                                              cluster.getServiceName(),
+//                                                              deploymentPolicy, policy);
+//           for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
+//
+//               NetworkPartitionContext networkPartitionContext
+//                       = PartitionManager.getInstance().getNetworkPartition(partitionGroup.getId());
+//               clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+//           }
+//        return null;
+//    }
 }

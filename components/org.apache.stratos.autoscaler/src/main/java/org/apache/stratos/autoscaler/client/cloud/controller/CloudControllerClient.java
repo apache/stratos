@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -68,18 +69,18 @@ public class CloudControllerClient {
 		}
     }
 
-    public void spawnInstances(Partition partition, String clusterId, int memberCountToBeIncreased) throws SpawningException {
-        //call CC spawnInstances method
-
-
-        log.info("Calling CC for spawning instances in cluster " + clusterId);
-        log.info("Member count to be increased: " + memberCountToBeIncreased);
-
-        for(int i =0; i< memberCountToBeIncreased; i++){
-            spawnAnInstance(partition, clusterId);
-        }
-        
-    }
+//    public void spawnInstances(Partition partition, String clusterId, int memberCountToBeIncreased) throws SpawningException {
+//        //call CC spawnInstances method
+//
+//
+//        log.info("Calling CC for spawning instances in cluster " + clusterId);
+//        log.info("Member count to be increased: " + memberCountToBeIncreased);
+//
+//        for(int i =0; i< memberCountToBeIncreased; i++){
+//            spawnAnInstance(partition, clusterId);
+//        }
+//        
+//    }
     
     /*
      * This will validate the given partitions against the given cartridge type.
@@ -118,11 +119,12 @@ public class CloudControllerClient {
 
     }
 
-    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId) throws SpawningException {
+    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId, String lbClusterId) throws SpawningException {
         try {
             org.apache.stratos.cloud.controller.pojo.MemberContext member = new org.apache.stratos.cloud.controller.pojo.MemberContext();
             member.setClusterId(clusterId);
             member.setPartition(partition);
+            member.setClusterId(lbClusterId);
             member.setInitTime(System.currentTimeMillis());
             return stub.startInstance(member);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
