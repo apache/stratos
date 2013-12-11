@@ -176,6 +176,29 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	    
     }
 	
+	public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
+        Partition[] partitions = getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+        
+        for (Partition partition : partitions) {
+            if (partition != null) {
+                NetworkPartitionContext nwPartitionCtxt =
+                                                          partitionManager.getNetworkPartitionOfPartition(partition.getId());
+                if (!nwPartitionCtxt.isServiceLBExist(serviceName)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Service LB [service name] "+serviceName+" does not exist in [network partition] " +
+                                  nwPartitionCtxt.getId() + " of [Deployment Policy] " +
+                                  deploymentPolicyId);
+
+                    }
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    }
+	
 	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
         Partition[] partitions = getPartitionsOfDeploymentPolicy(deploymentPolicyId);
         

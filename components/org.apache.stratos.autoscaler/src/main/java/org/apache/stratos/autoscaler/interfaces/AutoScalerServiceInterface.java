@@ -31,4 +31,5 @@ public interface AutoScalerServiceInterface {
 	public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException;
 	public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId);
 	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId);
+	public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId);
 }
