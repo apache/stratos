@@ -45,4 +45,9 @@ public class Constants {
 
     // to identify a lb cluster
     public static final String IS_LOAD_BALANCER = "load.balancer";
+    public static final String LOAD_BALANCER_REF = "load.balancer.ref";
+    public static final String SERVICE_AWARE_LOAD_BALANCER = "service.aware.load.balancer";
+    public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
+    public static final String NO_LOAD_BALANCER = "no.load.balancer";
+    public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
 }
