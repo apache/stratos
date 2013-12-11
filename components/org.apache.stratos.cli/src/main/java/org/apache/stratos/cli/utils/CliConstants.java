@@ -79,6 +79,11 @@ public class CliConstants {
      */
     public static final String PARTITION_DEPLOYMENT = "partition-deployment";
 
+    /**
+     * Autoscaling policy deployment
+     */
+    public static final String AUTOSCALING_POLICY_DEPLOYMENT = "autoscaling-policy-deployment";
+
 	/**
 	 * Give information of a cartridge.
 	 */

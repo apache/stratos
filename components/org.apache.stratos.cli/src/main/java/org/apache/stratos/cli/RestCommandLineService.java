@@ -53,6 +53,7 @@ public class RestCommandLineService {
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
     private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
     private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
+    private final String autoscalingPolicyDeploymentEndPoint = "/stratos/admin/policy/autoscale";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -470,7 +471,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
             }
             else {
-                System.out.println("You have successfully deployed the cartridge");
+                System.out.println("You have successfully deployed the partition");
             }
 
         } catch (Exception e) {
@@ -480,6 +481,17 @@ public class RestCommandLineService {
 
     public void deployAutoscalingPolicy (String autoScalingPolicy) {
         try {
+            String result = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
+                    autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
+
+            System.out.println(result);
+
+            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                System.out.println("Invalid operations. Authorization failed");
+            }
+            else {
+                System.out.println("You have successfully deployed the autoscaling policy");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

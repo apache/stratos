@@ -32,13 +32,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class PartitionDeploymentCommand implements Command<StratosCommandContext> {
+public class AutoScalingDeploymentCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(PartitionDeploymentCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(AutoScalingDeploymentCommand.class);
 
     private final Options options;
 
-    public PartitionDeploymentCommand(){
+    public AutoScalingDeploymentCommand(){
         options = constructOptions();
     }
 
@@ -46,7 +46,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Partition deployment resource path");
+                "Autoscaling policy deployment resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 
@@ -54,11 +54,11 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
     }
 
     public String getName() {
-        return CliConstants.PARTITION_DEPLOYMENT;
+        return CliConstants.AUTOSCALING_POLICY_DEPLOYMENT;
     }
 
     public String getDescription() {
-        return "Add new partition deployment";
+        return "Add new autoscaling policy deployment";
     }
 
     public String getArgumentSyntax() {
@@ -72,7 +72,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
 
         if (args != null || args.length > 0) {
             String resourcePath = null;
-            String partionDeployment = null;
+            String autoscalingPolicyDeployment = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -81,7 +81,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Partition deployment");
+                    logger.debug("Autoscaling policy deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -89,7 +89,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    partionDeployment = readResource(resourcePath);
+                    autoscalingPolicyDeployment = readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
@@ -97,7 +97,8 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
                     return CliConstants.BAD_ARGS_CODE;
                 }
 
-                RestCommandLineService.getInstance().deployPartition(partionDeployment);
+                System.out.println(autoscalingPolicyDeployment);
+                RestCommandLineService.getInstance().deployAutoscalingPolicy(autoscalingPolicyDeployment);
                 return CliConstants.SUCCESSFUL_CODE;
 
             } catch (ParseException e) {
