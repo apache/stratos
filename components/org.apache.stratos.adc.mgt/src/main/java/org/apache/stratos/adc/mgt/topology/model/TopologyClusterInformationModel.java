@@ -26,38 +26,38 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class TopologyClusterModel {
+public class TopologyClusterInformationModel {
 
-    private static final Log log = LogFactory.getLog(TopologyClusterModel.class);
+    private static final Log log = LogFactory.getLog(TopologyClusterInformationModel.class);
 
     private Map<Integer, Set<CartridgeTypeContext>> tenantIdToCartridgeTypeContextMap;
     //private Map<TenantIdAndAliasTopologyKey, Cluster> tenantIdAndAliasTopologyKeyToClusterMap;
     //private Map<Integer, List<Cluster>> tenantIdToClusterMap;
     //private Map<TenantIdAndTypeTopologyKey , List<Cluster>> tenantIdAndTypeTopologyKeyToClusterMap;
-    private static TopologyClusterModel topologyClusterModel;
+    private static TopologyClusterInformationModel topologyClusterInformationModel;
 
     //locks
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
-    private TopologyClusterModel() {
+    private TopologyClusterInformationModel() {
         //tenantIdAndAliasTopologyKeyToClusterMap = new HashMap<TenantIdAndAliasTopologyKey, Cluster>();
         //tenantIdAndTypeTopologyKeyToClusterMap = new HashMap<TenantIdAndTypeTopologyKey, List<Cluster>>();
         //tenantIdToClusterMap = new HashMap<Integer, List<Cluster>>();
         tenantIdToCartridgeTypeContextMap = new HashMap<Integer, Set<CartridgeTypeContext>>();
     }
 
-    public static TopologyClusterModel getInstance () {
-        if(topologyClusterModel == null) {
-            synchronized (TopologyClusterModel.class) {
-                if (topologyClusterModel == null) {
-                    topologyClusterModel = new TopologyClusterModel();
+    public static TopologyClusterInformationModel getInstance () {
+        if(topologyClusterInformationModel == null) {
+            synchronized (TopologyClusterInformationModel.class) {
+                if (topologyClusterInformationModel == null) {
+                    topologyClusterInformationModel = new TopologyClusterInformationModel();
                 }
             }
         }
 
-        return topologyClusterModel;
+        return topologyClusterInformationModel;
     }
 
     /*public void addCluster (int tenantId, String cartridgeType, String subscriptionAlias, Cluster cluster) {
