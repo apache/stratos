@@ -24,6 +24,7 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
@@ -36,8 +37,8 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
      *
      * @param cartridgeInfo CartridgeInfo subscription
      */
-    public ApplicationCartridgeSubscription(CartridgeInfo cartridgeInfo) {
-        super(cartridgeInfo);
+    public ApplicationCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
+        super(cartridgeInfo, isServiceDeployment);
     }
 
     public void createSubscription(Subscriber subscriber, String alias, String autoscalingPolicyName,
@@ -84,4 +85,6 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
         PayloadArg payloadArg = super.createPayloadParameters();
         return subscriptionTenancyBehaviour.createPayloadParameters(payloadArg);
     }
+
+	
 }

@@ -1,4 +1,4 @@
 {"tenantInfo":{"admin":"admin","firstname":"Frank","lastname":"Myers","adminPassword":"admin123","email":"foo@bar.com","tenantDomain":"frank.com"}}
 
 
-curl -X POST -H "Content-Type: application/json" -d '{"tenantInfo":{"admin":"admin","firstname":"Frank","lastname":"Myers","adminPassword":"admin123","email":"foo@bar.com","tenantDomain":"frank.com"}}'  -v -u admin:admin http://localhost:9763/stratos/admin/tenant/create
+curl -X POST -H "Content-Type: application/json" -d '{"tenantInfo":{"admin":"admin","firstname":"Frank","lastname":"Myers","adminPassword":"admin123","email":"foo@bar.com","tenantDomain":"frank.com"}}'  -v -u admin:admin http://localhost:9763/stratos/admin/tenant

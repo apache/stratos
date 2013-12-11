@@ -60,17 +60,17 @@ public abstract class Payload implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("TENANT_RANGE=" + payloadArg.getTenantRange());
         payloadBuilder.append(",");
-        payloadBuilder.append("TENANT_CONTEXT=" + payloadArg.getTenantDomain());
+        payloadBuilder.append("TENANT_CONTEXT=" + payloadArg.getTenantDomain()); // No need to send those now
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_ALIAS=" + payloadArg.getCartridgeAlias());
         payloadBuilder.append(",");
-        payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));
+        payloadBuilder.append("MB_IP=" + System.getProperty(CartridgeConstants.MB_IP));  // No need to send those now, will get from Puppet
         payloadBuilder.append(",");
-        payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT));
+        payloadBuilder.append("MB_PORT=" + System.getProperty(CartridgeConstants.MB_PORT)); // No need to send those now, will get from Puppet
         payloadBuilder.append(",");
-        payloadBuilder.append("CEP_IP=" + System.getProperty(CartridgeConstants.CEP_IP));
+        payloadBuilder.append("CEP_IP=" + System.getProperty(CartridgeConstants.CEP_IP)); // No need to send those now, will get from Puppet
         payloadBuilder.append(",");
-        payloadBuilder.append("CEP_PORT=" + System.getProperty(CartridgeConstants.CEP_PORT));
+        payloadBuilder.append("CEP_PORT=" + System.getProperty(CartridgeConstants.CEP_PORT)); // No need to send those now, will get from Puppet
         payloadBuilder.append(",");
         payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
         payloadBuilder.append(",");
@@ -78,7 +78,7 @@ public abstract class Payload implements Serializable {
         
         if(payloadArg.getCartridgeInfo() != null) {
             payloadBuilder.append(",");
-            payloadBuilder.append("SERVICE_NAME=" + payloadArg.getCartridgeInfo().getType());
+            payloadBuilder.append("SERVICE=" + payloadArg.getCartridgeInfo().getType());  // TODO -- rename to SERVICE_NAME and rename puppet agent too
         }
 
         //add the user defined payload String (if any)

@@ -862,5 +862,35 @@ public class ServiceUtils {
 
         cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
     }
+    
+    /**
+     * 
+     * Super tenant will deploy multitenant service. 
+     * 
+     * get domain , subdomain as well..
+     * @param clusterDomain 
+     * @param clusterSubdomain 
+     * 
+     */
+    static void deployService (String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, 
+    		String tenantDomain, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) {
+    	
+    	// create the subscription and persist. 
+    	CartridgeSubscription cartridgeSubscription = null;
+    	try {
+    		cartridgeSubscription = cartridgeSubsciptionManager.deployMultitenantService(cartridgeType, alias, autoscalingPolicy,
+					deploymentPolicy, tenantDomain, tenantId, "tenant-admin-user-name", clusterDomain, clusterSubdomain, null, false, null, null,
+					tenantRange);
+    		cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	/*CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
+                alias.trim(), autoscalingPolicy, deploymentPolicy ,tenantDomain, tenantId,
+                userName, "git", repoURL, privateRepo, repoUsername, repoPassword);*/
+    	
+    	// 
+    }
 
 }

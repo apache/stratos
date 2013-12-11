@@ -19,11 +19,14 @@
 
 package org.apache.stratos.adc.mgt.subscription;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
@@ -31,15 +34,17 @@ import org.apache.stratos.cloud.controller.pojo.Properties;
 
 public class FrameworkCartridgeSubscription extends CartridgeSubscription {
 
+	private static Log log = LogFactory.getLog(FrameworkCartridgeSubscription.class);
     private static final long serialVersionUID = 1633832232416272756L;
 
+    
     /**
      * Constructor
      *
      * @param cartridgeInfo CartridgeInfo subscription
      */
-    public FrameworkCartridgeSubscription(CartridgeInfo cartridgeInfo) {
-        super(cartridgeInfo);
+    public FrameworkCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
+        super(cartridgeInfo, isServiceDeployment);
     }
 
     @Override
@@ -49,6 +54,7 @@ public class FrameworkCartridgeSubscription extends CartridgeSubscription {
             RepositoryCredentialsRequiredException, RepositoryTransportException, UnregisteredCartridgeException,
             AlreadySubscribedException, RepositoryRequiredException, InvalidRepositoryException, PolicyException {
 
+    	log.info(" -- in create Subscription ---");
         super.createSubscription(subscriber, alias, autoscalingPolicyName, deploymentPolicyName, repository);
         subscriptionTenancyBehaviour.createSubscription();
     }
