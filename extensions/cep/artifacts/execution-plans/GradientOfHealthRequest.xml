@@ -7,7 +7,7 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="healthStats2" name="stratos.agent.health.stats" version="1.0.0"/>
+    <stream as="healthStats2" name="cartridge_agent_health_stats" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[
   from healthStats2 #window.stratos:faultHandling(1min, member_id) select cluster_id,partition_id,member_id group by cluster_id,partition_id insert into fault_message;

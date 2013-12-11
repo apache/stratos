@@ -7,7 +7,7 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="healthStats3" name="stratos.agent.health.stats" version="1.0.0"/>
+    <stream as="healthStats3" name="cartridge_agent_health_stats" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[ 
     from healthStats3 [health_description == 'memory_consumption'] #window.stratos:secondDerivative(1 min, value) select cluster_id,partition_id,member_id, value as second_derivative_memory_consumption group by cluster_id,partition_id insert into second_derivative_memory_consumption_stats;

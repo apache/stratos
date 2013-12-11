@@ -1,8 +1,8 @@
 <streamManagerConfiguration xmlns="http://wso2.org/carbon/streammanager">
-
-    <streamDefinition name="stratos.lb.in.flight.req.count" version="1.0.0">
-         <description>cluster partition in-flight request count</description>
-         <nickName>in-flight request count</nickName>
+    <!-- in-flight requests stream definitions start -->
+    <streamDefinition name="in_flight_requests" version="1.0.0">
+         <description>in-flight request count</description>
+         <nickName>in-flight requests</nickName>
          <metaData>
          </metaData>
          <correlationData>
@@ -14,51 +14,51 @@
          </payloadData>
      </streamDefinition> 
 
-    <streamDefinition name="gradient_stats" version="1.0.0">
-         <description>gradient stats</description>
-         <nickName>gradient stats</nickName>
+    <streamDefinition name="gradient_in_flight_requests" version="1.0.0">
+         <description>gradient of in flight request count</description>
+         <nickName>gradient in flight requests</nickName>
          <metaData>
          </metaData>
          <correlationData>
          </correlationData>
          <payloadData>
-             <property name="partition_id" type="String"/>
              <property name="cluster_id" type="String"/>
+             <property name="partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
      </streamDefinition>
 
-    <streamDefinition name="aggregated_requests_stats" version="1.0.0">
-         <description>aggregated requests stats</description>
-         <nickName>aggregated requests stats</nickName>
+    <streamDefinition name="average_in_flight_requests" version="1.0.0">
+         <description>average of in-flight request count</description>
+         <nickName>average in-flight requests</nickName>
          <metaData>
          </metaData>
          <correlationData>
          </correlationData>
          <payloadData>
-             <property name="partition_id" type="String"/>
              <property name="cluster_id" type="String"/>
+             <property name="partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
      </streamDefinition> 
 
-    <streamDefinition name="second_derivative_of_requests_stats" version="1.0.0">
-         <description>second derivative of requests stats</description>
-         <nickName>second derivative of requests stats</nickName>
+    <streamDefinition name="second_derivative_in_flight_requests" version="1.0.0">
+         <description>second derivative of in-flight request count</description>
+         <nickName>second derivative in-flight requests</nickName>
          <metaData>
          </metaData>
          <correlationData>
          </correlationData>
          <payloadData>
-             <property name="partition_id" type="String"/>
              <property name="cluster_id" type="String"/>
+             <property name="partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
-     </streamDefinition>
+    </streamDefinition>
+    <!-- in-flight requests stream definitions end -->
 
-    <!-- This section is for health stat -->
-
-    <streamDefinition name="stratos.agent.health.stats" version="1.0.0">
+    <!-- cartridge agent health stats stream definitions start -->
+    <streamDefinition name="cartridge_agent_health_stats" version="1.0.0">
          <description>agent health stats</description>
          <nickName>agent health stats</nickName>
          <metaData>
@@ -66,11 +66,11 @@
          <correlationData>
          </correlationData>
          <payloadData>
+	         <property name="cluster_id" type="String" />
+             <property name="partition_id" type="String"/>
+             <property name="member_id" type="String" />
              <property name="health_description" type="String"/>
              <property name="value" type="double"/>
-	     <property name="member_id" type="String" />
-	     <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
          </payloadData>
      </streamDefinition>
 
@@ -175,8 +175,7 @@
              <property name="cluster_id" type="String"/>
              <property name="partition_id" type="String"/>
              <property name="member_id" type="String"/>
-	     <property name="cluster_id" type="String" />
          </payloadData>
-     </streamDefinition>
-
+    </streamDefinition>
+    <!-- cartridge agent health stats stream definitions end -->
 </streamManagerConfiguration>

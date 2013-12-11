@@ -8,9 +8,9 @@ public class Constants {
     public static String ROUND_ROBIN_ALGORITHM_ID = "round-robin";
     public static String ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
 
-    public static String GRADIENT_OF_REQUESTS_IN_FLIGHT = "gradient_of_requests_in_flight";
-    public static String AVERAGE_REQUESTS_IN_FLIGHT = "average_requests_in_flight";
-    public static String SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT = "second_derivative_of_requests_in_flight";
+    public static String GRADIENT_OF_REQUESTS_IN_FLIGHT = "gradient_in_flight_requests";
+    public static String AVERAGE_REQUESTS_IN_FLIGHT = "average_in_flight_requests";
+    public static String SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT = "second_derivative_in_flight_requests";
     
     public static String MEMBER_FAULT_EVENT_NAME = "member_fault";
 

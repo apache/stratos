@@ -7,7 +7,7 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="healthStats1" name="stratos.agent.health.stats" version="1.0.0"/>
+    <stream as="healthStats1" name="cartridge_agent_health_stats" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[from healthStats1 [health_description == 'port_not_open'] select cluster_id,partition_id,member_id group by cluster_id,partition_id insert into fault_message;
   from healthStats1 [health_description == 'load_average'] #window.timeBatch(1 min) select cluster_id,partition_id,member_id, avg(value) as average_load_average group by cluster_id,partition_id insert into average_load_average_stats;

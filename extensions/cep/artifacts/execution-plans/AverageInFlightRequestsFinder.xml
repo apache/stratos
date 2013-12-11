@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<executionPlan name="AverageRequestsInflightFinder" statistics="disable"
+<executionPlan name="AverageInFlightRequestsFinder" statistics="disable"
   trace="enable" xmlns="http://wso2.org/carbon/eventprocessor">
   <description>This will average the number of requests in flight over a minute.</description>
   <siddhiConfiguration>
@@ -11,9 +11,9 @@
   </importedStreams>
   <queryExpressions><![CDATA[ 
 from lbStats1#window.timeBatch(1 min)
-select cluster_id,partition_id, avg(in_flight_requests) as count group by cluster_id,partition_id  insert into aggregated_requests_stats;]]></queryExpressions>
+select cluster_id,partition_id, avg(in_flight_requests) as count group by cluster_id,partition_id  insert into average_in_flight_requests;]]></queryExpressions>
   <exportedStreams>
-    <stream name="aggregated_requests_stats"
-      valueOf="aggregated_requests_stats" version="1.0.0"/>
+    <stream name="average_in_flight_requests"
+      valueOf="average_in_flight_requests" version="1.0.0"/>
   </exportedStreams>
 </executionPlan>

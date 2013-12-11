@@ -11,9 +11,9 @@
   </importedStreams>
   <queryExpressions><![CDATA[ 
 from lbStats3#window.stratos:secondDerivative(1 min, in_flight_requests)
-select cluster_id,partition_id,in_flight_requests as count group by cluster_id,partition_id insert into second_derivative_of_requests_stats;]]></queryExpressions>
+select cluster_id,partition_id,in_flight_requests as count group by cluster_id,partition_id insert into second_derivative_in_flight_requests;]]></queryExpressions>
   <exportedStreams>
-    <stream name="second_derivative_of_requests_stats"
-      valueOf="second_derivative_of_requests_stats" version="1.0.0"/>
+    <stream name="second_derivative_in_flight_requests"
+      valueOf="second_derivative_in_flight_requests" version="1.0.0"/>
   </exportedStreams>
 </executionPlan>

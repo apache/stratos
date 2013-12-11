@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <eventFormatter name="SecondDerivativeEventFormatter"
   statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventformatter">
-  <from streamName="second_derivative_of_requests_stats" version="1.0.0"/>
+  <from streamName="second_derivative_in_flight_requests" version="1.0.0"/>
   <mapping customMapping="enable" type="json">
-    <inline>{"second_derivative_of_requests_in_flight":{"cluster_id":"{{cluster_id}}","value":"{{count}}"}}</inline>
+    <inline>{"second_derivative_in_flight_requests":{"cluster_id":"{{cluster_id}}","partition_id":"{{partition_id}}","value":"{{count}}"}}</inline>
   </mapping>
   <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
     <property name="transport.jms.Destination">summarized-health-stats</property>

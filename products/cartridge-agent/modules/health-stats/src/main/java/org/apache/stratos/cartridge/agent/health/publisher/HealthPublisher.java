@@ -35,7 +35,7 @@ import java.util.Observer;
 public class HealthPublisher implements Observer {
 
     private static final Log log = LogFactory.getLog(HealthPublisher.class);
-    private static final String CALL_CENTER_DATA_STREAM = "stratos.agent.health.stats";
+    private static final String DATA_STREAM_NAME = "cartridge_agent_health_stats";
     private static final String VERSION = "1.0.0";
     private AsyncDataPublisher asyncDataPublisher;
 
@@ -57,7 +57,7 @@ public class HealthPublisher implements Observer {
             //Using Asynchronous data publisher
             asyncDataPublisher = new AsyncDataPublisher("tcp://" + ip + ":" + port + "", "admin", "admin", agent);
             String streamDefinition = "{" +
-                    " 'name':'" + CALL_CENTER_DATA_STREAM + "'," +
+                    " 'name':'" + DATA_STREAM_NAME + "'," +
                     " 'version':'" + VERSION + "'," +
                     " 'nickName': 'health stats'," +
                     " 'description': 'health stats'," +
@@ -70,7 +70,7 @@ public class HealthPublisher implements Observer {
                     " {'name':'partition_id','type':'STRING'}" +
                     " ]" +
                     "}";
-            asyncDataPublisher.addStreamDefinition(streamDefinition, CALL_CENTER_DATA_STREAM, VERSION);
+            asyncDataPublisher.addStreamDefinition(streamDefinition, DATA_STREAM_NAME, VERSION);
 
         } catch (NullPointerException e) {
             if (log.isErrorEnabled()) {
@@ -104,7 +104,7 @@ public class HealthPublisher implements Observer {
             Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID, clusterID,partitionId};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
-                asyncDataPublisher.publish(CALL_CENTER_DATA_STREAM, VERSION, event);
+                asyncDataPublisher.publish(DATA_STREAM_NAME, VERSION, event);
             } catch (AgentException e) {
                 log.error("Failed to publish health stats. ", e);
             }

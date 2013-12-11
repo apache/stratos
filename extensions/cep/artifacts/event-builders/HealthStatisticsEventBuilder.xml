@@ -2,9 +2,9 @@
 <eventBuilder name="HealthStatisticsEventBuilder" statistics="disable"
     trace="enable" xmlns="http://wso2.org/carbon/eventbuilder">
     <from eventAdaptorName="DefaultWSO2EventInputAdaptor" eventAdaptorType="wso2event">
-        <property name="stream">stratos.agent.health.stats</property>
+        <property name="stream">cartridge_agent_health_stats</property>
         <property name="version">1.0.0</property>
     </from>
     <mapping customMapping="disable" type="wso2event"/>
-    <to streamName="stratos.agent.health.stats" version="1.0.0"/>
+    <to streamName="cartridge_agent_health_stats" version="1.0.0"/>
 </eventBuilder>
