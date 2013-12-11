@@ -1,0 +1,127 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.stratos.autoscaler.rule;
+
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.MemberStatsContext;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
+import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
+import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+import org.apache.stratos.autoscaler.policy.model.LoadAverage;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.pojo.MemberContext;
+
+import org.apache.stratos.autoscaler.policy.model.LoadAverage
+import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
+
+global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
+global org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy $deploymentPolicy;
+global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy $autoscalePolicy;
+global java.lang.String clusterId;
+
+
+rule "Scaler-up Rule"
+dialect "mvel"
+	when
+        $networkPartitionContext : NetworkPartitionContext ()
+        $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $evaluator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
+        lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
+        lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
+        lbStatSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
+        averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
+
+        partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId)
+        predictedValue : Float() from $evaluator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative)
+        eval(predictedValue > averageLimit * $evaluator.scaleUpFactor)
+	then
+//	    if (predictedValue*scaleUpFactor > averageLimit){
+            //scale up
+            NetworkPartitionContext networkPartitionContext;
+
+            $evaluator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId);
+
+//	    }
+
+end
+
+
+rule "Scaler-down Rule"
+dialect "mvel"
+	when
+        $networkPartitionContext : NetworkPartitionContext ()
+        $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $evaluator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
+        lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
+        lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
+        lbStatSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
+        averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
+
+        partition :  Partition() from autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId)
+        predictedValue :  Float() from $evaluator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative)
+        eval(predictedValue* $evaluator.scaleDownFactor* $evaluator.scaleDownLowerRate < averageLimit)
+	then
+
+        MemberStatsContext selectedMemberStatsContext = null;
+        double lowestOverallLoad = 0.0;
+        boolean foundAValue = false;
+        for(PartitionContext partitionContext : $networkPartitionContext.getPartitionCtxts().values()){
+            for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
+
+                LoadAverage loadAverage = memberStatsContext.getLoadAverage();
+                MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
+                double predictedCpu
+                = $evaluator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative());
+                double predictedMemoryConsumption
+                = $evaluator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative());
+                double overallLoad = (predictedCpu + predictedMemoryConsumption) / 2;
+                if(!foundAValue){
+                    foundAValue = true;
+                    selectedMemberStatsContext = memberStatsContext;
+                    lowestOverallLoad = overallLoad;
+                } else if(overallLoad < lowestOverallLoad){
+                    selectedMemberStatsContext = memberStatsContext;
+                    lowestOverallLoad = overallLoad;
+                }
+
+
+            }
+        }
+        if(selectedMemberStatsContext != null)
+            $evaluator.delegateTerminate(selectedMemberStatsContext.getMemberId());
+
+
+end
+
+

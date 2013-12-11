@@ -19,15 +19,6 @@
 
 package org.apache.stratos.cartridge.agent.health.publisher;
 
-import java.io.File;
-import java.lang.Double;
-import java.lang.NullPointerException;
-import java.lang.String;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.databridge.agent.thrift.Agent;
@@ -35,7 +26,11 @@ import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.conf.AgentConfiguration;
 import org.wso2.carbon.databridge.agent.thrift.exception.AgentException;
 import org.wso2.carbon.databridge.commons.Event;
-import org.wso2.carbon.utils.CarbonUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 public class HealthPublisher implements Observer {
 
@@ -71,7 +66,8 @@ public class HealthPublisher implements Observer {
                     " {'name':'health_description','type':'STRING'}," +
                     " {'name':'value','type':'DOUBLE'}," +
                     " {'name':'member_id','type':'STRING'}," +
-                    " {'name':'cluster_id','type':'STRING'}" +
+                    " {'name':'cluster_id','type':'STRING'}," +
+                    " {'name':'partition_id','type':'STRING'}" +
                     " ]" +
                     "}";
             asyncDataPublisher.addStreamDefinition(streamDefinition, CALL_CENTER_DATA_STREAM, VERSION);
@@ -101,10 +97,11 @@ public class HealthPublisher implements Observer {
 
         String memberID = System.getProperty("member.id");
         String clusterID = System.getProperty("cluster.id");
+        String partitionId = System.getProperty("partition.id");
 
         for (Map.Entry<String, Double> entry : stats.entrySet()) {
 
-            Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID, clusterID};
+            Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID, clusterID,partitionId};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
                 asyncDataPublisher.publish(CALL_CENTER_DATA_STREAM, VERSION, event);
@@ -113,7 +110,6 @@ public class HealthPublisher implements Observer {
             }
 
         }
-        stats = null;
     }
 
     private static Event eventObject(Object[] correlationData, Object[] metaData,

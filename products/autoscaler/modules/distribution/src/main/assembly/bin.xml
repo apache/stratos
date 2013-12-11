@@ -248,7 +248,13 @@
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/conf/autoscaler.drl</source>
+            <source>src/main/conf/mincheck.drl</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/scaling.drl</source>
             <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>

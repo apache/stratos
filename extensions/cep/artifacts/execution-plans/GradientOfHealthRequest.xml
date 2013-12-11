@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executionPlan name="GradientOfHealthRequest" statistics="disable"
-  trace="enable" xmlns="http://wso2.org/carbon/eventprocessor">
+  trace="disable" xmlns="http://wso2.org/carbon/eventprocessor">
   <description>This will find the gradient of the heath request over a minute.</description>
   <siddhiConfiguration>
     <property name="siddhi.enable.distributed.processing">false</property>
@@ -9,16 +9,15 @@
   <importedStreams>
     <stream as="healthStats2" name="stratos.agent.health.stats" version="1.0.0"/>
   </importedStreams>
-  <queryExpressions><![CDATA[define partition healthStats2Partition by member_id;
-  from healthStats2 #window.stratos:faultHandling(1min, member_id) select member_id, cluster_id insert into fault_message partition by healthStats2Partition;
-  from healthStats2 [health_description == 'load_average'] #window.stratos:gradient(1 min, value) select member_id, value as gradient_load_average insert into gradient_load_average_stats partition by healthStats2Partition; 
-  from healthStats2 [health_description == 'memory_consumption'] #window.stratos:gradient(1 min, value) select member_id, value as gradient_memory_consumption insert into gradient_memory_consumption_stats partition by healthStats2Partition;]]></queryExpressions>
+  <queryExpressions><![CDATA[
+  from healthStats2 #window.stratos:faultHandling(1min, member_id) select cluster_id,partition_id,member_id group by cluster_id,partition_id insert into fault_message;
+  from healthStats2 [health_description == 'load_average'] #window.stratos:gradient(1 min, value) select cluster_id,partition_id, member_id, value as gradient_load_average group by cluster_id,partition_id insert into gradient_load_average_stats; 
+  from healthStats2 [health_description == 'memory_consumption'] #window.stratos:gradient(1 min, value) select cluster_id,partition_id,member_id, value as gradient_memory_consumption group by cluster_id,partition_id  insert into gradient_memory_consumption_stats;]]></queryExpressions>
   <exportedStreams>
-    <stream name="gradient_load_average_stats" passthroughFlow="disable"
+    <stream name="gradient_load_average_stats"
       valueOf="gradient_load_average_stats" version="1.0.0"/>
-    <stream name="gradient_memory_consumption_stats" passthroughFlow="disable"
+    <stream name="gradient_memory_consumption_stats"
       valueOf="gradient_memory_consumption_stats" version="1.0.0"/>
-    <stream name="fault_message" passthroughFlow="disable"
-      valueOf="fault_message" version="1.0.0"/>
+    <stream name="fault_message" valueOf="fault_message" version="1.0.0"/>
   </exportedStreams>
 </executionPlan>
