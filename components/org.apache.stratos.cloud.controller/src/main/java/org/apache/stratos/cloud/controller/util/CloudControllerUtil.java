@@ -161,6 +161,7 @@ public class CloudControllerUtil {
 		carInfo.setVersion(cartridge.getVersion());
 		carInfo.setMultiTenant(cartridge.isMultiTenant());
 		carInfo.setBaseDir(cartridge.getBaseDir());
+		carInfo.setLbConfig(cartridge.getLbConfig());
 		carInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
 		carInfo.setPortMappings(cartridge.getPortMappings()
 		                                 .toArray(new PortMapping[cartridge.getPortMappings()

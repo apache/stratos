@@ -262,6 +262,7 @@
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax26:LoadbalancerConfig"/>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax26:PortMapping"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax26:Property"/>
@@ -274,6 +275,12 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="appSpecificMapping" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LoadbalancerConfig">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax26:Properties"/>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PortMapping">
@@ -312,12 +319,6 @@
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"/>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax26:Properties"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="LoadbalancerConfig">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax26:Properties"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>

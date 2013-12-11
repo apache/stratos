@@ -28,5 +28,8 @@ public interface AutoScalerServiceInterface {
 	public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String partitionGroup);
 	public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId);
 	
-	public void checkLBExistence(String clusterId) throws NonExistingLBException;
+	public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException;
+	public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId);
+	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId);
+	public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId);
 }

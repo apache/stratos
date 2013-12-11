@@ -27,6 +27,8 @@ import java.util.*;
  */
 public class NetworkPartitionContext {
 
+    private String id;
+    
     private String provider;
 
     private String region;
@@ -52,6 +54,26 @@ public class NetworkPartitionContext {
         return clusterId != null &&
                (clusterId.equals(this.defaultLbClusterId) ||
                 this.serviceNameToLBClusterIdMap.containsValue(clusterId) || this.clusterIdToLBClusterIdMap.containsValue(clusterId));
+
+    }
+    
+    public boolean isDefaultLBExist() {
+
+        return defaultLbClusterId != null;
+
+    }
+    
+    public boolean isServiceLBExist(String serviceName) {
+
+        return this.serviceNameToLBClusterIdMap.containsKey(serviceName) && 
+                this.serviceNameToLBClusterIdMap.get(serviceName) != null;
+
+    }
+    
+    public boolean isClusterLBExist(String clusterId) {
+
+        return this.clusterIdToLBClusterIdMap.containsKey(clusterId) &&
+                this.clusterIdToLBClusterIdMap.get(clusterId) != null;
 
     }
 
@@ -125,6 +147,14 @@ public class NetworkPartitionContext {
 
         this.clusterIdToLBClusterIdMap = clusterIdToLBClusterIdMap;
 
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int hashCode() {
