@@ -376,6 +376,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             StringBuilder payload = new StringBuilder(ctxt.getPayload());
             addToPayload(payload, "MEMBER_ID", memberID);
             addToPayload(payload, "LB_CLUSTER_ID", member.getLbClusterId());
+            addToPayload(payload, "NETWORK_PARTITION_ID", member.getNetworkPartitionId());
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
