@@ -39,6 +39,7 @@ import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
 
@@ -199,29 +200,9 @@ public class AutoscalerUtil {
             throw new PolicyValidationException(msg);
         }
 
-//        Partition[] allPartitions = deploymentPolicy.getAllPartitions();
-//        if (allPartitions == null) {
-//            String msg =
-//                         "Deployment Policy's Partitions are null. Policy name: " +
-//                                 deploymentPolicyName;
-//            log.error(msg);
-//            throw new PolicyValidationException(msg);
-//        }
-//
-//        try {
-//            validateExistenceOfPartions(allPartitions);
-//        } catch (InvalidPartitionException e) {
-//            String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
-//            log.error(msg, e);
-//            throw new PolicyValidationException(msg, e);
-//        }
-//
-//        CloudControllerClient.getInstance()
-//                             .validatePartitionsOfPolicy(cluster.getServiceName(),
-//                                                         allPartitions);
-
+        String clusterId = cluster.getClusterId();
         LbClusterMonitor clusterMonitor =
-                                        new LbClusterMonitor(cluster.getClusterId(),
+                                        new LbClusterMonitor(clusterId,
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
         // partition group = network partition context
@@ -259,22 +240,23 @@ public class AutoscalerUtil {
 
             }
             networkPartitionContext.addPartitionContext(partitionContext);
+            
+            // populate lb cluster id in network partition context.
+            java.util.Properties props = cluster.getProperties();
+            
+            if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
+                String value = props.getProperty(Constants.LOAD_BALANCER_REF);
+                
+                if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+                    networkPartitionContext.setDefaultLbClusterId(clusterId);
+                } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+                    String serviceName = cluster.getServiceName();
+                    networkPartitionContext.addServiceLB(serviceName, clusterId);
+                }
+            }
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
         }
-//        if (policy != null) {
-//
-//            // get values from policy
-//            LoadThresholds loadThresholds = policy.getLoadThresholds();
-//            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-//            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-//            float secondDerivativeLimit = loadThresholds.getRequestsInFlight().getSecondDerivative();
-//
-//            clusterMonitor.setRequestsInFlightGradientThreshold(gradientLimit);
-//            clusterMonitor.setRequestsInFlightSecondDerivativeThreshold(secondDerivativeLimit);
-//            clusterMonitor.setAverageRequestsInFlightThreshold(averageLimit);
-//
-//        }
 
         return clusterMonitor;
     }
