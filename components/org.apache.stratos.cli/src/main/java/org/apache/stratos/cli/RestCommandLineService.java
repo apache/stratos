@@ -338,6 +338,9 @@ public class RestCommandLineService {
                 if (subscription.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
                     System.out.println("Duplicate alias. Please choose different alias");
                     return;
+                } else if (subscription.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                    System.out.println("Error in backend");
+                    return;
                 }
 
                 String subscriptionJSON =  subscription.substring(20, subscription.length() -1);
@@ -373,6 +376,9 @@ public class RestCommandLineService {
 
             if (subscriptionOutput.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
                 System.out.println("Duplicate alias. Please choose different alias");
+                return;
+            } else if (subcriptionConnectInfo.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                System.out.println("Error in backend");
                 return;
             }
 
