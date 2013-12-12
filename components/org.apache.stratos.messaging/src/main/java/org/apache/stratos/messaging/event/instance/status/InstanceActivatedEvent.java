@@ -32,12 +32,14 @@ public class InstanceActivatedEvent extends TopologyEvent implements Serializabl
 
     private final String serviceName;
     private final String clusterId;
+    private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
 
-    public InstanceActivatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+    public InstanceActivatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
     }
@@ -56,5 +58,9 @@ public class InstanceActivatedEvent extends TopologyEvent implements Serializabl
 
     public String getMemberId() {
         return memberId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
     }
 }

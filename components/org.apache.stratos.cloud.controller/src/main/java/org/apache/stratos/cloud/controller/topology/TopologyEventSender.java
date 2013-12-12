@@ -107,35 +107,37 @@ public class TopologyEventSender {
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
-        InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName, clusterId, partitionId, memberId);
+    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+        InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [partition] %s [member] %s", serviceName, clusterId, partitionId, memberId));
+            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s", serviceName, clusterId, networkPartitionId, partitionId, memberId));
         }
         publishEvent(instanceSpawnedEvent);
     }
 
     public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {
         MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(instanceStartedEvent.getServiceName(),
-                           instanceStartedEvent.getClusterId(), instanceStartedEvent.getMemberId());
+                           instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId());
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member started event: [service] %s [cluster] %s [member] %s", instanceStartedEvent.getServiceName(), instanceStartedEvent.getClusterId(), instanceStartedEvent.getMemberId()));
+            log.info(String.format("Publishing member started event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
+                    instanceStartedEvent.getServiceName(), instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId()));
         }
         publishEvent(memberStartedEventTopology);
     }
 
      public static void sendMemberActivatedEvent(MemberActivatedEvent memberActivatedEvent) {
          if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member activated event: [service] %s [cluster] %s [member] %s", memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), memberActivatedEvent.getMemberId()));
+            log.info(String.format("Publishing member activated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
+                    memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), memberActivatedEvent.getNetworkPartitionId(), memberActivatedEvent.getPartitionId(), memberActivatedEvent.getMemberId()));
          }
          publishEvent(memberActivatedEvent);
     }
 
-    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
-        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, partitionId, memberId);
+    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [partition] %s [member] %s", serviceName, clusterId, partitionId, memberId));
+            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s", serviceName, clusterId, networkPartitionId, partitionId, memberId));
         }
         publishEvent(memberTerminatedEvent);
     }
