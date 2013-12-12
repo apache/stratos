@@ -332,7 +332,6 @@ public class RestCommandLineService {
             System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
                     dataCartridgeAlias);
             try {
-                System.out.println("First try");
                 String subscription = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
@@ -365,8 +364,6 @@ public class RestCommandLineService {
             cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
             cartridgeInfoBean.setAsPolicy(asPolicy);
             cartridgeInfoBean.setDepPolicy(depPolicy);
-
-            System.out.println("Second try");
 
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
             completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
