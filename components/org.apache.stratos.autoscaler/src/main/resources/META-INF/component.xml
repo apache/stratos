@@ -18,7 +18,8 @@
   -->
 <component xmlns="http://products.wso2.org/carbon">
     <deployers>
-        <deployer>
+        <!--
+         <deployer>
             <directory>autoscale-policies</directory>
             <extension>xml</extension>
             <class>org.apache.stratos.autoscaler.policy.deployers.AutoscalerPolicyDeployer</class>
@@ -32,6 +33,6 @@
             <directory>partitions</directory>
             <extension>xml</extension>
             <class>org.apache.stratos.autoscaler.partition.deployers.PartitionDeployer</class>
-        </deployer>
+        </deployer>-->
     </deployers>
 </component>
