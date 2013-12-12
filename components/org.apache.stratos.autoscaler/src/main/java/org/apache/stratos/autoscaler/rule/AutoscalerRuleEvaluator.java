@@ -21,17 +21,8 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
-import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
@@ -42,7 +33,6 @@ import org.drools.runtime.rule.FactHandle;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
-import java.util.Enumeration;
 import java.util.Properties;
 
 /**
@@ -59,11 +49,6 @@ public class AutoscalerRuleEvaluator {
 
 	private static KnowledgeBase minCheckKbase;
 	private static KnowledgeBase scaleCheckKbase;
-
-
-    public static double scaleUpFactor = 0.8;   //get from config
-    public static double scaleDownFactor = 0.2;
-    public static double scaleDownLowerRate = 0.8;
 
     public AutoscalerRuleEvaluator(){
 
@@ -86,7 +71,7 @@ public class AutoscalerRuleEvaluator {
 
         if (handle == null) {
 
-            ksession.setGlobal("$evaluator", new AutoscalerRuleEvaluator());
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
             handle = ksession.insert(obj);
         } else {
             ksession.update(handle, obj);
@@ -100,14 +85,16 @@ public class AutoscalerRuleEvaluator {
     public static FactHandle evaluateScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
 
         if (handle == null) {
-            ksession.setGlobal("$evaluator", new AutoscalerRuleEvaluator());
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
 
             handle = ksession.insert(obj);
         } else {
             ksession.update(handle, obj);
         }
         ksession.fireAllRules();
-        log.info("fired all rules "+obj);
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Rules executed for : %s ", obj));
+        }
         return handle;
     }
 
@@ -123,75 +110,21 @@ public class AutoscalerRuleEvaluator {
         ksession = scaleCheckKbase.newStatefulKnowledgeSession();
         return ksession;
     }
-    
-	public void delegateSpawn(PartitionContext partitionContext, String clusterId) {
-		try {
-		    
-		    String nwPartitionId = partitionContext.getNetworkPartitionId();
-		    NetworkPartitionContext ctxt = PartitionManager.getInstance().getNetworkPartition(nwPartitionId);
-		    
-		    Properties props = partitionContext.getProperties();
-		    String value = (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
-		    String lbClusterId;
-		    
-		    if(value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-		        lbClusterId = ctxt.getDefaultLbClusterId();
-		    } else if(value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-		        String serviceName = partitionContext.getServiceName();
-		        lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
-		    }
-		   
-                MemberContext memberContext = CloudControllerClient.getInstance()
-                        .spawnAnInstance(partitionContext.getPartition(), clusterId, lbClusterId);
-                if( memberContext!= null){
-                    partitionContext.addPendingMember(memberContext);
-                }
 
-		} catch (Throwable e) {
-			String message = "Cannot spawn an instance";
-            log.error(message, e);
-			throw new RuntimeException(message, e);
-		}
-	}
+    public static String getLbClusterId(PartitionContext partitionContext, NetworkPartitionContext ctxt) {
+        Properties props = partitionContext.getProperties();
+        String value =
+                       (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+        String lbClusterId = null;
 
-    public void delegateTerminate(Partition partition, String clusterId) {
-   		log.info("terminate from partition " + partition.getId() + " cluster " + clusterId );
-   	}
-
-    public void delegateTerminate(String memberId) {
-   		try {
-
-   			CloudControllerClient.getInstance().terminate(memberId);
-   		} catch (Throwable e) {
-   			log.error("Cannot terminate instance", e);
-   		}
-   	}
-	
-	public void delegateTerminateAll(String clusterId) {
-        try {
-
-            CloudControllerClient.getInstance().terminateAllInstances(clusterId);
-        } catch (Throwable e) {
-            log.error("Cannot terminate instance", e);
+        if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+            lbClusterId = ctxt.getDefaultLbClusterId();
+        } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+            String serviceName = partitionContext.getServiceName();
+            lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
         }
+        return lbClusterId;
     }
-
-//	public boolean delegateSpawn(Partition partition, String clusterId, int memberCountToBeIncreased) {
-//		CloudControllerClient cloudControllerClient = new CloudControllerClient();
-//		try {
-//            int currentMemberCount = AutoscalerContext.getInstance().getClusterMonitor(clusterId).getMemberCount();
-//            log.info("Current member count is " + currentMemberCount );
-//
-//            if(currentMemberCount < partition.getPartitionMembersMax()) {
-//                AutoscalerContext.getInstance().getClusterMonitor(clusterId).increaseMemberCount(memberCountToBeIncreased);
-//                cloudControllerClient.spawnInstances(partition, clusterId, memberCountToBeIncreased);
-//            }
-//			return true;
-//		} catch (Throwable e) {
-//			log.error("Cannot spawn an instance", e);
-//		}
-//		return false;
-//	}
 
     private static KnowledgeBase readKnowledgeBase(String drlFileName) {
         
@@ -211,27 +144,6 @@ public class AutoscalerRuleEvaluator {
         return kbase;
     }
 
-    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm){
-        AutoscaleAlgorithm autoscaleAlgorithm = null;
-        if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
-
-            autoscaleAlgorithm = new RoundRobin();
-        } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
-
-            autoscaleAlgorithm = new OneAfterAnother();
-        }
-        return autoscaleAlgorithm;
-    }
-
-    public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative){
-        double predictedValue;
-//        s = u * t + 0.5 * a * t * t
-        if(log.isDebugEnabled()) {
-            log.debug((String.format("Calculating predicted value, gradient %s ", gradient)));
-        }
-        predictedValue = average + gradient + 0.5 * secondDerivative;
-        return predictedValue;
-    }
 
 
 }

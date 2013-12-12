@@ -45,7 +45,7 @@ import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
 
-global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy $deploymentPolicy;
 global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy $autoscalePolicy;
 global java.lang.String clusterId;
@@ -56,21 +56,21 @@ dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
         $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
-        autoscaleAlgorithm : AutoscaleAlgorithm() from  $evaluator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
         lbStatSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId)
-        predictedValue : Float() from $evaluator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative)
-        eval(predictedValue > averageLimit * $evaluator.scaleUpFactor)
+        predictedValue : Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
+        eval(predictedValue > averageLimit * $delegator.SCALE_UP_FACTOR)
 	then
 //	    if (predictedValue*scaleUpFactor > averageLimit){
             //scale up
             NetworkPartitionContext networkPartitionContext;
 
-            $evaluator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId);
+            $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId);
 
 //	    }
 
@@ -82,15 +82,15 @@ dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
         $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
-        autoscaleAlgorithm : AutoscaleAlgorithm() from  $evaluator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
         lbStatSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId)
-        predictedValue :  Float() from $evaluator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative)
-        eval(predictedValue* $evaluator.scaleDownFactor* $evaluator.scaleDownLowerRate < averageLimit)
+        predictedValue :  Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
+        eval(predictedValue < averageLimit * $delegator.SCALE_DOWN_FACTOR)
 	then
 
         MemberStatsContext selectedMemberStatsContext = null;
@@ -102,9 +102,9 @@ dialect "mvel"
                 LoadAverage loadAverage = memberStatsContext.getLoadAverage();
                 MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
                 double predictedCpu
-                = $evaluator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative());
+                = $delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
                 double predictedMemoryConsumption
-                = $evaluator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative());
+                = $delegator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative(), 1);
                 double overallLoad = (predictedCpu + predictedMemoryConsumption) / 2;
                 if(!foundAValue){
                     foundAValue = true;
@@ -119,7 +119,7 @@ dialect "mvel"
             }
         }
         if(selectedMemberStatsContext != null)
-            $evaluator.delegateTerminate(selectedMemberStatsContext.getMemberId());
+            $delegator.delegateTerminate(selectedMemberStatsContext.getMemberId());
 
 
 end

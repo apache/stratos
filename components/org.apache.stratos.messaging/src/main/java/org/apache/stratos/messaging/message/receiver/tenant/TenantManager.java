@@ -39,7 +39,7 @@ public class TenantManager {
     private static final Log log = LogFactory.getLog(TenantManager.class);
 
     private static volatile TenantManager instance;
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 

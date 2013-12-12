@@ -19,17 +19,21 @@
 package org.apache.stratos.autoscaler.message.receiver.health;
 
 import com.google.gson.stream.JsonReader;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterMonitor;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -37,6 +41,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import javax.jms.TextMessage;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -282,9 +287,14 @@ public class HealthEventMessageDelegator implements Runnable {
             // start a new member in the same Partition
             String partitionId = monitor.getPartitonOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
-            ccClient.spawnAnInstance(partition, clusterId);
+            NetworkPartitionContext nwPartitionCtxt = PartitionManager.getInstance().getNetworkPartitionOfPartition(partitionId);
+            PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+            
+            String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
+            ccClient.spawnAnInstance(partition, clusterId, lbClusterId);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s", partitionId, clusterId));
+                log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s [lb cluster] %s ", 
+                                       partitionId, clusterId, lbClusterId));
             }
 
         } catch (TerminationException e) {

@@ -62,7 +62,7 @@ public class ServiceUtils {
     static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
         String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+        log.info("Starting to deploy a Cartridge [type] "+cartridgeDefinitionBean.type);
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         
@@ -78,6 +78,8 @@ public class ServiceUtils {
                 
                 // call CC
                 cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
+                
+                log.info("Successfully deployed Cartridge [type] "+cartridgeDefinitionBean.type);
                 
             } catch (Exception e) {
                 throw new RestAPIException(e);
@@ -865,6 +867,9 @@ public class ServiceUtils {
         ConfigurationContext configurationContext, String userName, String tenantDomain, Property[] props) throws ADCException {
         
         try {
+            if(log.isDebugEnabled()) {
+                log.debug("Subscribing to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
+            }
             CartridgeSubscription cartridgeSubscription = 
                     cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType, lbAlias.trim(), defaultAutoscalingPolicy, 
                                                                      deploymentPolicy ,tenantDomain, 
@@ -872,6 +877,10 @@ public class ServiceUtils {
                                                                      userName, "git", null, false, null, null, props);
             
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+            
+            if(log.isDebugEnabled()) {
+                log.debug("Successfully subscribed to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
+            }
         } catch (Exception e) {
             String msg = "Error while subscribing to load balancer cartridge [type] "+cartridgeType;
             log.error(msg, e);

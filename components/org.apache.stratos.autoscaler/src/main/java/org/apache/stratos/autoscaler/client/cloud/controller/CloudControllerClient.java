@@ -126,6 +126,7 @@ public class CloudControllerClient {
             member.setPartition(partition);
             member.setClusterId(lbClusterId);
             member.setInitTime(System.currentTimeMillis());
+            log.info("Trying to spawn an instance of [cluster] "+clusterId+" [partition] "+partition.getId()+ " [lb cluster] "+lbClusterId);
             return stub.startInstance(member);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             log.error(e.getMessage());

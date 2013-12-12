@@ -188,8 +188,4 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
         }
     }
 
-    public NetworkPartitionContext getNetworkPartition(String partitionGroupId) {
-        return networkPartitionContexts.get(partitionGroupId);
-    }
-
 }
