@@ -7,7 +7,7 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="lbStats2" name="stratos.lb.stats" version="1.0.0"/>
+    <stream as="lbStats2" name="in_flight_requests" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[ 
 from lbStats2#window.stratos:gradient(1 min, in_flight_requests)
