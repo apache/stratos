@@ -80,8 +80,8 @@ public class PolicyManager {
 		return true;
 	}
 	
-	// Add the policy to information model and persist.
-	public boolean deployDeploymentscalePolicy(DeploymentPolicy policy) throws InvalidPolicyException {	
+	// Add the deployment policy to information model and persist.
+	public boolean deployDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {	
 	    try {
 	        Partition[] allPartitions = policy.getAllPartitions();
             validateExistenceOfPartions(allPartitions);

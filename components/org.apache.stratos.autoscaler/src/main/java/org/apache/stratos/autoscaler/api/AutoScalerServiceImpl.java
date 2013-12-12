@@ -75,7 +75,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
 	@Override
 	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException {
-		return PolicyManager.getInstance().deployDeploymentscalePolicy(depPolicy);
+		return PolicyManager.getInstance().deployDeploymentPolicy(depPolicy);
 	}
 
 	@Override
