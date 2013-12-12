@@ -304,18 +304,20 @@ public class RestCommandLineService {
     }
 
     // This method does the cartridge subscription
-    public void subscribe(String cartridgeType, String alias, String policy, String externalRepoURL,
-                          boolean privateRepo, String username, String password, String dataCartridgeType, String dataCartridgeAlias)
+    public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
+                          String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy, String depPolicy)
             throws CommandException {
 
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
         cartridgeInfoBean.setCartridgeType(null);
         cartridgeInfoBean.setAlias(null);
-        cartridgeInfoBean.setPolicy(null);
+        //cartridgeInfoBean.setPolicy(null);
         cartridgeInfoBean.setRepoURL(null);
         cartridgeInfoBean.setPrivateRepo(false);
         cartridgeInfoBean.setRepoUsername(null);
         cartridgeInfoBean.setRepoPassword(null);
+        cartridgeInfoBean.setAsPolicy(null);
+        cartridgeInfoBean.setDepPolicy(null);
         cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
         cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
 
@@ -354,13 +356,15 @@ public class RestCommandLineService {
         try {
             cartridgeInfoBean.setCartridgeType(cartridgeType);
             cartridgeInfoBean.setAlias(alias);
-            cartridgeInfoBean.setPolicy(policy);
+            //cartridgeInfoBean.setPolicy(policy);
             cartridgeInfoBean.setRepoURL(externalRepoURL);
             cartridgeInfoBean.setPrivateRepo(privateRepo);
             cartridgeInfoBean.setRepoUsername(username);
             cartridgeInfoBean.setRepoPassword(password);
             cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
             cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
+            cartridgeInfoBean.setAsPolicy(asPolicy);
+            cartridgeInfoBean.setDepPolicy(depPolicy);
 
             System.out.println("Second try");
 

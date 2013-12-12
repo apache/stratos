@@ -384,6 +384,17 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		username = System.getenv(CliConstants.STRATOS_USERNAME_ENV_PROPERTY);
 		password = System.getenv(CliConstants.STRATOS_PASSWORD_ENV_PROPERTY);
 
+        int slashCount = StringUtils.countMatches(stratosURL, "/");
+        int colonCount = StringUtils.countMatches(stratosURL, ":");
+
+        if ( ! (colonCount == 2 && (slashCount == 3 || slashCount == 2))) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invalid STRATOS_URL");
+            }
+
+            System.out.println("Invalid STRATOS_URL. Please enter correct STRATOS_URL");
+            return false;
+        }
 		if (StringUtils.isBlank(stratosURL)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Required configuration not found.");
