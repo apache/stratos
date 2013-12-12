@@ -152,7 +152,6 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                         logger.trace("Autoscaling policy option is passed");
                     }
                     asPolicy = commandLine.getOptionValue(CliConstants.AUTOSCALING_POLICY_OPTION);
-                    System.out.println(asPolicy);
                 }
                 if (commandLine.hasOption(CliConstants.DEPLOYMENT_POLICY_OPTION)) {
                     if (logger.isTraceEnabled()) {
@@ -225,7 +224,6 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 		}
 	}
 
-	@Override
 	public Options getOptions() {
 		return options;
 	}

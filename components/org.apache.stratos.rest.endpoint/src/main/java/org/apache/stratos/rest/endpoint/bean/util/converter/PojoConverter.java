@@ -173,52 +173,52 @@ public class PojoConverter {
         org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy = new
                 org.apache.stratos.autoscaler.policy.model.AutoscalePolicy();
 
-        autoscalePolicy.setId(autoscalePolicyBean.id);
-        autoscalePolicy.setDescription(autoscalePolicyBean.description);
-        autoscalePolicy.setDisplayName(autoscalePolicyBean.displayName);
+        autoscalePolicy.setId(autoscalePolicyBean.getId());
+        autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
+        autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
 
-        if (autoscalePolicyBean.loadThresholds != null) {
+        if (autoscalePolicyBean.getLoadThresholds() != null) {
 
             org.apache.stratos.autoscaler.policy.model.LoadThresholds loadThresholds = new
                     org.apache.stratos.autoscaler.policy.model.LoadThresholds();
 
-            if(autoscalePolicyBean.loadThresholds.loadAverage != null) {
+            if(autoscalePolicyBean.getLoadThresholds().loadAverage != null) {
 
                 //set load average information
                 org.apache.stratos.autoscaler.policy.model.LoadAverage loadAverage = new
                         org.apache.stratos.autoscaler.policy.model.LoadAverage();
-                loadAverage.setAverage(autoscalePolicyBean.loadThresholds.loadAverage.average);
-                loadAverage.setGradient(autoscalePolicyBean.loadThresholds.loadAverage.gradient);
-                loadAverage.setSecondDerivative(autoscalePolicyBean.loadThresholds.loadAverage.secondDerivative);
-                loadAverage.setScaleDownMarginOfGradient(autoscalePolicyBean.loadThresholds.loadAverage.scaleDownMarginOfGradient);
-                loadAverage.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.loadThresholds.loadAverage.scaleDownMarginOfSecondDerivative);
+                loadAverage.setAverage(autoscalePolicyBean.getLoadThresholds().loadAverage.average);
+                loadAverage.setGradient(autoscalePolicyBean.getLoadThresholds().loadAverage.gradient);
+                loadAverage.setSecondDerivative(autoscalePolicyBean.getLoadThresholds().loadAverage.secondDerivative);
+                loadAverage.setScaleDownMarginOfGradient(autoscalePolicyBean.getLoadThresholds().loadAverage.scaleDownMarginOfGradient);
+                loadAverage.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.getLoadThresholds().loadAverage.scaleDownMarginOfSecondDerivative);
                 //set load average
                 loadThresholds.setLoadAverage(loadAverage);
             }
-            if (autoscalePolicyBean.loadThresholds.requestsInFlight != null) {
+            if (autoscalePolicyBean.getLoadThresholds().requestsInFlight != null) {
 
                 org.apache.stratos.autoscaler.policy.model.RequestsInFlight requestsInFlight = new
                         org.apache.stratos.autoscaler.policy.model.RequestsInFlight();
                 //set request in flight information
-                requestsInFlight.setAverage(autoscalePolicyBean.loadThresholds.requestsInFlight.average);
-                requestsInFlight.setGradient(autoscalePolicyBean.loadThresholds.requestsInFlight.gradient);
-                requestsInFlight.setSecondDerivative(autoscalePolicyBean.loadThresholds.requestsInFlight.secondDerivative);
-                requestsInFlight.setScaleDownMarginOfGradient(autoscalePolicyBean.loadThresholds.requestsInFlight.scaleDownMarginOfGradient);
-                requestsInFlight.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.loadThresholds.requestsInFlight.scaleDownMarginOfSecondDerivative);
+                requestsInFlight.setAverage(autoscalePolicyBean.getLoadThresholds().requestsInFlight.average);
+                requestsInFlight.setGradient(autoscalePolicyBean.getLoadThresholds().requestsInFlight.gradient);
+                requestsInFlight.setSecondDerivative(autoscalePolicyBean.getLoadThresholds().requestsInFlight.secondDerivative);
+                requestsInFlight.setScaleDownMarginOfGradient(autoscalePolicyBean.getLoadThresholds().requestsInFlight.scaleDownMarginOfGradient);
+                requestsInFlight.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.getLoadThresholds().requestsInFlight.scaleDownMarginOfSecondDerivative);
                 //set request in flight
                 loadThresholds.setRequestsInFlight(requestsInFlight);
             }
-            if (autoscalePolicyBean.loadThresholds.memoryConsumption != null) {
+            if (autoscalePolicyBean.getLoadThresholds().memoryConsumption != null) {
 
                 org.apache.stratos.autoscaler.policy.model.MemoryConsumption memoryConsumption = new
                         org.apache.stratos.autoscaler.policy.model.MemoryConsumption();
 
                 //set memory consumption information
-                memoryConsumption.setAverage(autoscalePolicyBean.loadThresholds.memoryConsumption.average);
-                memoryConsumption.setGradient(autoscalePolicyBean.loadThresholds.memoryConsumption.gradient);
-                memoryConsumption.setSecondDerivative(autoscalePolicyBean.loadThresholds.memoryConsumption.secondDerivative);
-                memoryConsumption.setScaleDownMarginOfGradient(autoscalePolicyBean.loadThresholds.memoryConsumption.scaleDownMarginOfGradient);
-                memoryConsumption.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.loadThresholds.memoryConsumption.scaleDownMarginOfSecondDerivative);
+                memoryConsumption.setAverage(autoscalePolicyBean.getLoadThresholds().memoryConsumption.average);
+                memoryConsumption.setGradient(autoscalePolicyBean.getLoadThresholds().memoryConsumption.gradient);
+                memoryConsumption.setSecondDerivative(autoscalePolicyBean.getLoadThresholds().memoryConsumption.secondDerivative);
+                memoryConsumption.setScaleDownMarginOfGradient(autoscalePolicyBean.getLoadThresholds().memoryConsumption.scaleDownMarginOfGradient);
+                memoryConsumption.setScaleDownMarginOfSecondDerivative(autoscalePolicyBean.getLoadThresholds().memoryConsumption.scaleDownMarginOfSecondDerivative);
                 //set memory consumption
                 loadThresholds.setMemoryConsumption(memoryConsumption);
             }
@@ -370,11 +370,11 @@ public class PojoConverter {
             return autoscalePolicyBean;
         }
 
-        autoscalePolicyBean.id = autoscalePolicy.getId();
-        autoscalePolicyBean.displayName = autoscalePolicy.getDisplayName();
-        autoscalePolicyBean.description = autoscalePolicy.getDescription();
+        autoscalePolicyBean.setId(autoscalePolicy.getId());
+        autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
+        autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         if(autoscalePolicy.getLoadThresholds() != null) {
-            autoscalePolicyBean.loadThresholds = populateLoadThresholds(autoscalePolicy.getLoadThresholds());
+            autoscalePolicyBean.setLoadThresholds(populateLoadThresholds(autoscalePolicy.getLoadThresholds()));
         }
 
         return autoscalePolicyBean;

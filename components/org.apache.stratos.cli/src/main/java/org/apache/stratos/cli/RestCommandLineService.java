@@ -62,6 +62,8 @@ public class RestCommandLineService {
     private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
     private final String autoscalingPolicyDeploymentEndPoint = "/stratos/admin/policy/autoscale";
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";
+    private final String listParitionRestEndPoint = "/stratos/admin/partition";
+    private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -354,7 +356,11 @@ public class RestCommandLineService {
 
                 String responseCode = "" + response.getStatusLine().getStatusCode();
 
-                if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                if (subscription == null) {
+                    System.out.println("Error");
+                    return;
+                }
+                else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
                     System.out.println("Duplicate alias. Please choose different alias");
                     return;
                 } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
@@ -399,7 +405,11 @@ public class RestCommandLineService {
             String subscriptionOutput = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
-            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+
+            if (subscriptionOutput == null) {
+                System.out.println("Error");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
                 System.out.println("Duplicate alias. Please choose different alias");
                 return;
             } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
@@ -605,6 +615,126 @@ public class RestCommandLineService {
         }
     }
 
+    public void listPartitions() throws CommandException{
+        try {
+            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listParitionRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String resultString = getHttpResponseString(response);
+
+            if (resultString == null) {
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            PartitionList partitionList = gson.fromJson(resultString, PartitionList.class);
+
+            if (partitionList == null) {
+                System.out.println("Partition list is null");
+                return;
+            }
+
+            RowMapper<Partition> partitionMapper = new RowMapper<Partition>() {
+
+                public String[] getData(Partition partition) {
+                    String[] data = new String[3];
+                    data[0] = partition.getId();
+                    data[1] = partition.getProvider();
+                    data[2] = "" + partition.getPartitionMax();
+                    data[3] = "" + partition.getPartitionMin();
+                    return data;
+                }
+            };
+
+            Partition[] partitions = new Partition[partitionList.getPartition().size()];
+            partitions = partitionList.getPartition().toArray(partitions);
+
+            System.out.println("Available Partitions:");
+            CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider", "PartitionMax", "PartitionMin");
+            System.out.println();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void listAutoscalePolicies() throws CommandException {
+        try {
+            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            System.out.println(response.getStatusLine().getStatusCode());
+            String resultString = getHttpResponseString(response);
+
+            if (resultString == null) {
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            AutoscalePolicyList policyList = gson.fromJson(resultString, AutoscalePolicyList.class);
+
+            if (policyList == null) {
+                System.out.println("Autoscale policy list is null");
+                return;
+            }
+
+            RowMapper<AutoscalePolicy> partitionMapper = new RowMapper<AutoscalePolicy>() {
+
+                public String[] getData(AutoscalePolicy policy) {
+                    String[] data = new String[3];
+                    data[0] = policy.getId();
+                    data[1] = policy.getDisplayName();
+                    data[2] = policy.getDisplayName();
+                    return data;
+                }
+            };
+
+            AutoscalePolicy[] policyArry = new AutoscalePolicy[policyList.getAutoscalePolicy().size()];
+            policyArry = policyList.getAutoscalePolicy().toArray(policyArry);
+
+            System.out.println("Available Partitions:");
+            CommandLineUtils.printTable(policyArry, partitionMapper, "ID", "Display name", "Description");
+            System.out.println();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class AutoscalePolicyList {
+        private ArrayList<AutoscalePolicy> autoscalePolicy;
+
+        public ArrayList<AutoscalePolicy> getAutoscalePolicy() {
+            return autoscalePolicy;
+        }
+
+        public void setAutoscalePolicy(ArrayList<AutoscalePolicy> autoscalePolicy) {
+            this.autoscalePolicy = autoscalePolicy;
+        }
+
+        AutoscalePolicyList() {
+            autoscalePolicy = new ArrayList<AutoscalePolicy>();
+        }
+    }
+
+    private class PartitionList {
+        private ArrayList<Partition> partition;
+
+        public ArrayList<Partition> getPartition() {
+            return partition;
+        }
+
+        public void setPartition(ArrayList<Partition> partition) {
+            this.partition = partition;
+        }
+
+        PartitionList() {
+            partition = new ArrayList<Partition>();
+        }
+    }
+
     // This class is for convert JSON string to CartridgeList object
     private class CartridgeList  {
         private ArrayList<Cartridge> cartridge;
@@ -642,16 +772,19 @@ public class RestCommandLineService {
 
     private String getHttpResponseString (HttpResponse response) {
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+            BufferedReader reader = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
 
             String output;
             String result = "";
-            while ((output = br.readLine()) != null) {
+            while ((output = reader.readLine()) != null) {
                 result += output;
             }
             return result;
         } catch (SocketException e) {
             System.out.println("Connection problem");
+            return null;
+        } catch (NullPointerException e) {
+            System.out.println("Null value return from server");
             return null;
         } catch (IOException e) {
             e.printStackTrace();

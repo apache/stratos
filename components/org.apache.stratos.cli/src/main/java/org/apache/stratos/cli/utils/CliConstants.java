@@ -65,6 +65,11 @@ public class CliConstants {
 	public static final String CARTRIDGES_ACTION = "list-available-cartridges";
 
     /**
+     * List the available autoscaling policies
+     */
+    public static final String LIST_AUTOSCALE_POLICY = "list-autoscale-policies";
+
+    /**
      * Add tenant
      */
     public static final String ADD_TENANT = "create-tenant";
@@ -78,6 +83,11 @@ public class CliConstants {
      * Partition deployment
      */
     public static final String PARTITION_DEPLOYMENT = "deploy-partition";
+
+    /**
+     * List partitions
+     */
+    public static final String LIST_PARTITION = "list-available-partitions";
 
     /**
      * Autoscaling policy deployment

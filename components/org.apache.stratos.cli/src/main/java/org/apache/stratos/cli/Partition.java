@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.cli;
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
-public class AutoscalePolicy {
+public class Partition {
 
     private String id;
 
-    private String displayName;
+    private int partitionMin;
 
-    private String description;
+    private int partitionMax;
 
-    private LoadThresholds loadThresholds;
+    private String provider;
+
+    private List<PropertyBean> property;
 
     public String getId() {
         return id;
@@ -40,27 +40,37 @@ public class AutoscalePolicy {
         this.id = id;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public int getPartitionMin() {
+        return partitionMin;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setPartitionMin(int partitionMin) {
+        this.partitionMin = partitionMin;
     }
 
-    public String getDescription() {
-        return description;
+    public int getPartitionMax() {
+        return partitionMax;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPartitionMax(int partitionMax) {
+        this.partitionMax = partitionMax;
     }
 
-    public LoadThresholds getLoadThresholds() {
-        return loadThresholds;
+    public String getProvider() {
+        return provider;
     }
 
-    public void setLoadThresholds(LoadThresholds loadThresholds) {
-        this.loadThresholds = loadThresholds;
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
     }
 }
+
+
