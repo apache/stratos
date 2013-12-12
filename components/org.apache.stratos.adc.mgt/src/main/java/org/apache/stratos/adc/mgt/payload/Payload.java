@@ -75,10 +75,15 @@ public abstract class Payload implements Serializable {
         payloadBuilder.append("CLUSTER_ID=" + payloadArg.getServiceDomain());
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_KEY=" + payloadArg.getSubscriptionKey());
+        payloadBuilder.append(",");
+        payloadBuilder.append("DEPLOYMENT=" + "default"); // hard coded to default
+        payloadBuilder.append(",");
+        payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));       
+        
         
         if(payloadArg.getCartridgeInfo() != null) {
             payloadBuilder.append(",");
-            payloadBuilder.append("SERVICE=" + payloadArg.getCartridgeInfo().getType());  // TODO -- rename to SERVICE_NAME and rename puppet agent too
+            payloadBuilder.append("SERVICE_NAME=" + payloadArg.getCartridgeInfo().getType());
         }
 
         //add the user defined payload String (if any)

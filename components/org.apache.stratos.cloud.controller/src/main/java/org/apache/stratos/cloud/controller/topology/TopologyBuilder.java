@@ -105,43 +105,33 @@ public class TopologyBuilder {
         try {
             TopologyManager.getInstance().acquireWriteLock();
             service = topology.getService(registrant.getCartridgeType());
-//            if (service == null) {
-//                service = new Service(registrant.getClusterId());
-//                Cluster cluster = new Cluster(registrant.getCartridgeType(),
-//                                              registrant.getClusterId(),
-//                                              registrant.getAutoScalerPolicyName());
-//                cluster.setHostName(registrant.getHostName());
-//                cluster.setTenantRange(registrant.getTenantRange());
-//                cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
-//                service.addCluster(cluster);
-//                topology.addService(service);
-//            } else {
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
             
             String property = props.getProperty(Constants.IS_LOAD_BALANCER);
             boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
             
             Cluster cluster;
-                if (service.clusterExists(registrant.getClusterId())) {
-                    //update the cluster
-                    cluster = service.getCluster(registrant.getClusterId());
-                    cluster.addHostName(registrant.getHostName());
-                    cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
-                    cluster.setTenantRange(registrant.getTenantRange());
-                    cluster.setProperties(props);
-                    cluster.setLbCluster(isLb);
-                } else {
-                    cluster = new Cluster(registrant.getCartridgeType(),
-                            registrant.getClusterId(),
-                            registrant.getAutoScalerPolicyName());
-                    cluster.addHostName(registrant.getHostName());
-                    cluster.setTenantRange(registrant.getTenantRange());
-                    cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
-                    cluster.setProperties(props);
-                    cluster.setLbCluster(isLb);
-                    service.addCluster(cluster);
-                }
-//            }
+            if (service.clusterExists(registrant.getClusterId())) {
+                // update the cluster
+                cluster = service.getCluster(registrant.getClusterId());
+                cluster.addHostName(registrant.getHostName());
+                cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
+                cluster.setTenantRange(registrant.getTenantRange());
+                cluster.setProperties(props);
+                cluster.setLbCluster(isLb);
+                cluster.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
+                
+            } else {
+                cluster =
+                          new Cluster(registrant.getCartridgeType(), registrant.getClusterId(),
+                                      registrant.getAutoScalerPolicyName());
+                cluster.addHostName(registrant.getHostName());
+                cluster.setTenantRange(registrant.getTenantRange());
+                cluster.setProperties(props);
+                cluster.setLbCluster(isLb);
+                cluster.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
+                service.addCluster(cluster);
+            }
             TopologyManager.getInstance().updateTopology(topology);
             TopologyEventSender.sendClusterCreatedEvent(registrant);
 
