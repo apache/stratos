@@ -240,6 +240,7 @@
                     <xs:element minOccurs="0" name="partition" nillable="true" type="ax29:Partition"/>
                     <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Registrant">

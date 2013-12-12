@@ -26,7 +26,6 @@ import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -119,13 +118,15 @@ public class CloudControllerClient {
 
     }
 
-    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId, String lbClusterId) throws SpawningException {
+    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
         try {
             org.apache.stratos.cloud.controller.pojo.MemberContext member = new org.apache.stratos.cloud.controller.pojo.MemberContext();
             member.setClusterId(clusterId);
             member.setPartition(partition);
-            member.setClusterId(lbClusterId);
+            member.setLbClusterId(lbClusterId);
             member.setInitTime(System.currentTimeMillis());
+            member.setNetworkPartitionId(networkPartitionId);
+
             log.info("Trying to spawn an instance of [cluster] "+clusterId+" [partition] "+partition.getId()+ " [lb cluster] "+lbClusterId);
             return stub.startInstance(member);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {

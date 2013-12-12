@@ -33,7 +33,7 @@ public interface GenericRestClient {
      *              User name for basic auth
      * @param passWord
      *              Password for basic auth
-     * @return The status of the executed request
+     * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
@@ -48,7 +48,7 @@ public interface GenericRestClient {
      *              User name for basic auth
      * @param passWord
      *              Password for basic auth
-     * @return The status of the executed request
+     * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */

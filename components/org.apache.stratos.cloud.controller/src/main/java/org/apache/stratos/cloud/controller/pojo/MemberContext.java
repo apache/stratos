@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
-import java.io.Serializable;
-
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
+import java.io.Serializable;
 
 /**
  * Holds information about a Member.
@@ -50,6 +50,8 @@ public class MemberContext implements Serializable{
     private long initTime;
     // lb cluster id of this member
     private String lbClusterId;
+    //network partition id
+    private String networkPartitionId;
     
     public MemberContext(String id, String clusterId, Partition partition) {
         this.memberId = id;
@@ -131,6 +133,13 @@ public class MemberContext implements Serializable{
     public void setLbClusterId(String lbClusterId) {
         this.lbClusterId = lbClusterId;
     }
-    
-    
+
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
+    }
 }
