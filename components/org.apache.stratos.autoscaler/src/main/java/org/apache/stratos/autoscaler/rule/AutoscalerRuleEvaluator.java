@@ -42,8 +42,7 @@ import java.util.Properties;
 public class AutoscalerRuleEvaluator {
 	
 	private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
-	
-	private static AutoscalerRuleEvaluator instance = null;
+
 	private static final String DRL_FILE_NAME = "mincheck.drl";
 	private static final String SCALING_DRL_FILE_NAME = "scaling.drl";
 
@@ -77,7 +76,9 @@ public class AutoscalerRuleEvaluator {
             ksession.update(handle, obj);
         }
         ksession.fireAllRules();
-        log.info("fired all rules "+obj);
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Minimum check executed for : %s ", obj));
+        }
         return handle;
     }
 
@@ -93,7 +94,7 @@ public class AutoscalerRuleEvaluator {
         }
         ksession.fireAllRules();
         if(log.isDebugEnabled()){
-            log.debug(String.format("Rules executed for : %s ", obj));
+            log.debug(String.format("Scale check executed for : %s ", obj));
         }
         return handle;
     }

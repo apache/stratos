@@ -58,7 +58,7 @@ public class RuleTasksDelegator {
                                          CloudControllerClient.getInstance()
                                                               .spawnAnInstance(partitionContext.getPartition(),
                                                                       clusterId,
-                                                                      lbClusterId);
+                                                                      lbClusterId, partitionContext.getNetworkPartitionId());
             if (memberContext != null) {
                partitionContext.addPendingMember(memberContext);
             }

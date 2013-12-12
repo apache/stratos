@@ -291,7 +291,7 @@ public class HealthEventMessageDelegator implements Runnable {
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
             
             String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
-            ccClient.spawnAnInstance(partition, clusterId, lbClusterId);
+            ccClient.spawnAnInstance(partition, clusterId, lbClusterId, nwPartitionCtxt.getId());
             if (log.isInfoEnabled()) {
                 log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s [lb cluster] %s ", 
                                        partitionId, clusterId, lbClusterId));

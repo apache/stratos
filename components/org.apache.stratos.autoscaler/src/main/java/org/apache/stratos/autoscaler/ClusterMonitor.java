@@ -42,6 +42,7 @@ public class ClusterMonitor implements Runnable{
 
     private String serviceId;
 
+    //key: network partition id, value: Network partition context
     private Map<String, NetworkPartitionContext> networkPartitionCtxts;
 
 

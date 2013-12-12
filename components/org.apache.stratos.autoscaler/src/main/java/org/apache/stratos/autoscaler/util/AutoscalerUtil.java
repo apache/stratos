@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
@@ -42,7 +41,6 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -121,6 +119,7 @@ public class AutoscalerUtil {
                 PartitionContext partitionContext = new PartitionContext(partition);
                 partitionContext.setServiceName(cluster.getServiceName());
                 partitionContext.setProperties(cluster.getProperties());
+                partitionContext.setNetworkPartitionId(partitionGroup.getId());
                 
                 for (Member member: cluster.getMembers()){
                     String memberId = member.getMemberId();
