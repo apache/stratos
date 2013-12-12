@@ -341,6 +341,9 @@ public class RestCommandLineService {
                 } else if (subscription.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
                     System.out.println("Error in backend");
                     return;
+                } else if (subscription.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                    System.out.println("Invalid operation. Authorization failed");
+                    return;
                 }
 
                 String subscriptionJSON =  subscription.substring(20, subscription.length() -1);
@@ -379,6 +382,9 @@ public class RestCommandLineService {
                 return;
             } else if (subcriptionConnectInfo.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
                 System.out.println("Error in backend");
+                return;
+            } else if (subscriptionOutput.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operation. Authorization failed");
                 return;
             }
 
