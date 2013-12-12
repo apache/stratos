@@ -30,6 +30,8 @@ public class CartridgeInfoBean {
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
+    private String asPolicy;
+    private String depPolicy;
 
 
     public String getCartridgeType() {
@@ -102,5 +104,21 @@ public class CartridgeInfoBean {
 
     public void setDataCartridgeAlias(String dataCartridgeAlias) {
         this.dataCartridgeAlias = dataCartridgeAlias;
+    }
+
+    public String getAsPolicy() {
+        return asPolicy;
+    }
+
+    public void setAsPolicy(String asPolicy) {
+        this.asPolicy = asPolicy;
+    }
+
+    public String getDepPolicy() {
+        return depPolicy;
+    }
+
+    public void setDepPolicy(String depPolicy) {
+        this.depPolicy = depPolicy;
     }
 }

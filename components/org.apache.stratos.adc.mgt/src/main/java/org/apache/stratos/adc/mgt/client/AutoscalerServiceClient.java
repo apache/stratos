@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceNonExistingLBExceptionException;
@@ -39,7 +40,6 @@ public class AutoscalerServiceClient {
 
     private static final Log log = LogFactory.getLog(AutoscalerServiceClient.class);
     private static volatile AutoscalerServiceClient serviceClient;
-    private static final String AUTOSCALER_SERVICE_URL = "autoscaler.service.url";
 
     public AutoscalerServiceClient(String epr) throws AxisFault {
 
@@ -49,7 +49,7 @@ public class AutoscalerServiceClient {
             stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(300000);
 
         } catch (AxisFault axisFault) {
-            String msg = "Failed to initiate AutoscalerService client. " + axisFault.getMessage();
+            String msg = "Failed to initiate autoscaler service client. " + axisFault.getMessage();
             log.error(msg, axisFault);
             throw new AxisFault(msg, axisFault);
         }
@@ -59,7 +59,7 @@ public class AutoscalerServiceClient {
         if (serviceClient == null) {
             synchronized (AutoscalerServiceClient.class) {
                 if (serviceClient == null) {
-                    serviceClient = new AutoscalerServiceClient(System.getProperty(AUTOSCALER_SERVICE_URL));
+                    serviceClient = new AutoscalerServiceClient(System.getProperty(CartridgeConstants.AUTOSCALER_SERVICE_URL));
                 }
             }
         }
