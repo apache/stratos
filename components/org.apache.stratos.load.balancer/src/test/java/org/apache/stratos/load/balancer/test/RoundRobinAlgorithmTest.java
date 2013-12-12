@@ -39,15 +39,15 @@ public class RoundRobinAlgorithmTest {
     @Test
     public final void testRoundRobinAlgorithm() {
         List<Member> members = new ArrayList<Member>();
-        Member member = new Member("service1", "cluster1", "p1", "m1");
+        Member member = new Member("service1", "cluster1", "np1", "p1", "m1");
         member.setStatus(MemberStatus.Activated);
         members.add(member);
 
-        member = new Member("service1", "cluster1", "p1", "m2");
+        member = new Member("service1", "cluster1", "np1", "p1", "m2");
         member.setStatus(MemberStatus.Activated);
         members.add(member);
 
-        member = new Member("service1", "cluster1", "p1", "m3");
+        member = new Member("service1", "cluster1", "np1", "p1", "m3");
         member.setStatus(MemberStatus.Activated);
         members.add(member);
 
