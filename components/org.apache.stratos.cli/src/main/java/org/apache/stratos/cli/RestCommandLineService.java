@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -172,12 +173,17 @@ public class RestCommandLineService {
 
             String resultString = getHttpResponseString(response);
 
+            if (resultString == null) {
+                return;
+            }
+
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
 
             if (cartridgeList == null) {
                 System.out.println("Available cartridge list is null");
+                return;
             }
 
             CartridgeList multiTelentCartridgeList = new CartridgeList();
@@ -239,7 +245,7 @@ public class RestCommandLineService {
                 System.out.println();
             }
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -258,6 +264,7 @@ public class RestCommandLineService {
 
             if (cartridgeList == null) {
                 System.out.println("Subscribe cartridge list is null");
+                return;
             }
 
             Cartridge[] cartridges = new Cartridge[cartridgeList.getCartridge().size()];
@@ -464,7 +471,6 @@ public class RestCommandLineService {
 
             String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            System.out.println(responseCode);
 
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
@@ -644,6 +650,9 @@ public class RestCommandLineService {
                 result += output;
             }
             return result;
+        } catch (SocketException e) {
+            System.out.println("Connection problem");
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
