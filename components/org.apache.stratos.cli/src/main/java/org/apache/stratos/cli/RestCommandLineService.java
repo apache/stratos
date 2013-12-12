@@ -615,6 +615,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method list available partitons
     public void listPartitions() throws CommandException{
         try {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listParitionRestEndPoint,
@@ -659,6 +660,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method list autoscale policies
     public void listAutoscalePolicies() throws CommandException {
         try {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
@@ -703,6 +705,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This class convert JSON string to autoscalepolicylist object
     private class AutoscalePolicyList {
         private ArrayList<AutoscalePolicy> autoscalePolicy;
 
@@ -719,6 +722,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This class convert JSON string to PartitionLIst object
     private class PartitionList {
         private ArrayList<Partition> partition;
 
