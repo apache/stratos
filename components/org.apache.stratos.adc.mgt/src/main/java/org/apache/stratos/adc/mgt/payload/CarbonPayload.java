@@ -33,10 +33,10 @@ public class CarbonPayload extends Payload {
         payloadBuilder.append(",");
 
         //carbon specific
-        payloadBuilder.append("DEPLOYMENT=" + payloadArg.getDeployment());
-        payloadBuilder.append(",");
-        payloadBuilder.append("SC_IP=" + System.getProperty(CartridgeConstants.SC_IP));
-        payloadBuilder.append(",");
+        //payloadBuilder.append("DEPLOYMENT=" + payloadArg.getDeployment());
+        //payloadBuilder.append(",");
+        //payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));
+        //payloadBuilder.append(",");
         payloadBuilder.append("MULTITENANT=" + payloadArg.getCartridgeInfo().getMultiTenant());
 
     }

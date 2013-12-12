@@ -495,7 +495,7 @@ public class CartridgeSubscriptionManager {
             
             // populate payload from UI here
             payloadArg.setTenantRange(tenantRange);
-            payloadArg.setDeployment("default");   
+            //payloadArg.setDeployment("default");   
             payloadArg.setServiceDomain(cartridgeAlias+"."+cartridgeInfo.getHostName()+".domain"); // This is cluster id
             cartridgeSubscription.setPayload(payload);
         }
