@@ -146,7 +146,7 @@ public class CliConstants {
 	public static final String POLICY_OPTION = "o";
 	public static final String POLICY_LONG_OPTION = "policy";
 
-    public static final String AUTOSCALING_POLICY_OPTION = "as";
+    public static final String AUTOSCALING_POLICY_OPTION = "ap";
     public static final String AUTOSCALING_POLICY_LONG_OPTION = "autoscaling-policy";
 
     public static final String DEPLOYMENT_POLICY_OPTION = "dp";
