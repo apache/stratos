@@ -143,8 +143,8 @@ public class TopologyEventSender {
     public static void sendCompleteTopologyEvent(Topology topology) {
         CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
 
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing complete topology event"));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Publishing complete topology event"));
         }
         publishEvent(completeTopologyEvent);
     }
