@@ -59,6 +59,7 @@ public class Constants {
 
     public static final String CONF_DELIMITER_HOSTS = ",";
     public static final long DEFAULT_SESSION_TIMEOUT = 90000;
+    public static final String STATIC_NETWORK_PARTITION = "static-network-partition";
     public static final String STATIC_PARTITION = "static-partition";
 
     /* Nginx format related constants */

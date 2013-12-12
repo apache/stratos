@@ -35,15 +35,17 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     private final String serviceName;
     private final String clusterId;
+    private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
     private Map<String, Port> portMap;
     private String memberIp;
     private String lbClusterId;
 
-    public MemberActivatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+    public MemberActivatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
     	this.portMap = new HashMap<String, Port>();
@@ -55,6 +57,14 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public String getPartitionId(){
+        return this.partitionId;
     }
 
     public String getMemberId() {
@@ -92,10 +102,6 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 	public void setMemberIp(String memberIp) {
 	    this.memberIp = memberIp;
     }
-	
-	public String getPartitionId(){
-		return this.partitionId;
-	}
 
     public String getLbClusterId() {
         return lbClusterId;

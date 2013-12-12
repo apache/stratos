@@ -24,18 +24,21 @@ import java.io.Serializable;
 /**
  * This event is fired by Cloud Controller when a member is terminated.
  */
-public class MemberTerminatedEvent extends TopologyEvent implements Serializable {
+public class
+        MemberTerminatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = -7899511757547631157L;
 
     private final String serviceName;
     private final String clusterId;
+    private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
     private String lbClusterId;
 
-    public MemberTerminatedEvent(String serviceName, String clusterId, String partitionId, String memberId) {
+    public MemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
     }
@@ -62,5 +65,9 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
 
     public void setLbClusterId(String lbClusterId) {
         this.lbClusterId = lbClusterId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
     }
 }

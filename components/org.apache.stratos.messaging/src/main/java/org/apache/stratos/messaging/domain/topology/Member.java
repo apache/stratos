@@ -39,6 +39,7 @@ public class Member implements Serializable {
 
     private final String serviceName;
     private final String clusterId;
+    private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
 
@@ -50,9 +51,10 @@ public class Member implements Serializable {
     private Properties properties;
     private String lbClusterId;
 
-    public Member(String serviceName, String clusterId, String partitionId, String memberId) {
+    public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
         this.portMap = new HashMap<String, Port>();
@@ -138,6 +140,10 @@ public class Member implements Serializable {
 
     public String getLbClusterId() {
         return lbClusterId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
     }
 }
 
