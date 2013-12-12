@@ -84,7 +84,6 @@
          <payloadData>
 	     <property name="cluster_id" type="String" />
              <property name="partition_id" type="String"/>
-             <property name="member_id" type="String"/>
              <property name="average_load_average" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -99,7 +98,6 @@
          <payloadData>
              <property name="cluster_id" type="String"/>
              <property name="partition_id" type="String"/>
-             <property name="member_id" type="String"/>
              <property name="average_memory_consumption" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -114,7 +112,6 @@
          <payloadData>
 	     <property name="cluster_id" type="String" />
              <property name="partition_id" type="String"/>
-             <property name="member_id" type="String"/>
              <property name="gradient_load_average" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -129,7 +126,6 @@
          <payloadData>
 	     <property name="cluster_id" type="String" />
              <property name="partition_id" type="String"/>
-             <property name="member_id" type="String"/>
              <property name="gradient_memory_consumption" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -144,7 +140,6 @@
          <payloadData>
 	     <property name="cluster_id" type="String" />
              <property name="partition_id" type="String"/>
-             <property name="member_id" type="String"/>
              <property name="second_derivative_memory_consumption" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -159,7 +154,6 @@
          <payloadData>
 	     <property name="cluster_id" type="String" />
              <property name="partition_id" type="String"/>
-             <property name="member_id" type="String"/>
              <property name="second_derivative_load_average" type="double"/>
          </payloadData>
      </streamDefinition>

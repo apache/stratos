@@ -10,8 +10,8 @@
     <stream as="healthStats3" name="cartridge_agent_health_stats" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[ 
-    from healthStats3 [health_description == 'memory_consumption'] #window.stratos:secondDerivative(1 min, value) select cluster_id,partition_id,member_id, value as second_derivative_memory_consumption group by cluster_id,partition_id insert into second_derivative_memory_consumption_stats;
-  from healthStats3 [health_description == 'load_average'] #window.stratos:secondDerivative(1 min, value) select cluster_id,partition_id,member_id, value as second_derivative_load_average group by cluster_id,partition_id insert into second_derivative_load_average_stats;]]></queryExpressions>
+    from healthStats3 [health_description == 'memory_consumption'] #window.stratos:secondDerivative(1 min, value) select cluster_id,partition_id,value as second_derivative_memory_consumption group by cluster_id,partition_id insert into second_derivative_memory_consumption_stats;
+  from healthStats3 [health_description == 'load_average'] #window.stratos:secondDerivative(1 min, value) select cluster_id,partition_id,value as second_derivative_load_average group by cluster_id,partition_id insert into second_derivative_load_average_stats;]]></queryExpressions>
   <exportedStreams>
     <stream name="second_derivative_memory_consumption_stats"
       valueOf="second_derivative_memory_consumption_stats" version="1.0.0"/>
