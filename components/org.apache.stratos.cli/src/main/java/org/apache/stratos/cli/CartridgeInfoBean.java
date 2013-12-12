@@ -30,8 +30,8 @@ public class CartridgeInfoBean {
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
-    private String asPolicy;
-    private String depPolicy;
+    private String autoscalePolicy;
+    private String deploymentPolicy;
 
 
     public String getCartridgeType() {
@@ -106,19 +106,19 @@ public class CartridgeInfoBean {
         this.dataCartridgeAlias = dataCartridgeAlias;
     }
 
-    public String getAsPolicy() {
-        return asPolicy;
+    public String getAutoscalePolicy() {
+        return autoscalePolicy;
     }
 
-    public void setAsPolicy(String asPolicy) {
-        this.asPolicy = asPolicy;
+    public void setAutoscalePolicy(String autoscalePolicy) {
+        this.autoscalePolicy = autoscalePolicy;
     }
 
-    public String getDepPolicy() {
-        return depPolicy;
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
     }
 
-    public void setDepPolicy(String depPolicy) {
-        this.depPolicy = depPolicy;
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }
