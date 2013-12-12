@@ -64,6 +64,7 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
             if (topology.serviceExists(event.getServiceName())) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Service already created: [service] %s", event.getServiceName()));
+                    return false;
                 }
             }
 
