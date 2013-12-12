@@ -98,22 +98,18 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         return options;
 	}
 
-	@Override
 	public String getName() {
 		return CliConstants.SUBSCRIBE_ACTION;
 	}
 
-	@Override
 	public String getDescription() {
 		return "Subscribe to a cartridge";
 	}
 
-	@Override
 	public String getArgumentSyntax() {
 		return "[Cartridge type] [Cartridge alias]";
 	}
 
-	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
@@ -151,17 +147,18 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 				//	}
 				//	policy = commandLine.getOptionValue(CliConstants.POLICY_OPTION);
 				//}
-                if (commandLine.hasOption(CliConstants.AUTOSCALING_POLICY_DEPLOYMENT)) {
+                if (commandLine.hasOption(CliConstants.AUTOSCALING_POLICY_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Autoscaling policy option is passed");
                     }
-                    asPolicy = commandLine.getOptionValue(CliConstants.AUTOSCALING_POLICY_DEPLOYMENT);
+                    asPolicy = commandLine.getOptionValue(CliConstants.AUTOSCALING_POLICY_OPTION);
+                    System.out.println(asPolicy);
                 }
-                if (commandLine.hasOption(CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT)) {
+                if (commandLine.hasOption(CliConstants.DEPLOYMENT_POLICY_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Deployment policy option is passed");
                     }
-                    depPolicy = commandLine.getOptionValue(CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT);
+                    depPolicy = commandLine.getOptionValue(CliConstants.DEPLOYMENT_POLICY_OPTION);
                 }
 				if (commandLine.hasOption(CliConstants.REPO_URL_OPTION)) {
 					if (logger.isTraceEnabled()) {

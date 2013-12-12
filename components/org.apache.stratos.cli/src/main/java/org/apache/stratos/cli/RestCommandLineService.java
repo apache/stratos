@@ -26,12 +26,16 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -163,8 +167,10 @@ public class RestCommandLineService {
     // List currently available multi tenant and single tenant cartridges
     public void listAvailableCartridges() throws CommandException {
         try {
-            String resultString = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
+            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
+
+            String resultString = getHttpResponseString(response);
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
@@ -241,8 +247,10 @@ public class RestCommandLineService {
     public void listSubscribedCartridges(final boolean full) throws CommandException {
         try {
 
-            String resultString = restClientService.doGet(restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
+            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
+
+            String resultString = getHttpResponseString(response);
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
@@ -316,8 +324,8 @@ public class RestCommandLineService {
         cartridgeInfoBean.setPrivateRepo(false);
         cartridgeInfoBean.setRepoUsername(null);
         cartridgeInfoBean.setRepoPassword(null);
-        cartridgeInfoBean.setAsPolicy(null);
-        cartridgeInfoBean.setDepPolicy(null);
+        cartridgeInfoBean.setAutoscalePolicy(null);
+        cartridgeInfoBean.setDeploymentPolicy(null);
         cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
         cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
 
@@ -332,12 +340,21 @@ public class RestCommandLineService {
             System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
                     dataCartridgeAlias);
             try {
-                System.out.println("First try");
-                String subscription = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
+                HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
-                if (subscription.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
+                String subscription = getHttpResponseString(response);
+
+                String responseCode = "" + response.getStatusLine().getStatusCode();
+
+                if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
                     System.out.println("Duplicate alias. Please choose different alias");
+                    return;
+                } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                    System.out.println("Error in backend");
+                    return;
+                } else if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                    System.out.println("Invalid operation. Authorization failed");
                     return;
                 }
 
@@ -363,19 +380,26 @@ public class RestCommandLineService {
             cartridgeInfoBean.setRepoPassword(password);
             cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
             cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
-            cartridgeInfoBean.setAsPolicy(asPolicy);
-            cartridgeInfoBean.setDepPolicy(depPolicy);
-
-            System.out.println("Second try");
+            cartridgeInfoBean.setAutoscalePolicy(asPolicy);
+            cartridgeInfoBean.setDeploymentPolicy(depPolicy);
 
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
             completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
 
-            String subscriptionOutput = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
+            HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                     completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
-            if (subscriptionOutput.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
+            String subscriptionOutput = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
                 System.out.println("Duplicate alias. Please choose different alias");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                System.out.println("Error in backend");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operation. Authorization failed");
                 return;
             }
 
@@ -418,7 +442,7 @@ public class RestCommandLineService {
     }
 
     // This method helps to create the new tenant
-    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email, String active){
+    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email){
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
             tenantInfo.setAdmin(admin);
@@ -427,7 +451,7 @@ public class RestCommandLineService {
             tenantInfo.setAdminPassword(password);
             tenantInfo.setTenantDomain(domain);
             tenantInfo.setEmail(email);
-            tenantInfo.setActive(active);
+            //tenantInfo.setActive(active);
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
@@ -435,15 +459,25 @@ public class RestCommandLineService {
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
             String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
 
-            String result = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint,
+            HttpResponse response = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint,
                     completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
-            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+            String result = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            System.out.println(responseCode);
+
+            if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_NO_CONTENT) {
-                System.out.println("Tenant added successfully");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
                 System.out.println("Domain is not available to register. Please check domain name");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_OK)){
+                System.out.println("Tenant added successfully");
+                return;
+            } else {
+                System.out.println ("Unhandle error");
+                return;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -464,10 +498,13 @@ public class RestCommandLineService {
     // This method helps to deploy cartridge definitions
     public void deployCartridgeDefinition (String cartridgeDefinition) {
         try {
-            String result = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
                     cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
 
-            if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+            String result = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
             }
             else {
@@ -481,15 +518,24 @@ public class RestCommandLineService {
     // This method helps to deploy partitions
     public void deployPartition (String partitionDefinition) {
         try {
-            String result = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
                     partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
+
+            String result = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the partition");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
                 System.out.println("Specified policy already exists");
+                return;
+            } else {
+                System.out.println ("Unhandle error");
+                return;
             }
 
         } catch (Exception e) {
@@ -500,15 +546,24 @@ public class RestCommandLineService {
     // This method helps to deploy autoscalling polices
     public void deployAutoscalingPolicy (String autoScalingPolicy) {
         try {
-            String result = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
                     autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
+
+            String result = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                return;
+            } else if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                return;
+            } else if (responseCode.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
                 System.out.println("Specified policy already exists");
+                return;
+            } else {
+                System.out.println ("Unhandle error");
+                return;
             }
 
         } catch (Exception e) {
@@ -519,15 +574,24 @@ public class RestCommandLineService {
     // This method helps to deploy deployment polices
     public void deployDeploymentPolicy (String deploymentPolicy) {
         try {
-            String result = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
+
+            String result = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the deployment policy");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
+                return;
+            } else if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
-            } else if (Integer.parseInt(result) == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
+                return;
+            } else if (responseCode.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
                 System.out.println("Specified policy already exists");
+                return;
+            } else {
+                System.out.println ("Unhandle error");
+                return;
             }
 
         } catch (Exception e) {
@@ -568,5 +632,21 @@ public class RestCommandLineService {
             }
         }
         return urlBuilder.toString();
+    }
+
+    private String getHttpResponseString (HttpResponse response) {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+
+            String output;
+            String result = "";
+            while ((output = br.readLine()) != null) {
+                result += output;
+            }
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

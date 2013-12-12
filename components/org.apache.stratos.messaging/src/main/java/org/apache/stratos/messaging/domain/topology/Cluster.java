@@ -42,7 +42,7 @@ public class Cluster implements Serializable {
     private List<String> hostNames;
     private String tenantRange;
     private String autoscalePolicyName;
-    private String deploymentPolicyName = "economy-deployment";
+    private String deploymentPolicyName;
     private boolean isLbCluster;
     // Key: Member.memberId
     @XmlJavaTypeAdapter(MapAdapter.class)

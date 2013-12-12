@@ -63,11 +63,11 @@ public class HealthPublisher implements Observer {
                     " 'description': 'health stats'," +
                     " 'metaData':[]," +
                     " 'payloadData':[" +
-                    " {'name':'health_description','type':'STRING'}," +
-                    " {'name':'value','type':'DOUBLE'}," +
-                    " {'name':'member_id','type':'STRING'}," +
                     " {'name':'cluster_id','type':'STRING'}," +
-                    " {'name':'partition_id','type':'STRING'}" +
+                    " {'name':'partition_id','type':'STRING'}," +
+                    " {'name':'member_id','type':'STRING'}," +
+                    " {'name':'health_description','type':'STRING'}," +
+                    " {'name':'value','type':'DOUBLE'}" +
                     " ]" +
                     "}";
             asyncDataPublisher.addStreamDefinition(streamDefinition, DATA_STREAM_NAME, VERSION);
@@ -101,7 +101,7 @@ public class HealthPublisher implements Observer {
 
         for (Map.Entry<String, Double> entry : stats.entrySet()) {
 
-            Object[] payload = new Object[]{entry.getKey(), entry.getValue(), memberID, clusterID,partitionId};
+            Object[] payload = new Object[]{clusterID,partitionId,memberID,entry.getKey(), entry.getValue()};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
                 asyncDataPublisher.publish(DATA_STREAM_NAME, VERSION, event);
