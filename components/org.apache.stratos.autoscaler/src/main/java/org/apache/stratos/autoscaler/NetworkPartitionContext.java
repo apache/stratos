@@ -95,6 +95,10 @@ public class NetworkPartitionContext {
         this.serviceNameToLBClusterIdMap = serviceToLBClusterId;
 
     }
+    
+    public void addServiceLB(final String serviceName, final String lbClusterId) {
+        this.serviceNameToLBClusterIdMap.put(serviceName, lbClusterId);
+    }
 
     public String getLBClusterIdOfCluster(final String clusterId) {
 
