@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeExcept
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
@@ -1145,7 +1146,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (iaas == null) {
             try {
                 iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
-                iaas.buildComputeServiceAndTemplate(iaasProvider);
+                // builds and sets Compute Service
+                ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
                 iaasProvider.setIaas(iaas);
             } catch (Exception e) {
                 String msg =
