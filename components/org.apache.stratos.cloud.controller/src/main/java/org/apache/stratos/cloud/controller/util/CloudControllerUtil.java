@@ -60,7 +60,10 @@ public class CloudControllerUtil {
         cartridge.setDisplayName(config.getDisplayName());
         cartridge.setDescription(config.getDescription());
         cartridge.setHostName(config.getHostName());
-        cartridge.setDeploymentDirs(Arrays.asList(config.getDeploymentDirs()));
+        String[] deploymentDirs = config.getDeploymentDirs();
+        if(deploymentDirs != null) {
+            cartridge.setDeploymentDirs(Arrays.asList(deploymentDirs));
+        }
         cartridge.setProvider(config.getProvider());
         cartridge.setVersion(config.getVersion());
         cartridge.setBaseDir(config.getBaseDir());
