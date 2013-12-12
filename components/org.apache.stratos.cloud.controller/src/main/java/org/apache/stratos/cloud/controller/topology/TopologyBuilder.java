@@ -30,6 +30,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.List;
@@ -160,12 +161,11 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
-                                           Partition partition, String privateIp) {
+                                           String networkPartitionId, String partitionId, String privateIp) {
         //adding the new member to the cluster after it is successfully started in IaaS.
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
-        String partitionId = partition.getId();
 
         if (cluster.memberExists(memberId)) {
             throw new RuntimeException(String.format("Member %s already exists", memberId));
@@ -173,7 +173,7 @@ public class TopologyBuilder {
 
         try {
             TopologyManager.getInstance().acquireWriteLock();
-            Member member = new Member(serviceName, clusterId, partitionId, memberId);
+            Member member = new Member(serviceName, clusterId, networkPartitionId, partitionId, memberId);
             member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
             cluster.addMember(member);
@@ -181,8 +181,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, partitionId, memberId);
-
+        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
     }
 
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
@@ -237,9 +236,8 @@ public class TopologyBuilder {
                     instanceActivatedEvent.getMemberId()));
         }
 
-        org.apache.stratos.messaging.event.topology.MemberActivatedEvent memberActivatedEvent =
-                new org.apache.stratos.messaging.event.topology.MemberActivatedEvent(instanceActivatedEvent.getServiceName(),
-                        instanceActivatedEvent.getClusterId(), instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId());
+        MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent(instanceActivatedEvent.getServiceName(),
+                        instanceActivatedEvent.getClusterId(), instanceActivatedEvent.getNetworkPartitionId(), instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId());
 
         try {
             TopologyManager.getInstance().acquireWriteLock();
@@ -268,7 +266,7 @@ public class TopologyBuilder {
         TopologyEventSender.sendMemberActivatedEvent(memberActivatedEvent);
     }
 
-    public static void handleMemberTerminated(String serviceName, String clusterId, String partitionId, String memberId) {
+    public static void handleMemberTerminated(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
         Cluster cluster = service.getCluster(clusterId);
@@ -286,7 +284,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.getInstance().releaseWriteLock();
         }
-        TopologyEventSender.sendMemberTerminatedEvent(serviceName, clusterId, partitionId, memberId);
+        TopologyEventSender.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
     }
 
     public static void handleMemberSuspended() {

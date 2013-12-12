@@ -309,17 +309,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
     
     @Override
-    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException,
+    public MemberContext startInstance(MemberContext memberContext) throws IllegalArgumentException,
         UnregisteredCartridgeException {
 
-        if (member == null) {
+        if (memberContext == null) {
             String msg = "Instance start-up failed. Member is null.";
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
 
-        String clusterId = member.getClusterId();
-        Partition partition = member.getPartition();
+        String clusterId = memberContext.getClusterId();
+        Partition partition = memberContext.getPartition();
 
         log.info("Starting new instance of cluster : " + clusterId);
 
@@ -355,7 +355,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredCartridgeException(msg);
         }
 
-        member.setCartridgeType(cartridgeType);
+        memberContext.setCartridgeType(cartridgeType);
 
         final Lock lock = new ReentrantLock();
 
@@ -371,12 +371,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         try {
             // generating the Unique member ID...
             String memberID = generateMemberId(clusterId);
-            member.setMemberId(memberID);
+            memberContext.setMemberId(memberID);
             // have to add memberID to the payload
             StringBuilder payload = new StringBuilder(ctxt.getPayload());
             addToPayload(payload, "MEMBER_ID", memberID);
-            addToPayload(payload, "LB_CLUSTER_ID", member.getLbClusterId());
-            addToPayload(payload, "NETWORK_PARTITION_ID", member.getNetworkPartitionId());
+            addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
+            addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -431,7 +431,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     throw new CloudControllerException(msg);
                 }
 
-                member.setNodeId(nodeId);
+                memberContext.setNodeId(nodeId);
 
                 // reset ip
                 String ip = "";
@@ -440,7 +440,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
                     // allocate an IP address - manual IP assigning mode
                     ip = iaas.getIaas().associateAddress(iaas, node);
-                    member.setAllocatedIpAddress(ip);
+                    memberContext.setAllocatedIpAddress(ip);
                     log.info("Allocated ip address: " + ip);
                 }
 
@@ -448,7 +448,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (node.getPublicAddresses() != null &&
                     node.getPublicAddresses().iterator().hasNext()) {
                     ip = node.getPublicAddresses().iterator().next();
-                    member.setPublicIpAddress(ip);
+                    memberContext.setPublicIpAddress(ip);
                     log.info("Public ip address: " + ip);
                 }
 
@@ -456,18 +456,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (node.getPrivateAddresses() != null &&
                     node.getPrivateAddresses().iterator().hasNext()) {
                     ip = node.getPrivateAddresses().iterator().next();
-                    member.setPrivateIpAddress(ip);
+                    memberContext.setPrivateIpAddress(ip);
                     log.info("Private ip address: " + ip);
                 }
 
-                dataHolder.addMemberContext(member);
+                dataHolder.addMemberContext(memberContext);
 
                 // persist in registry
                 persist();
 
                 // trigger topology
-                TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, partition,
-                                                    ip);
+                TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(), partition.getId(), ip);
 
                 // update the topology with the newly spawned member
                 // publish data
@@ -478,7 +477,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.info("Instance is successfully starting up in IaaS " + iaas.getType() +
                          ".\tIP Address(public/private): " + ip + "\tNode Id: " + nodeId);
 
-                return member;
+                return memberContext;
 
             } finally {
                 // release the lock
@@ -883,7 +882,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		return iaasTemp;
 	}
 
-	private void logTermination(MemberContext ctxt) {
+	private void logTermination(MemberContext memberContext) {
 
 		// get the ip of the terminated node
 //		String ip = ctxt.getPublicIp(nodeId);
@@ -901,7 +900,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //		serviceCtxt.setProperty(ipProp, newIpStr.length() == 0 ? "" : newIpStr
 //				.substring(0, newIpStr.length() - 1).toString());
         //updating the topology
-        TopologyBuilder.handleMemberTerminated(ctxt.getCartridgeType(), ctxt.getClusterId(), ctxt.getPartition().getId(), ctxt.getMemberId());
+        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getMemberId());
 
 		// remove the reference
 //		ctxt.removeNodeIdToPublicIp(nodeId);

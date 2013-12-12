@@ -83,6 +83,7 @@ public class ArtifactListener implements MessageListener{
 	    		InstanceActivatedEvent instanceActivatedEvent = new InstanceActivatedEvent(
                         LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME),
 	    		        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID),
+                        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.NETWORK_PARTITION_ID),
                         LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.PARTITION_ID),
 	    		        LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
 	    		EventPublisher publisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
