@@ -104,14 +104,6 @@ public class AutoscalerUtil {
             throw new PolicyValidationException(msg);
         }
 
-        try {
-            validateExistenceOfPartions(allPartitions);
-        } catch (InvalidPartitionException e) {
-            String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
-            log.error(msg, e);
-            throw new PolicyValidationException(msg, e);
-        }
-
         CloudControllerClient.getInstance()
                              .validatePartitionsOfPolicy(cluster.getServiceName(),
                                                          allPartitions);
@@ -259,37 +251,6 @@ public class AutoscalerUtil {
         }
 
         return clusterMonitor;
-    }
-
-    private static void validateExistenceOfPartions(Partition[] partitions) throws InvalidPartitionException {
-        PartitionManager partitionMgr = PartitionManager.getInstance();
-        for (Partition partition : partitions) {
-            String partitionId = partition.getId();
-            if (partitionId == null || !partitionMgr.partitionExist(partitionId)) {
-                String msg =
-                             "Non existing Partition defined. Partition id: " + partitionId + ". " +
-                                     "Please define the partition in the partition definition file.";
-                log.error(msg);
-                throw new InvalidPartitionException(msg);
-            }
-            fillPartition(partition, partitionMgr.getPartitionById(partitionId));
-        }
-    }
-
-    private static void fillPartition(Partition destPartition, Partition srcPartition) {
-
-        if (!destPartition.isProviderSpecified()) {
-            destPartition.setProvider(srcPartition.getProvider());
-        }
-        if (!destPartition.isPartitionMaxSpecified()) {
-            destPartition.setPartitionMax(srcPartition.getPartitionMax());
-        }
-        if (!destPartition.isPartitionMinSpecified()) {
-            destPartition.setPartitionMin(srcPartition.getPartitionMin());
-        }
-        if (!destPartition.isPropertiesSpecified()) {
-            destPartition.setProperties(srcPartition.getProperties());
-        }
     }
 
     public static Properties getProperties(final OMElement elt) {

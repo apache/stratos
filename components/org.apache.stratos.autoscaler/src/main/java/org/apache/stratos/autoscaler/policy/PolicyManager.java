@@ -30,10 +30,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
@@ -78,12 +82,53 @@ public class PolicyManager {
 	
 	// Add the policy to information model and persist.
 	public boolean deployDeploymentscalePolicy(DeploymentPolicy policy) throws InvalidPolicyException {	
+	    try {
+	        Partition[] allPartitions = policy.getAllPartitions();
+            validateExistenceOfPartions(allPartitions);
+            
+        } catch (InvalidPartitionException e) {
+            String msg = "Deployment Policy is invalid. Policy name: " + policy.getId();
+            log.error(msg, e);
+            throw new InvalidPolicyException(msg, e);
+        }
+	    
 		this.addDeploymentPolicyToInformationModel(policy);
 		this.persitDeploymentPolicy(deploymentPolicyResourcePath+ policy.getId(), policy);
 		
 		log.info("Deployment policy  :" + policy.getId() + " is deployed successfully.");
 		return true;
 	}
+	
+	private static void validateExistenceOfPartions(Partition[] partitions) throws InvalidPartitionException {
+        PartitionManager partitionMgr = PartitionManager.getInstance();
+        for (Partition partition : partitions) {
+            String partitionId = partition.getId();
+            if (partitionId == null || !partitionMgr.partitionExist(partitionId)) {
+                String msg =
+                             "Non existing Partition defined. Partition id: " + partitionId + ". " +
+                                     "Please define the partition in the partition definition file.";
+                log.error(msg);
+                throw new InvalidPartitionException(msg);
+            }
+            fillPartition(partition, partitionMgr.getPartitionById(partitionId));
+        }
+    }
+
+    private static void fillPartition(Partition destPartition, Partition srcPartition) {
+
+        if (!destPartition.isProviderSpecified()) {
+            destPartition.setProvider(srcPartition.getProvider());
+        }
+        if (!destPartition.isPartitionMaxSpecified()) {
+            destPartition.setPartitionMax(srcPartition.getPartitionMax());
+        }
+        if (!destPartition.isPartitionMinSpecified()) {
+            destPartition.setPartitionMin(srcPartition.getPartitionMin());
+        }
+        if (!destPartition.isPropertiesSpecified()) {
+            destPartition.setProperties(srcPartition.getProperties());
+        }
+    }
 		
 	public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException{
 		if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
@@ -152,6 +197,7 @@ public class PolicyManager {
 			if(log.isDebugEnabled()){
 				log.debug("Adding policy :" + policy.getId());
 			}
+			PartitionManager.getInstance().deployNewNetworkPartitions(policy);
 			deploymentPolicyListMap.put(policy.getId(), policy);
 		} else {
 			throw new InvalidPolicyException("Specified policy [" + policy.getId()
