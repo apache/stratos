@@ -183,14 +183,6 @@ public class Cartridge implements Serializable{
         this.lastlyUsedIaas = lastlyUsedIaas;
     }
 
-//    public boolean isJcloudsObjectsBuilt() {
-//        return isJcloudsObjectsBuilt;
-//    }
-//
-//    public void setJcloudsObjectsBuilt(boolean isJcloudsObjectsBuilt) {
-//        this.isJcloudsObjectsBuilt = isJcloudsObjectsBuilt;
-//    }
-
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -216,7 +208,6 @@ public class Cartridge implements Serializable{
     }
 	
 	public void reset(){
-//		lastlyUsedIaas = null;
 	}
 
 	public List<String> getDeploymentDirs() {
