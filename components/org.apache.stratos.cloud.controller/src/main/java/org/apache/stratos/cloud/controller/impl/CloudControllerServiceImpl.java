@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeExcept
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
@@ -214,57 +215,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					currentData.setClusterIdToContext(serializedObj.getClusterIdToContext());
 					currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
 					currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
+					currentData.setCartridges(serializedObj.getCartridges());
 
-					// traverse through current Service Contexts
-//					for (ServiceContext ctxt : currentData.getServiceCtxtList()) {
-//						// traverse through serialized Service Contexts
-//						for (ServiceContext serializedCtxt : serializedObj
-//								.getServiceCtxtList()) {
-//							// if a matching Service Context found
-//							if (ctxt.equals(serializedCtxt)) {
-//								// persisted node ids of this Service Context
-//								List<Object> nodeIds = serializedObj
-//										.getNodeIdsOfServiceCtxt(serializedCtxt);
-//								for (Object nodeIdObj : nodeIds) {
-//									String nodeId = (String) nodeIdObj;
-//
-//									// assign persisted data
-//									currentData.addNodeId(nodeId, ctxt);
-//
-//								}
-//
-//								ctxt.setIaasContextMap(serializedCtxt
-//										.getIaasCtxts());
-//								appendToPublicIpProperty(
-//										serializedCtxt
-//												.getProperty(CloudControllerConstants.PUBLIC_IP_PROPERTY),
-//										ctxt);
-//
-//								// assign lastly used IaaS
-//								if (serializedCtxt.getCartridge() != null
-//										&& serializedCtxt.getCartridge()
-//												.getLastlyUsedIaas() != null) {
-//
-//									if (ctxt.getCartridge() == null) {
-//										// load Cartridge
-//										ctxt.setCartridge(loadCartridge(
-//												ctxt.getCartridgeType(),
-//												serializedObj.getCartridges()));
-//									}
-//
-//									IaasProvider serializedIaas = serializedCtxt
-//											.getCartridge().getLastlyUsedIaas();
-//									ctxt.getCartridge().setLastlyUsedIaas(
-//											serializedIaas);
-//
-//								}
-//							}
-//						}
-//					}
-
-					log.debug("Data is retrieved from registry.");
+					if(log.isDebugEnabled()) {
+					    
+					    log.debug("Cloud Controller Data is retrieved from registry.");
+					}
 				} else {
-					log.debug("No data is persisted in registry.");
+				    if(log.isDebugEnabled()) {
+				        
+				        log.debug("Cloud Controller Data cannot be found in registry.");
+				    }
 				}
 			} catch (Exception e) {
 
@@ -315,7 +276,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
         
         // TODO transaction begins
+        String cartridgeType = cartridge.getType();
+        if(dataHolder.getCartridge(cartridgeType) != null) {
+            if (dataHolder.getCartridges().remove(cartridge)) {
+                log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+            }
+        }
+        
         dataHolder.addCartridge(cartridge);
+        
+        // persist
+        persist();
 
         List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
         cartridgeList.add(cartridge);
@@ -323,11 +294,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleServiceCreated(cartridgeList);
         // transaction ends
         
-        log.info("Successfully deployed the Cartridge definition: " + cartridge.getType());
+        log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
 
     public void undeployCartridgeDefinition(String cartridgeType) {
 
+        Cartridge cartridge = null;
+        if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
+            if (dataHolder.getCartridges().remove(cartridge)) {
+                persist();
+                log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+            }
+        }
     }
     
     @Override
@@ -1004,6 +982,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName));
 	    TopologyBuilder.handleClusterCreated(registrant);
 	    
+	    persist();
+	    
 		return true;
 	}
 
@@ -1061,26 +1041,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         dataHolder.removeClusterContext(clusterId);
         dataHolder.removeMemberContext(clusterId);
         
-		//subDomain = checkSubDomain(subDomain);
-
-		// find the service context
-//		ServiceContext subjectedSerCtxt = dataHolder
-//				.getServiceContextFromDomain(clusterId);
+        persist();
         
-        
-        
-//        TopologyBuilder.handleClusterRemoved(subjectedSerCtxt);
-
-//		if (subjectedSerCtxt == null) {
-//			throw new UnregisteredClusterException(
-//					"No registered service found for domain: " + clusterId);
-//		}
-//
-//		// get the service definition file.
-//		File serviceDefFile = subjectedSerCtxt.getFile();
-//
-//		// delete that file, so that it gets automatically undeployed.
-//		return serviceDefFile.delete();
 	}
 
 		
@@ -1145,7 +1107,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (iaas == null) {
             try {
                 iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
-                iaas.buildComputeServiceAndTemplate(iaasProvider);
+                // builds and sets Compute Service
+                ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
                 iaasProvider.setIaas(iaas);
             } catch (Exception e) {
                 String msg =

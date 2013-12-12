@@ -304,18 +304,20 @@ public class RestCommandLineService {
     }
 
     // This method does the cartridge subscription
-    public void subscribe(String cartridgeType, String alias, String policy, String externalRepoURL,
-                          boolean privateRepo, String username, String password, String dataCartridgeType, String dataCartridgeAlias)
+    public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
+                          String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy, String depPolicy)
             throws CommandException {
 
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
         cartridgeInfoBean.setCartridgeType(null);
         cartridgeInfoBean.setAlias(null);
-        cartridgeInfoBean.setPolicy(null);
+        //cartridgeInfoBean.setPolicy(null);
         cartridgeInfoBean.setRepoURL(null);
         cartridgeInfoBean.setPrivateRepo(false);
         cartridgeInfoBean.setRepoUsername(null);
         cartridgeInfoBean.setRepoPassword(null);
+        cartridgeInfoBean.setAsPolicy(null);
+        cartridgeInfoBean.setDepPolicy(null);
         cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
         cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
 
@@ -330,12 +332,17 @@ public class RestCommandLineService {
             System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
                     dataCartridgeAlias);
             try {
-                System.out.println("First try");
                 String subscription = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
                 if (subscription.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
                     System.out.println("Duplicate alias. Please choose different alias");
+                    return;
+                } else if (subscription.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                    System.out.println("Error in backend");
+                    return;
+                } else if (subscription.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                    System.out.println("Invalid operation. Authorization failed");
                     return;
                 }
 
@@ -354,15 +361,15 @@ public class RestCommandLineService {
         try {
             cartridgeInfoBean.setCartridgeType(cartridgeType);
             cartridgeInfoBean.setAlias(alias);
-            cartridgeInfoBean.setPolicy(policy);
+            //cartridgeInfoBean.setPolicy(policy);
             cartridgeInfoBean.setRepoURL(externalRepoURL);
             cartridgeInfoBean.setPrivateRepo(privateRepo);
             cartridgeInfoBean.setRepoUsername(username);
             cartridgeInfoBean.setRepoPassword(password);
             cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
             cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
-
-            System.out.println("Second try");
+            cartridgeInfoBean.setAsPolicy(asPolicy);
+            cartridgeInfoBean.setDepPolicy(depPolicy);
 
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
             completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
@@ -372,6 +379,12 @@ public class RestCommandLineService {
 
             if (subscriptionOutput.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
                 System.out.println("Duplicate alias. Please choose different alias");
+                return;
+            } else if (subcriptionConnectInfo.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                System.out.println("Error in backend");
+                return;
+            } else if (subscriptionOutput.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operation. Authorization failed");
                 return;
             }
 

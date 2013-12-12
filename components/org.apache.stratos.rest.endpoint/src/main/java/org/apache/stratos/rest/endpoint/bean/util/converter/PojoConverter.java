@@ -79,7 +79,9 @@ public class PojoConverter {
     private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
         LoadbalancerConfig lbConfig = new LoadbalancerConfig();
         lbConfig.setType(loadBalancer.type);
-        lbConfig.setProperties(getProperties(loadBalancer.property));
+        if (loadBalancer.property != null && !loadBalancer.property.isEmpty()) {
+            lbConfig.setProperties(getProperties(loadBalancer.property));
+        }
         return lbConfig;
     }
 

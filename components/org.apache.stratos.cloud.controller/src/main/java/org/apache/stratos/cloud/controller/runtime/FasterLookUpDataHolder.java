@@ -242,6 +242,10 @@ public class FasterLookUpDataHolder implements Serializable{
 	public List<Cartridge> getCartridges() {
 		return cartridges;
 	}
+	
+	public void setCartridges(List<Cartridge> cartridges) {
+	    this.cartridges = cartridges;
+	}
 
 	public Cartridge getCartridge(String cartridgeType) {
 		for (Cartridge cartridge : cartridges) {

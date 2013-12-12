@@ -50,8 +50,8 @@ public class TenantSynzhronizerTask implements Task {
     @Override
     public void execute() {
         try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Publishing complete tenant event"));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Publishing complete tenant event"));
             }
             Tenant tenant;
             List<Tenant> tenants = new ArrayList<Tenant>();

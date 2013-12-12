@@ -36,7 +36,9 @@ public class CartridgeAgentClient {
     }
 	
 	public void unregister(String domain, String subDomain, String hostName) throws Exception {
-		log.info(" ** Unregistering -- ");
+        if(log.isInfoEnabled()) {
+		    log.info("Unregistering cartridge agent client...");
+        }
 		stub.unregister(domain, subDomain, hostName);
 	}
 }

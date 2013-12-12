@@ -50,11 +50,21 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 	 */
 	private Options constructOptions() {
 		final Options options = new Options();
-		Option policyOption = new Option(CliConstants.POLICY_OPTION, CliConstants.POLICY_LONG_OPTION, true,
-				"Auto-scaling policy.\nPlease use \"" + CliConstants.POLICIES_ACTION
-						+ "\" command to view the available policies.");
-		policyOption.setArgName("policy name");
-		options.addOption(policyOption);
+		//Option policyOption = new Option(CliConstants.POLICY_OPTION, CliConstants.POLICY_LONG_OPTION, true,
+		//		"Auto-scaling policy.\nPlease use \"" + CliConstants.POLICIES_ACTION
+		//				+ "\" command to view the available policies.");
+		//policyOption.setArgName("policy name");
+		//options.addOption(policyOption);
+
+        Option autoscaling = new Option(CliConstants.AUTOSCALING_POLICY_OPTION, CliConstants.AUTOSCALING_POLICY_LONG_OPTION,
+                true, "Auto-scaling policy");
+        autoscaling.setArgName("auto-scaling-policy");
+        options.addOption(autoscaling);
+
+        Option deployment = new Option(CliConstants.DEPLOYMENT_POLICY_OPTION, CliConstants.DEPLOYMENT_POLICY_LONG_OPTION,
+                true, "Deployment-policy");
+        deployment.setArgName("deployment-policy");
+        options.addOption(deployment);
 
 		Option connectOption = new Option(CliConstants.CONNECT_OPTION, CliConstants.CONNECT_LONG_OPTION, true,
 				"Data cartridge type");
@@ -84,7 +94,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 		passwordOption.setArgName("password");
 		passwordOption.setOptionalArg(true);
 		options.addOption(passwordOption);
-		return options;
+
+        return options;
 	}
 
 	@Override
@@ -112,6 +123,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 			String type = null;
 			String alias = null;
 			String policy = null;
+            String asPolicy = null;
+            String depPolicy = null;
 			String repoURL = null, dataCartridgeType = null, dataCartridgeAlias = null, username = "", password = "";
 			boolean privateRepo = false;
 			final CommandLineParser parser = new GnuParser();
@@ -132,12 +145,24 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					logger.debug("Subscribing to {} cartridge with alias {}", type, alias);
 				}
 
-				if (commandLine.hasOption(CliConstants.POLICY_OPTION)) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("Policy option is passed");
-					}
-					policy = commandLine.getOptionValue(CliConstants.POLICY_OPTION);
-				}
+				//if (commandLine.hasOption(CliConstants.POLICY_OPTION)) {
+				//	if (logger.isTraceEnabled()) {
+				//		logger.trace("Policy option is passed");
+				//	}
+				//	policy = commandLine.getOptionValue(CliConstants.POLICY_OPTION);
+				//}
+                if (commandLine.hasOption(CliConstants.AUTOSCALING_POLICY_DEPLOYMENT)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Autoscaling policy option is passed");
+                    }
+                    asPolicy = commandLine.getOptionValue(CliConstants.AUTOSCALING_POLICY_DEPLOYMENT);
+                }
+                if (commandLine.hasOption(CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Deployment policy option is passed");
+                    }
+                    depPolicy = commandLine.getOptionValue(CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT);
+                }
 				if (commandLine.hasOption(CliConstants.REPO_URL_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("RepoURL option is passed");
@@ -184,8 +209,9 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					context.getStratosApplication().printUsage(getName());
 					return CliConstants.BAD_ARGS_CODE;
 				}
-                RestCommandLineService.getInstance().subscribe(type, alias, policy, repoURL, privateRepo, username,
-                		password, dataCartridgeType, dataCartridgeAlias);
+
+                RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
+                		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy);
 				//CommandLineService.getInstance().subscribe(type, alias, policy, repoURL, privateRepo, username,
 				//		password, dataCartridgeType, dataCartridgeAlias);
 				return CliConstants.SUCCESSFUL_CODE;

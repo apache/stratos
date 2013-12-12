@@ -21,7 +21,8 @@ package org.apache.stratos.adc.mgt.utils;
 
 public class CartridgeConstants {
     public static final String SC_IP = "sc.ip";
-	public static final String AUTOSCALER_SERVICE_URL = "autoscalerService.url";
+	public static final String AUTOSCALER_SERVICE_URL = "autoscaler.service.url";
+    public static final String CLOUD_CONTROLLER_SERVICE_URL = "cloud.controller.service.url";
     public static final String ALIAS_NAMESPACE ="http://org.wso2.securevault/configuration";
     public static final String ALIAS_LOCALPART ="secretAlias";
     public static final String ALIAS_PREFIX ="svns";
