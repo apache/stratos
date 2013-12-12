@@ -53,6 +53,14 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
 
     public void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
+         //TODO: change to debug
+        log.info("Type: " + cartridgeSubscription.getType() +
+            " \n Cluster Domain: " + cartridgeSubscription.getCluster().getClusterDomain() +
+            " \n Cluster Sub-Domain: " + cartridgeSubscription.getCluster().getClusterSubDomain() +
+            " \n Tenant Range: " + cartridgeSubscription.getPayload().getPayloadArg().getTenantRange() +
+            " \n Autoscaling Policy: " + cartridgeSubscription.getAutoscalingPolicyName() +
+            " \n Deployment Policy: " + cartridgeSubscription.getDeploymentPolicyName());
+
         ApplicationManagementUtil.registerService(cartridgeSubscription.getType(),
                 cartridgeSubscription.getCluster().getClusterDomain(),
                 cartridgeSubscription.getCluster().getClusterSubDomain(),
