@@ -28,7 +28,6 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.autoscaler.rule.ExecutorTaskScheduler;
 import org.apache.stratos.autoscaler.topology.AutoscalerTopologyReceiver;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
@@ -103,12 +102,12 @@ public class AutoscalerServerComponent {
 				log.debug("Health message processor thread started");
 			}
 			// Start scheduler for running rules
-			ExecutorTaskScheduler executor = new ExecutorTaskScheduler();
-			Thread executorThread = new Thread(executor);
-			executorThread.start();
-			if (log.isDebugEnabled()) {
-				log.debug("Rules executor thread started");
-			}
+//			ExecutorTaskScheduler executor = new ExecutorTaskScheduler();
+//			Thread executorThread = new Thread(executor);
+//			executorThread.start();
+//			if (log.isDebugEnabled()) {
+//				log.debug("Rules executor thread started");
+//			}
 			this.registryManager = RegistryManager.getInstance();
 			// Adding the registry stored partitions to the information model.
 			ArrayList<Partition> partitions = this.retreivePartitions();

@@ -51,7 +51,7 @@ public class NetworkPartitionContext {
 
     //details required for partition selection algorithms
     private int currentPartitionIndex;
-    private Map<String, Integer> partitionCountMap;
+    private Map<String, Integer> partitionToMemberCountMap;
 
     //partitions of this network partition
     private Map<String, PartitionContext> partitionCtxts;
@@ -62,6 +62,7 @@ public class NetworkPartitionContext {
         this.id = id;
         this.setServiceToLBClusterId(new HashMap<String, String>());
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
+        partitionToMemberCountMap = new HashMap<String, Integer>();
 
     }
 
@@ -235,30 +236,30 @@ public class NetworkPartitionContext {
 
     public void increaseMemberCountInPartitionBy(String partitionId, int count){
 
-         partitionCountMap.put(partitionId, getMemberCount(partitionId) + count);
+         partitionToMemberCountMap.put(partitionId, getMemberCount(partitionId) + count);
      }
 
      public void decreaseMemberCountInPartitionBy(String partitionId, int count){
 
-         partitionCountMap.put(partitionId, getMemberCount(partitionId) - count);
+         partitionToMemberCountMap.put(partitionId, getMemberCount(partitionId) - count);
      }
 
      public void addPartitionCount(String partitionId, int count){
-         partitionCountMap.put(partitionId, count);
+         partitionToMemberCountMap.put(partitionId, count);
      }
 
      public void removePartitionCount(String partitionId){
 
-         partitionCountMap.remove(partitionId);
+         partitionToMemberCountMap.remove(partitionId);
      }
 
      public boolean partitionCountExists(String partitionId){
-         return partitionCountMap.containsKey(partitionId);
+         return partitionToMemberCountMap.containsKey(partitionId);
      }
 
      public int getMemberCount(String partitionId){
-         if(partitionCountMap.containsKey(partitionId)) {
-             return partitionCountMap.get(partitionId);
+         if(partitionToMemberCountMap.containsKey(partitionId)) {
+             return partitionToMemberCountMap.get(partitionId);
          }
          return 0;
      }
@@ -293,5 +294,12 @@ public class NetworkPartitionContext {
 
     public void setPartitions(Partition[] partitions) {
         this.partitions = partitions;
+        for (Partition partition: partitions){
+            partitionToMemberCountMap.put(partition.getId(), 0);
+        }
+    }
+
+    public void setPartitionToMemberCountMap(Map<String, Integer> partitionToMemberCountMap) {
+        this.partitionToMemberCountMap = partitionToMemberCountMap;
     }
 }
