@@ -332,12 +332,17 @@ public class RestCommandLineService {
             System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
                     dataCartridgeAlias);
             try {
-                System.out.println("First try");
                 String subscription = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
                 if (subscription.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
                     System.out.println("Duplicate alias. Please choose different alias");
+                    return;
+                } else if (subscription.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                    System.out.println("Error in backend");
+                    return;
+                } else if (subscription.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                    System.out.println("Invalid operation. Authorization failed");
                     return;
                 }
 
@@ -366,8 +371,6 @@ public class RestCommandLineService {
             cartridgeInfoBean.setAsPolicy(asPolicy);
             cartridgeInfoBean.setDepPolicy(depPolicy);
 
-            System.out.println("Second try");
-
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
             completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
 
@@ -376,6 +379,12 @@ public class RestCommandLineService {
 
             if (subscriptionOutput.equals("" + CliConstants.RESPONSE_NO_CONTENT)) {
                 System.out.println("Duplicate alias. Please choose different alias");
+                return;
+            } else if (subcriptionConnectInfo.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
+                System.out.println("Error in backend");
+                return;
+            } else if (subscriptionOutput.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operation. Authorization failed");
                 return;
             }
 
