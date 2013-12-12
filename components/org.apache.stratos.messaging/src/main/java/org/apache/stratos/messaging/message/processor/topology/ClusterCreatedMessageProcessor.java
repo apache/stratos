@@ -96,7 +96,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
             }
 
             // Apply changes to the topology
-            Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(), event.getAutoscalingPolicyName());
+            Cluster cluster = new Cluster(event.getServiceName(), event.getClusterId(), event.getDeploymentPolicyName(), event.getAutoscalingPolicyName());
             cluster.addHostName(event.getHostName());
             cluster.setTenantRange(event.getTenantRange());
 

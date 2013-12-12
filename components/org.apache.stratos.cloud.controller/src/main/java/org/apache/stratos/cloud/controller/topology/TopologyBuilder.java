@@ -115,21 +115,16 @@ public class TopologyBuilder {
                 // update the cluster
                 cluster = service.getCluster(registrant.getClusterId());
                 cluster.addHostName(registrant.getHostName());
-                cluster.setAutoscalePolicyName(registrant.getAutoScalerPolicyName());
                 cluster.setTenantRange(registrant.getTenantRange());
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
-                
             } else {
-                cluster =
-                          new Cluster(registrant.getCartridgeType(), registrant.getClusterId(),
-                                      registrant.getAutoScalerPolicyName());
+                cluster = new Cluster(registrant.getCartridgeType(), registrant.getClusterId(),
+                                      registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
                 cluster.addHostName(registrant.getHostName());
                 cluster.setTenantRange(registrant.getTenantRange());
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
                 service.addCluster(cluster);
             }
             TopologyManager.getInstance().updateTopology(topology);
