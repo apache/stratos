@@ -123,6 +123,10 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	public NetworkPartitionContext getNetworkPartitionOfPartition(String partitionId) {
 	    return this.partitionIdToNetworkPartition.get(partitionId);
 	}
+	
+	public NetworkPartitionContext getNetworkPartition(String networkPartitionId) {
+	    return this.networkPartitionContexts.get(networkPartitionId);
+	}
 
 	public List<NetworkPartitionContext> getAllNetworkPartitions() {
 	    return this.networkPartitions;
@@ -182,10 +186,6 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
             networkPartitionContexts.put(partitionGroup.getId(), networkPartitionContext);
 
         }
-    }
-
-    public NetworkPartitionContext getNetworkPartition(String partitionGroupId) {
-        return networkPartitionContexts.get(partitionGroupId);
     }
 
 }

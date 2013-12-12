@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventFormatter name="FaultMessageEventFormatter"
+  statistics="disable" trace="enable" xmlns="http://wso2.org/carbon/eventformatter">
+  <from streamName="fault_message" version="1.0.0"/>
+  <mapping customMapping="enable" type="json">
+    <inline>{"member_fault":{"cluster_id":"{{cluster_id}}","partition_id":"{{partition_id}}","member_id":"{{member_id}}"}}</inline>
+  </mapping>
+  <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
+    <property name="transport.jms.Destination">summarized-health-stats</property>
+  </to>
+</eventFormatter>

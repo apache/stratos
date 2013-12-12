@@ -44,7 +44,7 @@ import org.apache.stratos.cloud.controller.pojo.MemberContext;
 global org.apache.stratos.autoscaler.policy.PolicyManager $manager;
 global org.apache.stratos.autoscaler.AutoscalerContext $context; 
 global org.apache.commons.logging.Log log;
-global org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator $evaluator;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global org.apache.stratos.messaging.domain.topology.Topology $topology;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
@@ -56,7 +56,7 @@ dialect "mvel"
 	       eval($ctxt.getCurrentMemberCount() < $ctxt.getMinimumMemberCount())
 
        then
-	       $evaluator.delegateSpawn($ctxt, clusterId);
+	       $delegator.delegateSpawn($ctxt, clusterId);
 	       
 end
 
@@ -68,6 +68,6 @@ dialect "mvel"
             memberId : String() from $ctxt.getObsoletedMembers()
             eval($ctxt.removeObsoleteMember(memberId))
         then
-           $evaluator.delegateTerminate(memberId);
+           $delegator.delegateTerminate(memberId);
 end
 

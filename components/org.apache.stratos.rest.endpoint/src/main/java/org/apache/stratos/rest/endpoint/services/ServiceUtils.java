@@ -42,7 +42,6 @@ import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.rest.endpoint.Constants;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -50,8 +49,9 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefin
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.messaging.util.Constants;
 
-import java.beans.PropertyVetoException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -62,7 +62,7 @@ public class ServiceUtils {
     static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
         String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+        log.info("Starting to deploy a Cartridge [type] "+cartridgeDefinitionBean.type);
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         
@@ -78,6 +78,8 @@ public class ServiceUtils {
                 
                 // call CC
                 cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
+                
+                log.info("Successfully deployed Cartridge [type] "+cartridgeDefinitionBean.type);
                 
             } catch (Exception e) {
                 throw new RestAPIException(e);
@@ -642,7 +644,7 @@ public class ServiceUtils {
             }
         }
         
-        org.apache.stratos.cloud.controller.pojo.Property lbRefProp = null; 
+        List<Property> lbRefProp = new ArrayList<Property>(); 
         
         if (!isLb) {
             // if not an LB Cartridge
@@ -667,21 +669,27 @@ public class ServiceUtils {
 
                 Properties lbProperties = lbConfig.getProperties();
 
+                Property property = new Property();
+                property.setName(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+                
                 for (org.apache.stratos.cloud.controller.pojo.Property prop : lbProperties.getProperties()) {
-                    // lb ref prop
-                    lbRefProp = prop;
+                    
+                    String name = prop.getName();
+                    String value = prop.getValue();
                     
                     // TODO make following a chain of responsibility pattern
-                    if (Constants.NO_LOAD_BALANCER.equals(prop.getName())) {
-                        if ("true".equals(prop.getValue())) {
+                    if (Constants.NO_LOAD_BALANCER.equals(name)) {
+                        if ("true".equals(value)) {
                             if (log.isDebugEnabled()) {
                                 log.debug("This cartridge does not require a load balancer. " +
                                           "[Type] " + cartridgeType);
                             }
+                            property.setValue(name);
+                            lbRefProp.add(property);
                             break;
                         }
-                    } else if (Constants.EXISTING_LOAD_BALANCERS.equals(prop.getName())) {
-                        String clusterIdsVal = prop.getValue();
+                    } else if (Constants.EXISTING_LOAD_BALANCERS.equals(name)) {
+                        String clusterIdsVal = value;
                         if (log.isDebugEnabled()) {
                             log.debug("This cartridge refers to existing load balancers. " +
                                       "[Type] " + cartridgeType + "[Referenced Cluster Ids] " +
@@ -700,10 +708,14 @@ public class ServiceUtils {
                                 }
                             }
                         }
+                        
+                        property.setValue(name);
+                        lbRefProp.add(property);
                         break;
 
-                    } else if (Constants.DEFAULT_LOAD_BALANCER.equals(prop.getName())) {
-                        if ("true".equals(prop.getValue())) {
+                    } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
+                        if ("true".equals(value)) {
+                            property.setValue(name);
                             if (log.isDebugEnabled()) {
                                 log.debug("This cartridge uses default load balancer. " +
                                           "[Type] " + cartridgeType);
@@ -726,7 +738,7 @@ public class ServiceUtils {
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicy, configurationContext,
-                                                          userName, tenantDomain);
+                                                          userName, tenantDomain, new Property[]{property});
                                             }
                                         }
                                     }
@@ -736,9 +748,12 @@ public class ServiceUtils {
                                     log.error(ex.getMessage(), ex);
                                 }
                             }
+                            
+                            lbRefProp.add(property);
                             break;
-                        } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(prop.getName())) {
-                            if ("true".equals(prop.getValue())) {
+                        } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+                            if ("true".equals(value)) {
+                                property.setValue(name);
                                 if (log.isDebugEnabled()) {
                                     log.debug("This cartridge uses a service aware load balancer. " +
                                               "[Type] " + cartridgeType);
@@ -762,7 +777,7 @@ public class ServiceUtils {
                                                               lbAlias,
                                                               lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                               deploymentPolicy, configurationContext,
-                                                              userName, tenantDomain);
+                                                              userName, tenantDomain, new Property[]{property});
                                                 }
                                             }
                                         }
@@ -772,6 +787,8 @@ public class ServiceUtils {
                                         log.error(ex.getMessage(), ex);
                                     }
                                 }
+                                
+                                lbRefProp.add(property);
                                 break;
                             }
                         }
@@ -783,7 +800,7 @@ public class ServiceUtils {
         CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType,
                 alias.trim(), autoscalingPolicy, deploymentPolicy ,tenantDomain, ApplicationManagementUtil.getTenantId(configurationContext),
                 userName, "git", repoURL, privateRepo, repoUsername, repoPassword, 
-                lbRefProp != null ? new org.apache.stratos.cloud.controller.pojo.Property[]{lbRefProp}:null);
+                lbRefProp.toArray(new Property[0]));
 
         if(dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
 
@@ -847,16 +864,23 @@ public class ServiceUtils {
     
     private static void subscribeToLb(String cartridgeType, String lbAlias,
         String defaultAutoscalingPolicy, String deploymentPolicy,
-        ConfigurationContext configurationContext, String userName, String tenantDomain) throws ADCException {
+        ConfigurationContext configurationContext, String userName, String tenantDomain, Property[] props) throws ADCException {
         
         try {
+            if(log.isDebugEnabled()) {
+                log.debug("Subscribing to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
+            }
             CartridgeSubscription cartridgeSubscription = 
-                    cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType, lbAlias.trim(), defaultAutoscalingPolicy, 
+                    cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType, lbAlias.trim(), defaultAutoscalingPolicy, 
                                                                      deploymentPolicy ,tenantDomain, 
                                                                      ApplicationManagementUtil.getTenantId(configurationContext),
-                                                                     userName, "git", null, false, null, null);
+                                                                     userName, "git", null, false, null, null, props);
             
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+            
+            if(log.isDebugEnabled()) {
+                log.debug("Successfully subscribed to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
+            }
         } catch (Exception e) {
             String msg = "Error while subscribing to load balancer cartridge [type] "+cartridgeType;
             log.error(msg, e);

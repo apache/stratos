@@ -65,7 +65,7 @@ public class CloudControllerServiceClient {
             synchronized (CloudControllerServiceClient.class) {
                 if (serviceClient == null) {
                     serviceClient = new CloudControllerServiceClient(
-                            System.getProperty(CartridgeConstants.AUTOSCALER_SERVICE_URL));
+                            System.getProperty(CartridgeConstants.CLOUD_CONTROLLER_SERVICE_URL));
                 }
             }
         }

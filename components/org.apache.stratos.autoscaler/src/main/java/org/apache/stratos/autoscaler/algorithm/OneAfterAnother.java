@@ -47,14 +47,14 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
     public Partition getNextScaleUpPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
 
     	int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-    	List<?> partitionContexts = Arrays.asList(networkPartitionContext.getPartitionCtxts());
-    	int noOfPartitions = partitionContexts.size();
+    	List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
+    	int noOfPartitions = partitions.size();
     	
     	for(int i=currentPartitionIndex; i< noOfPartitions; i++)
     	{
-            if (partitionContexts.get(currentPartitionIndex) instanceof Partition) {
+            if (partitions.get(currentPartitionIndex) instanceof Partition) {
                 currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-                Partition currentPartition = (Partition) partitionContexts.get(currentPartitionIndex);
+                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
                 if (networkPartitionContext.partitionCountExists(currentPartitionId)) {
@@ -90,13 +90,13 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
     public Partition getNextScaleDownPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
 
     	int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-    	List<?> partitionContexts = Arrays.asList(networkPartitionContext.getPartitionCtxts());
+    	List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
     	
     	for(int i = currentPartitionIndex; i >= 0; i--)
     	{
-            if (partitionContexts.get(currentPartitionIndex) instanceof Partition) {
+            if (partitions.get(currentPartitionIndex) instanceof Partition) {
                 currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-                Partition currentPartition = (Partition) partitionContexts.get(currentPartitionIndex);
+                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
                 // has more than minimum instances.

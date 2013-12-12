@@ -153,19 +153,19 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
                     email = commandLine.getOptionValue(CliConstants.EMAIL_OPTION);
 
                 }
-                if (commandLine.hasOption(CliConstants.ACTIVE_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Tenat active option is passed");
-                    }
-                    active = commandLine.getOptionValue(CliConstants.ACTIVE_OPTION);
-                }
+                //if (commandLine.hasOption(CliConstants.ACTIVE_OPTION)) {
+                //    if (logger.isTraceEnabled()) {
+                //        logger.trace("Tenat active option is passed");
+                //    }
+                //    active = commandLine.getOptionValue(CliConstants.ACTIVE_OPTION);
+                //}
 
-                if (admin == null || firstName == null || lastaName == null || password == null || domain == null || email == null || active == null) {
-                    System.out.println("usage: " + getName() + " [-u <user name>] [-f <first name>] [-l <last name>] [-p <password>] [-d <domain name>] [-e <email>] [-a <active/deactivate>]");
+                if (admin == null || firstName == null || lastaName == null || password == null || domain == null || email == null) {
+                    System.out.println("usage: " + getName() + " [-u <user name>] [-f <first name>] [-l <last name>] [-p <password>] [-d <domain name>] [-e <email>]");
                     return CliConstants.BAD_ARGS_CODE;
                 }
 
-                RestCommandLineService.getInstance().addTenant(admin, firstName, lastaName, password, domain, email, active);
+                RestCommandLineService.getInstance().addTenant(admin, firstName, lastaName, password, domain, email);
                 return CliConstants.SUCCESSFUL_CODE;
 
             } catch (ParseException e) {

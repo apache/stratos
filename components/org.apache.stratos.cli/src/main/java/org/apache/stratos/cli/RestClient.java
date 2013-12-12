@@ -21,6 +21,8 @@ package org.apache.stratos.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -56,7 +58,7 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public String doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
+    public HttpResponse doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
         try {
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -74,6 +76,7 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(postRequest);
 
+            /*
             int responseCode = response.getStatusLine().getStatusCode();
 
             if (responseCode == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
@@ -93,13 +96,18 @@ public class RestClient implements GenericRestClient{
             while ((output = br.readLine()) != null) {
                 result += output;
             }
+            */
 
             httpClient.getConnectionManager().shutdown();
-            return result;
+            //return result;
+            return response;
 
         } catch (ClientProtocolException e) {
             throw new ClientProtocolException();
-        } catch (IOException e) {
+        } catch (ConnectException e) {
+            throw new ConnectException();
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -118,7 +126,7 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public String doGet(String resourcePath, String userName, String passWord) {
+    public HttpResponse doGet(String resourcePath, String userName, String passWord) {
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(resourcePath);
@@ -131,6 +139,7 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
             HttpResponse response = httpClient.execute(getRequest);
 
+            /*
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
@@ -142,9 +151,10 @@ public class RestClient implements GenericRestClient{
             while ((output = br.readLine()) != null) {
                 result += output;
             }
+            */
 
             httpClient.getConnectionManager().shutdown();
-            return result;
+            return response;
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();

@@ -188,7 +188,6 @@ public class Cartridge implements Comparable<Cartridge> {
         this.mappedDomain = mappedDomain;
     }
 
-    @Override
     public int compareTo(Cartridge o) {
         int compare = 0;
         if (cartridgeAlias != null && o.cartridgeAlias != null) {

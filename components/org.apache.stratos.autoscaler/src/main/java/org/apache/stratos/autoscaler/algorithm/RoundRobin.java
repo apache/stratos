@@ -39,14 +39,14 @@ public class RoundRobin implements AutoscaleAlgorithm{
     
     public Partition getNextScaleUpPartition(NetworkPartitionContext networkPartitionContext, String clusterId){
 
-    	List<?> partitionContexts = Arrays.asList(networkPartitionContext.getPartitionCtxts());
-    	int noOfPartitions = partitionContexts.size();
+    	List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
+    	int noOfPartitions = partitions.size();
 
     	for(int i=0; i < noOfPartitions; i++)
     	{
     	    int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-    	    if (partitionContexts.get(currentPartitionIndex) instanceof Partition) {
-    		    Partition currentPartition = (Partition) partitionContexts.get(currentPartitionIndex);
+    	    if (partitions.get(currentPartitionIndex) instanceof Partition) {
+    		    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
     	        String currentPartitionId =  currentPartition.getId();
     	        
     	        // point to next partition
@@ -84,8 +84,8 @@ public class RoundRobin implements AutoscaleAlgorithm{
 	@Override
     public Partition getNextScaleDownPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
 
-        List<?> partitionContexts = Arrays.asList(networkPartitionContext.getPartitionCtxts());
-        int noOfPartitions = partitionContexts.size();
+        List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
+        int noOfPartitions = partitions.size();
 
         for (int i = 0; i < noOfPartitions; i++) {
             int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
@@ -101,9 +101,9 @@ public class RoundRobin implements AutoscaleAlgorithm{
             // Set next partition as current partition in Autoscaler Context
             networkPartitionContext.setCurrentPartitionIndex(currentPartitionIndex);
 
-            if (partitionContexts.get(currentPartitionIndex) instanceof Partition) {
+            if (partitions.get(currentPartitionIndex) instanceof Partition) {
 
-                Partition currentPartition = (Partition) partitionContexts.get(currentPartitionIndex);
+                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
                 if (!networkPartitionContext.partitionCountExists(currentPartitionId))

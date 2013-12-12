@@ -37,12 +37,13 @@ public class Cluster implements Serializable {
 
 	private static final long serialVersionUID = -361960242360176077L;
 	
-	private String serviceName;
-    private String clusterId;
+	private final String serviceName;
+    private final String clusterId;
+    private final String autoscalePolicyName;
+    private final String deploymentPolicyName;
+
     private List<String> hostNames;
     private String tenantRange;
-    private String autoscalePolicyName;
-    private String deploymentPolicyName = "economy-deployment";
     private boolean isLbCluster;
     // Key: Member.memberId
     @XmlJavaTypeAdapter(MapAdapter.class)
@@ -51,11 +52,12 @@ public class Cluster implements Serializable {
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
 
-    public Cluster(String serviceName, String clusterId, String autoscalePolicyName) {
+    public Cluster(String serviceName, String clusterId, String deploymentPolicyName, String autoscalePolicyName) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.hostNames = new ArrayList<String>();
+        this.deploymentPolicyName = deploymentPolicyName;
         this.autoscalePolicyName = autoscalePolicyName;
+        this.hostNames = new ArrayList<String>();
         this.memberMap = new HashMap<String, Member>();
     }
 
@@ -116,16 +118,8 @@ public class Cluster implements Serializable {
         return autoscalePolicyName;
     }
 
-    public void setAutoscalePolicyName(String autoscalePolicyName) {
-        this.autoscalePolicyName = autoscalePolicyName;
-    }
-
 	public String getDeploymentPolicyName() {
 		return deploymentPolicyName;
-	}
-
-	public void setDeploymentPolicyName(String deploymentPolicy) {
-		this.deploymentPolicyName = deploymentPolicy;
 	}
 
     public String getLoadBalanceAlgorithmName() {

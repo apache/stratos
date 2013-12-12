@@ -24,11 +24,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class AutoscalePolicy {
 
-    public String id;
+    private String id;
 
-    public String displayName;
+    private String displayName;
 
-    public String description;
+    private String description;
 
-    public LoadThresholds loadThresholds;
+    private LoadThresholds loadThresholds;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LoadThresholds getLoadThresholds() {
+        return loadThresholds;
+    }
+
+    public void setLoadThresholds(LoadThresholds loadThresholds) {
+        this.loadThresholds = loadThresholds;
+    }
 }

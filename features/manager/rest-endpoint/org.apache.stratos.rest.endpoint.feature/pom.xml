@@ -216,6 +216,11 @@
             <artifactId>carbon-cxf</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -287,6 +292,9 @@
                                     <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
+			    <bundles>
+				<bundleDef>org.apache.stratos:org.apache.stratos.autoscaler.service.stub:${project.version}</bundleDef>
+			    </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core:${wso2carbon.version}</importFeatureDef>
                             </importFeatures>

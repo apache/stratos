@@ -141,15 +141,30 @@ public class LbClusterMonitor implements Runnable{
     }
     
     private void monitor() {
-//        if(clusterCtxt != null ) {
-            //TODO make this concurrent
+        // TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
 
-                minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-                log.info("partition " + networkPartitionContext.getId());
-                minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession
-                        , minCheckFactHandle, networkPartitionContext);
+            // minimum check per partition
+            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
+                                                                            .values()) {
 
+                if (partitionContext != null) {
+                    minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Running minimum check for partition %s ",
+                                                partitionContext.getPartitionId()));
+                    }
+
+                    minCheckFactHandle =
+                                         AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession,
+                                                                                  minCheckFactHandle,
+                                                                                  partitionContext);
+                    // start only in the first partition context
+                    break;
+                }
+
+            }
 
         }
     }

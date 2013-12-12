@@ -50,44 +50,54 @@ public class CliConstants {
 	/**
 	 * Subscribe to a cartridge.
 	 */
-	public static final String SUBSCRIBE_ACTION = "subscribe";
+	public static final String SUBSCRIBE_ACTION = "subscribe-cartridge";
 
-	public static final String UNSUBSCRIBE_ACTION = "unsubscribe";
+	public static final String UNSUBSCRIBE_ACTION = "unsubscribe-cartridge";
 
 	/**
 	 * List the subscribed cartridges
 	 */
-	public static final String LIST_ACTION = "list";
+	public static final String LIST_ACTION = "list-subscribe-cartridges";
 
 	/**
 	 * List the available cartridges
 	 */
-	public static final String CARTRIDGES_ACTION = "cartridges";
+	public static final String CARTRIDGES_ACTION = "list-available-cartridges";
+
+    /**
+     * List the available autoscaling policies
+     */
+    public static final String LIST_AUTOSCALE_POLICY = "list-autoscale-policies";
 
     /**
      * Add tenant
      */
-    public static final String ADD_TENANT = "add-tenant";
+    public static final String ADD_TENANT = "create-tenant";
 
     /**
      * Cartridge deployment
      */
-    public static final String CARTRIDGE_DEPLOYMENT = "cartridge-deployment";
+    public static final String CARTRIDGE_DEPLOYMENT = "deploy-cartridge";
 
     /**
      * Partition deployment
      */
-    public static final String PARTITION_DEPLOYMENT = "partition-deployment";
+    public static final String PARTITION_DEPLOYMENT = "deploy-partition";
+
+    /**
+     * List partitions
+     */
+    public static final String LIST_PARTITION = "list-available-partitions";
 
     /**
      * Autoscaling policy deployment
      */
-    public static final String AUTOSCALING_POLICY_DEPLOYMENT = "autoscaling-policy-deployment";
+    public static final String AUTOSCALING_POLICY_DEPLOYMENT = "deploy-autoscaling-policy";
 
     /**
      * Deployment policy deployment
      */
-    public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deployment-policy-deployment";
+    public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deploy-deployment-policy";
 
 	/**
 	 * Give information of a cartridge.
@@ -135,6 +145,12 @@ public class CliConstants {
 	
 	public static final String POLICY_OPTION = "o";
 	public static final String POLICY_LONG_OPTION = "policy";
+
+    public static final String AUTOSCALING_POLICY_OPTION = "as";
+    public static final String AUTOSCALING_POLICY_LONG_OPTION = "autoscaling-policy";
+
+    public static final String DEPLOYMENT_POLICY_OPTION = "dp";
+    public static final String DEPLOYMENT_POLICY_LONG_OPTION = "deployment-policy";
 	
 	public static final String CONNECT_OPTION = "c";
 	public static final String CONNECT_LONG_OPTION = "connect";
@@ -172,7 +188,8 @@ public class CliConstants {
     public static final String RESOURCE_PATH = "p";
     public static final String RESOURCE_PATH_LONG_OPTION = "resource-path";
 
-    public static final int RESPONSE_INTERNAL_SERVER_ERROR = 500;
-    public static final int RESPONSE_AUTHORIZATION_FAIL = 403;
-    public static final int RESPONSE_NO_CONTENT = 204;
+    public static final String RESPONSE_INTERNAL_SERVER_ERROR = "500";
+    public static final String RESPONSE_AUTHORIZATION_FAIL = "403";
+    public static final String RESPONSE_NO_CONTENT = "204";
+    public static final String RESPONSE_OK = "200";
 }
