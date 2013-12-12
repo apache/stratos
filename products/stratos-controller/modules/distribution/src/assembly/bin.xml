@@ -222,7 +222,8 @@
 
 	<!-- adc.mgt related files -->
 	<fileSet>
-           <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/</directory>
+           <!--directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/</directory-->
+	   <directory>src/main/conf/</directory>
            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
 	   <includes>
                <include>cartridge-config.properties</include>
