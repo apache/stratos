@@ -76,7 +76,7 @@ CREATE TABLE  `stratos_foundation`.`CARTRIDGE_SUBSCRIPTION` (
   `STATE` varchar(30) NOT NULL,
   `ALIAS` varchar(255) NOT NULL,
   `TENANT_DOMAIN` varchar(255) NOT NULL,
-  `BASE_DIR` varchar(255) NOT NULL,
+  `BASE_DIR` varchar(255) NULL,
   `REPO_ID` int(11) DEFAULT NULL,
   `DATA_CARTRIDGE_ID` int(11) DEFAULT NULL,
   `MAPPED_DOMAIN` varchar(255),
