@@ -42,12 +42,14 @@ mb_port=$2
 cep_ip=$3
 cep_port=$4
 lb_cluster_id=$5
+network_partition_id=$6
 
 echo "mb-ip: $mb_ip" | tee -a $LOG
 echo "mb-port: $mb_port" | tee -a $LOG
 echo "cep-ip: $cep_ip" | tee -a $LOG
 echo "cep-port: $cep_port" | tee -a $LOG
 echo "lb-cluster-id: $lb_cluster_id" | tee -a $LOG
+echo "lb-network-partition-id: $network_partition_id" | tee -a $LOG
 
 cp -f $script_home/templates/loadbalancer.conf.template $script_home/loadbalancer.conf.orig
 cat $script_home/loadbalancer.conf.orig | sed -e "s@MB_IP@$mb_ip@g" > $script_home/loadbalancer.conf
@@ -63,6 +65,9 @@ cat $script_home/loadbalancer.conf.orig | sed -e "s@CEP_PORT@$cep_port@g" > $scr
 
 cp -f $script_home/loadbalancer.conf $script_home/loadbalancer.conf.orig
 cat $script_home/loadbalancer.conf.orig | sed -e "s@LB_CLUSTER_ID@$lb_cluster_id@g" > $script_home/loadbalancer.conf
+
+cp -f $script_home/loadbalancer.conf $script_home/loadbalancer.conf.orig
+cat $script_home/loadbalancer.conf.orig | sed -e "s@NETWORK_PARTITION_ID@$network_partition_id@g" > $script_home/loadbalancer.conf
 
 rm $script_home/loadbalancer.conf.orig
 

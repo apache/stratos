@@ -28,7 +28,7 @@ class_path=${lib_path}andes-client-0.13.wso2v8.jar:${lib_path}ant-1.7.0.jar:${li
 
 current_path=`pwd`
 
-java -cp $class_path -Dmember.id=$1 -Dkey.file.path=$current_path/../security/client-truststore.jks -Dthrift.receiver.ip=$2 -Dthrift.receiver.port=$3 -Dopen.ports=$4 -Dcluster.id=$5 -Dpartition.id=$6 org.apache.stratos.cartridge.agent.health.publisher.Main $*
+java -cp $class_path -Dmember.id=$1 -Dkey.file.path=$current_path/../security/client-truststore.jks -Dthrift.receiver.ip=$2 -Dthrift.receiver.port=$3 -Dopen.ports=$4 -Dcluster.id=$5 -Dnetwork.partition.id=$6 org.apache.stratos.cartridge.agent.health.publisher.Main $*
 
 echo "Health publisher completed"
 

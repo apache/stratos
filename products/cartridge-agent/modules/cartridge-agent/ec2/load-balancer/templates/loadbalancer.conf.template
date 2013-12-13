@@ -73,7 +73,7 @@ loadbalancer {
 
     # Network partition id
     # Provide the network partition id if cep-stats-publisher is set to true.
-    network-partition-id: network-partition-1;
+    network-partition-id: NETWORK_PARTITION_ID;
 
     # Multi-tenancy
     # If this property is set to true, all incoming request URLs will be scanned using the given tenant-identifier-regex

@@ -61,7 +61,7 @@ source ${instance_path}/launch.params
 # Starting load balancer
 #---------------------------
 pushd $instance_path/load-balancer/
-sh start-load-balancer.sh $MB_IP $MB_PORT $CEP_IP $CEP_PORT $LB_CLUSTER_ID &
+sh start-load-balancer.sh $MB_IP $MB_PORT $CEP_IP $CEP_PORT $LB_CLUSTER_ID $NETWORK_PARTITION_ID &
 popd
 
 #---------------------------
@@ -84,6 +84,6 @@ popd
 
 pushd $health_publisher_path/bin
 echo "Executing: health-publisher.sh"
-sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID
+sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID $NETWORK_PARTITION_ID
 echo "Health stat published" | tee -a $LOG
 popd

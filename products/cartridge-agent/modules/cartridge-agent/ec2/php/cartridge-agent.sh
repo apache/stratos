@@ -80,7 +80,7 @@ popd
 
 pushd $health_publisher_path/bin
 echo "Executing: health-publisher.sh"
-sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID
+sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID $NETWORK_PARTITION_ID
 echo "Health stat published" | tee -a $LOG
 popd
 

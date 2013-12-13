@@ -64,7 +64,7 @@ public class HealthPublisher implements Observer {
                     " 'metaData':[]," +
                     " 'payloadData':[" +
                     " {'name':'cluster_id','type':'STRING'}," +
-                    " {'name':'partition_id','type':'STRING'}," +
+                    " {'name':'network_partition_id','type':'STRING'}," +
                     " {'name':'member_id','type':'STRING'}," +
                     " {'name':'health_description','type':'STRING'}," +
                     " {'name':'value','type':'DOUBLE'}" +
@@ -96,12 +96,21 @@ public class HealthPublisher implements Observer {
     private void publishEvents(Map<String, Double> stats) {
 
         String memberID = System.getProperty("member.id");
+        if(memberID == null) {
+            throw new RuntimeException("member.id system property was not found");
+        }
         String clusterID = System.getProperty("cluster.id");
-        String partitionId = System.getProperty("partition.id");
+        if(clusterID == null) {
+            throw new RuntimeException("cluster.id system property was not found");
+        }
+        String networkPartitionId = System.getProperty("network.partition.id");
+        if(networkPartitionId == null) {
+            throw new RuntimeException("network.partition.id system property was not found");
+        }
 
         for (Map.Entry<String, Double> entry : stats.entrySet()) {
 
-            Object[] payload = new Object[]{clusterID,partitionId,memberID,entry.getKey(), entry.getValue()};
+            Object[] payload = new Object[]{clusterID,networkPartitionId,memberID,entry.getKey(), entry.getValue()};
             Event event = eventObject(null, null, payload, new HashMap<String, String>());
             try {
                 asyncDataPublisher.publish(DATA_STREAM_NAME, VERSION, event);
