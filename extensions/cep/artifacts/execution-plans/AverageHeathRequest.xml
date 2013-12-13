@@ -9,9 +9,9 @@
   <importedStreams>
     <stream as="healthStats1" name="cartridge_agent_health_stats" version="1.0.0"/>
   </importedStreams>
-  <queryExpressions><![CDATA[from healthStats1 [health_description == 'port_not_open'] select cluster_id,partition_id,member_id insert into fault_message;
-  from healthStats1 [health_description == 'load_average'] #window.timeBatch(1 min) select cluster_id,partition_id,avg(value) as average_load_average group by cluster_id,partition_id insert into average_load_average_stats;
-  from healthStats1 [health_description == 'memory_consumption'] #window.timeBatch(1 min) select cluster_id,partition_id,avg(value) as average_memory_consumption group by cluster_id,partition_id insert into average_memory_consumption_stats;]]></queryExpressions>
+  <queryExpressions><![CDATA[from healthStats1 [health_description == 'port_not_open'] select cluster_id,network_partition_id,member_id insert into fault_message;
+  from healthStats1 [health_description == 'load_average'] #window.timeBatch(1 min) select cluster_id,network_partition_id,avg(value) as average_load_average group by cluster_id,network_partition_id insert into average_load_average_stats;
+  from healthStats1 [health_description == 'memory_consumption'] #window.timeBatch(1 min) select cluster_id,network_partition_id,avg(value) as average_memory_consumption group by cluster_id,network_partition_id insert into average_memory_consumption_stats;]]></queryExpressions>
   <exportedStreams>
     <stream name="average_load_average_stats" passthroughFlow="disable"
       valueOf="average_load_average_stats" version="1.0.0"/>
