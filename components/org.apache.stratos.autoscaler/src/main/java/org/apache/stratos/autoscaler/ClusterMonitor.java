@@ -173,6 +173,7 @@ public class ClusterMonitor implements Runnable{
 
                 scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
                         , scaleCheckFactHandle, networkPartitionContext);
+                networkPartitionContext.setRifReset(false);
             } else if(log.isDebugEnabled()){
                     log.debug(String.format("Scale will not run since the LB statistics have not received before this " +
                             "cycle for network partition %s", networkPartitionContext.getId()) );

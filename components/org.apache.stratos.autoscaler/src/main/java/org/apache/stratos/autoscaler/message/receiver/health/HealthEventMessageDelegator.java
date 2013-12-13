@@ -201,7 +201,7 @@ public class HealthEventMessageDelegator implements Runnable {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
         if(member != null) {
-            String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(member.getPartitionId()).getId();
+            String networkPartitionId = findNetworkPartitionId(memberId);
             LoadAverage loadAverage = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
                     .getNetworkPartitionCtxt(networkPartitionId)
                     .getPartitionCtxt(member.getPartitionId())
@@ -228,7 +228,7 @@ public class HealthEventMessageDelegator implements Runnable {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
         if(member != null) {
-            String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(member.getPartitionId()).getId();
+            String networkPartitionId = findNetworkPartitionId(memberId);
             MemoryConsumption memoryConsumption = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
                     .getNetworkPartitionCtxt(networkPartitionId)
                     .getPartitionCtxt(member.getPartitionId())
@@ -249,6 +249,38 @@ public class HealthEventMessageDelegator implements Runnable {
             }
             return null;
         }
+    }
+    private String findClusterId(String memberId) {
+        for(Service service: TopologyManager.getTopology().getServices()){
+            for(Cluster cluster: service.getClusters()){
+                if(cluster.memberExists(memberId)){
+                    return cluster.getClusterId();
+                }
+            }
+        }
+        return null;
+    }
+
+    private NetworkPartitionContext findNetworkPartition(String memberId) {
+        for(Service service: TopologyManager.getTopology().getServices()){
+            for(Cluster cluster: service.getClusters()){
+                return AutoscalerContext.getInstance().getMonitor(cluster.getClusterId())
+                        .getNetworkPartitionCtxt(cluster.getMember(memberId).getNetworkPartitionId());
+            }
+        }
+        return null;
+    }
+
+
+    private String findNetworkPartitionId(String memberId) {
+        for(Service service: TopologyManager.getTopology().getServices()){
+            for(Cluster cluster: service.getClusters()){
+                if(cluster.memberExists(memberId)){
+                    return cluster.getMember(memberId).getNetworkPartitionId();
+                }
+            }
+        }
+        return null;
     }
 
     private Member findMember(String memberId) {
@@ -284,7 +316,7 @@ public class HealthEventMessageDelegator implements Runnable {
             // start a new member in the same Partition
             String partitionId = monitor.getPartitonOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
-            NetworkPartitionContext nwPartitionCtxt = PartitionManager.getInstance().getNetworkPartitionOfPartition(partitionId);
+            NetworkPartitionContext nwPartitionCtxt = findNetworkPartition(memberId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
             
             String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);

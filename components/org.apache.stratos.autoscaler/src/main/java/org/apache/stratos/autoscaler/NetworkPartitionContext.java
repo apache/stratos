@@ -265,6 +265,9 @@ public class NetworkPartitionContext {
 
     public void setRifReset(boolean rifReset) {
         this.rifReset = rifReset;
+        this.averageRifReset = rifReset;
+        this.gradientRifReset = rifReset;
+        this.secondDerivativeRifRest = rifReset;
     }
 
     public String getId() {
