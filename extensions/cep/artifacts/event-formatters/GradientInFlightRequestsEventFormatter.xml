@@ -3,7 +3,7 @@
   trace="disable" xmlns="http://wso2.org/carbon/eventformatter">
   <from streamName="gradient_in_flight_requests" version="1.0.0"/>
   <mapping customMapping="enable" type="json">
-    <inline>{"gradient_in_flight_requests":{"cluster_id":"{{cluster_id}}","partition_id":"{{partition_id}}","value":"{{count}}"}}</inline>
+    <inline>{"gradient_in_flight_requests":{"cluster_id":"{{cluster_id}}","network_partition_id":"{{network_partition_id}}","value":"{{count}}"}}</inline>
   </mapping>
   <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
     <property name="transport.jms.Destination">summarized-health-stats</property>

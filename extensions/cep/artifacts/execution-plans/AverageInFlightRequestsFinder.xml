@@ -11,7 +11,7 @@
   </importedStreams>
   <queryExpressions><![CDATA[ 
 from lbStats1#window.timeBatch(1 min)
-select cluster_id,partition_id, avg(in_flight_requests) as count group by cluster_id,partition_id  insert into average_in_flight_requests;]]></queryExpressions>
+select cluster_id,network_partition_id, avg(in_flight_requests) as count group by cluster_id,network_partition_id  insert into average_in_flight_requests;]]></queryExpressions>
   <exportedStreams>
     <stream name="average_in_flight_requests"
       valueOf="average_in_flight_requests" version="1.0.0"/>

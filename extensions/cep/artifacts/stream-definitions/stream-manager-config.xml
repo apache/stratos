@@ -9,7 +9,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="in_flight_request_count" type="int"/>
          </payloadData>
      </streamDefinition> 
@@ -23,7 +23,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -37,7 +37,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
      </streamDefinition> 
@@ -51,7 +51,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
     </streamDefinition>
@@ -67,7 +67,7 @@
          </correlationData>
          <payloadData>
 	         <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="member_id" type="String" />
              <property name="health_description" type="String"/>
              <property name="value" type="double"/>
@@ -83,7 +83,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="average_load_average" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -97,7 +97,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="average_memory_consumption" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -111,7 +111,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="gradient_load_average" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -125,7 +125,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="gradient_memory_consumption" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -139,7 +139,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="second_derivative_memory_consumption" type="double"/>
          </payloadData>
      </streamDefinition>
@@ -153,7 +153,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="second_derivative_load_average" type="double"/>
          </payloadData>
      </streamDefinition>
