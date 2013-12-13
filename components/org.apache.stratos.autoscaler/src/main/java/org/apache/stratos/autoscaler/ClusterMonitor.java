@@ -162,17 +162,22 @@ public class ClusterMonitor implements Runnable{
 
             }
 
-            scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-            scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
-            scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
+            if(networkPartitionContext.isRifReset()){
+                scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
+                scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
+                scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
 
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+                }
+
+                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
+                        , scaleCheckFactHandle, networkPartitionContext);
+                networkPartitionContext.setRifReset(false);
+            } else if(log.isDebugEnabled()){
+                    log.debug(String.format("Scale will not run since the LB statistics have not received before this " +
+                            "cycle for network partition %s", networkPartitionContext.getId()) );
             }
-
-            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
-                    , scaleCheckFactHandle, networkPartitionContext);
-
         }
     }
 
