@@ -52,8 +52,8 @@ public class PartitionContext {
     // properties
     private Properties properties;
     
-    // 5 mints as the default
-    private long expiryTime = 300000;
+    // 10 mints as the default
+    private long expiryTime = 600000;
     // pending members
     private List<MemberContext> pendingMembers;
 

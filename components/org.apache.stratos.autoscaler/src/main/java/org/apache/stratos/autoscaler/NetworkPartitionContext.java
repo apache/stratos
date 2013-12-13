@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.autoscaler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import java.util.Map;
  */
 public class NetworkPartitionContext {
 
+    private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private String id;
 
     private String defaultLbClusterId;
@@ -38,6 +41,9 @@ public class NetworkPartitionContext {
     private Map<String, String> clusterIdToLBClusterIdMap;
 
     private String partitionAlgorithm;
+
+    //boolean values to keep whether the requests in flight parameters are reset or not
+    private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
     
     //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
     private int minInstanceCount = 1, maxInstanceCount = 1;
@@ -211,6 +217,14 @@ public class NetworkPartitionContext {
 
     public void setAverageRequestsInFlight(float averageRequestsInFlight) {
         this.averageRequestsInFlight = averageRequestsInFlight;
+        averageRifReset = true;
+        if(secondDerivativeRifRest && gradientRifReset){
+            rifReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                        , this.id));
+            }
+        }
     }
 
     public float getRequestsInFlightSecondDerivative() {
@@ -219,6 +233,14 @@ public class NetworkPartitionContext {
 
     public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
         this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
+        secondDerivativeRifRest = true;
+        if(averageRifReset && gradientRifReset){
+            rifReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                        , this.id));
+            }
+        }
     }
 
     public float getRequestsInFlightGradient() {
@@ -227,8 +249,23 @@ public class NetworkPartitionContext {
 
     public void setRequestsInFlightGradient(float requestsInFlightGradient) {
         this.requestsInFlightGradient = requestsInFlightGradient;
+        gradientRifReset = true;
+        if(secondDerivativeRifRest && averageRifReset){
+            rifReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                        , this.id));
+            }
+        }
     }
 
+    public boolean isRifReset() {
+        return rifReset;
+    }
+
+    public void setRifReset(boolean rifReset) {
+        this.rifReset = rifReset;
+    }
 
     public String getId() {
         return id;
@@ -306,4 +343,5 @@ public class NetworkPartitionContext {
     public void setPartitionToMemberCountMap(Map<String, Integer> partitionToMemberCountMap) {
         this.partitionToMemberCountMap = partitionToMemberCountMap;
     }
+
 }
