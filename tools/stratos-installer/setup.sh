@@ -130,7 +130,23 @@ export $enable_internal_git
 export $host_user
 export hostname=`hostname -f`
 
+# Check validity of IP
+function valid_ip()
+{
+    local  ip=$1
+    local  stat=1
 
+    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.'
+        ip=($ip)
+        IFS=$OIFS
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+        stat=$?
+    fi
+    return $stat
+}
 
 function helpsetup {
     echo ""
@@ -149,8 +165,12 @@ function general_conf_validate {
         echo "Please specify the stratos domain"
         exit 1
     fi
-    if [[ (-z $mb_port_offset || -z $mb_ip ) ]]; then
-        echo "Please specify the ip and the port offset of MB"
+    if [[ (-z $mb_port_offset || -z $mb_ip || -z $mb_hostname) ]]; then
+        echo "Please specify the ip, the port offset and the hostname of MB"
+        exit 1
+    fi
+    if !(valid_ip $mb_ip); then 
+        echo "Please provide valid ip for MB's ip"
         exit 1
     fi
 }
@@ -181,6 +201,9 @@ function lb_conf_validate {
     if [[ -z $lb_cep_ip ]]; then
 	echo "Please specify the ip of CEP in conf/setup.conf"
 	exit 1
+    elif !(valid_ip $lb_cep_ip); then 
+        echo "Please provide valid ip for CEP's ip"
+        exit 1
     fi
 }
 
@@ -230,7 +253,17 @@ function sm_conf_validate {
         echo "Please specify the port offset of CC"
         exit 1
     fi
-
+    if [[ -z $sm_ip || -z $as_ip || -z $cc_ip ]]; then
+	echo "Please specify the ips of SM and/or AS and/or CC"
+	exit 1
+    elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip); then 
+        echo "Please provide valid ips for SM and/or AS and/or CC"
+        exit 1
+    fi
+    if [[-z $cc_hostname || -z $as_hostname ]]; then
+	echo "Please specify valid hostname for AS and/or CC"
+	exit 1
+    elif
 }
 
 
@@ -483,7 +516,7 @@ function sm_setup {
     echo "Setup SM" >> $LOG
     echo "Configuring Stratos Manager"
 
-    cp -f ./config/sc/repository/conf/carbon.xml $sm_path/repository/conf/
+    cp -f ./config/sm/repository/conf/carbon.xml $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/jndi.properties $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/cartridge-config.properties $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/datasources/master-datasources.xml $sm_path/repository/conf/datasources/
@@ -566,6 +599,28 @@ function sm_setup {
 if [[ $sm = "true" ]]; then
     sm_setup
 fi
+
+
+# ------------------------------------------------
+# Mapping domain/host names 
+# ------------------------------------------------
+
+cp -f /etc/hosts hosts.tmp
+
+
+echo "$mb_ip $mb_hostname	# message broker hostname"	>> hosts.tmp
+
+if [[ $lb = "true" ]]; then
+    echo "$lb_cep_ip $cep_hostname	# load balancer hostname"	>> hosts.tmp
+fi
+
+if [[ $sm = "true" ]]; then
+    echo "$sm_ip $sm_hostname	# stratos domain"	>> hosts.tmp
+    echo "$cc_ip $cc_hostname	# cloud controller hostname"	>> hosts.tmp
+    echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
+fi
+
+mv -f ./hosts.tmp /etc/hosts
 
 
 # ------------------------------------------------
