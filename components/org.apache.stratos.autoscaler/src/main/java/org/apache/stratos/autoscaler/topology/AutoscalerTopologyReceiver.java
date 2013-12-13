@@ -21,14 +21,9 @@ package org.apache.stratos.autoscaler.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterMonitor;
-import org.apache.stratos.autoscaler.LbClusterMonitor;
-import org.apache.stratos.autoscaler.MemberStatsContext;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -160,7 +155,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             	try {
             		TopologyManager.acquireReadLock();
 					MemberTerminatedEvent e = (MemberTerminatedEvent) event;
-                    String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(e.getPartitionId()).getId() ;
+                    String networkPartitionId = e.getNetworkPartitionId();
 					AutoscalerContext.getInstance().getMonitor(e.getClusterId())
                             .getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(e.getPartitionId())
                             .removeMemberStatsContext(e.getMemberId());
@@ -188,9 +183,8 @@ public class AutoscalerTopologyReceiver implements Runnable {
 					MemberActivatedEvent e = (MemberActivatedEvent)event;
                     String memberId = e.getMemberId();
                     String partitionId = e.getPartitionId();
+                    String networkPartitionId = e.getNetworkPartitionId();
 
-                    String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(e.getPartitionId()).getId() ;
-                    
                     PartitionContext partitionContext;
 					String clusterId = e.getClusterId();
                     ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
