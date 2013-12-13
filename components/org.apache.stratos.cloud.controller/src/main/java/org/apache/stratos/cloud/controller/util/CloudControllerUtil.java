@@ -61,7 +61,7 @@ public class CloudControllerUtil {
         cartridge.setDescription(config.getDescription());
         cartridge.setHostName(config.getHostName());
         String[] deploymentDirs = config.getDeploymentDirs();
-        if(deploymentDirs != null) {
+        if((deploymentDirs != null) && (deploymentDirs.length > 0)) {
             cartridge.setDeploymentDirs(Arrays.asList(deploymentDirs));
         }
         cartridge.setProvider(config.getProvider());
