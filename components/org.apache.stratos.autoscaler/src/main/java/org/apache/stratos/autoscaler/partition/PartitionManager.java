@@ -66,6 +66,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 			+ AutoScalerConstants.PARTITION_RESOURCE + "/";
 	
 	private PartitionManager(){
+        networkPartitionContexts = new HashMap<String, NetworkPartitionContext>();
 //	    networkPartitions = new ArrayList<NetworkPartitionContext>();
 //	    partitionIdToNetworkPartition = new HashMap<String, NetworkPartitionContext>();
 	}

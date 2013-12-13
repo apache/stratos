@@ -135,7 +135,7 @@ public class AutoscalerServerComponent {
 				log.info("Autoscaler Server Component activated");
 			}
 		} catch (Throwable e) {
-			log.error("Error in Activating the AS component " + e.getStackTrace());
+			log.error("Error in activating the autoscaler component ", e);
 		}
     }
     
