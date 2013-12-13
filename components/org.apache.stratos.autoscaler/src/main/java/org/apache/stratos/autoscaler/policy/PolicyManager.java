@@ -119,12 +119,6 @@ public class PolicyManager {
         if (!destPartition.isProviderSpecified()) {
             destPartition.setProvider(srcPartition.getProvider());
         }
-        if (!destPartition.isPartitionMaxSpecified()) {
-            destPartition.setPartitionMax(srcPartition.getPartitionMax());
-        }
-        if (!destPartition.isPartitionMinSpecified()) {
-            destPartition.setPartitionMin(srcPartition.getPartitionMin());
-        }
         if (!destPartition.isPropertiesSpecified()) {
             destPartition.setProperties(srcPartition.getProperties());
         }
