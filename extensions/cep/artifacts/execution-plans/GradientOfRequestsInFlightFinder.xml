@@ -10,8 +10,8 @@
     <stream as="lbStats2" name="in_flight_requests" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[ 
-from lbStats2#window.stratos:gradient(1 min, in_flight_requests)
-select cluster_id,network_partition_id,in_flight_requests as count group by cluster_id,network_partition_id insert into gradient_in_flight_requests;]]></queryExpressions>
+from lbStats2#window.stratos:gradient(1 min, in_flight_request_count)
+select cluster_id,network_partition_id,in_flight_request_count as count group by cluster_id,network_partition_id insert into gradient_in_flight_requests;]]></queryExpressions>
   <exportedStreams>
     <stream name="gradient_in_flight_requests" valueOf="gradient_in_flight_requests" version="1.0.0"/>
   </exportedStreams>
