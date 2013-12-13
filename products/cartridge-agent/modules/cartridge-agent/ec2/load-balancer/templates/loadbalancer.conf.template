@@ -71,6 +71,10 @@ loadbalancer {
     cep-ip: CEP_IP;
     cep-port: CEP_PORT;
 
+    # Network partition id
+    # Provide the network partition id if cep-stats-publisher is set to true.
+    network-partition-id: network-partition-1;
+
     # Multi-tenancy
     # If this property is set to true, all incoming request URLs will be scanned using the given tenant-identifier-regex
     # and matching tenant identifier value will be used to delegate the requests to the relevant cluster.

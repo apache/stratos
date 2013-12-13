@@ -41,11 +41,11 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
 
     private static LoadBalancerInFlightRequestCountCollector collector;
     // Map<ClusterId, Map<PartitionId, InFlightRequestCount>
-    private Map<String, Map<String, Integer>> inFlightRequestCountMap;
+    private Map<String, Integer> inFlightRequestCountMap;
     private Thread notifier;
 
     private LoadBalancerInFlightRequestCountCollector() {
-        inFlightRequestCountMap = new ConcurrentHashMap<String, Map<String, Integer>>();
+        inFlightRequestCountMap = new ConcurrentHashMap<String, Integer>();
         if (notifier == null || (notifier != null && !notifier.isAlive())) {
             notifier = new Thread(new ObserverNotifier());
             notifier.start();
@@ -65,63 +65,50 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
         return collector;
     }
 
-    public int getInFlightRequestCount(String clusterId, String partitionId) {
-        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
-            return -1;
-        }
-
-        Map<String, Integer> partitionMap = inFlightRequestCountMap.get(clusterId);
-        if (partitionMap == null) {
-            return 0;
-        }
-        if (partitionMap.containsKey(partitionId)) {
-            return partitionMap.get(partitionId);
+    public int getInFlightRequestCount(String clusterId) {
+        if (inFlightRequestCountMap.containsKey(clusterId)) {
+            return inFlightRequestCountMap.get(clusterId);
         }
         return 0;
     }
 
-    public void setInFlightRequestCount(String clusterId, String partitionId, int value) {
-        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
+    public void setInFlightRequestCount(String clusterId, int value) {
+        if (StringUtils.isBlank(clusterId)) {
             return;
         }
 
-        Map<String, Integer> partitionMap = inFlightRequestCountMap.get(clusterId);
-        if (partitionMap == null) {
-            partitionMap = new HashMap<String, Integer>();
-            inFlightRequestCountMap.put(clusterId, partitionMap);
-        }
-        partitionMap.put(partitionId, value);
+        inFlightRequestCountMap.put(clusterId, value);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("In-flight request count updated: [cluster] %s [partition] $s [value] %d", clusterId, partitionId, value));
+            log.debug(String.format("In-flight request count updated: [cluster] %s [value] %d", clusterId, value));
         }
         setChanged();
     }
 
-    public void incrementInFlightRequestCount(String clusterId, String partitionId) {
-        incrementInFlightRequestCount(clusterId, partitionId, 1);
+    public void incrementInFlightRequestCount(String clusterId) {
+        incrementInFlightRequestCount(clusterId, 1);
     }
 
-    public void incrementInFlightRequestCount(String clusterId, String partitionId, int value) {
-        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
+    public void incrementInFlightRequestCount(String clusterId, int value) {
+        if (StringUtils.isBlank(clusterId)) {
             return;
         }
 
-        int count = getInFlightRequestCount(clusterId, partitionId);
-        setInFlightRequestCount(clusterId, partitionId, (count + value));
+        int count = getInFlightRequestCount(clusterId);
+        setInFlightRequestCount(clusterId, (count + value));
     }
 
-    public void decrementInFlightRequestCount(String clusterId, String partitionId) {
-        decrementInFlightRequestCount(clusterId, partitionId, 1);
+    public void decrementInFlightRequestCount(String clusterId) {
+        decrementInFlightRequestCount(clusterId, 1);
     }
 
-    public void decrementInFlightRequestCount(String clusterId, String partitionId, int value) {
-        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(partitionId)) {
+    public void decrementInFlightRequestCount(String clusterId, int value) {
+        if (StringUtils.isBlank(clusterId)) {
             return;
         }
 
-        int count = getInFlightRequestCount(clusterId, partitionId);
+        int count = getInFlightRequestCount(clusterId);
         int newValue = (count - value) < 0 ? 0 : (count - value);
-        setInFlightRequestCount(clusterId, partitionId, newValue);
+        setInFlightRequestCount(clusterId, newValue);
     }
 
 
@@ -142,7 +129,7 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
                     Thread.sleep(15000);
                 } catch (InterruptedException ignore) {
                 }
-                LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Map<String, Integer>>(inFlightRequestCountMap));
+                LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Integer>(inFlightRequestCountMap));
             }
         }
     }

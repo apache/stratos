@@ -36,6 +36,7 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Djavax.net.ssl.trustStorePassword=wso2carbon
             -Dthrift.receiver.ip=localhost
             -Dthrift.receiver.port=7615
+            -Dnetwork.partition.id=
             -Dstratos.messaging.topology.service.filter=
             -Dload.balancer.cep.stats.publisher.enabled=true"
 

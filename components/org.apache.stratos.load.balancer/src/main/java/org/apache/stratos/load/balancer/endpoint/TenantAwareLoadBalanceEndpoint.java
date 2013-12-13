@@ -241,7 +241,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         axis2Member.setActive(member.isActive());
         // Set cluster id and partition id in message context
         synCtx.setProperty(Constants.CLUSTER_ID, member.getClusterId());
-        synCtx.setProperty(Constants.PARTITION_ID, member.getPartitionId());
         return axis2Member;
     }
 
@@ -527,11 +526,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             if(StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }
-            String partitionId = (String) messageContext.getProperty(Constants.PARTITION_ID);
-            if(StringUtils.isBlank(partitionId)) {
-                throw new RuntimeException("Partition id not found in message context");
-            }
-            LoadBalancerInFlightRequestCountCollector.getInstance().incrementInFlightRequestCount(clusterId, partitionId);
+            LoadBalancerInFlightRequestCountCollector.getInstance().incrementInFlightRequestCount(clusterId);
         }
         catch (Exception e) {
             if(log.isDebugEnabled()) {

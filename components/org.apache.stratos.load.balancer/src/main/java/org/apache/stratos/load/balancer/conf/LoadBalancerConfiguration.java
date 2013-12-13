@@ -64,6 +64,7 @@ public class LoadBalancerConfiguration {
     private TenantIdentifier tenantIdentifier;
     private String tenantIdentifierRegex;
     private String topologyMemberFilter;
+    private String networkPartitionId;
 
     /**
      * Load balancer configuration is singleton.
@@ -243,6 +244,14 @@ public class LoadBalancerConfiguration {
         return tenantIdentifierRegex;
     }
 
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
     private static class LoadBalancerConfigurationReader {
 
         private String property;
@@ -349,6 +358,10 @@ public class LoadBalancerConfiguration {
                 String cepPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_PORT);
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_CEP_PORT, cepPort, "loadbalancer");
                 configuration.setCepPort(Integer.parseInt(cepPort));
+
+                String networkPartitionId = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_NETWORK_PARTITION_ID);
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_NETWORK_PARTITION_ID, networkPartitionId, "loadbalancer");
+                configuration.setNetworkPartitionId(networkPartitionId);
             }
 
             if (configuration.isMultiTenancyEnabled()) {

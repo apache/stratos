@@ -56,6 +56,7 @@ public class Constants {
     public static final String CONF_PROPERTY_VALUE_TENANT_ID = "tenant-id";
     public static final String CONF_PROPERTY_VALUE_TENANT_DOMAIN = "tenant-domain";
     public static final String CONF_PROPERTY_TENANT_IDENTIFIER_REGEX = "tenant-identifier-regex";
+    public static final String CONF_PROPERTY_NETWORK_PARTITION_ID = "network-partition-id";
 
     public static final String CONF_DELIMITER_HOSTS = ",";
     public static final long DEFAULT_SESSION_TIMEOUT = 90000;

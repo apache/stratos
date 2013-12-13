@@ -45,7 +45,7 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
             List<Attribute> payloadData = new ArrayList<Attribute>();
             // Payload definition
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
-            payloadData.add(new Attribute("partition_id", AttributeType.STRING));
+            payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
             payloadData.add(new Attribute("in_flight_request_count", AttributeType.INT));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
@@ -62,14 +62,14 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
      * Publish in-flight request count of a cluster.
      *
      * @param clusterId
-     * @param partitionId
+     * @param networkPartitionId
      * @param inFlightRequestCount
      */
-    public void publish(String clusterId, String partitionId, int inFlightRequestCount) {
+    public void publish(String clusterId, String networkPartitionId, int inFlightRequestCount) {
         List<Object> payload = new ArrayList<Object>();
         // Payload values
         payload.add(clusterId);
-        payload.add(partitionId);
+        payload.add(networkPartitionId);
         payload.add(inFlightRequestCount);
         super.publish(payload.toArray());
     }

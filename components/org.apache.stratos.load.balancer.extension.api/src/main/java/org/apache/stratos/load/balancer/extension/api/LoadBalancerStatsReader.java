@@ -29,7 +29,6 @@ public interface LoadBalancerStatsReader {
     /**
      * Get in-flight request count of a given cluster.
      * @param clusterId
-     * @param partitionId
      */
-    int getInFlightRequestCount(String clusterId, String partitionId);
+    int getInFlightRequestCount(String clusterId);
 }

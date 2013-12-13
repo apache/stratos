@@ -45,7 +45,7 @@ public class HAProxyStatsReader implements LoadBalancerStatsReader {
     }
 
     @Override
-    public int getInFlightRequestCount(String clusterId, String partitionId) {
+    public int getInFlightRequestCount(String clusterId) {
         String frontendId, backendId, command, output;
         String[] array;
         int totalWeight, weight;
@@ -63,25 +63,23 @@ public class HAProxyStatsReader implements LoadBalancerStatsReader {
                         backendId = frontendId + "-members";
 
                         for (Member member : cluster.getMembers()) {
-                            if((member.getPartitionId() != null) && member.getPartitionId().equals(partitionId)) {
-                                // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
-                                command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
-                                try {
-                                    output = CommandUtil.executeCommand(command);
-                                    if ((output != null) && (output.length() > 0)) {
-                                        array = output.split(" ");
-                                        if ((array != null) && (array.length > 0)) {
-                                            weight = Integer.parseInt(array[0]);
-                                            if (log.isDebugEnabled()) {
-                                                log.debug(String.format("Member weight found: [cluster] %s [member] %s [weight] %d", member.getClusterId(), member.getMemberId(), weight));
-                                            }
-                                            totalWeight += weight;
+                            // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
+                            command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
+                            try {
+                                output = CommandUtil.executeCommand(command);
+                                if ((output != null) && (output.length() > 0)) {
+                                    array = output.split(" ");
+                                    if ((array != null) && (array.length > 0)) {
+                                        weight = Integer.parseInt(array[0]);
+                                        if (log.isDebugEnabled()) {
+                                            log.debug(String.format("Member weight found: [cluster] %s [member] %s [weight] %d", member.getClusterId(), member.getMemberId(), weight));
                                         }
+                                        totalWeight += weight;
                                     }
-                                } catch (IOException e) {
-                                    if (log.isErrorEnabled()) {
-                                        log.error(e);
-                                    }
+                                }
+                            } catch (IOException e) {
+                                if (log.isErrorEnabled()) {
+                                    log.error(e);
                                 }
                             }
                         }

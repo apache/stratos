@@ -19,6 +19,7 @@
 
 package org.apache.stratos.load.balancer.extension.api;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.statistics.WSO2CEPInFlightRequestPublisher;
@@ -37,6 +38,7 @@ public class LoadBalancerInFlightRequestCountNotifier implements Runnable {
     private LoadBalancerStatsReader statsReader;
     private final WSO2CEPInFlightRequestPublisher statsPublisher;
     private long statsPublisherInterval = 15000;
+    private String networkPartitionId;
     private boolean terminated;
 
     public LoadBalancerInFlightRequestCountNotifier(LoadBalancerStatsReader statsReader) {
@@ -46,6 +48,10 @@ public class LoadBalancerInFlightRequestCountNotifier implements Runnable {
         String interval = System.getProperty("stats.notifier.interval");
         if (interval != null) {
             statsPublisherInterval = Long.getLong(interval);
+        }
+        networkPartitionId = System.getProperty("network.partition.id");
+        if (StringUtils.isBlank(networkPartitionId)) {
+            throw new RuntimeException("network.partition.id system property was not found.");
         }
     }
 
@@ -61,24 +67,20 @@ public class LoadBalancerInFlightRequestCountNotifier implements Runnable {
                 if (statsPublisher.isEnabled()) {
                     try {
                         TopologyManager.acquireReadLock();
-                        Collection<String> partitionIds;
                         int requestCount;
                         for (Service service : TopologyManager.getTopology().getServices()) {
                             for (Cluster cluster : service.getClusters()) {
-                                partitionIds =  cluster.findPartitionIds();
-                                for(String partitionId : partitionIds) {
-                                    // Publish in-flight request count of each cluster partition
-                                    requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId(), partitionId);
-                                    statsPublisher.publish(cluster.getClusterId(), partitionId, requestCount);
-                                    if (log.isDebugEnabled()) {
-                                        log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [partition] %s [value] %d",
-                                                cluster.getClusterId(), partitionId, requestCount));
-                                    }
+                                // Publish in-flight request count of load balancer's network partition
+                                requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
+                                statsPublisher.publish(cluster.getClusterId(), networkPartitionId, requestCount);
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [network-partition] %s [value] %d",
+                                            cluster.getClusterId(), networkPartitionId, requestCount));
                                 }
                             }
+
                         }
-                    }
-                    finally {
+                    } finally {
                         TopologyManager.releaseReadLock();
                     }
                 } else if (log.isWarnEnabled()) {

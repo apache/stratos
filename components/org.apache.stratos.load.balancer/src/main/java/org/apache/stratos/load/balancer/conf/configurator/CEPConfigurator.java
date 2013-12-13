@@ -31,5 +31,6 @@ public class CEPConfigurator {
         System.setProperty("load.balancer.cep.stats.publisher.enabled", String.valueOf(configuration.isCepStatsPublisherEnabled()));
         System.setProperty("thrift.receiver.ip", configuration.getCepIp());
         System.setProperty("thrift.receiver.port", String.valueOf(configuration.getCepPort()));
+        System.setProperty("network.partition.id", configuration.getNetworkPartitionId());
     }
 }

@@ -81,6 +81,7 @@ public class LoadBalancerConfigurationTest {
             Assert.assertTrue(String.format("%s, cep stats publisher is not true", validationError), configuration.isCepStatsPublisherEnabled());
             Assert.assertEquals(String.format("%s, cep ip is not valid", validationError), "localhost", configuration.getCepIp());
             Assert.assertEquals(String.format("%s, cep port is not valid", validationError), 7615, configuration.getCepPort());
+            Assert.assertEquals(String.format("%s, network partition id is not valid", validationError), "network-partition-1", configuration.getNetworkPartitionId());
             Assert.assertTrue(String.format("%s, multi-tenancy is not true", validationError), configuration.isMultiTenancyEnabled());
             Assert.assertEquals(String.format("%s, tenant-identifier is not valid", validationError), TenantIdentifier.TenantDomain, configuration.getTenantIdentifier());
             Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/([^/]*)/", configuration.getTenantIdentifierRegex());

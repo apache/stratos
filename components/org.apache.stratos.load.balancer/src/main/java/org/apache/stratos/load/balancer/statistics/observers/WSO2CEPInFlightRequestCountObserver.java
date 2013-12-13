@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.load.balancer.statistics.observers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.statistics.WSO2CEPInFlightRequestPublisher;
@@ -29,28 +30,28 @@ import java.util.Observer;
 public class WSO2CEPInFlightRequestCountObserver implements Observer {
     private static final Log log = LogFactory.getLog(WSO2CEPInFlightRequestCountObserver.class);
     private WSO2CEPInFlightRequestPublisher publisher;
+    private String networkPartitionId;
 
     public WSO2CEPInFlightRequestCountObserver() {
         this.publisher = new WSO2CEPInFlightRequestPublisher();
+        networkPartitionId = System.getProperty("network.partition.id");
+        if (StringUtils.isBlank(networkPartitionId)) {
+            throw new RuntimeException("network.partition.id system property was not found.");
+        }
     }
 
     public void update(Observable observable, Object object) {
         try {
             if (publisher.isEnabled()) {
-                Map<String, Map<String, Integer>> inFlightRequestCountMap = (Map<String, Map<String, Integer>>) object;
+                // Map<ClusterId, Count>
+                Map<String, Integer> inFlightRequestCountMap = (Map<String, Integer>) object;
                 // Publish event per cluster id
-                Map<String, Integer> partitionMap = null;
                 for (String clusterId : inFlightRequestCountMap.keySet()) {
-                    partitionMap = inFlightRequestCountMap.get(clusterId);
-                    if (partitionMap != null) {
-                        for (String partitionId : partitionMap.keySet()) {
-                            // Publish event
-                            publisher.publish(clusterId, partitionId, partitionMap.get(partitionId));
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [partition] %s [value] %d",
-                                        clusterId, partitionId, partitionMap.get(partitionId)));
-                            }
-                        }
+                    // Publish event
+                    publisher.publish(clusterId, networkPartitionId, inFlightRequestCountMap.get(clusterId));
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [network-partition] %s [value] %d",
+                                clusterId, networkPartitionId, inFlightRequestCountMap.get(clusterId)));
                     }
                 }
             } else if (log.isWarnEnabled()) {
