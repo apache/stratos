@@ -76,13 +76,12 @@ public class HealthEventMessageDelegator implements Runnable {
 
                 if (Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(event.getEventName())) {
                     String clusterId = event.getProperties().get("cluster_id");
-                    String partitionId = event.getProperties().get("partition_id");
+                    String networkPartitionId = event.getProperties().get("network_partition_id");
                     String value = event.getProperties().get("value");
-                    String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(partitionId).getId();
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [partition] %s [value] %s", event.getEventName(), clusterId, partitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", event.getEventName(), clusterId, networkPartitionId, value));
                     }
 
                     AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
@@ -90,13 +89,12 @@ public class HealthEventMessageDelegator implements Runnable {
 
                 } else if (Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(event.getEventName())) {
                     String clusterId = event.getProperties().get("cluster_id");
-                    String partitionId = event.getProperties().get("partition_id");
+                    String networkPartitionId = event.getProperties().get("network_partition_id");
                     String value = event.getProperties().get("value");
-                    String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(partitionId).getId();
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [partition] %s [value] %s", event.getEventName(), clusterId, partitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", event.getEventName(), clusterId, networkPartitionId, value));
                     }
 
                     AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
@@ -104,13 +102,12 @@ public class HealthEventMessageDelegator implements Runnable {
 
                 } else if (Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(event.getEventName())) {
                     String clusterId = event.getProperties().get("cluster_id");
-                    String partitionId = event.getProperties().get("partition_id");
+                    String networkPartitionId = event.getProperties().get("network_partition_id");
                     String value = event.getProperties().get("value");
-                    String networkPartitionId = PartitionManager.getInstance().getNetworkPartitionOfPartition(partitionId).getId();
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [partition] %s [value] %s", event.getEventName(), clusterId, partitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", event.getEventName(), clusterId, networkPartitionId, value));
                     }
 
                     AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
