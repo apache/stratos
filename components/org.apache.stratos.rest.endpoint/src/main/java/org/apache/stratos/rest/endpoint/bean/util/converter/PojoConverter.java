@@ -314,11 +314,11 @@ public class PojoConverter {
         partitionBeans.provider = partition.getProvider();
         partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.partitionMax = partition.getPartitionMax();
-        //properties are not added currently, TODO if required
-        //if(partition[i].getProperties() != null) {
-        //    List<PropertyBean> propertyBeans = getPropertyBeans(partition[i].getProperties());
-        //    partition.property = propertyBeans;
-        //}
+        //properties 
+        if(partition.getProperties() != null) {
+            List<PropertyBean> propertyBeans = getPropertyBeans(partition.getProperties());
+            partitionBeans.property = propertyBeans;
+        }
 
         return partitionBeans;
     }
