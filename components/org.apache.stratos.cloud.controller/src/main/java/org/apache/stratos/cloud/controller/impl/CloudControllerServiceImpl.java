@@ -337,7 +337,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String clusterId = memberContext.getClusterId();
         Partition partition = memberContext.getPartition();
 
-        log.info("Starting new instance : " + memberContext.toString());
+        log.info("Received an instance spawn request : " + memberContext.toString());
 
         ComputeService computeService = null;
         Template template = null;
