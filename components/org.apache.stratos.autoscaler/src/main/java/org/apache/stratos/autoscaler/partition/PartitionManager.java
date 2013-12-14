@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -61,6 +62,9 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	private Map<String, NetworkPartitionContext> networkPartitionContexts;
 
 	private static PartitionManager instance;
+	
+	private String partitionResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
+			+ AutoScalerConstants.PARTITION_RESOURCE + "/";
 	
 	private PartitionManager(){
         networkPartitionContexts = new HashMap<String, NetworkPartitionContext>();
@@ -161,10 +165,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		
 	}
 	
-	public boolean validatePartition(Partition partition) throws PartitionValidationException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Validating partition via cloud controller: [id] %s", partition.getId()));
-        }
+	public boolean validatePartition(Partition partition) throws PartitionValidationException{				
 		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
 
@@ -172,6 +173,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
         for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId());
             networkPartitionContexts.put(partitionGroup.getId(), networkPartitionContext);
+
         }
     }
 

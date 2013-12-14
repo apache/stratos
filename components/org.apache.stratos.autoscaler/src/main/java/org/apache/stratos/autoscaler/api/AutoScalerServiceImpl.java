@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -69,7 +71,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	}
 
 	@Override
-	public boolean addPartition(Partition partition) {
+	public boolean addPartition(Partition partition) throws InvalidPartitionException {
         return partitionManager.addNewPartition(partition);
 	}
 

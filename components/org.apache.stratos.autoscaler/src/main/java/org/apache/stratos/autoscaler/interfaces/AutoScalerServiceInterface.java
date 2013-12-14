@@ -1,6 +1,8 @@
 package org.apache.stratos.autoscaler.interfaces;
 
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -11,7 +13,7 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 public interface AutoScalerServiceInterface {
 	
 	public Partition[] getAllAvailablePartitions();
-	public boolean addPartition(Partition partition);
+	public boolean addPartition(Partition partition) throws InvalidPartitionException;
 	
 	public DeploymentPolicy[] getAllDeploymentPolicies();
 	public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
