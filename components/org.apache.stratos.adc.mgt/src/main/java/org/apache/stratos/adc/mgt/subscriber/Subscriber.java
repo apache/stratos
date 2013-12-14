@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 public class Subscriber implements Serializable {
 
+    private static final long serialVersionUID = 6429685206817913437L;
     private String adminUserName;
     private int tenantId;
     private String tenantDomain;
@@ -58,9 +59,10 @@ public class Subscriber implements Serializable {
         this.tenantDomain = tenantDomain;
     }
 
-    public String toString () {
-        return "[Admin username: " + adminUserName +
-                " -- tenant Id: " + tenantId +
-                " -- tenant domain: " + tenantDomain + "] ";
+    @Override
+    public String toString() {
+        return "Subscriber [adminUserName=" + adminUserName + ", tenantId=" + tenantId +
+               ", tenantDomain=" + tenantDomain + "]";
     }
+
 }

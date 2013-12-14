@@ -105,22 +105,24 @@ public class TopologyBuilder {
         Service service;
         try {
             TopologyManager.getInstance().acquireWriteLock();
-            service = topology.getService(registrant.getCartridgeType());
+            String cartridgeType = registrant.getCartridgeType();
+            service = topology.getService(cartridgeType);
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
             
             String property = props.getProperty(Constants.IS_LOAD_BALANCER);
             boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
             
             Cluster cluster;
-            if (service.clusterExists(registrant.getClusterId())) {
+            String clusterId = registrant.getClusterId();
+            if (service.clusterExists(clusterId)) {
                 // update the cluster
-                cluster = service.getCluster(registrant.getClusterId());
+                cluster = service.getCluster(clusterId);
                 cluster.addHostName(registrant.getHostName());
                 cluster.setTenantRange(registrant.getTenantRange());
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
             } else {
-                cluster = new Cluster(registrant.getCartridgeType(), registrant.getClusterId(),
+                cluster = new Cluster(cartridgeType, clusterId,
                                       registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
                 cluster.addHostName(registrant.getHostName());
                 cluster.setTenantRange(registrant.getTenantRange());
@@ -129,7 +131,7 @@ public class TopologyBuilder {
                 service.addCluster(cluster);
             }
             TopologyManager.getInstance().updateTopology(topology);
-            TopologyEventSender.sendClusterCreatedEvent(registrant);
+            TopologyEventSender.sendClusterCreatedEvent(cartridgeType, clusterId, cluster);
 
         } finally {
             TopologyManager.getInstance().releaseWriteLock();

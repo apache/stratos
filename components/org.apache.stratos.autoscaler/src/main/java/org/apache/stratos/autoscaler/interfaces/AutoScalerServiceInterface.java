@@ -21,7 +21,7 @@ public interface AutoScalerServiceInterface {
 	public AutoscalePolicy[] getAllAutoScalingPolicy();
 	public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException;
 	
-	public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType) throws  PartitionValidationException;
+	public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType);
 	
 	public Partition getPartition (String partitionId);
 	public DeploymentPolicy getDeploymentPolicy (String deploymentPolicyId);

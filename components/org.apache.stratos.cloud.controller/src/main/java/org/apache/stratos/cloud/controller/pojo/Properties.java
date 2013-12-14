@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Had to wrap {@link Property} array using a class, since there's a bug in current 
@@ -35,6 +36,11 @@ public class Properties implements Serializable{
 
     public void setProperties(Property[] properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public String toString() {
+        return "Properties [properties=" + Arrays.toString(properties) + "]";
     }
     
 }

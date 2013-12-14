@@ -19,10 +19,8 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.util.Util;
-
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import java.io.Serializable;
-import java.util.Properties;
 
 /**
  * This event is fired by Cloud Controller when a cluster is created for a service.
@@ -31,62 +29,34 @@ public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2080623816272047762L;
 
 	private final String serviceName;
-    private final String clusterId;
-    private final String hostName;
-    private String tenantRange;
-    private String autoscalingPolicyName;
-    private String deploymentPolicyName;
-    private Properties properties;
+	private final String clusterId;
+    private Cluster cluster;
 
-    public ClusterCreatedEvent(String serviceName, String clusterId, String hostName) {
+
+    public ClusterCreatedEvent(String serviceName, String clusterId, Cluster cluster) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.hostName = hostName;
+        this.cluster = cluster;
     }
 
+    public Cluster getCluster() {
+        return cluster;
+    }
+    
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
+    }
+    
     public String getServiceName() {
         return serviceName;
+    }
+    
+    @Override
+    public String toString() {
+        return "ClusterCreatedEvent [serviceName=" + serviceName + ", cluster=" + cluster + "]";
     }
 
     public String getClusterId() {
         return clusterId;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public String getTenantRange() {
-        return tenantRange;
-    }
-
-    public void setTenantRange(String tenantRange) {
-        Util.validateTenantRange(tenantRange);
-        this.tenantRange = tenantRange;
-    }
-
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
-    public String getAutoscalingPolicyName() {
-        return autoscalingPolicyName;
-    }
-
-    public void setAutoscalingPolicyName(String autoscalingPolicyName) {
-        this.autoscalingPolicyName = autoscalingPolicyName;
-    }
-
-    public String getDeploymentPolicyName() {
-        return deploymentPolicyName;
-    }
-
-    public void setDeploymentPolicyName(String deploymentPolicyName) {
-        this.deploymentPolicyName = deploymentPolicyName;
     }
 }

@@ -49,6 +49,7 @@ global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy $deploymentPolicy;
 global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy $autoscalePolicy;
 global java.lang.String clusterId;
+global java.lang.String lbRef;
 
 
 rule "Scaler-up Rule"
@@ -70,7 +71,7 @@ dialect "mvel"
             //scale up
             NetworkPartitionContext networkPartitionContext;
 
-            $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId);
+            $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
 
 //	    }
 

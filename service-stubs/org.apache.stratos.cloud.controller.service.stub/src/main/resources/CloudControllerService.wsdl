@@ -142,7 +142,7 @@
             <xs:element name="startInstance">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="member" nillable="true" type="ax210:MemberContext"/>
+                        <xs:element minOccurs="0" name="memberContext" nillable="true" type="ax210:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -236,11 +236,11 @@
                     <xs:element minOccurs="0" name="initTime" type="xs:long"/>
                     <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="nodeId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="partition" nillable="true" type="ax29:Partition"/>
                     <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Registrant">
@@ -832,22 +832,22 @@
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.100.1.154:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://192.168.1.4:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.100.1.154:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://192.168.1.4:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.100.1.154:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://192.168.1.4:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.100.1.154:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://192.168.1.4:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.100.1.154:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
+            <http:address location="http://192.168.1.4:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.100.1.154:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
+            <http:address location="https://192.168.1.4:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

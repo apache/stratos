@@ -139,12 +139,14 @@ public class CloudControllerUtil {
                     }
 
                     org.apache.stratos.cloud.controller.pojo.Properties props1 =
-                                                                                 config.getProperties();
+                                                                                 iaasConfig.getProperties();
                     if (props1 != null) {
                         for (Property prop : props1.getProperties()) {
                             iaasProvider.addProperty(prop.getName(), prop.getValue());
                         }
                     }
+                    
+                    cartridge.addIaasProvider(iaasProvider);
                 }
             }
         }

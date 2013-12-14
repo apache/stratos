@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.autoscaler.exception;
 
-public class NonExistingLBException extends RuntimeException {
+public class NonExistingLBException extends Exception {
 
     private static final long serialVersionUID = -9163807860189126883L;
 

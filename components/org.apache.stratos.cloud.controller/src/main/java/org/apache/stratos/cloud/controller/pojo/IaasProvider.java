@@ -40,6 +40,7 @@ public class IaasProvider implements Serializable{
      */
     private String type;
 
+
     /**
      * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.interfaces.Iaas}
      */
@@ -229,4 +230,9 @@ public class IaasProvider implements Serializable{
         this.payload = payload;
     }
 
+    @Override
+    public String toString() {
+        return "IaasProvider [type=" + type + ", name=" + name + ", image=" + image +
+                ", provider=" + provider + "]";
+    }
 }

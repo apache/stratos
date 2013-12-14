@@ -127,7 +127,8 @@ public class CloudControllerClient {
             member.setInitTime(System.currentTimeMillis());
             member.setNetworkPartitionId(networkPartitionId);
 
-            log.info("Trying to spawn an instance of [cluster] "+clusterId+" [partition] "+partition.getId()+ " [lb cluster] "+lbClusterId);
+            log.info("Trying to spawn an instance of [cluster] "+clusterId+" [partition] "+partition.getId()+
+                     " [lb cluster] "+lbClusterId+" [Network Partition Id] "+networkPartitionId);
             return stub.startInstance(member);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             log.error(e.getMessage());

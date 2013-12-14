@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -76,22 +77,11 @@ public class TopologyEventSender {
         }
     }
 
-    public static void sendClusterCreatedEvent(Registrant registrant) {
-        Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(registrant.getCartridgeType(),
-                                                                          registrant.getClusterId(),
-                                                                          registrant.getHostName());
-        clusterCreatedEvent.setTenantRange(registrant.getTenantRange());
-        clusterCreatedEvent.setAutoscalingPolicyName(registrant.getAutoScalerPolicyName());
-        clusterCreatedEvent.setProperties(props);
-        clusterCreatedEvent.setDeploymentPolicyName(registrant.getDeploymentPolicyName());
+    public static void sendClusterCreatedEvent(String serviceName, String clusterId, Cluster cluster) {
+        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(serviceName, clusterId, cluster);
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster created event: " +
-                    "[service] %s [cluster] %s [host] %s [tenant-range] %s [autoscaling-policy] %s [deployment-policy] %s ",
-                                   registrant.getCartridgeType(), registrant.getClusterId(), 
-                                   registrant.getHostName(), registrant.getTenantRange(), registrant.getAutoScalerPolicyName(),
-                                   registrant.getDeploymentPolicyName()));
+            log.info("Publishing cluster created event: " +cluster.toString());
         }
         publishEvent(clusterCreatedEvent);
 

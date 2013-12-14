@@ -84,4 +84,11 @@ public class Registrant {
     public void setDeploymentPolicyName(String deploymentPolicyName) {
         this.deploymentPolicyName = deploymentPolicyName;
     }
+    @Override
+    public String toString() {
+        return "Registrant [clusterId=" + clusterId + ", tenantRange=" + tenantRange +
+               ", hostName=" + hostName + ", cartridgeType=" + cartridgeType + ", properties=" +
+               properties + ", autoScalerPolicyName=" + autoScalerPolicyName +
+               ", deploymentPolicyName=" + deploymentPolicyName + "]";
+    }
 }

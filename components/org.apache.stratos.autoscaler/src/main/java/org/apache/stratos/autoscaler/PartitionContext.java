@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,8 +40,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  */
 
-public class PartitionContext {
+public class PartitionContext implements Serializable{
 
+    private static final long serialVersionUID = 5822689534291741272L;
     private static final Log log = LogFactory.getLog(PartitionContext.class);
     private String partitionId;
     private String serviceName;
@@ -70,6 +72,7 @@ public class PartitionContext {
     
     public PartitionContext(Partition partition) {
         this.setPartition(partition);
+        this.minimumMemberCount = partition.getPartitionMin();
         this.partitionId = partition.getId();
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();

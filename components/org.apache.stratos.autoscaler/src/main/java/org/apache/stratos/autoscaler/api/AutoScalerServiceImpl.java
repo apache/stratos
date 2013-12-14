@@ -58,14 +58,23 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	}
 
 	@Override
-	public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType) throws PartitionValidationException {
+	public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType) {
 		ArrayList<DeploymentPolicy> validPolicies = new ArrayList<DeploymentPolicy>();
 		
 		for(DeploymentPolicy deploymentPolicy : this.getAllDeploymentPolicies()){
-			Partition[] policyPartitions = deploymentPolicy.getAllPartitions();;
-			boolean isValid = CloudControllerClient.getInstance().validatePartitionsOfPolicy(cartridgeType, policyPartitions);
-			if(isValid)
-				validPolicies.add(deploymentPolicy);			
+			Partition[] policyPartitions = deploymentPolicy.getAllPartitions();
+            try {
+                // call CC API
+                CloudControllerClient.getInstance().validatePartitionsOfPolicy(cartridgeType, policyPartitions);
+                // if this deployment policy is valid for this cartridge, add it.
+                validPolicies.add(deploymentPolicy);			
+            } catch (PartitionValidationException ignoredException) {
+                // if this policy doesn't valid for the given cartridge, add a debug log.
+                if (log.isDebugEnabled()) {
+                    log.debug("Deployment policy [id] "+deploymentPolicy.getId()
+                              +" is not valid for Cartridge [type] "+cartridgeType, ignoredException);
+                }
+            }
 		}
 		return validPolicies.toArray(new DeploymentPolicy[0]);
 	}

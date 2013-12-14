@@ -142,4 +142,13 @@ public class MemberContext implements Serializable{
     public void setNetworkPartitionId(String networkPartitionId) {
         this.networkPartitionId = networkPartitionId;
     }
+
+    @Override
+    public String toString() {
+        return "MemberContext [memberId=" + memberId + ", nodeId=" + nodeId + ", clusterId=" +
+               clusterId + ", cartridgeType=" + cartridgeType + ", privateIpAddress=" +
+               privateIpAddress + ", publicIpAddress=" + publicIpAddress + ", allocatedIpAddress=" +
+               allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId +
+               ", networkPartitionId=" + networkPartitionId + "]";
+    }
 }

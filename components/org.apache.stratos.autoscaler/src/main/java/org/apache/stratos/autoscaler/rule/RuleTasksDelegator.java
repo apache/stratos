@@ -44,7 +44,7 @@ public class RuleTasksDelegator {
         return autoscaleAlgorithm;
     }
 
-    public void delegateSpawn(PartitionContext partitionContext, String clusterId) {
+    public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType) {
         try {
 
             String nwPartitionId = partitionContext.getNetworkPartitionId();
@@ -52,7 +52,8 @@ public class RuleTasksDelegator {
                                           PartitionManager.getInstance()
                                                           .getNetworkPartition(nwPartitionId);
 
-            String lbClusterId = getLbClusterId(partitionContext, ctxt);
+            
+            String lbClusterId = getLbClusterId(lbRefType, partitionContext, ctxt);
 
             MemberContext memberContext =
                                          CloudControllerClient.getInstance()
@@ -72,18 +73,21 @@ public class RuleTasksDelegator {
 
 
 
-    public static String getLbClusterId(PartitionContext partitionContext, NetworkPartitionContext ctxt) {
-       Properties props = partitionContext.getProperties();
-       String value =
-                      (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+    public static String getLbClusterId(String lbRefType, PartitionContext partitionCtxt, 
+        NetworkPartitionContext nwPartitionCtxt) {
+       
        String lbClusterId = null;
 
-       if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-           lbClusterId = ctxt.getDefaultLbClusterId();
-       } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-           String serviceName = partitionContext.getServiceName();
-           lbClusterId = ctxt.getLBClusterIdOfService(serviceName);
-       }
+        if (lbRefType != null) {
+            if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
+            } else if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+                String serviceName = partitionCtxt.getServiceName();
+                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
+            } else {
+                log.warn("Invalid LB reference type defined: [value] "+lbRefType);
+            }
+        }
        return lbClusterId;
     }
 
