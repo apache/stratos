@@ -208,6 +208,7 @@ public class AutoscalerUtil {
             PartitionContext partitionContext = new PartitionContext(partition);
             partitionContext.setServiceName(cluster.getServiceName());
             partitionContext.setProperties(cluster.getProperties());
+            partitionContext.setNetworkPartitionId(partitionGroup.getId());
 
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
