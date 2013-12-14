@@ -104,7 +104,7 @@ public class PolicyManager {
                         "Please deploy the partitions before deploying the deployment policies.";
                 throw new InvalidPartitionException(msg);
             }
-            fillPartition(partition, PartitionManager.getInstance().getPartitionById(deploymentPolicy.getId()));
+            fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
         }
     }
 
