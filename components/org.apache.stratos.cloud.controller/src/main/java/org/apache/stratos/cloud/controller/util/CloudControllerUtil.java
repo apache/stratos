@@ -145,6 +145,8 @@ public class CloudControllerUtil {
                             iaasProvider.addProperty(prop.getName(), prop.getValue());
                         }
                     }
+                    
+                    cartridge.addIaasProvider(iaasProvider);
                 }
             }
         }
