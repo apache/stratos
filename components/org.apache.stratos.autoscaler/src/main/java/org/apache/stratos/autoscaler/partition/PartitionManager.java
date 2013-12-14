@@ -62,9 +62,6 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 
 	private static PartitionManager instance;
 	
-	private String partitionResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE 
-			+ AutoScalerConstants.PARTITION_RESOURCE + "/";
-	
 	private PartitionManager(){
         networkPartitionContexts = new HashMap<String, NetworkPartitionContext>();
 //	    networkPartitions = new ArrayList<NetworkPartitionContext>();
@@ -86,34 +83,21 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	 * Deploy a new partition to Auto Scaler.
 	 */
 	public boolean addNewPartition(Partition partition) throws AutoScalerException{
-		String partitionId = partition.getId();
-		if(this.partitionExist(partition.getId()))
-			throw new AutoScalerException("A parition with the ID " +  partitionId + " already exist.");
-				
-		String resourcePath= this.partitionResourcePath + partition.getId();
-		
-        RegistryManager regManager = RegistryManager.getInstance();     
-        
+		if(this.partitionExist(partition.getId())) {
+			throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
+        }
+
         try {
-        	this.validatePartition(partition);
-
-        	regManager.persist(partition, resourcePath);
-			addPartitionToInformationModel(partition);	
-
-	        // register network partition
-//	        NetworkPartitionContext nwPartition = getOrAddNetworkPartition(partition);
-//	        this.partitionIdToNetworkPartition.put(partitionId, nwPartition);
-//            this.networkPartitionIdToNetworkPartition.put(nwPartition.getId(), nwPartition);
-
-
-		} catch (RegistryException e) {
-			throw new AutoScalerException(e);
-		} catch(PartitionValidationException e){
+        	validatePartition(partition);
+            RegistryManager.getInstance().persistPartition(partition);
+			addPartitionToInformationModel(partition);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Partition is deployed successfully: [id] %s", partition.getId()));
+            }
+            return true;
+		} catch(Exception e){
 			throw new AutoScalerException(e);
 		}
-                
-		log.info("Partition :" + partition.getId() + " is deployed successfully.");
-		return true;
 	}
 	
 	
@@ -177,7 +161,10 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		
 	}
 	
-	public boolean validatePartition(Partition partition) throws PartitionValidationException{				
+	public boolean validatePartition(Partition partition) throws PartitionValidationException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Validating partition via cloud controller: [id] %s", partition.getId()));
+        }
 		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
 
@@ -185,7 +172,6 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
         for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId());
             networkPartitionContexts.put(partitionGroup.getId(), networkPartitionContext);
-
         }
     }
 
