@@ -337,8 +337,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String clusterId = memberContext.getClusterId();
         Partition partition = memberContext.getPartition();
 
-        String memberAsString = memberContext.toString();
-        log.info("Starting new instance : " + memberAsString);
+        log.info("Starting new instance : " + memberContext.toString());
 
         ComputeService computeService = null;
         Template template = null;
@@ -346,7 +345,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (partition == null) {
             String msg =
                          "Instance start-up failed. Specified Partition is null. " +
-                                 memberAsString;
+                                 memberContext.toString();
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -355,7 +354,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
 
         if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + memberAsString;
+            String msg = "Instance start-up failed. Invalid cluster id. " + memberContext.toString();
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -367,7 +366,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (cartridge == null) {
             String msg =
                          "Instance start-up failed. No valid Cartridge found. " +
-                                 memberAsString;
+                                 memberContext.toString();
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
@@ -379,7 +378,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
             String msg =
-                         "Instance start-up failed. " + memberAsString + ". " +
+                         "Instance start-up failed. " + memberContext.toString() + ". " +
                                  "There's no IaaS provided for the partition: " + partitionId +
                                  " and for the Cartridge type: " + cartridgeType;
             log.fatal(msg);
@@ -411,7 +410,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 try {
                     iaas = setIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
-                    String msg ="Instance start up failed. "+memberAsString+
+                    String msg ="Instance start up failed. "+memberContext.toString()+
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type;
                     log.error(msg, e);
                     throw new CloudControllerException(msg, e);
@@ -427,7 +426,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (template == null) {
                 String msg =
                              "Failed to start an instance. " +
-                                     memberAsString +
+                                     memberContext.toString() +
                                      ". Reason : Template is null. You have not specify a matching service " +
                                      "element in the configuration file of Autoscaler.\n Hence, will try to " +
                                      "start in another IaaS if available.";
@@ -461,7 +460,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 // node id
                 String nodeId = node.getId();
                 if (nodeId == null) {
-                    String msg = "Node id of the starting instance is null.\n" + memberAsString;
+                    String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
                     log.fatal(msg);
                     throw new CloudControllerException(msg);
                 }
@@ -469,7 +468,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 memberContext.setNodeId(nodeId);
                 
                 if(log.isDebugEnabled()) {
-                    log.debug("Node id was set. "+memberAsString);
+                    log.debug("Node id was set. "+memberContext.toString());
                 }
 
                 // reset ip
@@ -480,7 +479,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     // allocate an IP address - manual IP assigning mode
                     ip = iaas.associateAddress(iaasProvider, node);
                     memberContext.setAllocatedIpAddress(ip);
-                    log.info("Allocated an ip address: " + memberAsString);
+                    log.info("Allocated an ip address: " + memberContext.toString());
                 }
 
                 // public ip
@@ -488,7 +487,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     node.getPublicAddresses().iterator().hasNext()) {
                     ip = node.getPublicAddresses().iterator().next();
                     memberContext.setPublicIpAddress(ip);
-                    log.info("Public ip address: " + memberAsString);
+                    log.info("Public ip address: " + memberContext.toString());
                 }
 
                 // private IP
@@ -496,7 +495,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     node.getPrivateAddresses().iterator().hasNext()) {
                     ip = node.getPrivateAddresses().iterator().next();
                     memberContext.setPrivateIpAddress(ip);
-                    log.info("Private ip address: " + memberAsString);
+                    log.info("Private ip address: " + memberContext.toString());
                 }
 
                 dataHolder.addMemberContext(memberContext);
@@ -513,7 +512,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Node details: \n" + node.toString() + "\n***************\n");
                 }
 
-                log.info("Instance is successfully starting up. "+memberAsString);
+                log.info("Instance is successfully starting up. "+memberContext.toString());
 
                 return memberContext;
 
@@ -523,7 +522,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
         } catch (Exception e) {
-            String msg = "Failed to start an instance. " + memberAsString;
+            String msg = "Failed to start an instance. " + memberContext.toString();
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
         }
@@ -1067,8 +1066,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
         
-        persist();
-
         return true;
     }
 
