@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +30,9 @@ import java.util.Map;
  * Holds runtime data of a network partition.
  *
  */
-public class NetworkPartitionContext {
+public class NetworkPartitionContext implements Serializable {
 
+    private static final long serialVersionUID = -5458149704820463584L;
     private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private String id;
 
@@ -202,6 +204,13 @@ public class NetworkPartitionContext {
     }
 
 
+
+    @Override
+    public String toString() {
+        return "NetworkPartitionContext [id=" + id + ", defaultLbClusterId=" + defaultLbClusterId +
+               ", partitionAlgorithm=" + partitionAlgorithm + ", minInstanceCount=" +
+               minInstanceCount + ", maxInstanceCount=" + maxInstanceCount + "]";
+    }
 
     public int getCurrentPartitionIndex() {
         return currentPartitionIndex;

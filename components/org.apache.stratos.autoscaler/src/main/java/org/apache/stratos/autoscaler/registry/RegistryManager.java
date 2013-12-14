@@ -2,6 +2,7 @@ package org.apache.stratos.autoscaler.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.util.Deserializer;
@@ -91,6 +92,14 @@ public class RegistryManager {
                     partition.getId(), partition.getProvider(), partition.getPartitionMin(), partition.getPartitionMax()));
         }
     }
+    
+    public void persistNetworkPartition(NetworkPartitionContext nwPartitionCtxt) {
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_RESOURCE + "/";
+        persist(nwPartitionCtxt, resourcePath);
+        if(log.isDebugEnabled()) {
+            log.debug("NetworkPartitionContext written to registry: "+nwPartitionCtxt.toString());
+        }
+    }
 
     public void persistAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
@@ -157,6 +166,39 @@ public class RegistryManager {
             }
         }
         return partitionList;
+    }
+    
+    public List<NetworkPartitionContext> retrieveNetworkPartitions() {
+        List<NetworkPartitionContext> nwPartitionList = new ArrayList<NetworkPartitionContext>();
+        RegistryManager registryManager = RegistryManager.getInstance();
+        String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + 
+                                                                              AutoScalerConstants.NETWORK_PARTITION_RESOURCE);
+
+        if (partitionsResourceList != null) {
+            NetworkPartitionContext nwPartition;
+            for (String resourcePath : partitionsResourceList) {
+                Object serializedObj = registryManager.retrieve(resourcePath);
+                if (serializedObj != null) {
+                    try {
+
+                        Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+                        if (dataObj instanceof NetworkPartitionContext) {
+                            nwPartition = (NetworkPartitionContext) dataObj;
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("NetworkPartitionContext read from registry: "+nwPartition.toString()));
+                            }
+                            nwPartitionList.add(nwPartition);
+                        } else {
+                            return null;
+                        }
+                    } catch (Exception e) {
+                        String msg = "Unable to retrieve data from Registry. Hence, any historical NetworkPartitionContext will not get reflected.";
+                        log.warn(msg, e);
+                    }
+                }
+            }
+        }
+        return nwPartitionList;
     }
 
     public List<AutoscalePolicy> retrieveASPolicies() {

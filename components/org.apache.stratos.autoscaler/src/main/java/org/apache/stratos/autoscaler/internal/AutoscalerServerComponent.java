@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
@@ -89,6 +90,15 @@ public class AutoscalerServerComponent {
                 Partition partition = partitionIterator.next();
                 PartitionManager.getInstance().addPartitionToInformationModel(partition);
             }
+            
+            // Adding the network partitions stored in registry to the information model
+            List<NetworkPartitionContext> nwPartitionCtxts = RegistryManager.getInstance().retrieveNetworkPartitions();
+            Iterator<NetworkPartitionContext> nwPartitionIterator = nwPartitionCtxts.iterator();
+            while (nwPartitionIterator.hasNext()) {
+                NetworkPartitionContext nwPartition = nwPartitionIterator.next();
+                PartitionManager.getInstance().addNetworkPartitionContext(nwPartition);
+            }
+            
             List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
             Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();
             while (asPolicyIterator.hasNext()) {
