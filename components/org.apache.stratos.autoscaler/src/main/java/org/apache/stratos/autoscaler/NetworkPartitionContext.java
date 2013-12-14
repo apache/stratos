@@ -71,6 +71,7 @@ public class NetworkPartitionContext implements Serializable {
         this.setServiceToLBClusterId(new HashMap<String, String>());
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
         partitionToMemberCountMap = new HashMap<String, Integer>();
+        partitionCtxts = new HashMap<String, PartitionContext>();
 
     }
 
