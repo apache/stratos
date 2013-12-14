@@ -492,13 +492,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return null;
     }
 
-//    @Override
-//    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned) {
-//        //TODO
-//        return null;
-//    }
-
-
 	private void addToPayload(StringBuilder payload, String name, String value) {
 	    payload.append(",");
         payload.append(name+"=" + value);
@@ -533,7 +526,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
-//        String nodeId = dataHolder.getNodeId(memberId);
+        
         MemberContext ctxt = dataHolder.getMemberContextOfMemberId(memberId);
         
         if(ctxt == null) {
@@ -545,18 +538,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ThreadExecutor exec = new ThreadExecutor();
         exec.execute(new InstanceTerminator(ctxt));
         exec.shutdown();
-
-       
-		
-
-//		}
-
-//		log.info("Termination of an instance which is belong to domain '"
-//				+ clusterId
-//				+ "' , failed! Reason: No matching "
-//				+ "running instance found in any available IaaS.");
-//
-//		return false;
 
 	}
     
