@@ -658,9 +658,10 @@ public class ServiceUtils {
             } else {
 
                 CartridgeInfo lbCartridgeInfo;
+                String lbCartridgeType = lbConfig.getType();
                 try {
                     // retrieve lb Cartridge info
-                    lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbConfig.getType());
+                    lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
                 } catch (Exception e) {
                     String msg = "Cannot get cartridge info: " + cartridgeType;
                     log.error(msg, e);
@@ -724,7 +725,7 @@ public class ServiceUtils {
                                 try {
                                     // get the valid policies for lb cartridge
                                     DeploymentPolicy[] lbCartridgeDepPolicies =
-                                                                                autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
+                                                                                autoscalerServiceClient.getDeploymentPolicies(lbCartridgeType);
                                     // traverse deployment policies of lb cartridge
                                     for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
                                         // check existence of the subscribed policy
@@ -734,7 +735,7 @@ public class ServiceUtils {
 
                                                 // if lb cluster doesn't exist
                                                 String lbAlias = "lb" + new Random().nextInt();
-                                                subscribeToLb(cartridgeType,
+                                                subscribeToLb(lbCartridgeType,
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicy, configurationContext,
@@ -763,7 +764,7 @@ public class ServiceUtils {
                                         
                                         // get the valid policies for lb cartridge
                                         DeploymentPolicy[] lbCartridgeDepPolicies =
-                                                                                    autoscalerServiceClient.getDeploymentPolicies(lbConfig.getType());
+                                                                                    autoscalerServiceClient.getDeploymentPolicies(lbCartridgeType);
                                         // traverse deployment policies of lb cartridge
                                         for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
                                             // check existence of the subscribed policy
@@ -773,7 +774,7 @@ public class ServiceUtils {
 
                                                     // if lb cluster doesn't exist
                                                     String lbAlias = "lb" + cartridgeType + new Random().nextInt();
-                                                    subscribeToLb(cartridgeType,
+                                                    subscribeToLb(lbCartridgeType,
                                                               lbAlias,
                                                               lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                               deploymentPolicy, configurationContext,
