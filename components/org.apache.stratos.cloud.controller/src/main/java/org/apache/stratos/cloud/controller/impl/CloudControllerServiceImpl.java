@@ -1090,11 +1090,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (iaas == null) {
             
             try {
-                iaas = setIaas(iaasProvider);
-            } catch (InvalidIaasProviderException e) {
+                iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
+                ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
+                iaasProvider.setIaas(iaas);
+            } catch (Exception e) {
                 String msg =
-                        "Invalid Partition - " + partition.toString() +
-                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider;
+                             "Unable to build the jclouds object for iaas " + "of type: " +
+                                     iaasProvider.getType();
                 log.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }
@@ -1106,8 +1108,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         validator.validate(partition.getId(),
                            CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
         
-        persist();
-
         return true;
     }
 
