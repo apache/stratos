@@ -94,7 +94,7 @@ public class RegistryManager {
     }
     
     public void persistNetworkPartition(NetworkPartitionContext nwPartitionCtxt) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_RESOURCE + "/";
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_RESOURCE + "/"+nwPartitionCtxt.getId();
         persist(nwPartitionCtxt, resourcePath);
         if(log.isDebugEnabled()) {
             log.debug("NetworkPartitionContext written to registry: "+nwPartitionCtxt.toString());
