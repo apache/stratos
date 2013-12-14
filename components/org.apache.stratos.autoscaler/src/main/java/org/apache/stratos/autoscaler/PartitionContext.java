@@ -72,6 +72,7 @@ public class PartitionContext implements Serializable{
     
     public PartitionContext(Partition partition) {
         this.setPartition(partition);
+        this.minimumMemberCount = partition.getPartitionMin();
         this.partitionId = partition.getId();
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();

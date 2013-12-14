@@ -218,4 +218,9 @@ public class LbClusterMonitor implements Runnable{
    	public boolean memberExist(String memberId){
    		return this.memberPartitionMap.containsKey(memberId);
    	}
+
+    @Override
+    public String toString() {
+        return "LbClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId + "]";
+    }
 }

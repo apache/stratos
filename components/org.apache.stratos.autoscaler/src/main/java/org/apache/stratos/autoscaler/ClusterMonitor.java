@@ -60,6 +60,8 @@ public class ClusterMonitor implements Runnable{
     private FactHandle scaleCheckFactHandle;
 
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    
+    private String lbReferenceType;
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
@@ -152,7 +154,8 @@ public class ClusterMonitor implements Runnable{
             for(PartitionContext partitionContext: networkPartitionContext.getPartitionCtxts().values()){
 
                 minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-
+                minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
+                
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
                 }
@@ -219,6 +222,13 @@ public class ClusterMonitor implements Runnable{
         return autoscalePolicy;
     }
 
+    @Override
+    public String toString() {
+        return "ClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId +
+               ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
+               ", lbReferenceType=" + lbReferenceType + "]";
+    }
+
     public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
         this.autoscalePolicy = autoscalePolicy;
     }
@@ -230,4 +240,12 @@ public class ClusterMonitor implements Runnable{
    	public boolean memberExist(String memberId){
    		return this.memberPartitionMap.containsKey(memberId);
    	}
+
+    public String getLbReferenceType() {
+        return lbReferenceType;
+    }
+
+    public void setLbReferenceType(String lbReferenceType) {
+        this.lbReferenceType = lbReferenceType;
+    }
 }

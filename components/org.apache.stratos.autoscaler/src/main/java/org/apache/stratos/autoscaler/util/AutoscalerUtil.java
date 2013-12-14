@@ -110,6 +110,7 @@ public class AutoscalerUtil {
                                         new ClusterMonitor(cluster.getClusterId(),
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
+        
         for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
 
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId());
@@ -145,20 +146,20 @@ public class AutoscalerUtil {
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
         }
-//        if (policy != null) {
-//
-//            // get values from policy
-//            LoadThresholds loadThresholds = policy.getLoadThresholds();
-//            float averageLimit = loadThresholds.getRequestsInFlight().getAverage();
-//            float gradientLimit = loadThresholds.getRequestsInFlight().getGradient();
-//            float secondDerivativeLimit = loadThresholds.getRequestsInFlight().getSecondDerivative();
-//
-//            clusterMonitor.setRequestsInFlightGradientThreshold(gradientLimit);
-//            clusterMonitor.setRequestsInFlightSecondDerivativeThreshold(secondDerivativeLimit);
-//            clusterMonitor.setAverageRequestsInFlightThreshold(averageLimit);
-//
-//        }
+        
+        
+        // find lb reference type
+        java.util.Properties props = cluster.getProperties();
+        
+        if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
+            String value = props.getProperty(Constants.LOAD_BALANCER_REF);
+            clusterMonitor.setLbReferenceType(value);
+            if(log.isDebugEnabled()) {
+                log.debug("Set the lb reference type: "+value);
+            }
+        }
 
+        log.info("Cluster monitor created: "+clusterMonitor.toString());
         return clusterMonitor;
     }
     
