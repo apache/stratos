@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -85,13 +86,16 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	/*
 	 * Deploy a new partition to Auto Scaler.
 	 */
-	public boolean addNewPartition(Partition partition) throws AutoScalerException{
+	public boolean addNewPartition(Partition partition) throws AutoScalerException, InvalidPartitionException{
+		
+		if(null == partition.getProvider())
+			throw new InvalidPartitionException("Mendatory feild provider has not be set for partition "+ partition.getId());
+		
 		String partitionId = partition.getId();
 		if(this.partitionExist(partition.getId()))
 			throw new AutoScalerException("A parition with the ID " +  partitionId + " already exist.");
 				
-		String resourcePath= this.partitionResourcePath + partition.getId();
-		
+		String resourcePath= this.partitionResourcePath + partition.getId();		
         RegistryManager regManager = RegistryManager.getInstance();     
         
         try {

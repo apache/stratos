@@ -115,6 +115,9 @@ public class PolicyManager {
     }
 
     private static void fillPartition(Partition destPartition, Partition srcPartition) {
+    	if(null == srcPartition.getProvider())
+    		throw new RuntimeException("Provider is not set for the deployed partition.");
+    	
     	if(log.isDebugEnabled())
     		log.debug("Settting provider for Partition " + destPartition.getId() + " provider "+ srcPartition.getProvider());
         destPartition.setProvider(srcPartition.getProvider());
