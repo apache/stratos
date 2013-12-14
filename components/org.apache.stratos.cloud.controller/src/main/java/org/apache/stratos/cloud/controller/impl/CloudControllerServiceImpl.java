@@ -1079,7 +1079,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (iaasProvider == null) {
             String msg =
-                         "Invalid Partition - " + partition.toString()+". Cause: Iaas Provider is null for: "+provider;
+                         "Invalid Partition - " + partition.toString()+". Cause: Iaas Provider " +
+                                 "is null for Partition Provider: "+provider;
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }
