@@ -48,6 +48,7 @@ public class Cluster implements Serializable {
     // Key: Member.memberId
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
+
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
@@ -136,6 +137,14 @@ public class Cluster implements Serializable {
 
     public void setLbCluster(boolean isLbCluster) {
         this.isLbCluster = isLbCluster;
+    }
+    
+    @Override
+    public String toString() {
+        return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId +
+                ", autoscalePolicyName=" + autoscalePolicyName + ", deploymentPolicyName=" +
+                deploymentPolicyName + ", hostNames=" + hostNames + ", tenantRange=" + tenantRange +
+                ", isLbCluster=" + isLbCluster + ", properties=" + properties + "]";
     }
 
     /**
