@@ -48,7 +48,12 @@ public abstract class PayloadData implements Serializable {
     }*/
 
     public StringBuilder getCompletePayloadData () {
-        return additionalPayloadDataBuilder.append(",").append(getBasicPayloadData().getPayloadData());
+
+        if(additionalPayloadDataBuilder.length() > 0) {
+            return getBasicPayloadData().getPayloadData().append(",").append(additionalPayloadDataBuilder);
+        } else {
+            return getBasicPayloadData().getPayloadData();
+        }
     }
 
     public BasicPayloadData getBasicPayloadData() {
@@ -57,5 +62,9 @@ public abstract class PayloadData implements Serializable {
 
     public void setBasicPayloadData(BasicPayloadData basicPayloadData) {
         this.basicPayloadData = basicPayloadData;
+    }
+
+    public String toString () {
+        return getCompletePayloadData().toString();
     }
 }

@@ -70,4 +70,8 @@ public class Cluster implements Serializable {
     public void setServiceStatus(String serviceStatus) {
         this.serviceStatus = serviceStatus;
     }
+
+    public String toString () {
+        return clusterDomain;
+    }
 }

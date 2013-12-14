@@ -453,7 +453,6 @@ public abstract class CartridgeSubscription implements Serializable {
                ", alias=" + alias + ", autoscalingPolicyName=" + autoscalingPolicyName +
                ", deploymentPolicyName=" + deploymentPolicyName + ", subscriber=" + subscriber +
                ", repository=" + repository + ", cartridgeInfo=" + cartridgeInfo + ", payload=" +
-               payload + ", cluster=" + cluster + ", subscriptionStatus=" + subscriptionStatus +
-               ", serviceStatus=" + serviceStatus + ", mappedDomain=" + mappedDomain+ "]";
+               payloadData + ", cluster=" + cluster + "]";
     }
 }
