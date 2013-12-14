@@ -469,4 +469,14 @@ public abstract class CartridgeSubscription implements Serializable {
     public void setServiceStatus(String serviceStatus) {
         this.serviceStatus = serviceStatus;
     }
+
+    @Override
+    public String toString() {
+        return "CartridgeSubscription [subscriptionId=" + subscriptionId + ", type=" + type +
+               ", alias=" + alias + ", autoscalingPolicyName=" + autoscalingPolicyName +
+               ", deploymentPolicyName=" + deploymentPolicyName + ", subscriber=" + subscriber +
+               ", repository=" + repository + ", cartridgeInfo=" + cartridgeInfo + ", payload=" +
+               payload + ", cluster=" + cluster + ", subscriptionStatus=" + subscriptionStatus +
+               ", serviceStatus=" + serviceStatus + ", mappedDomain=" + mappedDomain+ "]";
+    }
 }

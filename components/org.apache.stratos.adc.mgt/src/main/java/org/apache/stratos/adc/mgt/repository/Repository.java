@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 public class Repository implements Serializable {
 
+    private static final long serialVersionUID = 8386330511938705573L;
     private int id;
     private String url;
     private String userName;
@@ -67,5 +68,11 @@ public class Repository implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Repository [id=" + id + ", url=" + url + ", userName=" + userName +
+               ", isPrivateRepository=" + isPrivateRepository + "]";
     }
 }

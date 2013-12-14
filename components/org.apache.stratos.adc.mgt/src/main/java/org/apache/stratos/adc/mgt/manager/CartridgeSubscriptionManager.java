@@ -340,6 +340,7 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.setSubscriptionId(subscriptionId);
         ApplicationManagementUtil.addDNSEntry(cartridgeSubscriptionInfo.getAlias(), cartridgeSubscription.getType());
 
+        log.info("Successful Subscription: "+cartridgeSubscription.toString());
         return ApplicationManagementUtil.
                 createSubscriptionResponse(cartridgeSubscriptionInfo, cartridgeSubscription.getRepository());
     }
