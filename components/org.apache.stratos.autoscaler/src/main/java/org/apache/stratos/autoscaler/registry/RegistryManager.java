@@ -85,7 +85,7 @@ public class RegistryManager {
     }
 
     public void persistPartition(Partition partition) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.PARTITION_RESOURCE + "/";
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.PARTITION_RESOURCE + "/"+partition.getId();
         persist(partition, resourcePath);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Partition written to registry: [id] %s [provider] %s [min] %d [max] %d",
