@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.subscription.factory;
 
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.subscription.*;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
@@ -59,21 +60,22 @@ public class CartridgeSubscriptionFactory {
         return cartridgeSubscription;
     }*/
 
-    public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo)
+    public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo,
+                                                                         SubscriptionTenancyBehaviour subscriptionTenancyBehaviour)
             throws ADCException {
 
         //TODO: fix the logic properly
         CartridgeSubscription cartridgeSubscription = null;
         if(cartridgeInfo.getMultiTenant()) {
-            cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, false);
+            cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
 
         } else {
             if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
-                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo, false);
+                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
             }
             else {
                 //cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
-                cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, false);
+                cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
             }
         }
 

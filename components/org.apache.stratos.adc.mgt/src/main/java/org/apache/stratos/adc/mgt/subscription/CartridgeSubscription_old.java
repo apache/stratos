@@ -380,11 +380,11 @@
 //        this.cartridgeInfo = cartridgeInfo;
 //    }
 //
-//    public Payload getPayload() {
+//    public Payload getPayloadData() {
 //        return payload;
 //    }
 //
-//    public void setPayload(Payload payload) {
+//    public void setPayloadData(Payload payload) {
 //        this.payload = payload;
 //    }
 //

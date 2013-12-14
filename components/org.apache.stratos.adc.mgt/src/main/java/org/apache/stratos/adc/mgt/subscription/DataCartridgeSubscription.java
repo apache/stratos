@@ -21,15 +21,16 @@ package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
-import org.apache.stratos.adc.mgt.exception.*;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
+import org.apache.stratos.adc.mgt.exception.ADCException;
+import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
 import org.apache.stratos.adc.mgt.repository.Repository;
-import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
-import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataCartridgeSubscription extends CartridgeSubscription {
 
@@ -40,37 +41,16 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
     /**
      * Constructor
      *
-     * @param cartridgeInfo CartridgeInfo subscription
+     * @param cartridgeInfo CartridgeInfo instance
+     * @param subscriptionTenancyBehaviour SubscriptionTenancyBehaviour instance
      */
-    public DataCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
+    public DataCartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour
+            subscriptionTenancyBehaviour) {
 
-        super(cartridgeInfo, isServiceDeployment);
-        this.setHost("localhost");
-        this.setUsername(CartridgeConstants.MYSQL_DEFAULT_USER);
-        this.setPassword(ApplicationManagementUtil.generatePassword());
-    }
-
-    @Override
-    public void createSubscription(Subscriber subscriber, String alias, String autoscalingPolicyName, String deploymentPolicyName,
-                                   Repository repository)
-
-            throws InvalidCartridgeAliasException,
-            DuplicateCartridgeAliasException, ADCException, RepositoryCredentialsRequiredException,
-            RepositoryTransportException, UnregisteredCartridgeException, AlreadySubscribedException,
-            RepositoryRequiredException, InvalidRepositoryException, PolicyException {
-
-        super.createSubscription(subscriber, alias, autoscalingPolicyName, deploymentPolicyName, repository);
-        subscriptionTenancyBehaviour.createSubscription();
-    }
-
-    public PayloadArg createPayloadParameters() throws ADCException {
-
-        PayloadArg payloadArg = super.createPayloadParameters();
-        payloadArg.setDataCartridgeHost(this.getHost());
-        payloadArg.setDataCartridgeAdminUser(getUsername());
-        payloadArg.setDataCartridgeAdminPassword(getPassword());
-
-        return subscriptionTenancyBehaviour.createPayloadParameters(payloadArg);
+        super(cartridgeInfo, subscriptionTenancyBehaviour);
+        setHost("localhost");
+        setUsername("root");
+        setPassword("root");
     }
 
     @Override
@@ -79,9 +59,7 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
 
         Properties props = new Properties();
         props.setProperties(getCartridgeInfo().getProperties());
-        //subscriptionTenancyBehaviour.registerSubscription(ApplicationManagementUtil.
-        //        setRegisterServiceProperties(getAutoscalingPolicyName(), getSubscriber().getTenantId(), getAlias()));
-        subscriptionTenancyBehaviour.registerSubscription(props);
+        getSubscriptionTenancyBehaviour().registerSubscription(this, props);
 
         DataCartridge dataCartridge = new DataCartridge();
         dataCartridge.setUserName(getUsername());
@@ -103,10 +81,14 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
     }
 
     @Override
-    public void removeSubscription() throws ADCException, NotSubscribedException {
+    public Map<String, String> getCustomPayloadEntries() {
 
-        subscriptionTenancyBehaviour.removeSubscription();
-        super.cleanupSubscription();
+        Map<String, String> payloadEntriesMap = new HashMap<String, String>();
+        payloadEntriesMap.put("MYSQL_HOST", host);
+        payloadEntriesMap.put("MYSQL_USER", username);
+        payloadEntriesMap.put("MYSQL_PASSWORD", password);
+
+        return payloadEntriesMap;
     }
 
     public String getHost() {

@@ -22,43 +22,34 @@ package org.apache.stratos.adc.mgt.payload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
-import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
 public class PayloadFactory {
 
 	private static Log log = LogFactory.getLog(PayloadFactory.class);
 
     /**
-     * Creates and returns a Payload subscription
+     * Creates and returns a PayloadData instance
      *
      * @param cartridgeProvider Cartridge provider
      * @param cartridgeType Cartridge type
-     * @param payloadFilePath Location to create the payload
+     * @param basicPayloadData BasicPayloadData instance
      * @return Payload subscription
      * @throws ADCException if no matching criteria is found to create a payload
      */
-	public static Payload getPayloadInstance (String cartridgeProvider, String cartridgeType, String payloadFilePath)
+	public static PayloadData getPayloadDataInstance(String cartridgeProvider, String cartridgeType,
+                                                     BasicPayloadData basicPayloadData)
             throws ADCException {
 
-        Payload payload = null;
+        PayloadData payloadData = null;
 
-        if(cartridgeProvider.equals(CartridgeConstants.PROVIDER_NAME_WSO2)) {
-            payload = new CarbonPayload(payloadFilePath);
+        //TODO: fix after adding the property Category to Cartridge Definition
+        payloadData = new FramewrokCartridgePayloadData(basicPayloadData);
 
-        } else {
-            if(cartridgeProvider.equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
-                payload = new DataPayload(payloadFilePath);
-            }
-            else {
-                payload = new NonCarbonPayload(payloadFilePath);
-            }
-        }
-
-        if(payload == null) {
+        if(payloadData == null) {
             throw new ADCException("Unable to find matching payload for cartridge type " + cartridgeType +
                     ", provider " + cartridgeProvider);
         }
 
-        return payload;
+        return payloadData;
     }
 }

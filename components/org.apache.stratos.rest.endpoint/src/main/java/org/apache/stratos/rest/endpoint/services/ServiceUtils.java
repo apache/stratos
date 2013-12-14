@@ -908,10 +908,10 @@ public class ServiceUtils {
     	// create the subscription and persist. 
     	CartridgeSubscription cartridgeSubscription = null;
     	try {
-    		cartridgeSubscription = cartridgeSubsciptionManager.deployMultitenantService(cartridgeType, alias, autoscalingPolicy,
-					deploymentPolicy, tenantDomain, tenantId, "tenant-admin-user-name", clusterDomain, clusterSubdomain, null, false, null, null,
-					tenantRange);
-    		cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+    		//cartridgeSubscription = cartridgeSubsciptionManager.deployMultitenantService(cartridgeType, alias, autoscalingPolicy,
+			//		deploymentPolicy, tenantDomain, tenantId, "tenant-admin-user-name", clusterDomain, clusterSubdomain, null, false, null, null,
+			//		tenantRange);
+    		//cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

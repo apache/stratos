@@ -19,15 +19,9 @@
 
 package org.apache.stratos.adc.mgt.subscription;
 
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.adc.mgt.exception.*;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.repository.Repository;
-import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
-import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
 
 public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
@@ -37,35 +31,14 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
     /**
      * Constructor
      *
-     * @param cartridgeInfo CartridgeInfo subscription
+     * @param cartridgeInfo CartridgeInfo instance
+     * @param subscriptionTenancyBehaviour SubscriptionTenancyBehaviour instance
      */
-    public ApplicationCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
-        super(cartridgeInfo, isServiceDeployment);
+    public ApplicationCartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour
+            subscriptionTenancyBehaviour) {
+        super(cartridgeInfo, subscriptionTenancyBehaviour);
     }
 
-    public void createSubscription(Subscriber subscriber, String alias, String autoscalingPolicyName,
-                                   String deploymentPolicyName, Repository repository) throws
-            InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException,
-            RepositoryCredentialsRequiredException, RepositoryTransportException, UnregisteredCartridgeException,
-            AlreadySubscribedException, RepositoryRequiredException, InvalidRepositoryException, PolicyException {
-
-        super.createSubscription(subscriber, alias, autoscalingPolicyName, deploymentPolicyName, repository);
-        subscriptionTenancyBehaviour.createSubscription();
-    }
-
-    @Override
-    public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
-
-        Properties props = new Properties();
-        props.setProperties(getCartridgeInfo().getProperties());
-        
-        subscriptionTenancyBehaviour.registerSubscription(props);
-
-        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
-                getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
-                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
-                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), null, "PENDING", getSubscriptionKey());
-    }
 
     public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
                                         boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
@@ -74,19 +47,4 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
         //no repository for application cartridge instances
         return null;
     }
-
-    @Override
-    public void removeSubscription() throws ADCException, NotSubscribedException {
-
-        subscriptionTenancyBehaviour.removeSubscription();
-        super.cleanupSubscription();
-    }
-
-    public PayloadArg createPayloadParameters () throws ADCException {
-
-        PayloadArg payloadArg = super.createPayloadParameters();
-        return subscriptionTenancyBehaviour.createPayloadParameters(payloadArg);
-    }
-
-	
 }

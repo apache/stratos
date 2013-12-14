@@ -23,7 +23,6 @@ import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 
@@ -32,25 +31,13 @@ import java.io.Serializable;
 public abstract class SubscriptionTenancyBehaviour implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    protected CartridgeSubscription cartridgeSubscription;
 
-    public SubscriptionTenancyBehaviour(CartridgeSubscription cartridgeSubscription) {
-        this.cartridgeSubscription = cartridgeSubscription;
-    }
+    public abstract void createSubscription(CartridgeSubscription cartridgeSubscription)
+            throws ADCException, AlreadySubscribedException;
 
-    public void setCartridgeSubscription (CartridgeSubscription cartridgeSubscription) {
-        this.cartridgeSubscription = cartridgeSubscription;
-    }
+    public abstract void registerSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)
+            throws ADCException, UnregisteredCartridgeException;
 
-    public CartridgeSubscription getCartridgeSubscription () {
-        return cartridgeSubscription;
-    }
-
-    public abstract void createSubscription() throws ADCException, AlreadySubscribedException;
-
-    public abstract void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException;
-
-    public abstract void removeSubscription() throws ADCException, NotSubscribedException;
-
-    public abstract PayloadArg createPayloadParameters(PayloadArg payloadArg) throws ADCException;
+    public abstract void removeSubscription(CartridgeSubscription cartridgeSubscription)
+            throws ADCException, NotSubscribedException;
 }

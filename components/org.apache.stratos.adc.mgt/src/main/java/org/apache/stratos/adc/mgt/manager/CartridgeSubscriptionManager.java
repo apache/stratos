@@ -29,14 +29,17 @@ import org.apache.stratos.adc.mgt.connector.CartridgeSubscriptionConnectorFactor
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.*;
-import org.apache.stratos.adc.mgt.payload.Payload;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
+import org.apache.stratos.adc.mgt.payload.BasicPayloadData;
+import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadFactory;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-import org.apache.stratos.adc.mgt.subscription.FrameworkCartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionMultiTenantBehaviour;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionSingleTenantBehaviour;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
+import org.apache.stratos.adc.mgt.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
@@ -120,25 +123,10 @@ public class CartridgeSubscriptionManager {
         // validate cartridge alias
         ApplicationManagementUtil.validateCartridgeAlias(cartridgeAlias, cartridgeType);
 
-        // TODO - remove, now autoscaling policy is at autoscaler. Just need to pass the name
-        /*
-         * Policy autoScalingPolicy;
-         * if(autoscalingPolicyName != null && !autoscalingPolicyName.isEmpty()) {
-         * autoScalingPolicy = PolicyHolder.getInstance().getPolicy(autoscalingPolicyName);
-         * } else {
-         * autoScalingPolicy = PolicyHolder.getInstance().getDefaultPolicy();
-         * }
-         * 
-         * if(autoScalingPolicy == null) {
-         * throw new PolicyException("Could not load the auto scaling policy.");
-         * }
-         */
-
         CartridgeInfo cartridgeInfo;
         try {
             cartridgeInfo =
-                            CloudControllerServiceClient.getServiceClient()
-                                                        .getCartridgeInfo(cartridgeType);
+                            CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
             if (props != null) {
                 cartridgeInfo.setProperties(props);
             }
@@ -156,11 +144,19 @@ public class CartridgeSubscriptionManager {
             throw new ADCException(message, e);
         }
 
-        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
+        //Decide tenancy behaviour
+        SubscriptionTenancyBehaviour tenancyBehaviour;
+        if(cartridgeInfo.getMultiTenant()) {
+            tenancyBehaviour = new SubscriptionMultiTenantBehaviour();
+        } else {
+            tenancyBehaviour = new SubscriptionSingleTenantBehaviour();
+        }
 
-        CartridgeSubscription cartridgeSubscription =
-                                                      CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
+        //Create the CartridgeSubscription instance
+        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
+                getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
 
+        //Create repository
         Repository repository =
                                 cartridgeSubscription.manageRepository(repositoryURL,
                                                                        repositoryUsername,
@@ -169,6 +165,10 @@ public class CartridgeSubscriptionManager {
                                                                        cartridgeAlias,
                                                                        cartridgeInfo, tenantDomain);
 
+        //Create subscriber
+        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
+
+        //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                  deploymentPolicyName, repository);
         cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey()); // TODO ---- fix
@@ -179,51 +179,37 @@ public class CartridgeSubscriptionManager {
                  cartridgeType + ", Repo URL: " + repositoryURL + ", Policy: " +
                  autoscalingPolicyName);
 
-        Payload payload =
-                          PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(),
-                                                            cartridgeType, "/tmp/" + tenantDomain +
-                                                                           "-" + cartridgeAlias +
-                                                                           ".zip");
-        PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
+        //Create the payload
+        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.getBasicPayloadData(cartridgeSubscription);
+        PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
+                cartridgeInfo.getType(), basicPayloadData);
 
-        if (payloadArg != null) {
-            // populate the payload
-            payload.populatePayload(payloadArg);
-            cartridgeSubscription.setPayload(payload);
-        }
-
-        // get the payload parameters defined in the cartridge definition file for this cartridge
-        // type
+        // get the payload parameters defined in the cartridge definition file for this cartridge type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
-            StringBuilder customPayloadParamsBuilder = new StringBuilder();
             for (Property property : cartridgeInfo.getProperties()) {
-                // check if a property is related to the payload. Currently this is done by checking
-                // if the
-                // property name starts with 'payload_parameter.' suffix. If so the payload param
-                // name will
+                // check if a property is related to the payload. Currently this is done by checking if the
+                // property name starts with 'payload_parameter.' suffix. If so the payload param name will
                 // be taken as the substring from the index of '.' to the end of the property name.
                 if (property.getName()
                             .startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
                     String payloadParamName = property.getName();
-                    customPayloadParamsBuilder.append(",");
-                    customPayloadParamsBuilder.append(payloadParamName.substring(payloadParamName.indexOf(".") + 1));
-                    customPayloadParamsBuilder.append("=");
-                    customPayloadParamsBuilder.append(property.getValue());
+                    payloadData.add(payloadParamName.substring(payloadParamName.indexOf(".") + 1), property.getValue());
                 }
-            }
-            // if valid payload related parameters are found in the cartridge definition file, add
-            // them to the payload
-            String customPayloadParamString = customPayloadParamsBuilder.toString();
-            if (!customPayloadParamString.isEmpty()) {
-                payload.populatePayload(customPayloadParamString);
-                cartridgeSubscription.setPayload(payload);
             }
         }
 
-        // CartridgeInstanceCache.getCartridgeInstanceCache().
-        // addCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeAlias),
-        // cartridgeSubscription);
+        //check if there are any custom payload entries defined
+        if (cartridgeSubscription.getCustomPayloadEntries() != null) {
+            //add them to the payload
+            Map<String, String> customPayloadEntries = cartridgeSubscription.getCustomPayloadEntries();
+            Set<Map.Entry<String,String>> entrySet = customPayloadEntries.entrySet();
+            for (Map.Entry<String, String> entry : entrySet) {
+                payloadData.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        cartridgeSubscription.setPayloadData(payloadData);
 
         return cartridgeSubscription;
     }
@@ -283,25 +269,17 @@ public class CartridgeSubscriptionManager {
         }
 
         //add connection relates parameters to the payload
-        if(cartridgeSubscription.getPayload() != null) {
-            cartridgeSubscription.getPayload().populatePayload(connectionParamsBuilder.toString());
+        if(cartridgeSubscription.getPayloadData() != null) {
+            //cartridgeSubscription.getPayloadData().populatePayload(connectionParamsBuilder.toString());
         } else {
             //no existing payload
-            Payload payload = PayloadFactory.getPayloadInstance(cartridgeSubscription.getCartridgeInfo().getProvider(),
+            /*Payload payload = PayloadFactory.getPayloadDataInstance(cartridgeSubscription.getCartridgeInfo().getProvider(),
                     cartridgeSubscription.getType(), "/tmp/" + tenantDomain + "-" + cartridgeSubscription.getAlias() +
                     ".zip");
             payload.populatePayload(connectionParamsBuilder.toString());
-            cartridgeSubscription.setPayload(payload);
+            cartridgeSubscription.setPayloadData(payload);*/
         }
 
-        /*
-        payloadArg.setUserDefinedPayload(connectionParamsBuilder.toString());
-        Payload payload = PayloadFactory.getPayloadInstance(cartridgeSubscription.getCartridgeInfo().getProvider(),
-                cartridgeSubscription.getType(),
-                "/tmp/" + tenantDomain + "-" + cartridgeSubscription.getAlias() + ".zip");
-        payload.populatePayload(payloadArg);
-        payload.createPayload();
-        */
     }
 
     /**
@@ -315,14 +293,6 @@ public class CartridgeSubscriptionManager {
      */
     public SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription)
             throws ADCException, UnregisteredCartridgeException {
-
-        /*CartridgeSubscriptionInfo cartridgeSubscription = CartridgeInstanceCache.getCartridgeInstanceCache().
-                getCartridgeSubscription(new CartridgeInstanceCacheKey(tenantId, alias));
-
-        if(cartridgeSubscription == null) {
-            throw new ADCException("Unable to find cartridge with alias " + alias + ", for tenant Id " + tenantId +
-                    " in cache");
-        }*/
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(null);
 
@@ -370,26 +340,6 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    /*public List<CartridgeSubscriptionInfo> getCartridgeInstances (int tenantId) throws ADCException, NotSubscribedException {
-
-        List<CartridgeSubscriptionInfo> cartridgeSubscriptions = getCartridgeSubscriptions(tenantId);
-        List<CartridgeSubscriptionInfo> cartridgeInstances = new ArrayList<CartridgeSubscriptionInfo>();
-        CartridgeInfo cartridgeInfo;
-
-        for(CartridgeSubscriptionInfo cartridgeSubscription : cartridgeSubscriptions) {
-            try {
-                cartridgeInfo = CloudControllerServiceClient.getServiceClient().
-                        getCartridgeInfo(cartridgeSubscription.getCartridge());
-                cartridgeInstances.add(populateCartridgeSubscriptionInformation(cartridgeInfo, cartridgeSubscription));
-
-            } catch (Exception e) {
-                throw new ADCException(e.getMessage(), e);
-            }
-        }
-
-        return cartridgeInstances;
-    }*/
-
     /**
      * Creates and returns a CartridgeSubscription object
      *
@@ -415,27 +365,9 @@ public class CartridgeSubscriptionManager {
 
         return populateCartridgeSubscriptionInformation(cartridgeInfo, cartridgeSubscriptionInfo);
     }
-    
-    
-    /****
-     *  TODO - complete method...
-     * 
-     * 
-     * @param cartridgeType
-     * @param cartridgeAlias
-     * @param autoscalingPolicyName
-     * @param deploymentPolicyName
-     * @param tenantDomain
-     * @param tenantId
-     * @param tenantAdminUsername
-     * @param repositoryType
-     * @param repositoryURL
-     * @param isPrivateRepository
-     * @param repositoryUsername
-     * @param repositoryPassword
-     */
-    
-    public CartridgeSubscription deployMultitenantService(String cartridgeType, String cartridgeAlias,
+
+    //TODO: remove
+    /*public CartridgeSubscription deployMultitenantService(String cartridgeType, String cartridgeAlias,
             String autoscalingPolicyName, String deploymentPolicyName,
             String tenantDomain, int tenantId,
             String tenantAdminUsername,
@@ -485,7 +417,7 @@ public class CartridgeSubscriptionManager {
         
         // TODO -- payload would need some additional params - like Puppet master IP .. etc
         
-        Payload payload = PayloadFactory.getPayloadInstance(cartridgeInfo.getProvider(), cartridgeType,
+        Payload payload = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(), cartridgeType,
                 "/tmp/" + tenantDomain + "-" + cartridgeAlias + ".zip");
         PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
 
@@ -497,7 +429,7 @@ public class CartridgeSubscriptionManager {
             payloadArg.setTenantRange(tenantRange);
             //payloadArg.setDeployment("default");   
             payloadArg.setServiceDomain(cartridgeAlias+"."+cartridgeInfo.getHostName()+".domain"); // This is cluster id
-            cartridgeSubscription.setPayload(payload);
+            cartridgeSubscription.setPayloadData(payload);
         }
 
         //get the payload parameters defined in the cartridge definition file for this cartridge type
@@ -521,13 +453,13 @@ public class CartridgeSubscriptionManager {
             String customPayloadParamString = customPayloadParamsBuilder.toString();
             if(!customPayloadParamString.isEmpty()) {
                 payload.populatePayload(customPayloadParamString);
-                cartridgeSubscription.setPayload(payload);
+                cartridgeSubscription.setPayloadData(payload);
             }
         }
         
         return cartridgeSubscription;
     	
-    }
+    }*/
 
     private CartridgeSubscriptionInfo getCartridgeSubscriptionInfo(String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
@@ -577,7 +509,15 @@ public class CartridgeSubscriptionManager {
                                                                            CartridgeSubscriptionInfo cartridgeSubscriptionInfo)
             throws ADCException {
 
-        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
+        SubscriptionTenancyBehaviour tenancyBehaviour;
+        if(cartridgeInfo.getMultiTenant()) {
+            tenancyBehaviour = new SubscriptionMultiTenantBehaviour();
+        } else {
+            tenancyBehaviour = new SubscriptionSingleTenantBehaviour();
+        }
+
+        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
+                getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
 
         cartridgeSubscription.setSubscriptionId(cartridgeSubscriptionInfo.getSubscriptionId());
         cartridgeSubscription.setAlias(cartridgeSubscriptionInfo.getAlias());
@@ -586,12 +526,6 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.setClusterSubDomain(cartridgeSubscriptionInfo.getClusterSubdomain());
         cartridgeSubscription.setMgtClusterDomain(cartridgeSubscriptionInfo.getMgtClusterDomain());
         cartridgeSubscription.setMgtClusterSubDomain(cartridgeSubscriptionInfo.getMgtClusterSubDomain());
-        /*Policy autoScalingPolicy;
-        if(cartridgeSubscriptionInfo.getPolicy() != null && !cartridgeSubscriptionInfo.getPolicy().isEmpty()) {
-            autoScalingPolicy = PolicyHolder.getInstance().getPolicy(cartridgeSubscriptionInfo.getPolicy());
-        } else {
-            autoScalingPolicy = PolicyHolder.getInstance().getDefaultPolicy();
-        }*/
         cartridgeSubscription.setAutoscalingPolicyName(cartridgeSubscriptionInfo.getPolicy());
         Subscriber subscriber = new Subscriber(CarbonContext.getThreadLocalCarbonContext().getUsername(),
                 cartridgeSubscriptionInfo.getTenantId(), cartridgeSubscriptionInfo.getTenantDomain());

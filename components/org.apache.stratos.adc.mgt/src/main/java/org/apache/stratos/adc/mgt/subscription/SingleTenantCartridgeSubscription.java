@@ -63,12 +63,12 @@
 //        ApplicationManagementUtil.registerService(getType(),
 //                getCluster().getClusterDomain(),
 //                getCluster().getClusterSubDomain(),
-//                getPayload().createPayload(),
-//                getPayload().getPayloadArg().getTenantRange(),
+//                getPayloadData().createPayload(),
+//                getPayloadData().getPayloadArg().getTenantRange(),
 //                getCluster().getHostName(),
 //                null);
 //
-//        getPayload().delete();
+//        getPayloadData().delete();
 //
 //        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
 //                getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

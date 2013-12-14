@@ -32,10 +32,12 @@ public class LBCartridgeSubscription extends CartridgeSubscription {
     /**
      * Constructor
      *
-     * @param cartridgeInfo CartridgeInfo subscription
+     * @param cartridgeInfo CartridgeInfo instance
+     * @param subscriptionTenancyBehaviour SubscriptionTenancyBehaviour instance
      */
-    public LBCartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
-        super(cartridgeInfo, isServiceDeployment);
+    public LBCartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour
+            subscriptionTenancyBehaviour) {
+        super(cartridgeInfo, subscriptionTenancyBehaviour);
     }
 
     @Override

@@ -23,14 +23,24 @@ import junit.framework.TestCase;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionMultiTenantBehaviour;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionSingleTenantBehaviour;
+import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 public class CartridgeSubscriptionTest extends TestCase {
 
     private CartridgeSubscription getCartridgeInstance (CartridgeInfo cartridgeInfo) {
 
+        SubscriptionTenancyBehaviour tenancyBehaviour;
+        if(cartridgeInfo.getMultiTenant()) {
+            tenancyBehaviour = new SubscriptionMultiTenantBehaviour();
+        } else {
+            tenancyBehaviour = new SubscriptionSingleTenantBehaviour();
+        }
+
         try {
-            return CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo);
+            return CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
 
         } catch (ADCException e) {
             throw new RuntimeException(e);
@@ -40,14 +50,16 @@ public class CartridgeSubscriptionTest extends TestCase {
     public void testCarbonCartridge () {
 
         CartridgeInfo cartridgeInfo = new CartridgeInfo();
+        cartridgeInfo.setProvider("carbon");
         cartridgeInfo.setMultiTenant(true);
         cartridgeInfo.setType("esb");
         assertNotNull(getCartridgeInstance(cartridgeInfo));
     }
-     //TODO FIXME
-    /*public void testPhpCartridgeInstance () {
+
+    public void testPhpCartridgeInstance () {
 
         CartridgeInfo cartridgeInfo = new CartridgeInfo();
+        cartridgeInfo.setProvider("php-provider");
         cartridgeInfo.setMultiTenant(false);
         cartridgeInfo.setType("php");
         assertNotNull(getCartridgeInstance(cartridgeInfo));
@@ -56,6 +68,7 @@ public class CartridgeSubscriptionTest extends TestCase {
     public void testMySqlCartridgeInstance () {
 
         CartridgeInfo cartridgeInfo = new CartridgeInfo();
+        cartridgeInfo.setProvider("data");
         cartridgeInfo.setMultiTenant(false);
         cartridgeInfo.setType("mysql");
         assertNotNull(getCartridgeInstance(cartridgeInfo));
@@ -64,8 +77,9 @@ public class CartridgeSubscriptionTest extends TestCase {
     public void testTomcatCartridgeInstance () {
 
         CartridgeInfo cartridgeInfo = new CartridgeInfo();
+        cartridgeInfo.setProvider("tomcat-provider");
         cartridgeInfo.setMultiTenant(false);
         cartridgeInfo.setType("tomcat");
         assertNotNull(getCartridgeInstance(cartridgeInfo));
-    }*/
+    }
 }

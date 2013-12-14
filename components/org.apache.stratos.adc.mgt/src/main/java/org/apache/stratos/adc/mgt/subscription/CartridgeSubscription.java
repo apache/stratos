@@ -27,23 +27,20 @@ import org.apache.stratos.adc.mgt.dao.Cluster;
 import org.apache.stratos.adc.mgt.dns.DNSManager;
 import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
-import org.apache.stratos.adc.mgt.payload.Payload;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
+import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.repository.Repository;
-import org.apache.stratos.adc.mgt.service.RepositoryInfoBean;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
-import org.apache.stratos.adc.mgt.subscription.tenancy.ServiceDeploymentMultiTenantBehaviour;
-import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionMultiTenantBehaviour;
-import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionSingleTenantBehaviour;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
-import org.apache.stratos.adc.mgt.utils.*;
+import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.adc.mgt.utils.RepositoryFactory;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public abstract class CartridgeSubscription implements Serializable {
 
@@ -58,23 +55,23 @@ public abstract class CartridgeSubscription implements Serializable {
     private Subscriber subscriber;
     private Repository repository;
     private CartridgeInfo cartridgeInfo;
-    private Payload payload;
+    private PayloadData payloadData;
     private Cluster cluster;
-    private String subscriptionStatus;
-    private String serviceStatus;
+    //private String subscriptionStatus;
+    //private String serviceStatus;
     private String mappedDomain;
-    private List<String> connectedSubscriptionAliases;
+    //private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
-    protected SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
+    private SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
 
     
     /**
      * Constructor
      *
-     * @param cartridgeInfo CartridgeInfo subscription
+     * @param cartridgeInfo CartridgeInfo instance
+     * @param subscriptionTenancyBehaviour SubscriptionTenancyBehaviour instance
      */
-    // TODO - temp fix to identify service deployment
-    public CartridgeSubscription(CartridgeInfo cartridgeInfo, boolean isServiceDeployment) {
+    public CartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour subscriptionTenancyBehaviour) {
 
         this.setCartridgeInfo(cartridgeInfo);
         this.setType(cartridgeInfo.getType());
@@ -84,16 +81,9 @@ public abstract class CartridgeSubscription implements Serializable {
         getCluster().setMgtClusterDomain("");
         getCluster().setMgtClusterSubDomain(CartridgeConstants.DEFAULT_MGT_SUBDOMAIN);
         getCluster().setHostName(cartridgeInfo.getHostName());
-        this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
-        this.connectedSubscriptionAliases = new ArrayList<String>();
-        boolean isMultiTenant = getCartridgeInfo().getMultiTenant();
-        if(isServiceDeployment) {
-        	subscriptionTenancyBehaviour = new ServiceDeploymentMultiTenantBehaviour(this);
-        } else if(isMultiTenant) {
-            subscriptionTenancyBehaviour = new SubscriptionMultiTenantBehaviour(this);
-        } else {
-            subscriptionTenancyBehaviour = new SubscriptionSingleTenantBehaviour(this);
-        } 
+        //this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
+        //this.connectedSubscriptionAliases = new ArrayList<String>();
+        this.setSubscriptionTenancyBehaviour(subscriptionTenancyBehaviour);
     }
 
     /**
@@ -122,14 +112,12 @@ public abstract class CartridgeSubscription implements Serializable {
             DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
 
-    	log.info(" ---- in super type cartridge subscription --");
         setSubscriber(subscriber);
         setAlias(alias);
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
-        // TODOOO... remove followig
-        //subscriptionTenancyBehaviour.createSubscription(this);
+        getSubscriptionTenancyBehaviour().createSubscription(this);
     }
 
     /**
@@ -138,7 +126,11 @@ public abstract class CartridgeSubscription implements Serializable {
      * @throws ADCException
      * @throws NotSubscribedException
      */
-    public abstract void removeSubscription() throws ADCException, NotSubscribedException;
+    public void removeSubscription() throws ADCException, NotSubscribedException {
+
+        getSubscriptionTenancyBehaviour().removeSubscription(this);
+        cleanupSubscription();
+    }
 
     /**
      * Registers the subscription
@@ -149,8 +141,19 @@ public abstract class CartridgeSubscription implements Serializable {
      * @throws ADCException
      * @throws UnregisteredCartridgeException
      */
-    public abstract CartridgeSubscriptionInfo registerSubscription(Properties properties)
-            throws ADCException, UnregisteredCartridgeException;
+    public CartridgeSubscriptionInfo registerSubscription(Properties properties)
+            throws ADCException, UnregisteredCartridgeException {
+
+        Properties props = new Properties();
+        props.setProperties(getCartridgeInfo().getProperties());
+
+        getSubscriptionTenancyBehaviour().registerSubscription(this, props);
+
+        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
+                getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
+                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
+                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), null, "PENDING", getSubscriptionKey());
+    }
 
     /**
      * Connect cartridges
@@ -158,7 +161,7 @@ public abstract class CartridgeSubscription implements Serializable {
      * @param connectingCartridgeAlias Alias of connecting cartridge
      */
     public void connect (String connectingCartridgeAlias) {
-        connectedSubscriptionAliases.add(connectingCartridgeAlias);
+        //connectedSubscriptionAliases.add(connectingCartridgeAlias);
     }
 
     /**
@@ -167,27 +170,7 @@ public abstract class CartridgeSubscription implements Serializable {
      * @param disconnectingCartridgeAlias Alias of the cartridge subscription to disconnect
      */
     public void disconnect (String disconnectingCartridgeAlias) {
-        connectedSubscriptionAliases.remove(disconnectingCartridgeAlias);
-    }
-
-    /**
-     * Creates the relevant payload parameters for this cartridge subscription
-     *
-     * @return PayloadArg subscription
-     * @throws ADCException in an errpr
-     */
-    public PayloadArg createPayloadParameters() throws ADCException {
-
-        PayloadArg payloadArg = new PayloadArg();
-        payloadArg.setCartridgeInfo(getCartridgeInfo());
-        //payloadArg.setPolicy(getAutoscalingPolicyName());
-        payloadArg.setMultitenant(getCartridgeInfo().getMultiTenant());
-        payloadArg.setTenantId(getSubscriber().getTenantId());
-        payloadArg.setTenantDomain(getSubscriber().getTenantDomain());
-        payloadArg.setCartridgeAlias(getAlias());
-        payloadArg.setServiceName(getCartridgeInfo().getType());
-        payloadArg.setSubscriptionKey(subscriptionKey);
-        return payloadArg;
+        //connectedSubscriptionAliases.remove(disconnectingCartridgeAlias);
     }
 
     /**
@@ -233,27 +216,7 @@ public abstract class CartridgeSubscription implements Serializable {
             repository.setPassword(repoUserPassword);
             repository.setPrivateRepository(privateRepo);
 
-        } 
-        // Commenting out, since internal git repos are no longer used
-        /*else {
-
-            log.info("External git repo url not provided for tenant "
-                    + tenantDomain + ", creating an git internal repository");
-
-            repository.setUserName(System.getProperty(CartridgeConstants.INTERNAL_GIT_USERNAME));
-            repository.setPassword(System.getProperty(CartridgeConstants.INTERNAL_GIT_PASSWORD));
-            try {
-                new RepositoryCreator(new RepositoryInfoBean(repoURL, cartridgeAlias, tenantDomain,
-                        repository.getUserName(), repository.getPassword(), cartridgeInfo.getDeploymentDirs(),
-                        cartridgeInfo)).createInternalRepository();
-
-            } catch (Exception e) {
-                throw new ADCException(e.getMessage(), e);
-            }
-            String repoName = tenantDomain + "/" + cartridgeAlias;
-            repository.setUrl("https://" + System.getProperty(CartridgeConstants.GIT_HOST_NAME) + ":8443/git/" +
-                    repoName);
-        }*/
+        }
 
         // Validate Remote Repository.
         ApplicationManagementUtil.validateRepository(repoURL, repoUserName, repoUserPassword, privateRepo,
@@ -311,7 +274,13 @@ public abstract class CartridgeSubscription implements Serializable {
             log.error(errorMsg, e);
         }
 
-        this.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
+        //this.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
+    }
+
+    public Map<String, String> getCustomPayloadEntries () {
+
+        //no custom payload entries by default
+        return null;
     }
 
     public String getType() {
@@ -330,9 +299,9 @@ public abstract class CartridgeSubscription implements Serializable {
         return repository;
     }
 
-    public List<String> getConnectedSubscriptionAliases() {
+    /*public List<String> getConnectedSubscriptionAliases() {
         return connectedSubscriptionAliases;
-    }
+    }*/
 
     public CartridgeInfo getCartridgeInfo() {
         return cartridgeInfo;
@@ -406,12 +375,12 @@ public abstract class CartridgeSubscription implements Serializable {
         this.cartridgeInfo = cartridgeInfo;
     }
 
-    public Payload getPayload() {
-        return payload;
+    public PayloadData getPayloadData() {
+        return payloadData;
     }
 
-    public void setPayload(Payload payload) {
-        this.payload = payload;
+    public void setPayloadData(PayloadData payloadData) {
+        this.payloadData = payloadData;
     }
 
     public int getSubscriptionId() {
@@ -430,13 +399,13 @@ public abstract class CartridgeSubscription implements Serializable {
         this.mappedDomain = mappedDomain;
     }
 
-    public String getSubscriptionStatus() {
+    /*public String getSubscriptionStatus() {
         return subscriptionStatus;
     }
 
     public void setSubscriptionStatus(String subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
-    }
+    }*/
 
     public String getSubscriptionKey() {
         return subscriptionKey;
@@ -462,11 +431,19 @@ public abstract class CartridgeSubscription implements Serializable {
         this.deploymentPolicyName = deploymentPolicyName;
     }
 
-    public String getServiceStatus() {
+    public SubscriptionTenancyBehaviour getSubscriptionTenancyBehaviour() {
+        return subscriptionTenancyBehaviour;
+    }
+
+    public void setSubscriptionTenancyBehaviour(SubscriptionTenancyBehaviour subscriptionTenancyBehaviour) {
+        this.subscriptionTenancyBehaviour = subscriptionTenancyBehaviour;
+    }
+
+    /*public String getServiceStatus() {
         return serviceStatus;
     }
 
     public void setServiceStatus(String serviceStatus) {
         this.serviceStatus = serviceStatus;
-    }
+    }*/
 }

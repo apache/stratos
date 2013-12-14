@@ -25,24 +25,18 @@ import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 
 public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehaviour {
 
     private static Log log = LogFactory.getLog(SubscriptionMultiTenantBehaviour.class);
 
-    public SubscriptionMultiTenantBehaviour(CartridgeSubscription cartridgeSubscription) {
-        super(cartridgeSubscription);
-    }
 
-    public void createSubscription() throws ADCException, AlreadySubscribedException {
+    public void createSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, AlreadySubscribedException {
 
         boolean allowMultipleSubscription = Boolean.
                 valueOf(System.getProperty(CartridgeConstants.FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED));
@@ -54,8 +48,8 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
                 subscribed = PersistenceManager.isAlreadySubscribed(cartridgeSubscription.getType(),
                         cartridgeSubscription.getSubscriber().getTenantId());
             } catch (Exception e) {
-                String msg = "Error checking whether the cartridge type " + cartridgeSubscription.getType()
-                        + " is already subscribed";
+                String msg = "Error checking whether the cartridge type " + cartridgeSubscription.getType() +
+                        " is already subscribed";
                 log.error(msg, e);
                 throw new ADCException(msg, e);
             }
@@ -70,33 +64,8 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
             }
         }
 
-        /*TopologyManagementService topologyService = DataHolder.getTopologyMgtService();
-        DomainContext[] domainContexts = topologyService.getDomainsAndSubdomains(cartridgeSubscription.getType(),
-                cartridgeSubscription.getSubscriber().getTenantId());
-        log.info("Retrieved " + domainContexts.length + " domain and corresponding subdomain pairs");
-
-        if (domainContexts.length > 0) {
-            if(domainContexts.length > 2) {
-                if(log.isDebugEnabled())
-                    log.debug("Too many domain sub domain pairs");
-            }
-
-            for (DomainContext domainContext : domainContexts) {
-                if (domainContext.getSubDomain().equalsIgnoreCase("mgt")) {
-                    cartridgeSubscription.getCluster().setMgtClusterDomain(domainContext.getDomain());
-                    cartridgeSubscription.getCluster().setMgtClusterSubDomain(domainContext.getSubDomain());
-                } else {
-                    cartridgeSubscription.getCluster().setClusterDomain(domainContext.getDomain());
-                    cartridgeSubscription.getCluster().setClusterSubDomain(domainContext.getSubDomain());
-                }
-            }
-        } else {
-            String msg = "Domain contexts not found for " + cartridgeSubscription.getType() + " and tenant id " +
-                    cartridgeSubscription.getSubscriber().getTenantId();
-            log.warn(msg);
-            throw new ADCException(msg);
-        }*/
-        TopologyManager.acquireReadLock();
+        //TODO: implement getting cluster Id from DB
+        /*TopologyManager.acquireReadLock();
 
         try {
             Service service = TopologyManager.getTopology().getService(cartridgeSubscription.getType());
@@ -107,30 +76,25 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
                 throw new ADCException(errorMsg);
             }
 
-            //TODO: fix properly
             //cartridgeSubscription.getCluster().setClusterDomain(service.getCluster().);
             //cartridgeSubscription.getCluster().setClusterSubDomain(domainContext.getSubDomain());
 
         } finally {
             TopologyManager.releaseReadLock();
-        }
+        }*/
     }
 
-    public void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
+    public void registerSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)
+            throws ADCException, UnregisteredCartridgeException {
 
         //nothing to do
     }
 
-    public void removeSubscription() throws ADCException, NotSubscribedException {
+    public void removeSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, NotSubscribedException {
 
         log.info("Cartridge with alias " + cartridgeSubscription.getAlias() + ", and type " + cartridgeSubscription.getType() +
                 " is a multi-tenant cartridge and therefore will not terminate all instances and " +
                 "unregister services");
     }
 
-    public PayloadArg createPayloadParameters(PayloadArg payloadArg) throws ADCException {
-
-        //payload not used
-        return null;
-    }	
 }

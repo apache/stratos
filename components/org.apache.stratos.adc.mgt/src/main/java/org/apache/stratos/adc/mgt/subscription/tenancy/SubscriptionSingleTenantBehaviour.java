@@ -27,10 +27,8 @@ import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
-import org.apache.stratos.adc.mgt.payload.PayloadArg;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
-import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 
 
@@ -38,11 +36,9 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
 
     private static Log log = LogFactory.getLog(SubscriptionSingleTenantBehaviour.class);
 
-    public SubscriptionSingleTenantBehaviour(CartridgeSubscription cartridgeSubscription) {
-        super(cartridgeSubscription);
-    }
 
-    public void createSubscription() throws ADCException, AlreadySubscribedException {
+
+    public void createSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, AlreadySubscribedException {
 
         //set the cluster and hostname
         cartridgeSubscription.getCluster().setClusterDomain(cartridgeSubscription.getAlias() + "." +
@@ -51,30 +47,22 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
                 cartridgeSubscription.getCluster().getHostName());
     }
 
-    public void registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
+    public void registerSubscription(CartridgeSubscription cartridgeSubscription, Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-         //TODO: change to debug
-        log.info("Type: " + cartridgeSubscription.getType() +
-            " \n Cluster Domain: " + cartridgeSubscription.getCluster().getClusterDomain() +
-            " \n Cluster Sub-Domain: " + cartridgeSubscription.getCluster().getClusterSubDomain() +
-            " \n Tenant Range: " + cartridgeSubscription.getPayload().getPayloadArg().getTenantRange() +
-            " \n Autoscaling Policy: " + cartridgeSubscription.getAutoscalingPolicyName() +
-            " \n Deployment Policy: " + cartridgeSubscription.getDeploymentPolicyName());
+        log.info("Payload: " + cartridgeSubscription.getPayloadData().getCompletePayloadData().toString());
 
         ApplicationManagementUtil.registerService(cartridgeSubscription.getType(),
                 cartridgeSubscription.getCluster().getClusterDomain(),
                 cartridgeSubscription.getCluster().getClusterSubDomain(),
-                cartridgeSubscription.getPayload().createPayload(),
-                cartridgeSubscription.getPayload().getPayloadArg().getTenantRange(),
+                cartridgeSubscription.getPayloadData().getCompletePayloadData(),
+                cartridgeSubscription.getPayloadData().getBasicPayloadData().getTenantRange(),
                 cartridgeSubscription.getCluster().getHostName(),
                 cartridgeSubscription.getAutoscalingPolicyName(),
                 cartridgeSubscription.getDeploymentPolicyName(),
                 properties);
-
-        cartridgeSubscription.getPayload().delete();
     }
 
-    public void removeSubscription() throws ADCException, NotSubscribedException {
+    public void removeSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, NotSubscribedException {
 
         try {
             CloudControllerServiceClient.getServiceClient().terminateAllInstances(cartridgeSubscription.getCluster().getClusterDomain());
@@ -105,26 +93,5 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
 
         log.info("Unregistered service cluster, domain " + cartridgeSubscription.getCluster().getClusterDomain() + ", sub domain " +
                 cartridgeSubscription.getCluster().getClusterSubDomain());
-    }
-
-    public PayloadArg createPayloadParameters(PayloadArg payloadArg) throws ADCException {
-
-
-        if(cartridgeSubscription.getRepository() != null) {
-            payloadArg.setRepoURL(cartridgeSubscription.getRepository().getUrl());
-        }
-        payloadArg.setHostName(cartridgeSubscription.getCluster().getHostName());
-        payloadArg.setServiceDomain(cartridgeSubscription.getCluster().getClusterDomain());
-        payloadArg.setServiceSubDomain(cartridgeSubscription.getCluster().getMgtClusterSubDomain());
-        payloadArg.setMgtServiceDomain(cartridgeSubscription.getCluster().getMgtClusterDomain());
-        payloadArg.setMgtServiceSubDomain(cartridgeSubscription.getCluster().getMgtClusterSubDomain());
-        if(cartridgeSubscription.getCartridgeInfo().getProvider().equals(CartridgeConstants.PROVIDER_NAME_WSO2)) {
-            payloadArg.setTenantRange(Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()));
-        }
-        else {
-            payloadArg.setTenantRange("*");
-        }
-
-        return payloadArg;
     }
 }
