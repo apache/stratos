@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -86,13 +85,16 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	/*
 	 * Deploy a new partition to Auto Scaler.
 	 */
-	public boolean addNewPartition(Partition partition) throws AutoScalerException{
-		if(this.partitionExist(partition.getId())) {
-			throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
-        }
-
+	public boolean addNewPartition(Partition partition) throws AutoScalerException, InvalidPartitionException {
         try {
-        	validatePartition(partition);
+            if(this.partitionExist(partition.getId())) {
+                throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
+            }
+            if(null == partition.getProvider()) {
+                throw new InvalidPartitionException("Mandatory field provider has not be set for partition "+ partition.getId());
+            }
+
+        	validatePartitionViaCloudController(partition);
             RegistryManager.getInstance().persistPartition(partition);
 			addPartitionToInformationModel(partition);
             if(log.isInfoEnabled()) {
@@ -165,7 +167,10 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		
 	}
 	
-	public boolean validatePartition(Partition partition) throws PartitionValidationException{				
+	public boolean validatePartitionViaCloudController(Partition partition) throws PartitionValidationException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Validating partition via cloud controller: [id] %s", partition.getId()));
+        }
 		return CloudControllerClient.getInstance().validatePartition(partition);
 	}
 
