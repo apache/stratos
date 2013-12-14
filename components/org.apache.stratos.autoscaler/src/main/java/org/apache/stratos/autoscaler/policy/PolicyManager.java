@@ -115,13 +115,14 @@ public class PolicyManager {
     }
 
     private static void fillPartition(Partition destPartition, Partition srcPartition) {
+    	if(log.isDebugEnabled())
+    		log.debug("Settting provider for Partition " + destPartition.getId() + " provider "+ srcPartition.getProvider());
+        destPartition.setProvider(srcPartition.getProvider());
+        
+        if(log.isDebugEnabled())
+        	log.info("Settting properties for Partition " + destPartition.getId() + " provider "+ srcPartition.getProperties());
+        destPartition.setProperties(srcPartition.getProperties());
 
-        if (!destPartition.isProviderSpecified()) {
-            destPartition.setProvider(srcPartition.getProvider());
-        }
-        if (!destPartition.isPropertiesSpecified()) {
-            destPartition.setProperties(srcPartition.getProperties());
-        }
     }
 		
 	public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException{
