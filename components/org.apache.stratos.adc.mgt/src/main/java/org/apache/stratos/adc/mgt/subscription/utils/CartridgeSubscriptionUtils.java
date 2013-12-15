@@ -65,11 +65,11 @@ public class CartridgeSubscriptionUtils {
         basicPayloadData.setClusterId(service.getClusterId());
         basicPayloadData.setDeployment("default");//currently hard coded to default
         basicPayloadData.setHostName(service.getHostName());
-        basicPayloadData.setMultitenant("true");
+        basicPayloadData.setMultitenant(String.valueOf(service.getCartridgeInfo().getMultiTenant()));
         basicPayloadData.setPortMappings(createPortMappingPayloadString(service.getCartridgeInfo()));
         basicPayloadData.setServiceName(service.getType());
         basicPayloadData.setTenantId(service.getTenantId());
-        basicPayloadData.setTenantRange("*");
+        basicPayloadData.setTenantRange(service.getTenantRange());
 
         return basicPayloadData;
     }
