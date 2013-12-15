@@ -50,7 +50,7 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
         super(cartridgeInfo, subscriptionTenancyBehaviour);
         setHost("localhost");
         setUsername("root");
-        setPassword("root");
+        setPassword(ApplicationManagementUtil.generatePassword());
     }
 
     @Override

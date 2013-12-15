@@ -19,13 +19,19 @@
 
 package org.apache.stratos.adc.mgt.subscription.utils;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.payload.BasicPayloadData;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 public class CartridgeSubscriptionUtils {
 
-    public static BasicPayloadData getBasicPayloadData (CartridgeSubscription cartridgeSubscription) {
+    private static Log log = LogFactory.getLog(CartridgeSubscriptionUtils.class);
+
+    public static BasicPayloadData createBasicPayload (CartridgeSubscription cartridgeSubscription) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setApplicationPath(cartridgeSubscription.getCartridgeInfo().getBaseDir());
@@ -51,6 +57,23 @@ public class CartridgeSubscriptionUtils {
         return basicPayloadData;
     }
 
+    public static BasicPayloadData createBasicPayload (Service service) {
+
+        BasicPayloadData basicPayloadData = new BasicPayloadData();
+        basicPayloadData.setApplicationPath(service.getCartridgeInfo().getBaseDir());
+        basicPayloadData.setSubscriptionKey(service.getSubscriptionKey());
+        basicPayloadData.setClusterId(service.getClusterId());
+        basicPayloadData.setDeployment("default");//currently hard coded to default
+        basicPayloadData.setHostName(service.getHostName());
+        basicPayloadData.setMultitenant("true");
+        basicPayloadData.setPortMappings(createPortMappingPayloadString(service.getCartridgeInfo()));
+        basicPayloadData.setServiceName(service.getType());
+        basicPayloadData.setTenantId(service.getTenantId());
+        basicPayloadData.setTenantRange("*");
+
+        return basicPayloadData;
+    }
+
     private static String createPortMappingPayloadString (CartridgeInfo cartridgeInfo) {
 
         // port mappings
@@ -65,5 +88,11 @@ public class CartridgeSubscriptionUtils {
         String portMappingString = portMapBuilder.toString().replaceAll("\\|$", "");
 
         return portMappingString;
+    }
+
+    public static String generateSubscriptionKey() {
+        String key = RandomStringUtils.randomAlphanumeric(16);
+        log.info("Generated key  : " + key); // TODO -- remove the log
+        return key;
     }
 }

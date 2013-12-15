@@ -22,6 +22,7 @@ package org.apache.stratos.adc.mgt.payload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
+import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 
 public class PayloadFactory {
 
@@ -43,7 +44,11 @@ public class PayloadFactory {
         PayloadData payloadData = null;
 
         //TODO: fix after adding the property Category to Cartridge Definition
-        payloadData = new FramewrokCartridgePayloadData(basicPayloadData);
+        if (cartridgeProvider.equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
+            payloadData = new DataCartridgePayloadData(basicPayloadData);
+        } else {
+            payloadData = new FramewrokCartridgePayloadData(basicPayloadData);
+        }
 
         if(payloadData == null) {
             throw new ADCException("Unable to find matching payload for cartridge type " + cartridgeType +

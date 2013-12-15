@@ -20,7 +20,6 @@
 package org.apache.stratos.adc.mgt.manager;
 
 import org.apache.axis2.AxisFault;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
@@ -157,8 +156,7 @@ public class CartridgeSubscriptionManager {
                 getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
 
         //Create repository
-        Repository repository =
-                                cartridgeSubscription.manageRepository(repositoryURL,
+        Repository repository = cartridgeSubscription.manageRepository(repositoryURL,
                                                                        repositoryUsername,
                                                                        repositoryPassword,
                                                                        isPrivateRepository,
@@ -171,7 +169,7 @@ public class CartridgeSubscriptionManager {
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                  deploymentPolicyName, repository);
-        cartridgeSubscription.setSubscriptionKey(generateSubscriptionKey()); // TODO ---- fix
+        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey()); // TODO ---- fix
                                                                              // properly
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
@@ -180,7 +178,7 @@ public class CartridgeSubscriptionManager {
                  autoscalingPolicyName);
 
         //Create the payload
-        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.getBasicPayloadData(cartridgeSubscription);
+        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(cartridgeSubscription);
         PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
                 cartridgeInfo.getType(), basicPayloadData);
 
@@ -535,11 +533,4 @@ public class CartridgeSubscriptionManager {
 
         return cartridgeSubscription;
     }
-    
-
-    private String generateSubscriptionKey() {
-    	String key = RandomStringUtils.randomAlphanumeric(16);
-    	log.info("Generated key  : " + key); // TODO -- remove the log
-		return key;
-	}
 }
