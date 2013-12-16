@@ -125,12 +125,12 @@ public class LbClusterMonitor implements Runnable{
 
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
-                log.debug("Cluster monitor is running..");
+                log.debug("Cluster monitor is running.. "+this.toString());
             }
             try {
                 monitor();
             } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed.", e);
+                log.error("Cluster monitor: Monitor failed. "+this.toString(), e);
             }
             try {
                 // TODO make this configurable
@@ -175,7 +175,7 @@ public class LbClusterMonitor implements Runnable{
         scaleCheckKnowledgeSession.dispose();
         setDestroyed(true);
         if(log.isDebugEnabled()) {
-            log.debug("Cluster Monitor Drools session has been disposed.");
+            log.debug("Cluster Monitor Drools session has been disposed. "+this.toString());
         }
     }
 
