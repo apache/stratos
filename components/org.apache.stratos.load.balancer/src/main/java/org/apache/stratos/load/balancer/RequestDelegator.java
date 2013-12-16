@@ -27,7 +27,6 @@ import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.ArrayList;
 
@@ -45,52 +44,42 @@ public class RequestDelegator {
     }
 
     public Member findNextMemberFromHostName(String hostName) {
-        try {
-            if (hostName == null)
-                return null;
-
-            TopologyManager.acquireReadLock();
-            long startTime = System.currentTimeMillis();
-
-            Cluster cluster = LoadBalancerContext.getInstance().getHostNameClusterMap().getCluster(hostName);
-            if (cluster != null) {
-                Member member = findNextMemberInCluster(cluster);
-                if (member != null) {
-                    if (log.isDebugEnabled()) {
-                        long endTime = System.currentTimeMillis();
-                        log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [member] %s", (endTime - startTime), member.getServiceName(), member.getClusterId(), member.getMemberId()));
-                    }
-                }
-                return member;
-            }
+        if (hostName == null)
             return null;
-        } finally {
-            TopologyManager.releaseReadLock();
+
+        long startTime = System.currentTimeMillis();
+
+        Cluster cluster = LoadBalancerContext.getInstance().getHostNameClusterMap().getCluster(hostName);
+        if (cluster != null) {
+            Member member = findNextMemberInCluster(cluster);
+            if (member != null) {
+                if (log.isDebugEnabled()) {
+                    long endTime = System.currentTimeMillis();
+                    log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [member] %s", (endTime - startTime), member.getServiceName(), member.getClusterId(), member.getMemberId()));
+                }
+            }
+            return member;
         }
+        return null;
     }
 
     public Member findNextMemberFromTenantId(String hostName, int tenantId) {
-        try {
-            TopologyManager.acquireReadLock();
-            long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-            // Find cluster from host name and tenant id
-            Cluster cluster = LoadBalancerContext.getInstance().getMultiTenantClusterMap().getCluster(hostName, tenantId);
-            if (cluster != null) {
-                Member member = findNextMemberInCluster(cluster);
-                if (member != null) {
-                    if (log.isDebugEnabled()) {
-                        long endTime = System.currentTimeMillis();
-                        log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [tenant-id] %d [member] %s",
-                                (endTime - startTime), member.getServiceName(), member.getClusterId(), tenantId, member.getMemberId()));
-                    }
+        // Find cluster from host name and tenant id
+        Cluster cluster = LoadBalancerContext.getInstance().getMultiTenantClusterMap().getCluster(hostName, tenantId);
+        if (cluster != null) {
+            Member member = findNextMemberInCluster(cluster);
+            if (member != null) {
+                if (log.isDebugEnabled()) {
+                    long endTime = System.currentTimeMillis();
+                    log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [tenant-id] %d [member] %s",
+                            (endTime - startTime), member.getServiceName(), member.getClusterId(), tenantId, member.getMemberId()));
                 }
-                return member;
             }
-            return null;
-        } finally {
-            TopologyManager.releaseReadLock();
+            return member;
         }
+        return null;
     }
 
     private Member findNextMemberInCluster(Cluster cluster) {
