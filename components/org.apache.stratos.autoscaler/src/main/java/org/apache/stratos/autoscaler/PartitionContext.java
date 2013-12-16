@@ -70,6 +70,10 @@ public class PartitionContext implements Serializable{
 
     private Map<String, MemberStatsContext> memberStatsContexts;
     
+    // for the use of tests
+    public PartitionContext() {
+    }
+    
     public PartitionContext(Partition partition) {
         this.setPartition(partition);
         this.minimumMemberCount = partition.getPartitionMin();
