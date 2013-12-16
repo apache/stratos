@@ -228,18 +228,17 @@ public class CloudControllerUtil {
         return javaProps;
     }
     
-    public static void persist(Topology topology) {
+    public static void persistTopology(Topology topology) {
       try {
           RegistryManager.getInstance().persistTopology(topology);
       } catch (RegistryException e) {
 
           String msg = "Failed to persist the Topology in registry. ";
           log.fatal(msg, e);
-//          throw new CloudControllerException(msg, e);
       }
     }
     
-    public static Topology retrieve() {
+    public static Topology retrieveTopology() {
 
           Object obj = RegistryManager.getInstance().retrieveTopology();
           if (obj != null) {

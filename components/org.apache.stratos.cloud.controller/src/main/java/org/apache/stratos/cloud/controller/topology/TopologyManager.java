@@ -18,25 +18,21 @@
  */
 package org.apache.stratos.cloud.controller.topology;
 
-import com.google.gson.Gson;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.Topology;
+
+import com.google.gson.Gson;
 
 import javax.jms.TextMessage;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * this will manage to get and update the whole topology  from the file and to the file
+ * Persistence and retrieval of Topology from Registry
  */
 public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
@@ -44,8 +40,6 @@ public class TopologyManager {
     private  volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-    private File topologyFile = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH);
-	private File backup = new File(CloudControllerConstants.TOPOLOGY_FILE_PATH + ".back");
     private volatile Topology topology;
     private static TopologyManager instance;
     private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
@@ -81,28 +75,11 @@ public class TopologyManager {
     }
 
     public synchronized Topology getTopology() {
-        String currentContent = null;
         synchronized (TopologyManager.class) {
             if(this.topology == null) {
                 //need to initialize the topology
-//                this.topology = CloudControllerUtil.retrieve();
-//                if (this.topology == null) {
-                    
-//                }
-                if(this.topologyFile.exists()) {
-                    try {
-                        currentContent = FileUtils.readFileToString(this.topologyFile);
-                        Gson gson = new Gson();
-                        this.topology = gson.fromJson(currentContent, Topology.class);
-                        if(log.isDebugEnabled()) {
-                            log.debug("The current topology is: " + currentContent);
-                        }
-                    } catch (IOException e) {
-                        log.error(e.getMessage());
-                        throw new CloudControllerException(e.getMessage(), e);
-                    }
-                    
-                } else {
+                this.topology = CloudControllerUtil.retrieveTopology();
+                if (this.topology == null) {
                     if(log.isDebugEnabled()) {
                         log.debug("Creating new topology");
                     }
@@ -119,41 +96,23 @@ public class TopologyManager {
     public synchronized void updateTopology(Topology topology) {
         synchronized (TopologyManager.class) {
              this.topology = topology;
-//             CloudControllerUtil.persist(this.topology);
+             CloudControllerUtil.persistTopology(this.topology);
              if (log.isDebugEnabled()) {
-                 Gson gson = new Gson();
-                 String message = gson.toJson(topology);
-                 log.debug("Topology got updated. Full Topology: "+message);
+                 log.debug("Topology got updated. Full Topology: "+toJson());
              }
              
-            if (this.topologyFile.exists()) {
-                this.backup.delete();
-                this.topologyFile.renameTo(backup);
-            }
-            Gson gson = new Gson();
-            String message = gson.toJson(topology);
-            // overwrite the topology file
-            try {
-                FileUtils.writeStringToFile(this.topologyFile, message);
-                if(log.isDebugEnabled()) {
-                    log.debug("The updated topology is: " + message);
-                }
-            } catch (IOException e) {
-                log.error(e.getMessage());
-                throw new CloudControllerException(e.getMessage(), e);
-            }
         }
+
+    }
+
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(topology);
 
     }
 
     public void setTopology(Topology topology) {
         this.topology = topology;
-    }
-
-    public String toJson() {
-        Gson gson = new Gson();
-        return  gson.toJson(topology);
-
     }
 
     public BlockingQueue<TextMessage> getSharedTopologyDiffQueue() {
