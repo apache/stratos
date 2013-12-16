@@ -87,14 +87,12 @@ public class CartridgeDeployer extends AbstractDeployer{
 			fileToCartridgeListMap.put(deploymentFileData.getAbsolutePath(),
 			                           new ArrayList<Cartridge>(cartridges));
 			
-			ThreadExecutor exec = new ThreadExecutor();
+			ThreadExecutor exec = ThreadExecutor.getInstance();
 			// create Jclouds objects, for each IaaS
 			for (Cartridge cartridge : cartridges) {
 				// jclouds object building is time consuming, hence I use Java executor framework
 				exec.execute(new JcloudsObjectBuilder(cartridge, deploymentFileData));
 			}
-			// wait till the jobs finish.
-			exec.shutdown();
 
 			TopologyBuilder.handleServiceCreated(cartridges);
 			log.info("Successfully deployed the Cartridge definition specified at " + deploymentFileData.getAbsolutePath());

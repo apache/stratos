@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.concurrent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class can be used to create a thread pool, and hand over new jobs to the pool.
@@ -27,8 +28,16 @@ import java.util.concurrent.Executors;
 public class ThreadExecutor {
     private ExecutorService executor;
 
-    public ThreadExecutor() {
-        executor = Executors.newCachedThreadPool();
+    private static class Holder {
+        private static final ThreadExecutor INSTANCE = new ThreadExecutor();
+    }
+    
+    public static ThreadExecutor getInstance() {
+        return Holder.INSTANCE;
+    }
+    
+    private ThreadExecutor() {
+        executor = Executors.newFixedThreadPool(50);
     }
     
     public void execute(Runnable job){
@@ -43,11 +52,21 @@ public class ThreadExecutor {
     }
     
     public void shutdown() {
-        // This will make the executor accept no new threads
-        // and finish all existing threads in the queue
-        executor.shutdown();
-        // Wait until all threads are finished
-        while (!executor.isTerminated()) {}
+        executor.shutdown(); // Disable new tasks from being submitted
+        try {
+          // Wait a while for existing tasks to terminate
+          if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+            executor.shutdownNow(); // Cancel currently executing tasks
+            // Wait a while for tasks to respond to being cancelled
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS))
+                System.err.println("Pool did not terminate");
+          }
+        } catch (InterruptedException ie) {
+          // (Re-)Cancel if current thread also interrupted
+          executor.shutdownNow();
+          // Preserve interrupt status
+          Thread.currentThread().interrupt();
+        }
     }
     
     

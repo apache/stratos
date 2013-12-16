@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
 
-    private  volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private  volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     private volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
     private volatile Topology topology;
