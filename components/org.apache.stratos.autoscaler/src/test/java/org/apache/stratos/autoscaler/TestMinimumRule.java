@@ -34,8 +34,8 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestKnowledgeBase {
-    private static final Log log = LogFactory.getLog(TestKnowledgeBase.class);
+public class TestMinimumRule {
+    private static final Log log = LogFactory.getLog(TestMinimumRule.class);
     private String droolsFilePath = "src/test/resources/test-minimum-autoscaler-rule.drl";
     private KnowledgeBase kbase;
     private StatefulKnowledgeSession ksession;
@@ -67,7 +67,7 @@ public class TestKnowledgeBase {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
         
-        assertEquals(false, TestDelegator.isDelegated());
+        assertEquals(false, TestDelegator.isMinRuleFired());
         
         ksession = kbase.newStatefulKnowledgeSession();
         ksession.setGlobal("clusterId", "lb.cluster.1");
@@ -85,7 +85,7 @@ public class TestKnowledgeBase {
             e.printStackTrace();
         }
         
-        assertEquals(true, TestDelegator.isDelegated());
+        assertEquals(true, TestDelegator.isMinRuleFired());
         
     }
     

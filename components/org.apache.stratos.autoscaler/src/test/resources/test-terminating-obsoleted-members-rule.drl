@@ -49,15 +49,15 @@ global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
 
-import function org.apache.stratos.autoscaler.TestDelegator.setMinRuleFired;
+import function org.apache.stratos.autoscaler.TestDelegator.addObsoleteMember;
 
-rule "Minimum Rule"
+rule "Terminate Obsoleted Instances"
 dialect "mvel"
-       when
-	       $ctxt : PartitionContext ()
-	       eval($ctxt.getCurrentMemberCount() < $ctxt.getMinimumMemberCount())
-
-       then
-	       setMinRuleFired(true);
-	       
+        when
+            $ctxt : PartitionContext ()
+            eval($ctxt.getObsoletedMembers().size() > 0)
+            memberId : String() from $ctxt.getObsoletedMembers()
+            eval($ctxt.removeObsoleteMember(memberId))
+        then
+            addObsoleteMember(memberId);
 end

@@ -19,20 +19,36 @@
 
 package org.apache.stratos.autoscaler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Helper class to keep the state of the consequence of a rule.
  * @author nirmal
  *
  */
 public class TestDelegator {
-    private static boolean isDelegated;
+    private static boolean isMinRuleFired;
+    private static List<String> obsoletedMembers = new ArrayList<String>();
 
-    public static boolean isDelegated() {
-        return isDelegated;
+    public static boolean isMinRuleFired() {
+        return isMinRuleFired;
     }
 
-    public static void setDelegated(boolean isDelegated) {
-        TestDelegator.isDelegated = isDelegated;
+    public static void setMinRuleFired(boolean isMinRuleFired) {
+        TestDelegator.isMinRuleFired = isMinRuleFired;
+    }
+
+    public static List<String> getObsoletedMembers() {
+        return obsoletedMembers;
+    }
+
+    public static void setObsoletedMembers(List<String> obsoletedMembers) {
+        TestDelegator.obsoletedMembers = obsoletedMembers;
+    }
+    
+    public static void addObsoleteMember(String memberId) {
+        TestDelegator.obsoletedMembers.add(memberId);
     }
 
     
