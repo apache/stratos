@@ -621,43 +621,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.error(msg);
                     throw new InvalidMemberException(msg);
                 }
-                // ServiceContext serviceCtxt = dataHolder
-                // .getServiceContextFromDomain(clusterId);
-                //
-                // if (serviceCtxt == null) {
-                // String msg = "Not a registered service: domain - " + clusterId;
-                // log.fatal(msg);
-                // throw new CloudControllerException(msg);
-                // }
-                //
-                // // load Cartridge, if null
-                // //if (serviceCtxt.getCartridge() == null) {
-                // serviceCtxt.setCartridge(loadCartridge(
-                // serviceCtxt.getCartridgeType(),
-                // dataHolder.getCartridges()));
-                // //}
-                //
-                // // if still, Cartridge is null
-                // if (serviceCtxt.getCartridge() == null) {
-                // String msg = "There's no registered Cartridge found. Domain - "
-                // + clusterId;
-                // log.fatal(msg);
-                // throw new CloudControllerException(msg);
-                // }
-
-                // for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
 
                 IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
-
-
-
-                // // terminate the last instance first
-                // for (String id : Lists.reverse(ctxt.getNodeIds())) {
-                // if (id != null) {
-                // nodeId = id;
-                // break;
-                // }
-                // }
 
                 // terminate it!
                 terminate(iaasProvider, nodeId, ctxt);
@@ -667,11 +632,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             } catch (Exception e) {
                 String msg =
-                             "Starting to terminate an instance with member id : " + memberId +
-                                     " in partition id: " + partitionId + " of cluster id: " +
-                                     clusterId + " and of cartridge type: " + cartridgeType;
-                log.error(msg);
-                throw new CloudControllerException(msg);
+                             "Instance termination failed. "+ctxt.toString();
+                log.error(msg, e);
+                throw new CloudControllerException(msg, e);
             }
 
         }

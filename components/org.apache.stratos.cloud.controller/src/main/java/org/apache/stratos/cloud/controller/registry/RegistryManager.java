@@ -40,26 +40,24 @@ import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 public class RegistryManager {
     private final static Log log = LogFactory.getLog(RegistryManager.class);
     private static Registry registryService;
-    private static RegistryManager registryManager;
 
-    public static RegistryManager getInstance() {
-
-        registryService = ServiceReferenceHolder.getInstance().getRegistry();
-
-        synchronized (RegistryManager.class) {
-            if (registryManager == null) {
-                if (registryService == null) {
-                    // log.warn("Registry Service is null. Hence unable to fetch data from registry.");
-                    return registryManager;
-                }
-                registryManager = new RegistryManager();
-            }
-        }
-        return registryManager;
+    private static class Holder {
+        static final RegistryManager INSTANCE = new RegistryManager();
     }
 
+    public static RegistryManager getInstance() {
+        registryService = ServiceReferenceHolder.getInstance().getRegistry();
+        if (registryService == null) {
+            log.warn("Registry Service is null. Hence unable to fetch data from registry.");
+            return null;
+        }
+
+        return Holder.INSTANCE;
+    }
+    
     private RegistryManager() {
         try {
+
             if (!registryService.resourceExists(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE)) {
                 registryService.put(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE,
                         registryService.newCollection());

@@ -43,39 +43,24 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	// Partitions against partitionID
 	private static Map<String,Partition> partitions = new HashMap<String, Partition>();
 	
-//	private List<NetworkPartitionContext> networkPartitions;
-	
-	/*
-	 * Key - partition id
-	 * Value - reference to NetworkPartition 
-	 */
-//	private Map<String, NetworkPartitionContext> partitionIdToNetworkPartition;
-
-
 	/*
 	 * Key - network partition id
 	 * Value - reference to NetworkPartition
 	 */
 	private Map<String, NetworkPartitionContext> networkPartitionContexts;
 
-	private static PartitionManager instance;
+	private static class Holder {
+        static final PartitionManager INSTANCE = new PartitionManager();
+    }
+	
+	public static PartitionManager getInstance(){
+	    return Holder.INSTANCE;
+	}
 	
 	private PartitionManager(){
         networkPartitionContexts = new HashMap<String, NetworkPartitionContext>();
-//	    networkPartitions = new ArrayList<NetworkPartitionContext>();
-//	    partitionIdToNetworkPartition = new HashMap<String, NetworkPartitionContext>();
 	}
 	
-	public static PartitionManager getInstance(){
-	    if (instance == null) {
-            synchronized (PartitionManager.class) {
-                if (instance == null) {
-                    instance = new PartitionManager();
-                }
-            }
-        }
-        return instance;
-	}
 	
 	public boolean partitionExist(String partitionId){
 		return partitions.containsKey(partitionId);
@@ -110,48 +95,9 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		partitions.put(partition.getId(), partition);
 	}
 
-//	public NetworkPartitionContext getNetworkPartitionOfPartition(String partitionId) {
-//	    return this.partitionIdToNetworkPartition.get(partitionId);
-//	}
-	
 	public NetworkPartitionContext getNetworkPartition(String networkPartitionId) {
 	    return this.networkPartitionContexts.get(networkPartitionId);
 	}
-
-//	public List<NetworkPartitionContext> getAllNetworkPartitions() {
-//	    return this.networkPartitions;
-//	}
-
-//	/**
-//	 * TODO make {@link NetworkPartitionContext}s extensible.
-//	 * @param partition
-//	 */
-//	protected NetworkPartitionContext getOrAddNetworkPartition(Partition partition) {
-//
-//	    if(partition == null) {
-//	        return null;
-//	    }
-//	    String provider = partition.getProvider();
-//	    String region = null;
-//	    Properties properties = partition.getProperties();
-//        if (properties != null) {
-//            for (Property prop : properties.getProperties()) {
-//                if(Constants.REGION_PROPERTY.equals(prop.getName())) {
-//                    region = prop.getValue();
-//                    break;
-//                }
-//            }
-//        }
-//        NetworkPartitionContext networkPar = new NetworkPartitionContext(provider, region);
-//        if(!this.networkPartitions.contains(networkPar)){
-//            this.networkPartitions.add(networkPar);
-//        } else {
-//            int idx = this.networkPartitions.indexOf(networkPar);
-//            networkPar = this.networkPartitions.get(idx);
-//        }
-//
-//        return networkPar;
-//    }
 
     public Partition getPartitionById(String partitionId){
 		if(partitionExist(partitionId))
@@ -161,7 +107,6 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	}
 	
 	public Partition[] getAllPartitions(){
-		//return Collections.unmodifiableList(new ArrayList<Partition>(partitions.values()));
 		return partitions.values().toArray(new Partition[0]);
 		
 	}
