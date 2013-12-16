@@ -264,4 +264,52 @@ public class RegistryManager {
         }
         return depPolicyList;
     }
+
+	public void removeAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
+		 String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
+         this.delete(resourcePath);
+	     if(log.isDebugEnabled()) {
+	          log.debug(String.format("Autoscaler policy deleted from registry: [id] %s [name] %s [description] %s",
+	                    autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
+	     }
+		
+	}
+	
+	public void removeDeploymentPolicy(DeploymentPolicy depPolicy){
+		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE;
+		this.delete(resourcePath);
+		if(log.isDebugEnabled()) {
+	          log.debug(String.format("Deployment policy deleted from registry: [id] %s" ,
+	        		  depPolicy.getId()));
+	     }
+	}
+	
+	public void removeNetworkPartition(String networkPartition){
+		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_RESOURCE;
+		this.delete(resourcePath);
+		if(log.isDebugEnabled()) {
+	          log.debug(String.format("Network partition deleted from registry: [id] %s" ,
+	        		  networkPartition));
+	     }
+	}
+	
+
+	private void delete(String resourcePath) {
+		 try {
+	            registryService.beginTransaction();
+	            registryService.delete(resourcePath);	           
+	            registryService.commitTransaction();
+	        } catch (RegistryException e) {
+	            try {
+	                registryService.rollbackTransaction();
+	            } catch (RegistryException e1) {
+	                if(log.isErrorEnabled()) {
+	                    log.error("Could not rollback transaction", e);
+	                }
+	            }
+	            log.error("Could not delete resource at "+ resourcePath);
+	            throw new AutoScalerException("Could not delete data in registry at " + resourcePath, e);
+	        }
+		
+	}
 }

@@ -147,6 +147,7 @@ public class PolicyManager {
                 log.debug("Removing policy :" + policy);
             }
             autoscalePolicyListMap.remove(policy);
+            RegistryManager.getInstance().removeAutoscalerPolicy(this.getAutoscalePolicy(policy));
         } else {
             throw new InvalidPolicyException("No such policy [" + policy + "] exists");
         }
@@ -194,8 +195,14 @@ public class PolicyManager {
     public void removeDeploymentPolicy(String policy) throws InvalidPolicyException {
         if (deploymentPolicyListMap.containsKey(policy)) {
             if (log.isDebugEnabled()) {
-                log.debug("Removing policy :" + policy);
+                log.debug("Removing deployment policy :" + policy);
             }
+            DeploymentPolicy depPolicy = this.getDeploymentPolicy(policy);
+            // undeploy network partitions this deployment policy.
+            PartitionManager.getInstance().undeployNetworkPartitions(depPolicy);
+            // undeploy the deployment policy.
+            RegistryManager.getInstance().removeDeploymentPolicy(depPolicy);
+            // remove from the infromation model.
             deploymentPolicyListMap.remove(policy);
         } else {
             throw new InvalidPolicyException("No such policy [" + policy + "] exists");

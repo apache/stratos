@@ -132,7 +132,29 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
         }
     }
     
-    public void addNetworkPartitionContext(NetworkPartitionContext ctxt) {
+    public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
+        for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
+            String id = partitionGroup.getId();
+            if (networkPartitionContexts.containsKey(id)) {                
+                NetworkPartitionContext netPartCtx = this.getNetworkPartition(id);
+                // remove from information model
+                this.removeNetworkPartitionContext(netPartCtx);
+                //remove from the registry
+                RegistryManager.getInstance().removeNetworkPartition(this.getNetworkPartition(id).getId());
+            }else{
+            	String errMsg = "Network partition context not found for policy " + depPolicy;
+            	log.error(errMsg);
+            	throw new AutoScalerException(errMsg);
+            }
+
+        }
+    }
+    
+    private void removeNetworkPartitionContext(NetworkPartitionContext netPartCtx) {
+    	 networkPartitionContexts.remove(netPartCtx.getId());		
+	}
+
+	public void addNetworkPartitionContext(NetworkPartitionContext ctxt) {
         networkPartitionContexts.put(ctxt.getId(), ctxt);
     }
 
