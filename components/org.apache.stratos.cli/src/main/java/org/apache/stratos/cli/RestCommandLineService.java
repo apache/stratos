@@ -172,8 +172,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
-            String resultString = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list available cartridges");
+                return;
+            }
 
+            String resultString = getHttpResponseString(response);
             if (resultString == null) {
                 return;
             }
@@ -256,6 +261,12 @@ public class RestCommandLineService {
 
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list subscribe cartridges");
+                return;
+            }
 
             String resultString = getHttpResponseString(response);
 
@@ -351,9 +362,13 @@ public class RestCommandLineService {
                 HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
-                String subscription = getHttpResponseString(response);
-
                 String responseCode = "" + response.getStatusLine().getStatusCode();
+                if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                    System.out.println("Error occur in subscribe cartridge");
+                    return;
+                }
+
+                String subscription = getHttpResponseString(response);
 
                 if (subscription == null) {
                     System.out.println("Error");
@@ -401,9 +416,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                     completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
-            String subscriptionOutput = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in subscribe cartridge");
+                return;
+            }
 
+            String subscriptionOutput = getHttpResponseString(response);
 
             if (subscriptionOutput == null) {
                 System.out.println("Error");
@@ -478,8 +497,11 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint,
                     completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in create tenant");
+                return;
+            }
 
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
@@ -516,8 +538,11 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
                     cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy cartridge definition");
+                return;
+            }
 
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
@@ -536,8 +561,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
                     partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy partition");
+                return;
+            }
+
+            String result = getHttpResponseString(response);
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the partition");
@@ -564,8 +594,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
                     autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy autoscaling policy");
+                return;
+            }
+
+            String result = getHttpResponseString(response);
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
@@ -592,8 +627,14 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
+
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy deployment policy");
+                return;
+            }
+
+            String result = getHttpResponseString(response);
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the deployment policy");
@@ -620,9 +661,16 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listParitionRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list partitions");
+                return;
+            }
+
             String resultString = getHttpResponseString(response);
 
             if (resultString == null) {
+                System.out.println("Response content is empty");
                 return;
             }
 
@@ -631,7 +679,7 @@ public class RestCommandLineService {
             PartitionList partitionList = gson.fromJson(resultString, PartitionList.class);
 
             if (partitionList == null) {
-                System.out.println("Partition list is null");
+                System.out.println("Partition list is empty");
                 return;
             }
 
@@ -665,10 +713,16 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
-            System.out.println(response.getStatusLine().getStatusCode());
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list autoscase policies");
+                return;
+            }
+
             String resultString = getHttpResponseString(response);
 
             if (resultString == null) {
+                System.out.println("Response content is empty");
                 return;
             }
 
@@ -677,7 +731,7 @@ public class RestCommandLineService {
             AutoscalePolicyList policyList = gson.fromJson(resultString, AutoscalePolicyList.class);
 
             if (policyList == null) {
-                System.out.println("Autoscale policy list is null");
+                System.out.println("Autoscale policy list is empty");
                 return;
             }
 
