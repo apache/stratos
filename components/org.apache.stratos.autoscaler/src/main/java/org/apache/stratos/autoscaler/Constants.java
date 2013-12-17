@@ -21,15 +21,24 @@ public class Constants {
     // partition properties
     public static final String REGION_PROPERTY = "region";
 
+    public static final String MEMBER_AVERAGE_LOAD_AVERAGE = "member_average_load_average";
+    public static final String MEMBER_AVERAGE_MEMORY_CONSUMPTION = "member_average_memory_consumption";
+    public static final String AVERAGE_REQUESTS_IN_FLIGHT = "average_in_flight_requests";
+
+    public static final String MEMBER_GRADIENT_LOAD_AVERAGE = "member_gradient_load_average";
+    public static final String MEMBER_GRADIENT_MEMORY_CONSUMPTION = "member_gradient_memory_consumption";
+    public static final String GRADIENT_OF_REQUESTS_IN_FLIGHT = "gradient_in_flight_requests";
+
+    public static final String MEMBER_SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION = "member_second_derivative_memory_consumption";
+    public static final String MEMBER_SECOND_DERIVATIVE_OF_LOAD_AVERAGE = "member_second_derivative_load_average";
+    public static final String SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT = "second_derivative_in_flight_requests";
+
     public static final String AVERAGE_LOAD_AVERAGE = "average_load_average";
     public static final String AVERAGE_MEMORY_CONSUMPTION = "average_memory_consumption";
-    public static final String AVERAGE_REQUESTS_IN_FLIGHT = "average_in_flight_requests";
 
     public static final String GRADIENT_LOAD_AVERAGE = "gradient_load_average";
     public static final String GRADIENT_MEMORY_CONSUMPTION = "gradient_memory_consumption";
-    public static final String GRADIENT_OF_REQUESTS_IN_FLIGHT = "gradient_in_flight_requests";
 
-    public static final String SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT = "second_derivative_in_flight_requests";
     public static final String SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION = "second_derivative_memory_consumption";
     public static final String SECOND_DERIVATIVE_OF_LOAD_AVERAGE = "second_derivative_load_average";
 }
