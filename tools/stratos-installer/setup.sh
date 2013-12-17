@@ -228,18 +228,18 @@ function sm_conf_validate {
 	exit 1
     fi
     if [[ ! -f $mysql_connector_jar ]]; then
-        echo "Please copy the mysql connector jar into the same folder as this command(stratos2 release pack folder) and update conf/setup.conf file"
+        echo "Please copy the mysql connector jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
     fi
-    if [[ -z $cc_port_offset ]]; then
-        echo "Please specify the port offset of CC"
+    if [[ -z $cc_port_offset || -z $as_port_offset || -z $cep_port_offset ]]; then
+        echo "Please specify the port offset of AS and/or CC and/or CEP"
         exit 1
     fi
-    if [[ -z $sm_ip || -z $as_ip || -z $cc_ip ]]; then
-	echo "Please specify the ips of SM and/or AS and/or CC"
-	exit 1
-    elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip); then 
-        echo "Please provide valid ips for SM and/or AS and/or CC"
+    if [[ -z $sm_ip || -z $as_ip || -z $cc_ip || -z $cep_ip ]]; then
+        echo "Please specify the ips of SM and/or AS and/or CC and/or CEP"
+        exit 1
+    elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip && valid_ip $cep_ip); then
+        echo "Please provide valid ips for SM and/or AS and/or CC and/or CEP"
         exit 1
     fi
     if [[-z $cc_hostname || -z $as_hostname ]]; then
@@ -482,6 +482,9 @@ function sm_setup {
     echo "In repository/conf/cartridge-config.properties" >> $LOG
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@SM_IP@$sm_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
@@ -504,6 +507,18 @@ function sm_setup {
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_SCHEMA@$stratos_foundation_db_schema@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_IP@$sm_mb_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_LISTEN_PORT@$sm_mb_listen_port@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_IP@$sm_cep_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_LISTEN_PORT@$sm_cep_tcp_port@g" > repository/conf/cartridge-config.properties
 
     echo "In repository/conf/datasources/master-datasources.xml" >> $LOG
     cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
@@ -572,6 +587,16 @@ mv -f ./hosts.tmp /etc/hosts
 # ------------------------------------------------
 # Starting the servers
 # ------------------------------------------------
+echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
+chown $host_user:$host_user $stratos_path -R
+
+echo "Apache Stratos setup has successfully completed"
+
+read -p "Do you want to start the servers [y/n]? " answer
+if [[ $answer != y ]] ; then
+   exit 1
+fi
+
 echo "Starting the servers" >> $LOG
 
 echo "Starting up servers. This may take time. Look at $LOG file for server startup details"
@@ -580,7 +605,7 @@ chown -R $host_user.$host_user $log_path
 chmod -R 777 $log_path
 
 export setup_dir=$PWD
-su - $host_user -c "source $setup_dir/conf/setup.conf;$setup_dir/start-servers.sh -p$product_list >> $LOG"
+su - $host_user -c "source $setup_dir/conf/setup.conf;$setup_dir/start-servers.sh -p\"$product_list\" >> $LOG"
 
 echo "Servers started. Please look at $LOG file for server startup details"
 if [[ $sm == "true" ]]; then
