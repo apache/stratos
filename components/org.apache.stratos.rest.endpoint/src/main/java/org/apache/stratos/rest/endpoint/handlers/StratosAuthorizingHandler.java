@@ -29,6 +29,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.cxf.service.Service;
 import org.apache.cxf.service.model.BindingOperationInfo;
+import org.apache.stratos.rest.endpoint.Utils;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.api.AuthorizationManager;
@@ -36,6 +37,7 @@ import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -69,12 +71,18 @@ public class StratosAuthorizingHandler implements RequestHandler {
             SecurityContext securityContext = message.get(SecurityContext.class);
             Method method = getTargetMethod(message);
             if (!authorize(securityContext, method)) {
-               return Response.status(Response.Status.FORBIDDEN).build();
+               log.warn("User :"+ securityContext.getUserPrincipal().getName() + "trying to perform unauthrorized action" +
+                       " against the resource :"+ method);
+               return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).
+                       entity(Utils.buildMessage("The user does not have required permissions to " +
+                               "perform this operation")).build();
             }
             return null;
 
-        } catch (Exception ex) {
-            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (Exception exception) {
+            log.error("Unexpercted error occured while REST api, authorization process",exception);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
+                    entity(Utils.buildMessage("Unexpected error. Please contact the system admin")).build();
         }
     }
 

@@ -26,13 +26,13 @@
     <display-name>S2 Admin Endpoint</display-name>
 
     <servlet>
-        <servlet-name>S2AdminEndpoint</servlet-name>
+        <servlet-name>StratosAdminEndpoint</servlet-name>
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>S2AdminEndpoint</servlet-name>
+        <servlet-name>StratosAdminEndpoint</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 

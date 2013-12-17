@@ -26,6 +26,8 @@ import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
+import org.apache.stratos.rest.endpoint.Utils;
+import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.security.StratosSecurityContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.common.AuthenticationException;
@@ -35,6 +37,7 @@ import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -61,7 +64,8 @@ public class StratosAuthenticationHandler implements RequestHandler {
         if ((username == null) || (password == null) || username.equals("")
                 || password.equals("")) {
             log.error("username or password is seen as null/empty values.");
-            return Response.status(401).header("WWW-Authenticate", "Basic").build();
+            return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
+                    type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Username/Password cannot be null")).build();
         }
         try {
             RealmService realmService = ServiceHolder.getRealmService();
@@ -72,7 +76,9 @@ public class StratosAuthenticationHandler implements RequestHandler {
             UserRealm userRealm = AnonymousSessionUtil.getRealmByTenantDomain(registryService, realmService, tenantDomain);
             if (userRealm == null) {
                 log .error("Invalid domain or unactivated tenant login");
-                throw new AuthenticationException("Invalid domain or unactivated tenant login");
+                // is this the correct HTTP code for this scenario ? (401)
+                return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
+                        type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Tenant not found")).build();
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
             if (userRealm.getUserStoreManager().authenticate(username, password)) {  // if authenticated
@@ -90,10 +96,15 @@ public class StratosAuthenticationHandler implements RequestHandler {
             } else {
                 log.warn("unable to authenticate the request");
                 // authentication failed, request the authetication, add the realm name if needed to the value of WWW-Authenticate
-                return Response.status(401).header("WWW-Authenticate", "Basic").build();
+                return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
+                        type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Authentication failed. Please " +
+                        "check your username/password")).build();
             }
         } catch (Exception exception) {
-            return Response.status(401).header("WWW-Authenticate", "Basic").build();
+            log.error("Authentication failed",exception);
+            // server error in the eyes of the client. Hence 5xx HTTP code.
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
+                    entity(Utils.buildMessage("Unexpected error. Please contact the system admin")).build();
         }
 
     }
