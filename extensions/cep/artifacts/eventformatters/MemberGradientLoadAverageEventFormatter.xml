@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eventFormatter name="FaultMessageEventFormatter"
+<eventFormatter name="MemberGradientLoadAverageEventFormatter"
   statistics="disable" trace="enable" xmlns="http://wso2.org/carbon/eventformatter">
-  <from streamName="fault_message" version="1.0.0"/>
+  <from streamName="member_gradient_load_average_stats" version="1.0.0"/>
   <mapping customMapping="enable" type="json">
-    <inline>{"member_fault":{"cluster_id":"{{cluster_id}}","partition_id":"{{partition_id}}","member_id":"{{member_id}}"}}</inline>
+    <inline>{"member_gradient_load_average":{"member_id":"{{member_id}}","cluster_id":"{{cluster_id}}","network_partition_id":"{{network_partition_id}}","value":"{{member_gradient_load_average}}"}}</inline>
   </mapping>
   <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
     <property name="transport.jms.Destination">summarized-health-stats</property>
