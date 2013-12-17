@@ -49,7 +49,7 @@
 	<dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
-	    <version>0.13.wso2v6</version>
+	    <version>0.13.wso2v8</version>
         </dependency>
 	<dependency>
             <groupId>org.apache.stratos</groupId>
@@ -128,7 +128,7 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.adc.mgt.stub:${project.version}</bundleDef>
-                                <bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
+                                <bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
                                 <bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
                                 <bundleDef>com.google.code.gson:gson:2.1</bundleDef>
