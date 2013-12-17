@@ -59,4 +59,9 @@ public class Port implements Serializable{
     public void setProxy(int proxy) {
         this.proxy = proxy;
     }
+
+    @Override
+    public String toString() {
+        return "Port [protocol=" + protocol + ", value=" + value + ", proxy=" + proxy + "]";
+    }
 }

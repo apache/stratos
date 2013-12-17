@@ -78,4 +78,9 @@ public class Topology implements Serializable {
     public boolean isInitialized() {
         return initialized;
     }
+
+    @Override
+    public String toString() {
+        return "Topology [serviceMap=" + serviceMap + ", initialized=" + initialized + "]";
+    }
 }
