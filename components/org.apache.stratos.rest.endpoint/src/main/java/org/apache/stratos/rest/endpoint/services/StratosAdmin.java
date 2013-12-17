@@ -331,7 +331,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public void unsubscribe(String alias){
         try {
-            ServiceUtils.unsubscribe(alias,getTenantDomain());
+            ServiceUtils.unsubscribe(alias, getTenantDomain());
         } catch (Exception exception) {
             log.error(exception);
         }
