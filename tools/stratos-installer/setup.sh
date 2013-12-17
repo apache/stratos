@@ -245,7 +245,7 @@ function sm_conf_validate {
     if [[-z $cc_hostname || -z $as_hostname ]]; then
 	echo "Please specify valid hostname for AS and/or CC"
 	exit 1
-    elif
+    fi
 }
 
 
@@ -350,6 +350,7 @@ function cep_setup {
     cp -f $cep_extension_path/artifacts/outputeventadaptors/*.xml $cep_path/repository/deployment/server/outputeventadaptors/
     cp -f $cep_extension_path/artifacts/executionplans/*.xml $cep_path/repository/deployment/server/executionplans/
     cp -f $cep_extension_path/artifacts/eventformatters/*.xml $cep_path/repository/deployment/server/eventformatters/
+    cp -f $cep_extension_path/artifacts/streamdefinitions/*.xml $cep_path/repository/conf/
 
     pushd $cep_path
 
@@ -360,6 +361,10 @@ function cep_setup {
     echo "In repository/conf/jndi.properties"
     cp -f repository/conf/jndi.properties repository/conf/jndi.properties.orig
     cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$cep_mb_listen_port@g" > repository/conf/jndi.properties
+
+    echo "In outputeventadaptors"
+    cp -f repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml.orig
+    cat repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml.orig | sed -e "s@CEP_HOME@$cep_path@g" > repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
 
     echo "In repository/conf/siddhi/siddhi.extension"
     cp -f repository/conf/siddhi/siddhi.extension repository/conf/siddhi/siddhi.extension.orig
