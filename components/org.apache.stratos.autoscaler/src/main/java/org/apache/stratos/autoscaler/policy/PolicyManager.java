@@ -83,6 +83,7 @@ public class PolicyManager {
             }
             fillPartitions(policy);
         } catch (InvalidPartitionException e) {
+        	log.error(e);
             throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
         }
 
@@ -101,9 +102,10 @@ public class PolicyManager {
             String partitionId = partition.getId();
             if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
                 String msg = "Could not find partition: [id] " + partitionId + ". " +
-                        "Please deploy the partitions before deploying the deployment policies.";
+                        "Please deploy the partitions before deploying the deployment policies.";                
                 throw new InvalidPartitionException(msg);
             }
+            
             fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
         }
     }
