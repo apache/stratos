@@ -121,7 +121,6 @@ public class RestCommandLineService {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Tenant Domain {}", restClientService.getUsername());
                 }
-                System.out.println("Loggin successfull");
                 return true;
             } else {
                 // Just return true as we don't need to validate
