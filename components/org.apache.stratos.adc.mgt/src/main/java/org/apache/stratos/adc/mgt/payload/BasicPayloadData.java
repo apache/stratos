@@ -50,6 +50,38 @@ public class BasicPayloadData implements Serializable {
 
     public BasicPayloadData() {
         payloadBuilder = new StringBuilder();
+        createBasicPayloadData();
+    }
+
+    private void createBasicPayloadData () {
+
+        payloadBuilder.append("SERVICE_NAME=" + getServiceName());
+        payloadBuilder.append(",");
+        payloadBuilder.append("HOST_NAME=" + getHostName());
+        payloadBuilder.append(",");
+        payloadBuilder.append("MULTITENANT=" + getMultitenant());
+        payloadBuilder.append(",");
+        payloadBuilder.append("TENANT_ID=" + getTenantId());
+        payloadBuilder.append(",");
+        payloadBuilder.append("TENANT_RANGE=" + getTenantRange());
+        payloadBuilder.append(",");
+        payloadBuilder.append("CARTRIDGE_ALIAS=" + getSubscriptionAlias());
+        payloadBuilder.append(",");
+        payloadBuilder.append("CLUSTER_ID=" + getClusterId());
+        payloadBuilder.append(",");
+        payloadBuilder.append("CARTRIDGE_KEY=" + getSubscriptionKey());
+        payloadBuilder.append(",");
+        payloadBuilder.append("DEPLOYMENT=" + getDeployment());
+        payloadBuilder.append(",");
+        payloadBuilder.append("APP_PATH=" + getApplicationPath());
+        payloadBuilder.append(",");
+        payloadBuilder.append("GIT_REPO=" + getGitRepositoryUrl());
+        payloadBuilder.append(",");
+        payloadBuilder.append("PORTS=" + getPortMappings());
+
+        //Payload Data exposed as system variables
+        payloadBuilder.append(",");
+        payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));
     }
 
     public String getServiceName() {
@@ -126,7 +158,7 @@ public class BasicPayloadData implements Serializable {
 
     public StringBuilder getPayloadData () {
 
-        payloadBuilder.append("SERVICE_NAME=" + getServiceName());
+        /*payloadBuilder.append("SERVICE_NAME=" + getServiceName());
         payloadBuilder.append(",");
         payloadBuilder.append("HOST_NAME=" + getHostName());
         payloadBuilder.append(",");
@@ -152,7 +184,7 @@ public class BasicPayloadData implements Serializable {
 
         //Payload Data exposed as system variables
         payloadBuilder.append(",");
-        payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));
+        payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));*/
 
         return payloadBuilder;
     }
