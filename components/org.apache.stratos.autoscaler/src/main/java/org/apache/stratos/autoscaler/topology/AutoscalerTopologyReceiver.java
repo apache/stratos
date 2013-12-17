@@ -156,9 +156,12 @@ public class AutoscalerTopologyReceiver implements Runnable {
             		TopologyManager.acquireReadLock();
 					MemberTerminatedEvent e = (MemberTerminatedEvent) event;
                     String networkPartitionId = e.getNetworkPartitionId();
-					AutoscalerContext.getInstance().getMonitor(e.getClusterId())
-                            .getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(e.getPartitionId())
+					NetworkPartitionContext networkPartitionContext = AutoscalerContext.getInstance().getMonitor(e.getClusterId())
+                            .getNetworkPartitionCtxt(networkPartitionId);
+
+                    networkPartitionContext.getPartitionCtxt(e.getPartitionId())
                             .removeMemberStatsContext(e.getMemberId());
+                    networkPartitionContext.decreaseMemberCountInPartitionBy(e.getPartitionId(), 1);
 //					ClusterContext clusCtx = monitor.getClusterCtxt();
 //					String networkPartitionId = monitor.
 //                    if (networkPartitionId != null) {
