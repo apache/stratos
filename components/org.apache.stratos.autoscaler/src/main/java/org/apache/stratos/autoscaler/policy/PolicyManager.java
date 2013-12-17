@@ -141,7 +141,7 @@ public class PolicyManager {
      * @param policy
      * @throws InvalidPolicyException
      */
-    public void removeAutoscalePolicy(String policy) throws InvalidPolicyException {
+    public void undeployAutoscalePolicy(String policy) throws InvalidPolicyException {
         if (autoscalePolicyListMap.containsKey(policy)) {
             if (log.isDebugEnabled()) {
                 log.debug("Removing policy :" + policy);
@@ -192,7 +192,7 @@ public class PolicyManager {
      * @param policy
      * @throws InvalidPolicyException
      */
-    public void removeDeploymentPolicy(String policy) throws InvalidPolicyException {
+    public void undeployDeploymentPolicy(String policy) throws InvalidPolicyException {
         if (deploymentPolicyListMap.containsKey(policy)) {
             if (log.isDebugEnabled()) {
                 log.debug("Removing deployment policy :" + policy);
