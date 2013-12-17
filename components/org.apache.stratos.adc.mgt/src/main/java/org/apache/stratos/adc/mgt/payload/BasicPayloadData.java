@@ -49,11 +49,12 @@ public class BasicPayloadData implements Serializable {
     protected StringBuilder payloadBuilder;
 
     public BasicPayloadData() {
-        payloadBuilder = new StringBuilder();
-        createBasicPayloadData();
+
     }
 
-    private void createBasicPayloadData () {
+    public void populatePayload () {
+
+        payloadBuilder = new StringBuilder();
 
         payloadBuilder.append("SERVICE_NAME=" + getServiceName());
         payloadBuilder.append(",");
