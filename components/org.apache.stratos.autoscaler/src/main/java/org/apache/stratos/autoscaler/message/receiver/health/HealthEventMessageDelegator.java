@@ -124,7 +124,7 @@ public class HealthEventMessageDelegator implements Runnable {
                     } else {
                         handleMemberFaultEvent(clusterId, memberId);
                     }
-                } else if(Constants.AVERAGE_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_AVERAGE_LOAD_AVERAGE.equals(event.getEventName())) {
                     LoadAverage loadAverage = findLoadAverage(event);
                     if(loadAverage != null) {
                         String value = event.getProperties().get("value");
@@ -135,7 +135,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(event.getEventName())) {
                     LoadAverage loadAverage = findLoadAverage(event);
                     if(loadAverage != null) {
                         String value = event.getProperties().get("value");
@@ -146,7 +146,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.GRADIENT_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_GRADIENT_LOAD_AVERAGE.equals(event.getEventName())) {
                     LoadAverage loadAverage = findLoadAverage(event);
                     if(loadAverage != null) {
                         String value = event.getProperties().get("value");
@@ -157,7 +157,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.AVERAGE_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_AVERAGE_MEMORY_CONSUMPTION.equals(event.getEventName())) {
                     MemoryConsumption memoryConsumption = findMemoryConsumption(event);
                     if(memoryConsumption != null) {
                         String value = event.getProperties().get("value");
@@ -168,7 +168,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(event.getEventName())) {
                     MemoryConsumption memoryConsumption = findMemoryConsumption(event);
                     if(memoryConsumption != null) {
                         String value = event.getProperties().get("value");
@@ -179,7 +179,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.GRADIENT_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_GRADIENT_MEMORY_CONSUMPTION.equals(event.getEventName())) {
                     MemoryConsumption memoryConsumption = findMemoryConsumption(event);
                     if(memoryConsumption != null) {
                         String value = event.getProperties().get("value");
@@ -190,6 +190,19 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
                         }
                     }
+
+                } else if(Constants.AVERAGE_LOAD_AVERAGE.equals(event.getEventName())) {
+                    //do nothing for network partition wise events yet
+                } else if(Constants.SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(event.getEventName())) {
+                     //do nothing for network partition wise events yet
+                } else if(Constants.GRADIENT_LOAD_AVERAGE.equals(event.getEventName())) {
+                     //do nothing for network partition wise events yet
+                } else if(Constants.AVERAGE_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                     //do nothing for network partition wise events yet
+                } else if(Constants.SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                     //do nothing for network partition wise events yet
+                } else if(Constants.GRADIENT_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                     //do nothing for network partition wise events yet
                 }
             } catch (Exception e) {
                 log.error("Failed to retrieve the health stat event message.", e);
