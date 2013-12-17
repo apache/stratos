@@ -154,12 +154,12 @@ public class PolicyManager {
     }
 
     /**
-     * Returns a List of the Autoscale policies contained in this manager.
+     * Returns an array of the Autoscale policies contained in this manager.
      *
      * @return
      */
-    public List<AutoscalePolicy> getAutoscalePolicyList() {
-        return Collections.unmodifiableList(new ArrayList<AutoscalePolicy>(autoscalePolicyListMap.values()));
+    public AutoscalePolicy[] getAutoscalePolicyList() {        
+        return autoscalePolicyListMap.values().toArray(new AutoscalePolicy[0]);
     }
 
     /**
@@ -210,12 +210,12 @@ public class PolicyManager {
     }
 
     /**
-     * Returns a List of the Deployment policies contained in this manager.
+     * Returns an array of the Deployment policies contained in this manager.
      *
      * @return
      */
-    public List<DeploymentPolicy> getDeploymentPolicyList() {
-        return Collections.unmodifiableList(new ArrayList<DeploymentPolicy>(deploymentPolicyListMap.values()));
+    public DeploymentPolicy[] getDeploymentPolicyList() {        
+        return deploymentPolicyListMap.values().toArray(new DeploymentPolicy[0]);
     }
 
     /**
