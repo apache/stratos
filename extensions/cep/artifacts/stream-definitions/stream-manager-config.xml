@@ -66,9 +66,10 @@
          <correlationData>
          </correlationData>
          <payloadData>
-	         <property name="cluster_id" type="String" />
+	     <property name="cluster_id" type="String" />
              <property name="network_partition_id" type="String"/>
              <property name="member_id" type="String" />
+             <property name="partition_id" type="String" />
              <property name="health_description" type="String"/>
              <property name="value" type="double"/>
          </payloadData>
@@ -167,8 +168,9 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="partition_id" type="String"/>
+             <property name="network_partition_id" type="String"/>
              <property name="member_id" type="String"/>
+             <property name="partition_id" type="String"/>
          </payloadData>
     </streamDefinition>
     <!-- cartridge agent health stats stream definitions end -->
