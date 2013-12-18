@@ -220,7 +220,7 @@ public class LbClusterMonitor extends AbstractMonitor{
         for(Service service: TopologyManager.getTopology().getServices()){
             for(Cluster cluster: service.getClusters()){
                 if(cluster.memberExists(memberId)){
-                    cluster.getMember(memberId).getPartitionId();
+                    return cluster.getMember(memberId).getPartitionId();
                 }
             }
         }
@@ -251,7 +251,7 @@ public class LbClusterMonitor extends AbstractMonitor{
 
                        String networkPartitionId = cluster.getMember(memberId).getNetworkPartitionId();
    	                if(networkPartitionCtxts.containsKey(networkPartitionId)) {
-                           networkPartitionCtxts.get(networkPartitionId);
+                           return networkPartitionCtxts.get(networkPartitionId);
                        }
    	            }
    	      }

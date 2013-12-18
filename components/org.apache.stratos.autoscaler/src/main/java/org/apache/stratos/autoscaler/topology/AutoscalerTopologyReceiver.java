@@ -92,7 +92,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                         for(Cluster cluster : service.getClusters()) {
                         	    Thread th; 
                         		if(cluster.isLbCluster()){
-                        			th= new Thread(new LBClusterMonitorAdder(cluster));
+                        			th = new Thread(new LBClusterMonitorAdder(cluster));
                         		}else{
                         			th = new Thread(new ClusterMonitorAdder(cluster));
                         		}
