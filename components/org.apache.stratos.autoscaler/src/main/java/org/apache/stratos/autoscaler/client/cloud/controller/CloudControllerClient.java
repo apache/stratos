@@ -19,6 +19,7 @@
 
 package org.apache.stratos.autoscaler.client.cloud.controller;
 
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,8 +65,8 @@ public class CloudControllerClient {
             String epr = "https://" + hostname + ":" + port + "/" + Constants.CLOUD_CONTROLLER_SERVICE_SFX  ;
             int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
             stub = new CloudControllerServiceStub(epr);
-            stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(cloudControllerClientTimeout);
-
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, cloudControllerClientTimeout);
 		} catch (Exception e) {
 			log.error("Stub init error", e);
 		}

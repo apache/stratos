@@ -134,6 +134,7 @@ public class AutoscalerUtil {
                             networkPartitionContext.increaseMemberCountInPartitionBy(partition.getId(), 1);
                         } else if(MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())){
                             partitionContext.addPendingMember(memberContext);
+
                             networkPartitionContext.increaseMemberCountInPartitionBy(partition.getId(), 1);
                         } else if(MemberStatus.Suspended.equals(member.getStatus())){
                             partitionContext.addFaultyMember(memberId);
@@ -214,7 +215,7 @@ public class AutoscalerUtil {
 
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
-                if (member.getPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
+                if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
                     MemberContext memberContext = new MemberContext();
                     memberContext.setClusterId(member.getClusterId());
                     memberContext.setMemberId(memberId);
