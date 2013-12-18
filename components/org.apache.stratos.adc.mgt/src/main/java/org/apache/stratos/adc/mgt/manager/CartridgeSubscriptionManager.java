@@ -212,6 +212,10 @@ public class CartridgeSubscriptionManager {
 
         cartridgeSubscription.setPayloadData(payloadData);
 
+        // Publish tenant subscribed event to message broker
+        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                cartridgeSubscription.getCartridgeInfo().getType());
+
         return cartridgeSubscription;
     }
 
@@ -333,7 +337,10 @@ public class CartridgeSubscriptionManager {
 
         if(cartridgeSubscription != null) {
             cartridgeSubscription.removeSubscription();
-            //CartridgeInstanceCache.getCartridgeInstanceCache().removeCartridgeInstance(cartridgeInstanceCacheKey);
+
+            // Publish tenant un-subscribed event to message broker
+            CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                    cartridgeSubscription.getCartridgeInfo().getType());
         }
         else {
             if(log.isDebugEnabled()) {
