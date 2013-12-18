@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cli;
+package org.apache.stratos.cli.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cli;
+package org.apache.stratos.cli.beans;
 
 public class PropertyBean {
 
