@@ -40,14 +40,15 @@ public abstract class Service implements Serializable {
     private CartridgeInfo cartridgeInfo;
     private PayloadData payloadData;
 
-    public Service (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo) {
+    public Service (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
+    		String tenantRange) {
 
         this.type = type;
         this.autoscalingPolicyName = autoscalingPolicyName;
         this.deploymentPolicyName = deploymentPolicyName;
         this.tenantId = tenantId;
         this.cartridgeInfo = cartridgeInfo;
-        this.tenantRange = "*";
+        this.tenantRange = tenantRange;
         this.subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
     }
 
