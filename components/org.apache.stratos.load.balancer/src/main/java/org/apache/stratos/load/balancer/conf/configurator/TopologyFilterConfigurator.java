@@ -19,6 +19,8 @@
 
 package org.apache.stratos.load.balancer.conf.configurator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -26,10 +28,17 @@ import org.apache.stratos.messaging.util.Constants;
  * Topology filter configurator to configure topology filters.
  */
 public class TopologyFilterConfigurator {
+    private static final Log log = LogFactory.getLog(TopologyFilterConfigurator.class);
 
     public static void configure(LoadBalancerConfiguration configuration) {
         System.setProperty(Constants.TOPOLOGY_SERVICE_FILTER, configuration.getTopologyServiceFilter());
         System.setProperty(Constants.TOPOLOGY_CLUSTER_FILTER, configuration.getTopologyClusterFilter());
         System.setProperty(Constants.TOPOLOGY_MEMBER_FILTER, configuration.getTopologyMemberFilter());
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("service filter: ", System.getProperty(Constants.TOPOLOGY_SERVICE_FILTER)));
+            log.debug(String.format("cluster filter: ", System.getProperty(Constants.TOPOLOGY_CLUSTER_FILTER)));
+            log.debug(String.format("member filter: ", System.getProperty(Constants.TOPOLOGY_MEMBER_FILTER)));
+        }
     }
 }

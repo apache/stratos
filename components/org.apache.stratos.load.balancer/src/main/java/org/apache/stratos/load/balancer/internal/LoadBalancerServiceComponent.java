@@ -33,6 +33,7 @@ import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
@@ -160,6 +161,16 @@ public class LoadBalancerServiceComponent {
                             sb.append(clusterId);
                         }
                         log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+                    }
+                    if (TopologyMemberFilter.getInstance().isActive()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String clusterId : TopologyMemberFilter.getInstance().getIncludedLbClusterIds()) {
+                            if (sb.length() > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append(clusterId);
+                        }
+                        log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
                     }
                 }
             }

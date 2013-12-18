@@ -26,6 +26,10 @@ import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.payload.BasicPayloadData;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
+import org.apache.stratos.messaging.util.Constants;
 
 public class CartridgeSubscriptionUtils {
 
@@ -94,5 +98,35 @@ public class CartridgeSubscriptionUtils {
         String key = RandomStringUtils.randomAlphanumeric(16);
         log.info("Generated key  : " + key); // TODO -- remove the log
         return key;
+    }
+
+    public static void publishTenantSubscribedEvent(int tenantId, String serviceName) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+            }
+            TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
+            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+            eventPublisher.publish(subscribedEvent);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+            }
+        }
+    }
+
+    public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+            }
+            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName);
+            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+            eventPublisher.publish(event);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not publish tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+            }
+        }
     }
 }
