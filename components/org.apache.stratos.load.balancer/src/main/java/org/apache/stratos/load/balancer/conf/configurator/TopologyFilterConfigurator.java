@@ -19,6 +19,9 @@
 
 package org.apache.stratos.load.balancer.conf.configurator;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -26,10 +29,28 @@ import org.apache.stratos.messaging.util.Constants;
  * Topology filter configurator to configure topology filters.
  */
 public class TopologyFilterConfigurator {
+    private static final Log log = LogFactory.getLog(TopologyFilterConfigurator.class);
 
     public static void configure(LoadBalancerConfiguration configuration) {
-        System.setProperty(Constants.TOPOLOGY_SERVICE_FILTER, configuration.getTopologyServiceFilter());
-        System.setProperty(Constants.TOPOLOGY_CLUSTER_FILTER, configuration.getTopologyClusterFilter());
-        System.setProperty(Constants.TOPOLOGY_MEMBER_FILTER, configuration.getTopologyMemberFilter());
+        String serviceFilter = configuration.getTopologyServiceFilter();
+        if (StringUtils.isNotBlank(serviceFilter)) {
+            System.setProperty(Constants.TOPOLOGY_SERVICE_FILTER, serviceFilter);
+        }
+
+        String clusterFilter = configuration.getTopologyClusterFilter();
+        if (StringUtils.isNotBlank(clusterFilter)) {
+            System.setProperty(Constants.TOPOLOGY_CLUSTER_FILTER, clusterFilter);
+        }
+
+        String memberFilter = configuration.getTopologyMemberFilter();
+        if (StringUtils.isNotBlank(memberFilter)) {
+            System.setProperty(Constants.TOPOLOGY_MEMBER_FILTER, memberFilter);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Setting service-filter = %s", System.getProperty(Constants.TOPOLOGY_SERVICE_FILTER)));
+            log.debug(String.format("Setting cluster-filter = %s", System.getProperty(Constants.TOPOLOGY_CLUSTER_FILTER)));
+            log.debug(String.format("Setting member-filter = %s", System.getProperty(Constants.TOPOLOGY_MEMBER_FILTER)));
+        }
     }
 }

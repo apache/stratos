@@ -25,6 +25,7 @@ import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
@@ -68,7 +69,9 @@ public class LoadBalancerTenantReceiver implements Runnable {
                 CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
                 for (Tenant tenant : completeTenantEvent.getTenants()) {
                     for (String serviceName : tenant.getServiceSubscriptions()) {
-                        addTenantSubscriptionToLbContext(serviceName, tenant.getTenantId());
+                        if(isMultiTenantService(serviceName)) {
+                            addTenantSubscriptionToLbContext(serviceName, tenant.getTenantId());
+                        }
                     }
                 }
             }
@@ -77,17 +80,43 @@ public class LoadBalancerTenantReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 TenantSubscribedEvent tenantSubscribedEvent = (TenantSubscribedEvent) event;
-                addTenantSubscriptionToLbContext(tenantSubscribedEvent.getServiceName(), tenantSubscribedEvent.getTenantId());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Tenant subscribed event received: [tenant-id] %d [service] %s",
+                            tenantSubscribedEvent.getTenantId(), tenantSubscribedEvent.getServiceName()));
+                }
+                if(isMultiTenantService(tenantSubscribedEvent.getServiceName())) {
+                    addTenantSubscriptionToLbContext(tenantSubscribedEvent.getServiceName(), tenantSubscribedEvent.getTenantId());
+                }
             }
         });
         messageProcessorChain.addEventListener(new TenantUnSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TenantUnSubscribedEvent tenantUnSubscribedEvent = (TenantUnSubscribedEvent) event;
-                removeTenantSubscriptionFromLbContext(tenantUnSubscribedEvent.getServiceName(), tenantUnSubscribedEvent.getTenantId());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Tenant un-subscribed event received: [tenant-id] %d [service] %s",
+                            tenantUnSubscribedEvent.getTenantId(), tenantUnSubscribedEvent.getServiceName()));
+                }
+                if(isMultiTenantService(tenantUnSubscribedEvent.getServiceName())) {
+                    removeTenantSubscriptionFromLbContext(tenantUnSubscribedEvent.getServiceName(), tenantUnSubscribedEvent.getTenantId());
+                }
             }
         });
         return messageProcessorChain;
+    }
+
+    private boolean isMultiTenantService(String serviceName) {
+        try {
+            TopologyManager.acquireReadLock();
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            if(service != null) {
+                return (service.getServiceType() == ServiceType.MultiTenant);
+            }
+            return false;
+        }
+        finally {
+            TopologyManager.releaseReadLock();
+        }
     }
 
     private void addTenantSubscriptionToLbContext(String serviceName, int tenantId) {
@@ -105,7 +134,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
                     clusterMap.put(tenantId, cluster);
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster added to multi-tenant clusters map: [host-name] %s [tenant-id] %d [cluster] %s",
+                    log.debug(String.format("Cluster added to multi-tenant cluster map: [host-name] %s [tenant-id] %d [cluster] %s",
                             hostName, tenantId, cluster.getClusterId()));
                 }
             }
