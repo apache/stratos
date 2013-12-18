@@ -128,6 +128,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         command = new AutoscalePolicyCommand();
         commands.put(command.getName(), command);
+
+        command = new DeploymentPolicyCommand();
+        commands.put(command.getName(), command);
 		
 		//command = new InfoCommand();
 		//commands.put(command.getName(), command);

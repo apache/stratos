@@ -132,8 +132,9 @@ public class PolicyManager {
             }
             autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
         } else {
-            throw new InvalidPolicyException("Specified policy [" + asPolicy.getId()
-                    + "] already exists");
+        	String errMsg = "Specified policy [" + asPolicy.getId() + "] already exists";
+        	log.error(errMsg);
+            throw new InvalidPolicyException(errMsg);
         }
     }
 
