@@ -9,19 +9,19 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AutoscalePolicyCommand implements Command<StratosCommandContext> {
+public class DeploymentPolicyCommand implements Command<StratosCommandContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoscalePolicyCommand.class);
 
-    public AutoscalePolicyCommand() {
+    public DeploymentPolicyCommand() {
     }
 
     public String getName() {
-        return CliConstants.LIST_AUTOSCALE_POLICY;
+        return CliConstants.LIST_DEPLOYMENT_POLICIES;
     }
 
     public String getDescription() {
-        return "List available autoscale policies";
+        return "List available deployment policies";
     }
 
     public String getArgumentSyntax() {
@@ -34,7 +34,7 @@ public class AutoscalePolicyCommand implements Command<StratosCommandContext> {
         }
         if (args == null || args.length == 0) {
             //CommandLineService.getInstance().listAvailableCartridges();
-            RestCommandLineService.getInstance().listAutoscalePolicies();
+            RestCommandLineService.getInstance().listDeploymentPolicies();
             return CliConstants.SUCCESSFUL_CODE;
         } else {
             context.getStratosApplication().printUsage(getName());
