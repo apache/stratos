@@ -895,6 +895,7 @@ public class RestCommandLineService {
         return urlBuilder.toString();
     }
 
+    // This method gives the HTTP response string
     private String getHttpResponseString (HttpResponse response) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));

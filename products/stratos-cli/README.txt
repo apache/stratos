@@ -32,19 +32,20 @@ usage: stratos [-debug] [-h] [-p <password>] [-trace] [-u <username>]
  -u,--username <username>   Username
 
 
-Available Commands: 
-add-domain-mapping        Map domain for the subscribed cartridge
-help                      Help for commands
-subscribe                 Subscribe to a cartridge
-sync                      Synchronize GIT repository for the subscribed cartridge
-remove-domain-mapping     Remove domain mapping for the subscribed cartridge
-list                      List subscribed cartridges with details
-unsubscribe               Unsubscribe from a subscribed cartridge
-policies                  List available policies
-exit                      Exit from Stratos Client Tool
-info                      Get information about a subscribed cartridge
-cartridges                List available cartridges
-
+Available Commands:
+create-tenant             	Add new tenant
+list-autoscale-policies   	List available autoscale policies
+subscribe-cartridge       	Subscribe to a cartridge
+exit                      	Exit from Stratos Client Tool
+list-available-cartridges 	List available cartridges
+help                      	Help for commands
+list-available-partitions 	List available partitions
+deploy-cartridge          	Add new cartridge deployment
+unsubscribe-cartridge     	Unsubscribe from a subscribed cartridge
+list-subscribe-cartridges 	List subscribed cartridges with details
+deploy-partition          	Add new partition deployment
+deploy-autoscaling-policy 	Add new autoscaling policy deployment
+deploy-deployment-policy  	Add new deployment policy
 
 Installation & Running
 ==================================
@@ -57,10 +58,10 @@ chmod +x ./stratos.sh
 2. Export the host and port of the SC as environment variables
 
 Linux:
-export STRATOS_URL=https://s2demo.apache.com:9445
+export STRATOS_URL=https://stratosmanager.apache.org:9445
 
 Windows:
-set STRATOS_URL=https://s2demo.apache.com:9445
+set STRATOS_URL=https://stratosmanager.apache.org:9445
 
 3. Run the stratos.sh or stratos.bat as appropriate
 
