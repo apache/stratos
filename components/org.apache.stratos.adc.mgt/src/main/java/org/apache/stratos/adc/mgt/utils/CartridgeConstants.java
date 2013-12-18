@@ -82,6 +82,11 @@ public class CartridgeConstants {
 	public static final String INTERNAL_GIT_PASSWORD = "internal.repo.password";
 
     public static final String CUSTOM_PAYLOAD_PARAM_NAME_PREFIX = "payload_parameter.";
+    
+    public static final String CC_SOCKET_TIMEOUT = "cc.socket.timeout";
+    public static final String CC_CONNECTION_TIMEOUT = "cc.connection.timeout";
+    public static final String AUTOSCALER_SOCKET_TIMEOUT = "autoscaler.socket.timeout";
+    public static final String AUTOSCALER_CONNECTION_TIMEOUT = "autoscaler.connection.timeout";
 
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";

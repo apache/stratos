@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.client;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
@@ -47,10 +48,16 @@ public class CloudControllerServiceClient {
 
 	public CloudControllerServiceClient(String epr) throws AxisFault {
 
+		String ccSocketTimeout = 
+			System.getProperty(CartridgeConstants.CC_SOCKET_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.CC_SOCKET_TIMEOUT);
+		String ccConnectionTimeout = 
+			System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT) ;
+		
 		ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
 		try {
 			stub = new CloudControllerServiceStub(clientConfigContext, epr);
-			stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(300000);
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, ccSocketTimeout);
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, ccConnectionTimeout);
 
 		} catch (AxisFault axisFault) {
 			String msg = "Failed to initiate AutoscalerService client. " + axisFault.getMessage();

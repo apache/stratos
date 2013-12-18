@@ -64,7 +64,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 			Partition[] policyPartitions = deploymentPolicy.getAllPartitions();
             try {
                 // call CC API
-                CloudControllerClient.getInstance().validatePartitionsOfPolicy(cartridgeType, policyPartitions);
+                CloudControllerClient.getInstance().validateDeploymentPolicy(cartridgeType, deploymentPolicy);
                 // if this deployment policy is valid for this cartridge, add it.
                 validPolicies.add(deploymentPolicy);			
             } catch (PartitionValidationException ignoredException) {
