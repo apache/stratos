@@ -63,7 +63,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        log.info("Sending member started event");
+        log.info("Publishing instance started event");
         // Send member activated event
         InstanceStartedEvent event = new InstanceStartedEvent(
                 LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME),
@@ -73,14 +73,15 @@ public class Main {
                 LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
         EventPublisher publisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
         publisher.publish(event);
-        log.info("Member started event is sent");
+        log.info("Instance started event is published");
 
         String repoURL = LaunchParamsUtil
                 .readParamValueFromPayload("GIT_REPO");
 
         if ("null".equals(repoURL) || repoURL == null) {
-            log.info(" No git repo for this cartridge");
+            log.info("No git repo found for this cartridge");
             waitForPortsTobeActive();
+            log.info("All ports active");
             InstanceActivatedEvent instanceActivatedEvent = new InstanceActivatedEvent(
                     LaunchParamsUtil
                             .readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME),
@@ -95,7 +96,7 @@ public class Main {
             EventPublisher instanceStatusPublisher = new EventPublisher(
                     Constants.INSTANCE_STATUS_TOPIC);
             instanceStatusPublisher.publish(instanceActivatedEvent);
-            log.info(" Instance status published. No git repo ");
+            log.info("Instance activated event published");
         }
 
         // Start periodical file checker task
