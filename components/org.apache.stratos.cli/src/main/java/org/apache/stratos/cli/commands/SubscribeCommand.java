@@ -165,12 +165,12 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					}
 					repoURL = commandLine.getOptionValue(CliConstants.REPO_URL_OPTION);
 				}
-				if (commandLine.hasOption(CliConstants.PRIVATE_REPO_OPTION)) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("privateRepo option is passed");
-					}
-					privateRepo = true;
-				}
+				//if (commandLine.hasOption(CliConstants.PRIVATE_REPO_OPTION)) {
+				//	if (logger.isTraceEnabled()) {
+				//		logger.trace("privateRepo option is passed");
+				//	}
+				//	privateRepo = true;
+				//}
 				if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Username option is passed");
