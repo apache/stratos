@@ -81,8 +81,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 		urlOption.setArgName("url");
 		options.addOption(urlOption);
 
-		options.addOption(CliConstants.PRIVATE_REPO_OPTION, CliConstants.PRIVATE_REPO_LONG_OPTION, false,
-				"Private repository");
+		//options.addOption(CliConstants.PRIVATE_REPO_OPTION, CliConstants.PRIVATE_REPO_LONG_OPTION, false,
+		//		"Private repository");
 
 		Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
 				"GIT repository username");

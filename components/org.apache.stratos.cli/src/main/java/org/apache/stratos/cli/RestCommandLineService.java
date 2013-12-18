@@ -368,9 +368,9 @@ public class RestCommandLineService {
                 if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                     System.out.println("Invalid operation. Authorization failed");
                     return;
-                } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                    System.out.println("Duplicate alias. Please choose different alias");
-                    return;
+                //} else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                  //  System.out.println("Duplicate alias. Please choose different alias");
+                  //  return;
                 } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                     System.out.println("Error occur in subscribe cartridge");
                     return;
@@ -418,9 +418,9 @@ public class RestCommandLineService {
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
                 return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                System.out.println("Duplicate alias. Please choose different alias");
-                return;
+            //} else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+            //    System.out.println("Duplicate alias. Please choose different alias");
+            //    return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in subscribe cartridge");
                 return;
