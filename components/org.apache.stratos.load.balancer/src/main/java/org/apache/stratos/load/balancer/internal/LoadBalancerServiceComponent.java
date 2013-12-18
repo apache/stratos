@@ -31,6 +31,7 @@ import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
+import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -114,6 +115,9 @@ public class LoadBalancerServiceComponent {
 
             // Configure cep settings
             CEPConfigurator.configure(configuration);
+
+            // Configure topology filters
+            TopologyFilterConfigurator.configure(configuration);
 
             if (configuration.isMultiTenancyEnabled()) {
                 // Configure jndi.properties

@@ -19,6 +19,7 @@
 
 package org.apache.stratos.load.balancer.conf.configurator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
@@ -31,14 +32,25 @@ public class TopologyFilterConfigurator {
     private static final Log log = LogFactory.getLog(TopologyFilterConfigurator.class);
 
     public static void configure(LoadBalancerConfiguration configuration) {
-        System.setProperty(Constants.TOPOLOGY_SERVICE_FILTER, configuration.getTopologyServiceFilter());
-        System.setProperty(Constants.TOPOLOGY_CLUSTER_FILTER, configuration.getTopologyClusterFilter());
-        System.setProperty(Constants.TOPOLOGY_MEMBER_FILTER, configuration.getTopologyMemberFilter());
+        String serviceFilter = configuration.getTopologyServiceFilter();
+        if (StringUtils.isNotBlank(serviceFilter)) {
+            System.setProperty(Constants.TOPOLOGY_SERVICE_FILTER, serviceFilter);
+        }
 
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("service filter: ", System.getProperty(Constants.TOPOLOGY_SERVICE_FILTER)));
-            log.debug(String.format("cluster filter: ", System.getProperty(Constants.TOPOLOGY_CLUSTER_FILTER)));
-            log.debug(String.format("member filter: ", System.getProperty(Constants.TOPOLOGY_MEMBER_FILTER)));
+        String clusterFilter = configuration.getTopologyClusterFilter();
+        if (StringUtils.isNotBlank(clusterFilter)) {
+            System.setProperty(Constants.TOPOLOGY_CLUSTER_FILTER, clusterFilter);
+        }
+
+        String memberFilter = configuration.getTopologyMemberFilter();
+        if (StringUtils.isNotBlank(memberFilter)) {
+            System.setProperty(Constants.TOPOLOGY_MEMBER_FILTER, memberFilter);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Topology filter settings: [service-filter] %s", System.getProperty(Constants.TOPOLOGY_SERVICE_FILTER)));
+            log.debug(String.format("Topology filter settings: [cluster-filter] %s", System.getProperty(Constants.TOPOLOGY_CLUSTER_FILTER)));
+            log.debug(String.format("Topology filter settings: [member-filter] %s", System.getProperty(Constants.TOPOLOGY_MEMBER_FILTER)));
         }
     }
 }
