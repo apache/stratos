@@ -759,6 +759,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method list deployment policies
     public void listDeploymentPolicies() throws CommandException {
         try {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listDeploymentPolicyRestEndPoint,
@@ -807,6 +808,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This class convert JSON string to deploymentpolicylist object
     private class DeploymentPolicyList {
         private ArrayList<DeploymentPolicy> deploymentPolicy;
 
