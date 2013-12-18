@@ -23,11 +23,11 @@
             <extension>xml</extension>
             <class>org.apache.stratos.cloud.controller.deployers.CloudControllerDeployer</class>
         </deployer>
-        <deployer>
+        <!-- >deployer>
             <directory>cartridges</directory>
             <extension>xml</extension>
             <class>org.apache.stratos.cloud.controller.deployers.CartridgeDeployer</class>
-        </deployer>
+        </deployer-->
         <!-- >deployer>
             <directory>services</directory>
             <extension>xml</extension>

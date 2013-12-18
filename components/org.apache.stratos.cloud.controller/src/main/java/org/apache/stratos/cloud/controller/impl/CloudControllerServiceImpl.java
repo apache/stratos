@@ -373,7 +373,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         memberContext.setCartridgeType(cartridgeType);
 
-        final Lock lock = new ReentrantLock();
+        final Lock lock = new ReentrantLock(true);
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
@@ -572,9 +572,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new InvalidMemberException(msg);
         }
         
-        ThreadExecutor exec = new ThreadExecutor();
+        ThreadExecutor exec = ThreadExecutor.getInstance();
         exec.execute(new InstanceTerminator(ctxt));
-        exec.shutdown();
 
 	}
     
@@ -759,12 +758,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		    throw new InvalidClusterException(msg);
 		}
 		
-		ThreadExecutor exec = new ThreadExecutor();
+		ThreadExecutor exec = ThreadExecutor.getInstance();
 		for (MemberContext memberContext : ctxts) {
             exec.execute(new InstanceTerminator(memberContext));
         }
 		
-		exec.shutdown();
 
 //		ServiceContext serviceCtxt = dataHolder
 //				.getServiceContextFromDomain(clusterId);

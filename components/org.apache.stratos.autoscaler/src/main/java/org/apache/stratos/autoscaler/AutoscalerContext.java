@@ -17,6 +17,7 @@ public class AutoscalerContext {
     private AutoscalerContext() {
         try {
             setMonitors(new HashMap<String, ClusterMonitor>());
+            setLbMonitors(new HashMap<String, LbClusterMonitor>());
         } catch (Exception e) {
             log.error("Rule evaluateMinCheck error", e);
         }

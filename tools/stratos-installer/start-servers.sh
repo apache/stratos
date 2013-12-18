@@ -36,11 +36,11 @@ fi
 function help {
     echo ""
     echo "Give one or more of the servers to start on this machine. The available servers are"
-    echo "mb, cc, lb, as, sc, cep, all. 'all' means you need to start all servers."
+    echo "mb, cc, as, sm, cep, all. 'all' means you need to start all servers."
     echo "usage:"
     echo "setup.sh -p\"<product list>\""
     echo "eg."
-    echo "setup.sh -p\"cc lb\""
+    echo "setup.sh -p\"cc sm\""
     echo ""
 }
 
@@ -70,9 +70,6 @@ do
     if [[ $x = "cc" ]]; then
         cc="true"
     fi
-    if [[ $x = "lb" ]]; then
-        lb="true"
-    fi
     if [[ $x = "as" ]]; then
         as="true"
     fi
@@ -82,7 +79,6 @@ do
     if [[ $x = "all" ]]; then
 	mb="true"
         cc="true"
-        lb="true"
         as="true"
         sc="true"
         cep="true"
@@ -90,10 +86,8 @@ do
     if [[ $x = "demo" ]]; then
         demo="true"
         cc="true"
-        lb="true"
         as="true"
         sc="true"
-	bam="true"
     fi
 done
 product_list=`echo $product_list | sed 's/^ *//g' | sed 's/ *$//g'`
@@ -132,15 +126,6 @@ if [[ $cc = "true" ]]; then
     sleep $SLEEP
 fi
 
-if [[ $lb = "true" ]]; then
-    echo ${lb_path} 
-
-    echo "Starting LB server ..." >> $LOG
-    nohup ${lb_path}/bin/stratos.sh &
-    echo "LB server started" >> $LOG
-    sleep $SLEEP
-fi
-
 if [[ $as = "true" ]]; then
     echo ${as_path}
 
@@ -151,13 +136,12 @@ if [[ $as = "true" ]]; then
 fi
 
 
-if [[ $sc = "true" ]]; then
-    
-    echo ${sc_path}
+if [[ $sm = "true" ]]; then  
+    echo ${sm_path}
 
-    echo "Starting SC server ..." >> $LOG
-    nohup ${sc_path}/bin/stratos.sh &
-    echo "SC server started" >> $LOG
+    echo "Starting SM server ..." >> $LOG
+    nohup ${sm_path}/bin/stratos.sh &
+    echo "SM server started" >> $LOG
     sleep $SLEEP
 
 fi

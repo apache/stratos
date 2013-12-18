@@ -83,6 +83,7 @@ public class PolicyManager {
             }
             fillPartitions(policy);
         } catch (InvalidPartitionException e) {
+        	log.error(e);
             throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
         }
 
@@ -101,9 +102,10 @@ public class PolicyManager {
             String partitionId = partition.getId();
             if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
                 String msg = "Could not find partition: [id] " + partitionId + ". " +
-                        "Please deploy the partitions before deploying the deployment policies.";
+                        "Please deploy the partitions before deploying the deployment policies.";                
                 throw new InvalidPartitionException(msg);
             }
+            
             fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
         }
     }
@@ -130,8 +132,9 @@ public class PolicyManager {
             }
             autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
         } else {
-            throw new InvalidPolicyException("Specified policy [" + asPolicy.getId()
-                    + "] already exists");
+        	String errMsg = "Specified policy [" + asPolicy.getId() + "] already exists";
+        	log.error(errMsg);
+            throw new InvalidPolicyException(errMsg);
         }
     }
 
@@ -154,12 +157,12 @@ public class PolicyManager {
     }
 
     /**
-     * Returns a List of the Autoscale policies contained in this manager.
+     * Returns an array of the Autoscale policies contained in this manager.
      *
      * @return
      */
-    public List<AutoscalePolicy> getAutoscalePolicyList() {
-        return Collections.unmodifiableList(new ArrayList<AutoscalePolicy>(autoscalePolicyListMap.values()));
+    public AutoscalePolicy[] getAutoscalePolicyList() {        
+        return autoscalePolicyListMap.values().toArray(new AutoscalePolicy[0]);
     }
 
     /**
@@ -210,12 +213,12 @@ public class PolicyManager {
     }
 
     /**
-     * Returns a List of the Deployment policies contained in this manager.
+     * Returns an array of the Deployment policies contained in this manager.
      *
      * @return
      */
-    public List<DeploymentPolicy> getDeploymentPolicyList() {
-        return Collections.unmodifiableList(new ArrayList<DeploymentPolicy>(deploymentPolicyListMap.values()));
+    public DeploymentPolicy[] getDeploymentPolicyList() {        
+        return deploymentPolicyListMap.values().toArray(new DeploymentPolicy[0]);
     }
 
     /**

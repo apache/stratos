@@ -1,0 +1,48 @@
+{{#if login}}
+        <div class="top-blue-strip"></div>
+        <div class="login-logo-section"><a  href="{{url "/"}}"><img src="{{url "/themes/theme1/ui/img/logo-login.png"}}"/></a></div>
+        <style>
+        body {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    </style>
+{{/if}}
+{{#unless login}}
+<div class="navbar navbar-inverse navbar-fixed-top main-menu">
+    <div class="shadow-wrapper">
+        <div class="top-blue-strip"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <a class="navbar-brand" href="{{url "/"}}"><img src="{{url "/themes/theme1/ui/img/logo-inside.png"}}"/></a>
+                 </div>
+                 <div class="col-lg-9 custom-nav">
+                    <ul class="pull-left">
+                        <li {{#if my_cartridges}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icon-cartridge"></i> <span><br>My Cartridges</span></a></li>
+                        <li><a href="{{url "/"}}"><i class="icon-dashboard"></i> <span><br>Dashboard</span></a></li>
+                     </ul>
+                     <ul class="pull-right">
+                         <li><a><i class="icon-tenant"></i><br> logout section</a></li>
+                     </ul>
+                 </div>
+            </div>
+            <!--/.navbar-collapse -->
+        </div><!-- End container -->
+    </div>
+    <div class="breadcrumb-strip">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-3">
+                    <a class="btn {{css}}" href="{{link}}">{{name}}</a>
+                </div>
+                <div class="col-lg-9 help-section">
+                    <i class="icon-help"></i>
+                    <p>Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/unless}}

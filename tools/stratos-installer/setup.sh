@@ -37,21 +37,21 @@ lb="false"
 as="false"
 sm="false"
 cep="false"
-product_list="mb;cc;cep;lb;as;sm"
+product_list="mb;cc;cep;as;sm"
 enable_internal_git=false
 
 function help {
     echo ""
     echo "Usage:"
     echo "setup.sh -u <host username> -p \"<product list>\""
-    echo "product list : [mb, cc, lb, as, sm, cep]"
+    echo "product list : [mb, cc, as, sm, cep]"
     echo "Example:"
-    echo "sudo ./setup.sh -p \"cc lb\""
+    echo "sudo ./setup.sh -p \"cc\""
     echo "sudo ./setup.sh -p \"all\""
     echo ""
     echo "-u: <host username> The login user of the host."
     echo "-p: <product list> Apache Stratos products to be installed on this node. Provide one or more names of the servers."
-    echo "    The available servers are cc, lb, as, sm or all. 'all' means you need to setup all servers in this machine. Default is all"
+    echo "    The available servers are cc, as, sm or all. 'all' means you need to setup all servers in this machine. Default is all"
     echo "-g: <enable_internal_git> true|false Whether enable internal git repo for Stratos2. Default is false"
     echo ""
 }
@@ -86,9 +86,6 @@ do
     if [[ $x = "cep" ]]; then
         cep="true"
     fi
-    if [[ $x = "lb" ]]; then
-        lb="true"
-    fi
     if [[ $x = "as" ]]; then
         as="true"
     fi
@@ -99,7 +96,6 @@ do
         mb="true"
         cep="true"
         cc="true"
-        lb="true"
         as="true"
         sm="true"
     fi
@@ -130,7 +126,23 @@ export $enable_internal_git
 export $host_user
 export hostname=`hostname -f`
 
+# Check validity of IP
+function valid_ip()
+{
+    local  ip=$1
+    local  stat=1
 
+    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.'
+        ip=($ip)
+        IFS=$OIFS
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+        stat=$?
+    fi
+    return $stat
+}
 
 function helpsetup {
     echo ""
@@ -149,8 +161,12 @@ function general_conf_validate {
         echo "Please specify the stratos domain"
         exit 1
     fi
-    if [[ (-z $mb_port_offset || -z $mb_ip ) ]]; then
-        echo "Please specify the ip and the port offset of MB"
+    if [[ (-z $mb_port_offset || -z $mb_ip || -z $mb_hostname) ]]; then
+        echo "Please specify the ip, the port offset and the hostname of MB"
+        exit 1
+    fi
+    if !(valid_ip $mb_ip); then 
+        echo "Please provide valid ip for MB's ip"
         exit 1
     fi
 }
@@ -170,17 +186,6 @@ function cep_conf_validate {
     if [[ ! -f $cep_extension_jar ]]; then
         echo "Please copy the cep extension jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
-    fi
-}
-
-function lb_conf_validate {
-    if [[ -z $lb_path ]]; then
-	helpsetup LB
-	exit 1
-    fi
-    if [[ -z $lb_cep_ip ]]; then
-	echo "Please specify the ip of CEP in conf/setup.conf"
-	exit 1
     fi
 }
 
@@ -223,14 +228,24 @@ function sm_conf_validate {
 	exit 1
     fi
     if [[ ! -f $mysql_connector_jar ]]; then
-        echo "Please copy the mysql connector jar into the same folder as this command(stratos2 release pack folder) and update conf/setup.conf file"
+        echo "Please copy the mysql connector jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
     fi
-    if [[ -z $cc_port_offset ]]; then
-        echo "Please specify the port offset of CC"
+    if [[ -z $cc_port_offset || -z $as_port_offset || -z $cep_port_offset ]]; then
+        echo "Please specify the port offset of AS and/or CC and/or CEP"
         exit 1
     fi
-
+    if [[ -z $sm_ip || -z $as_ip || -z $cc_ip || -z $cep_ip ]]; then
+        echo "Please specify the ips of SM and/or AS and/or CC and/or CEP"
+        exit 1
+    elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip && valid_ip $cep_ip); then
+        echo "Please provide valid ips for SM and/or AS and/or CC and/or CEP"
+        exit 1
+    fi
+    if [[-z $cc_hostname || -z $as_hostname ]]; then
+	echo "Please specify valid hostname for AS and/or CC"
+	exit 1
+    fi
 }
 
 
@@ -240,9 +255,6 @@ if [[ $mb = "true" ]]; then
 fi
 if [[ $cep = "true" ]]; then
     cep_conf_validate
-fi
-if [[ $lb = "true" ]]; then
-    lb_conf_validate
 fi
 if [[ $cc = "true" ]]; then
     cc_conf_validate
@@ -280,11 +292,6 @@ fi
 if [[ $cep = "true" ]]; then
     if [[ ! -d $cep_path ]]; then
         unzip $cep_pack_path -d $stratos_path
-    fi
-fi
-if [[ $lb = "true" ]]; then
-    if [[ ! -d $lb_path ]]; then
-        unzip $lb_pack_path -d $stratos_path
     fi
 fi
 if [[ $cc = "true" ]]; then
@@ -343,6 +350,7 @@ function cep_setup {
     cp -f $cep_extension_path/artifacts/outputeventadaptors/*.xml $cep_path/repository/deployment/server/outputeventadaptors/
     cp -f $cep_extension_path/artifacts/executionplans/*.xml $cep_path/repository/deployment/server/executionplans/
     cp -f $cep_extension_path/artifacts/eventformatters/*.xml $cep_path/repository/deployment/server/eventformatters/
+    cp -f $cep_extension_path/artifacts/streamdefinitions/*.xml $cep_path/repository/conf/
 
     pushd $cep_path
 
@@ -353,6 +361,10 @@ function cep_setup {
     echo "In repository/conf/jndi.properties"
     cp -f repository/conf/jndi.properties repository/conf/jndi.properties.orig
     cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$cep_mb_listen_port@g" > repository/conf/jndi.properties
+
+    echo "In outputeventadaptors"
+    cp -f repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml.orig
+    cat repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml.orig | sed -e "s@CEP_HOME@$cep_path@g" > repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
 
     echo "In repository/conf/siddhi/siddhi.extension"
     cp -f repository/conf/siddhi/siddhi.extension repository/conf/siddhi/siddhi.extension.orig
@@ -368,38 +380,6 @@ if [[ $cep = "true" ]]; then
     cep_setup
 fi
 
-# ------------------------------------------------
-# Setup LB
-# ------------------------------------------------    
-function lb_setup {
-    echo "Setup LB" >> $LOG
-    echo "Configuring the Load Balancer"
-
-    cp -f ./config/lb/repository/conf/loadbalancer.conf $lb_path/repository/conf/
-    cp -f ./config/lb/repository/conf/axis2/axis2.xml $lb_path/repository/conf/axis2/
-
-    pushd $lb_path
-
-    echo "In repository/conf/loadbalancer.conf" >> $LOG
-    cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_IP@$lb_mb_ip@g" > repository/conf/loadbalancer.conf
-
-    cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@MB_LISTEN_PORT@$lb_mb_listen_port@g" > repository/conf/loadbalancer.conf
-    
-    cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@CEP_IP@$lb_cep_ip@g" > repository/conf/loadbalancer.conf
-
-    cp -f repository/conf/loadbalancer.conf repository/conf/loadbalancer.conf.orig
-    cat repository/conf/loadbalancer.conf.orig | sed -e "s@CEP_LISTEN_PORT@$lb_cep_tcp_port@g" > repository/conf/loadbalancer.conf
-
-    popd #lb_path
-    echo "End configuring the Load Balancer"
-}
-
-if [[ $lb = "true" ]]; then
-    lb_setup
-fi
 
 # ------------------------------------------------
 # Setup CC
@@ -483,7 +463,7 @@ function sm_setup {
     echo "Setup SM" >> $LOG
     echo "Configuring Stratos Manager"
 
-    cp -f ./config/sc/repository/conf/carbon.xml $sm_path/repository/conf/
+    cp -f ./config/sm/repository/conf/carbon.xml $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/jndi.properties $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/cartridge-config.properties $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/datasources/master-datasources.xml $sm_path/repository/conf/datasources/
@@ -502,13 +482,19 @@ function sm_setup {
     echo "In repository/conf/cartridge-config.properties" >> $LOG
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@SM_IP@$sm_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@SC_HOSTNAME:SC_HTTPS_PORT@$sm_ip:$sm_https_port@g" > repository/conf/cartridge-config.properties
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@SM_HOSTNAME:SM_HTTPS_PORT@$sm_ip:$sm_https_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_HOSTNAME:STRATOS_FOUNDATION_DB_PORT@$stratos_foundation_db_hostname:$stratos_foundation_db_port@g" > repository/conf/cartridge-config.properties
@@ -521,6 +507,18 @@ function sm_setup {
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_SCHEMA@$stratos_foundation_db_schema@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_IP@$sm_mb_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_LISTEN_PORT@$sm_mb_listen_port@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_IP@$sm_cep_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_LISTEN_PORT@$sm_cep_tcp_port@g" > repository/conf/cartridge-config.properties
 
     echo "In repository/conf/datasources/master-datasources.xml" >> $LOG
     cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
@@ -569,11 +567,37 @@ fi
 
 
 # ------------------------------------------------
+# Mapping domain/host names 
+# ------------------------------------------------
+
+cp -f /etc/hosts hosts.tmp
+
+
+echo "$mb_ip $mb_hostname	# message broker hostname"	>> hosts.tmp
+
+if [[ $sm = "true" ]]; then
+    echo "$sm_ip $sm_hostname	# stratos domain"	>> hosts.tmp
+    echo "$cc_ip $cc_hostname	# cloud controller hostname"	>> hosts.tmp
+    echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
+fi
+
+mv -f ./hosts.tmp /etc/hosts
+
+
+# ------------------------------------------------
 # Starting the servers
 # ------------------------------------------------
+echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
+chown $host_user:$host_user $stratos_path -R
+
+echo "Apache Stratos setup has successfully completed"
+
+read -p "Do you want to start the servers [y/n]? " answer
+if [[ $answer != y ]] ; then
+   exit 1
+fi
+
 echo "Starting the servers" >> $LOG
-#Starting the servers in the following order is recommended
-#mb, cc, elb, is, agent, sm
 
 echo "Starting up servers. This may take time. Look at $LOG file for server startup details"
 
@@ -581,7 +605,7 @@ chown -R $host_user.$host_user $log_path
 chmod -R 777 $log_path
 
 export setup_dir=$PWD
-su - $host_user -c "source $setup_dir/conf/setup.conf;$setup_dir/start-servers.sh -p$product_list >> $LOG"
+su - $host_user -c "source $setup_dir/conf/setup.conf;$setup_dir/start-servers.sh -p\"$product_list\" >> $LOG"
 
 echo "Servers started. Please look at $LOG file for server startup details"
 if [[ $sm == "true" ]]; then

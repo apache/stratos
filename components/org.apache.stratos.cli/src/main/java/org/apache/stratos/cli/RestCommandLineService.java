@@ -64,6 +64,7 @@ public class RestCommandLineService {
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";
     private final String listParitionRestEndPoint = "/stratos/admin/partition";
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
+    private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -121,7 +122,6 @@ public class RestCommandLineService {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Tenant Domain {}", restClientService.getUsername());
                 }
-                System.out.println("Loggin successfull");
                 return true;
             } else {
                 // Just return true as we don't need to validate
@@ -173,8 +173,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
-            String resultString = getHttpResponseString(response);
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list available cartridges");
+                return;
+            }
 
+            String resultString = getHttpResponseString(response);
             if (resultString == null) {
                 return;
             }
@@ -257,6 +262,12 @@ public class RestCommandLineService {
 
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list subscribe cartridges");
+                return;
+            }
 
             String resultString = getHttpResponseString(response);
 
@@ -352,9 +363,13 @@ public class RestCommandLineService {
                 HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
-                String subscription = getHttpResponseString(response);
-
                 String responseCode = "" + response.getStatusLine().getStatusCode();
+                if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                    System.out.println("Error occur in subscribe cartridge");
+                    return;
+                }
+
+                String subscription = getHttpResponseString(response);
 
                 if (subscription == null) {
                     System.out.println("Error");
@@ -402,9 +417,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
                     completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
-            String subscriptionOutput = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in subscribe cartridge");
+                return;
+            }
 
+            String subscriptionOutput = getHttpResponseString(response);
 
             if (subscriptionOutput == null) {
                 System.out.println("Error");
@@ -479,8 +498,11 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint,
                     completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in create tenant");
+                return;
+            }
 
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
@@ -517,8 +539,11 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
                     cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy cartridge definition");
+                return;
+            }
 
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
@@ -537,8 +562,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
                     partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy partition");
+                return;
+            }
+
+            String result = getHttpResponseString(response);
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the partition");
@@ -565,8 +595,13 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
                     autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy autoscaling policy");
+                return;
+            }
+
+            String result = getHttpResponseString(response);
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
@@ -593,8 +628,14 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-            String result = getHttpResponseString(response);
+
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy deployment policy");
+                return;
+            }
+
+            String result = getHttpResponseString(response);
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the deployment policy");
@@ -621,9 +662,16 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listParitionRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list partitions");
+                return;
+            }
+
             String resultString = getHttpResponseString(response);
 
             if (resultString == null) {
+                System.out.println("Response content is empty");
                 return;
             }
 
@@ -632,7 +680,7 @@ public class RestCommandLineService {
             PartitionList partitionList = gson.fromJson(resultString, PartitionList.class);
 
             if (partitionList == null) {
-                System.out.println("Partition list is null");
+                System.out.println("Partition list is empty");
                 return;
             }
 
@@ -666,10 +714,16 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
-            System.out.println(response.getStatusLine().getStatusCode());
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list autoscase policies");
+                return;
+            }
+
             String resultString = getHttpResponseString(response);
 
             if (resultString == null) {
+                System.out.println("Response content is empty");
                 return;
             }
 
@@ -678,7 +732,7 @@ public class RestCommandLineService {
             AutoscalePolicyList policyList = gson.fromJson(resultString, AutoscalePolicyList.class);
 
             if (policyList == null) {
-                System.out.println("Autoscale policy list is null");
+                System.out.println("Autoscale policy list is empty");
                 return;
             }
 
@@ -702,6 +756,73 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // This method list deployment policies
+    public void listDeploymentPolicies() throws CommandException {
+        try {
+            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listDeploymentPolicyRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list deployment policies");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            DeploymentPolicyList policyList = gson.fromJson(resultString, DeploymentPolicyList.class);
+
+            if (policyList == null) {
+                System.out.println("Deployment policy list is empty");
+                return;
+            }
+
+            RowMapper<DeploymentPolicy> partitionMapper = new RowMapper<DeploymentPolicy>() {
+
+                public String[] getData(DeploymentPolicy policy) {
+                    String[] data = new String[3];
+                    data[0] = policy.getId();
+                    return data;
+                }
+            };
+
+            DeploymentPolicy[] policyArry = new DeploymentPolicy[policyList.getDeploymentPolicy().size()];
+            policyArry = policyList.getDeploymentPolicy().toArray(policyArry);
+
+            System.out.println("Available Deployment Policies:");
+            CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
+            System.out.println();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // This class convert JSON string to deploymentpolicylist object
+    private class DeploymentPolicyList {
+        private ArrayList<DeploymentPolicy> deploymentPolicy;
+
+
+        public ArrayList<DeploymentPolicy> getDeploymentPolicy() {
+            return deploymentPolicy;
+        }
+
+        public void setDeploymentPolicy(ArrayList<DeploymentPolicy> deploymentPolicy) {
+            this.deploymentPolicy = deploymentPolicy;
+        }
+
+        DeploymentPolicyList() {
+            deploymentPolicy = new ArrayList<DeploymentPolicy>();
         }
     }
 

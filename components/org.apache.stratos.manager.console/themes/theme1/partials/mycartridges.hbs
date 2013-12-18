@@ -1,0 +1,41 @@
+<div class="container content-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>{{title}}</h1>
+        </div>
+    </div>
+</div>
+{{#each mycartridges}}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="h2-wrapper"><h2>{{kind}}</h2></div>
+        </div>
+    </div>
+    <div class="row">
+        {{#each cartridges}}
+        <div class="col-md-6">
+            <div class="box-container">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="state-box {{state}}-state"><i class="icon-{{state}}"></i> {{state}}</div>
+                            <div class="box-left"><i class="icon-{{type}} big-pro-icons"></i></div>
+                            <div class="big-pro-icons-title">{{version}}</div>
+                        </div>
+                        <div class="col-lg-9">
+                            <a><h3>{{name}}</h3></a>
+                            <h4>LB IP:</h4>
+                            <div>{{lb_ip}}</div>
+
+                            <h4>Access URL:</h4>
+                            <div><a>{{access_url}}</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+{{/each}}

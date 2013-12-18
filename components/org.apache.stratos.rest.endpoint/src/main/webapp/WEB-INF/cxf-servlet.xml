@@ -31,6 +31,7 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <ref bean="exceptionHandler"/>
             <ref bean="authenticationFilter"/>
             <ref bean="authorizationFilter"/>
         </jaxrs:providers>
@@ -46,6 +47,7 @@
     <bean id="authorizationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthorizingHandler">
         <property name="securedObject" ref="stratosRestEndpointBean"/>
     </bean>
+    <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
 
     <!--The below config enables OAuth based authentication/authorization for REST API-->
     <!--bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">

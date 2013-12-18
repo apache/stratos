@@ -73,7 +73,7 @@ public class ClusterMonitor implements Runnable{
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
-        this.deploymentPolicy = deploymentPolicy;
+        this.autoscalePolicy = autoscalePolicy;
         networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
 

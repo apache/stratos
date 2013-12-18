@@ -1,0 +1,7 @@
+<%
+var caramel = require('caramel')
+var cartridges = require('/data/cartridges.json');
+caramel.render({
+    cartridges:cartridges
+});
+%>

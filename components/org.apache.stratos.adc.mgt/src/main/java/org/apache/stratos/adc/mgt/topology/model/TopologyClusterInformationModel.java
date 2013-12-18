@@ -37,7 +37,7 @@ public class TopologyClusterInformationModel {
     private static TopologyClusterInformationModel topologyClusterInformationModel;
 
     //locks
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
