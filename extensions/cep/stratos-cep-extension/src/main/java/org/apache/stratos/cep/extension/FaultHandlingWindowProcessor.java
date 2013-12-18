@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 public class FaultHandlingWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
 
     private static final int MILI_TO_MINUTE = 1000;
-    private static final int TIME_OUT = 100;
+    private static final int TIME_OUT = 600;
 
     static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
     private ScheduledExecutorService eventRemoverScheduler;
