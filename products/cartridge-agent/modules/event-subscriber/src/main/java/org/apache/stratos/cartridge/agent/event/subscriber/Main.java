@@ -119,6 +119,7 @@ public class Main {
         if (StringUtils.isBlank(ports)) {
             throw new RuntimeException("No ports found");
         }
+        ports = ports.replace("|", ",");
         String[] portsArray = ports.split(",");
 
         long startTime = System.currentTimeMillis();
