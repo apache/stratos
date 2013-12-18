@@ -184,8 +184,9 @@ public class PolicyManager {
             PartitionManager.getInstance().deployNewNetworkPartitions(policy);
             deploymentPolicyListMap.put(policy.getId(), policy);
         } else {
-            throw new InvalidPolicyException("Specified policy [" + policy.getId()
-                    + "] already exists");
+        	String errMsg = "Specified policy [" + policy.getId()+ "] already exists";
+        	log.error(errMsg);
+            throw new InvalidPolicyException(errMsg);
         }
     }
 
