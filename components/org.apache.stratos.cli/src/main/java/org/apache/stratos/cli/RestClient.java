@@ -105,7 +105,7 @@ public class RestClient implements GenericRestClient{
             }
             */
 
-            httpClient.getConnectionManager().shutdown();
+            //httpClient.getConnectionManager().shutdown();
             //return result;
             return response;
 
@@ -144,6 +144,11 @@ public class RestClient implements GenericRestClient{
             getRequest.addHeader("Authorization", basicAuth);
 
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+
+            HttpParams params = httpClient.getParams();
+            HttpConnectionParams.setConnectionTimeout(params, 300000);
+            HttpConnectionParams.setSoTimeout(params, 300000);
+
             HttpResponse response = httpClient.execute(getRequest);
 
             /*
@@ -160,7 +165,7 @@ public class RestClient implements GenericRestClient{
             }
             */
 
-            httpClient.getConnectionManager().shutdown();
+            //httpClient.getConnectionManager().shutdown();
             return response;
 
         } catch (ClientProtocolException e) {

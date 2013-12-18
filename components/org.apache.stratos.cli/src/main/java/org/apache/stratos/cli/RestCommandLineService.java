@@ -376,13 +376,10 @@ public class RestCommandLineService {
                     return;
                 }
 
-                System.out.println("Response code : " + responseCode);
-                System.out.println(completeJsonSubscribeString);
-
                 String subscription = getHttpResponseString(response);
 
                 if (subscription == null) {
-                    System.out.println("Error in response 1");
+                    System.out.println("Error in response");
                     return;
                 }
 
@@ -429,13 +426,10 @@ public class RestCommandLineService {
                 return;
             }
 
-            System.out.println("Response code : " + responseCode);
-            System.out.println(completeJsonSubscribeString);
-
             String subscriptionOutput = getHttpResponseString(response);
 
             if (subscriptionOutput == null) {
-                System.out.println("Error in response 2");
+                System.out.println("Error in response");
                 return;
             }
 
@@ -471,7 +465,7 @@ public class RestCommandLineService {
                 System.out.println(takeTimeMsg);
             }
 
-            System.out.format("Please map the %s \"%s\" to ELB IP%n", hostnamesLabel, hostnames);
+            System.out.format("Please map the %s \"%s\" to LB IP%n", hostnamesLabel, hostnames);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -540,11 +534,11 @@ public class RestCommandLineService {
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have successfully deployed the cartridge");
+                return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in deploy cartridge definition");
-                return;
-            } else {
-                System.out.println("You have successfully deployed the cartridge");
                 return;
             }
         } catch (Exception e) {
@@ -894,14 +888,13 @@ public class RestCommandLineService {
             }
             return result;
         } catch (SocketException e) {
-            e.printStackTrace();
             System.out.println("Connection problem");
             return null;
         } catch (NullPointerException e) {
             System.out.println("Null value return from server");
             return null;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("IO error");
             return null;
         }
     }
