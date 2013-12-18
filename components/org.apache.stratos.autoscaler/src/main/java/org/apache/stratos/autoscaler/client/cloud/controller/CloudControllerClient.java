@@ -62,7 +62,10 @@ public class CloudControllerClient {
             int port = conf.getInt("autoscaler.cloudController.port", Constants.CLOUD_CONTROLLER_DEFAULT_PORT);
             String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
             String epr = "https://" + hostname + ":" + port + "/" + Constants.CLOUD_CONTROLLER_SERVICE_SFX  ;
+            int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
             stub = new CloudControllerServiceStub(epr);
+            stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(cloudControllerClientTimeout);
+
 		} catch (Exception e) {
 			log.error("Stub init error", e);
 		}
