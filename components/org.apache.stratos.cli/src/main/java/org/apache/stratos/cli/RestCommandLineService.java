@@ -376,10 +376,13 @@ public class RestCommandLineService {
                     return;
                 }
 
+                System.out.println("Response code : " + responseCode);
+                System.out.println(completeJsonSubscribeString);
+
                 String subscription = getHttpResponseString(response);
 
                 if (subscription == null) {
-                    System.out.println("Error in response");
+                    System.out.println("Error in response 1");
                     return;
                 }
 
@@ -426,10 +429,13 @@ public class RestCommandLineService {
                 return;
             }
 
+            System.out.println("Response code : " + responseCode);
+            System.out.println(completeJsonSubscribeString);
+
             String subscriptionOutput = getHttpResponseString(response);
 
             if (subscriptionOutput == null) {
-                System.out.println("Error in response");
+                System.out.println("Error in response 2");
                 return;
             }
 
@@ -888,6 +894,7 @@ public class RestCommandLineService {
             }
             return result;
         } catch (SocketException e) {
+            e.printStackTrace();
             System.out.println("Connection problem");
             return null;
         } catch (NullPointerException e) {

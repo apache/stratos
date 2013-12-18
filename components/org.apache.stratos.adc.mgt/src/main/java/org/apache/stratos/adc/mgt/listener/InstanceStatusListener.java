@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.adc.mgt.listener;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
@@ -30,6 +26,10 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
+
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 
 public class InstanceStatusListener implements MessageListener {
 
@@ -59,8 +59,15 @@ public class InstanceStatusListener implements MessageListener {
                 }
 
                 CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
-                ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
-                publisher.publish();
+                if (subscription.getRepository() != null) {
+                    ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
+                    publisher.publish();
+                }
+                else {
+                    //TODO: make this log debug
+                    log.info("No repository found for subscription with alias: " + subscription.getAlias() + ", type: " + subscription.getCartridge() +
+                        ". Not sending the Depsync event");
+                }
             }
         } catch (Exception e) {
             if(log.isErrorEnabled()) {

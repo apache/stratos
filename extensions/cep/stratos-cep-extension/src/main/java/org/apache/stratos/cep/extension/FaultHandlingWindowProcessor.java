@@ -74,6 +74,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         if (memberID != null) {
             String id = (String)event.getData()[subjectedAttrIndex];
             timeStampMap.put(id, event);
+            log.debug("Add member : " + id);
         }
         else {
             System.out.println("Member ID null");
@@ -108,8 +109,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                     InEvent event = (InEvent)pair.getValue();
 
                     if ((currentTime - event.getTimeStamp()) / MILI_TO_MINUTE > TIME_OUT) {
-                        log.info("Member Inactive : " + pair.getKey());
+                        log.info("Member Inactive : " + pair.getKey() + " : " + "for " + TIME_OUT + " seconds");
                         it.remove();
+                        log.debug("Inactive member : " + pair.getKey() + " : " + "for " + TIME_OUT + " seconds");
                         nextProcessor.process(event);
                     }
                 }
