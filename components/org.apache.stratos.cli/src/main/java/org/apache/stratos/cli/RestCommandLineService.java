@@ -364,7 +364,13 @@ public class RestCommandLineService {
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
                 String responseCode = "" + response.getStatusLine().getStatusCode();
-                if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                    System.out.println("Invalid operation. Authorization failed");
+                    return;
+                } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                    System.out.println("Duplicate alias. Please choose different alias");
+                    return;
+                } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                     System.out.println("Error occur in subscribe cartridge");
                     return;
                 }
@@ -372,17 +378,7 @@ public class RestCommandLineService {
                 String subscription = getHttpResponseString(response);
 
                 if (subscription == null) {
-                    System.out.println("Error");
-                    return;
-                }
-                else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                    System.out.println("Duplicate alias. Please choose different alias");
-                    return;
-                } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
-                    System.out.println("Error in backend");
-                    return;
-                } else if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
-                    System.out.println("Invalid operation. Authorization failed");
+                    System.out.println("Error in response");
                     return;
                 }
 
@@ -418,7 +414,13 @@ public class RestCommandLineService {
                     completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operation. Authorization failed");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("Duplicate alias. Please choose different alias");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in subscribe cartridge");
                 return;
             }
@@ -426,16 +428,7 @@ public class RestCommandLineService {
             String subscriptionOutput = getHttpResponseString(response);
 
             if (subscriptionOutput == null) {
-                System.out.println("Error");
-                return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                System.out.println("Duplicate alias. Please choose different alias");
-                return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
-                System.out.println("Error in backend");
-                return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
-                System.out.println("Invalid operation. Authorization failed");
+                System.out.println("Error in response");
                 return;
             }
 
@@ -499,24 +492,20 @@ public class RestCommandLineService {
                     completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in create tenant");
-                return;
-            }
-
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
                 return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
-                System.out.println("Domain is not available to register. Please check domain name");
-                return;
             } else if (responseCode.equals(CliConstants.RESPONSE_OK)){
                 System.out.println("Tenant added successfully");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in create tenant");
                 return;
             } else {
                 System.out.println ("Unhandle error");
                 return;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -540,16 +529,16 @@ public class RestCommandLineService {
                     cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in deploy cartridge definition");
-                return;
-            }
 
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
-            }
-            else {
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in deploy cartridge definition");
+                return;
+            } else {
                 System.out.println("You have successfully deployed the cartridge");
+                return;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -563,7 +552,11 @@ public class RestCommandLineService {
                     partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+
+            if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in deploy partition");
                 return;
             }
@@ -572,15 +565,6 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the partition");
-                return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
-                System.out.println("Invalid operations. Authorization failed");
-                return;
-            } else if (responseCode.equals(CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
-                System.out.println("Specified policy already exists");
-                return;
-            } else {
-                System.out.println ("Unhandle error");
                 return;
             }
 
@@ -596,7 +580,10 @@ public class RestCommandLineService {
                     autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in deploy autoscaling policy");
                 return;
             }
@@ -605,15 +592,6 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
-                return;
-            } else if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
-                System.out.println("Invalid operations. Authorization failed");
-                return;
-            } else if (responseCode.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
-                System.out.println("Specified policy already exists");
-                return;
-            } else {
-                System.out.println ("Unhandle error");
                 return;
             }
 
@@ -628,9 +606,11 @@ public class RestCommandLineService {
             HttpResponse response = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
 
-
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in deploy deployment policy");
                 return;
             }
@@ -639,15 +619,6 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the deployment policy");
-                return;
-            } else if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
-                System.out.println("Invalid operations. Authorization failed");
-                return;
-            } else if (responseCode.equals("" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR)) {
-                System.out.println("Specified policy already exists");
-                return;
-            } else {
-                System.out.println ("Unhandle error");
                 return;
             }
 
@@ -663,7 +634,10 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in list partitions");
                 return;
             }
@@ -715,7 +689,10 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in list autoscase policies");
                 return;
             }
@@ -766,7 +743,10 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occur in list deployment policies");
                 return;
             }
