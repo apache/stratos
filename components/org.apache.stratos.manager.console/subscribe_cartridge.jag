@@ -1,0 +1,6 @@
+<%
+var caramel = require('caramel')
+caramel.render({
+        name:"PHP 5.4 Cartridge"
+});
+%>

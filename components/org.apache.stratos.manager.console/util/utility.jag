@@ -1,0 +1,77 @@
+<%
+
+function E4XtoJSON(xml, ignored) {
+    var r, children = xml.*, attributes = xml.@*, length = children.length();
+    if(length == 0) {
+        r = xml.toString();
+    } else if(length == 1) {
+        var text = xml.text().toString();
+        if(text) {
+            r = text;
+        }
+    }
+    if(r == undefined) {
+        r = {};
+        for each (var child in children) {
+             var name = child.localName();
+             var json = E4XtoJSON(child, ignored);
+             var value = r[name];
+             if(value) {
+               if(value.length) {
+                 value.push(json);
+               } else {
+                 r[name] = [value, json]
+               }
+             } else {
+               r[name] = json;
+             }
+        }
+    }
+    if(attributes.length()) {
+        var a = {}, c = 0;
+        for each (var attribute in attributes) {
+          var name = attribute.localName();
+          if(ignored && ignored.indexOf(name) == -1) {
+            a["_" + name] = attribute.toString();
+            c ++;
+          }
+        }
+        if(c) {
+          if(r) a._ = r;
+          return a;
+        }
+    }
+    return r;
+}
+
+function sortNumber(jsonArray, property, ascending, zeroLast) {
+    jsonArray.sort(function (a, b) {
+        var aProp = parseFloat(a[property]);
+        var bProp = parseFloat(b[property]);
+
+        if(zeroLast){
+             if(aProp == 0){
+                aProp = 500000;
+             }
+             if(bProp == 0 ){
+                bProp = 500000;
+             }
+        }
+
+        return aProp === bProp ? 0 : ( ascending ? (aProp >= bProp ? 1 : -1 ) : (aProp >= bProp ? -1 : 1 ));
+    });
+
+    return jsonArray;
+}
+
+
+
+
+function getServerUrl(){
+    var serverUrl = "https://localhost:9453/services";
+    serverUrl = serverUrl + "/UserProfileMgtService";
+
+    return serverUrl;
+}
+
+%>

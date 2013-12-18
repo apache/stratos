@@ -1,0 +1,304 @@
+body, div, h1,h2,h3,h4,h5, p, span{
+    font-family: 'Open Sans', sans-serif;
+}
+a{cursor: pointer}
+a:hover{text-decoration: none}
+.top-blue-strip{
+    background: #18c3f4;
+    height: 6px;
+}
+.login-logo-section{
+    text-align: center;
+    width: 100%;
+    padding:20px 0;
+}
+h1.login-title{
+    font-size:28px;
+    text-align: center;
+    padding-bottom:20px;
+    margin:0;
+}
+h2.login-sub-title{
+    font-size:14px;
+    background: transparent url(../img/transparent-white.png) repeat left top;
+    padding:5px;
+    margin:20px 0;
+}
+.login-box-wrapper{
+    text-align: center;
+}
+.login-box{
+    width:415px;
+    display: inline-block;
+}
+.login-box-top{
+    background: #e8ebeb url(../img/clouds.png) no-repeat 40px 10px;
+    border-radius: 0;
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+    -moz-border-radius-topleft: 8px;
+    -moz-border-radius-topright: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+.login-box-bottom{
+    background: #c1c1c1;
+    border-radius: 0;
+    -webkit-border-bottom-right-radius: 8px;
+    -webkit-border-bottom-left-radius: 8px;
+    -moz-border-radius-bottomright: 8px;
+    -moz-border-radius-bottomleft: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding:20px 10px;
+    text-align: left;
+}
+.login-box-footer{
+    background: transparent url(../img/login-shadow.png) no-repeat left top;
+    width:440px;
+    height: 64px;
+    margin-top:10px;
+    display: inline-block;
+}
+.username-wrapper{
+    background: #c1c1c1 url(../img/icon-user.png) no-repeat 8px 16px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    height:60px;
+    margin:0 10px;
+    padding-left:40px;
+}
+.password-wrapper{
+    background: #c1c1c1 url(../img/icon-lock.png) no-repeat 8px 16px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    height:60px;
+    margin:0 10px;
+    padding-left:40px;
+}
+.login-button-wrapper{
+    margin:20px 10px;
+}
+div.username-wrapper input.input-username{
+    height:60px;
+    width:100%;
+    font-size: 16px;
+}
+div.password-wrapper input.input-password{
+    height:60px;
+    width:100%;
+    font-size: 16px;
+}
+.login-button{
+    height:40px;
+    width:100%;
+    font-size: 16px;
+}
+.footer-right{
+    width:400px;
+    font-size: 11px;
+}
+/* Sticky footer styles
+     -------------------------------------------------- */
+
+html,
+body {
+    height: 100%;
+    /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by it's height */
+    margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+#push,
+#footer {
+    height: 62px;
+    padding-top:10px;
+
+}
+#footer{
+    background: #e8ebeb;
+}
+.main-menu{
+    background: #e8ebeb;
+    -webkit-box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
+    -moz-box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
+    box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
+}
+.shadow-wrapper{
+    background: transparent url(../img/repeat.png) repeat-x;
+        -webkit-box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
+        -moz-box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
+        box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
+}
+.breadcrumb-strip{
+    min-height: 78px;
+    z-index: 1;
+    padding-top:10px;
+}
+.menu-strip{
+    z-index: 2;
+}
+.custom-nav ul{
+    padding:0;
+    margin:0;
+    border-left:solid 1px #9eafbc;
+    border-right:solid 1px #cadff0;
+}
+.custom-nav ul li{
+    float:left;
+    display: block;
+    border-left:solid 1px #cadff0;
+    border-right:solid 1px #9eafbc;
+}
+.custom-nav ul li a{
+    height: 73px;
+    display: block;
+    padding:10px 20px;
+    text-align: center;
+    font-size: 14px;
+    color:#444;
+}
+.custom-nav ul li a:hover{
+    background: #c8d6df;
+    text-decoration: none;
+}
+.custom-nav ul li i{
+    font-size: 24px;
+}
+.custom-nav ul li.active a{
+    background: #595a5a;
+    color: #fff;
+}
+.custom-nav ul li.active a:hover{
+    background: #3e3f3f;
+}
+.custom-nav ul li.active i{
+    color:#06adf0;
+}
+.navbar-brand{
+    padding:10px 0 0 0;
+}
+.help-section p {
+    font-size: 12px;
+}
+.help-section i{
+    font-size: 34px;
+    color:#a4a6a6;
+    display: block;
+    float:left;
+    margin-right:10px;
+}
+.content-starter{
+    margin-top: 157px;
+}
+h1{
+    color:#575757;
+    font-size:44px;
+}
+h2{
+    background: #fff;
+    display: inline-block;
+    padding:0 10px 0 0;
+    margin:10px 0;
+    color:#575757;
+    text-transform:capitalize;
+
+}
+.h2-wrapper{
+    background: transparent url(../img/gray.png) repeat-x left 30px;
+}
+h3{
+    padding: 15px 0 0 0;
+    margin: 0;
+}
+h4{
+    font-weight: bold;
+    padding: 0;
+    margin: 10px 0 0 0;
+    color:#686868;
+    font-size: 14px;
+}
+.box-container{
+    background: #eff1f1;
+    border: solid 1px #dadada;
+    min-height: 160px;
+    margin-top:10px ;
+    margin-bottom: 20px;
+}
+.box-left{
+    padding-top: 20px;
+}
+.state-box{
+    position: absolute;
+    margin-top: -15px;
+}
+.active-state{
+    background: #67b200;
+    color:#fff;
+    padding:5px 10px;
+}
+.inactive-state{
+    background: #fbc240;
+    color:#fff;
+    padding:5px 10px;
+}
+.big-pro-icons{
+    font-size: 50px;
+    margin-top: 20px;
+}
+.box-left span{
+    font-size: 14px;
+}
+.big-pro-icons-title{
+    text-align: left    ;
+    padding-top: 10px;
+}
+.cartridge-description{
+    padding-top:20px;
+    font-size: 12px;
+}
+.required{
+    font-weight: bold;
+}
+.speech-bubble{
+    width: 780px;
+    background: #eff1f1;
+    border:solid 1px #dadada;
+    padding: 10px;
+    color:#686868;
+    position: absolute;
+}
+
+.speech-pointer {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 15px 15px 15px 0;
+    border-color: transparent #eff1f1;
+    display: block;
+    width: 0;
+    z-index: 1;
+    left: -15px;
+    top: 25px;
+}
+#credential_container h2{
+    background: transparent;
+}

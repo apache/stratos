@@ -192,4 +192,5 @@ public class CliConstants {
     public static final String RESPONSE_AUTHORIZATION_FAIL = "403";
     public static final String RESPONSE_NO_CONTENT = "204";
     public static final String RESPONSE_OK = "200";
+    public static final String RESPONSE_BAD_REQUEST = "400";
 }

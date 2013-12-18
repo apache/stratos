@@ -1,0 +1,50 @@
+<%
+
+var getUserProfile = "<mgt:getUserProfile xmlns:mgt=\"http://mgt.profile.user.identity.carbon.wso2.org\">\n" +
+                                                "<mgt:username>{0}</mgt:username>\n" +
+                                                "<mgt:profileName>{1}</mgt:profileName>\n" +
+                                                "</mgt:getUserProfile>";
+
+application.put("urn:getUserProfile", getUserProfile);
+
+
+
+
+var log = new Log();
+
+
+function getPayload(method, param){
+
+    var payload = application.get(method);
+
+    if(payload != null){
+        if(param instanceof Array){
+            for(var x = 0; x < param.length; x++){
+                payload = format(payload, param[x], x);
+            }
+        }else{
+            payload = format(payload, param, 0);
+        }
+    }
+
+    return payload;
+}
+
+function format(variable, value, index){
+    var placeHolder = "{" + index + "}";
+    var index = variable.indexOf(placeHolder);
+    if(index > -1){
+        var data = variable.split(placeHolder);
+        var newData = data[0] + value;
+        if(data.length > 1){
+            newData += data[1];
+        }
+
+        return newData;
+    }
+
+    return variable;
+}
+
+
+%>

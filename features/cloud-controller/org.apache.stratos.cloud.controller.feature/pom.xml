@@ -171,7 +171,7 @@
 	<dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
-	    <version>0.13.wso2v6</version>
+	    <version>0.13.wso2v8</version>
         </dependency>
     </dependencies>
 
@@ -262,7 +262,7 @@
                                 <!--bundleDef>org.jaggeryjs:0.9.0.ALPHA2-wso2v2</bundleDef-->
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
-				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v6</bundleDef>
+				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
