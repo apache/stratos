@@ -48,9 +48,9 @@ public class TopologyFilterConfigurator {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Topology filter settings: [service-filter] %s", System.getProperty(Constants.TOPOLOGY_SERVICE_FILTER)));
-            log.debug(String.format("Topology filter settings: [cluster-filter] %s", System.getProperty(Constants.TOPOLOGY_CLUSTER_FILTER)));
-            log.debug(String.format("Topology filter settings: [member-filter] %s", System.getProperty(Constants.TOPOLOGY_MEMBER_FILTER)));
+            log.debug(String.format("Setting service-filter = %s", System.getProperty(Constants.TOPOLOGY_SERVICE_FILTER)));
+            log.debug(String.format("Setting cluster-filter = %s", System.getProperty(Constants.TOPOLOGY_CLUSTER_FILTER)));
+            log.debug(String.format("Setting member-filter = %s", System.getProperty(Constants.TOPOLOGY_MEMBER_FILTER)));
         }
     }
 }
