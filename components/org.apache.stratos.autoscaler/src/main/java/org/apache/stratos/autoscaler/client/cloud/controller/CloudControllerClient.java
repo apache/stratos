@@ -161,7 +161,7 @@ public class CloudControllerClient {
     public void terminateAllInstances(String clusterId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Terminating all instances of cluster via cloud controller: %s", clusterId));
+                log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
             }
             long startTime = System.currentTimeMillis();
             stub.terminateAllInstances(clusterId);
@@ -186,7 +186,7 @@ public class CloudControllerClient {
     public void terminate(String memberId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Calling cloud controller to terminate instance: [member] %s", memberId));
+                log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
             }
             long startTime = System.currentTimeMillis();
             stub.terminateInstance(memberId);

@@ -51,13 +51,13 @@ public class CloudControllerServiceClient {
 		String ccSocketTimeout = 
 			System.getProperty(CartridgeConstants.CC_SOCKET_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.CC_SOCKET_TIMEOUT);
 		String ccConnectionTimeout = 
-			System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT) ;
+			System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT);
 		
 		ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
 		try {
 			stub = new CloudControllerServiceStub(clientConfigContext, epr);
-			stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, ccSocketTimeout);
-			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, ccConnectionTimeout);
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(ccSocketTimeout));
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(ccConnectionTimeout));
 
 		} catch (AxisFault axisFault) {
 			String msg = "Failed to initiate AutoscalerService client. " + axisFault.getMessage();

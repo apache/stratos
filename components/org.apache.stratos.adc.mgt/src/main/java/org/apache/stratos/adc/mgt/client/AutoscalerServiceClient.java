@@ -47,15 +47,15 @@ public class AutoscalerServiceClient {
     	
     	
     	String autosclaerSocketTimeout =
-    		(System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT) == null ) ? "300000": System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT);
+    		System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT) == null ? "300000": System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT);
 		String autosclaerConnectionTimeout = 
-			(System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ) ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) ;
+			System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) ;
     	
         ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
         try {
             stub = new AutoScalerServiceStub(clientConfigContext, epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, autosclaerSocketTimeout);
-			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, autosclaerConnectionTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(autosclaerSocketTimeout));
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(autosclaerConnectionTimeout));
 
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate autoscaler service client. " + axisFault.getMessage();
