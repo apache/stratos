@@ -99,24 +99,29 @@ if [[ -d $stratos_path/scripts ]]; then
    rm -rf $stratos_path/scripts
 fi
 
+if [[ -d $mb_path ]]; then
+   echo 'Removing MB'
+   rm -rf $mb_path
+fi
+
+if [[ -d $cep_path ]]; then
+   echo 'Removing CEP'
+   rm -rf $cep_path
+fi
+
 if [[ -d $cc_path ]]; then
    echo 'Removing CC'
    rm -rf $cc_path
 fi
 
-if [[ -d $sc_path ]]; then
-   echo 'Removing SC'
-   rm -rf $sc_path
+if [[ -d $as_path ]]; then
+   echo 'Removing AS'
+   rm -rf $as_path
 fi
 
-if [[ -d $elb_path ]]; then
-   echo 'Removing ELB'
-   rm -rf $elb_path
-fi
-
-if [[ -d $agent_path ]]; then
-   echo 'Removing Agent'
-   rm -rf $agent_path
+if [[ -d $sm_path ]]; then
+   echo 'Removing SM'
+   rm -rf $sm_path
 fi
 
 echo 'Removing logs'
