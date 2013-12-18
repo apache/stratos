@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -57,7 +56,7 @@ public class LbClusterMonitor extends AbstractMonitor{
     private AutoscalePolicy autoscalePolicy;
 
         // Key- MemberId Value- partitionId
-    private Map<String, String> memberPartitionMap;
+//    private Map<String, String> memberPartitionMap;
 
     private FactHandle minCheckFactHandle;
     private FactHandle scaleCheckFactHandle;
@@ -218,7 +217,14 @@ public class LbClusterMonitor extends AbstractMonitor{
     }
 
     public String getPartitionOfMember(String memberId){
-   		return this.memberPartitionMap.get(memberId);
+        for(Service service: TopologyManager.getTopology().getServices()){
+            for(Cluster cluster: service.getClusters()){
+                if(cluster.memberExists(memberId)){
+                    cluster.getMember(memberId).getPartitionId();
+                }
+            }
+        }
+        return null;
    	}
 
     @Override
