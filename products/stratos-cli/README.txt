@@ -58,10 +58,10 @@ chmod +x ./stratos.sh
 2. Export the host and port of the SC as environment variables
 
 Linux:
-export STRATOS_URL=https://s2demo.apache.com:9445
+export STRATOS_URL=https://stratosmanager.apache.org:9445
 
 Windows:
-set STRATOS_URL=https://s2demo.apache.com:9445
+set STRATOS_URL=https://stratosmanager.apache.org:9445
 
 3. Run the stratos.sh or stratos.bat as appropriate
 
