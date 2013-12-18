@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -57,7 +56,7 @@ public class LbClusterMonitor extends AbstractMonitor{
     private AutoscalePolicy autoscalePolicy;
 
         // Key- MemberId Value- partitionId
-    private Map<String, String> memberPartitionMap;
+//    private Map<String, String> memberPartitionMap;
 
     private FactHandle minCheckFactHandle;
     private FactHandle scaleCheckFactHandle;
@@ -217,29 +216,45 @@ public class LbClusterMonitor extends AbstractMonitor{
         this.autoscalePolicy = autoscalePolicy;
     }
 
-    public String getPartitonOfMember(String memberId){
-   		return this.memberPartitionMap.get(memberId);
+    public String getPartitionOfMember(String memberId){
+        for(Service service: TopologyManager.getTopology().getServices()){
+            for(Cluster cluster: service.getClusters()){
+                if(cluster.memberExists(memberId)){
+                    cluster.getMember(memberId).getPartitionId();
+                }
+            }
+        }
+        return null;
    	}
 
-   	public boolean memberExist(String memberId){
-   		return this.memberPartitionMap.containsKey(memberId);
+    @Override
+    public boolean memberExist(String memberId){
+        for(Service service: TopologyManager.getTopology().getServices()){
+            for(Cluster cluster: service.getClusters()){
+                if(cluster.memberExists(memberId)){
+                    return true;
+                }
+            }
+        }
+        return false;
    	}
 
     @Override
     public String toString() {
         return "LbClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId + "]";
     }
-    
+
     @Override
-	public NetworkPartitionContext findNetworkPartition(String memberId) {
-		 for(Service service: TopologyManager.getTopology().getServices()){
-	            for(Cluster cluster: service.getClusters()){
-	                NetworkPartitionContext netCtx = AutoscalerContext.getInstance().getLBMonitor(cluster.getClusterId())
-	                        .getNetworkPartitionCtxt(cluster.getMember(memberId).getNetworkPartitionId());
-	                if(null != netCtx)
-	                	return netCtx;
-	            }
-	      }
-	      return null;
-	}
+   	public NetworkPartitionContext findNetworkPartition(String memberId) {
+   		 for(Service service: TopologyManager.getTopology().getServices()){
+   	            for(Cluster cluster: service.getClusters()){
+
+                       String networkPartitionId = cluster.getMember(memberId).getNetworkPartitionId();
+   	                if(networkPartitionCtxts.containsKey(networkPartitionId)) {
+                           networkPartitionCtxts.get(networkPartitionId);
+                       }
+   	            }
+   	      }
+   	      return null;
+   	}
 }

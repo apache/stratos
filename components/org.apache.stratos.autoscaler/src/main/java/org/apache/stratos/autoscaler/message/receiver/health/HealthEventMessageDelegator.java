@@ -339,7 +339,7 @@ public class HealthEventMessageDelegator implements Runnable {
             ccClient.terminate(memberId);
 
             // start a new member in the same Partition
-            String partitionId = monitor.getPartitonOfMember(memberId);
+            String partitionId = monitor.getPartitionOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
             NetworkPartitionContext nwPartitionCtxt = monitor.findNetworkPartition(memberId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
