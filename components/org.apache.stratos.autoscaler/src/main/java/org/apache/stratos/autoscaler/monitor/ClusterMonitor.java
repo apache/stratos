@@ -16,13 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler;
+package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
@@ -35,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * rules engine.
  *
  */
-public class ClusterMonitor implements Runnable{
+public class ClusterMonitor extends AbstractMonitor{
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String clusterId;
@@ -248,4 +254,17 @@ public class ClusterMonitor implements Runnable{
     public void setLbReferenceType(String lbReferenceType) {
         this.lbReferenceType = lbReferenceType;
     }
+
+	@Override
+	public NetworkPartitionContext findNetworkPartition(String memberId) {
+		 for(Service service: TopologyManager.getTopology().getServices()){
+	            for(Cluster cluster: service.getClusters()){
+	            	NetworkPartitionContext netCtx = AutoscalerContext.getInstance().getMonitor(cluster.getClusterId())
+	                        .getNetworkPartitionCtxt(cluster.getMember(memberId).getNetworkPartitionId());
+	                if(null !=netCtx)
+	                	return netCtx;
+	            }
+	      }
+	      return null;
+	}
 }
