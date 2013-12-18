@@ -74,8 +74,8 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("DEPLOYMENT=" + getDeployment());
         payloadBuilder.append(",");
-        payloadBuilder.append("APP_PATH=" + getApplicationPath());
-        payloadBuilder.append(",");
+        //payloadBuilder.append("APP_PATH=" + getApplicationPath());
+        //payloadBuilder.append(",");
         payloadBuilder.append("GIT_REPO=" + getGitRepositoryUrl());
         payloadBuilder.append(",");
         payloadBuilder.append("PORTS=" + getPortMappings());
