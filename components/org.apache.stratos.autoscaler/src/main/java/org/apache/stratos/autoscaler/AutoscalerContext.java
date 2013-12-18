@@ -51,6 +51,10 @@ public class AutoscalerContext {
         return monitors.containsKey(clusterId);
     }
     
+    public boolean lbMoniterExist(String clusterId) {
+        return lbMonitors.containsKey(clusterId);
+    }
+    
     public LbClusterMonitor getLBMonitor(String clusterId) {
         return lbMonitors.get(clusterId);
     }
