@@ -30,6 +30,7 @@ import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadFactory;
 import org.apache.stratos.adc.mgt.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
+import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Property;
 
@@ -37,7 +38,7 @@ public class ServiceDeploymentManager {
 
     private static Log log = LogFactory.getLog(ServiceDeploymentManager.class);
 
-    public Service deployService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId)
+    public Service deployService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, String tenantRange)
         throws ADCException, UnregisteredCartridgeException {
 
         //get deployed Cartridge Definition information
@@ -62,7 +63,7 @@ public class ServiceDeploymentManager {
             throw new ADCException(errorMsg);
         }
 
-        Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo);
+        Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
 
         //generate the cluster ID (domain)for the service
         service.setClusterId(type + "." + cartridgeInfo.getHostName() + ".domain");
@@ -97,8 +98,14 @@ public class ServiceDeploymentManager {
         //deploy the service
         service.deploy();
 
-        //TODO: persist Service
-
+        //persist Service
+        try {
+			PersistenceManager.persistService(service);
+		} catch (Exception e) {
+            String message = "Error getting info for " + type;
+            log.error(message, e);
+            throw new ADCException(message, e);
+        }
         return service;
     }
 

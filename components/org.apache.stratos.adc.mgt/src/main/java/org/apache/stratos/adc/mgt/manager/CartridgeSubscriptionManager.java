@@ -31,6 +31,7 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.payload.BasicPayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadFactory;
+import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
@@ -215,6 +216,17 @@ public class CartridgeSubscriptionManager {
         // Publish tenant subscribed event to message broker
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                 cartridgeSubscription.getCartridgeInfo().getType());
+        
+        // publish artifact-deployment event for multi-tenant subscription
+        //CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
+        
+        if(cartridgeInfo.getMultiTenant()) {
+        	log.info(" Multitenant --> Publishing Artifact update event -- ");
+            ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(),
+            		cartridgeSubscription.getClusterDomain(), // clusterId 
+            		String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+            publisher.publish();
+        } 
 
         return cartridgeSubscription;
     }

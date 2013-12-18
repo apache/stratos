@@ -34,6 +34,7 @@ import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
 import org.apache.stratos.adc.mgt.dao.RepositoryCredentials;
+import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.repository.Repository;
 
 /**
@@ -844,6 +845,42 @@ public class PersistenceManager {
 
 		return cartridgeSubscriptionInfo;
 	}
+	
+	
+	public static void persistService(Service service) throws Exception {
+
+		Connection con = null;
+		PreparedStatement insertServiceStmt = null;
+
+		String insertServiceSQL = "INSERT INTO SERVICE (TYPE, AUTOSCALING_POLICY,DEPLOYMENT_POLICY,TENANT_RANGE,"
+				+ "CLUSTER_ID,HOST_NAME,SUBSCRIPTION_KEY)"
+				+ " VALUES (?,?,?,?,?,?,?)";
+
+		try {
+
+			con = StratosDBUtils.getConnection();
+			insertServiceStmt = con.prepareStatement(insertServiceSQL);
+			insertServiceStmt.setString(1, service.getType());
+			insertServiceStmt.setString(2, service.getAutoscalingPolicyName());
+			insertServiceStmt.setString(3, service.getDeploymentPolicyName());
+			insertServiceStmt.setString(4, service.getTenantRange());
+			insertServiceStmt.setString(5, service.getClusterId());
+			insertServiceStmt.setString(6, service.getHostName());
+			insertServiceStmt.setString(7, service.getSubscriptionKey());
+			insertServiceStmt.executeUpdate();
+			con.commit();
+			if (log.isDebugEnabled()) {
+				log.debug(" Service " + service.getType() + " is inserted into DB");
+			}
+		} catch (Exception e) {
+			String msg = "Error while sql connection :" + e.getMessage();
+			log.error(msg, e);
+			throw e;
+		} finally {
+			StratosDBUtils.closeStatement(insertServiceStmt);
+		}
+
+	} 
 
 	
 
