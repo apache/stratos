@@ -111,6 +111,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                     if ((currentTime - event.getTimeStamp()) / MILI_TO_MINUTE > TIME_OUT) {
                         log.info("Member Inactive : " + pair.getKey());
                         it.remove();
+                        log.debug("Inactive member : " + pair.getKey());
                         nextProcessor.process(event);
                     }
                 }
