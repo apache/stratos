@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;

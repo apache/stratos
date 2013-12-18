@@ -30,6 +30,7 @@ import org.apache.stratos.adc.mgt.exception.*;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
+import org.apache.stratos.adc.mgt.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
@@ -409,7 +410,7 @@ public class ApplicationManagementService extends AbstractAdmin {
             }
             if (connectingCartridgeSubscription != null) {
                 // Publish tenant subscribed event
-                publishTenantSubscribedEvent(getTenantId(), connectingCartridgeSubscription.getCartridgeInfo().getType());
+                CartridgeSubscriptionUtils.publishTenantSubscribedEvent(getTenantId(), connectingCartridgeSubscription.getCartridgeInfo().getType());
 
                 try {
                     cartridgeSubsciptionManager.connectCartridges(getTenantDomain(), cartridgeSubscription,
@@ -430,36 +431,6 @@ public class ApplicationManagementService extends AbstractAdmin {
         return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
 
 	}
-
-    private void publishTenantSubscribedEvent(int tenantId, String serviceName) {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
-            }
-            TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
-            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
-            eventPublisher.publish(subscribedEvent);
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
-            }
-        }
-    }
-
-    private void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
-            }
-            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName);
-            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
-            eventPublisher.publish(event);
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Could not publish tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
-            }
-        }
-    }
 
     /**
      * Unsubscribing the cartridge
@@ -487,7 +458,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 
         // Publish tenant un-subscribed event
         String serviceName = subscription.getCartridge();
-        publishTenantUnSubscribedEvent(getTenantId(), serviceName);
+        CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(getTenantId(), serviceName);
 
 
         /*CartridgeSubscriptionInfo subscription = null;
