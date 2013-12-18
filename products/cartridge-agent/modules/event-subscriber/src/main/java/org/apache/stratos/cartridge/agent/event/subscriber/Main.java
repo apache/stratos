@@ -70,8 +70,8 @@ public class Main {
 		publisher.publish(event);
 		log.info("Member started event is sent");		
 
-		String repoURL =LaunchParamsUtil
-			.readParamValueFromPayload("REPO_URL");
+		String repoURL = LaunchParamsUtil
+			.readParamValueFromPayload("GIT_REPO");
 		
 		if ("null".equals(repoURL) || repoURL == null) {
 			log.info(" No git repo for this cartridge ");
