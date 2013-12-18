@@ -176,7 +176,7 @@ public class RestCommandLineService {
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in list available cartridges");
+                System.out.println("Error occured while listing available cartridges");
                 return;
             }
 
@@ -266,7 +266,7 @@ public class RestCommandLineService {
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in list subscribe cartridges");
+                System.out.println("Error occured while listing subscribe cartridges");
                 return;
             }
 
@@ -372,7 +372,7 @@ public class RestCommandLineService {
                   //  System.out.println("Duplicate alias. Please choose different alias");
                   //  return;
                 } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                    System.out.println("Error occur in subscribe cartridge");
+                    System.out.println("Error occured while subscribing cartridge");
                     return;
                 }
 
@@ -422,7 +422,7 @@ public class RestCommandLineService {
             //    System.out.println("Duplicate alias. Please choose different alias");
             //    return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in subscribe cartridge");
+                System.out.println("Error occured while subscribing cartridge");
                 return;
             }
 
@@ -500,7 +500,7 @@ public class RestCommandLineService {
                 System.out.println("Tenant added successfully");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in create tenant");
+                System.out.println("Error occured while creating tenant");
                 return;
             } else {
                 System.out.println ("Unhandle error");
@@ -538,7 +538,7 @@ public class RestCommandLineService {
                 System.out.println("You have successfully deployed the cartridge");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in deploy cartridge definition");
+                System.out.println("Error occured while deploying cartridge definition");
                 return;
             }
         } catch (Exception e) {
@@ -558,7 +558,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in deploy partition");
+                System.out.println("Error occured while deploying partition");
                 return;
             }
 
@@ -585,7 +585,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in deploy autoscaling policy");
+                System.out.println("Error occured while deploying autoscaling policy");
                 return;
             }
 
@@ -612,7 +612,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in deploy deployment policy");
+                System.out.println("Error occured while deploying deployment policy");
                 return;
             }
 
@@ -639,7 +639,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in list partitions");
+                System.out.println("Error occured while listing partitions");
                 return;
             }
 
@@ -694,7 +694,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in list autoscase policies");
+                System.out.println("Error occured while listing autoscase policies");
                 return;
             }
 
@@ -748,7 +748,7 @@ public class RestCommandLineService {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occur in list deployment policies");
+                System.out.println("Error occured while listing deployment policies");
                 return;
             }
 
