@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -69,6 +70,27 @@ public class Main {
 		publisher.publish(event);
 		log.info("Member started event is sent");		
 
+		String repoURL =LaunchParamsUtil
+			.readParamValueFromPayload("REPO_URL");
+		
+		if ("null".equals(repoURL) || repoURL == null) {
+			log.info(" No git repo for this cartridge ");
+			InstanceActivatedEvent instanceActivatedEvent = new InstanceActivatedEvent(
+					LaunchParamsUtil
+							.readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME),
+					LaunchParamsUtil
+							.readParamValueFromPayload(CartridgeAgentConstants.CLUSTER_ID),
+					LaunchParamsUtil
+							.readParamValueFromPayload(CartridgeAgentConstants.NETWORK_PARTITION_ID),
+					LaunchParamsUtil
+							.readParamValueFromPayload(CartridgeAgentConstants.PARTITION_ID),
+					LaunchParamsUtil
+							.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID));
+			EventPublisher instanceStatusPublisher = new EventPublisher(
+					Constants.INSTANCE_STATUS_TOPIC);
+			instanceStatusPublisher.publish(instanceActivatedEvent);
+			log.info(" Instance status published. No git repo ");
+		}
 		
 		// Start periodical file checker task
 		// TODO -- start this thread only if this node configured as a commit true node
