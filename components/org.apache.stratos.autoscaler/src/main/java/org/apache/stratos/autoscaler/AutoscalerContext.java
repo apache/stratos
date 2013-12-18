@@ -63,6 +63,10 @@ public class AutoscalerContext {
     	log.info("Remove moniter clusterid" + clusterId);
         return monitors.remove(clusterId);
     }
+    public LbClusterMonitor removeLbMonitor(String clusterId) {
+    	log.info("Remove moniter clusterid" + clusterId);
+        return lbMonitors.remove(clusterId);
+    }
 
     public Map<String, ClusterMonitor> getMonitors() {
         return monitors;
