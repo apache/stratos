@@ -35,9 +35,10 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 		
 	}
 	
-	public abstract String getPartitonOfMember(String memberId);
+	public abstract String getPartitionOfMember(String memberId);
 	public abstract DeploymentPolicy getDeploymentPolicy();
 	public abstract boolean memberExist(String memberId);
 	public abstract NetworkPartitionContext findNetworkPartition(String memberId);
+
 	
 }
