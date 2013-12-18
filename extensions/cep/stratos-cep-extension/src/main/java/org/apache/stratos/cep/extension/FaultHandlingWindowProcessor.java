@@ -72,9 +72,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     protected void addDataToMap(InEvent event) {
         if (memberID != null) {
-            log.debug("Add member : " + memberID);
             String id = (String)event.getData()[subjectedAttrIndex];
             timeStampMap.put(id, event);
+            log.debug("Add member : " + id);
         }
         else {
             System.out.println("Member ID null");
