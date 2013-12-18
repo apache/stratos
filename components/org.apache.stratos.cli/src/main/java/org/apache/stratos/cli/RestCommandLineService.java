@@ -64,6 +64,7 @@ public class RestCommandLineService {
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";
     private final String listParitionRestEndPoint = "/stratos/admin/partition";
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
+    private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -755,6 +756,71 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void listDeploymentPolicies() throws CommandException {
+        try {
+            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listDeploymentPolicyRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occur in list deployment policies");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            DeploymentPolicyList policyList = gson.fromJson(resultString, DeploymentPolicyList.class);
+
+            if (policyList == null) {
+                System.out.println("Deployment policy list is empty");
+                return;
+            }
+
+            RowMapper<DeploymentPolicy> partitionMapper = new RowMapper<DeploymentPolicy>() {
+
+                public String[] getData(DeploymentPolicy policy) {
+                    String[] data = new String[3];
+                    data[0] = policy.getId();
+                    return data;
+                }
+            };
+
+            DeploymentPolicy[] policyArry = new DeploymentPolicy[policyList.getDeploymentPolicy().size()];
+            policyArry = policyList.getDeploymentPolicy().toArray(policyArry);
+
+            System.out.println("Available Deployment Policies:");
+            CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
+            System.out.println();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class DeploymentPolicyList {
+        private ArrayList<DeploymentPolicy> deploymentPolicy;
+
+
+        public ArrayList<DeploymentPolicy> getDeploymentPolicy() {
+            return deploymentPolicy;
+        }
+
+        public void setDeploymentPolicy(ArrayList<DeploymentPolicy> deploymentPolicy) {
+            this.deploymentPolicy = deploymentPolicy;
+        }
+
+        DeploymentPolicyList() {
+            deploymentPolicy = new ArrayList<DeploymentPolicy>();
         }
     }
 
