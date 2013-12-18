@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
@@ -65,7 +64,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 			Partition[] policyPartitions = deploymentPolicy.getAllPartitions();
             try {
                 // call CC API
-                CloudControllerClient.getInstance().validatePartitionsOfPolicy(cartridgeType, policyPartitions);
+                CloudControllerClient.getInstance().validateDeploymentPolicy(cartridgeType, deploymentPolicy);
                 // if this deployment policy is valid for this cartridge, add it.
                 validPolicies.add(deploymentPolicy);			
             } catch (PartitionValidationException ignoredException) {

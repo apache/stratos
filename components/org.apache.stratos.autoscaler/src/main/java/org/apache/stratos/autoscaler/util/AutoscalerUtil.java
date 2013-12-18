@@ -102,9 +102,7 @@ public class AutoscalerUtil {
             throw new PolicyValidationException(msg);
         }
 
-        CloudControllerClient.getInstance()
-                             .validatePartitionsOfPolicy(cluster.getServiceName(),
-                                                         allPartitions);
+        CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
 
         ClusterMonitor clusterMonitor =
                                         new ClusterMonitor(cluster.getClusterId(),
@@ -338,7 +336,7 @@ public class AutoscalerUtil {
 //           }
 //
 //           CloudControllerClient.getInstance()
-//                                .validatePartitionsOfPolicy(cluster.getServiceName(),
+//                                .validateDeploymentPolicy(cluster.getServiceName(),
 //                                                            allPartitions);
 //
 //           LbClusterMonitor clusterMonitor =
