@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically

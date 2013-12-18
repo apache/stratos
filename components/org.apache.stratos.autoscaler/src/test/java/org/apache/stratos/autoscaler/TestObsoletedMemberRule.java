@@ -73,9 +73,6 @@ public class TestObsoletedMemberRule {
         if(kbase == null) {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
-        
-        assertEquals(false, TestDelegator.isMinRuleFired());
-        
         ksession = kbase.newStatefulKnowledgeSession();
         PartitionContext p = new PartitionContext();
         p.setObsoletedMembers(new CopyOnWriteArrayList<String>());
@@ -105,9 +102,7 @@ public class TestObsoletedMemberRule {
         if(kbase == null) {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
-        
-        assertEquals(false, TestDelegator.isMinRuleFired());
-        
+
         ksession = kbase.newStatefulKnowledgeSession();
         PartitionContext p = new PartitionContext();
         p.setObsoletedMembers(new CopyOnWriteArrayList<String>());

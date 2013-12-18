@@ -81,8 +81,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 		urlOption.setArgName("url");
 		options.addOption(urlOption);
 
-		options.addOption(CliConstants.PRIVATE_REPO_OPTION, CliConstants.PRIVATE_REPO_LONG_OPTION, false,
-				"Private repository");
+		//options.addOption(CliConstants.PRIVATE_REPO_OPTION, CliConstants.PRIVATE_REPO_LONG_OPTION, false,
+		//		"Private repository");
 
 		Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
 				"GIT repository username");
@@ -165,12 +165,12 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					}
 					repoURL = commandLine.getOptionValue(CliConstants.REPO_URL_OPTION);
 				}
-				if (commandLine.hasOption(CliConstants.PRIVATE_REPO_OPTION)) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("privateRepo option is passed");
-					}
-					privateRepo = true;
-				}
+				//if (commandLine.hasOption(CliConstants.PRIVATE_REPO_OPTION)) {
+				//	if (logger.isTraceEnabled()) {
+				//		logger.trace("privateRepo option is passed");
+				//	}
+				//	privateRepo = true;
+				//}
 				if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Username option is passed");

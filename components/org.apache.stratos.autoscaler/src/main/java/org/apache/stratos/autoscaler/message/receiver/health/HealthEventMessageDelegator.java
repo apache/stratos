@@ -30,8 +30,6 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
-import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -321,10 +319,15 @@ public class HealthEventMessageDelegator implements Runnable {
         	AutoscalerContext asCtx = AutoscalerContext.getInstance();
         	AbstractMonitor monitor = null;
         	
-        	if(asCtx.moniterExist(clusterId)){
-        		monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-        	}
-            
+        	if(asCtx.moniterExist(clusterId)){        		
+        		monitor = asCtx.getMonitor(clusterId);        		
+        	}else if(asCtx.lbMoniterExist(clusterId)){        		
+        		monitor = asCtx.getLBMonitor(clusterId);        		
+        	}else{
+        		String errMsg = "A monitor is not found for this custer";
+        		log.error(errMsg);
+        		throw new RuntimeException(errMsg);
+        	}        
             
             if (!monitor.memberExist(memberId)) {
                 // member has already terminated. So no action required
