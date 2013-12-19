@@ -81,4 +81,10 @@ public class ArtifactUpdatedEvent extends InstanceNotifierEvent implements Seria
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
 	}
+
+    @Override
+    public String toString() {
+        return String.format("[cluster] %s [repo-url] %s [repo-username] %s [tenant] %s",
+                getClusterId(), getRepoURL(), getRepoUserName(), getTenantId());
+    }
 }

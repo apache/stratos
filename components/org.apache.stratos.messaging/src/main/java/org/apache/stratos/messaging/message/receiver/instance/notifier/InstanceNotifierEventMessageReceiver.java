@@ -69,6 +69,10 @@ public class InstanceNotifierEventMessageReceiver implements Runnable {
         }
     }
 
+    public boolean isSubscribed() {
+        return ((topicSubscriber != null) && (topicSubscriber.isSubscribed()));
+    }
+
     public void terminate() {
         topicSubscriber.terminate();
         messageDelegator.terminate();
