@@ -59,7 +59,8 @@ public class TopologyEventMessageDelegator implements Runnable {
             } catch (Exception e) {
                 String error = "Failed to retrieve the topology event message.";
             	log.error(error, e);
-            	throw new RuntimeException(error, e);
+            	// Commenting throwing the error. Otherwise thread will not execute if an exception is thrown.
+            	//throw new RuntimeException(error, e);
             }
         }
     }
