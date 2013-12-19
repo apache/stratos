@@ -78,10 +78,13 @@ public class Main {
         String repoURL = LaunchParamsUtil
                 .readParamValueFromPayload("GIT_REPO");
 
+
+        log.info("waiting for all ports to be active");
+        waitForPortsTobeActive();
+        log.info("All ports active");
+        
         if ("null".equals(repoURL) || repoURL == null) {
             log.info("No git repo found for this cartridge");
-            waitForPortsTobeActive();
-            log.info("All ports active");
             InstanceActivatedEvent instanceActivatedEvent = new InstanceActivatedEvent(
                     LaunchParamsUtil
                             .readParamValueFromPayload(CartridgeAgentConstants.SERVICE_NAME),
@@ -103,10 +106,47 @@ public class Main {
         // TODO -- start this thread only if this node configured as a commit true node
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0, 10, TimeUnit.SECONDS);
+        
+        // Invoke Health publisher
+        //pushd $health_publisher_path/bin
+        //echo "Executing: health-publisher.sh"
+        //sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID
+        //echo "Health stat published" | tee -a $LOG
+        //popd
+        
+        // /opt/apache-stratos-cartridge-agent/health-publisher/bin/health-publisher.sh
+
+        log.info("Executing health publisher ..");
+        Process proc;
+		try {
+
+			String command =
+				"/opt/apache-stratos-cartridge-agent/health-publisher/bin/health-publisher.sh "+
+				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID) + " " +
+				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CEP_IP) + " " +
+				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CEP_PORT) + " " +
+				getPorts(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.PORTS)) + " " +				
+			    " /";
+			proc = Runtime.getRuntime().exec(command);
+			log.info("executing health publisher command.. :" + command);
+			proc.waitFor();
+			log.info("Health publisher executed");
+		}catch (Exception e) {
+			log.error(" Exception occurred in executing health publisher", e);
+		}
+
 
     }
 
-    private static void waitForPortsTobeActive() {
+    /*
+     * Return ports split by comma
+     */
+    private static String getPorts(String readParamValueFromPayload) {
+    	String portString = readParamValueFromPayload.trim();    	
+		return portString.replace("|", ",");
+	}
+
+	private static void waitForPortsTobeActive() {
         long portCheckTimeOut = 1000 * 60 * 10;
         String portCheckTimeOutStr = System.getProperty("port.check.timeout");
         if (StringUtils.isNotBlank(portCheckTimeOutStr)) {
