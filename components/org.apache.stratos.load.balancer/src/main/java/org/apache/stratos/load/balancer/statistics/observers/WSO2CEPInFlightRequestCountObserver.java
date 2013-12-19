@@ -21,7 +21,7 @@ package org.apache.stratos.load.balancer.statistics.observers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.statistics.WSO2CEPInFlightRequestPublisher;
+import org.apache.stratos.load.balancer.common.statistics.publisher.WSO2CEPInFlightRequestPublisher;
 
 import java.util.Map;
 import java.util.Observable;

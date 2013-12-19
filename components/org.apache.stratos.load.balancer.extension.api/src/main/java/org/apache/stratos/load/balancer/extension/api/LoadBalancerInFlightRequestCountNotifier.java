@@ -22,12 +22,10 @@ package org.apache.stratos.load.balancer.extension.api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.statistics.WSO2CEPInFlightRequestPublisher;
+import org.apache.stratos.load.balancer.common.statistics.publisher.WSO2CEPInFlightRequestPublisher;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-
-import java.util.Collection;
 
 /**
  * Load balancer statistics notifier thread for publishing statistics periodically to CEP.

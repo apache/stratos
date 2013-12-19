@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.load.balancer.common.statistics.publisher;
 
+import org.apache.stratos.common.statistics.publisher.WSO2CEPStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -27,26 +28,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * WSO2 CEP in flight request count publisher.
+ * WSO2 CEP faulty member publisher.
  * <p/>
- * In-flight request count:
- * Number of requests being served at a given moment could be identified as in-flight request count.
+ * Faulty members:
+ * If a request was rejected by some of the members in a cluster while at least
+ * one member could serve it, those members could be identified as faulty.
  */
-public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
+public class WSO2CEPFaultyMemberPublisher extends WSO2CEPStatisticsPublisher {
 
-    private static final String DATA_STREAM_NAME = "in_flight_requests";
+    private static final String DATA_STREAM_NAME = "stratos.lb.faulty.members";
     private static final String VERSION = "1.0.0";
 
     private static StreamDefinition createStreamDefinition() {
         try {
             StreamDefinition streamDefinition = new StreamDefinition(DATA_STREAM_NAME, VERSION);
-            streamDefinition.setNickName("lb stats");
-            streamDefinition.setDescription("lb stats");
+            streamDefinition.setNickName("lb fault members");
+            streamDefinition.setDescription("lb fault members");
             List<Attribute> payloadData = new ArrayList<Attribute>();
             // Payload definition
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
-            payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
-            payloadData.add(new Attribute("in_flight_request_count", AttributeType.INT));
+            payloadData.add(new Attribute("member_id", AttributeType.STRING));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         } catch (Exception e) {
@@ -54,23 +55,21 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatsPublisher {
         }
     }
 
-    public WSO2CEPInFlightRequestPublisher() {
+    public WSO2CEPFaultyMemberPublisher() {
         super(createStreamDefinition());
     }
 
     /**
-     * Publish in-flight request count of a cluster.
+     * Publish faulty members.
      *
      * @param clusterId
-     * @param networkPartitionId
-     * @param inFlightRequestCount
+     * @param memberId
      */
-    public void publish(String clusterId, String networkPartitionId, int inFlightRequestCount) {
+    public void publish(String clusterId, String memberId) {
         List<Object> payload = new ArrayList<Object>();
         // Payload values
         payload.add(clusterId);
-        payload.add(networkPartitionId);
-        payload.add(inFlightRequestCount);
+        payload.add(memberId);
         super.publish(payload.toArray());
     }
 }
