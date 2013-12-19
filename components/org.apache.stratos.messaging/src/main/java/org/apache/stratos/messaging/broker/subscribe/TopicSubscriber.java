@@ -44,8 +44,9 @@ public class TopicSubscriber implements Runnable {
 	private TopicConnector connector;
     private TopicHealthChecker healthChecker;
 	private javax.jms.TopicSubscriber topicSubscriber = null;
+    private boolean subscribed;
 
-	/**
+    /**
 	 * @param aTopicName
 	 *            topic name of this subscriber instance.
 	 */
@@ -65,8 +66,8 @@ public class TopicSubscriber implements Runnable {
 			topic = topicSession.createTopic(topicName);
 		}
 		topicSubscriber = topicSession.createSubscriber(topic);
-
 		topicSubscriber.setMessageListener(messageListener);
+        subscribed = true;
 	}
 
 	/**
@@ -91,7 +92,6 @@ public class TopicSubscriber implements Runnable {
 		while (!terminated) {
 			try {
 				doSubscribe();
-
 			} catch (Exception e) {
 				log.error("Error while subscribing to the topic: " + topicName, e);
 			} finally {
@@ -107,6 +107,7 @@ public class TopicSubscriber implements Runnable {
 				// health checker failed
 				// closes all sessions/connections
 				try {
+                    subscribed = false;
 					if (topicSubscriber != null) {
 						topicSubscriber.close();
 					}
@@ -128,5 +129,9 @@ public class TopicSubscriber implements Runnable {
     public void terminate() {
         healthChecker.terminate();
         terminated = true;
+    }
+
+    public boolean isSubscribed() {
+        return subscribed;
     }
 }

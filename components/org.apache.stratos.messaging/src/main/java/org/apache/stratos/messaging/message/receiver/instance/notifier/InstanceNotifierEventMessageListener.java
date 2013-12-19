@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.tenant;
+package org.apache.stratos.messaging.message.receiver.instance.notifier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,12 +28,12 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 /**
- * Implements functionality for receiving text based event messages from the tenant
+ * Implements functionality for receiving text based event messages from the instance notifier
  * message broker topic and add them to the event queue.
  */
-public class TenantEventMessageListener implements MessageListener {
+public class InstanceNotifierEventMessageListener implements MessageListener {
 
-    private static final Log log = LogFactory.getLog(TenantEventMessageListener.class);
+    private static final Log log = LogFactory.getLog(InstanceNotifierEventMessageListener.class);
 
     @Override
     public void onMessage(Message message) {
@@ -41,10 +41,10 @@ public class TenantEventMessageListener implements MessageListener {
             TextMessage receivedMessage = (TextMessage) message;
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant message received: %s", ((TextMessage) message).getText()));
+                    log.debug(String.format("Instance notifier message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
-                TenantEventMessageQueue.getInstance().add(receivedMessage);
+                InstanceNotifierEventMessageQueue.getInstance().add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);
