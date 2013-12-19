@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.event.artifact.synchronization.ArtifactUpdatedEvent;
+import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 
 public class ArtifactUpdatePublisher {
 	

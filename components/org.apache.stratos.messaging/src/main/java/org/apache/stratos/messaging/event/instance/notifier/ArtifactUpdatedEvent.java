@@ -16,13 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.artifact.synchronization;
+package org.apache.stratos.messaging.event.instance.notifier;
+
+import org.apache.stratos.messaging.event.tenant.TenantEvent;
+
+import java.io.Serializable;
 
 /**
  * This event is fired to a cluster when an artifact notification received from the git repository.
  */
 
-public class ArtifactUpdatedEvent {
+public class ArtifactUpdatedEvent extends InstanceNotifierEvent implements Serializable {
     private String clusterId;
     private String status;
     private String repoUserName;
@@ -77,6 +81,4 @@ public class ArtifactUpdatedEvent {
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
 	}
-	
-    
 }
