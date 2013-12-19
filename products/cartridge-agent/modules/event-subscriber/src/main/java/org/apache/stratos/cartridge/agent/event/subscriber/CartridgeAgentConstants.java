@@ -33,4 +33,9 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String NETWORK_PARTITION_ID = "NETWORK_PARTITION_ID";
     public static final String PARTITION_ID = "PARTITION_ID";
     public static final String MEMBER_ID = "MEMBER_ID";
+    public static final String PORTS = "PORTS";
+    public static final String CEP_PORT = "CEP_PORT";
+    public static final String CEP_IP = "CEP_IP";
+    public static final String MB_PORT = "MB_PORT";
+    public static final String MB_IP = "MB_IP";
 }
