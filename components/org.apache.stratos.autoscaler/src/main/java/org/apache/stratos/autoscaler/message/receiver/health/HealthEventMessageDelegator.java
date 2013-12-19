@@ -37,6 +37,7 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import javax.jms.TextMessage;
@@ -319,21 +320,29 @@ public class HealthEventMessageDelegator implements Runnable {
         	AutoscalerContext asCtx = AutoscalerContext.getInstance();
         	AbstractMonitor monitor = null;
         	
-        	if(asCtx.moniterExist(clusterId)){        		
-        		monitor = asCtx.getMonitor(clusterId);        		
-        	}else if(asCtx.lbMoniterExist(clusterId)){        		
-        		monitor = asCtx.getLBMonitor(clusterId);        		
+        	if(asCtx.moniterExist(clusterId)){
+        		monitor = asCtx.getMonitor(clusterId);
+        	}else if(asCtx.lbMoniterExist(clusterId)){
+        		monitor = asCtx.getLBMonitor(clusterId);
         	}else{
         		String errMsg = "A monitor is not found for this custer";
         		log.error(errMsg);
         		throw new RuntimeException(errMsg);
-        	}        
-            
-            if (!monitor.memberExist(memberId)) {
-                // member has already terminated. So no action required
-                return;
+        	}
+        	
+        	NetworkPartitionContext nwPartitionCtxt;
+            try{
+            	TopologyManager.acquireReadLock();
+            	Member member = monitor.getMember(memberId);
+	            if (null == member) {
+	                // member has already terminated. So no action required
+	                return;
+	            } else{
+	            	nwPartitionCtxt = monitor.getNetworkPartitionCtxt(member);
+	            }
+            }finally{
+            	TopologyManager.releaseReadLock();
             }
-
             // terminate the faulty member
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             ccClient.terminate(memberId);
@@ -341,7 +350,6 @@ public class HealthEventMessageDelegator implements Runnable {
             // start a new member in the same Partition
             String partitionId = monitor.getPartitionOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
-            NetworkPartitionContext nwPartitionCtxt = monitor.findNetworkPartition(memberId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
             
             String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
