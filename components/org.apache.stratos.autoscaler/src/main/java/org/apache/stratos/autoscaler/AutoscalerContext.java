@@ -24,7 +24,10 @@ public class AutoscalerContext {
             log.error("Rule evaluateMinCheck error", e);
         }
     }
+    
+    // Map<ClusterId, ClusterMonitor>
     private Map<String, ClusterMonitor> monitors;
+    // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
     public static AutoscalerContext getInstance() {

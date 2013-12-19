@@ -231,7 +231,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                     
 					if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
                         monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
+					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);					    
 					} else {
 					    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
 					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
@@ -239,7 +239,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //					ClusterContext clusCtx = monitor.getClusterCtxt();
 //                    monitor.getNetworkPartitionCtxt(e.getId()).getPartitionCtxt(partitionId);
 //                            .addMemberStatsContext(new MemberStatsContext(e.getMemberId()));
-                    partitionContext.addMemberStatsContext(new MemberStatsContext(e.getMemberId()));
+                    partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
 //					PartitionContext partCtxt = monitor.getNetworkPartitionCtxt(e.getId())
 //                            .getPartitionCtxt(partitionId);
 					partitionContext.incrementCurrentMemberCount(1);

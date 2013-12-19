@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
@@ -25,14 +27,6 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -43,25 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LbClusterMonitor extends AbstractMonitor{
 
     private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
-    private String clusterId;
-    private String serviceId;
-
-    private Map<String, NetworkPartitionContext> networkPartitionCtxts;
-
-    private StatefulKnowledgeSession minCheckKnowledgeSession;
-    private StatefulKnowledgeSession scaleCheckKnowledgeSession;
-    private boolean isDestroyed;
-
-    private DeploymentPolicy deploymentPolicy;
-    private AutoscalePolicy autoscalePolicy;
-
-        // Key- MemberId Value- partitionId
-//    private Map<String, String> memberPartitionMap;
-
-    private FactHandle minCheckFactHandle;
-    private FactHandle scaleCheckFactHandle;
-
-    private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
     public LbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                             AutoscalePolicy autoscalePolicy) {
@@ -75,54 +50,6 @@ public class LbClusterMonitor extends AbstractMonitor{
         this.deploymentPolicy = deploymentPolicy;
         this.deploymentPolicy = deploymentPolicy;
         networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
-        return networkPartitionCtxts;
-    }
-
-    public NetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
-        return networkPartitionCtxts.get(networkPartitionId);
-    }
-
-    public void setPartitionCtxt(Map<String, NetworkPartitionContext> partitionCtxt) {
-        this.networkPartitionCtxts = partitionCtxt;
-    }
-
-    public boolean partitionCtxtAvailable(String partitionId) {
-        return networkPartitionCtxts.containsKey(partitionId);
-    }
-
-    public void addNetworkPartitionCtxt(NetworkPartitionContext ctxt) {
-        this.networkPartitionCtxts.put(ctxt.getId(), ctxt);
-    }
-    
-    public NetworkPartitionContext getPartitionCtxt(String id) {
-        return this.networkPartitionCtxts.get(id);
-    }
-
-    public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
-        return minCheckKnowledgeSession;
-    }
-
-    public void setMinCheckKnowledgeSession(StatefulKnowledgeSession minCheckKnowledgeSession) {
-        this.minCheckKnowledgeSession = minCheckKnowledgeSession;
-    }
-
-    public FactHandle getMinCheckFactHandle() {
-        return minCheckFactHandle;
-    }
-
-    public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
-        this.minCheckFactHandle = minCheckFactHandle;
     }
 
     @Override
@@ -172,89 +99,12 @@ public class LbClusterMonitor extends AbstractMonitor{
             }
 
         }
-    }
-
-    
-    public void destroy() {
-        minCheckKnowledgeSession.dispose();
-        scaleCheckKnowledgeSession.dispose();
-        setDestroyed(true);
-        if(log.isDebugEnabled()) {
-            log.debug("Cluster Monitor Drools session has been disposed. "+this.toString());
-        }
-    }
-
-    public boolean isDestroyed() {
-        return isDestroyed;
-    }
-
-    public void setDestroyed(boolean isDestroyed) {
-        this.isDestroyed = isDestroyed;
-    }
-
-    public String getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
-    }
-
-    public DeploymentPolicy getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
-
-    public AutoscalePolicy getAutoscalePolicy() {
-        return autoscalePolicy;
-    }
-
-    public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
-        this.autoscalePolicy = autoscalePolicy;
-    }
-
-    public String getPartitionOfMember(String memberId){
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
-                    return cluster.getMember(memberId).getPartitionId();
-                }
-            }
-        }
-        return null;
-   	}
-
-    @Override
-    public boolean memberExist(String memberId){
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
-                    return true;
-                }
-            }
-        }
-        return false;
-   	}
+    }       
 
     @Override
     public String toString() {
         return "LbClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId + "]";
     }
 
-    @Override
-   	public NetworkPartitionContext findNetworkPartition(String memberId) {
-   		 for(Service service: TopologyManager.getTopology().getServices()){
-   	            for(Cluster cluster: service.getClusters()){
 
-                       String networkPartitionId = cluster.getMember(memberId).getNetworkPartitionId();
-   	                if(networkPartitionCtxts.containsKey(networkPartitionId)) {
-                           return networkPartitionCtxts.get(networkPartitionId);
-                       }
-   	            }
-   	      }
-   	      return null;
-   	}
 }
