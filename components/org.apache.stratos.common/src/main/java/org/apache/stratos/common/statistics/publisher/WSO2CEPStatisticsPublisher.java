@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.common.statistics.publisher;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,10 +32,10 @@ import org.wso2.carbon.databridge.commons.StreamDefinition;
 import java.util.HashMap;
 
 /**
- * WSO2 CEP statistics publisher for the load balancer.
+ * WSO2 CEP statistics publisher.
  */
-public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
-    private static final Log log = LogFactory.getLog(WSO2CEPStatsPublisher.class);
+public class WSO2CEPStatisticsPublisher implements StatisticsPublisher {
+    private static final Log log = LogFactory.getLog(WSO2CEPStatisticsPublisher.class);
 
     private StreamDefinition streamDefinition;
     private AsyncDataPublisher asyncDataPublisher;
@@ -45,7 +45,7 @@ public class WSO2CEPStatsPublisher implements LoadBalancerStatsPublisher {
     private String password;
     private boolean enabled = false;
 
-    public WSO2CEPStatsPublisher(StreamDefinition streamDefinition) {
+    public WSO2CEPStatisticsPublisher(StreamDefinition streamDefinition) {
         this.streamDefinition = streamDefinition;
         this.ip = System.getProperty("thrift.receiver.ip");
         this.port = System.getProperty("thrift.receiver.port");

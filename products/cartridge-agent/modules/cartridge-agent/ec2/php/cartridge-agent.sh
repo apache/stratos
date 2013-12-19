@@ -77,10 +77,10 @@ sh event-subscriber.sh  &
 echo "Event subscribed" | tee -a $LOG
 popd
 
-
-pushd $health_publisher_path/bin
-echo "Executing: health-publisher.sh"
-sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID $NETWORK_PARTITION_ID
-echo "Health stat published" | tee -a $LOG
-popd
+#Health publisher is started inside event subscriber
+#pushd $health_publisher_path/bin
+#echo "Executing: health-publisher.sh"
+#sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID $NETWORK_PARTITION_ID
+#echo "Health stat published" | tee -a $LOG
+#popd
 

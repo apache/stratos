@@ -881,6 +881,11 @@ public class PersistenceManager {
 		}
 
 	} 
+	
+	
+	public static Service getServiceFromCartridgeType(String cartridgeType) {
+		return null;
+	}
 
 	
 

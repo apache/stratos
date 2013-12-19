@@ -17,12 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
+package org.apache.stratos.common.statistics.publisher;
 
 /**
- * Load balancer statistics publisher interface.
+ *  Statistics publisher interface.
  */
-public interface LoadBalancerStatsPublisher {
+public interface StatisticsPublisher {
 
     /**
      * Set statistics publisher enabled or disabled.

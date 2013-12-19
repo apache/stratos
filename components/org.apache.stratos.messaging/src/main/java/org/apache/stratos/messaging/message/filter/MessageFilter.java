@@ -39,9 +39,9 @@ public class MessageFilter {
         return keyValuePairMap;
     }
 
-    public static List<String> splitUsingTokenizer(String Subject, String Delimiters) {
-        StringTokenizer tokenizer = new StringTokenizer(Subject, Delimiters);
-        List<String> list = new ArrayList<String>(Subject.length());
+    public static List<String> splitUsingTokenizer(String string, String delimiter) {
+        StringTokenizer tokenizer = new StringTokenizer(string, delimiter);
+        List<String> list = new ArrayList<String>(string.length());
         while (tokenizer.hasMoreTokens()) {
             list.add(tokenizer.nextToken());
         }
