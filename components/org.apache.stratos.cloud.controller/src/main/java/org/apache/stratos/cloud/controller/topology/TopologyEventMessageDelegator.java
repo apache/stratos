@@ -51,6 +51,8 @@ public class TopologyEventMessageDelegator implements Runnable {
                 } else if(InstanceActivatedEvent.class.getName().equals(type)) {
                      TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) Util.
                                                         jsonToObject(json, InstanceActivatedEvent.class));
+                } else{
+                	log.warn("Event message received is not InstanceStartedEvent or InstanceActivatedEvent" );
                 }
 
 				if (log.isDebugEnabled()) {
@@ -59,7 +61,8 @@ public class TopologyEventMessageDelegator implements Runnable {
             } catch (Exception e) {
                 String error = "Failed to retrieve the topology event message.";
             	log.error(error, e);
-            	throw new RuntimeException(error, e);
+            	// Commenting throwing the error. Otherwise thread will not execute if an exception is thrown.
+            	//throw new RuntimeException(error, e);
             }
         }
     }
