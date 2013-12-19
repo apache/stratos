@@ -125,7 +125,9 @@ public class Main {
 				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.MEMBER_ID) + " " +
 				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CEP_IP) + " " +
 				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.CEP_PORT) + " " +
-				getPorts(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.PORTS)) + " " +				
+				getPorts(LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.PORTS)) + " " +	
+				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.NETWORK_PARTITION_ID) + " " +
+				LaunchParamsUtil.readParamValueFromPayload(CartridgeAgentConstants.PARTITION_ID) + " " +
 			    " /";
 			proc = Runtime.getRuntime().exec(command);
 			log.info("executing health publisher command.. :" + command);
