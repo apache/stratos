@@ -25,42 +25,33 @@ import org.apache.stratos.messaging.event.Event;
  *  This event is fired by Event processing engine to send member fault event
  */
 public class MemberFaultEvent extends Event {
-    private String clusterId;
-    private String memberId;
-    private String partitionId;
+    private final String clusterId;
+    private final String memberId;
+    private final String partitionId;
 
-    private float value;
+    private final float value;
+
+    public MemberFaultEvent(String clusterId, String memberId, String partitionId, float value) {
+        this.clusterId = clusterId;
+        this.memberId = memberId;
+        this.partitionId = partitionId;
+        this.value = value;
+    }
 
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public float getValue() {
         return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
     }
 
     public String getPartitionId() {
         return partitionId;
     }
 
-    public void setPartitionId(String partitionId) {
-        this.partitionId = partitionId;
-    }
-
     public String getMemberId() {
         return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
     }
 }
