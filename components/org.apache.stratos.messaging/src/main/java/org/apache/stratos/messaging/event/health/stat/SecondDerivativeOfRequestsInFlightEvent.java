@@ -25,32 +25,26 @@ import org.apache.stratos.messaging.event.Event;
  *  This event is fired by Event processing engine to send second derivative of requests in flight
  */
 public class SecondDerivativeOfRequestsInFlightEvent extends Event {
-    private String clusterId;
-    private String networkPartitionId;
-    private float value;
+    private final String clusterId;
+    private final String networkPartitionId;
+    private final float value;
+
+    public SecondDerivativeOfRequestsInFlightEvent(String clusterId, String networkPartitionId, float value) {
+        this.clusterId = clusterId;
+        this.networkPartitionId = networkPartitionId;
+        this.value = value;
+    }
 
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public float getValue() {
         return value;
     }
 
-    public void setValue(float value) {
-        this.value = value;
-    }
-
     public String getNetworkPartitionId() {
         return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
     }
 }

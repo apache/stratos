@@ -218,7 +218,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
             	try {
 					TopologyManager.acquireReadLock();
-					
+
 					MemberActivatedEvent e = (MemberActivatedEvent)event;
                     String memberId = e.getMemberId();
                     String partitionId = e.getPartitionId();
@@ -228,10 +228,10 @@ public class AutoscalerTopologyReceiver implements Runnable {
                     PartitionContext partitionContext;
 					String clusterId = e.getClusterId();
                     AbstractMonitor monitor;
-                    
+
 					if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
                         monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);					    
+					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
 					} else {
 					    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
 					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
@@ -244,7 +244,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //                            .getPartitionCtxt(partitionId);
 					partitionContext.incrementCurrentMemberCount(1);
 					partitionContext.removePendingMember(memberId);
-					
+
 				}
                 finally{
                 	TopologyManager.releaseReadLock();

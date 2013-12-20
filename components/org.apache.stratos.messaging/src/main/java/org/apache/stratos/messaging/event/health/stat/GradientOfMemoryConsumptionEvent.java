@@ -25,32 +25,26 @@ import org.apache.stratos.messaging.event.Event;
  * This event is fired by Event processing engine to send gradient of  memory consumption
  */
 public class GradientOfMemoryConsumptionEvent extends Event {
-    private String networkPartitionId;
-    private String clusterId;
-    private float value;
+    private final String networkPartitionId;
+    private final String clusterId;
+    private final float value;
+
+    public GradientOfMemoryConsumptionEvent(String networkPartitionId, String clusterId, float value) {
+        this.networkPartitionId = networkPartitionId;
+        this.clusterId = clusterId;
+        this.value = value;
+    }
 
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public float getValue() {
         return value;
     }
 
-    public void setValue(float value) {
-        this.value = value;
-    }
-
     public String getNetworkPartitionId() {
         return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
     }
 }
