@@ -29,6 +29,15 @@ export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
 
+#-----
+# Unzip cartridge agent pack
+#-----
+pushd ${instance_path}
+unzip apache-stratos-cartridge-agent-4.0.0-SNAPSHOT-bin.zip
+mv apache-stratos-cartridge-agent-4.0.0-SNAPSHOT cartridge-agent
+popd
+
+
 # ---------------------------------------------
 # Download payload
 # ---------------------------------------------
