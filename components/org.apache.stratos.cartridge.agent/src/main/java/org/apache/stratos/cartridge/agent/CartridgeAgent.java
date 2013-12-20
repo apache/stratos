@@ -76,7 +76,7 @@ public class CartridgeAgent implements Runnable {
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
         if ("null".equals(repoUrl) || StringUtils.isBlank(repoUrl)) {
             if(log.isInfoEnabled()) {
-                log.info("No repo url found");
+                log.info("No artifact repository found");
             }
 
             // Publish instance activated event
@@ -94,8 +94,8 @@ public class CartridgeAgent implements Runnable {
 
     private void onArtifactUpdateEvent(ArtifactUpdatedEvent event) {
         ArtifactUpdatedEvent artifactUpdatedEvent = (ArtifactUpdatedEvent) event;
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Artifact update event received: $s", artifactUpdatedEvent.toString()));
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Artifact update event received: %s", artifactUpdatedEvent.toString()));
         }
 
         String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
@@ -107,8 +107,8 @@ public class CartridgeAgent implements Runnable {
         String tenantId = artifactUpdatedEvent.getTenantId();
 
         if(StringUtils.isNotEmpty(repoURL) && (clusterIdInPayload != null) && clusterIdInPayload.equals(clusterIdInMessage)) {
-            if(log.isDebugEnabled()) {
-                log.debug("Executing git checkout");
+            if(log.isInfoEnabled()) {
+                log.info("Executing git checkout");
             }
             RepositoryInformation repoInformation = new RepositoryInformation();
             repoInformation.setRepoUsername(repoUsername);

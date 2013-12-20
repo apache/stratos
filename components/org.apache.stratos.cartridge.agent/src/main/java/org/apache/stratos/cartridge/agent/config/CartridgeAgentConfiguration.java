@@ -103,8 +103,8 @@ public class CartridgeAgentConfiguration {
         List<Integer> ports = new ArrayList<Integer>();
         String portsStr = readParameterValue(CartridgeAgentConstants.PORTS);
         List<String> portsStrList = CartridgeAgentUtils.splitUsingTokenizer(portsStr, "|");
-        for(String portStr : portsStrList) {
-            ports.add(Integer.parseInt(portsStr));
+        for(String port : portsStrList) {
+            ports.add(Integer.parseInt(port));
         }
         return ports;
     }
