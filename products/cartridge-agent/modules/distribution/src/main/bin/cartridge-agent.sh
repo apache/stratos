@@ -30,8 +30,9 @@ properties="-Dmb.ip=localhost
             -Dthrift.receiver.port=7615
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
-            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties"
+            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch.params
+            -Dcep.stats.publisher.enabled=true"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
