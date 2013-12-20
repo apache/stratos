@@ -259,7 +259,7 @@ public class RestCommandLineService {
                 System.out.println();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in listing available cartridges", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -336,7 +336,7 @@ public class RestCommandLineService {
             CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
             System.out.println();
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in listing subscribe cartridges", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -351,7 +351,6 @@ public class RestCommandLineService {
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
         cartridgeInfoBean.setCartridgeType(null);
         cartridgeInfoBean.setAlias(null);
-        //cartridgeInfoBean.setPolicy(null);
         cartridgeInfoBean.setRepoURL(null);
         cartridgeInfoBean.setPrivateRepo(false);
         cartridgeInfoBean.setRepoUsername(null);
@@ -379,9 +378,6 @@ public class RestCommandLineService {
                 if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                     System.out.println("Invalid operation. Authorization failed");
                     return;
-                //} else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                  //  System.out.println("Duplicate alias. Please choose different alias");
-                  //  return;
                 } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                     System.out.println("Error occured while subscribing cartridge");
                     return;
@@ -402,7 +398,7 @@ public class RestCommandLineService {
                 System.out.format("%nSubscribing to %s cartridge and connecting with %s data cartridge.%n", alias,
                         dataCartridgeAlias);
             } catch (Exception e) {
-                e.printStackTrace();
+                handleException("Exception in subscribing to data cartridge", e);
             }
             finally {
                 httpClient.getConnectionManager().shutdown();
@@ -416,7 +412,6 @@ public class RestCommandLineService {
         try {
             cartridgeInfoBean.setCartridgeType(cartridgeType);
             cartridgeInfoBean.setAlias(alias);
-            //cartridgeInfoBean.setPolicy(policy);
             cartridgeInfoBean.setRepoURL(externalRepoURL);
             cartridgeInfoBean.setPrivateRepo(privateRepo);
             cartridgeInfoBean.setRepoUsername(username);
@@ -436,9 +431,6 @@ public class RestCommandLineService {
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
                 return;
-            //} else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-            //    System.out.println("Duplicate alias. Please choose different alias");
-            //    return;
             } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println("Error occured while subscribing cartridge");
                 return;
@@ -485,14 +477,15 @@ public class RestCommandLineService {
 
             System.out.format("Please map the %s \"%s\" to LB IP%n", hostnamesLabel, hostnames);
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in subscribing to cartridge", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to create the new tenant
-    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email){
+    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email)
+            throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
@@ -502,7 +495,6 @@ public class RestCommandLineService {
             tenantInfo.setAdminPassword(password);
             tenantInfo.setTenantDomain(domain);
             tenantInfo.setEmail(email);
-            //tenantInfo.setActive(active);
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
@@ -514,6 +506,7 @@ public class RestCommandLineService {
                     completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
+
             if (responseCode.equals(CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operation. Authorization failed");
                 return;
@@ -529,7 +522,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in creating tenant", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -543,14 +536,14 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
             System.out.println("You have successfully unsubscribed " + alias);
         } catch ( Exception e) {
-            e.printStackTrace();
+            handleException("Exception in un-subscribing cartridge", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy cartridge definitions
-    public void deployCartridgeDefinition (String cartridgeDefinition) {
+    public void deployCartridgeDefinition (String cartridgeDefinition) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + cartridgeDeploymentEndPoint,
@@ -569,14 +562,14 @@ public class RestCommandLineService {
                 return;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in deploy cartridge definition", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy partitions
-    public void deployPartition (String partitionDefinition) {
+    public void deployPartition (String partitionDefinition) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + partitionDeploymentEndPoint,
@@ -600,14 +593,14 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in deploying partitions", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy autoscalling polices
-    public void deployAutoscalingPolicy (String autoScalingPolicy) {
+    public void deployAutoscalingPolicy (String autoScalingPolicy) throws CommandException{
         DefaultHttpClient httpClient= new DefaultHttpClient();
         try {
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
@@ -630,14 +623,14 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in deploying autoscale police", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy deployment polices
-    public void deployDeploymentPolicy (String deploymentPolicy) {
+    public void deployDeploymentPolicy (String deploymentPolicy) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
@@ -660,7 +653,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in deploying deployment policy", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -718,7 +711,7 @@ public class RestCommandLineService {
             System.out.println();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in listing partitions", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -775,7 +768,7 @@ public class RestCommandLineService {
             System.out.println();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in listing autoscale policies", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -829,7 +822,7 @@ public class RestCommandLineService {
             System.out.println();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException("Exception in listing deployment polices", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -943,5 +936,18 @@ public class RestCommandLineService {
             System.out.println("IO error");
             return null;
         }
+    }
+
+    // This is for handle exception
+    private void handleException(String key, Exception e, Object... args) throws CommandException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
+        }
+        String message = CommandLineUtils.getMessage(key, args);
+        if (logger.isErrorEnabled()) {
+            logger.error(message);
+        }
+        System.out.println(message);
+        throw new CommandException(message, e);
     }
 }
