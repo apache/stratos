@@ -43,15 +43,14 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
             StreamDefinition streamDefinition = new StreamDefinition(DATA_STREAM_NAME, VERSION);
             streamDefinition.setNickName("agent health stats");
             streamDefinition.setDescription("agent health stats");
+            // Payload definition
             List<Attribute> payloadData = new ArrayList<Attribute>();
-
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
             payloadData.add(new Attribute("member_id", AttributeType.STRING));
             payloadData.add(new Attribute("partition_id", AttributeType.STRING));
             payloadData.add(new Attribute("health_description", AttributeType.STRING));
             payloadData.add(new Attribute("value", AttributeType.DOUBLE));
-
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         } catch (Exception e) {
