@@ -88,18 +88,6 @@ import org.drools.runtime.rule.FactHandle;
         }
         return null;
    	}
-        
-    public Member getMember(String memberId){
-    	
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
-                    return cluster.getMember(memberId);
-                }
-            }
-        }
-        return null;
-   	}
     
     public void destroy() {
         minCheckKnowledgeSession.dispose();
