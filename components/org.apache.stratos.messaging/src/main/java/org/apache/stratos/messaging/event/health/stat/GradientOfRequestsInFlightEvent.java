@@ -19,14 +19,12 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  * This event is fired by Event processing engine to send gradient of requests in flight
  */
-public class GradientOfRequestsInFlightEvent implements Serializable {
-    private static final long serialVersionUID = 1981538866459526611L;
-
+public class GradientOfRequestsInFlightEvent extends Event {
     private String networkPartitionId;
     private String clusterId;
     private float value;

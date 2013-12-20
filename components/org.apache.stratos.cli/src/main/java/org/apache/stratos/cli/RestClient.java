@@ -48,6 +48,8 @@ public class RestClient implements GenericRestClient{
     /**
      * Handle http post request. Return String
      *
+     * @param  httpClient
+     *              This should be httpClient which used to connect to rest endpoint
      * @param resourcePath
      *              This should be REST endpoint
      * @param jsonParamString
@@ -60,11 +62,9 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
+    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString, String userName,
+                               String passWord) throws Exception{
         try {
-
-            //DefaultHttpClient httpClient = new DefaultHttpClient();
-
             HttpPost postRequest = new HttpPost(resourcePath);
 
             StringEntity input = new StringEntity(jsonParamString);
@@ -83,32 +83,7 @@ public class RestClient implements GenericRestClient{
 
             HttpResponse response = httpClient.execute(postRequest);
 
-            /*
-            int responseCode = response.getStatusLine().getStatusCode();
-
-            if (responseCode == CliConstants.RESPONSE_AUTHORIZATION_FAIL) {
-                return "" + CliConstants.RESPONSE_AUTHORIZATION_FAIL;
-            } else if (responseCode == CliConstants.RESPONSE_NO_CONTENT) {
-                return "" + CliConstants.RESPONSE_NO_CONTENT;
-            } else if (responseCode == CliConstants.RESPONSE_INTERNAL_SERVER_ERROR) {
-                return "" + CliConstants.RESPONSE_INTERNAL_SERVER_ERROR;
-            } else if (response.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-
-            String output;
-            String result = "";
-            while ((output = br.readLine()) != null) {
-                result += output;
-            }
-            */
-
-            //httpClient.getConnectionManager().shutdown();
-            //return result;
             return response;
-
         } catch (ClientProtocolException e) {
             throw new ClientProtocolException();
         } catch (ConnectException e) {
@@ -123,6 +98,8 @@ public class RestClient implements GenericRestClient{
     /**
      * Handle http get request. Return String
      *
+     * @param  httpClient
+     *              This should be httpClient which used to connect to rest endpoint
      * @param resourcePath
      *              This should be REST endpoint
      * @param userName
@@ -135,7 +112,6 @@ public class RestClient implements GenericRestClient{
      */
     public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) {
         try {
-            //DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 
@@ -151,23 +127,7 @@ public class RestClient implements GenericRestClient{
 
             HttpResponse response = httpClient.execute(getRequest);
 
-            /*
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-
-            String output;
-            String result = "";
-            while ((output = br.readLine()) != null) {
-                result += output;
-            }
-            */
-
-            //httpClient.getConnectionManager().shutdown();
             return response;
-
         } catch (ClientProtocolException e) {
             e.printStackTrace();
             return null;
