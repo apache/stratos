@@ -59,16 +59,6 @@ source ${instance_path}/launch.params
 # Starting cartridge agent executable
 #------------------------------------
 pushd $ca_exec_path
-echo "Configuring cartridge agent executable..." | tee -a $LOG
-cp -f templates/cartridge-agent.sh.template bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/cartridge-agent.sh
-rm -f bin/cartridge-agent.sh.tmp
 echo "Starting cartridge agent..." | tee -a $LOG
 sh bin/cartridge-agent.sh
 popd
