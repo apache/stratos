@@ -30,9 +30,8 @@ import java.util.Map;
  * Holds runtime data of a network partition.
  *
  */
-public class NetworkPartitionContext implements Serializable {
+public class NetworkPartitionContext{
 
-    private static final long serialVersionUID = -5458149704820463584L;
     private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private String id;
 

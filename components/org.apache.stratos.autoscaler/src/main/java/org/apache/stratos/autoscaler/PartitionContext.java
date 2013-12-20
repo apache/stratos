@@ -40,9 +40,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  */
 
-public class PartitionContext implements Serializable{
+public class PartitionContext{
 
-    private static final long serialVersionUID = 5822689534291741272L;
     private static final Log log = LogFactory.getLog(PartitionContext.class);
     private String partitionId;
     private String serviceName;
