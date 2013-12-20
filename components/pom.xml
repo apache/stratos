@@ -50,6 +50,8 @@
         <module>org.apache.stratos.deployment</module>
         <!-- CLI -->
         <module>org.apache.stratos.cli</module>
+        <!-- Cartridge Agent -->
+        <module>org.apache.stratos.cartridge.agent</module>
         <!-- Load Balancer -->
         <module>org.apache.stratos.load.balancer.common</module>
         <module>org.apache.stratos.load.balancer</module>
