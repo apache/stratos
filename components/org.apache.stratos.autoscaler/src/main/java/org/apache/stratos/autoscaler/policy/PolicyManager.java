@@ -43,26 +43,19 @@ public class PolicyManager {
 
     private static final Log log = LogFactory.getLog(PolicyManager.class);
 
-    private static final String asResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/";
-
     private static Map<String, AutoscalePolicy> autoscalePolicyListMap = new HashMap<String, AutoscalePolicy>();
 
     private static Map<String, DeploymentPolicy> deploymentPolicyListMap = new HashMap<String, DeploymentPolicy>();
-
-    private static PolicyManager instance = null;
-
-    private PolicyManager() {
+    
+    private static class InstanceHolder {
+        private static final PolicyManager INSTANCE = new PolicyManager(); 
     }
 
     public static PolicyManager getInstance() {
-        if (instance == null) {
-            synchronized (PolicyManager.class) {
-                if (instance == null) {
-                    instance = new PolicyManager();
-                }
-            }
-        }
-        return instance;
+        return InstanceHolder.INSTANCE;
+     }
+    
+    private PolicyManager() {
     }
 
     // Add the policy to information model and persist.
