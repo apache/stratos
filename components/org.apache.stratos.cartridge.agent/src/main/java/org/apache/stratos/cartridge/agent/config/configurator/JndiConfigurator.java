@@ -21,6 +21,8 @@ package org.apache.stratos.cartridge.agent.config.configurator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -33,12 +35,13 @@ import java.io.IOException;
  * Jndi configurator to configure message broker related settings and generate jndi.properties file.
  */
 public class JndiConfigurator {
-
-    private static boolean configured;
+    private static final Log log = LogFactory.getLog(JndiConfigurator.class);
 
     public static void configure() {
+        if(log.isDebugEnabled()) {
+            log.debug("Configuring jndi.properties file");
+        }
         generateJndiPropertiesFile();
-        configured = true;
     }
 
     private static void generateJndiPropertiesFile() {
@@ -63,7 +66,7 @@ public class JndiConfigurator {
             jndiFilePath = jndiFileDir + "jndi.properties";
         }
         else {
-            jndiFilePath = jndiFileDir = "/" + "jndi.properties";
+            jndiFilePath = jndiFileDir + "/" + "jndi.properties";
         }
 
         File templateFile = new File(templateFilePath);
@@ -80,6 +83,9 @@ public class JndiConfigurator {
 
             // Write jndi.properties file
             writeFileContent(content, jndiFilePath);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("jndi.properties file written to: %s", jndiFilePath));
+            }
         } catch (Exception e) {
             throw new RuntimeException("Could not write jndi.properties file", e);
         }
@@ -97,9 +103,5 @@ public class JndiConfigurator {
     private static void writeFileContent(String content, String filePath) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(filePath);
         IOUtils.write(content, outputStream);
-    }
-
-    public static boolean isConfigured() {
-        return configured;
     }
 }

@@ -38,7 +38,6 @@
             <outputDirectory>/conf</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
-                <include>jndi.properties</include>
                 <include>log4j.properties</include>
             </includes>
         </fileSet>

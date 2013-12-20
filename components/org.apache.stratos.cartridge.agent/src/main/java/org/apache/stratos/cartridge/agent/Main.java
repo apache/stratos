@@ -36,6 +36,9 @@ public class Main {
     public static void main(String[] args) {
         try {
             // Configure log4j properties
+            if(log.isDebugEnabled()) {
+                log.debug("Configuring log4j.properties file path");
+            }
             PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
 
             // Generate jndi.properties file
