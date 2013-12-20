@@ -231,7 +231,7 @@ public class NetworkPartitionContext implements Serializable {
         if(secondDerivativeRifRest && gradientRifReset){
             rifReset = true;
             if(log.isDebugEnabled()){
-                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
                         , this.id));
             }
         }
@@ -247,7 +247,7 @@ public class NetworkPartitionContext implements Serializable {
         if(averageRifReset && gradientRifReset){
             rifReset = true;
             if(log.isDebugEnabled()){
-                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
                         , this.id));
             }
         }
@@ -263,7 +263,7 @@ public class NetworkPartitionContext implements Serializable {
         if(secondDerivativeRifRest && averageRifReset){
             rifReset = true;
             if(log.isDebugEnabled()){
-                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
                         , this.id));
             }
         }
