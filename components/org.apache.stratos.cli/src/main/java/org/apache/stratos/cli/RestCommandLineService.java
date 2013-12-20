@@ -28,6 +28,7 @@ import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.*;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
@@ -116,9 +117,11 @@ public class RestCommandLineService {
             throw new CommandException(e);
         }
 
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
+
             if (validateLogin) {
-                restClientService.doPost(restClientService.getUrl() + initializeEndpoint, "",
+                restClientService.doPost(httpClient, restClientService.getUrl() + initializeEndpoint, "",
                         restClientService.getUsername(), restClientService.getPassword());
                 if (logger.isDebugEnabled()) {
                     logger.debug("Tenant Domain {}", restClientService.getUsername());
@@ -134,6 +137,8 @@ public class RestCommandLineService {
         } catch (ConnectException e) {
             System.out.println("Authentication failed. Please set the STRTOS_URL");
             return false;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
@@ -170,8 +175,9 @@ public class RestCommandLineService {
 
     // List currently available multi tenant and single tenant cartridges
     public void listAvailableCartridges() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -254,14 +260,16 @@ public class RestCommandLineService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // List subscribe cartridges
     public void listSubscribedCartridges(final boolean full) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-
-            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -329,6 +337,8 @@ public class RestCommandLineService {
             System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
@@ -336,6 +346,7 @@ public class RestCommandLineService {
     public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
                           String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy, String depPolicy)
             throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
 
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
         cartridgeInfoBean.setCartridgeType(null);
@@ -361,7 +372,7 @@ public class RestCommandLineService {
             System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
                     dataCartridgeAlias);
             try {
-                HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
+                HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + subscribCartridgeRestEndpoint,
                         completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
                 String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -393,6 +404,13 @@ public class RestCommandLineService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            finally {
+                httpClient.getConnectionManager().shutdown();
+            }
+        }
+
+        if (httpClient == null) {
+            httpClient = new DefaultHttpClient();
         }
 
         try {
@@ -411,7 +429,7 @@ public class RestCommandLineService {
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
             completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
 
-            HttpResponse response = restClientService.doPost(restClientService.getUrl() + subscribCartridgeRestEndpoint,
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + subscribCartridgeRestEndpoint,
                     completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -468,11 +486,14 @@ public class RestCommandLineService {
             System.out.format("Please map the %s \"%s\" to LB IP%n", hostnamesLabel, hostnames);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to create the new tenant
     public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email){
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
             tenantInfo.setAdmin(admin);
@@ -489,7 +510,7 @@ public class RestCommandLineService {
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
             String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
 
-            HttpResponse response = restClientService.doPost(restClientService.getUrl() + addTenantEndPoint,
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + addTenantEndPoint,
                     completeJsonString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -509,24 +530,30 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            restClientService.doPost(restClientService.getUrl() + unsubscribeTenantEndPoint, alias,
+            restClientService.doPost(httpClient, restClientService.getUrl() + unsubscribeTenantEndPoint, alias,
                     restClientService.getUsername(), restClientService.getPassword());
             System.out.println("You have successfully unsubscribed " + alias);
         } catch ( Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy cartridge definitions
     public void deployCartridgeDefinition (String cartridgeDefinition) {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(restClientService.getUrl() + cartridgeDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + cartridgeDeploymentEndPoint,
                     cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -543,13 +570,16 @@ public class RestCommandLineService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy partitions
     public void deployPartition (String partitionDefinition) {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(restClientService.getUrl() + partitionDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + partitionDeploymentEndPoint,
                     partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -571,13 +601,16 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy autoscalling polices
     public void deployAutoscalingPolicy (String autoScalingPolicy) {
+        DefaultHttpClient httpClient= new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
                     autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -598,13 +631,16 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method helps to deploy deployment polices
     public void deployDeploymentPolicy (String deploymentPolicy) {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -625,13 +661,16 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method list available partitons
     public void listPartitions() throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listParitionRestEndPoint,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listParitionRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -680,13 +719,16 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method list autoscale policies
     public void listAutoscalePolicies() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -734,13 +776,16 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
     // This method list deployment policies
     public void listDeploymentPolicies() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(restClientService.getUrl() + listDeploymentPolicyRestEndPoint,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listDeploymentPolicyRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -783,9 +828,10 @@ public class RestCommandLineService {
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
             System.out.println();
 
-
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
         }
     }
 
