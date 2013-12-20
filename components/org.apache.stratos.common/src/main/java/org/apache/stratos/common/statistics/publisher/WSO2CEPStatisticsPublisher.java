@@ -51,12 +51,10 @@ public class WSO2CEPStatisticsPublisher implements StatisticsPublisher {
         this.port = System.getProperty("thrift.receiver.port");
         this.username = "admin";
         this.password = "admin";
-        String enabledStr = System.getProperty("cep.stats.publisher.enabled");
-        if (StringUtils.isNotBlank(enabledStr)) {
-            enabled = Boolean.getBoolean(enabledStr);
-            if (enabled) {
-                init();
-            }
+
+        enabled = Boolean.getBoolean("cep.stats.publisher.enabled");
+        if (enabled) {
+            init();
         }
     }
 
