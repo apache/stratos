@@ -19,14 +19,12 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  *  This event is fired by Event processing engine to send average of memory consumption
  */
-public class MemberAverageMemoryConsumptionEvent implements Serializable {
-    private static final long serialVersionUID = -1707034855948914488L;
-
+public class MemberAverageMemoryConsumptionEvent extends Event {
     private String memberId;
     private float value;
 

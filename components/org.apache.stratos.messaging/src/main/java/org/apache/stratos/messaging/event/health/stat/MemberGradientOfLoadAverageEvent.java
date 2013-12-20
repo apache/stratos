@@ -19,14 +19,12 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  * This event is fired by Event processing engine to send gradient of Load average
  */
-public class MemberGradientOfLoadAverageEvent implements Serializable {
-
-    private static final long serialVersionUID = -3175864652586282657L;
+public class MemberGradientOfLoadAverageEvent extends Event {
 
     private String memberId;
     private float value;
