@@ -60,10 +60,10 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
+    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
         try {
 
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            //DefaultHttpClient httpClient = new DefaultHttpClient();
 
             HttpPost postRequest = new HttpPost(resourcePath);
 
@@ -133,9 +133,9 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(String resourcePath, String userName, String passWord) {
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) {
         try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            //DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 

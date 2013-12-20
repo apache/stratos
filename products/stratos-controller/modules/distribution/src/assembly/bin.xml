@@ -71,6 +71,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.console</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/console</outputDirectory>
+            <excludes>
+                <exclude>**/README</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <excludes>
@@ -299,6 +306,15 @@
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/lib/runtimes</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/lib/runtimes/</outputDirectory>
+            <includes>
+                <include>*/**</include>
+            </includes>
+        </fileSet>
+
+        <!-- copy jaggery modules -->
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/modules</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/modules</outputDirectory>
             <includes>
                 <include>*/**</include>
             </includes>
