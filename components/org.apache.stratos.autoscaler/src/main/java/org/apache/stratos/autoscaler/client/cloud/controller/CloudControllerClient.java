@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
@@ -43,20 +44,13 @@ public class CloudControllerClient {
 
     private static final Log log = LogFactory.getLog(CloudControllerClient.class);
     private static CloudControllerServiceStub stub;
-    private static CloudControllerClient instance;
+    
+    private static class InstanceHolder {
+        private static final CloudControllerClient INSTANCE = new CloudControllerClient(); 
+    }
     
     public static CloudControllerClient getInstance() {
-
-        if (instance == null) {
-            synchronized (CloudControllerClient.class) {
-                
-                if(instance == null) {
-                    instance = new CloudControllerClient();
-                }
-            }
-        }
-
-        return instance;
+    	return InstanceHolder.INSTANCE;
     }
     
     private CloudControllerClient(){
