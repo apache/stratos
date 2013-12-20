@@ -21,36 +21,12 @@ package org.apache.stratos.messaging.event.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
 
+import java.io.Serializable;
+
 /**
- *  This event is fired by Event processing engine to send average of requests in flight
+ * Represents all topology events.
  */
-public class AverageRequestsInFlightEvent extends Event {
-    private String networkPartitionId;
-    private String clusterId;
-    private float value;
+public abstract class HealthStatEvent extends Event implements Serializable {
 
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
-    }
-
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
-    }
+    private static final long serialVersionUID = 878645729335256359L;
 }

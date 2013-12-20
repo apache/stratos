@@ -19,14 +19,12 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  *  This event is fired by Event processing engine to send member fault event
  */
-public class MemberFaultEvent implements Serializable {
-
-    private static final long serialVersionUID = 5364415023905395683L;
+public class MemberFaultEvent extends Event {
     private String clusterId;
     private String memberId;
     private String partitionId;
