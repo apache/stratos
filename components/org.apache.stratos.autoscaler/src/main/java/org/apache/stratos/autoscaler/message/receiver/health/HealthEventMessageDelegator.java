@@ -18,11 +18,20 @@
  */
 package org.apache.stratos.autoscaler.message.receiver.health;
 
-import com.google.gson.stream.JsonReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -34,16 +43,9 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import javax.jms.TextMessage;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.stream.JsonReader;
 
 
 /**
@@ -129,7 +131,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         loadAverage.setAverage(floatValue);
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
+                            log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
                 } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(event.getEventName())) {
@@ -140,7 +142,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         loadAverage.setSecondDerivative(floatValue);
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
+                            log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
                 } else if(Constants.MEMBER_GRADIENT_LOAD_AVERAGE.equals(event.getEventName())) {
@@ -151,7 +153,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         loadAverage.setGradient(floatValue);
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
+                            log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
                 } else if(Constants.MEMBER_AVERAGE_MEMORY_CONSUMPTION.equals(event.getEventName())) {
@@ -162,7 +164,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         memoryConsumption.setAverage(floatValue);
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
+                            log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
                 } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(event.getEventName())) {
@@ -173,7 +175,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         memoryConsumption.setSecondDerivative(floatValue);
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
+                            log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
                 } else if(Constants.MEMBER_GRADIENT_MEMORY_CONSUMPTION.equals(event.getEventName())) {
@@ -184,7 +186,7 @@ public class HealthEventMessageDelegator implements Runnable {
                         memoryConsumption.setGradient(floatValue);
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("%s event: [member] %s [value] %s", event.getProperties().get("member_id"), value));
+                            log.debug(String.format("%s event: [member] %s [value] %s",event, event.getProperties().get("member_id"), value));
                         }
                     }
 
