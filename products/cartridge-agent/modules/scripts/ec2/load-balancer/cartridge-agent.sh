@@ -21,15 +21,13 @@
 # --------------------------------------------------------------
 
 # This script will be called from /etc/rc.local when the cartridge
-# instance is spawned. It will initiate all the tasks that needs to
+# instance is spawned. It will initiate all the tasks that needs to 
 # be run to bring the cartridge instance to operational state.
 
 set -e # Terminate on any error
-export LOG=/var/log/apache-stratos/cartridge-agent.log
+export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
-event_publisher_path=/opt/apache-stratos-cartridge-agent/event-publisher # Event publisher home
-event_subscriber_path=/opt/apache-stratos-cartridge-agent/event-subscriber # Event subscriber home
-health_publisher_path=/opt/apache-stratos-cartridge-agent/health-publisher # Health publisher home
+ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
 
 # ---------------------------------------------
 # Download payload
@@ -38,7 +36,7 @@ if [ ! -d ${instance_path}/payload ]; then
     echo "creating payload directory... " | tee -a $LOG
     mkdir ${instance_path}/payload
     echo "payload directory created" | tee -a $LOG
-    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/launch-params
+    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/payload.txt
     echo "payload copied"  | tee -a $LOG
 
     for i in `/usr/bin/ruby ${instance_path}/get-launch-params.rb`
@@ -52,7 +50,7 @@ if [ ! -d ${instance_path}/payload ]; then
         fi
         echo "writing to launch.params ${value}" | tee -a $LOG
         echo "export" ${value} >> ${instance_path}/launch.params
-    done
+    done    
 fi
 
 source ${instance_path}/launch.params
@@ -61,29 +59,24 @@ source ${instance_path}/launch.params
 # Starting load balancer
 #---------------------------
 pushd $instance_path/load-balancer/
-sh start-load-balancer.sh $MB_IP $MB_PORT $CEP_IP $CEP_PORT $LB_CLUSTER_ID $NETWORK_PARTITION_ID &
+sh "start-load-balancer.sh" $MB_IP $MB_PORT $CEP_IP $CEP_PORT $CLUSTER_ID $NETWORK_PARTITION_ID &
 popd
 
-#---------------------------
-# Starting topic subscriber
-#---------------------------
-# change mb ip port in conf/jndi.properties
-pushd $event_subscriber_path
-cp -f templates/jndi.properties.template conf/jndi.properties.tmp
-cat conf/jndi.properties.tmp | sed -e "s@MB-IP@$MB_IP@g" > conf/jndi.properties
-cp -f conf/jndi.properties conf/jndi.properties.tmp
-cat conf/jndi.properties.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > conf/jndi.properties
-rm -f conf/jndi.properties.tmp
+#------------------------------------
+# Starting cartridge agent executable
+#------------------------------------
+pushd $ca_exec_path
+echo "Configuring cartridge agent executable..." | tee -a $LOG
+cp -f templates/cartridge-agent.sh.template bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/cartridge-agent.sh
+cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/cartridge-agent.sh
+cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/cartridge-agent.sh
+cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/cartridge-agent.sh
+rm -f bin/cartridge-agent.sh.tmp
+echo "Starting cartridge agent..." | tee -a $LOG
+sh bin/cartridge-agent.sh
 popd
 
-pushd $event_subscriber_path/bin
-echo "Executing: event-subscriber.sh "
-sh event-subscriber.sh  &
-echo "Event subscribed" | tee -a $LOG
-popd
-
-pushd $health_publisher_path/bin
-echo "Executing: health-publisher.sh"
-sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID $NETWORK_PARTITION_ID
-echo "Health stat published" | tee -a $LOG
-popd

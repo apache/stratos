@@ -25,20 +25,18 @@
 # be run to bring the cartridge instance to operational state.
 
 set -e # Terminate on any error
-export LOG=/var/log/apache-stratos/cartridge-agent.log
+export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
-event_publisher_path=/opt/apache-stratos-cartridge-agent/event-publisher # Event publisher home
-event_subscriber_path=/opt/apache-stratos-cartridge-agent/event-subscriber # Event subscriber home
-health_publisher_path=/opt/apache-stratos-cartridge-agent/health-publisher # Health publisher home
+ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
 
 # ---------------------------------------------
-# Download payload.zip
+# Download payload
 # ---------------------------------------------
 if [ ! -d ${instance_path}/payload ]; then
     echo "creating payload directory... " | tee -a $LOG
     mkdir ${instance_path}/payload
     echo "payload directory created" | tee -a $LOG
-    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/launch-params
+    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/payload.txt
     echo "payload copied"  | tee -a $LOG
 
     for i in `/usr/bin/ruby ${instance_path}/get-launch-params.rb`
@@ -57,30 +55,21 @@ fi
 
 source ${instance_path}/launch.params
 
-
-
-#---------------------------
-# Starting Topic Subscriber
-#---------------------------
-# change mb ip port in conf/jndi.properties
-pushd $event_subscriber_path/conf
-cp -rf jndi.properties jndi.properties.tmp
-cat jndi.properties.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > jndi.properties
-cp -rf jndi.properties jndi.properties.tmp
-cat jndi.properties.tmp | sed -e "s@MB-IP-ADDRESS@$MB_IP@g" > jndi.properties
-rm -f jndi.properties.tmp
+#------------------------------------
+# Starting cartridge agent executable
+#------------------------------------
+pushd $ca_exec_path
+echo "Configuring cartridge agent executable..." | tee -a $LOG
+cp -f templates/cartridge-agent.sh.template bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/cartridge-agent.sh
+cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/cartridge-agent.sh
+cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/cartridge-agent.sh
+cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
+cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/cartridge-agent.sh
+rm -f bin/cartridge-agent.sh.tmp
+echo "Starting cartridge agent..." | tee -a $LOG
+sh bin/cartridge-agent.sh
 popd
-
-pushd $event_subscriber_path/bin
-echo "Executing: event-subscriber.sh "
-sh event-subscriber.sh  &
-echo "Event subscribed" | tee -a $LOG
-popd
-
-#Health publisher is started inside event subscriber
-#pushd $health_publisher_path/bin
-#echo "Executing: health-publisher.sh"
-#sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID $NETWORK_PARTITION_ID
-#echo "Health stat published" | tee -a $LOG
-#popd
 
