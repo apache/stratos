@@ -34,6 +34,7 @@
     <url>http://apache.org</url>
 
     <modules>
+        <module>modules/distribution</module>
     </modules>
 </project>
 

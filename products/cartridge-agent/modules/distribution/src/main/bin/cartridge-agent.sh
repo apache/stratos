@@ -20,27 +20,20 @@
 #
 # --------------------------------------------------------------
 
-echo "Starting haproxy extension..."
+echo "Starting cartridge agent..."
 script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
 lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
-properties="-Djndi.properties.dir=${script_path}/../conf
-            -Dexecutable.file.path=haproxy
-            -Dtemplates.path=${script_path}/../templates
-            -Dtemplates.name=haproxy.cfg.template
-            -Dscripts.path=${script_path}/../scripts
-            -Dconf.file.path=/tmp/haproxy.cfg
-            -Dstats.socket.file.path=/tmp/haproxy-stats.socket
-            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
-            -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
-            -Djavax.net.ssl.trustStorePassword=wso2carbon
+properties="-Dmb.ip=localhost
+            -Dmb.port=5677
             -Dthrift.receiver.ip=localhost
             -Dthrift.receiver.port=7615
-            -Dnetwork.partition.id=
-            -Dstratos.messaging.topology.service.filter=
-            -Dload.balancer.cep.stats.publisher.enabled=true"
+            -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
+            -Djndi.properties.dir=${script_path}/../conf
+            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties"
+            -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch.params
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
-java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.haproxy.extension.Main $*
+java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main
