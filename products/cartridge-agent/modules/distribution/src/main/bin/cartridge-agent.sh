@@ -31,7 +31,7 @@ properties="-Dmb.ip=MB-IP
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
-            -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch.params
+            -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch-params
             -Dcep.stats.publisher.enabled=true"
 
 # Uncomment below line to enable remote debugging
