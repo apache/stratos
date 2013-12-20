@@ -50,7 +50,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
             payloadData.add(new Attribute("member_id", AttributeType.STRING));
             payloadData.add(new Attribute("partition_id", AttributeType.STRING));
             payloadData.add(new Attribute("health_description", AttributeType.STRING));
-            payloadData.add(new Attribute("value", AttributeType.STRING));
+            payloadData.add(new Attribute("value", AttributeType.DOUBLE));
 
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
@@ -72,7 +72,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
      * @param health
      * @param value
      */
-    public void publish(String clusterId, String networkPartitionId, String memberId, String partitionId, String health, String value) {
+    public void publish(String clusterId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %s",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
