@@ -24,14 +24,19 @@
 # instance is spawned. It will initiate all the tasks that needs to 
 # be run to bring the cartridge instance to operational state.
 
+source /etc/environment
+
 set -e # Terminate on any error
 export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
+temp_payload_path=/tmp/payload/launch-params
+puppet_payload_path=/tmp/puppet-payload
+cartridge_agent_script=cartridge-agent.sh
 
-#-----
+#---------------------------------------------
 # Unzip cartridge agent pack
-#-----
+#---------------------------------------------
 pushd ${instance_path}
 unzip apache-stratos-cartridge-agent-4.0.0-SNAPSHOT-bin.zip
 mv apache-stratos-cartridge-agent-4.0.0-SNAPSHOT cartridge-agent
@@ -45,8 +50,14 @@ if [ ! -d ${instance_path}/payload ]; then
     echo "creating payload directory... " | tee -a $LOG
     mkdir ${instance_path}/payload
     echo "payload directory created" | tee -a $LOG
-    wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/payload.txt
-    echo "payload copied"  | tee -a $LOG
+    #wget http://169.254.169.254/latest/user-data -O ${instance_path}/payload/launch-params -- payload already downloaded
+    #echo "payload copied"  | tee -a $LOG
+
+    # Concat puppet payload and instance payload into ${instance_path}/payload/launch-params
+    #Read puppet configs
+    puppet_config=`cat /tmp/puppet-payload`
+    echo "puppet_config"
+    sed "s|$|${puppet_config}|" ${temp_payload_path} > ${instance_path}/payload/launch-params
 
     for i in `/usr/bin/ruby ${instance_path}/get-launch-params.rb`
     do
@@ -59,10 +70,25 @@ if [ ! -d ${instance_path}/payload ]; then
         fi
         echo "writing to launch.params ${value}" | tee -a $LOG
         echo "export" ${value} >> ${instance_path}/launch.params
-    done    
+    done
+
 fi
 
 source ${instance_path}/launch.params
+
+pushd $ca_exec_path
+echo "Configuring cartridge agent executable..." | tee -a $LOG
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/$cartridge_agent_script
+rm -f bin/$cartridge_agent_script.tmp
+popd
+
 
 #------------------------------------
 # Starting cartridge agent executable
