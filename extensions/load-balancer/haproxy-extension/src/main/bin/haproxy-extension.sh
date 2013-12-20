@@ -38,7 +38,7 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=
             -Dstratos.messaging.topology.service.filter=
-            -Dload.balancer.cep.stats.publisher.enabled=true"
+            -Dcep.stats.publisher.enabled=true"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

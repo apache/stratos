@@ -29,6 +29,15 @@ export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
 
+#-----
+# Unzip cartridge agent pack
+#-----
+pushd ${instance_path}
+unzip apache-stratos-cartridge-agent-4.0.0-SNAPSHOT-bin.zip
+mv apache-stratos-cartridge-agent-4.0.0-SNAPSHOT cartridge-agent
+popd
+
+
 # ---------------------------------------------
 # Download payload
 # ---------------------------------------------
@@ -59,16 +68,6 @@ source ${instance_path}/launch.params
 # Starting cartridge agent executable
 #------------------------------------
 pushd $ca_exec_path
-echo "Configuring cartridge agent executable..." | tee -a $LOG
-cp -f templates/cartridge-agent.sh.template bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/cartridge-agent.sh
-rm -f bin/cartridge-agent.sh.tmp
 echo "Starting cartridge agent..." | tee -a $LOG
 sh bin/cartridge-agent.sh
 popd
