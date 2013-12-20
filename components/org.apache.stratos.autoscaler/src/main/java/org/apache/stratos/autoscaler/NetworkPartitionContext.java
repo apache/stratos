@@ -30,10 +30,10 @@ import java.util.Map;
  * Holds runtime data of a network partition.
  *
  */
-public class NetworkPartitionContext implements Serializable {
+public class NetworkPartitionContext implements Serializable{
 
-    private static final long serialVersionUID = -5458149704820463584L;
-    private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
+	private static final long serialVersionUID = -8851073480764734511L;
+	private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private String id;
 
     private String defaultLbClusterId;
@@ -231,7 +231,7 @@ public class NetworkPartitionContext implements Serializable {
         if(secondDerivativeRifRest && gradientRifReset){
             rifReset = true;
             if(log.isDebugEnabled()){
-                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
                         , this.id));
             }
         }
@@ -247,7 +247,7 @@ public class NetworkPartitionContext implements Serializable {
         if(averageRifReset && gradientRifReset){
             rifReset = true;
             if(log.isDebugEnabled()){
-                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
                         , this.id));
             }
         }
@@ -263,7 +263,7 @@ public class NetworkPartitionContext implements Serializable {
         if(secondDerivativeRifRest && averageRifReset){
             rifReset = true;
             if(log.isDebugEnabled()){
-                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] "
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
                         , this.id));
             }
         }

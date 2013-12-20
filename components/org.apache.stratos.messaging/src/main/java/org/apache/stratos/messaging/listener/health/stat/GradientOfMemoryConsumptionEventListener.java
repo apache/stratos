@@ -17,34 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.health.stat;
+package org.apache.stratos.messaging.listener.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
 
 /**
- *  This event is fired by Event processing engine to send average of requests in flight
+ * Memory consumption  event listener
  */
-public class AverageRequestsInFlightEvent extends Event {
-    private final String networkPartitionId;
-    private final String clusterId;
-    private final float value;
-
-    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId, float value) {
-        this.networkPartitionId = networkPartitionId;
-        this.clusterId = clusterId;
-        this.value = value;
-    }
-
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
-    }
+public class GradientOfMemoryConsumptionEventListener extends Event {
 }

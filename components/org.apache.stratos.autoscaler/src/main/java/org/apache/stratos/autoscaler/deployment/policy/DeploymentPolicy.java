@@ -63,8 +63,7 @@ public class DeploymentPolicy implements Serializable{
         this.partitionGroups = groups;
     }
     
-    @SuppressWarnings("unchecked")
-	public Partition[] getAllPartitions() {
+    public Partition[] getAllPartitions() {
     	ArrayList<Partition> partitionslist = new ArrayList<Partition>();
     	for (PartitionGroup partitionGroup : this.getPartitionGroups()) {
             Partition[] partitions = partitionGroup.getPartitions();
@@ -101,7 +100,7 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public String toString() {
-        return "Deployment Policy: " + this.id;
+        return "Deployment Policy [id]" + this.id + " [partitions] " + Arrays.toString(this.getAllPartitions());
     }
 
 }

@@ -19,10 +19,7 @@
 
 package org.apache.stratos.autoscaler.policy;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -33,7 +30,6 @@ import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 /**
@@ -43,26 +39,24 @@ public class PolicyManager {
 
     private static final Log log = LogFactory.getLog(PolicyManager.class);
 
-    private static final String asResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/";
-
     private static Map<String, AutoscalePolicy> autoscalePolicyListMap = new HashMap<String, AutoscalePolicy>();
 
     private static Map<String, DeploymentPolicy> deploymentPolicyListMap = new HashMap<String, DeploymentPolicy>();
-
-    private static PolicyManager instance = null;
-
-    private PolicyManager() {
+    
+    /* An instance of a PolicyManager is created when the class is loaded. 
+     * Since the class is loaded only once, it is guaranteed that an object of 
+     * PolicyManager is created only once. Hence it is singleton.
+     */
+    
+    private static class InstanceHolder {
+        private static final PolicyManager INSTANCE = new PolicyManager(); 
     }
 
     public static PolicyManager getInstance() {
-        if (instance == null) {
-            synchronized (PolicyManager.class) {
-                if (instance == null) {
-                    instance = new PolicyManager();
-                }
-            }
-        }
-        return instance;
+        return InstanceHolder.INSTANCE;
+     }
+    
+    private PolicyManager() {
     }
 
     // Add the policy to information model and persist.

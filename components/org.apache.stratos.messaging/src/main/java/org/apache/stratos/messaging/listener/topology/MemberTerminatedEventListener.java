@@ -19,12 +19,8 @@
 
 package org.apache.stratos.messaging.listener.topology;
 
-import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
-public class MemberTerminatedEventListener extends EventListener {
+public abstract class MemberTerminatedEventListener extends EventListener {
 
-    @Override
-    protected void onEvent(Event event) {
-    }
 }
