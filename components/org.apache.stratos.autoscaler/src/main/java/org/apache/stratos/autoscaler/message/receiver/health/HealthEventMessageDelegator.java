@@ -210,72 +210,68 @@ public class HealthEventMessageDelegator implements Runnable {
     private LoadAverage findLoadAverage(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
-
-        if(member.isActive()){
+        
+        if(null == member){
+        	if(log.isErrorEnabled()) {
+                log.error(String.format("Member not found: [member] %s", memberId));
+            }
+            return null;
+        }
+        if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
                         " the load average health stat", memberId));
             }
             return null;
         }
-        if(member != null) {
-            String networkPartitionId = findNetworkPartitionId(memberId);
-            LoadAverage loadAverage = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
+        
+        String networkPartitionId = findNetworkPartitionId(memberId);
+        LoadAverage loadAverage = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
+                .getNetworkPartitionCtxt(networkPartitionId)
+                .getPartitionCtxt(member.getPartitionId())
+                .getMemberStatsContext(memberId).getLoadAverage();
+
+        if(loadAverage == null) {
+            loadAverage = new LoadAverage();
+            AutoscalerContext.getInstance().getMonitor(member.getClusterId())
                     .getNetworkPartitionCtxt(networkPartitionId)
                     .getPartitionCtxt(member.getPartitionId())
-                    .getMemberStatsContext(memberId).getLoadAverage();
-
-            if(loadAverage == null) {
-                loadAverage = new LoadAverage();
-                AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                        .getNetworkPartitionCtxt(networkPartitionId)
-                        .getPartitionCtxt(member.getPartitionId())
-                        .getMemberStatsContext(memberId).setLoadAverage(loadAverage);
-            }
-            return loadAverage;
+                    .getMemberStatsContext(memberId).setLoadAverage(loadAverage);
         }
-        else {
-            if(log.isErrorEnabled()) {
-                log.error(String.format("Member not found: [member] %s", memberId));
-            }
-            return null;
-        }
+        return loadAverage;
     }
 
     private MemoryConsumption findMemoryConsumption(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
-
-        if(member.isActive()){
+        
+        if(null == member){
+        	if(log.isErrorEnabled()) {
+                log.error(String.format("Member not found: [member] %s", memberId));
+            }
+            return null;
+        }
+        if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
                         " the health stat", memberId));
             }
             return null;
-        }
+        }        
+        String networkPartitionId = findNetworkPartitionId(memberId);
+        MemoryConsumption memoryConsumption = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
+                .getNetworkPartitionCtxt(networkPartitionId)
+                .getPartitionCtxt(member.getPartitionId())
+                .getMemberStatsContext(memberId).getMemoryConsumption();
 
-        if(member != null) {
-            String networkPartitionId = findNetworkPartitionId(memberId);
-            MemoryConsumption memoryConsumption = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
+        if(memoryConsumption == null) {
+            memoryConsumption = new MemoryConsumption();
+            AutoscalerContext.getInstance().getMonitor(member.getClusterId())
                     .getNetworkPartitionCtxt(networkPartitionId)
                     .getPartitionCtxt(member.getPartitionId())
-                    .getMemberStatsContext(memberId).getMemoryConsumption();
-
-            if(memoryConsumption == null) {
-                memoryConsumption = new MemoryConsumption();
-                AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                        .getNetworkPartitionCtxt(networkPartitionId)
-                        .getPartitionCtxt(member.getPartitionId())
-                        .getMemberStatsContext(memberId).setMemoryConsumption(memoryConsumption);
-            }
-            return memoryConsumption;
+                    .getMemberStatsContext(memberId).setMemoryConsumption(memoryConsumption);
         }
-        else {
-            if(log.isErrorEnabled()) {
-                log.error(String.format("Member not found: [member] %s", memberId));
-            }
-            return null;
-        }
+        return memoryConsumption;
     }
     private String findClusterId(String memberId) {
         for(Service service: TopologyManager.getTopology().getServices()){
@@ -348,6 +344,10 @@ public class HealthEventMessageDelegator implements Runnable {
             try{
             	TopologyManager.acquireReadLock();
             	Member member = findMember(memberId);
+            	
+            	if(null == member){
+            		return;
+            	}
                 if(!member.isActive()){
                     if(log.isDebugEnabled()){
                         log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
@@ -355,12 +355,9 @@ public class HealthEventMessageDelegator implements Runnable {
                     }
                     return;
                 }
-	            if (null == member) {
-	                // member has already terminated. So no action required
-	                return;
-	            } else{
-	            	nwPartitionCtxt = monitor.getNetworkPartitionCtxt(member);
-	            }
+	            
+	            nwPartitionCtxt = monitor.getNetworkPartitionCtxt(member);
+	            
             }finally{
             	TopologyManager.releaseReadLock();
             }
