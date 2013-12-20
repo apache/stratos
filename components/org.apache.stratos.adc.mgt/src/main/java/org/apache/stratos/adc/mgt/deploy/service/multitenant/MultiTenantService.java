@@ -32,8 +32,9 @@ public class MultiTenantService extends Service {
 
     private static Log log = LogFactory.getLog(MultiTenantService.class);
 
-    public MultiTenantService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo) {
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo);
+    public MultiTenantService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
+    		String tenantRange) {
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
     }
 
     @Override

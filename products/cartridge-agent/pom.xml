@@ -34,10 +34,7 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>modules/deployment-synchronizer</module>
-        <module>modules/event-publisher</module>
-        <module>modules/event-subscriber</module>
-	<module>modules/health-stats</module>
+        <module>modules/distribution</module>
     </modules>
 </project>
 

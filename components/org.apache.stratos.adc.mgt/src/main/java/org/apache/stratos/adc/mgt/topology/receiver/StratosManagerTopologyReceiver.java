@@ -59,6 +59,9 @@ public class StratosManagerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
+
+                log.info("********** [CompleteTopologyEventListener] Received: " + event.getClass() + " **********");
+
                 try {
                     TopologyManager.acquireReadLock();
                     for (Service service : TopologyManager.getTopology().getServices()) {
@@ -86,6 +89,8 @@ public class StratosManagerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new ClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+
+                log.info("********** [ClusterCreatedEventListener] Received: " + event.getClass() + " **********");
 
                 ClusterCreatedEvent clustercreatedEvent = (ClusterCreatedEvent) event;
                 //get subscription details
@@ -119,6 +124,8 @@ public class StratosManagerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
+                log.info("********** [ClusterRemovedEventListener] Received: " + event.getClass() + " **********");
+
                 ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
 
                 CartridgeSubscriptionInfo cartridgeSubscriptionInfo =
@@ -137,6 +144,8 @@ public class StratosManagerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new MemberStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
+
+                log.info("********** [MemberStartedEventListener] Received: " + event.getClass() + " **********");
 
                 MemberStartedEvent memberStartedEvent = (MemberStartedEvent) event;
 
@@ -169,6 +178,8 @@ public class StratosManagerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
+                log.info("********** [MemberActivatedEventListener] Received: " + event.getClass() + " **********");
+
                 MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
 
                 String clusterDomain = memberActivatedEvent.getClusterId();
@@ -200,6 +211,8 @@ public class StratosManagerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
+                log.info("********** [MemberSuspendedEventListener] Received: " + event.getClass() + " **********");
+
                 MemberSuspendedEvent memberSuspendedEvent = (MemberSuspendedEvent) event;
 
                 String clusterDomain = memberSuspendedEvent.getClusterId();
@@ -230,6 +243,8 @@ public class StratosManagerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+
+                log.info("********** [MemberTerminatedEventListener] Received: " + event.getClass() + " **********");
 
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
 

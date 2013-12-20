@@ -27,6 +27,8 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -41,6 +43,7 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -102,9 +105,7 @@ public class AutoscalerUtil {
             throw new PolicyValidationException(msg);
         }
 
-        CloudControllerClient.getInstance()
-                             .validatePartitionsOfPolicy(cluster.getServiceName(),
-                                                         allPartitions);
+        CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
 
         ClusterMonitor clusterMonitor =
                                         new ClusterMonitor(cluster.getClusterId(),
@@ -131,8 +132,11 @@ public class AutoscalerUtil {
 
                         if(MemberStatus.Activated.equals(member.getStatus())){
                             partitionContext.addActiveMember(memberContext);
+                            networkPartitionContext.increaseMemberCountInPartitionBy(partition.getId(), 1);
                         } else if(MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())){
                             partitionContext.addPendingMember(memberContext);
+
+                            networkPartitionContext.increaseMemberCountInPartitionBy(partition.getId(), 1);
                         } else if(MemberStatus.Suspended.equals(member.getStatus())){
                             partitionContext.addFaultyMember(memberId);
                         }
@@ -212,7 +216,7 @@ public class AutoscalerUtil {
 
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
-                if (member.getPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
+                if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
                     MemberContext memberContext = new MemberContext();
                     memberContext.setClusterId(member.getClusterId());
                     memberContext.setMemberId(memberId);
@@ -338,7 +342,7 @@ public class AutoscalerUtil {
 //           }
 //
 //           CloudControllerClient.getInstance()
-//                                .validatePartitionsOfPolicy(cluster.getServiceName(),
+//                                .validateDeploymentPolicy(cluster.getServiceName(),
 //                                                            allPartitions);
 //
 //           LbClusterMonitor clusterMonitor =

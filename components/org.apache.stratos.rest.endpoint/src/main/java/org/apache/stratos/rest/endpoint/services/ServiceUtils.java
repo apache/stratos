@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.AutoscalerServiceClient;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
+import org.apache.stratos.adc.mgt.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.adc.mgt.dto.Cartridge;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.*;
@@ -58,6 +59,7 @@ import java.util.regex.Pattern;
 public class ServiceUtils {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
+    private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
     static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
         String userName, String tenantDomain) throws RestAPIException {
@@ -909,23 +911,12 @@ public class ServiceUtils {
      */
     static void deployService (String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, 
     		String tenantDomain, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) {
-    	
-    	// create the subscription and persist. 
-    	CartridgeSubscription cartridgeSubscription = null;
+    	log.info("Deploying service..");
     	try {
-    		//cartridgeSubscription = cartridgeSubsciptionManager.deployMultitenantService(cartridgeType, alias, autoscalingPolicy,
-			//		deploymentPolicy, tenantDomain, tenantId, "tenant-admin-user-name", clusterDomain, clusterSubdomain, null, false, null, null,
-			//		tenantRange);
-    		//cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+    		serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	
-    	/*CartridgeSubscription cartridgeSubscription = cartridgeSubsciptionManager.subscribeToCartridge(cartridgeType,
-                alias.trim(), autoscalingPolicy, deploymentPolicy ,tenantDomain, tenantId,
-                userName, "git", repoURL, privateRepo, repoUsername, repoPassword);*/
-    	
-    	// 
     }
 
 }

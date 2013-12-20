@@ -114,7 +114,7 @@ public class SynapseConfigurator {
                     }
                     String algorithmClassName = defaultAlgorithm.getClassName();
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Setting algorithmClassName = %s", algorithmClassName));
+                        log.debug(String.format("Setting algorithm-class-name = %s", algorithmClassName));
                     }
                     node.setTextContent(algorithmClassName);
                     updated = true;
@@ -128,14 +128,14 @@ public class SynapseConfigurator {
                 } else if (parameter.getNodeValue().equals("sessionAffinity")) {
                     String value = String.valueOf(configuration.isSessionAffinityEnabled());
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Setting sessionAffinity = %s", value));
+                        log.debug(String.format("Setting session-affinity = %s", value));
                     }
                     node.setTextContent(value);
                     updated = true;
                 } else if (parameter.getNodeValue().equals("sessionTimeout")) {
                     String value = String.valueOf(configuration.getSessionTimeout());
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Setting sessionTimeout = %s", value));
+                        log.debug(String.format("Setting session-timeout = %s", value));
                     }
                     node.setTextContent(value);
                     updated = true;

@@ -27,6 +27,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -58,10 +60,10 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
+    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString, String userName, String passWord) throws Exception{
         try {
 
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            //DefaultHttpClient httpClient = new DefaultHttpClient();
 
             HttpPost postRequest = new HttpPost(resourcePath);
 
@@ -74,6 +76,11 @@ public class RestClient implements GenericRestClient{
             postRequest.addHeader("Authorization", basicAuth);
 
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+
+            HttpParams params = httpClient.getParams();
+            HttpConnectionParams.setConnectionTimeout(params, 300000);
+            HttpConnectionParams.setSoTimeout(params, 300000);
+
             HttpResponse response = httpClient.execute(postRequest);
 
             /*
@@ -98,7 +105,7 @@ public class RestClient implements GenericRestClient{
             }
             */
 
-            httpClient.getConnectionManager().shutdown();
+            //httpClient.getConnectionManager().shutdown();
             //return result;
             return response;
 
@@ -126,9 +133,9 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(String resourcePath, String userName, String passWord) {
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) {
         try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            //DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 
@@ -137,6 +144,11 @@ public class RestClient implements GenericRestClient{
             getRequest.addHeader("Authorization", basicAuth);
 
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+
+            HttpParams params = httpClient.getParams();
+            HttpConnectionParams.setConnectionTimeout(params, 300000);
+            HttpConnectionParams.setSoTimeout(params, 300000);
+
             HttpResponse response = httpClient.execute(getRequest);
 
             /*
@@ -153,7 +165,7 @@ public class RestClient implements GenericRestClient{
             }
             */
 
-            httpClient.getConnectionManager().shutdown();
+            //httpClient.getConnectionManager().shutdown();
             return response;
 
         } catch (ClientProtocolException e) {

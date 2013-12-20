@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.client;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
@@ -42,11 +43,19 @@ public class AutoscalerServiceClient {
     private static volatile AutoscalerServiceClient serviceClient;
 
     public AutoscalerServiceClient(String epr) throws AxisFault {
-
+    	
+    	
+    	
+    	String autosclaerSocketTimeout =
+    		System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT) == null ? "300000": System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT);
+		String autosclaerConnectionTimeout = 
+			System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) ;
+    	
         ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
         try {
             stub = new AutoScalerServiceStub(clientConfigContext, epr);
-            stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(300000);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(autosclaerSocketTimeout));
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(autosclaerConnectionTimeout));
 
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate autoscaler service client. " + axisFault.getMessage();

@@ -62,7 +62,7 @@ public class CliConstants {
 	/**
 	 * List the available cartridges
 	 */
-	public static final String CARTRIDGES_ACTION = "list-available-cartridges";
+	public static final String CARTRIDGES_ACTION = "list-cartridges";
 
     /**
      * List the available autoscaling policies
@@ -87,7 +87,12 @@ public class CliConstants {
     /**
      * List partitions
      */
-    public static final String LIST_PARTITION = "list-available-partitions";
+    public static final String LIST_PARTITION = "list-partitions";
+
+    /**
+     * List deployment policies
+     */
+    public static final String LIST_DEPLOYMENT_POLICIES = "list-deployment-policies";
 
     /**
      * Autoscaling policy deployment
@@ -192,4 +197,5 @@ public class CliConstants {
     public static final String RESPONSE_AUTHORIZATION_FAIL = "403";
     public static final String RESPONSE_NO_CONTENT = "204";
     public static final String RESPONSE_OK = "200";
+    public static final String RESPONSE_BAD_REQUEST = "400";
 }

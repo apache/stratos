@@ -23,10 +23,7 @@ import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -57,7 +54,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 	private final Options options;
 
 	public StratosApplication() {
-		commands = new HashMap<String, Command<StratosCommandContext>>();
+		commands = new TreeMap<String, Command<StratosCommandContext>>();
 		context = new StratosCommandContext(this);
 
 		options = constructOptions();
@@ -127,6 +124,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         commands.put(command.getName(), command);
 
         command = new AutoscalePolicyCommand();
+        commands.put(command.getName(), command);
+
+        command = new DeploymentPolicyCommand();
         commands.put(command.getName(), command);
 		
 		//command = new InfoCommand();

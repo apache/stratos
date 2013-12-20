@@ -73,7 +73,7 @@ public class ADCManagementServerComponent {
 		try {
 			CartridgeConfigFileReader.readProperties();
 			StratosDBUtils.initialize();
-			DataHolder.setEventPublisher(new EventPublisher(Constants.ARTIFACT_SYNCHRONIZATION_TOPIC));
+			DataHolder.setEventPublisher(new EventPublisher(Constants.INSTANCE_NOTIFIER_TOPIC));
 
             // Schedule complete tenant event synchronizer
             if(log.isDebugEnabled()) {

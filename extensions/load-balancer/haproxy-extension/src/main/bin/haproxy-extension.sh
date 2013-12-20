@@ -21,7 +21,7 @@
 # --------------------------------------------------------------
 
 echo "Starting haproxy extension..."
-script_path=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)`"`
+script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
 lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Djndi.properties.dir=${script_path}/../conf
@@ -43,4 +43,4 @@ properties="-Djndi.properties.dir=${script_path}/../conf
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
-java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.haproxy.extension.Main -Dp1=sample_value $*
+java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.haproxy.extension.Main $*

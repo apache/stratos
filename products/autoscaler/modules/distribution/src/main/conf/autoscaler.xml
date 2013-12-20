@@ -28,6 +28,7 @@
 		<cloudController>
 			<hostname>localhost</hostname>
 			<port>9444</port>
+            <clientTimeout>300000</clientTimeout>
 		</cloudController>
 	</autoscaler>
 </configuration>

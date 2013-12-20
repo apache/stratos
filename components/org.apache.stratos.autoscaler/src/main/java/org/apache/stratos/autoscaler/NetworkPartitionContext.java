@@ -289,8 +289,11 @@ public class NetworkPartitionContext implements Serializable {
     }
 
     public void increaseMemberCountInPartitionBy(String partitionId, int count){
-
-         partitionToMemberCountMap.put(partitionId, getMemberCount(partitionId) + count);
+         if(!partitionCountExists(partitionId)){
+             addPartitionCount(partitionId, 1);
+         } else{
+            partitionToMemberCountMap.put(partitionId, getMemberCount(partitionId) + count);
+         }
      }
 
      public void decreaseMemberCountInPartitionBy(String partitionId, int count){

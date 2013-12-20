@@ -136,13 +136,12 @@ if [[ $as = "true" ]]; then
 fi
 
 
-if [[ $sc = "true" ]]; then
-    
-    echo ${sc_path}
+if [[ $sm = "true" ]]; then  
+    echo ${sm_path}
 
-    echo "Starting SC server ..." >> $LOG
-    nohup ${sc_path}/bin/stratos.sh &
-    echo "SC server started" >> $LOG
+    echo "Starting SM server ..." >> $LOG
+    nohup ${sm_path}/bin/stratos.sh &
+    echo "SM server started" >> $LOG
     sleep $SLEEP
 
 fi

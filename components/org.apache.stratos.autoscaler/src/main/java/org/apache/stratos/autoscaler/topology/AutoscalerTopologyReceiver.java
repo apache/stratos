@@ -21,9 +21,15 @@ package org.apache.stratos.autoscaler.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.MemberStatsContext;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
+import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -84,8 +90,13 @@ public class AutoscalerTopologyReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
                     for(Service service : TopologyManager.getTopology().getServices()) {
                         for(Cluster cluster : service.getClusters()) {
-
-                                Thread th = new Thread(new ClusterMonitorAdder(cluster));
+                        	    Thread th; 
+                        		if(cluster.isLbCluster()){
+                        			th = new Thread(new LBClusterMonitorAdder(cluster));
+                        		}else{
+                        			th = new Thread(new ClusterMonitorAdder(cluster));
+                        		}
+                                
                                 th.start();
                         }
                     }
@@ -130,8 +141,22 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 try {
                     ClusterRemovedEvent e = (ClusterRemovedEvent) event;
                     TopologyManager.acquireReadLock();
-                    
-                    removeClusterFromContext(e.getClusterId());
+                    String serviceName = e.getServiceName();
+                    String clusterId = e.getClusterId();
+
+                    AbstractMonitor monitor;
+
+                    if(TopologyManager.getTopology().getService(serviceName).getCluster(clusterId).isLbCluster()){
+                        monitor = AutoscalerContext.getInstance().removeLbMonitor(clusterId);
+
+                    } else {
+                        monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
+                    }
+
+                    monitor.destroy();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
+                    }
                 }
                 finally {
                     TopologyManager.releaseReadLock();
@@ -156,9 +181,23 @@ public class AutoscalerTopologyReceiver implements Runnable {
             		TopologyManager.acquireReadLock();
 					MemberTerminatedEvent e = (MemberTerminatedEvent) event;
                     String networkPartitionId = e.getNetworkPartitionId();
-					AutoscalerContext.getInstance().getMonitor(e.getClusterId())
-                            .getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(e.getPartitionId())
+                    String clusterId = e.getClusterId();
+                    AbstractMonitor monitor;
+
+                    if(AutoscalerContext.getInstance().moniterExist(clusterId)){
+
+                        monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    } else {
+
+                        //This is LB member
+                        monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
+                    }
+
+					NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
+
+                    networkPartitionContext.getPartitionCtxt(e.getPartitionId())
                             .removeMemberStatsContext(e.getMemberId());
+                    networkPartitionContext.decreaseMemberCountInPartitionBy(e.getPartitionId(), 1);
 //					ClusterContext clusCtx = monitor.getClusterCtxt();
 //					String networkPartitionId = monitor.
 //                    if (networkPartitionId != null) {
@@ -185,20 +224,22 @@ public class AutoscalerTopologyReceiver implements Runnable {
                     String partitionId = e.getPartitionId();
                     String networkPartitionId = e.getNetworkPartitionId();
 
+                    String serviceName = e.getServiceName();
                     PartitionContext partitionContext;
 					String clusterId = e.getClusterId();
-                    ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    AbstractMonitor monitor;
                     
-					if(monitor != null) {
-					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
+					if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
+                        monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);					    
 					} else {
-					    LbClusterMonitor lbMonitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
-					    partitionContext = lbMonitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
+					    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
+					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
 					}
 //					ClusterContext clusCtx = monitor.getClusterCtxt();
 //                    monitor.getNetworkPartitionCtxt(e.getId()).getPartitionCtxt(partitionId);
 //                            .addMemberStatsContext(new MemberStatsContext(e.getMemberId()));
-                    partitionContext.addMemberStatsContext(new MemberStatsContext(e.getMemberId()));
+                    partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
 //					PartitionContext partCtxt = monitor.getNetworkPartitionCtxt(e.getId())
 //                            .getPartitionCtxt(partitionId);
 					partitionContext.incrementCurrentMemberCount(1);
@@ -221,7 +262,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //                    ServiceRemovedEvent serviceRemovedEvent = (ServiceRemovedEvent)event;
 //                    for(Service service : TopologyManager.getTopology().getServices()) {
 //                        for(Cluster cluster : service.getClusters()) {
-//                            removeClusterFromContext(cluster.getHostName());
+//                            removeMonitor(cluster.getHostName());
 //                        }
 //                    }
 //                }
@@ -325,7 +366,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //        }
 //    }
 
-    private void removeClusterFromContext(String clusterId) {
+    private void removeMonitor(String clusterId) {
         ClusterMonitor monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
 //        monitor.unsubscribe();
         monitor.destroy();

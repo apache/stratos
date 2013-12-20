@@ -2,6 +2,8 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +19,15 @@ public class AutoscalerContext {
     private AutoscalerContext() {
         try {
             setMonitors(new HashMap<String, ClusterMonitor>());
+            setLbMonitors(new HashMap<String, LbClusterMonitor>());
         } catch (Exception e) {
             log.error("Rule evaluateMinCheck error", e);
         }
     }
+    
+    // Map<ClusterId, ClusterMonitor>
     private Map<String, ClusterMonitor> monitors;
+    // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
     public static AutoscalerContext getInstance() {
@@ -36,6 +42,7 @@ public class AutoscalerContext {
     }
 
     public void addMonitor(ClusterMonitor monitor) {
+    	log.info("Adding moniter clusterid" + monitor.getClusterId());
         monitors.put(monitor.getClusterId(), monitor);
     }
 
@@ -43,12 +50,25 @@ public class AutoscalerContext {
         return monitors.get(clusterId);
     }
     
+    public boolean moniterExist(String clusterId) {
+        return monitors.containsKey(clusterId);
+    }
+    
+    public boolean lbMoniterExist(String clusterId) {
+        return lbMonitors.containsKey(clusterId);
+    }
+    
     public LbClusterMonitor getLBMonitor(String clusterId) {
         return lbMonitors.get(clusterId);
     }
 
     public ClusterMonitor removeMonitor(String clusterId) {
+    	log.info("Remove moniter clusterid" + clusterId);
         return monitors.remove(clusterId);
+    }
+    public LbClusterMonitor removeLbMonitor(String clusterId) {
+    	log.info("Remove moniter clusterid" + clusterId);
+        return lbMonitors.remove(clusterId);
     }
 
     public Map<String, ClusterMonitor> getMonitors() {

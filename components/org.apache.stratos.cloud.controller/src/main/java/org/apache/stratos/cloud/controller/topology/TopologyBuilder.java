@@ -163,7 +163,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
-                                           String networkPartitionId, String partitionId, String privateIp) {
+                                           String networkPartitionId, String partitionId, String privateIp, String lbClusterId) {
         //adding the new member to the cluster after it is successfully started in IaaS.
         Topology topology = TopologyManager.getInstance().getTopology();
         Service service = topology.getService(serviceName);
@@ -178,6 +178,7 @@ public class TopologyBuilder {
             Member member = new Member(serviceName, clusterId, networkPartitionId, partitionId, memberId);
             member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
+            member.setLbClusterId(lbClusterId);
             cluster.addMember(member);
             TopologyManager.getInstance().updateTopology(topology);
         } finally {

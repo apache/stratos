@@ -394,6 +394,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "MEMBER_ID", memberID);
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
+            addToPayload(payload, "PARTITION_ID", partitionId);
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -504,7 +505,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 persist();
 
                 // trigger topology
-                TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(), partition.getId(), ip);
+                TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(), partition.getId(), ip, memberContext.getLbClusterId());
 
                 // update the topology with the newly spawned member
                 // publish data

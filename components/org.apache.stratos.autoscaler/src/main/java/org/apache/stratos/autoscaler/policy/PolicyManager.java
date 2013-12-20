@@ -83,6 +83,7 @@ public class PolicyManager {
             }
             fillPartitions(policy);
         } catch (InvalidPartitionException e) {
+        	log.error(e);
             throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
         }
 
@@ -101,15 +102,16 @@ public class PolicyManager {
             String partitionId = partition.getId();
             if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
                 String msg = "Could not find partition: [id] " + partitionId + ". " +
-                        "Please deploy the partitions before deploying the deployment policies.";
+                        "Please deploy the partitions before deploying the deployment policies.";                
                 throw new InvalidPartitionException(msg);
             }
+            
             fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
         }
     }
 
     private static void fillPartition(Partition destPartition, Partition srcPartition) {
-        if(srcPartition.getProvider() == null)
+        if(srcPartition.getProvider() == null)        	
             throw new RuntimeException("Provider is not set in the deployed partition");
 
         if (log.isDebugEnabled()) {
@@ -130,8 +132,9 @@ public class PolicyManager {
             }
             autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
         } else {
-            throw new InvalidPolicyException("Specified policy [" + asPolicy.getId()
-                    + "] already exists");
+        	String errMsg = "Specified policy [" + asPolicy.getId() + "] already exists";
+        	log.error(errMsg);
+            throw new InvalidPolicyException(errMsg);
         }
     }
 
@@ -181,8 +184,9 @@ public class PolicyManager {
             PartitionManager.getInstance().deployNewNetworkPartitions(policy);
             deploymentPolicyListMap.put(policy.getId(), policy);
         } else {
-            throw new InvalidPolicyException("Specified policy [" + policy.getId()
-                    + "] already exists");
+        	String errMsg = "Specified policy [" + policy.getId()+ "] already exists";
+        	log.error(errMsg);
+            throw new InvalidPolicyException(errMsg);
         }
     }
 

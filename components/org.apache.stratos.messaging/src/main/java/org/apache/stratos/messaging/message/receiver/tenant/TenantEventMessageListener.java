@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageQueue;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

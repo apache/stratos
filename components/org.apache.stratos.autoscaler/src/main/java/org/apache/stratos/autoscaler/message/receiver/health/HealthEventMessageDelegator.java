@@ -22,15 +22,11 @@ import com.google.gson.stream.JsonReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ClusterMonitor;
-import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
+import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -38,6 +34,7 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import javax.jms.TextMessage;
@@ -213,6 +210,14 @@ public class HealthEventMessageDelegator implements Runnable {
     private LoadAverage findLoadAverage(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
+
+        if(member.isActive()){
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
+                        " the load average health stat", memberId));
+            }
+            return null;
+        }
         if(member != null) {
             String networkPartitionId = findNetworkPartitionId(memberId);
             LoadAverage loadAverage = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
@@ -240,6 +245,15 @@ public class HealthEventMessageDelegator implements Runnable {
     private MemoryConsumption findMemoryConsumption(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
+
+        if(member.isActive()){
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
+                        " the health stat", memberId));
+            }
+            return null;
+        }
+
         if(member != null) {
             String networkPartitionId = findNetworkPartitionId(memberId);
             MemoryConsumption memoryConsumption = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
@@ -273,17 +287,19 @@ public class HealthEventMessageDelegator implements Runnable {
         }
         return null;
     }
-
+    /*
     private NetworkPartitionContext findNetworkPartition(String memberId) {
         for(Service service: TopologyManager.getTopology().getServices()){
             for(Cluster cluster: service.getClusters()){
-                return AutoscalerContext.getInstance().getMonitor(cluster.getClusterId())
+                NetworkPartitionContext netCtx = AutoscalerContext.getInstance().getMonitor(cluster.getClusterId())
                         .getNetworkPartitionCtxt(cluster.getMember(memberId).getNetworkPartitionId());
+                if(null !=netCtx)
+                	return netCtx;
             }
         }
         return null;
     }
-
+    */
 
     private String findNetworkPartitionId(String memberId) {
         for(Service service: TopologyManager.getTopology().getServices()){
@@ -315,21 +331,46 @@ public class HealthEventMessageDelegator implements Runnable {
 
     private void handleMemberFaultEvent(String clusterId, String memberId) {
         try {
-
-            ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-            if (!monitor.memberExist(memberId)) {
-                // member has already terminated. So no action required
-                return;
+        	AutoscalerContext asCtx = AutoscalerContext.getInstance();
+        	AbstractMonitor monitor = null;
+        	
+        	if(asCtx.moniterExist(clusterId)){
+        		monitor = asCtx.getMonitor(clusterId);
+        	}else if(asCtx.lbMoniterExist(clusterId)){
+        		monitor = asCtx.getLBMonitor(clusterId);
+        	}else{
+        		String errMsg = "A monitor is not found for this custer";
+        		log.error(errMsg);
+        		throw new RuntimeException(errMsg);
+        	}
+        	
+        	NetworkPartitionContext nwPartitionCtxt;
+            try{
+            	TopologyManager.acquireReadLock();
+            	Member member = findMember(memberId);
+                if(!member.isActive()){
+                    if(log.isDebugEnabled()){
+                        log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
+                                " the member fault health stat", memberId));
+                    }
+                    return;
+                }
+	            if (null == member) {
+	                // member has already terminated. So no action required
+	                return;
+	            } else{
+	            	nwPartitionCtxt = monitor.getNetworkPartitionCtxt(member);
+	            }
+            }finally{
+            	TopologyManager.releaseReadLock();
             }
-
             // terminate the faulty member
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             ccClient.terminate(memberId);
 
             // start a new member in the same Partition
-            String partitionId = monitor.getPartitonOfMember(memberId);
+            String partitionId = monitor.getPartitionOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
-            NetworkPartitionContext nwPartitionCtxt = findNetworkPartition(memberId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
             
             String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
@@ -337,7 +378,7 @@ public class HealthEventMessageDelegator implements Runnable {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s [lb cluster] %s ", 
                                        partitionId, clusterId, lbClusterId));
-            }
+            }                       
 
         } catch (TerminationException e) {
             log.error(e);

@@ -24,5 +24,5 @@ echo "Starting event subscriber..."
 lib_path=./../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 
-${JAVA_HOME}/bin/java -cp "${class_path}" org.apache.stratos.cartridge.agent.event.subscriber.Main ../conf /opt/apache-stratos-cartridge-agent/payload/launch-params
+${JAVA_HOME}/bin/java -cp "${class_path}" org.apache.stratos.cartridge.agent.Main ../conf /opt/apache-stratos-cartridge-agent/payload/launch-params
 echo "Event subscriber completed"
