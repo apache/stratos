@@ -44,6 +44,9 @@ public class Main {
             // Generate jndi.properties file
             JndiConfigurator.configure();
 
+            // Initialize cartridge agent configuration
+            CartridgeAgentConfiguration.getInstance();
+
             cartridgeAgent = new CartridgeAgent();
             Thread thread = new Thread(cartridgeAgent);
             thread.start();

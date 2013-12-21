@@ -19,31 +19,26 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  *  This event is fired by Event processing engine to send second derivative of memory consumption
  */
-public class SecondDerivativeOfMemoryConsumptionEvent implements Serializable {
+public class SecondDerivativeOfMemoryConsumptionEvent extends Event {
+    private final String clusterId;
+    private final float value;
 
-    private static final long serialVersionUID = 8546005128088790015L;
-    private String clusterId;
-    private float value;
+    public SecondDerivativeOfMemoryConsumptionEvent(String clusterId, float value) {
+        this.clusterId = clusterId;
+        this.value = value;
+    }
 
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public float getValue() {
         return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
     }
 }

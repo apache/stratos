@@ -19,32 +19,27 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  *  This event is fired by Event processing engine to send average of Load average
  */
-public class MemberAverageLoadAverageEvent implements Serializable {
-    private static final long serialVersionUID = 506284597552753304L;
+public class MemberAverageLoadAverageEvent extends Event {
+    private final String memberId;
+    private final float value;
 
-    private String memberId;
-    private float value;
+    public MemberAverageLoadAverageEvent(String memberId, float value) {
+        this.memberId = memberId;
+        this.value = value;
+    }
 
 
     public String getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
-    }
-
     public float getValue() {
         return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
     }
 
 }

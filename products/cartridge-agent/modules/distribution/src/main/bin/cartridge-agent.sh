@@ -24,14 +24,15 @@ echo "Starting cartridge agent..."
 script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
 lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
-properties="-Dmb.ip=localhost
-            -Dmb.port=5677
-            -Dthrift.receiver.ip=localhost
-            -Dthrift.receiver.port=7615
+properties="-Dmb.ip=MB-IP
+            -Dmb.port=MB-PORT
+            -Dthrift.receiver.ip=CEP-IP
+            -Dthrift.receiver.port=CEP-PORT
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
-            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties"
+            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch.params
+            -Dcep.stats.publisher.enabled=true"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

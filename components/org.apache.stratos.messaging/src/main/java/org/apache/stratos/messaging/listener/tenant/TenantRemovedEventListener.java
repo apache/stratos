@@ -19,10 +19,15 @@
 
 package org.apache.stratos.messaging.listener.tenant;
 
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
  * Tenant removed event listener.
  */
-public abstract class TenantRemovedEventListener extends EventListener {
+public class TenantRemovedEventListener extends EventListener {
+    @Override
+    protected void onEvent(Event event) {
+
+    }
 }

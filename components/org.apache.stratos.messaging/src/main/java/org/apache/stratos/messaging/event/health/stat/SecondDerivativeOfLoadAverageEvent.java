@@ -19,40 +19,33 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  *  This event is fired by Event processing engine to send second derivative of Load average
  */
-public class SecondDerivativeOfLoadAverageEvent implements Serializable {
-    private static final long serialVersionUID = -908665632193275589L;
+public class SecondDerivativeOfLoadAverageEvent extends Event {
 
-    private String networkPartitionId;
-    private String clusterId;
-    private float value;
+    private final String networkPartitionId;
+    private final String clusterId;
+    private final float value;
+
+    public SecondDerivativeOfLoadAverageEvent(String networkPartitionId, String clusterId, float value) {
+        this.networkPartitionId = networkPartitionId;
+        this.clusterId = clusterId;
+        this.value = value;
+    }
 
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public float getValue() {
         return value;
     }
 
-    public void setValue(float value) {
-        this.value = value;
-    }
-
     public String getNetworkPartitionId() {
         return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
     }
 }

@@ -19,40 +19,33 @@
 
 package org.apache.stratos.messaging.event.health.stat;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  *  This event is fired by Event processing engine to send average of Load average
  */
-public class AverageLoadAverageEvent implements Serializable {
-    private static final long serialVersionUID = 1917296044923546781L;
+public class AverageLoadAverageEvent extends Event {
+    private final String networkPartitionId;
+    private final String clusterId;
+    private final float value;
 
-    private String networkPartitionId;
-    private String clusterId;
-    private float value;
+    public AverageLoadAverageEvent(String networkPartitionId, String clusterId, float value, String networkPartitionId1, String clusterId1, float value1){
+
+        this.networkPartitionId = networkPartitionId1;
+        this.clusterId = clusterId1;
+        this.value = value1;
+    }
 
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
     public float getValue() {
         return value;
     }
 
-    public void setValue(float value) {
-        this.value = value;
-    }
-
     public String getNetworkPartitionId() {
         return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
     }
 }
