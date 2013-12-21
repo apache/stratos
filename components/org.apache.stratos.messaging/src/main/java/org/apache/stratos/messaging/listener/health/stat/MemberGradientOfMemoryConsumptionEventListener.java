@@ -20,9 +20,14 @@
 package org.apache.stratos.messaging.listener.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
  * Gradient of  memory consumption event listener
  */
-public class MemberGradientOfMemoryConsumptionEventListener extends Event {
+public class MemberGradientOfMemoryConsumptionEventListener extends EventListener {
+    @Override
+    protected void onEvent(Event event) {
+
+    }
 }

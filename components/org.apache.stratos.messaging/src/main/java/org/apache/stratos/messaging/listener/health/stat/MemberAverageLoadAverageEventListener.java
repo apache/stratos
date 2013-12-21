@@ -20,10 +20,15 @@
 package org.apache.stratos.messaging.listener.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
  *  Average of Load average event listener
  */
-public class MemberAverageLoadAverageEventListener extends Event {
+public class MemberAverageLoadAverageEventListener extends EventListener {
 
+    @Override
+    protected void onEvent(Event event) {
+
+    }
 }
