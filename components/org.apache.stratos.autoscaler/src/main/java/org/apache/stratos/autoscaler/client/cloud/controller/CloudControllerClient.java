@@ -45,6 +45,10 @@ public class CloudControllerClient {
     private static final Log log = LogFactory.getLog(CloudControllerClient.class);
     private static CloudControllerServiceStub stub;
     
+    /* An instance of a CloudControllerClient is created when the class is loaded. 
+     * Since the class is loaded only once, it is guaranteed that an object of 
+     * CloudControllerClient is created only once. Hence it is singleton.
+     */
     private static class InstanceHolder {
         private static final CloudControllerClient INSTANCE = new CloudControllerClient(); 
     }

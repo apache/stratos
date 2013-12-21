@@ -114,8 +114,7 @@ public class RegistryManager {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getId();
         persist(deploymentPolicy, resourcePath);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Deployment policy written to registry: [id] %s [partitions] %s",
-                    deploymentPolicy.getId(), deploymentPolicy.getAllPartitions()));
+            log.debug(deploymentPolicy.toString());
         }
     }
     
@@ -248,8 +247,7 @@ public class RegistryManager {
                         if (dataObj instanceof DeploymentPolicy) {
                             depPolicy = (DeploymentPolicy) dataObj;
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Deployment policy read from registry: [id] %s [partitions] %s",
-                                        depPolicy.getId(), depPolicy.getAllPartitions()));
+                                log.debug(depPolicy.toString());
                             }
                             depPolicyList.add(depPolicy);
                         } else {
