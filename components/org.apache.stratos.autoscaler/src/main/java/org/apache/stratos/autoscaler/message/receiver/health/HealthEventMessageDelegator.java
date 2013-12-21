@@ -54,12 +54,13 @@ import com.google.gson.stream.JsonReader;
 public class HealthEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(HealthEventMessageDelegator.class);
+    private boolean terminate = false;
 
     @Override
     public void run() {
         log.info("Health event message delegator started");
 
-        while (true) {
+        while (!terminate) {
             try {
                 TextMessage message = HealthEventQueue.getInstance().take();
 
@@ -207,6 +208,7 @@ public class HealthEventMessageDelegator implements Runnable {
                 log.error("Failed to retrieve the health stat event message.", e);
             }
         }
+        log.warn("Health event Message delegater is terminated");
     }
 
     private LoadAverage findLoadAverage(Event event) {
@@ -433,5 +435,9 @@ public class HealthEventMessageDelegator implements Runnable {
         private void setProperties(Map<String, String> properties) {
             this.properties = properties;
         }
+    }
+    
+    public void terminate(){
+    	this.terminate = true;
     }
 }
