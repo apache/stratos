@@ -28,6 +28,8 @@ properties="-Dmb.ip=MB-IP
             -Dmb.port=MB-PORT
             -Dthrift.receiver.ip=CEP-IP
             -Dthrift.receiver.port=CEP-PORT
+            -Djavax.net.ssl.trustStore=../security/client-truststore.jks
+            -Djavax.net.ssl.trustStorePassword=wso2carbon
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
