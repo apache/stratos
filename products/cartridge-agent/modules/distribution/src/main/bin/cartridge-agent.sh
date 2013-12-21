@@ -32,7 +32,9 @@ properties="-Dmb.ip=MB-IP
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch-params
-            -Dcep.stats.publisher.enabled=true"
+            -Dcep.stats.publisher.enabled=true
+            -Djavax.net.ssl.trustStore=CERT-TRUSTSTORE
+            -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
