@@ -50,14 +50,17 @@ node /[0-9]{1,12}.default.php/ {
 	 include java
  
 	class {"php_cartridge":
-                        syslog            => "syslog:local2",
-                        docroot           => "/var/www/www",
-                        samlalias         => "/var/www/simplesamlphp/www",
-                        serverport         => "443",
-                        mb_ip         => "54.251.211.89",
-                        mb_port         => "5677",
-                        cep_ip         => "54.251.211.89",
-                        cep_port         => "7615",
+                        syslog 		           => "syslog:local2",
+                        docroot         	   => "/var/www/www",
+                        samlalias        	   => "/var/www/simplesamlphp/www",
+                        serverport        	   => "443",
+                        mb_ip       		   => "54.251.211.89",
+                        mb_port       		   => "5677",
+                        cep_ip        		   => "54.251.211.89",
+                        cep_port      		   => "7615",
+			cert_truststore  	   => "client-truststore.jks",
+                        truststore_password  	   => "wso2carbon",
+
         }
 }
 

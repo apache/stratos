@@ -86,6 +86,10 @@ cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
 cat bin/$cartridge_agent_script.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/$cartridge_agent_script
 cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
 cat bin/$cartridge_agent_script.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@CERT-TRUSTSTORE@$CERT_TRUSTSTORE@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bTRUSTSTORE-PASSWORD\b@$TRUSTSTORE_PASSWORD@g" > bin/$cartridge_agent_script
 rm -f bin/$cartridge_agent_script.tmp
 popd
 

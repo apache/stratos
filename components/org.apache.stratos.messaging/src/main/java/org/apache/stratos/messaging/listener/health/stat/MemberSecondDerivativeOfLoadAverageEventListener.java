@@ -20,9 +20,14 @@
 package org.apache.stratos.messaging.listener.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
  * Second derivative of Load average event listener
  */
-public class MemberSecondDerivativeOfLoadAverageEventListener extends Event {
+public class MemberSecondDerivativeOfLoadAverageEventListener extends EventListener {
+    @Override
+    protected void onEvent(Event event) {
+
+    }
 }
