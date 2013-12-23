@@ -36,7 +36,6 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private final String memberId;
     private MemberStatus status;
     private Properties properties;
-    private String lbClusterId;
 
     public MemberStartedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -77,14 +76,6 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 	public String getPartitionId() {
 		return partitionId;
 	}
-
-    public String getLbClusterId() {
-        return lbClusterId;
-    }
-
-    public void setLbClusterId(String lbClusterId) {
-        this.lbClusterId = lbClusterId;
-    }
 
     public String getNetworkPartitionId() {
         return networkPartitionId;

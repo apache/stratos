@@ -76,16 +76,6 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
                 }
             }
 
-            // Apply member filter
-            if(TopologyMemberFilter.getInstance().isActive()) {
-                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(event.getLbClusterId())) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", event.getLbClusterId()));
-                    }
-                    return false;
-                }
-            }
-
             // Validate event properties
             if ((event.getMemberIp() == null) || event.getMemberIp().isEmpty()) {
                 throw new RuntimeException(String.format("No ip address found in member activated event: [service] %s [cluster] %s [member] %s",
@@ -126,6 +116,17 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
                 }
                 return false;
             }
+
+            // Apply member filter
+            if(TopologyMemberFilter.getInstance().isActive()) {
+                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
+                    }
+                    return false;
+                }
+            }
+
             if (member.getStatus() == MemberStatus.Activated) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Member already activated: [service] %s [cluster] %s [member] %s",
