@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.autoscaler.topology.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.message.receiver.topology.AutoscalerTopologyReceiver;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
