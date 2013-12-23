@@ -84,9 +84,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
                     for (Service service : TopologyManager.getTopology().getServices()) {
                         for (Cluster cluster : service.getClusters()) {
-                            if (hasActiveMembers(cluster)) {
-                                LoadBalancerContextUtil.addClusterToLbContext(cluster);
-                            }
+                            LoadBalancerContextUtil.addClusterToLbContext(cluster);
                         }
                     }
                 } finally {

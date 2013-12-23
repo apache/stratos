@@ -35,12 +35,15 @@ public class LoadBalancerContextUtil {
         if (cluster == null)
             return;
 
-        // Add cluster to ClusterIdClusterMap
-        LoadBalancerContext.getInstance().getClusterIdClusterMap().addCluster(cluster);
-
         Service service = TopologyManager.getTopology().getService(cluster.getServiceName());
         if (service == null) {
             throw new RuntimeException(String.format("Service not found: [cluster] %s", cluster.getClusterId()));
+        }
+
+        // Add cluster to ClusterIdClusterMap
+        LoadBalancerContext.getInstance().getClusterIdClusterMap().addCluster(cluster);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Cluster added to cluster-id -> cluster map: [cluster] %s ", cluster.getClusterId()));
         }
 
         // Add cluster to HostNameClusterMap
@@ -48,7 +51,7 @@ public class LoadBalancerContextUtil {
             if (!LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster((hostName))) {
                 LoadBalancerContext.getInstance().getHostNameClusterMap().addCluster(hostName, cluster);
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster added to single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
+                    log.debug(String.format("Cluster added to hostname -> cluster map: [hostname] %s [cluster] %s ", hostName, cluster.getClusterId()));
                 }
             }
         }
@@ -70,12 +73,15 @@ public class LoadBalancerContextUtil {
             if (LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster(hostName)) {
                 LoadBalancerContext.getInstance().getHostNameClusterMap().removeCluster(hostName);
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster removed from single tenant cluster map: [cluster] %s [hostname] %s", cluster.getClusterId(), hostName));
+                    log.debug(String.format("Cluster removed from hostname -> cluster map: [hostname] %s [cluster] %s ", hostName, cluster.getClusterId()));
                 }
             }
         }
 
         // Remove cluster from ClusterIdClusterMap
         LoadBalancerContext.getInstance().getClusterIdClusterMap().removeCluster(clusterId);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Cluster removed from cluster-id -> cluster map: [cluster] %s ", cluster.getClusterId()));
+        }
     }
 }
