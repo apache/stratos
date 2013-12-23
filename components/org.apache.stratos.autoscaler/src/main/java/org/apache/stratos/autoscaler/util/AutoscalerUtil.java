@@ -140,15 +140,25 @@ public class AutoscalerUtil {
                         } else if(MemberStatus.Suspended.equals(member.getStatus())){
                             partitionContext.addFaultyMember(memberId);
                         }
-
                         partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                        if(log.isInfoEnabled()){
+                            log.info(String.format("Member stat context has been added: [member] %s", memberId));
+                        }
                     }
 
                 }
                 networkPartitionContext.addPartitionContext(partitionContext);
+                if(log.isInfoEnabled()){
+                    log.info(String.format("Partition context has been added: [partition] %s",
+                            partitionContext.getPartitionId()));
+                }
             }
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+            if(log.isInfoEnabled()){
+                log.info(String.format("Network partition context has been added: [network partition] %s",
+                            networkPartitionContext.getId()));
+            }
         }
         
         
@@ -232,6 +242,9 @@ public class AutoscalerUtil {
                     }
 
                     partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                    if(log.isInfoEnabled()){
+                        log.info(String.format("Member stat context has been added: [member] %s", memberId));
+                    }
                 }
 
             }

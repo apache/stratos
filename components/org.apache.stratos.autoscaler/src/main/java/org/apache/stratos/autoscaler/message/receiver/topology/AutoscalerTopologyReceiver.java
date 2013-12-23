@@ -90,14 +90,14 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 TopologyManager.acquireReadLock();
                 for(Service service : TopologyManager.getTopology().getServices()) {
                     for(Cluster cluster : service.getClusters()) {
-                            Thread th;
-                            if(cluster.isLbCluster()){
-                                th = new Thread(new LBClusterMonitorAdder(cluster));
-                            }else{
-                                th = new Thread(new ClusterMonitorAdder(cluster));
-                            }
+                        Thread th;
+                        if(cluster.isLbCluster()){
+                            th = new Thread(new LBClusterMonitorAdder(cluster));
+                        }else{
+                            th = new Thread(new ClusterMonitorAdder(cluster));
+                        }
 
-                            th.start();
+                        th.start();
                     }
                 }
             }

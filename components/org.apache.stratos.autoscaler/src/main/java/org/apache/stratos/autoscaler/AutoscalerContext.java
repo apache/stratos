@@ -42,7 +42,6 @@ public class AutoscalerContext {
     }
 
     public void addMonitor(ClusterMonitor monitor) {
-    	log.info("Adding moniter clusterid" + monitor.getClusterId());
         monitors.put(monitor.getClusterId(), monitor);
     }
 
