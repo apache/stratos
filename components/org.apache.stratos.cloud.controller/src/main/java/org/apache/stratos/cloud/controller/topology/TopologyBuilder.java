@@ -118,14 +118,18 @@ public class TopologyBuilder {
                 // update the cluster
                 cluster = service.getCluster(clusterId);
                 cluster.addHostName(registrant.getHostName());
-                cluster.setTenantRange(registrant.getTenantRange());
+                if(service.getServiceType() == ServiceType.MultiTenant) {
+                    cluster.setTenantRange(registrant.getTenantRange());
+                }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
             } else {
                 cluster = new Cluster(cartridgeType, clusterId,
                                       registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
                 cluster.addHostName(registrant.getHostName());
-                cluster.setTenantRange(registrant.getTenantRange());
+                if(service.getServiceType() == ServiceType.MultiTenant) {
+                    cluster.setTenantRange(registrant.getTenantRange());
+                }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
                 service.addCluster(cluster);
