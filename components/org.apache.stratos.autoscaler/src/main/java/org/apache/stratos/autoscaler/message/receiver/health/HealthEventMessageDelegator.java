@@ -28,10 +28,7 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -69,51 +66,52 @@ public class HealthEventMessageDelegator implements Runnable {
                     log.debug("Health event message received: [message] " + messageText);
 
                 Event event = jsonToEvent(messageText);
+                String eventName = event.getEventName();
 
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Received event: [event-name] %s", event.getEventName()));
+                    log.info(String.format("Received event: [event-name] %s", eventName));
                 }
 
-                if (Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(event.getEventName())) {
+                if (Constants.AVERAGE_REQUESTS_IN_FLIGHT.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
                     String networkPartitionId = event.getProperties().get("network_partition_id");
                     String value = event.getProperties().get("value");
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", event.getEventName(), clusterId, networkPartitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName, clusterId, networkPartitionId, value));
                     }
 
                     AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
                             .setAverageRequestsInFlight(floatValue);
 
-                } else if (Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(event.getEventName())) {
+                } else if (Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
                     String networkPartitionId = event.getProperties().get("network_partition_id");
                     String value = event.getProperties().get("value");
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", event.getEventName(), clusterId, networkPartitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName, clusterId, networkPartitionId, value));
                     }
 
                     AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
                             .setRequestsInFlightGradient(floatValue);
 
-                } else if (Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(event.getEventName())) {
+                } else if (Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
                     String networkPartitionId = event.getProperties().get("network_partition_id");
                     String value = event.getProperties().get("value");
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", event.getEventName(), clusterId, networkPartitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName, clusterId, networkPartitionId, value));
                     }
 
                     AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
                             .setRequestsInFlightSecondDerivative(floatValue);
 
-                } else if (Constants.MEMBER_FAULT_EVENT_NAME.equals(event.getEventName())) {
+                } else if (Constants.MEMBER_FAULT_EVENT_NAME.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
                     String memberId = event.getProperties().get("member_id");
 
@@ -124,7 +122,7 @@ public class HealthEventMessageDelegator implements Runnable {
                     } else {
                         handleMemberFaultEvent(clusterId, memberId);
                     }
-                } else if(Constants.MEMBER_AVERAGE_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_AVERAGE_LOAD_AVERAGE.equals(eventName)) {
                     LoadAverage loadAverage = findLoadAverage(event);
                     if(loadAverage != null) {
                         String value = event.getProperties().get("value");
@@ -135,7 +133,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(eventName)) {
                     LoadAverage loadAverage = findLoadAverage(event);
                     if(loadAverage != null) {
                         String value = event.getProperties().get("value");
@@ -146,7 +144,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.MEMBER_GRADIENT_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_GRADIENT_LOAD_AVERAGE.equals(eventName)) {
                     LoadAverage loadAverage = findLoadAverage(event);
                     if(loadAverage != null) {
                         String value = event.getProperties().get("value");
@@ -157,7 +155,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.MEMBER_AVERAGE_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_AVERAGE_MEMORY_CONSUMPTION.equals(eventName)) {
                     MemoryConsumption memoryConsumption = findMemoryConsumption(event);
                     if(memoryConsumption != null) {
                         String value = event.getProperties().get("value");
@@ -168,7 +166,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(eventName)) {
                     MemoryConsumption memoryConsumption = findMemoryConsumption(event);
                     if(memoryConsumption != null) {
                         String value = event.getProperties().get("value");
@@ -179,7 +177,7 @@ public class HealthEventMessageDelegator implements Runnable {
                             log.debug(String.format("%s event: [member] %s [value] %s", event, event.getProperties().get("member_id"), value));
                         }
                     }
-                } else if(Constants.MEMBER_GRADIENT_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.MEMBER_GRADIENT_MEMORY_CONSUMPTION.equals(eventName)) {
                     MemoryConsumption memoryConsumption = findMemoryConsumption(event);
                     if(memoryConsumption != null) {
                         String value = event.getProperties().get("value");
@@ -191,17 +189,17 @@ public class HealthEventMessageDelegator implements Runnable {
                         }
                     }
 
-                } else if(Constants.AVERAGE_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.AVERAGE_LOAD_AVERAGE.equals(eventName)) {
                     //do nothing for network partition wise events yet
-                } else if(Constants.SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.SECOND_DERIVATIVE_OF_LOAD_AVERAGE.equals(eventName)) {
                      //do nothing for network partition wise events yet
-                } else if(Constants.GRADIENT_LOAD_AVERAGE.equals(event.getEventName())) {
+                } else if(Constants.GRADIENT_LOAD_AVERAGE.equals(eventName)) {
                      //do nothing for network partition wise events yet
-                } else if(Constants.AVERAGE_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.AVERAGE_MEMORY_CONSUMPTION.equals(eventName)) {
                      //do nothing for network partition wise events yet
-                } else if(Constants.SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION.equals(eventName)) {
                      //do nothing for network partition wise events yet
-                } else if(Constants.GRADIENT_MEMORY_CONSUMPTION.equals(event.getEventName())) {
+                } else if(Constants.GRADIENT_MEMORY_CONSUMPTION.equals(eventName)) {
                      //do nothing for network partition wise events yet
                 }
             } catch (Exception e) {
@@ -219,28 +217,38 @@ public class HealthEventMessageDelegator implements Runnable {
         	if(log.isErrorEnabled()) {
                 log.error(String.format("Member not found: [member] %s", memberId));
             }
-            return null;
+        	return null;
         }
-        if(!member.isActive()){
-            if(log.isDebugEnabled()){
-                log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
-                        " the load average health stat", memberId));
+        AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
+        if(null == monitor){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Cluster monitor is not available for : [member] %s", memberId));
             }
             return null;
         }
-        
         String networkPartitionId = findNetworkPartitionId(memberId);
-        LoadAverage loadAverage = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                .getNetworkPartitionCtxt(networkPartitionId)
-                .getPartitionCtxt(member.getPartitionId())
-                .getMemberStatsContext(memberId).getLoadAverage();
+        MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
+                        .getPartitionCtxt(member.getPartitionId())
+                        .getMemberStatsContext(memberId);
+        if(null == memberStatsContext){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Member context is not available for : [member] %s", memberId));
+            }
+            return null;
+        }
+        else if(!member.isActive()){
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
+                        " the health stat", memberId));
+            }
+            return null;
+        }
+
+        LoadAverage loadAverage = memberStatsContext.getLoadAverage();
 
         if(loadAverage == null) {
             loadAverage = new LoadAverage();
-            AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                    .getNetworkPartitionCtxt(networkPartitionId)
-                    .getPartitionCtxt(member.getPartitionId())
-                    .getMemberStatsContext(memberId).setLoadAverage(loadAverage);
+            memberStatsContext.setLoadAverage(loadAverage);
         }
         return loadAverage;
     }
@@ -253,53 +261,42 @@ public class HealthEventMessageDelegator implements Runnable {
         	if(log.isErrorEnabled()) {
                 log.error(String.format("Member not found: [member] %s", memberId));
             }
+        	return null;
+        }
+        
+        AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
+        if(null == monitor){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Cluster monitor is not available for : [member] %s", memberId));
+            }
             return null;
         }
-        if(!member.isActive()){
+        
+        
+        String networkPartitionId = findNetworkPartitionId(memberId);
+        MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
+                        .getPartitionCtxt(member.getPartitionId())
+                        .getMemberStatsContext(memberId);
+        if(null == memberStatsContext){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Member context is not available for : [member] %s", memberId));
+            }
+            return null;
+        }else if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
                         " the health stat", memberId));
             }
             return null;
-        }        
-        String networkPartitionId = findNetworkPartitionId(memberId);
-        MemoryConsumption memoryConsumption = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                .getNetworkPartitionCtxt(networkPartitionId)
-                .getPartitionCtxt(member.getPartitionId())
-                .getMemberStatsContext(memberId).getMemoryConsumption();
+        }
+        MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
 
         if(memoryConsumption == null) {
             memoryConsumption = new MemoryConsumption();
-            AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                    .getNetworkPartitionCtxt(networkPartitionId)
-                    .getPartitionCtxt(member.getPartitionId())
-                    .getMemberStatsContext(memberId).setMemoryConsumption(memoryConsumption);
+            memberStatsContext.setMemoryConsumption(memoryConsumption);
         }
         return memoryConsumption;
     }
-    private String findClusterId(String memberId) {
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
-                    return cluster.getClusterId();
-                }
-            }
-        }
-        return null;
-    }
-    /*
-    private NetworkPartitionContext findNetworkPartition(String memberId) {
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                NetworkPartitionContext netCtx = AutoscalerContext.getInstance().getMonitor(cluster.getClusterId())
-                        .getNetworkPartitionCtxt(cluster.getMember(memberId).getNetworkPartitionId());
-                if(null !=netCtx)
-                	return netCtx;
-            }
-        }
-        return null;
-    }
-    */
 
     private String findNetworkPartitionId(String memberId) {
         for(Service service: TopologyManager.getTopology().getServices()){
@@ -332,7 +329,7 @@ public class HealthEventMessageDelegator implements Runnable {
     private void handleMemberFaultEvent(String clusterId, String memberId) {
         try {
         	AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        	AbstractMonitor monitor = null;
+        	AbstractMonitor monitor;
         	
         	if(asCtx.moniterExist(clusterId)){
         		monitor = asCtx.getMonitor(clusterId);
