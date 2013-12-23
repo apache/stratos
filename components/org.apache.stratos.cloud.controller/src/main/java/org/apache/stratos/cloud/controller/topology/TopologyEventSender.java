@@ -97,10 +97,12 @@ public class TopologyEventSender {
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, String lbClusterId) {
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
+        instanceSpawnedEvent.setLbClusterId(lbClusterId);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s", serviceName, clusterId, networkPartitionId, partitionId, memberId));
+            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [lb-cluster-id] %s",
+                    serviceName, clusterId, networkPartitionId, partitionId, memberId, lbClusterId));
         }
         publishEvent(instanceSpawnedEvent);
     }

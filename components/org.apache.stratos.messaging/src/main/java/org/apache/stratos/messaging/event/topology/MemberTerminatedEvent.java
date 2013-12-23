@@ -33,7 +33,6 @@ public class
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
-    private String lbClusterId;
 
     public MemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -57,14 +56,6 @@ public class
 
     public String getMemberId() {
         return memberId;
-    }
-
-    public String getLbClusterId() {
-        return lbClusterId;
-    }
-
-    public void setLbClusterId(String lbClusterId) {
-        this.lbClusterId = lbClusterId;
     }
 
     public String getNetworkPartitionId() {

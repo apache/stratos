@@ -76,16 +76,6 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
                 }
             }
 
-            // Apply member filter
-            if(TopologyMemberFilter.getInstance().isActive()) {
-                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(event.getLbClusterId())) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", event.getLbClusterId()));
-                    }
-                    return false;
-                }
-            }
-
             // Validate event against the existing topology
             Service service = topology.getService(event.getServiceName());
             if (service == null) {
@@ -112,6 +102,17 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
                 }
                 return false;
             }
+
+            // Apply member filter
+            if(TopologyMemberFilter.getInstance().isActive()) {
+                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
+                    }
+                    return false;
+                }
+            }
+
             if (member.getStatus() == MemberStatus.Terminated) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Member already terminated: [service] %s [cluster] %s [member] %s",
