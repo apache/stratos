@@ -51,6 +51,7 @@ public class CartridgeSubscriptionUtils {
         basicPayloadData.setServiceName(cartridgeSubscription.getCartridgeInfo().getType());
         basicPayloadData.setSubscriptionAlias(cartridgeSubscription.getAlias());
         basicPayloadData.setTenantId(cartridgeSubscription.getSubscriber().getTenantId());
+        //TODO:remove. we do not want to know about the tenant rance in subscription!
         if(cartridgeSubscription.getCartridgeInfo().getMultiTenant() ||
                 cartridgeSubscription.getSubscriber().getTenantId() == -1234) {  //TODO: fix properly
             basicPayloadData.setTenantRange("*");
