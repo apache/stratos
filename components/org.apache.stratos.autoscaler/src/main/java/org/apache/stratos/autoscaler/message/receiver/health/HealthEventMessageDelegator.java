@@ -296,29 +296,6 @@ public class HealthEventMessageDelegator implements Runnable {
         }
         return memoryConsumption;
     }
-    private String findClusterId(String memberId) {
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
-                    return cluster.getClusterId();
-                }
-            }
-        }
-        return null;
-    }
-    /*
-    private NetworkPartitionContext findNetworkPartition(String memberId) {
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                NetworkPartitionContext netCtx = AutoscalerContext.getInstance().getMonitor(cluster.getClusterId())
-                        .getNetworkPartitionCtxt(cluster.getMember(memberId).getNetworkPartitionId());
-                if(null !=netCtx)
-                	return netCtx;
-            }
-        }
-        return null;
-    }
-    */
 
     private String findNetworkPartitionId(String memberId) {
         for(Service service: TopologyManager.getTopology().getServices()){
@@ -351,7 +328,7 @@ public class HealthEventMessageDelegator implements Runnable {
     private void handleMemberFaultEvent(String clusterId, String memberId) {
         try {
         	AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        	AbstractMonitor monitor = null;
+        	AbstractMonitor monitor;
         	
         	if(asCtx.moniterExist(clusterId)){
         		monitor = asCtx.getMonitor(clusterId);
