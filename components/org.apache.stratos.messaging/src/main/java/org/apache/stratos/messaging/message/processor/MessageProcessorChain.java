@@ -19,12 +19,14 @@
 
 package org.apache.stratos.messaging.message.processor;
 
+import org.apache.stratos.messaging.listener.EventListener;
+
 import java.util.LinkedList;
 
 /**
  * Message processor chain definition.
  */
-public class MessageProcessorChain {
+public abstract class MessageProcessorChain {
 
     private LinkedList<MessageProcessor> list;
 
@@ -33,8 +35,8 @@ public class MessageProcessorChain {
         initialize();
     }
 
-    protected void initialize() {
-    }
+    protected abstract void initialize();
+    public abstract void addEventListener(EventListener eventListener);
 
     public void add(MessageProcessor messageProcessor) {
         if(list.size() > 0) {

@@ -20,7 +20,7 @@
 # --------------------------------------------------------------
 
 
-class php_cartridge (syslog,docroot,samlalias,serverport,mb_ip,mb_port,cep_ip,cep_port){
+class php_cartridge (syslog,docroot,samlalias,serverport,mb_ip,mb_port,cep_ip,cep_port,cert_truststore,truststore_password){
 	
 	$packages = ["nano","zip","build-essential","mysql-client","apache2","php5","php5-cli","libapache2-mod-php5","php5-gd","php5-mysql","php-db","php-pear","php5-curl","curl","wget","php5-ldap","php5-adodb","mailutils","php5-imap","php5-sqlite","php5-xmlrpc","php5-xsl","openssl","ssl-cert","ldap-utils","php5-mcrypt","mcrypt","ufw","fail2ban","git","libboost-all-dev","ruby"]
 
@@ -89,22 +89,26 @@ class php_cartridge (syslog,docroot,samlalias,serverport,mb_ip,mb_port,cep_ip,ce
 
 
 	# Copy and configure agent packs
-        file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-event-publisher-4.0.0-SNAPSHOT-bin.zip":
-        	source          => "puppet:///commons/apache-stratos-event-publisher-4.0.0-SNAPSHOT-bin.zip",
-                ensure          => present,
-	} 	
+        #file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-event-publisher-4.0.0-SNAPSHOT-bin.zip":
+        #	source          => "puppet:///commons/apache-stratos-event-publisher-4.0.0-SNAPSHOT-bin.zip",
+        #        ensure          => present,
+	#} 	
 
-        file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-event-subscriber-4.0.0-SNAPSHOT-bin.zip":
-                source          => "puppet:///commons/apache-stratos-event-subscriber-4.0.0-SNAPSHOT-bin.zip",
+        #file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-event-subscriber-4.0.0-SNAPSHOT-bin.zip":
+        #        source          => "puppet:///commons/apache-stratos-event-subscriber-4.0.0-SNAPSHOT-bin.zip",
+        #        ensure          => present,
+        #}
+
+
+        #file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-health-publisher-4.0.0-SNAPSHOT-bin.zip":
+        #        source          => "puppet:///commons/apache-stratos-health-publisher-4.0.0-SNAPSHOT-bin.zip",
+        #        ensure          => present,
+        #}
+
+        file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-cartridge-agent-4.0.0-SNAPSHOT-bin.zip":
+                source          => "puppet:///commons/apache-stratos-cartridge-agent-4.0.0-SNAPSHOT-bin.zip",
                 ensure          => present,
         }
-
-
-        file {  "/opt/apache-stratos-cartridge-agent/apache-stratos-health-publisher-4.0.0-SNAPSHOT-bin.zip":
-                source          => "puppet:///commons/apache-stratos-health-publisher-4.0.0-SNAPSHOT-bin.zip",
-                ensure          => present,
-        }
-
 
         file {  "/opt/apache-stratos-cartridge-agent/cartridge-agent.sh":
                 source          => "puppet:///commons/cartridge-agent.sh",
@@ -126,7 +130,7 @@ class php_cartridge (syslog,docroot,samlalias,serverport,mb_ip,mb_port,cep_ip,ce
 
 	file {"/tmp/puppet-payload":
 		 ensure  => present,
-		 content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port}",
+		 content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port},CERT_TRUSTSTORE=${cert_truststore},TRUSTSTORE_PASSWORD=${truststore_password},APP_PATH=${docroot}",
                  require => Exec["apache2 restart"];
 	}
 

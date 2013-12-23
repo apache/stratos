@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,18 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.integration.tests;
 
-package org.apache.stratos.messaging.listener.health.stat;
-
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.listener.EventListener;
+import org.wso2.carbon.integration.framework.SecurityVerificationTest;
 
 /**
- *  Second derivative of memory consumption event listener  event listener
+ * Test to ensure that the Stratos Autoscaler is properly secured
  */
-public class SecondDerivativeOfMemoryConsumptionEventListener extends EventListener {
-    @Override
-    protected void onEvent(Event event) {
-
-    }
+public class SecurityVerificationTestCase extends SecurityVerificationTest {
 }

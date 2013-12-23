@@ -27,29 +27,24 @@
 source /etc/environment
 
 set -e # Terminate on any error
-export LOG=/var/log/apache-stratos/cartridge-agent.log
+export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
-event_publisher_path=/opt/apache-stratos-cartridge-agent/event-publisher # Event publisher home
-event_subscriber_path=/opt/apache-stratos-cartridge-agent/event-subscriber # Event subscriber home
-health_publisher_path=/opt/apache-stratos-cartridge-agent/health-publisher # Health publisher home
+ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
 temp_payload_path=/tmp/payload/launch-params
 puppet_payload_path=/tmp/puppet-payload
+cartridge_agent_script=cartridge-agent.sh
+truststore_path=/opt/apache-stratos-cartridge-agent/cartridge-agent/security
 
-
-#-----
-# Unzip packs
-#-----
+#---------------------------------------------
+# Unzip cartridge agent pack
+#---------------------------------------------
 pushd ${instance_path}
-unzip apache-stratos-event-publisher-4.0.0-SNAPSHOT-bin.zip
-unzip apache-stratos-event-subscriber-4.0.0-SNAPSHOT-bin.zip
-unzip apache-stratos-health-publisher-4.0.0-SNAPSHOT-bin.zip
-mv apache-stratos-event-publisher-4.0.0-SNAPSHOT event-publisher
-mv apache-stratos-event-subscriber-4.0.0-SNAPSHOT event-subscriber
-mv apache-stratos-health-publisher-4.0.0-SNAPSHOT health-publisher
+unzip apache-stratos-cartridge-agent-4.0.0-SNAPSHOT-bin.zip
+mv apache-stratos-cartridge-agent-4.0.0-SNAPSHOT cartridge-agent
 popd
 
 # ---------------------------------------------
-# Download payload.zip
+# Download payload
 # ---------------------------------------------
 if [ ! -d ${instance_path}/payload ]; then
     echo "creating payload directory... " | tee -a $LOG
@@ -75,34 +70,35 @@ if [ ! -d ${instance_path}/payload ]; then
         fi
         echo "writing to launch.params ${value}" | tee -a $LOG
         echo "export" ${value} >> ${instance_path}/launch.params
-    done    
+    done
+
 fi
 
 source ${instance_path}/launch.params
 
-
-
-#---------------------------
-# Starting Topic Subscriber
-#---------------------------
-# change mb ip port in conf/jndi.properties
-pushd $event_subscriber_path/conf
-cp -rf jndi.properties jndi.properties.tmp
-cat jndi.properties.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > jndi.properties
-cp -rf jndi.properties jndi.properties.tmp
-cat jndi.properties.tmp | sed -e "s@MB-IP-ADDRESS@$MB_IP@g" > jndi.properties
-rm -f jndi.properties.tmp
+pushd $ca_exec_path
+echo "Configuring cartridge agent executable..." | tee -a $LOG
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@CERT-TRUSTSTORE@$truststore_path/$CERT_TRUSTSTORE@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bTRUSTSTORE-PASSWORD\b@$TRUSTSTORE_PASSWORD@g" > bin/$cartridge_agent_script
+rm -f bin/$cartridge_agent_script.tmp
 popd
 
-pushd $event_subscriber_path/bin
-echo "Executing: event-subscriber.sh "
-sh event-subscriber.sh  &
-echo "Event subscribed" | tee -a $LOG
+
+#------------------------------------
+# Starting cartridge agent executable
+#------------------------------------
+pushd $ca_exec_path
+echo "Starting cartridge agent..." | tee -a $LOG
+sh bin/$cartridge_agent_script &
 popd
 
-#Health publisher is started inside event subscriber
-#pushd $health_publisher_path/bin
-#echo "Executing: health-publisher.sh"
-#sh health-publisher.sh $MEMBER_ID $CEP_IP $CEP_PORT $PORTS $CLUSTER_ID
-#echo "Health stat published" | tee -a $LOG
-#popd

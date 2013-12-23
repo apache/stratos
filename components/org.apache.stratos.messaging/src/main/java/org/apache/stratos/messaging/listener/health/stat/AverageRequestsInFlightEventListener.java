@@ -20,9 +20,14 @@
 package org.apache.stratos.messaging.listener.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
  *  Average of requests in flight  event listener
  */
-public class AverageRequestsInFlightEventListener extends Event {
+public class AverageRequestsInFlightEventListener extends EventListener {
+    @Override
+    protected void onEvent(Event event) {
+
+    }
 }

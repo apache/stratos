@@ -20,29 +20,15 @@
 package org.apache.stratos.messaging.listener.health.stat;
 
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
  * Gradient of Load average event listener
  */
-public class MemberGradientOfLoadAverageEventListener extends Event {
+public class MemberGradientOfLoadAverageEventListener extends EventListener {
 
-    private String memberId;
-    private float value;
+    @Override
+    protected void onEvent(Event event) {
 
-
-    public String getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
     }
 }

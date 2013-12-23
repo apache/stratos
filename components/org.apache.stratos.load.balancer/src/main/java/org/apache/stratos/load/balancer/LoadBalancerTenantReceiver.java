@@ -49,11 +49,11 @@ public class LoadBalancerTenantReceiver implements Runnable {
 
     private static final Log log = LogFactory.getLog(LoadBalancerTenantReceiver.class);
 
-    private final TenantReceiver tenantReiver;
+    private final TenantReceiver tenantReceiver;
     private boolean terminated;
 
     public LoadBalancerTenantReceiver() {
-        tenantReiver = new TenantReceiver(createMessageDelegator());
+        tenantReceiver = new TenantReceiver(createMessageDelegator());
     }
 
     private TenantEventMessageDelegator createMessageDelegator() {
@@ -185,7 +185,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
 
     @Override
     public void run() {
-        Thread tenantReceiverThread = new Thread(tenantReiver);
+        Thread tenantReceiverThread = new Thread(tenantReceiver);
         tenantReceiverThread.start();
 
         // Keep the thread live until terminated
@@ -199,7 +199,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
      * Terminate load balancer tenant receiver thread.
      */
     public void terminate() {
-        tenantReiver.terminate();
+        tenantReceiver.terminate();
         terminated = true;
     }
 }
