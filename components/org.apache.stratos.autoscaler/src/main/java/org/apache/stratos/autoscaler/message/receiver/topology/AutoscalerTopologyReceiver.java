@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.topology;
+package org.apache.stratos.autoscaler.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,24 +86,24 @@ public class AutoscalerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                try {
-                    TopologyManager.acquireReadLock();
-                    for(Service service : TopologyManager.getTopology().getServices()) {
-                        for(Cluster cluster : service.getClusters()) {
-                        	    Thread th; 
-                        		if(cluster.isLbCluster()){
-                        			th = new Thread(new LBClusterMonitorAdder(cluster));
-                        		}else{
-                        			th = new Thread(new ClusterMonitorAdder(cluster));
-                        		}
-                                
-                                th.start();
-                        }
+            try {
+                TopologyManager.acquireReadLock();
+                for(Service service : TopologyManager.getTopology().getServices()) {
+                    for(Cluster cluster : service.getClusters()) {
+                            Thread th;
+                            if(cluster.isLbCluster()){
+                                th = new Thread(new LBClusterMonitorAdder(cluster));
+                            }else{
+                                th = new Thread(new ClusterMonitorAdder(cluster));
+                            }
+
+                            th.start();
                     }
                 }
-                finally {
-                    TopologyManager.releaseReadLock();
-                }
+            }
+            finally {
+                TopologyManager.releaseReadLock();
+            }
             }
 
         });
@@ -116,21 +116,21 @@ public class AutoscalerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new ClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                try {
-                    ClusterCreatedEvent e = (ClusterCreatedEvent) event;
-                    TopologyManager.acquireReadLock();
-                    Service service = TopologyManager.getTopology().getService(e.getServiceName());
-                    Cluster cluster = service.getCluster(e.getClusterId());
-                    if (cluster.isLbCluster()) {
-                        Thread th = new Thread(new LBClusterMonitorAdder(cluster));
-                        th.start();
-                    } else {
-                        Thread th = new Thread(new ClusterMonitorAdder(cluster));
-                        th.start();
-                    }
-                } finally {
-                    TopologyManager.releaseReadLock();
+            try {
+                ClusterCreatedEvent e = (ClusterCreatedEvent) event;
+                TopologyManager.acquireReadLock();
+                Service service = TopologyManager.getTopology().getService(e.getServiceName());
+                Cluster cluster = service.getCluster(e.getClusterId());
+                if (cluster.isLbCluster()) {
+                    Thread th = new Thread(new LBClusterMonitorAdder(cluster));
+                    th.start();
+                } else {
+                    Thread th = new Thread(new ClusterMonitorAdder(cluster));
+                    th.start();
                 }
+            } finally {
+                TopologyManager.releaseReadLock();
+            }
             }
 
         });
@@ -138,29 +138,29 @@ public class AutoscalerTopologyReceiver implements Runnable {
         processorChain.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                try {
-                    ClusterRemovedEvent e = (ClusterRemovedEvent) event;
-                    TopologyManager.acquireReadLock();
-                    String serviceName = e.getServiceName();
-                    String clusterId = e.getClusterId();
+            try {
+                ClusterRemovedEvent e = (ClusterRemovedEvent) event;
+                TopologyManager.acquireReadLock();
+                String serviceName = e.getServiceName();
+                String clusterId = e.getClusterId();
 
-                    AbstractMonitor monitor;
+                AbstractMonitor monitor;
 
-                    if(TopologyManager.getTopology().getService(serviceName).getCluster(clusterId).isLbCluster()){
-                        monitor = AutoscalerContext.getInstance().removeLbMonitor(clusterId);
+                if(TopologyManager.getTopology().getService(serviceName).getCluster(clusterId).isLbCluster()){
+                    monitor = AutoscalerContext.getInstance().removeLbMonitor(clusterId);
 
-                    } else {
-                        monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
-                    }
-
-                    monitor.destroy();
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
-                    }
+                } else {
+                    monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
                 }
-                finally {
-                    TopologyManager.releaseReadLock();
+
+                monitor.destroy();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
                 }
+            }
+            finally {
+                TopologyManager.releaseReadLock();
+            }
             }
 
         });
@@ -177,37 +177,34 @@ public class AutoscalerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
              
-            	try {
-            		TopologyManager.acquireReadLock();
-					MemberTerminatedEvent e = (MemberTerminatedEvent) event;
-                    String networkPartitionId = e.getNetworkPartitionId();
-                    String clusterId = e.getClusterId();
-                    AbstractMonitor monitor;
+            try {
+                TopologyManager.acquireReadLock();
+                MemberTerminatedEvent e = (MemberTerminatedEvent) event;
+                String networkPartitionId = e.getNetworkPartitionId();
+                String clusterId = e.getClusterId();
+                AbstractMonitor monitor;
 
-                    if(AutoscalerContext.getInstance().moniterExist(clusterId)){
+                if(AutoscalerContext.getInstance().moniterExist(clusterId)){
 
-                        monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-                    } else {
+                    monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                } else {
 
-                        //This is LB member
-                        monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
-                    }
+                    //This is LB member
+                    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
+                }
 
-					NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
+                NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
 
-                    networkPartitionContext.getPartitionCtxt(e.getPartitionId())
-                            .removeMemberStatsContext(e.getMemberId());
-                    networkPartitionContext.decreaseMemberCountInPartitionBy(e.getPartitionId(), 1);
-//					ClusterContext clusCtx = monitor.getClusterCtxt();
-//					String networkPartitionId = monitor.
-//                    if (networkPartitionId != null) {
-//                        NetworkPartitionContext networkPartContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
-//                        networkPartContext.decrementCurrentMemberCount(1);
-//                    }
+                networkPartitionContext.getPartitionCtxt(e.getPartitionId())
+                        .removeMemberStatsContext(e.getMemberId());
+                if(log.isInfoEnabled()){
+                    log.info(String.format("Member stat context has been removed: [member] %s", e.getMemberId()));
+                }
+                networkPartitionContext.decreaseMemberCountInPartitionBy(e.getPartitionId(), 1);
 
-				} finally {
-					TopologyManager.releaseReadLock();
-				}
+            } finally {
+                TopologyManager.releaseReadLock();
+            }
             }
 
         });
@@ -216,39 +213,36 @@ public class AutoscalerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-            	try {
-					TopologyManager.acquireReadLock();
+            try {
+                TopologyManager.acquireReadLock();
 
-					MemberActivatedEvent e = (MemberActivatedEvent)event;
-                    String memberId = e.getMemberId();
-                    String partitionId = e.getPartitionId();
-                    String networkPartitionId = e.getNetworkPartitionId();
+                MemberActivatedEvent e = (MemberActivatedEvent)event;
+                String memberId = e.getMemberId();
+                String partitionId = e.getPartitionId();
+                String networkPartitionId = e.getNetworkPartitionId();
 
-                    String serviceName = e.getServiceName();
-                    PartitionContext partitionContext;
-					String clusterId = e.getClusterId();
-                    AbstractMonitor monitor;
+                PartitionContext partitionContext;
+                String clusterId = e.getClusterId();
+                AbstractMonitor monitor;
 
-					if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
-                        monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
-					} else {
-					    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
-					    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
-					}
-//					ClusterContext clusCtx = monitor.getClusterCtxt();
-//                    monitor.getNetworkPartitionCtxt(e.getId()).getPartitionCtxt(partitionId);
-//                            .addMemberStatsContext(new MemberStatsContext(e.getMemberId()));
-                    partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-//					PartitionContext partCtxt = monitor.getNetworkPartitionCtxt(e.getId())
-//                            .getPartitionCtxt(partitionId);
-					partitionContext.incrementCurrentMemberCount(1);
-					partitionContext.removePendingMember(memberId);
-
-				}
-                finally{
-                	TopologyManager.releaseReadLock();
+                if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
+                    monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
+                } else {
+                    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
+                    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
                 }
+                partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                if(log.isInfoEnabled()){
+                    log.info(String.format("Member stat context has been added: [member] %s", memberId));
+                }
+                partitionContext.incrementCurrentMemberCount(1);
+                partitionContext.removePendingMember(memberId);
+
+            }
+            finally{
+                TopologyManager.releaseReadLock();
+            }
             }
         });
         
@@ -282,30 +276,28 @@ public class AutoscalerTopologyReceiver implements Runnable {
         }
 
         public void run() {
-                LbClusterMonitor monitor;
-                try {
-                    monitor = AutoscalerUtil.getLBClusterMonitor(cluster);
+            LbClusterMonitor monitor;
+            try {
+                monitor = AutoscalerUtil.getLBClusterMonitor(cluster);
 
-                } catch (PolicyValidationException e) {
-                    String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                    log.error(msg, e);
-                    throw new RuntimeException(msg, e);
+            } catch (PolicyValidationException e) {
+                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+                log.error(msg, e);
+                throw new RuntimeException(msg, e);
 
-                } catch(PartitionValidationException e){
-                    String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                    log.error(msg, e);
-                    throw new RuntimeException(msg, e);
-                }
+            } catch(PartitionValidationException e){
+                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+                log.error(msg, e);
+                throw new RuntimeException(msg, e);
+            }
 
-                Thread th = new Thread(monitor);
-                th.start();
-                AutoscalerContext.getInstance().addLbMonitor(monitor);
+            Thread th = new Thread(monitor);
+            th.start();
+            AutoscalerContext.getInstance().addLbMonitor(monitor);
+            if(log.isInfoEnabled()){
                 log.info(String.format("LB Cluster monitor has been added: [cluster] %s",
                                                         cluster.getClusterId()));
-//                if (log.isDebugEnabled()) {
-//                    log.debug(String.format("Cluster monitor has been added: [cluster] %s",
-//                                            cluster.getClusterId()));
-//                }
+            }
         }
     }
     
@@ -317,62 +309,37 @@ public class AutoscalerTopologyReceiver implements Runnable {
         }
 
         public void run() {
-                ClusterMonitor monitor;
-                try {
-                    monitor = AutoscalerUtil.getClusterMonitor(cluster);
+            ClusterMonitor monitor;
+            try {
+                monitor = AutoscalerUtil.getClusterMonitor(cluster);
 
-                } catch (PolicyValidationException e) {
-                    String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                    log.error(msg, e);
-                    throw new RuntimeException(msg, e);
+            } catch (PolicyValidationException e) {
+                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+                log.error(msg, e);
+                throw new RuntimeException(msg, e);
 
-                } catch(PartitionValidationException e){
-                    String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                    log.error(msg, e);
-                    throw new RuntimeException(msg, e);
-                }
+            } catch(PartitionValidationException e){
+                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+                log.error(msg, e);
+                throw new RuntimeException(msg, e);
+            }
 
-                Thread th = new Thread(monitor);
-                th.start();
-                AutoscalerContext.getInstance().addMonitor(monitor);
+            Thread th = new Thread(monitor);
+            th.start();
+            AutoscalerContext.getInstance().addMonitor(monitor);
+            if(log.isInfoEnabled()){
                 log.info(String.format("Cluster monitor has been added: [cluster] %s",
                                                         cluster.getClusterId()));
-//                if (log.isDebugEnabled()) {
-//                    log.debug(String.format("Cluster monitor has been added: [cluster] %s",
-//                                            cluster.getClusterId()));
-//                }
+            }
         }
     }
 
-//    private void addClusterToContext(Cluster cluster) {
-//        ClusterContext ctxt;
-//        try {
-//            ctxt = AutoscalerUtil.getClusterMonitor(cluster);
-//        } catch (PolicyValidationException e) {
-//            String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-//            log.error(msg, e);
-//            throw new RuntimeException(msg, e);
-//        }
-//        AutoscalerContext ruleCtxt = AutoscalerContext.getInstance();
-//        ClusterMonitor monitor =
-//                                 new ClusterMonitor(cluster.getClusterId(), ctxt,
-//                                                    ruleCtxt.getStatefulSession());
-//        Thread th = new Thread(monitor);
-//        th.start();
-//        AutoscalerContext.getInstance().addMonitor(monitor);
-//        if (log.isDebugEnabled()) {
-//            log.debug(String.format("Cluster monitor has been added: [cluster] %s",
-//                                    cluster.getClusterId()));
-//        }
-//    }
-
     private void removeMonitor(String clusterId) {
         ClusterMonitor monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
-//        monitor.unsubscribe();
         monitor.destroy();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
-            }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
+        }
     }
 
     private Cluster findCluster(String clusterId) {
