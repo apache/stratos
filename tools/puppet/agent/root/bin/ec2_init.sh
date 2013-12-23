@@ -40,6 +40,7 @@ PUPPETD=`which puppetd`
 
 COMMAND="${PUPPETD} -vt"
 IP=`${IFCONFIG} eth0 | ${GREP} -e "inet addr" | ${AWK} '{print $2}' | ${CUT} -d ':' -f 2`
+LOG=/tmp/puppet-init.log
 
 HOSTSFILE=/etc/hosts
 HOSTNAMEFILE=/etc/hostname
@@ -49,10 +50,47 @@ read_master() {
 }
 
 
+is_public_ip_assigned() {
+
+while true
+do
+   wget http://169.254.169.254/latest/meta-data/public-ipv4
+   if [ ! -f public-ipv4 ]
+        then
+          echo "Public ipv4 file not found. Sleep and retry" >> $LOG
+          sleep 2;
+          continue;
+        else
+          echo "public-ipv4 file is available. Read value" >> $LOG
+          # Here means file is available. Read the file
+          read -r ip<public-ipv4;
+          echo "value is **[$ip]** " >> $LOG
+
+          if [ -z "$ip" ]
+            then
+              echo "File is empty. Retry...." >> $LOG
+              sleep 2
+              rm public-ipv4
+              continue
+             else
+               echo "public ip is assigned. value is [$ip]. Remove file" >> $LOG
+               rm public-ipv4
+               break
+             fi
+        fi
+done
+}
+
+
 DATE=`date +%d%m%y%S`
 RANDOMNUMBER="`${TR} -c -d 0-9 < /dev/urandom | ${HEAD} -c 4`${DATE}"
 
 if [ ! -d /tmp/payload ]; then
+
+    ## Check whether the public ip is assigned
+    is_public_ip_assigned
+
+    echo "Public ip have assigned. Continue.." >> $LOG
 
     ## Clean old poop
     ${ECHO} "Removing all existing certificates .."
