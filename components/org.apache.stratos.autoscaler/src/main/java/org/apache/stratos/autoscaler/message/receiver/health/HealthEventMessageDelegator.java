@@ -211,6 +211,13 @@ public class HealthEventMessageDelegator implements Runnable {
     private LoadAverage findLoadAverage(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
+        
+        if(null == member){
+        	if(log.isErrorEnabled()) {
+                log.error(String.format("Member not found: [member] %s", memberId));
+            }
+        	return null;
+        }
         AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
         if(null == monitor){
             if(log.isErrorEnabled()) {
@@ -227,12 +234,8 @@ public class HealthEventMessageDelegator implements Runnable {
                log.error(String.format("Member context is not available for : [member] %s", memberId));
             }
             return null;
-        } else if(null == member){
-        	if(log.isErrorEnabled()) {
-                log.error(String.format("Member not found: [member] %s", memberId));
-            }
-            return null;
-        } else if(!member.isActive()){
+        }
+        else if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
                         " the health stat", memberId));
@@ -252,6 +255,14 @@ public class HealthEventMessageDelegator implements Runnable {
     private MemoryConsumption findMemoryConsumption(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
+        
+        if(null == member){
+        	if(log.isErrorEnabled()) {
+                log.error(String.format("Member not found: [member] %s", memberId));
+            }
+        	return null;
+        }
+        
         AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
         if(null == monitor){
             if(log.isErrorEnabled()) {
@@ -259,6 +270,8 @@ public class HealthEventMessageDelegator implements Runnable {
             }
             return null;
         }
+        
+        
         String networkPartitionId = findNetworkPartitionId(memberId);
         MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
                         .getPartitionCtxt(member.getPartitionId())
@@ -268,12 +281,7 @@ public class HealthEventMessageDelegator implements Runnable {
                log.error(String.format("Member context is not available for : [member] %s", memberId));
             }
             return null;
-        } else if(null == member){
-        	if(log.isErrorEnabled()) {
-                log.error(String.format("Member not found: [member] %s", memberId));
-            }
-            return null;
-        } else if(!member.isActive()){
+        }else if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
                         " the health stat", memberId));
