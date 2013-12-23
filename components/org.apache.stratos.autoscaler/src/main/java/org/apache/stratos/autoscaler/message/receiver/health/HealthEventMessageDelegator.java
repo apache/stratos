@@ -28,10 +28,7 @@ import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -214,33 +211,40 @@ public class HealthEventMessageDelegator implements Runnable {
     private LoadAverage findLoadAverage(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
-        
-        if(null == member){
+        AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
+        if(null == monitor){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Cluster monitor is not available for : [member] %s", memberId));
+            }
+            return null;
+        }
+        String networkPartitionId = findNetworkPartitionId(memberId);
+        MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
+                        .getPartitionCtxt(member.getPartitionId())
+                        .getMemberStatsContext(memberId);
+        if(null == memberStatsContext){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Member context is not available for : [member] %s", memberId));
+            }
+            return null;
+        } else if(null == member){
         	if(log.isErrorEnabled()) {
                 log.error(String.format("Member not found: [member] %s", memberId));
             }
             return null;
-        }
-        if(!member.isActive()){
+        } else if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
-                        " the load average health stat", memberId));
+                        " the health stat", memberId));
             }
             return null;
         }
-        
-        String networkPartitionId = findNetworkPartitionId(memberId);
-        LoadAverage loadAverage = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                .getNetworkPartitionCtxt(networkPartitionId)
-                .getPartitionCtxt(member.getPartitionId())
-                .getMemberStatsContext(memberId).getLoadAverage();
+
+        LoadAverage loadAverage = memberStatsContext.getLoadAverage();
 
         if(loadAverage == null) {
             loadAverage = new LoadAverage();
-            AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                    .getNetworkPartitionCtxt(networkPartitionId)
-                    .getPartitionCtxt(member.getPartitionId())
-                    .getMemberStatsContext(memberId).setLoadAverage(loadAverage);
+            memberStatsContext.setLoadAverage(loadAverage);
         }
         return loadAverage;
     }
@@ -248,32 +252,39 @@ public class HealthEventMessageDelegator implements Runnable {
     private MemoryConsumption findMemoryConsumption(Event event) {
         String memberId = event.getProperties().get("member_id");
         Member member = findMember(memberId);
-        
-        if(null == member){
+        AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
+        if(null == monitor){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Cluster monitor is not available for : [member] %s", memberId));
+            }
+            return null;
+        }
+        String networkPartitionId = findNetworkPartitionId(memberId);
+        MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
+                        .getPartitionCtxt(member.getPartitionId())
+                        .getMemberStatsContext(memberId);
+        if(null == memberStatsContext){
+            if(log.isErrorEnabled()) {
+               log.error(String.format("Member context is not available for : [member] %s", memberId));
+            }
+            return null;
+        } else if(null == member){
         	if(log.isErrorEnabled()) {
                 log.error(String.format("Member not found: [member] %s", memberId));
             }
             return null;
-        }
-        if(!member.isActive()){
+        } else if(!member.isActive()){
             if(log.isDebugEnabled()){
                 log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
                         " the health stat", memberId));
             }
             return null;
-        }        
-        String networkPartitionId = findNetworkPartitionId(memberId);
-        MemoryConsumption memoryConsumption = AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                .getNetworkPartitionCtxt(networkPartitionId)
-                .getPartitionCtxt(member.getPartitionId())
-                .getMemberStatsContext(memberId).getMemoryConsumption();
+        }
+        MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
 
         if(memoryConsumption == null) {
             memoryConsumption = new MemoryConsumption();
-            AutoscalerContext.getInstance().getMonitor(member.getClusterId())
-                    .getNetworkPartitionCtxt(networkPartitionId)
-                    .getPartitionCtxt(member.getPartitionId())
-                    .getMemberStatsContext(memberId).setMemoryConsumption(memoryConsumption);
+            memberStatsContext.setMemoryConsumption(memoryConsumption);
         }
         return memoryConsumption;
     }
