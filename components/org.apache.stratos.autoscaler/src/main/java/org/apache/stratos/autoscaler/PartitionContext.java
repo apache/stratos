@@ -55,7 +55,7 @@ public class PartitionContext implements Serializable{
     private Properties properties;
     
     // 10 mints as the default
-    private long expiryTime = 600000;
+    private long expiryTime = 900000;
     // pending members
     private List<MemberContext> pendingMembers;
 
