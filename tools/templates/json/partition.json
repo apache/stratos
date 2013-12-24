@@ -1,0 +1,14 @@
+{
+    "partition":{
+        "id": "partition-id",
+        "provider": "provider-name",
+        "property": [
+            {
+                "name": "region",
+                "value": "region-name"
+            }
+        ],
+        "partitionMin": "1",
+        "partitionMax": "3"
+    }
+}
