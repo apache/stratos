@@ -22,33 +22,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeDefinitionException;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
-import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
-import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
+import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
-import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
-import org.apache.stratos.cloud.controller.util.*;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -62,8 +50,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
@@ -373,7 +359,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         memberContext.setCartridgeType(cartridgeType);
 
-        final Lock lock = new ReentrantLock(true);
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
@@ -441,86 +426,35 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Should have a length between 3-15
             String str = clusterId.substring(0, 10);
             String group = str.replaceAll("[^a-z0-9-]", "");
-
             NodeMetadata node;
 
-            // create and start a node
+//            create and start a node
             Set<? extends NodeMetadata> nodes =
                                                 computeService.createNodesInGroup(group, 1,
                                                                                   template);
 
             node = nodes.iterator().next();
+            //Start allocating ip as a new job
 
-            String autoAssignIpProp =
-                                      iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
+            ThreadExecutor exec = ThreadExecutor.getInstance();
+            exec.execute(new IpAllocator(memberContext, computeService, template, iaasProvider, cartridgeType, node));
 
-            // acquire the lock
-            lock.lock();
 
-            try {
-                // node id
-                String nodeId = node.getId();
-                if (nodeId == null) {
-                    String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
-                    log.fatal(msg);
-                    throw new CloudControllerException(msg);
-                }
-
+            // node id
+            String nodeId = node.getId();
+            if (nodeId == null) {
+                String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
+                log.fatal(msg);
+                throw new CloudControllerException(msg);
+            }
                 memberContext.setNodeId(nodeId);
-                
                 if(log.isDebugEnabled()) {
                     log.debug("Node id was set. "+memberContext.toString());
                 }
 
-                // reset ip
-                String ip = "";
-                // default behavior is autoIpAssign=false
-                if (autoAssignIpProp == null ||
-                    (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
-                    // allocate an IP address - manual IP assigning mode
-                    ip = iaas.associateAddress(iaasProvider, node);
-                    memberContext.setAllocatedIpAddress(ip);
-                    log.info("Allocated an ip address: " + memberContext.toString());
-                }
+            log.info("Instance is successfully starting up. "+memberContext.toString());
 
-                // public ip
-                if (node.getPublicAddresses() != null &&
-                    node.getPublicAddresses().iterator().hasNext()) {
-                    ip = node.getPublicAddresses().iterator().next();
-                    memberContext.setPublicIpAddress(ip);
-                    log.info("Public ip address: " + memberContext.toString());
-                }
-
-                // private IP
-                if (node.getPrivateAddresses() != null &&
-                    node.getPrivateAddresses().iterator().hasNext()) {
-                    ip = node.getPrivateAddresses().iterator().next();
-                    memberContext.setPrivateIpAddress(ip);
-                    log.info("Private ip address: " + memberContext.toString());
-                }
-
-                dataHolder.addMemberContext(memberContext);
-
-                // persist in registry
-                persist();
-
-                // trigger topology
-                TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(), partition.getId(), ip, memberContext.getLbClusterId());
-
-                // update the topology with the newly spawned member
-                // publish data
-                if (log.isDebugEnabled()) {
-                    log.debug("Node details: \n" + node.toString() + "\n***************\n");
-                }
-
-                log.info("Instance is successfully starting up. "+memberContext.toString());
-
-                return memberContext;
-
-            } finally {
-                // release the lock
-                lock.unlock();
-            }
+            return memberContext;
 
         } catch (Exception e) {
             String msg = "Failed to start an instance. " + memberContext.toString();
@@ -636,6 +570,100 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.error(msg, e);
                 throw new CloudControllerException(msg, e);
             }
+
+        }
+    }
+
+    private class IpAllocator implements Runnable {
+
+        private MemberContext memberContext;
+        private ComputeService computeService;
+        private Template template;
+        private IaasProvider iaasProvider;
+        private String cartridgeType;
+        NodeMetadata node;
+
+        public IpAllocator(MemberContext memberContext, ComputeService computeService, Template template,
+                           IaasProvider iaasProvider, String cartridgeType, NodeMetadata node) {
+            this.memberContext = memberContext;
+            this.computeService = computeService;
+            this.template = template;
+            this.iaasProvider = iaasProvider;
+            this.cartridgeType = cartridgeType;
+            this.node = node;
+        }
+
+        @Override
+        public void run() {
+
+
+            String clusterId = memberContext.getClusterId();
+            Partition partition = memberContext.getPartition();
+
+            // generate the group id from domain name and sub domain
+            // name.
+            // Should have lower-case ASCII letters, numbers, or dashes.
+            // Should have a length between 3-15
+            String str = clusterId.substring(0, 10);
+            String group = str.replaceAll("[^a-z0-9-]", "");
+
+            try{
+
+                String autoAssignIpProp =
+                                          iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
+
+                    // reset ip
+                    String ip = "";
+                    // default behavior is autoIpAssign=false
+                    if (autoAssignIpProp == null ||
+                        (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
+
+                        Iaas iaas = iaasProvider.getIaas();
+                        // allocate an IP address - manual IP assigning mode
+                        ip = iaas.associateAddress(iaasProvider, node);
+                        memberContext.setAllocatedIpAddress(ip);
+                        log.info("Allocated an ip address: " + memberContext.toString());
+                    }
+
+                    // public ip
+                    if (node.getPublicAddresses() != null &&
+                        node.getPublicAddresses().iterator().hasNext()) {
+                        ip = node.getPublicAddresses().iterator().next();
+                        memberContext.setPublicIpAddress(ip);
+                        log.info("Public ip address: " + memberContext.toString());
+                    }
+
+                    // private IP
+                    if (node.getPrivateAddresses() != null &&
+                        node.getPrivateAddresses().iterator().hasNext()) {
+                        ip = node.getPrivateAddresses().iterator().next();
+                        memberContext.setPrivateIpAddress(ip);
+                        log.info("Private ip address: " + memberContext.toString());
+                    }
+
+                    dataHolder.addMemberContext(memberContext);
+
+                    // persist in registry
+                    persist();
+
+                    String memberID = memberContext.getMemberId();
+
+                    // trigger topology
+                    TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(),
+                            partition.getId(), ip, memberContext.getLbClusterId());
+
+                    // update the topology with the newly spawned member
+                    // publish data
+                    if (log.isDebugEnabled()) {
+                        log.debug("Node details: \n" + node.toString() + "\n***************\n");
+                    }
+
+            } catch (Exception e) {
+                String msg = "Error occurred while allocating an ip address. " + memberContext.toString();
+                log.error(msg, e);
+                throw new CloudControllerException(msg, e);
+            }
+
 
         }
     }
@@ -1071,3 +1099,4 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 }
+
