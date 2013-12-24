@@ -47,7 +47,7 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher 
             // Payload definition
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
-            payloadData.add(new Attribute("in_flight_request_count", AttributeType.INT));
+            payloadData.add(new Attribute("in_flight_request_count", AttributeType.DOUBLE));
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class WSO2CEPInFlightRequestPublisher extends WSO2CEPStatisticsPublisher 
         // Payload values
         payload.add(clusterId);
         payload.add(networkPartitionId);
-        payload.add(inFlightRequestCount);
+        payload.add((double)inFlightRequestCount);
         super.publish(payload.toArray());
     }
 }

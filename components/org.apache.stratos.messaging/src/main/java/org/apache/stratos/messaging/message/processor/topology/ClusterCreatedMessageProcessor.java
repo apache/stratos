@@ -73,16 +73,14 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
                     return false;
                 }
             }
-            
+
+            // Validate event properties
             Cluster cluster = event.getCluster();
-            
             if(cluster == null) {
-                String msg = "Cluster object of Cluster Created Event is null.";
+                String msg = "Cluster object of cluster created event is null.";
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
-
-            // Validate event properties
             if (cluster.getHostNames().isEmpty()) {
                 throw new RuntimeException("Host name/s not found in cluster created event");
             }
@@ -106,7 +104,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
             // Apply changes to the topology
             service.addCluster(cluster);
             if (log.isInfoEnabled()) {
-                log.info("Cluster created: "+cluster.toString());
+                log.info(String.format("Cluster created: %s", cluster.toString()));
             }
 
             // Notify event listeners

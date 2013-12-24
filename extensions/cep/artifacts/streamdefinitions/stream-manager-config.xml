@@ -10,7 +10,7 @@
          <payloadData>
              <property name="cluster_id" type="String"/>
              <property name="network_partition_id" type="String"/>
-             <property name="in_flight_request_count" type="int"/>
+             <property name="in_flight_request_count" type="double"/>
          </payloadData>
      </streamDefinition> 
 
