@@ -34,7 +34,7 @@ public class NetworkPartitionContext implements Serializable{
 
 	private static final long serialVersionUID = -8851073480764734511L;
 	private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
-    private String id;
+    private final String id;
 
     private String defaultLbClusterId;
 
@@ -42,7 +42,7 @@ public class NetworkPartitionContext implements Serializable{
 
     private Map<String, String> clusterIdToLBClusterIdMap;
 
-    private String partitionAlgorithm;
+    private final String partitionAlgorithm;
 
     //boolean values to keep whether the requests in flight parameters are reset or not
     private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
@@ -62,7 +62,7 @@ public class NetworkPartitionContext implements Serializable{
 //    private Map<String, Integer> partitionToMemberCountMap;
 
     //partitions of this network partition
-    private Map<String, PartitionContext> partitionCtxts;
+    private final Map<String, PartitionContext> partitionCtxts;
 
     public NetworkPartitionContext(String id, String partitionAlgo) {
 
@@ -285,10 +285,6 @@ public class NetworkPartitionContext implements Serializable{
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
 //    public void increaseMemberCountOfPartition(String partitionId, int count){
 //         if(!partitionCountExists(partitionId)){
 //             addPartitionCount(partitionId, 1);
@@ -334,20 +330,12 @@ public class NetworkPartitionContext implements Serializable{
         return partitionCtxts.get(partitionId);
     }
 
-    public void setPartitionCtxts(Map<String, PartitionContext> partitionCtxts) {
-        this.partitionCtxts = partitionCtxts;
-    }
-
     public void addPartitionContext(PartitionContext partitionContext) {
         partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
     }
 
     public String getPartitionAlgorithm() {
         return partitionAlgorithm;
-    }
-
-    public void setPartitionAlgorithm(String partitionAlgorithm) {
-        this.partitionAlgorithm = partitionAlgorithm;
     }
 
     public Partition[] getPartitions() {
