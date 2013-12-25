@@ -97,7 +97,7 @@ public class ClusterMonitor extends AbstractMonitor{
 
             if(networkPartitionContext.isRifReset()){
                 scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-                scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
+                //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
                 scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
 
                 if (log.isDebugEnabled()) {

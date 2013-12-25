@@ -46,7 +46,6 @@ import org.apache.stratos.autoscaler.policy.model.LoadAverage
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
 
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
-global org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy $deploymentPolicy;
 global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy $autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
