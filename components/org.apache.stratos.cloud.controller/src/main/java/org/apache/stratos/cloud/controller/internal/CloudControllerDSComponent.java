@@ -108,9 +108,12 @@ public class CloudControllerDSComponent {
         	
         	// initialize the topic publishers
             BundleContext bundleContext = context.getBundleContext();
-            bundleContext.registerService(CloudControllerService.class.getName(),
-                                          new CloudControllerServiceImpl(), null);
-            
+            bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
+
+            if(log.isInfoEnabled()) {
+                log.info("Scheduling tasks");
+            }
+            TaskScheduler.schedule();
 
             log.debug("******* Cloud Controller Service bundle is activated ******* ");
         } catch (Throwable e) {
