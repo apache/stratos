@@ -28,15 +28,15 @@ import javax.jms.TextMessage;
 /**
  * this is to handle the topology subscription
  */
-public class TopologyListener implements MessageListener{
-    private static final Log log = LogFactory.getLog(TopologyListener.class);
+public class InstanceStatusEventMessageListener implements MessageListener{
+    private static final Log log = LogFactory.getLog(InstanceStatusEventMessageListener.class);
 
     @Override
     public void onMessage(Message message) {
         TextMessage receivedMessage = (TextMessage) message;
-        TopologyManager.getInstance().getSharedTopologyDiffQueue().add(receivedMessage);
+        TopologyManager.getInstance().getInstanceStatusMessageQueue().add(receivedMessage);
         if(log.isDebugEnabled()) {
-            log.debug(message + "received....");
+            log.debug(String.format("Instance status message added to queue: %s", message));
         }
     }
 }

@@ -32,8 +32,8 @@ import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublis
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.TopologySynchronizerTask;
+import org.apache.stratos.cloud.controller.topology.InstanceStatusEventMessageDelegator;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
@@ -132,9 +132,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private void startTopologyBuilder() {
 		// initialize TopologyEventMessageProcessor Consumer
-		Thread topologyBuilder = new Thread(new TopologyEventMessageDelegator());
+		Thread delegatorThread = new Thread(new InstanceStatusEventMessageDelegator());
 		// start consumer
-		topologyBuilder.start();
+		delegatorThread.start();
 	}
 
 	private TaskManager registerAndScheduleDataPublisherTask(

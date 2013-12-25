@@ -42,7 +42,7 @@ public class TopologyManager {
     private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
     private volatile Topology topology;
     private static TopologyManager instance;
-    private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
+    private BlockingQueue<TextMessage> instanceStatusMessageQueue = new LinkedBlockingQueue<TextMessage>();
 
 
     private TopologyManager() {
@@ -87,9 +87,6 @@ public class TopologyManager {
                 }
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug("The current topology is: " + toJson());
-        }
         return this.topology;
     }
 
@@ -98,9 +95,8 @@ public class TopologyManager {
              this.topology = topology;
              CloudControllerUtil.persistTopology(this.topology);
              if (log.isDebugEnabled()) {
-                 log.debug("Topology got updated. Full Topology: "+toJson());
+                 log.debug(String.format("Topology updated: %s", toJson()));
              }
-             
         }
 
     }
@@ -115,12 +111,12 @@ public class TopologyManager {
         this.topology = topology;
     }
 
-    public BlockingQueue<TextMessage> getSharedTopologyDiffQueue() {
-        return sharedTopologyDiffQueue;
+    public BlockingQueue<TextMessage> getInstanceStatusMessageQueue() {
+        return instanceStatusMessageQueue;
     }
 
-    public void setSharedTopologyDiffQueue(BlockingQueue<TextMessage> sharedTopologyDiffQueue) {
-        this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
+    public void setInstanceStatusMessageQueue(BlockingQueue<TextMessage> instanceStatusMessageQueue) {
+        this.instanceStatusMessageQueue = instanceStatusMessageQueue;
     }
 }
 
