@@ -41,6 +41,10 @@ public class RuleTasksDelegator {
         } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
 
             autoscaleAlgorithm = new OneAfterAnother();
+        } else {
+            if(log.isErrorEnabled()){
+                log.error(String.format("Partition algorithm %s could not be identified !", partitionAlgorithm));
+            }
         }
         return autoscaleAlgorithm;
     }
