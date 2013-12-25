@@ -17,7 +17,7 @@ import org.wso2.carbon.ntask.core.service.TaskService;
 import java.util.HashMap;
 
 /**
- * Topology synchronizer task scheduler
+ * Cloud Controller task scheduler
  */
 public class TaskScheduler {
     private static final Log log = LogFactory.getLog(TaskScheduler.class);
