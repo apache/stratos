@@ -64,10 +64,11 @@ public class NetworkPartitionContext implements Serializable{
     //partitions of this network partition
     private Map<String, PartitionContext> partitionCtxts;
 
-    public NetworkPartitionContext(String id) {
+    public NetworkPartitionContext(String id, String partitionAlgo) {
 
         super();
         this.id = id;
+        this.partitionAlgorithm = partitionAlgo;
         this.setServiceToLBClusterId(new HashMap<String, String>());
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
 //        partitionToMemberCountMap = new HashMap<String, Integer>();

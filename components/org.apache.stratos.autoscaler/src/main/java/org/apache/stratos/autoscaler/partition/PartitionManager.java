@@ -124,7 +124,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
             if (!networkPartitionContexts.containsKey(id)) {
                 NetworkPartitionContext networkPartitionContext =
                                                                   new NetworkPartitionContext(
-                                                                                              id);
+                                                                                              id, partitionGroup.getPartitionAlgo());
                 addNetworkPartitionContext(networkPartitionContext);
                 RegistryManager.getInstance().persistNetworkPartition(networkPartitionContext);
             }
