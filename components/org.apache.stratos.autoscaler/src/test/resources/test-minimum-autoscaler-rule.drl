@@ -55,7 +55,7 @@ rule "Minimum Rule"
 dialect "mvel"
        when
 	       $ctxt : PartitionContext ()
-	       eval($ctxt.getCurrentMemberCount() < $ctxt.getMinimumMemberCount())
+	       eval($ctxt.getTotalMemberCount() < $ctxt.getMinimumMemberCount())
 
        then
 	       setMinRuleFired(true);
