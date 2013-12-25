@@ -236,6 +236,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 if(log.isInfoEnabled()){
                     log.info(String.format("Member stat context has been added: [member] %s", memberId));
                 }
+                partitionContext.incrementCurrentMemberCount(1);
                 partitionContext.removePendingMember(memberId);
 
             }
