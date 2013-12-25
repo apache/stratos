@@ -46,7 +46,7 @@ import org.apache.stratos.autoscaler.policy.model.LoadAverage
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
 
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
-global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy $autoscalePolicy;
+global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
 
@@ -55,7 +55,7 @@ rule "Scaler-up Rule"
 dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
-        $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
+        $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
         autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
@@ -81,7 +81,7 @@ rule "Scaler-down Rule"
 dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
-        $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
+        $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
         autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
