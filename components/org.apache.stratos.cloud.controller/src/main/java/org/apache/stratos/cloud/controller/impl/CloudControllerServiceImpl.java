@@ -89,36 +89,41 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	private void registerAndScheduleTopologySyncerTask(TaskService taskService) {
-		TaskInfo taskInfo;
+        TaskInfo taskInfo;
 		TaskManager tm = null;
-		try {
 
-			if (!taskService.getRegisteredTaskTypes().contains(
-					CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE)) {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug("Scheduling topology synchronization task");
+            }
 
-				// topology sync
-				taskService
-						.registerTaskType(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
-
-				tm = taskService
-						.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
-				
+			if (!taskService.getRegisteredTaskTypes().contains(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE)) {
+				taskService.registerTaskType(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
+				tm = taskService.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
 				String cron = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.CRON_ELEMENT);
-
 				cron = ( cron == null ? CloudControllerConstants.PUB_CRON_EXPRESSION : cron ); 
-				
+				if(log.isDebugEnabled()) {
+                    log.debug(String.format("Topology synchronization task cron: %s", cron));
+                }
 				TriggerInfo triggerInfo = new TriggerInfo(cron);
 				taskInfo = new TaskInfo(
 						CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME,
 						TopologySynchronizerTask.class.getName(),
 						new HashMap<String, String>(), triggerInfo);
 				tm.registerTask(taskInfo);
+                if(log.isDebugEnabled()) {
+                    log.debug("Topology synchronization task registered");
+                }
 			}
+            else {
+                if(log.isWarnEnabled()) {
+                    log.warn("Topology synchronization task already exists");
+                }
+            }
 
 		} catch (Exception e) {
-			String msg = "Error scheduling task: "
-					+ CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME;
-			log.error(msg, e);
+			String msg = "Error scheduling task: " + CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME;
+			log.error(msg);
 			if (tm != null) {
 				try {
 					tm.deleteTask(CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME);
