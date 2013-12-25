@@ -55,8 +55,8 @@ global java.lang.String lbRef;
 rule "Scaler-up Rule"
 dialect "mvel"
 	when
-	    eval(log.debug("Running scale up rule"))
         $networkPartitionContext : NetworkPartitionContext ()
+        eval(log.debug("Running scale up rule: [network-partition] " + $networkPartitionContext.getId()))
         $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
         autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
@@ -66,9 +66,9 @@ dialect "mvel"
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId)
         predictedValue : Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
-        eval(log.debug("predicted-value: " + predictedValue))
-        eval(log.debug("average-limit: " + averageLimit))
-        eval(log.debug("scale-up-factor: " + $delegator.SCALE_UP_FACTOR))
+        eval(log.debug("predicted value: " + predictedValue))
+        eval(log.debug("average limit: " + averageLimit))
+        eval(log.debug("scale-up factor: " + $delegator.SCALE_UP_FACTOR))
         eval(predictedValue > averageLimit * $delegator.SCALE_UP_FACTOR)
 	then
 //	    if (predictedValue*scaleUpFactor > averageLimit){
@@ -85,8 +85,8 @@ end
 rule "Scaler-down Rule"
 dialect "mvel"
 	when
-	    eval(log.debug("Running scale down rule"))
         $networkPartitionContext : NetworkPartitionContext ()
+        eval(log.debug("Running scale down rule: [network-partition] " + $networkPartitionContext.getId()))
         $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
         autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
@@ -96,9 +96,9 @@ dialect "mvel"
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId)
         predictedValue :  Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
-        eval(log.debug("predicted-value: " + predictedValue))
-        eval(log.debug("average-limit: " + averageLimit))
-        eval(log.debug("scale-down-factor: " + $delegator.SCALE_DOWN_FACTOR))
+        eval(log.debug("predicted value: " + predictedValue))
+        eval(log.debug("average limit: " + averageLimit))
+        eval(log.debug("scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
         eval(predictedValue < averageLimit * $delegator.SCALE_DOWN_FACTOR)
 	then
 
