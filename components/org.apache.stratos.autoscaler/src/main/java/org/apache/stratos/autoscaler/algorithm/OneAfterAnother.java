@@ -57,13 +57,13 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                 Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
-                if (networkPartitionContext.partitionCountExists(currentPartitionId)) {
-                    networkPartitionContext.addPartitionCount(currentPartitionId, 0);
-                }
+//                if (networkPartitionContext.partitionCountExists(currentPartitionId)) {
+//                    networkPartitionContext.addPartitionCount(currentPartitionId, 0);
+//                }
 
-                if (networkPartitionContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMax()) {
+                if (networkPartitionContext.getMemberCountOfPartition(currentPartitionId) < currentPartition.getPartitionMax()) {
                     // current partition is free
-                    networkPartitionContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
+//                    networkPartitionContext.increaseMemberCountOfPartition(currentPartitionId, 1);
                     if (log.isDebugEnabled())
                         log.debug("Free space found in partition " + currentPartition.getId());
 
@@ -100,9 +100,9 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                 String currentPartitionId = currentPartition.getId();
 
                 // has more than minimum instances.
-                if (networkPartitionContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMin()) {
+                if (networkPartitionContext.getMemberCountOfPartition(currentPartitionId) > currentPartition.getPartitionMin()) {
                     // current partition is free
-                    networkPartitionContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+//                    networkPartitionContext.decreaseMemberCountOfPartition(currentPartitionId, 1);
                     if (log.isDebugEnabled())
                         log.debug("A free space found for scale down in partition" +
                                   currentPartition.getId());
