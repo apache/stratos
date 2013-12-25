@@ -16,10 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.topology;
+package org.apache.stratos.cloud.controller.topic.instance.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -36,7 +38,7 @@ public class InstanceStatusEventMessageDelegator implements Runnable {
 
         while (true) {
             try {
-                TextMessage message = TopologyManager.getInstance().getInstanceStatusMessageQueue().take();
+                TextMessage message = InstanceStatusEventMessageQueue.getInstance().take();
 
                 // retrieve the header
                 String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
