@@ -87,9 +87,6 @@ public class TopologyManager {
                 }
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug("The current topology is: " + toJson());
-        }
         return this.topology;
     }
 
@@ -98,9 +95,8 @@ public class TopologyManager {
              this.topology = topology;
              CloudControllerUtil.persistTopology(this.topology);
              if (log.isDebugEnabled()) {
-                 log.debug("Topology got updated. Full Topology: "+toJson());
+                 log.debug(String.format("Topology updated: %s", toJson()));
              }
-             
         }
 
     }
