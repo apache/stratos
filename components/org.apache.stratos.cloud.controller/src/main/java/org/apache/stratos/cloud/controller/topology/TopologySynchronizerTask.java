@@ -30,14 +30,17 @@ public class TopologySynchronizerTask implements Task{
 
     @Override
     public void execute() {
-    	if(FasterLookUpDataHolder.getInstance().isTopologySyncRunning()||
-        		// this is a temporary fix to avoid task execution - limitation with ntask
-        		!FasterLookUpDataHolder.getInstance().getEnableTopologySync()){
-            return;
-        }
-    	
         if (log.isDebugEnabled()) {
-            log.debug("TopologySynchronizerTask ...");
+            log.debug("Executing topology synchronization task");
+        }
+
+        if(FasterLookUpDataHolder.getInstance().isTopologySyncRunning() ||
+        		// this is a temporary fix to avoid task execution - limitation with ntask
+                (!FasterLookUpDataHolder.getInstance().getEnableTopologySync())){
+            if(log.isWarnEnabled()) {
+                log.warn("Topology synchronization is disabled.");
+            }
+            return;
         }
         
     	// publish to the topic 
@@ -51,7 +54,9 @@ public class TopologySynchronizerTask implements Task{
 
     	// this is a temporary fix to avoid task execution - limitation with ntask
 		if(!FasterLookUpDataHolder.getInstance().getEnableTopologySync()){
-			log.debug("Topology Sync is disabled.");
+            if(log.isWarnEnabled()) {
+                log.warn("Topology synchronization is disabled.");
+            }
 			return;
 		}
     }
