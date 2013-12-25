@@ -65,6 +65,7 @@ dialect "mvel"
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId)
+        eval(partition != null)
         predictedValue : Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
         eval(log.debug("predicted value: " + predictedValue))
         eval(log.debug("average limit: " + averageLimit))
@@ -95,6 +96,7 @@ dialect "mvel"
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId)
+        eval(partition != null)
         predictedValue :  Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
         eval(log.debug("predicted value: " + predictedValue))
         eval(log.debug("average limit: " + averageLimit))
