@@ -65,14 +65,14 @@ public class CloudCommonServiceComponent {
                 CommonUtil.setEula(eula);
             }
             
-			packageInfos = new PackageInfoHolder();
-			context.getBundleContext().registerService(
-					PackageInfoHolder.class.getName(), packageInfos, null);
+			//packageInfos = new PackageInfoHolder();
+			//context.getBundleContext().registerService(
+			//		PackageInfoHolder.class.getName(), packageInfos, null);
 
             //Register manager configuration OSGI service
             try {
-                StratosConfiguration stratosConfiguration = CommonUtil.loadStratosConfiguration();
-                bundleContext.registerService(StratosConfiguration.class.getName(), stratosConfiguration, null);
+                //StratosConfiguration stratosConfiguration = CommonUtil.loadStratosConfiguration();
+                //bundleContext.registerService(StratosConfiguration.class.getName(), stratosConfiguration, null);
                 if (log.isDebugEnabled()) {
                     log.debug("******* Cloud Common Service bundle is activated ******* ");
                 }

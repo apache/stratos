@@ -48,6 +48,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.common.*,
+                            org.apache.stratos.common.statistics.publisher.*,
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.core.*;version=1.0.1,

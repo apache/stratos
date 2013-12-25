@@ -99,6 +99,7 @@
                         <Import-Package>
                             !org.apache.commons.logging,
                             org.apache.commons.logging; version=0.0.0,
+                            org.apache.stratos.common,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
