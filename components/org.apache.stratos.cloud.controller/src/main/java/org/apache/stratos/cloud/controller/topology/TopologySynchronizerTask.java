@@ -45,7 +45,7 @@ public class TopologySynchronizerTask implements Task{
         
     	// publish to the topic 
         if (TopologyManager.getTopology() != null) {
-            TopologyEventSender.sendCompleteTopologyEvent(TopologyManager.getTopology());
+            TopologyEventPublisher.sendCompleteTopologyEvent(TopologyManager.getTopology());
         }
     }
     

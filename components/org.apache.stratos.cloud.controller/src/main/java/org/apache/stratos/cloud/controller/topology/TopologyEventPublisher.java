@@ -33,6 +33,7 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.util.Constants;
 
 import java.util.List;
 import java.util.Properties;
@@ -40,8 +41,8 @@ import java.util.Properties;
 /**
  * this is to send the relevant events from cloud controller to topology topic
  */
-public class TopologyEventSender {
-    private static final Log log = LogFactory.getLog(TopologyBuilder.class);
+public class TopologyEventPublisher {
+    private static final Log log = LogFactory.getLog(TopologyEventPublisher.class);
 
 
     public static void sendServiceCreateEvent(List<Cartridge> cartridgeList) {
@@ -143,12 +144,8 @@ public class TopologyEventSender {
         publishEvent(completeTopologyEvent);
     }
 
-    public static void publishEvent(Event topologyEvent) {
-        List<EventPublisher> topicPublishers = FasterLookUpDataHolder.getInstance().getAllEventPublishers();
-
-        for(EventPublisher topicPublisher : topicPublishers) {
-            topicPublisher.publish(topologyEvent);
-        }
-
+    public static void publishEvent(Event event) {
+        EventPublisher eventPublisher = new EventPublisher(Constants.TOPOLOGY_TOPIC);
+        eventPublisher.publish(event);
     }
 }

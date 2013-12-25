@@ -71,42 +71,13 @@ public class CloudControllerDSComponent {
 
     protected void activate(ComponentContext context) {
         try {
-            
-            // register deployers of CC
-//            AxisConfiguration axisConfig = ServiceReferenceHolder.getInstance().getAxisConfiguration();
-//            
-//            if(axisConfig ==  null) {
-//                String msg = "Axis Configuration is null. Cannot register deployers.";
-//                log.error(msg);
-//                throw new CloudControllerException(msg);
-//            }
-//            
-//            DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
-//            Deployer cloudControllerDeployer = new CloudControllerDeployer();
-//            Deployer cartridgeDeployer = new CartridgeDeployer();
-//            deploymentEngine.addDeployer(cloudControllerDeployer, "../../conf", "xml");
-//            deploymentEngine.addDeployer(cartridgeDeployer, "cartridges", "xml");
-        	
-            // get all the topics - comma separated list
-            String topicsString = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.TOPICS_PROPERTY);
-            
-            if(topicsString == null || topicsString.isEmpty()) {
-                topicsString = Constants.TOPOLOGY_TOPIC;
-            } 
-            
-            String[] topics = topicsString.split(",");
-            for (String topic : topics) {
-                
-                dataHolder.addEventPublisher(new EventPublisher(topic), topic);
-            }
-
             // Start instance status event message listener
             TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
             subscriber.setMessageListener(new InstanceStatusEventMessageListener());
             Thread tsubscriber = new Thread(subscriber);
             tsubscriber.start();
         	
-        	// initialize the topic publishers
+        	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
 

@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
@@ -72,7 +71,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventSender.sendServiceCreateEvent(cartridgeList);
+        TopologyEventPublisher.sendServiceCreateEvent(cartridgeList);
 
     }
 
@@ -89,7 +88,7 @@ public class TopologyBuilder {
                     } finally {
                         TopologyManager.releaseWriteLock();
                     }
-                    TopologyEventSender.sendServiceRemovedEvent(cartridgeList);
+                    TopologyEventPublisher.sendServiceRemovedEvent(cartridgeList);
                 } else {
                     throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
                 }
@@ -135,7 +134,7 @@ public class TopologyBuilder {
                 service.addCluster(cluster);
             }
             TopologyManager.updateTopology(topology);
-            TopologyEventSender.sendClusterCreatedEvent(cartridgeType, clusterId, cluster);
+            TopologyEventPublisher.sendClusterCreatedEvent(cartridgeType, clusterId, cluster);
 
         } finally {
             TopologyManager.releaseWriteLock();
@@ -163,7 +162,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventSender.sendClusterRemovedEvent(ctxt);
+        TopologyEventPublisher.sendClusterRemovedEvent(ctxt);
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,
@@ -188,7 +187,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventSender.sendInstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, lbClusterId);
+        TopologyEventPublisher.sendInstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, lbClusterId);
     }
 
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
@@ -220,7 +219,7 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         //memberStartedEvent.
-        TopologyEventSender.sendMemberStartedEvent(instanceStartedEvent);
+        TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
     }
 
     public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
@@ -270,7 +269,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventSender.sendMemberActivatedEvent(memberActivatedEvent);
+        TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
     }
 
     public static void handleMemberTerminated(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
@@ -291,7 +290,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventSender.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
+        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
     }
 
     public static void handleMemberSuspended() {
