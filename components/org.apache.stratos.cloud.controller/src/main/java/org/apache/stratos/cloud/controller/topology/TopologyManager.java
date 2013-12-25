@@ -42,7 +42,7 @@ public class TopologyManager {
     private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
     private volatile Topology topology;
     private static TopologyManager instance;
-    private BlockingQueue<TextMessage> sharedTopologyDiffQueue = new LinkedBlockingQueue<TextMessage>();
+    private BlockingQueue<TextMessage> instanceStatusMessageQueue = new LinkedBlockingQueue<TextMessage>();
 
 
     private TopologyManager() {
@@ -115,12 +115,12 @@ public class TopologyManager {
         this.topology = topology;
     }
 
-    public BlockingQueue<TextMessage> getSharedTopologyDiffQueue() {
-        return sharedTopologyDiffQueue;
+    public BlockingQueue<TextMessage> getInstanceStatusMessageQueue() {
+        return instanceStatusMessageQueue;
     }
 
-    public void setSharedTopologyDiffQueue(BlockingQueue<TextMessage> sharedTopologyDiffQueue) {
-        this.sharedTopologyDiffQueue = sharedTopologyDiffQueue;
+    public void setInstanceStatusMessageQueue(BlockingQueue<TextMessage> instanceStatusMessageQueue) {
+        this.instanceStatusMessageQueue = instanceStatusMessageQueue;
     }
 }
 

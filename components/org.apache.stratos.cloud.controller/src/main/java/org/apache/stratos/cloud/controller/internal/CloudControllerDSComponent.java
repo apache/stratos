@@ -27,7 +27,7 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.topology.TopologyListener;
+import org.apache.stratos.cloud.controller.topology.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
@@ -100,9 +100,9 @@ public class CloudControllerDSComponent {
                 dataHolder.addEventPublisher(new EventPublisher(topic), topic);
             }
 
-            //initialting the subscriber
+            // Start instance status event message listener
             TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
-            subscriber.setMessageListener(new TopologyListener());
+            subscriber.setMessageListener(new InstanceStatusEventMessageListener());
             Thread tsubscriber = new Thread(subscriber);
             tsubscriber.start();
         	

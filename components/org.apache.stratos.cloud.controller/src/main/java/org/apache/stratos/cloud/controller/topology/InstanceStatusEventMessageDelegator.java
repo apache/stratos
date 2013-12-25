@@ -36,7 +36,7 @@ public class InstanceStatusEventMessageDelegator implements Runnable {
 
         while (true) {
             try {
-                TextMessage message = TopologyManager.getInstance().getSharedTopologyDiffQueue().take();
+                TextMessage message = TopologyManager.getInstance().getInstanceStatusMessageQueue().take();
 
                 // retrieve the header
                 String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
