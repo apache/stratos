@@ -125,8 +125,7 @@
                             org.apache.stratos.load.balancer.mediators,
                         </Export-Package>
                         <Import-Package>
-                            !org.apache.stratos.load.balancer.endpoint,
-                            !org.apache.stratos.load.balancer,
+                            org.apache.stratos.load.balancer.common.statistics.publisher,
                             org.wso2.carbon.registry.core.service; version=1.0.1,
                             *;resolution:=optional
                         </Import-Package>
