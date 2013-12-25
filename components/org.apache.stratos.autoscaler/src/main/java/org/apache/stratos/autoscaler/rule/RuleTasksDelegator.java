@@ -13,6 +13,8 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
+import java.util.Properties;
+
 /**
  * This will have utility methods that need to be executed from rule file...
  */
@@ -62,7 +64,6 @@ public class RuleTasksDelegator {
                partitionContext.addPendingMember(memberContext);
             }
 
-            partitionContext.incrementCurrentMemberCount(1);
         } catch (Throwable e) {
             String message = "Cannot spawn an instance";
             log.error(message, e);
