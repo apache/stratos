@@ -18,17 +18,12 @@
  */
 package org.apache.stratos.cloud.controller.topology;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.Topology;
 
-import com.google.gson.Gson;
-
-import javax.jms.TextMessage;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -37,86 +32,86 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
 
-    private  volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-    private volatile Topology topology;
-    private static TopologyManager instance;
-    private BlockingQueue<TextMessage> instanceStatusMessageQueue = new LinkedBlockingQueue<TextMessage>();
-
+    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+    private static volatile Topology topology;
 
     private TopologyManager() {
     }
 
-    public static TopologyManager getInstance() {
-        synchronized (TopologyManager.class) {
-            if (instance == null) {
-                instance = new TopologyManager();
-            }
-            return instance;
-            
+    public static void acquireReadLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Read lock acquired");
         }
-    }
-
-    public void acquireReadLock() {
         readLock.lock();
     }
 
-    public void releaseReadLock() {
+    public static void releaseReadLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Read lock released");
+        }
         readLock.unlock();
     }
 
-    public void acquireWriteLock() {
+    public static void acquireWriteLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Write lock acquired");
+        }
         writeLock.lock();
     }
 
-    public void releaseWriteLock() {
+    public static void releaseWriteLock() {
+        if(log.isDebugEnabled()) {
+            log.debug("Write lock released");
+        }
         writeLock.unlock();
     }
 
-    public synchronized Topology getTopology() {
-        synchronized (TopologyManager.class) {
-            if(this.topology == null) {
-                //need to initialize the topology
-                this.topology = CloudControllerUtil.retrieveTopology();
-                if (this.topology == null) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Creating new topology");
+    public static Topology getTopology() {
+        if (topology == null) {
+            synchronized (TopologyManager.class) {
+                if (topology == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Trying to retrieve topology from registry");
                     }
-                    this.topology = new Topology();
+                    topology = CloudControllerUtil.retrieveTopology();
+                    if (topology == null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Topology not found in registry, creating new");
+                        }
+                        topology = new Topology();
+                    }
+                    if (log.isDebugEnabled()) {
+                        log.debug("Topology initialized");
+                    }
                 }
             }
         }
-        return this.topology;
+        return topology;
     }
 
-    public synchronized void updateTopology(Topology topology) {
+    /**
+     * Update in-memory topology and persist it in registry.
+     * @param topology_
+     */
+    public static void updateTopology(Topology topology_) {
         synchronized (TopologyManager.class) {
-             this.topology = topology;
-             CloudControllerUtil.persistTopology(this.topology);
-             if (log.isDebugEnabled()) {
-                 log.debug(String.format("Topology updated: %s", toJson()));
-             }
+            if (log.isDebugEnabled()) {
+                log.debug("Updating topology");
+            }
+            topology = topology_;
+            CloudControllerUtil.persistTopology(topology);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Topology updated: %s", toJson(topology)));
+            }
         }
 
     }
 
-    public String toJson() {
+    private static String toJson(Object object) {
         Gson gson = new Gson();
-        return gson.toJson(topology);
-
-    }
-
-    public void setTopology(Topology topology) {
-        this.topology = topology;
-    }
-
-    public BlockingQueue<TextMessage> getInstanceStatusMessageQueue() {
-        return instanceStatusMessageQueue;
-    }
-
-    public void setInstanceStatusMessageQueue(BlockingQueue<TextMessage> instanceStatusMessageQueue) {
-        this.instanceStatusMessageQueue = instanceStatusMessageQueue;
+        return gson.toJson(object);
     }
 }
 
