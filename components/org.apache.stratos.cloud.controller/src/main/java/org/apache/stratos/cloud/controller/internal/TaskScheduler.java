@@ -54,7 +54,7 @@ public class TaskScheduler {
                 tm = taskService.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
                 FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
                 String cron = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.CRON_ELEMENT);
-                cron = ( cron == null ? CloudControllerConstants.PUB_CRON_EXPRESSION : cron );
+                cron = ( cron == null ? CloudControllerConstants.TOPOLOGY_SYNC_CRON : cron );
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Topology synchronization task cron: %s", cron));
                 }
