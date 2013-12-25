@@ -59,7 +59,7 @@ public class NetworkPartitionContext implements Serializable{
 
     //details required for partition selection algorithms
     private int currentPartitionIndex;
-    private Map<String, Integer> partitionToMemberCountMap;
+//    private Map<String, Integer> partitionToMemberCountMap;
 
     //partitions of this network partition
     private Map<String, PartitionContext> partitionCtxts;
@@ -70,7 +70,7 @@ public class NetworkPartitionContext implements Serializable{
         this.id = id;
         this.setServiceToLBClusterId(new HashMap<String, String>());
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
-        partitionToMemberCountMap = new HashMap<String, Integer>();
+//        partitionToMemberCountMap = new HashMap<String, Integer>();
         partitionCtxts = new HashMap<String, PartitionContext>();
 
     }
@@ -288,35 +288,39 @@ public class NetworkPartitionContext implements Serializable{
         this.id = id;
     }
 
-    public void increaseMemberCountInPartitionBy(String partitionId, int count){
-         if(!partitionCountExists(partitionId)){
-             addPartitionCount(partitionId, 1);
-         } else{
-            partitionToMemberCountMap.put(partitionId, getMemberCount(partitionId) + count);
-         }
-     }
+//    public void increaseMemberCountOfPartition(String partitionId, int count){
+//         if(!partitionCountExists(partitionId)){
+//             addPartitionCount(partitionId, 1);
+//         } else{
+//            partitionToMemberCountMap.put(partitionId, getMemberCountOfPartition(partitionId) + count);
+//         }
+//     }
 
-     public void decreaseMemberCountInPartitionBy(String partitionId, int count){
+//     public void decreaseMemberCountOfPartition(String partitionId, int count){
+//
+//         partitionToMemberCountMap.put(partitionId, getMemberCountOfPartition(partitionId) - count);
+//     }
+//
+//     public void addPartitionCount(String partitionId, int count){
+//         partitionToMemberCountMap.put(partitionId, count);
+//     }
+//
+//     public void removePartitionCount(String partitionId){
+//
+//         partitionToMemberCountMap.remove(partitionId);
+//     }
 
-         partitionToMemberCountMap.put(partitionId, getMemberCount(partitionId) - count);
-     }
+//     public boolean partitionCountExists(String partitionId){
+//         return partitionToMemberCountMap.containsKey(partitionId);
+//     }
 
-     public void addPartitionCount(String partitionId, int count){
-         partitionToMemberCountMap.put(partitionId, count);
-     }
-
-     public void removePartitionCount(String partitionId){
-
-         partitionToMemberCountMap.remove(partitionId);
-     }
-
-     public boolean partitionCountExists(String partitionId){
-         return partitionToMemberCountMap.containsKey(partitionId);
-     }
-
-     public int getMemberCount(String partitionId){
-         if(partitionToMemberCountMap.containsKey(partitionId)) {
-             return partitionToMemberCountMap.get(partitionId);
+     public int getMemberCountOfPartition(String partitionId){
+//         if(partitionToMemberCountMap.containsKey(partitionId)) {
+//             return partitionToMemberCountMap.get(partitionId);
+//         }
+//         return 0;
+         if(partitionCtxts.containsKey(partitionId)){
+             return getPartitionCtxt(partitionId).getTotalMemberCount();
          }
          return 0;
      }
@@ -351,13 +355,13 @@ public class NetworkPartitionContext implements Serializable{
 
     public void setPartitions(Partition[] partitions) {
         this.partitions = partitions;
-        for (Partition partition: partitions){
-            partitionToMemberCountMap.put(partition.getId(), 0);
-        }
+//        for (Partition partition: partitions){
+//            partitionToMemberCountMap.put(partition.getId(), 0);
+//        }
     }
 
-    public void setPartitionToMemberCountMap(Map<String, Integer> partitionToMemberCountMap) {
-        this.partitionToMemberCountMap = partitionToMemberCountMap;
-    }
+//    public void setPartitionToMemberCountMap(Map<String, Integer> partitionToMemberCountMap) {
+//        this.partitionToMemberCountMap = partitionToMemberCountMap;
+//    }
 
 }

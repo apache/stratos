@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
@@ -54,14 +53,14 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	        networkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
     	        
     	        // current partition has no partitionid-instanceid info in cluster context
-	        	if(!networkPartitionContext.partitionCountExists(currentPartitionId))
-                    AutoscalerContext.getInstance().getMonitor(clusterId)
-                                                .getNetworkPartitionCtxt(networkPartitionContext.getId())
-                                                .addPartitionCount(currentPartitionId, 0);
+//	        	if(!networkPartitionContext.partitionCountExists(currentPartitionId))
+//                    AutoscalerContext.getInstance().getMonitor(clusterId)
+//                                                .getNetworkPartitionCtxt(networkPartitionContext.getId())
+//                                                .addPartitionCount(currentPartitionId, 0);
 	        	
-    	        if(networkPartitionContext.getMemberCount(currentPartitionId) < currentPartition.getPartitionMax()){
+    	        if(networkPartitionContext.getMemberCountOfPartition(currentPartitionId) < currentPartition.getPartitionMax()){
     	        	// current partition is free    	        	
-    	        	networkPartitionContext.increaseMemberCountInPartitionBy(currentPartitionId, 1);
+//    	        	networkPartitionContext.increaseMemberCountOfPartition(currentPartitionId, 1);
     	        	if(log.isDebugEnabled())
     	        		log.debug("Free space found in partition " + currentPartition.getId());
 	                return currentPartition;
@@ -106,14 +105,14 @@ public class RoundRobin implements AutoscaleAlgorithm{
                 Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
-                if (!networkPartitionContext.partitionCountExists(currentPartitionId))
-                    AutoscalerContext.getInstance().getMonitor(clusterId)
-                            .getNetworkPartitionCtxt(networkPartitionContext.getId())
-                            .addPartitionCount(currentPartitionId, 0);
+//                if (!networkPartitionContext.partitionCountExists(currentPartitionId))
+//                    AutoscalerContext.getInstance().getMonitor(clusterId)
+//                            .getNetworkPartitionCtxt(networkPartitionContext.getId())
+//                            .addPartitionCount(currentPartitionId, 0);
                 // has more than minimum instances.
-                if (networkPartitionContext.getMemberCount(currentPartitionId) > currentPartition.getPartitionMin()) {
+                if (networkPartitionContext.getMemberCountOfPartition(currentPartitionId) > currentPartition.getPartitionMin()) {
                     // current partition is free
-                    networkPartitionContext.decreaseMemberCountInPartitionBy(currentPartitionId, 1);
+//                    networkPartitionContext.decreaseMemberCountOfPartition(currentPartitionId, 1);
                     if (log.isDebugEnabled()) {
                         log.debug("Returning partition for scaling down " +
                                   currentPartition.getId());

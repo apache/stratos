@@ -182,6 +182,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 MemberTerminatedEvent e = (MemberTerminatedEvent) event;
                 String networkPartitionId = e.getNetworkPartitionId();
                 String clusterId = e.getClusterId();
+                String partitionId = e.getPartitionId();
                 AbstractMonitor monitor;
 
                 if(AutoscalerContext.getInstance().moniterExist(clusterId)){
@@ -195,12 +196,13 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
                 NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
 
-                networkPartitionContext.getPartitionCtxt(e.getPartitionId())
-                        .removeMemberStatsContext(e.getMemberId());
+                PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
+                partitionContext.removeMemberStatsContext(e.getMemberId());
+                partitionContext.decrementCurrentActiveMemberCount(1);
+
                 if(log.isInfoEnabled()){
                     log.info(String.format("Member stat context has been removed: [member] %s", e.getMemberId()));
                 }
-                networkPartitionContext.decreaseMemberCountInPartitionBy(e.getPartitionId(), 1);
 
             } finally {
                 TopologyManager.releaseReadLock();
@@ -236,7 +238,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 if(log.isInfoEnabled()){
                     log.info(String.format("Member stat context has been added: [member] %s", memberId));
                 }
-                partitionContext.incrementCurrentMemberCount(1);
+                partitionContext.incrementCurrentActiveMemberCount(1);
                 partitionContext.removePendingMember(memberId);
 
             }

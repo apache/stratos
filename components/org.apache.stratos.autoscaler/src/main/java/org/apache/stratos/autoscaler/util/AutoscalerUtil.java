@@ -132,11 +132,13 @@ public class AutoscalerUtil {
 
                         if(MemberStatus.Activated.equals(member.getStatus())){
                             partitionContext.addActiveMember(memberContext);
-                            networkPartitionContext.increaseMemberCountInPartitionBy(partition.getId(), 1);
+//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
+                            partitionContext.incrementCurrentActiveMemberCount(1);
+
                         } else if(MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())){
                             partitionContext.addPendingMember(memberContext);
 
-                            networkPartitionContext.increaseMemberCountInPartitionBy(partition.getId(), 1);
+//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
                         } else if(MemberStatus.Suspended.equals(member.getStatus())){
                             partitionContext.addFaultyMember(memberId);
                         }
@@ -234,15 +236,17 @@ public class AutoscalerUtil {
 
                     if (MemberStatus.Activated.equals(member.getStatus())) {
                         partitionContext.addActiveMember(memberContext);
+//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
+                        partitionContext.incrementCurrentActiveMemberCount(1);
                     } else if (MemberStatus.Created.equals(member.getStatus()) ||
                                MemberStatus.Starting.equals(member.getStatus())) {
                         partitionContext.addPendingMember(memberContext);
+//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
                     } else if (MemberStatus.Suspended.equals(member.getStatus())) {
                         partitionContext.addFaultyMember(memberId);
                     }
 
                     partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-                    partitionContext.incrementCurrentMemberCount(1);
                     if(log.isInfoEnabled()){
                         log.info(String.format("Member stat context has been added: [member] %s", memberId));
                     }
