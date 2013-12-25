@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
@@ -37,7 +38,11 @@ public class InstanceStatusEventMessageListener implements MessageListener{
         TextMessage receivedMessage = (TextMessage) message;
         InstanceStatusEventMessageQueue.getInstance().add(receivedMessage);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Instance status message added to queue: %s", message));
+            try {
+                log.debug(String.format("Instance status message added to queue: %s", receivedMessage.getText()));
+            } catch (JMSException e) {
+                log.error(e);
+            }
         }
     }
 }

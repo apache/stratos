@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageDelegator;
 import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
@@ -76,6 +77,11 @@ public class CloudControllerDSComponent {
             subscriber.setMessageListener(new InstanceStatusEventMessageListener());
             Thread tsubscriber = new Thread(subscriber);
             tsubscriber.start();
+
+            // Start instance status message delegator
+            InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
+            Thread tdelegator = new Thread(delegator);
+            tdelegator.start();
         	
         	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
