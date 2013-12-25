@@ -30,9 +30,10 @@ class php_cartridge (syslog,docroot,samlalias,serverport,mb_ip,mb_port,cep_ip,ce
         }
 
         exec { "update-apt":
-                path    => ['/bin', '/usr/bin'],
+                path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin/'],
                 command => "apt-get update > /dev/null 2>&1 ",
                 require => File["/etc/apt/apt.conf.d/90forceyes"],
+		logoutput => on_failure,
         }
 
         package { $packages:
