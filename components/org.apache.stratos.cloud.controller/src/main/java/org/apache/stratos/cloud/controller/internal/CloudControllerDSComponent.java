@@ -26,13 +26,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
+import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -84,7 +84,8 @@ public class CloudControllerDSComponent {
             if(log.isInfoEnabled()) {
                 log.info("Scheduling tasks");
             }
-            TaskScheduler.schedule();
+
+            TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
 
             log.debug("******* Cloud Controller Service bundle is activated ******* ");
         } catch (Throwable e) {
