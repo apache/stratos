@@ -242,6 +242,7 @@ public class AutoscalerUtil {
                     }
 
                     partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                    partitionContext.incrementCurrentMemberCount(1);
                     if(log.isInfoEnabled()){
                         log.info(String.format("Member stat context has been added: [member] %s", memberId));
                     }
