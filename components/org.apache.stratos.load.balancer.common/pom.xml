@@ -92,6 +92,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.load.balancer.common.*,
+                            org.apache.stratos.load.balancer.common.statistics.publisher.*,
                         </Export-Package>
                         <Private-Package>
                             org.apache.stratos.load.balancer.common.internal;
