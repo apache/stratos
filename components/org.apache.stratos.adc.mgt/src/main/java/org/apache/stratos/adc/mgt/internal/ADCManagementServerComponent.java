@@ -146,7 +146,7 @@ public class ADCManagementServerComponent {
 
     protected void setRegistryService(RegistryService registryService) {
         try {
-            DataHolder.setRegistry(registryService.getGovernanceSystemRegistry());
+            DataHolder.setRegistryService(registryService);
         } catch (Exception e) {
             log.error("Cannot retrieve governance registry", e);
         }

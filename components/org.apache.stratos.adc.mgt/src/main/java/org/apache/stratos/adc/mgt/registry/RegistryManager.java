@@ -23,24 +23,29 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
-import org.apache.stratos.adc.mgt.lookup.ClusterIdToCartridgeSubscriptionMap;
-import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
+import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
+import org.apache.stratos.adc.mgt.lookup.SubscriptionContext;
 import org.apache.stratos.adc.mgt.utils.Serializer;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 
 public class RegistryManager {
 
     private final static Log log = LogFactory.getLog(RegistryManager.class);
+                                                                                                                          ;
     private final static String STRATOS_MANAGER_REOSURCE = "/stratos.manager";
-    private static Registry registryService;
-    private static RegistryManager registryManager;
+    private final static String CLUSTER_ID_TO_SUBSCRIPTION = "/clusterIdToSubscription";
+    private final static String TENENTID_TO_SUBSCRIPTION_CONTEXT = "/tenantIdToSubscriptionContext";
+
+    private static RegistryService registryService;
+    private static volatile RegistryManager registryManager;
 
     public static RegistryManager getInstance() {
 
-        registryService = DataHolder.getRegistry();
+        registryService = DataHolder.getRegistryService();
 
         if (registryManager == null) {
             synchronized (RegistryManager.class) {
@@ -54,83 +59,154 @@ public class RegistryManager {
     }
 
     private RegistryManager() {
-        try {
-            if (!registryService.resourceExists(STRATOS_MANAGER_REOSURCE)) {
-                registryService.put(STRATOS_MANAGER_REOSURCE, registryService.newCollection());
+
+    }
+
+    private UserRegistry initRegistry (int tenantId) throws RegistryException, ADCException {
+
+        UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry(tenantId);
+        if (tenantGovRegistry == null) {
+            String errorMsg = "Tenant " + tenantId + "'s governance registry is not initialized";
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
+
+        synchronized (RegistryManager.class) {
+            // check if the resource is available, else create it
+            try {
+                if (!tenantGovRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
+                    tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE, tenantGovRegistry.newCollection());
+                }
+            } catch (RegistryException e) {
+                String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
+                log.error(errorMsg, e);
+                throw new ADCException(errorMsg, e);
             }
-        } catch (RegistryException e) {
-            String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
-            log.error(errorMsg, e);;
         }
+
+        return tenantGovRegistry;
     }
 
-    public void persistAliastoSubscriptionMap (int tenantId,
-                                               SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap)
+    private UserRegistry initRegistry () throws RegistryException, ADCException {
+
+        UserRegistry govRegistry = registryService.getGovernanceSystemRegistry();
+        if (govRegistry == null) {
+            String errorMsg = "Governance registry is not initialized";
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
+
+        synchronized (RegistryManager.class) {
+            // check if the resource is available, else create it
+            try {
+                if (!govRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
+                    govRegistry.put(STRATOS_MANAGER_REOSURCE, govRegistry.newCollection());
+                }
+            } catch (RegistryException e) {
+                String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
+                log.error(errorMsg, e);
+                throw new ADCException(errorMsg, e);
+            }
+        }
+
+        return govRegistry;
+    }
+
+    public void persistSubscriptionContext(int tenantId, SubscriptionContext subscriptionContext)
             throws RegistryException, ADCException {
 
+        //TODO: uncomment
+        //UserRegistry tenantGovRegistry = initRegistry(tenantId);
+        //temporary
+        UserRegistry tenantGovRegistry = initRegistry();
+
         try {
-            registryService.beginTransaction();
-            Resource nodeResource = registryService.newResource();
-            nodeResource.setContent(Serializer.serializeAliasToSubscriptionMapToByteArray(aliasToSubscriptionMap));
-            registryService.put(STRATOS_MANAGER_REOSURCE + "/subscription/tenant" + Integer.toString(tenantId),
-                    nodeResource);
-            registryService.commitTransaction();
+            tenantGovRegistry.beginTransaction();
+            Resource nodeResource = tenantGovRegistry.newResource();
+            nodeResource.setContent(Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
+            //TODO: uncomment
+            //tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT, nodeResource);
+            //temporary
+            tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId), nodeResource);
+            tenantGovRegistry.commitTransaction();
 
         } catch (Exception e) {
-            String errorMsg = "Failed to persist SubscriptionAliasToCartridgeSubscriptionMap in registry.";
-            registryService.rollbackTransaction();
+            String errorMsg = "Failed to persist SubscriptionContext in registry.";
+            tenantGovRegistry.rollbackTransaction();
             log.error(errorMsg, e);
             throw new ADCException(errorMsg, e);
         }
     }
 
-    public Object getAliastoSubscriptionMap (int tenantId) throws ADCException {
+    public Object getSubscriptionContext(int tenantId) throws ADCException, RegistryException {
+
+        //TODO: uncomment
+        //UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry(tenantId);
+        //temprary
+        UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry();
+
+        if (tenantGovRegistry == null) {
+            String errorMsg = "Tenant " + tenantId + "'s governance registry is not initialized";
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
 
         try {
-            Resource resource = registryService.get(STRATOS_MANAGER_REOSURCE + "/subscription/tenant" +
-                    Integer.toString(tenantId));
+            //TODO: uncomment
+            //Resource resource = tenantGovRegistry.get(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT);
+            //temporary
+            Resource resource = tenantGovRegistry.get(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
+            return resource.getContent();
+
+        } catch (ResourceNotFoundException ignore) {
+            log.error("Sepcified resource not found at " + STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT);
+            return null;
+
+        } catch (RegistryException e) {
+            String errorMsg = "Failed to retrieve SubscriptionContext from registry.";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+
+    public void persistClusterIdToSubscription (ClusterIdToSubscription clusterIdToSubscription)
+            throws RegistryException, ADCException {
+
+        UserRegistry govRegistry = initRegistry();
+
+        try {
+            govRegistry.beginTransaction();
+            Resource nodeResource = govRegistry.newResource();
+            nodeResource.setContent(Serializer.serializeClusterIdToSubscriptionToByteArray(clusterIdToSubscription));
+            govRegistry.put(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION, nodeResource);
+            govRegistry.commitTransaction();
+
+        } catch (Exception e) {
+            String errorMsg = "Failed to persist ClusterIdToSubscription in registry.";
+            govRegistry.rollbackTransaction();
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+
+    public Object getClusterIdToSubscription () throws ADCException, RegistryException {
+
+        UserRegistry govRegistry = registryService.getGovernanceSystemRegistry();
+        if (govRegistry == null) {
+            String errorMsg = "Governance registry is not initialized";
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
+
+        try {
+            Resource resource = govRegistry.get(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION);
             return resource.getContent();
 
         } catch (ResourceNotFoundException ignore) {
             return null;
 
         } catch (RegistryException e) {
-            String errorMsg = "Failed to retrieve SubscriptionAliasToCartridgeSubscriptionMap from registry.";
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-    }
-
-    public void persistClusterIdToSubscriptionMap (ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap)
-            throws RegistryException, ADCException {
-
-        try {
-            registryService.beginTransaction();
-            Resource nodeResource = registryService.newResource();
-            nodeResource.setContent(Serializer.serializeClusterIdToSubscriptionMapToByteArray(clusterIdToSubscriptionMap));
-            registryService.put(STRATOS_MANAGER_REOSURCE + "/subscription/cluster",
-                    nodeResource);
-            registryService.commitTransaction();
-
-        } catch (Exception e) {
-            String errorMsg = "Failed to persist ClusterIdToCartridgeSubscriptionMap in registry.";
-            registryService.rollbackTransaction();
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-    }
-
-    public Object getClusterIdtoSubscriptionMap () throws ADCException {
-
-        try {
-            Resource resource = registryService.get(STRATOS_MANAGER_REOSURCE + "/subscription/cluster");
-            return resource.getContent();
-
-        } catch (ResourceNotFoundException ignore) {
-            return null;
-
-        } catch (RegistryException e) {
-            String errorMsg = "Failed to retrieve ClusterIdToCartridgeSubscriptionMap from registry.";
+            String errorMsg = "Failed to retrieve ClusterIdToSubscription from registry.";
             log.error(errorMsg, e);
             throw new ADCException(errorMsg, e);
         }

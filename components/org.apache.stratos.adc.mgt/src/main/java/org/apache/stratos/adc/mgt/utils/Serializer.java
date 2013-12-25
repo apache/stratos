@@ -19,8 +19,8 @@
 
 package org.apache.stratos.adc.mgt.utils;
 
-import org.apache.stratos.adc.mgt.lookup.ClusterIdToCartridgeSubscriptionMap;
-import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
+import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
+import org.apache.stratos.adc.mgt.lookup.SubscriptionContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,19 +30,19 @@ import java.io.ObjectOutputStream;
 public class Serializer {
 
     /**
-     * Serialize a SubscriptionAliasToCartridgeSubscriptionMap to a byte array.
-     * @param aliasToSubscriptionMap
+     * Serialize a SubscriptionContext instance to a byte array.
+     * @param subscriptionContext
      * @return byte[]
      * @throws java.io.IOException
      */
-    public static byte[] serializeAliasToSubscriptionMapToByteArray (SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap)
+    public static byte[] serializeSubscriptionSontextToByteArray(SubscriptionContext subscriptionContext)
             throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(aliasToSubscriptionMap);
+            out.writeObject(subscriptionContext);
 
             return bos.toByteArray();
 
@@ -56,19 +56,19 @@ public class Serializer {
     }
 
     /**
-     * Serialize a ClusterIdToCartridgeSubscriptionMap to a byte array.
-     * @param clusterIdToSubscriptionMap
+     * Serialize a ClusterIdToSubscription instance to a byte array.
+     * @param clusterIdToSubscription
      * @return byte[]
      * @throws java.io.IOException
      */
-    public static byte[] serializeClusterIdToSubscriptionMapToByteArray (ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap)
+    public static byte[] serializeClusterIdToSubscriptionToByteArray(ClusterIdToSubscription clusterIdToSubscription)
             throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(clusterIdToSubscriptionMap);
+            out.writeObject(clusterIdToSubscription);
 
             return bos.toByteArray();
 

@@ -134,7 +134,7 @@ public class TopologyClusterInformationModel {
 
                 } else {
                     //iterate through the set
-                    Iterator<SubscriptionAliasContext> aliasIterator = subscriptionAliasContextSet.iterator();
+                    /*Iterator<SubscriptionAliasContext> aliasIterator = subscriptionAliasContextSet.iterator();
                     while (aliasIterator.hasNext()) {
                         //see if the set contains a SubscriptionAliasContext instance with the given alias
                         SubscriptionAliasContext subscriptionAliasContext = aliasIterator.next();
@@ -143,7 +143,10 @@ public class TopologyClusterInformationModel {
                             aliasIterator.remove();
                             break;
                         }
-                    }
+                    }*/
+                    // remove the existing one
+                    subscriptionAliasContextSet.remove(new SubscriptionAliasContext(subscriptionAlias, null));
+
                     //now, add the new cluster object
                     subscriptionAliasContextSet.add(new SubscriptionAliasContext(subscriptionAlias, cluster));
                 }
@@ -205,7 +208,7 @@ public class TopologyClusterInformationModel {
                     while (aliasIterator.hasNext()) {
                         //see if the set contains a SubscriptionAliasContext instance with the given alias
                         SubscriptionAliasContext subscriptionAliasContext = aliasIterator.next();
-                        if (subscriptionAliasContext.getSubscriptionAlias().equals(subscriptionAlias)) {
+                        if (subscriptionAliasContext.equals(new SubscriptionAliasContext(subscriptionAlias, null))) {
                             return subscriptionAliasContext.getCluster();
                         }
                     }

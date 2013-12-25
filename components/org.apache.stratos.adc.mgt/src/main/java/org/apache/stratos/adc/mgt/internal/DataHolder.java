@@ -20,9 +20,9 @@
 package org.apache.stratos.adc.mgt.internal;
 
 import org.apache.axis2.context.ConfigurationContext;
-import org.wso2.carbon.registry.core.Registry;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -34,7 +34,7 @@ public class DataHolder {
 	private static ConfigurationContext serverConfigContext;
 
 	private static RealmService realmService;
-	private static Registry registry;
+	private static RegistryService registryService;
 	private static TopologyManagementService topologyMgtService;
 	private static EventPublisher eventPublisher;
 
@@ -46,8 +46,8 @@ public class DataHolder {
 		DataHolder.realmService = realmService;
 	}
 
-	public static Registry getRegistry() {
-		return registry;
+	public static RegistryService getRegistryService() {
+		return registryService;
 	}
 
 	public static ConfigurationContext getClientConfigContext() {
@@ -68,8 +68,8 @@ public class DataHolder {
 		DataHolder.serverConfigContext = serverConfigContext;
 	}
 
-	public static void setRegistry(Registry registry) {
-		DataHolder.registry = registry;
+	public static void setRegistryService(RegistryService registryService) {
+		DataHolder.registryService = registryService;
 	}
 
 	public static TopologyManagementService getTopologyMgtService() {

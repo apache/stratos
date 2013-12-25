@@ -32,7 +32,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 public class RegistryManager {
 	private static Log log = LogFactory.getLog(RegistryManager.class);
-	private static Registry registry = DataHolder.getRegistry();
+	private static Registry registry = DataHolder.getRegistryService();
 
 	public RegistryManager() {
 		try {

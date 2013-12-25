@@ -23,21 +23,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
-import org.apache.stratos.adc.mgt.lookup.ClusterIdToCartridgeSubscriptionMap;
-import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
+import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
+import org.apache.stratos.adc.mgt.lookup.SubscriptionContext;
 import org.apache.stratos.adc.mgt.registry.RegistryManager;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.Deserializer;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+
+import java.util.Collection;
 
 public class RegistryBasedPersistenceManager extends PersistenceManager {
 
     private static final Log log = LogFactory.getLog(RegistryBasedPersistenceManager.class);
 
     @Override
-    public void persistCartridgeSubscriptions(int tenantId, SubscriptionAliasToCartridgeSubscriptionMap aliasToSubscriptionMap) throws PersistenceManagerException {
+    public void persistCartridgeSubscription(CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
+
+        SubscriptionContext subscriptionContext = new SubscriptionContext();
+        subscriptionContext.addSubscription(cartridgeSubscription);
 
         try {
-            RegistryManager.getInstance().persistAliastoSubscriptionMap(tenantId, aliasToSubscriptionMap);
+            RegistryManager.getInstance().persistSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId(), subscriptionContext);
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
@@ -48,76 +54,137 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }
 
     @Override
-    public SubscriptionAliasToCartridgeSubscriptionMap retrieveCartridgeSubscriptions(int tenantId) throws PersistenceManagerException {
+    public void removeCartridgeSubscription(int tenantId, String alias) throws PersistenceManagerException {
+        //TODO
+    }
 
-        Object aliasToSubscriptionMapObj;
+    @Override
+    public CartridgeSubscription getCartridgeSubscription(int tenantId, String alias) throws PersistenceManagerException {
+
+        Object byteObj;
 
         try {
-            aliasToSubscriptionMapObj = RegistryManager.getInstance().getAliastoSubscriptionMap(tenantId);
+            byteObj = RegistryManager.getInstance().getSubscriptionContext(tenantId);
 
         } catch (ADCException e) {
             throw new PersistenceManagerException(e);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
         }
 
-        if (aliasToSubscriptionMapObj != null) {
-            try {
-                Object dataObj = Deserializer
-                        .deserializeFromByteArray((byte[]) aliasToSubscriptionMapObj);
-                if(dataObj instanceof SubscriptionAliasToCartridgeSubscriptionMap) {
-                    return (SubscriptionAliasToCartridgeSubscriptionMap) dataObj;
-                } else {
-                    return null;
-                }
+        Object subscriptionContextObj;
 
-            } catch (Exception e) {
-                String errorMsg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
-                log.warn(errorMsg, e);
-            }
+        try {
+            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        SubscriptionContext subscriptionContext;
+        if (subscriptionContextObj instanceof SubscriptionContext) {
+            subscriptionContext = (SubscriptionContext) subscriptionContextObj;
+            return subscriptionContext.getSubscriptionForAlias(alias);
         }
 
         return null;
     }
 
     @Override
-    public void persistCartridgeSubscriptions(String clusterId, ClusterIdToCartridgeSubscriptionMap clusterIdToSubscriptionMap) throws PersistenceManagerException {
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId) throws PersistenceManagerException {
+
+        Object byteObj;
 
         try {
-            RegistryManager.getInstance().persistClusterIdToSubscriptionMap(clusterIdToSubscriptionMap);
+            byteObj = RegistryManager.getInstance().getSubscriptionContext(tenantId);
+
+        } catch (ADCException e) {
+            throw new PersistenceManagerException(e);
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
+        }
 
-        } catch (ADCException e) {
+        Object subscriptionContextObj;
+
+        try {
+            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
             throw new PersistenceManagerException(e);
         }
+
+        SubscriptionContext subscriptionContext;
+        if (subscriptionContextObj instanceof SubscriptionContext) {
+            subscriptionContext = (SubscriptionContext) subscriptionContextObj;
+            return subscriptionContext.getSubscriptions();
+        }
+
+        return null;
     }
 
     @Override
-    public ClusterIdToCartridgeSubscriptionMap retrieveCartridgeSubscriptions(String clusterId) throws PersistenceManagerException {
+    public CartridgeSubscription getCartridgeSubscription(String clusterDomain) throws PersistenceManagerException {
 
-        Object clusterIdToSubscriptionMapObj;
+        Object byteObj;
 
         try {
-            clusterIdToSubscriptionMapObj = RegistryManager.getInstance().getClusterIdtoSubscriptionMap();
+            byteObj = RegistryManager.getInstance().getClusterIdToSubscription();
 
         } catch (ADCException e) {
             throw new PersistenceManagerException(e);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
         }
 
-        if (clusterIdToSubscriptionMapObj != null) {
-            try {
-                Object dataObj = Deserializer
-                        .deserializeFromByteArray((byte[]) clusterIdToSubscriptionMapObj);
-                if(dataObj instanceof ClusterIdToCartridgeSubscriptionMap) {
-                    return (ClusterIdToCartridgeSubscriptionMap) dataObj;
-                } else {
-                    return null;
-                }
+        Object clusterIdToSubscriptionObj;
 
-            } catch (Exception e) {
-                String errorMsg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
-                log.warn(errorMsg, e);
-            }
+        try {
+            clusterIdToSubscriptionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        ClusterIdToSubscription clusterIdToSubscription;
+        if (clusterIdToSubscriptionObj instanceof ClusterIdToSubscription) {
+            clusterIdToSubscription = (ClusterIdToSubscription) clusterIdToSubscriptionObj;
+            return clusterIdToSubscription.getSubscription(clusterDomain);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().getSubscriptionContext(tenantId);
+
+        } catch (ADCException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        Object subscriptionContextObj;
+
+        try {
+            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        SubscriptionContext subscriptionContext;
+        if (subscriptionContextObj instanceof SubscriptionContext) {
+            subscriptionContext = (SubscriptionContext) subscriptionContextObj;
+            return subscriptionContext.getSubscriptionsOfType(cartridgeType);
         }
 
         return null;

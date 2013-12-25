@@ -439,13 +439,23 @@ public abstract class CartridgeSubscription implements Serializable {
         this.subscriptionTenancyBehaviour = subscriptionTenancyBehaviour;
     }
 
-    /*public String getServiceStatus() {
-        return serviceStatus;
+    public boolean equals(Object other) {
+
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof CartridgeSubscription)) {
+            return false;
+        }
+
+        CartridgeSubscription that = (CartridgeSubscription)other;
+        return ((this.type.equals(that.type)) && (this.alias.equals(that.alias)));
     }
 
-    public void setServiceStatus(String serviceStatus) {
-        this.serviceStatus = serviceStatus;
-    }*/
+    public int hashCode () {
+
+        return type.hashCode() + alias.hashCode();
+    }
 
     @Override
     public String toString() {
