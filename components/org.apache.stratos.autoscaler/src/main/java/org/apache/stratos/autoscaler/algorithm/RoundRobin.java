@@ -40,7 +40,10 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
     	List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
     	int noOfPartitions = partitions.size();
-
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Selecting a partition from 'Round Robin' algorithm, " +
+                    "%s partitions in the [network partition]: %s ", noOfPartitions, networkPartitionContext.getId()));
+        }
     	for(int i=0; i < noOfPartitions; i++)
     	{
     	    int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();

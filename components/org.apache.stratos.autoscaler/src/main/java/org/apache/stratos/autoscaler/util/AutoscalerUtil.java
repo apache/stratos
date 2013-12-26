@@ -114,7 +114,8 @@ public class AutoscalerUtil {
         
         for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
 
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId());
+            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
+                    partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions());
 
             for(Partition partition: partitionGroup.getPartitions()){
                 PartitionContext partitionContext = new PartitionContext(partition);

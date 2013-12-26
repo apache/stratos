@@ -104,11 +104,13 @@ public class AutoscalerRuleEvaluator {
     public StatefulKnowledgeSession getMinCheckStatefulSession() {
         StatefulKnowledgeSession ksession;
         ksession = minCheckKbase.newStatefulKnowledgeSession();
+        ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }
     public StatefulKnowledgeSession getScaleCheckStatefulSession() {
         StatefulKnowledgeSession ksession;
         ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+        ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }
 
