@@ -26,13 +26,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
+import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.topology.TopologyListener;
+import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageDelegator;
+import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -71,46 +72,26 @@ public class CloudControllerDSComponent {
 
     protected void activate(ComponentContext context) {
         try {
-            
-            // register deployers of CC
-//            AxisConfiguration axisConfig = ServiceReferenceHolder.getInstance().getAxisConfiguration();
-//            
-//            if(axisConfig ==  null) {
-//                String msg = "Axis Configuration is null. Cannot register deployers.";
-//                log.error(msg);
-//                throw new CloudControllerException(msg);
-//            }
-//            
-//            DeploymentEngine deploymentEngine = (DeploymentEngine) axisConfig.getConfigurator();
-//            Deployer cloudControllerDeployer = new CloudControllerDeployer();
-//            Deployer cartridgeDeployer = new CartridgeDeployer();
-//            deploymentEngine.addDeployer(cloudControllerDeployer, "../../conf", "xml");
-//            deploymentEngine.addDeployer(cartridgeDeployer, "cartridges", "xml");
-        	
-            // get all the topics - comma separated list
-            String topicsString = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.TOPICS_PROPERTY);
-            
-            if(topicsString == null || topicsString.isEmpty()) {
-                topicsString = Constants.TOPOLOGY_TOPIC;
-            } 
-            
-            String[] topics = topicsString.split(",");
-            for (String topic : topics) {
-                
-                dataHolder.addEventPublisher(new EventPublisher(topic), topic);
-            }
-
-            //initialting the subscriber
+            // Start instance status event message listener
             TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
-            subscriber.setMessageListener(new TopologyListener());
+            subscriber.setMessageListener(new InstanceStatusEventMessageListener());
             Thread tsubscriber = new Thread(subscriber);
             tsubscriber.start();
+
+            // Start instance status message delegator
+            InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
+            Thread tdelegator = new Thread(delegator);
+            tdelegator.start();
         	
-        	// initialize the topic publishers
+        	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
-            bundleContext.registerService(CloudControllerService.class.getName(),
-                                          new CloudControllerServiceImpl(), null);
-            
+            bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
+
+            if(log.isInfoEnabled()) {
+                log.info("Scheduling tasks");
+            }
+
+            TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
 
             log.debug("******* Cloud Controller Service bundle is activated ******* ");
         } catch (Throwable e) {

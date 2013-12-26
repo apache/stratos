@@ -69,6 +69,7 @@
                             <bundles>
                                 <!--bundleDef>org.wso2.carbon:org.wso2.carbon.load.balance.agent.stub</bundleDef>
                                 -->
+                                <bundleDef>org.apache.stratos:org.apache.stratos.common:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.load.balancer.common:${project.version}</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-api:1.6.4</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12:1.6.4</bundleDef>

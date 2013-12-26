@@ -40,10 +40,9 @@ import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
-
+global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.policy.PolicyManager $manager;
-global org.apache.stratos.autoscaler.AutoscalerContext $context; 
-global org.apache.commons.logging.Log log;
+global org.apache.stratos.autoscaler.AutoscalerContext $context;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global org.apache.stratos.messaging.domain.topology.Topology $topology;
 global java.util.Map partitionCtxts;
@@ -53,8 +52,11 @@ global java.lang.String lbRef;
 rule "Minimum Rule"
 dialect "mvel"
        when
-	       $ctxt : PartitionContext ()
-	       eval($ctxt.getCurrentMemberCount() < $ctxt.getMinimumMemberCount())
+           $ctxt : PartitionContext ()
+           eval(log.debug("Running minimum rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
+	       eval(log.debug("total member count: " + $ctxt.getTotalMemberCount()))
+	       eval(log.debug("minimum member count: " + $ctxt.getMinimumMemberCount()))
+	       eval($ctxt.getTotalMemberCount() < $ctxt.getMinimumMemberCount())
 
        then
 	       $delegator.delegateSpawn($ctxt, clusterId, lbRef);
@@ -65,8 +67,11 @@ rule "Terminate Obsoleted Instances"
 dialect "mvel"
         when
             $ctxt : PartitionContext ()
+            eval(log.debug("Running obsolete instances rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
+            eval(log.debug("obsolete member count: " + $ctxt.getObsoletedMembers().size()))
             eval($ctxt.getObsoletedMembers().size() > 0)
             memberId : String() from $ctxt.getObsoletedMembers()
+            eval(log.debug("member id: " + memberId))
             eval($ctxt.removeObsoleteMember(memberId))
         then
            $delegator.delegateTerminate(memberId);

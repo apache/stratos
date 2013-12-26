@@ -13,8 +13,6 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
-import java.util.Properties;
-
 /**
  * This will have utility methods that need to be executed from rule file...
  */
@@ -34,12 +32,19 @@ public class RuleTasksDelegator {
 
     public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm){
         AutoscaleAlgorithm autoscaleAlgorithm = null;
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
+        }
         if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
 
             autoscaleAlgorithm = new RoundRobin();
         } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
 
             autoscaleAlgorithm = new OneAfterAnother();
+        } else {
+            if(log.isErrorEnabled()){
+                log.error(String.format("Partition algorithm %s could not be identified !", partitionAlgorithm));
+            }
         }
         return autoscaleAlgorithm;
     }

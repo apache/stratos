@@ -45,9 +45,9 @@ import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
 
+global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
-global org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy $deploymentPolicy;
-global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy $autoscalePolicy;
+global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
 
@@ -56,25 +56,27 @@ rule "Scaler-up Rule"
 dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
-        $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
-        autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
+        eval(log.debug("Running scale up rule: [network-partition] " + $networkPartitionContext.getId()))
+        $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
+	    algorithmName : String() from $networkPartitionContext.getPartitionAlgorithm();
+        eval(log.debug("algorithm name " + algorithmName))
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm(algorithmName)
+        eval(log.debug("algorithm " + autoscaleAlgorithm))
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
         lbStatSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId)
-        predictedValue : Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
+        eval(partition != null)
+	    predictedValue : Double() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
+        eval(log.debug("predicted value: " + predictedValue))
+        eval(log.debug("average limit: " + averageLimit))
+        eval(log.debug("scale-up factor: " + $delegator.SCALE_UP_FACTOR))
         eval(predictedValue > averageLimit * $delegator.SCALE_UP_FACTOR)
 	then
-//	    if (predictedValue*scaleUpFactor > averageLimit){
-            //scale up
-            NetworkPartitionContext networkPartitionContext;
-
-            $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
-
-//	    }
-
+        log.debug("scaling up");
+        $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
 end
 
 
@@ -82,7 +84,8 @@ rule "Scaler-down Rule"
 dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
-        $loadThresholds : LoadThresholds() from  $autoscalePolicy.getLoadThresholds()
+        eval(log.debug("Running scale down rule: [network-partition] " + $networkPartitionContext.getId()))
+        $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
         autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm($networkPartitionContext.getPartitionAlgorithm())
         lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
@@ -90,7 +93,11 @@ dialect "mvel"
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 
         partition :  Partition() from autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId)
+        eval(partition != null)
         predictedValue :  Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
+        eval(log.debug("predicted value: " + predictedValue))
+        eval(log.debug("average limit: " + averageLimit))
+        eval(log.debug("scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
         eval(predictedValue < averageLimit * $delegator.SCALE_DOWN_FACTOR)
 	then
 
@@ -121,8 +128,6 @@ dialect "mvel"
         }
         if(selectedMemberStatsContext != null)
             $delegator.delegateTerminate(selectedMemberStatsContext.getMemberId());
-
-
 end
 
 

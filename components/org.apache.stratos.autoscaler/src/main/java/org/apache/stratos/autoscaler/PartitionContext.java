@@ -48,14 +48,14 @@ public class PartitionContext implements Serializable{
     private String serviceName;
     private String networkPartitionId;
     private Partition partition;
-    private int currentMemberCount = 0;
+    private int currentActiveMemberCount = 0;
     private int minimumMemberCount = 0;
     
     // properties
     private Properties properties;
     
-    // 10 mints as the default
-    private long expiryTime = 600000;
+    // 15 mints as the default
+    private long expiryTime = 900000;
     // pending members
     private List<MemberContext> pendingMembers;
 
@@ -109,18 +109,18 @@ public class PartitionContext implements Serializable{
     public void setPartitionId(String partitionId) {
         this.partitionId = partitionId;
     }
-    public int getCurrentMemberCount() {
+    public int getTotalMemberCount() {
         // live count + pending count
-        return currentMemberCount + pendingMembers.size();
+        return currentActiveMemberCount + pendingMembers.size();
     }
 
-    public void incrementCurrentMemberCount(int count) {
+    public void incrementCurrentActiveMemberCount(int count) {
 
-        this.currentMemberCount += count;
+        this.currentActiveMemberCount += count;
     }
     
-    public void decrementCurrentMemberCount(int count) {
-        this.currentMemberCount -= count;
+    public void decrementCurrentActiveMemberCount(int count) {
+        this.currentActiveMemberCount -= count;
     }
 
     public int getMinimumMemberCount() {

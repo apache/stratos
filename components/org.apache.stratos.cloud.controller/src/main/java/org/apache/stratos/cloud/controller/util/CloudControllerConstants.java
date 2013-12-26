@@ -223,10 +223,9 @@ public final class CloudControllerConstants {
      * Topology sync related constants
      */
     public static final String TOPOLOGY_FILE_PATH = CarbonUtils.getCarbonConfigDirPath()+File.separator+"service-topology.conf";
-    public static final String TOPOLOGY_TOPIC_NAME = "topology-topic";
 	public static final String TOPOLOGY_SYNC_CRON = "1 * * * * ? *";
-	public static final String TOPOLOGY_SYNC_TASK_NAME = "TopologySynchronizerTask";
-	public static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK";
+	public static final String TOPOLOGY_SYNC_TASK_NAME = "TOPOLOGY_SYNC_TASK";
+	public static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK_TYPE";
 	public static final String AMQP_CONNECTION_URL = "amqp://admin:admin@clientID/carbon?brokerlist='tcp://localhost:5672'";
 	public static final String AMQP_INITIAL_CONTEXT_FACTORY = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
 	public static final String AMQP_TOPIC_CONNECTION_FACTORY = "qpidConnectionfactory";

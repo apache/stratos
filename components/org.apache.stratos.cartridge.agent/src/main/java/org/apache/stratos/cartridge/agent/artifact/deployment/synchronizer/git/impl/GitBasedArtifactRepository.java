@@ -69,7 +69,7 @@ public class GitBasedArtifactRepository {
      /*   if (tenantId == GitDeploymentSynchronizerConstants.SUPER_TENANT_ID)
             return;*/
     	
-    	log.info("In init git context............");
+    	log.info("Initializing git context.");
     	
     	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
     	String gitLocalRepoPath = repositoryInformation.getRepoPath();
@@ -162,7 +162,7 @@ public class GitBasedArtifactRepository {
      */
     private static void cacheGitRepoContext(int tenantId, RepositoryContext gitRepoCtx) {
 
-    	log.info("caching repo context....");
+    	log.info("caching repo context");
         tenantToRepoContextMap.put(tenantId, gitRepoCtx);
     }
 
@@ -186,11 +186,8 @@ public class GitBasedArtifactRepository {
      *      
      */
     public static boolean commit() {
-
-    	// foreach tenant's local path check for commit
     	// TODO implement later, this is applicable for management node.
-    	//log.info(" In commit.... map count : " + tenantToRepoContextMap.size());
-    	
+
 		for (Entry<Integer, RepositoryContext> tenantMap : tenantToRepoContextMap
 				.entrySet()) {
 
@@ -369,9 +366,9 @@ public class GitBasedArtifactRepository {
     }
 
     public static boolean checkout(RepositoryInformation repositoryInformation) {
-
-    	log.info("In checkout............");
-    	
+        if(log.isInfoEnabled()) {
+    	    log.info("Executing checkout");
+        }
     	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
     	
     	// if context for tenant is not initialized
@@ -382,7 +379,7 @@ public class GitBasedArtifactRepository {
 		RepositoryContext gitRepoCtx = retrieveCachedGitContext(tenantId);
         if(gitRepoCtx == null) { //to handle super tenant scenario
            // if(log.isDebugEnabled())
-                log.info("No git repository context information found for deployment synchronizer ");
+                log.info("No git repository context information found for deployment synchronizer");
 
             return true;
         }
@@ -425,8 +422,9 @@ public class GitBasedArtifactRepository {
      * @return true if success, else false
      */
     private static boolean pullArtifacts (RepositoryContext gitRepoCtx) {
-
-    	log.info("Pulling artifacts.....");
+        if(log.isInfoEnabled())  {
+    	    log.info("Pulling artifacts");
+        }
         PullCommand pullCmd = gitRepoCtx.getGit().pull();
 
         if(!gitRepoCtx.getKeyBasedAuthentication()) {
@@ -466,7 +464,6 @@ public class GitBasedArtifactRepository {
             e.printStackTrace();
             return false;
         }
-
         return true;
     }
 

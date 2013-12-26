@@ -182,6 +182,11 @@ public class CloudControllerConfigParser {
         FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
         dataHolder.setEnableTopologySync(isEnable);
+        if (!isEnable) {
+            if (log.isWarnEnabled()) {
+                log.warn("Topology synchronization is disabled!");
+            }
+        }
 
         if (isEnable) {
             TopologyConfig topologyConfig = new TopologyConfig();

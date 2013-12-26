@@ -16,27 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.topology;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+package org.apache.stratos.cloud.controller.topic.instance.status;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * this is to handle the topology subscription
+ * Implements a blocking queue for managing instance status event messages.
  */
-public class TopologyListener implements MessageListener{
-    private static final Log log = LogFactory.getLog(TopologyListener.class);
+public class InstanceStatusEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
+    private static volatile InstanceStatusEventMessageQueue instance;
 
-    @Override
-    public void onMessage(Message message) {
-        TextMessage receivedMessage = (TextMessage) message;
-        TopologyManager.getInstance().getSharedTopologyDiffQueue().add(receivedMessage);
-        if(log.isDebugEnabled()) {
-            log.debug(message + "received....");
+    private InstanceStatusEventMessageQueue(){
+    }
+
+    public static synchronized InstanceStatusEventMessageQueue getInstance() {
+        if (instance == null) {
+            synchronized (InstanceStatusEventMessageQueue.class){
+                if (instance == null) {
+                    instance = new InstanceStatusEventMessageQueue();
+                }
+            }
         }
+        return instance;
     }
 }

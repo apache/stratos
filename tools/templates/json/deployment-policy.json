@@ -1,0 +1,16 @@
+{
+    "deploymentPolicy": {
+        "id": "deployment-policy-id",
+        "partitionGroup": {
+            "id": "partition-group-id",
+            "partitionAlgo": "one-after-another",
+            "partition": [
+                {
+                    "id": "partition-id",
+                    "partitionMax": "3",
+                    "partitionMin": "1"
+                }
+            ]
+        }
+    }
+}
