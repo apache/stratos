@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.integration.tests;
+//package org.apache.stratos.manager.integration.tests;
 
 import org.apache.axis2.client.ServiceClient;
 import org.apache.commons.logging.Log;
@@ -35,58 +35,58 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class TenantMgtTestCase {
-
-    private static String TenantMgtAdminServiceURL;
-    private static String TestTenantDomain;
-    public static final Log log = LogFactory.getLog(TenantMgtTestCase.class);
-
-    @BeforeClass
-    public void init() {
-        log.info("****************************** TenantMgtTestCase Start ******************************");
-        TestTenantDomain = "testcase.org";
-        TenantMgtAdminServiceURL = "https://" + FrameworkSettings.HOST_NAME + ":" +
-                                 FrameworkSettings.HTTPS_PORT + "/services/TenantMgtAdminService";
-    }
-
-    @Test(groups = {"stratos.manager"})
-    public void addTenantTest() throws Exception {
-        Calendar calender = new GregorianCalendar();
-        calender.setTime(new Date());
-
-        TenantInfoBean tenantInfoBean = new TenantInfoBean();
-        tenantInfoBean.setActive(true);
-        tenantInfoBean.setEmail("manager-test@wso2.com");
-        tenantInfoBean.setAdmin("admin");
-        tenantInfoBean.setAdminPassword("admin123");
-        tenantInfoBean.setTenantDomain(TestTenantDomain);
-        tenantInfoBean.setCreatedDate(calender);
-        tenantInfoBean.setFirstname("Fname");
-        tenantInfoBean.setLastname("Lname");
-        tenantInfoBean.setSuccessKey("true");
-        tenantInfoBean.setUsagePlan("Demo");
-
-        TenantMgtAdminServiceStub stub = new TenantMgtAdminServiceStub(TenantMgtAdminServiceURL);
-        ServiceClient client = stub._getServiceClient();
-        CarbonUtils.setBasicAccessSecurityHeaders(FrameworkSettings.USER_NAME, FrameworkSettings.PASSWORD, client);
-
-        String result = stub.addTenant(tenantInfoBean);
-        Assert.assertTrue(stub.retrieveTenants()[0].getTenantDomain().equals(TestTenantDomain));
-
-    }
-
-    @Test(groups = {"stratos.manager"})
-    public void activateTenantTest() throws Exception {
-        TenantMgtAdminServiceStub stub = new TenantMgtAdminServiceStub(TenantMgtAdminServiceURL);
-        ServiceClient client = stub._getServiceClient();
-        CarbonUtils.setBasicAccessSecurityHeaders(FrameworkSettings.USER_NAME, FrameworkSettings.PASSWORD, client);
-        stub.activateTenant(TestTenantDomain);
-        Assert.assertTrue(stub.retrieveTenants()[0].getActive());
-    }
-
-    @AfterClass
-    public void end(){
-        log.info("****************************** TenantMgtTestCase End ******************************");
-    }
-
-}
+//public class TenantMgtTestCase {
+//
+//    private static String TenantMgtAdminServiceURL;
+//    private static String TestTenantDomain;
+//    public static final Log log = LogFactory.getLog(TenantMgtTestCase.class);
+//
+//    @BeforeClass
+//    public void init() {
+//        log.info("****************************** TenantMgtTestCase Start ******************************");
+//        TestTenantDomain = "testcase.org";
+//        TenantMgtAdminServiceURL = "https://" + FrameworkSettings.HOST_NAME + ":" +
+//                                 FrameworkSettings.HTTPS_PORT + "/services/TenantMgtAdminService";
+//    }
+//
+//    @Test(groups = {"stratos.manager"})
+//    public void addTenantTest() throws Exception {
+//        Calendar calender = new GregorianCalendar();
+//        calender.setTime(new Date());
+//
+//        TenantInfoBean tenantInfoBean = new TenantInfoBean();
+//        tenantInfoBean.setActive(true);
+//        tenantInfoBean.setEmail("manager-test@wso2.com");
+//        tenantInfoBean.setAdmin("admin");
+//        tenantInfoBean.setAdminPassword("admin123");
+//        tenantInfoBean.setTenantDomain(TestTenantDomain);
+//        tenantInfoBean.setCreatedDate(calender);
+//        tenantInfoBean.setFirstname("Fname");
+//        tenantInfoBean.setLastname("Lname");
+//        tenantInfoBean.setSuccessKey("true");
+//        tenantInfoBean.setUsagePlan("Demo");
+//
+//        TenantMgtAdminServiceStub stub = new TenantMgtAdminServiceStub(TenantMgtAdminServiceURL);
+//        ServiceClient client = stub._getServiceClient();
+//        CarbonUtils.setBasicAccessSecurityHeaders(FrameworkSettings.USER_NAME, FrameworkSettings.PASSWORD, client);
+//
+//        String result = stub.addTenant(tenantInfoBean);
+//        Assert.assertTrue(stub.retrieveTenants()[0].getTenantDomain().equals(TestTenantDomain));
+//
+//    }
+//
+//    @Test(groups = {"stratos.manager"})
+//    public void activateTenantTest() throws Exception {
+//        TenantMgtAdminServiceStub stub = new TenantMgtAdminServiceStub(TenantMgtAdminServiceURL);
+//        ServiceClient client = stub._getServiceClient();
+//        CarbonUtils.setBasicAccessSecurityHeaders(FrameworkSettings.USER_NAME, FrameworkSettings.PASSWORD, client);
+//        stub.activateTenant(TestTenantDomain);
+//        Assert.assertTrue(stub.retrieveTenants()[0].getActive());
+//    }
+//
+//    @AfterClass
+//    public void end(){
+//        log.info("****************************** TenantMgtTestCase End ******************************");
+//    }
+//
+//}

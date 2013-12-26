@@ -16,39 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.integration.tests;
+//package org.apache.stratos.manager.integration.tests;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
-import org.wso2.carbon.integration.framework.TestServerManager;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+//import org.testng.annotations.AfterSuite;
+//import org.testng.annotations.BeforeSuite;
+//import org.wso2.carbon.integration.framework.TestServerManager;
 
-import java.io.File;
-import java.io.IOException;
+//import java.io.File;
+//import java.io.IOException;
 
 /**
  * Prepares the WSO2 AS for test runs, starts the server, and stops the server after
  * test runs
  */
-public class StratosManagerTestServerManager extends TestServerManager {
-    private static final Log log = LogFactory.getLog(StratosManagerTestServerManager.class);
-
-    @Override
-    @BeforeSuite(timeOut = 300000)
-    public String startServer() throws IOException {
-        String carbonHome = super.startServer();
-        System.setProperty("carbon.home", carbonHome);
-        return carbonHome;
-    }
-
-    @Override
-    @AfterSuite(timeOut = 60000)
-    public void stopServer() throws Exception {
-        super.stopServer();
-    }
-
-    protected void copyArtifacts(String carbonHome) throws IOException {
-    }
-
-}
+//public class StratosManagerTestServerManager extends TestServerManager {
+//    private static final Log log = LogFactory.getLog(StratosManagerTestServerManager.class);
+//
+//    @Override
+//    @BeforeSuite(timeOut = 300000)
+//    public String startServer() throws IOException {
+//        String carbonHome = super.startServer();
+//        System.setProperty("carbon.home", carbonHome);
+//        return carbonHome;
+//    }
+//
+//    @Override
+//    @AfterSuite(timeOut = 60000)
+//    public void stopServer() throws Exception {
+//        super.stopServer();
+//    }
+//
+//    protected void copyArtifacts(String carbonHome) throws IOException {
+//    }
+//
+//}

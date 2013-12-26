@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.integration.tests;
+//package org.apache.stratos.manager.integration.tests;
 
-import org.wso2.carbon.integration.framework.SecurityVerificationTest;
+//import org.wso2.carbon.integration.framework.SecurityVerificationTest;
 
 /**
  * Test to ensure that the WSO2 Stratos Manager is properly secured
  */
-public class SecurityVerificationTestCase extends SecurityVerificationTest {
-}
+//public class SecurityVerificationTestCase extends SecurityVerificationTest {
+//}
