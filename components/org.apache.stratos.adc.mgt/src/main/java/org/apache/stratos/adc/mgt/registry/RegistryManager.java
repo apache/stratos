@@ -21,11 +21,7 @@ package org.apache.stratos.adc.mgt.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
-import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
-import org.apache.stratos.adc.mgt.lookup.SubscriptionContext;
-import org.apache.stratos.adc.mgt.utils.Serializer;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
@@ -36,20 +32,16 @@ public class RegistryManager {
 
     private final static Log log = LogFactory.getLog(RegistryManager.class);
                                                                                                                           ;
-    private final static String STRATOS_MANAGER_REOSURCE = "/stratos.manager";
-    private final static String CLUSTER_ID_TO_SUBSCRIPTION = "/clusterIdToSubscription";
-    private final static String TENENTID_TO_SUBSCRIPTION_CONTEXT = "/tenantIdToSubscriptionContext";
+    private static final String STRATOS_MANAGER_REOSURCE = "/stratos.manager";
 
     private static RegistryService registryService;
     private static volatile RegistryManager registryManager;
 
     public static RegistryManager getInstance() {
 
-        registryService = DataHolder.getRegistryService();
-
         if (registryManager == null) {
             synchronized (RegistryManager.class) {
-                if (registryService == null) {
+                if (registryManager == null) {
                     return registryManager;
                 }
                 registryManager = new RegistryManager();
@@ -59,60 +51,64 @@ public class RegistryManager {
     }
 
     private RegistryManager() {
-
+        registryService = DataHolder.getRegistryService();
     }
 
-    private UserRegistry initRegistry (int tenantId) throws RegistryException, ADCException {
+    private UserRegistry initRegistry (int tenantId) throws RegistryException {
 
         UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry(tenantId);
-        if (tenantGovRegistry == null) {
+        /*if (tenantGovRegistry == null) {
             String errorMsg = "Tenant " + tenantId + "'s governance registry is not initialized";
             log.error(errorMsg);
             throw new ADCException(errorMsg);
-        }
+        }*/
 
-        synchronized (RegistryManager.class) {
-            // check if the resource is available, else create it
-            try {
-                if (!tenantGovRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
-                    tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE, tenantGovRegistry.newCollection());
+        // check if the resource is available, else create it
+        if (!tenantGovRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
+            synchronized (RegistryManager.class) {
+                try {
+                    if (!tenantGovRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
+                        tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE, tenantGovRegistry.newCollection());
+                    }
+                } catch (RegistryException e) {
+                    String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
+                    log.error(errorMsg, e);
+                    throw e;
                 }
-            } catch (RegistryException e) {
-                String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
-                log.error(errorMsg, e);
-                throw new ADCException(errorMsg, e);
             }
         }
 
         return tenantGovRegistry;
     }
 
-    private UserRegistry initRegistry () throws RegistryException, ADCException {
+    private UserRegistry initRegistry () throws RegistryException {
 
         UserRegistry govRegistry = registryService.getGovernanceSystemRegistry();
-        if (govRegistry == null) {
+        /*if (govRegistry == null) {
             String errorMsg = "Governance registry is not initialized";
             log.error(errorMsg);
             throw new ADCException(errorMsg);
-        }
+        }*/
 
-        synchronized (RegistryManager.class) {
-            // check if the resource is available, else create it
-            try {
-                if (!govRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
-                    govRegistry.put(STRATOS_MANAGER_REOSURCE, govRegistry.newCollection());
+        // check if the resource is available, else create it
+        if (!govRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
+            synchronized (RegistryManager.class) {
+                try {
+                    if (!govRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
+                        govRegistry.put(STRATOS_MANAGER_REOSURCE, govRegistry.newCollection());
+                    }
+                } catch (RegistryException e) {
+                    String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
+                    log.error(errorMsg, e);
+                    throw e;
                 }
-            } catch (RegistryException e) {
-                String errorMsg = "Failed to create the registry resource " + STRATOS_MANAGER_REOSURCE;
-                log.error(errorMsg, e);
-                throw new ADCException(errorMsg, e);
             }
         }
 
         return govRegistry;
     }
 
-    public void persistSubscriptionContext(int tenantId, SubscriptionContext subscriptionContext)
+    /*public void persistSubscriptionContext (int tenantId, SubscriptionContext subscriptionContext)
             throws RegistryException, ADCException {
 
         //TODO: uncomment
@@ -124,10 +120,7 @@ public class RegistryManager {
             tenantGovRegistry.beginTransaction();
             Resource nodeResource = tenantGovRegistry.newResource();
             nodeResource.setContent(Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
-            //TODO: uncomment
-            //tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT, nodeResource);
-            //temporary
-            tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId), nodeResource);
+            tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT, nodeResource);
             tenantGovRegistry.commitTransaction();
 
         } catch (Exception e) {
@@ -138,11 +131,12 @@ public class RegistryManager {
         }
     }
 
+    //TODO: retun the de-serialized object
     public Object getSubscriptionContext(int tenantId) throws ADCException, RegistryException {
 
         //TODO: uncomment
         //UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry(tenantId);
-        //temprary
+        //temporary
         UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry();
 
         if (tenantGovRegistry == null) {
@@ -152,14 +146,11 @@ public class RegistryManager {
         }
 
         try {
-            //TODO: uncomment
-            //Resource resource = tenantGovRegistry.get(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT);
-            //temporary
-            Resource resource = tenantGovRegistry.get(STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
+            Resource resource = tenantGovRegistry.get(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
             return resource.getContent();
 
         } catch (ResourceNotFoundException ignore) {
-            log.error("Sepcified resource not found at " + STRATOS_MANAGER_REOSURCE + TENENTID_TO_SUBSCRIPTION_CONTEXT);
+            log.error("Sepcified resource not found at " + STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
             return null;
 
         } catch (RegistryException e) {
@@ -167,9 +158,33 @@ public class RegistryManager {
             log.error(errorMsg, e);
             throw new ADCException(errorMsg, e);
         }
-    }
+    }*/
 
-    public void persistClusterIdToSubscription (ClusterIdToSubscription clusterIdToSubscription)
+    /*public Object getSubscriptionContexts() throws RegistryException {
+
+        UserRegistry registry = registryService.getGovernanceSystemRegistry();
+        return retrieve(registry, STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
+
+
+        if ((resourceObj == null) || !(resourceObj instanceof String[])) {
+            return null;
+        }
+
+        // get the paths for all SubscriptionContext instnaces
+        String[] subscriptionCtxtResourcePaths = (String[]) resourceObj;
+
+        Collection<SubscriptionContext> cartridgeSubscriptionCtxts;
+        //for each path, get the SubscriptionContext instance
+        for (String subscriptionCtxResourcePath : subscriptionCtxtResourcePaths) {
+            Object subscriptionCtxObj = retrieve(registry, subscriptionCtxResourcePath);
+            if (subscriptionCtxObj != null && subscriptionCtxObj instanceof SubscriptionContext) {
+
+            }
+        }
+
+    }*/
+
+    /*public void persistClusterIdToSubscription (ClusterIdToSubscription clusterIdToSubscription)
             throws RegistryException, ADCException {
 
         UserRegistry govRegistry = initRegistry();
@@ -189,6 +204,7 @@ public class RegistryManager {
         }
     }
 
+    //TODO: retun the de-serialized object
     public Object getClusterIdToSubscription () throws ADCException, RegistryException {
 
         UserRegistry govRegistry = registryService.getGovernanceSystemRegistry();
@@ -210,5 +226,51 @@ public class RegistryManager {
             log.error(errorMsg, e);
             throw new ADCException(errorMsg, e);
         }
+    }*/
+
+    public void persist (String path, byte [] resourceBytes) throws RegistryException {
+
+        UserRegistry registry = initRegistry();
+
+        try {
+            registry.beginTransaction();
+            Resource nodeResource = registry.newResource();
+            nodeResource.setContent(resourceBytes);
+            registry.put(path, nodeResource);
+            registry.commitTransaction();
+
+        } catch (RegistryException e) {
+            registry.rollbackTransaction();
+            String errorMsg = "Failed to persist the given resource in registry path " + path;
+            log.error(errorMsg, e);
+            throw e;
+        }
+    }
+
+    public Object retrieve (String resourcePath) throws RegistryException {
+
+        UserRegistry registry = initRegistry();
+
+        Resource resource;
+
+        try {
+            resource = registry.get(resourcePath);
+
+        } catch (ResourceNotFoundException ignore) {
+            String errorMsg = "Resource not found at path " + resourcePath;
+            log.error(errorMsg);
+            return null;
+
+        } catch (RegistryException e) {
+            String errorMsg = "Failed to retrieve the Resource at " + resourcePath + " from registry.";
+            log.error(errorMsg, e);
+            throw e;
+        }
+
+        if(resource == null) {
+            return null;
+        }
+
+        return resource.getContent();
     }
 }

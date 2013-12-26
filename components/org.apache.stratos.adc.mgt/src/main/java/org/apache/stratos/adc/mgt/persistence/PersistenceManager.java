@@ -22,7 +22,7 @@ package org.apache.stratos.adc.mgt.persistence;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
-import java.util.Collection;
+import java.util.List;
 
 public abstract class PersistenceManager {
 
@@ -35,13 +35,16 @@ public abstract class PersistenceManager {
     public abstract CartridgeSubscription getCartridgeSubscription(int tenantId, String alias)
             throws PersistenceManagerException;
 
-    public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
+    public abstract List<CartridgeSubscription> getCartridgeSubscriptions()
+            throws PersistenceManagerException;
+
+    public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
             throws PersistenceManagerException;
 
     public abstract CartridgeSubscription getCartridgeSubscription (String clusterDomain)
             throws PersistenceManagerException;
 
-    public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
+    public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
             throws PersistenceManagerException;
 
     /*public abstract Repository getRepository (int tenantId, String alias)
