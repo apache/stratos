@@ -80,7 +80,7 @@ dialect "mvel"
 
         eval(scaleUpAction)
 	then
-        log.debug(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + cluster + " Scaling up cluster");
+        log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId + " Scaling up cluster");
         $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
 end
 
@@ -119,24 +119,24 @@ dialect "mvel"
             for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
 
                 LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId
-                    + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage.toString());
+                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] "
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage.toString());
 
                 MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
-                log.debug(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId
-                    + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption.toString()));
+                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] "
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption.toString());
 
                 double predictedCpu = $delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
-                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId
-                    + " [member] " + memberStatsContext.getMemberId() + " Predicted CPU: " + predictedCpu);
+                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] "
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted CPU: " + predictedCpu);
 
                 double predictedMemoryConsumption = $delegator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative(), 1);
-                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId
-                    + " [member] " + memberStatsContext.getMemberId() + " Predicted memory consumption: " + predictedMemoryConsumption);
+                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] "
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted memory consumption: " + predictedMemoryConsumption);
 
                 double overallLoad = (predictedCpu + predictedMemoryConsumption) / 2;
-                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId
-                    + " [member] " + memberStatsContext.getMemberId() + " Overall load: " + overallLoad);
+                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] "
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Overall load: " + overallLoad);
 
                 if(!foundAValue){
                     foundAValue = true;
@@ -148,14 +148,14 @@ dialect "mvel"
                 }
 
                 if(selectedMemberStatsContext != null) {
-                    log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId +
-                        + " Member with lowest overall load: " + memberStatsContext.getMemberId());
+                    log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] "
+                        + clusterId + " Member with lowest overall load: " + memberStatsContext.getMemberId());
                 }
             }
         }
         if(selectedMemberStatsContext != null) {
-            log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId +
-                        + " Terminating member: " + memberStatsContext.getMemberId());
+            log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition]" + partition.getId() + " [cluster] " + clusterId
+                + " Terminating member: " + selectedMemberStatsContext.getMemberId());
             $delegator.delegateTerminate(selectedMemberStatsContext.getMemberId());
         }
 end
