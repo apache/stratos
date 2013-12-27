@@ -55,16 +55,23 @@ public class HealthEventMessageDelegator implements Runnable {
 
     @Override
     public void run() {
-        log.info("Health event message delegator started");
+        if(log.isInfoEnabled()) {
+            log.info("Health event message delegator started");
+        }
+
+        if(log.isDebugEnabled()) {
+            log.debug("Waiting for topology to be initialized");
+        }
+        while(!TopologyManager.getTopology().isInitialized());
 
         while (!terminate) {
             try {
                 TextMessage message = HealthEventQueue.getInstance().take();
 
                 String messageText = message.getText();
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("Health event message received: [message] " + messageText);
-
+                }
                 Event event = jsonToEvent(messageText);
                 String eventName = event.getEventName();
 
