@@ -33,6 +33,8 @@ public class MemberStatsContext {
 
     public MemberStatsContext(String memberId){
         this.memberId = memberId;
+        memoryConsumption = new MemoryConsumption();
+        loadAverage =  new LoadAverage();
     }
 
     public String getMemberId() {
@@ -47,16 +49,16 @@ public class MemberStatsContext {
     public LoadAverage getLoadAverage() {
         return loadAverage;
     }
-
-    public void setLoadAverage(LoadAverage loadAverage) {
-        this.loadAverage = loadAverage;
-    }
+//
+//    public void setLoadAverage(LoadAverage loadAverage) {
+//        this.loadAverage = loadAverage;
+//    }
 
     public MemoryConsumption getMemoryConsumption() {
         return memoryConsumption;
     }
-
-    public void setMemoryConsumption(MemoryConsumption memoryConsumption) {
-        this.memoryConsumption = memoryConsumption;
-    }
+//
+//    public void setMemoryConsumption(MemoryConsumption memoryConsumption) {
+//        this.memoryConsumption = memoryConsumption;
+//    }
 }

@@ -290,11 +290,6 @@ public class HealthEventMessageDelegator implements Runnable {
         }
 
         LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-
-        if(loadAverage == null) {
-            loadAverage = new LoadAverage();
-            memberStatsContext.setLoadAverage(loadAverage);
-        }
         return loadAverage;
     }
 
@@ -336,10 +331,6 @@ public class HealthEventMessageDelegator implements Runnable {
         }
         MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
 
-        if(memoryConsumption == null) {
-            memoryConsumption = new MemoryConsumption();
-            memberStatsContext.setMemoryConsumption(memoryConsumption);
-        }
         return memoryConsumption;
     }
 
