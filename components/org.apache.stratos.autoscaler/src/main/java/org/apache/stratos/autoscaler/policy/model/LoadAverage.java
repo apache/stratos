@@ -27,11 +27,11 @@ import java.io.Serializable;
 public class LoadAverage implements Serializable{
 
 	private static final long serialVersionUID = -2109860338694123343L;
-	private float average;
-    private float secondDerivative;
-    private float gradient;
-    private float scaleDownMarginOfGradient;
-    private float scaleDownMarginOfSecondDerivative;
+	private float average = 0.0f;
+    private float secondDerivative =  0.0f;
+    private float gradient =  0.0f;
+    private float scaleDownMarginOfGradient  =  0.0f;
+    private float scaleDownMarginOfSecondDerivative =  0.0f;
 
     /**
      * Gets the value of the average property.   
