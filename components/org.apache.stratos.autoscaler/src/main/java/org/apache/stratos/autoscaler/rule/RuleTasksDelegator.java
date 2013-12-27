@@ -26,7 +26,15 @@ public class RuleTasksDelegator {
     public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative, int timeInterval){
         double predictedValue;
 //        s = u * t + 0.5 * a * t * t
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Predicting the value, [average]: %s , [gradient]: %s , [second derivative]" +
+                    ": %s , [time intervals]: %s ", average, gradient, secondDerivative, timeInterval));
+        }
         predictedValue = average + gradient * timeInterval + 0.5 * secondDerivative * timeInterval * timeInterval;
+
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Predicted value: %s ", predictedValue));
+        }
         return predictedValue;
     }
 

@@ -118,7 +118,7 @@ dialect "mvel"
         averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
         eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Average limit: " + averageLimit))
 
-        predictedValue :  Float() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
+        predictedValue :  Double() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
         eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Predicted value: " + predictedValue))
 
         eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
@@ -135,11 +135,11 @@ dialect "mvel"
 
                 LoadAverage loadAverage = memberStatsContext.getLoadAverage();
                 log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] "
-                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage.toString());
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
 
                 MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
                 log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] "
-                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption.toString());
+                    + clusterId + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption);
 
                 double predictedCpu = $delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
                 log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] "
