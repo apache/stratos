@@ -108,4 +108,9 @@ public class MemoryConsumption implements Serializable {
         this.scaleDownMarginOfSecondDerivative = scaleDownMarginOfSecondDerivative;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[average] %f [second-derivative] %f [gradient] %f [scale-down-margin-of-gradient] %f [scale-down-margin-of-second-derivative] %f",
+                getAverage(), getSecondDerivative(), getGradient(), getScaleDownMarginOfGradient(), getScaleDownMarginOfSecondDerivative());
+    }
 }
