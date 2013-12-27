@@ -48,7 +48,7 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
         if (interval != null) {
             statsPublisherInterval = Long.getLong(interval);
         }
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("stats.notifier.interval: %dms", statsPublisherInterval));
         }
 
@@ -76,12 +76,19 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
                         int requestCount;
                         for (Service service : TopologyManager.getTopology().getServices()) {
                             for (Cluster cluster : service.getClusters()) {
-                                // Publish in-flight request count of load balancer's network partition
-                                requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
-                                inFlightRequestPublisher.publish(cluster.getClusterId(), networkPartitionId, requestCount);
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [network-partition] %s [value] %d",
-                                            cluster.getClusterId(), networkPartitionId, requestCount));
+                                if (!cluster.isLbCluster()) {
+                                    // Publish in-flight request count of load balancer's network partition
+                                    requestCount = statsReader.getInFlightRequestCount(cluster.getClusterId());
+                                    inFlightRequestPublisher.publish(cluster.getClusterId(), networkPartitionId, requestCount);
+                                    if (log.isDebugEnabled()) {
+                                        log.debug(String.format("In-flight request count published to cep: [cluster-id] %s [network-partition] %s [value] %d",
+                                                cluster.getClusterId(), networkPartitionId, requestCount));
+                                    }
+                                }
+                                else {
+                                    if(log.isWarnEnabled()) {
+                                        log.warn(String.format("Load balancer cluster found in topology: %s", cluster.getClusterId()));
+                                    }
                                 }
                             }
 
