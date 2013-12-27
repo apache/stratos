@@ -58,7 +58,7 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             if (TopologyServiceFilter.getInstance().isActive()) {
                 // Add services included in service filter
                 for (Service service : event.getTopology().getServices()) {
-                    if (TopologyServiceFilter.getInstance().serviceNameExcluded(service.getServiceName())) {
+                    if (TopologyServiceFilter.getInstance().serviceNameIncluded(service.getServiceName())) {
                         topology.addService(service);
                     } else {
                         if (log.isDebugEnabled()) {

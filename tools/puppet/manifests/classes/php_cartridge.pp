@@ -29,6 +29,8 @@ class php_cartridge (syslog,docroot,samlalias,serverport,mb_ip,mb_port,cep_ip,ce
                 source  => "puppet:///apt/90forceyes";
         }
 
+#fix for the apt get failure: multiple paths to 'path'. on a failure, logs are enabled to get an idea of what is wrong.
+
         exec { "update-apt":
                 path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin/'],
                 command => "apt-get update > /dev/null 2>&1 ",

@@ -16,34 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.integration.tests;
+//package org.apache.stratos.manager.integration.tests;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.testng.annotations.Test;
-import org.wso2.carbon.integration.framework.ClientConnectionUtil;
-import org.wso2.carbon.integration.framework.LoginLogoutUtil;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+//import org.testng.annotations.Test;
+//import org.wso2.carbon.integration.framework.ClientConnectionUtil;
+//import org.wso2.carbon.integration.framework.LoginLogoutUtil;
 
 /**
  * A test case which tests logging in & logging out of a Carbon core server
  */
-public class LoginLogoutTestCase {
-
-    private LoginLogoutUtil util = new LoginLogoutUtil();
-    public static final Log log = LogFactory.getLog(LoginLogoutTestCase.class);
-
-    @Test(groups = {"stratos.manager"})
-    public void login() throws Exception {
-        log.info("****************************** LoginLogoutTestCase Start ******************************");
-        ClientConnectionUtil.waitForPort(9763);
-        util.login();
-    }
-
-    @Test(groups = {"stratos.manager"})
-    public void logout() throws Exception {
-        ClientConnectionUtil.waitForPort(9763);
-        util.logout();
-        log.info("****************************** LoginLogoutTestCase End ******************************");
-    }
-}
+//public class LoginLogoutTestCase {
+//
+//    private LoginLogoutUtil util = new LoginLogoutUtil();
+//    public static final Log log = LogFactory.getLog(LoginLogoutTestCase.class);
+//
+//    @Test(groups = {"stratos.manager"})
+//    public void login() throws Exception {
+//        log.info("****************************** LoginLogoutTestCase Start ******************************");
+//        ClientConnectionUtil.waitForPort(9763);
+//        util.login();
+//    }
+//
+//    @Test(groups = {"stratos.manager"})
+//    public void logout() throws Exception {
+//        ClientConnectionUtil.waitForPort(9763);
+//        util.logout();
+//        log.info("****************************** LoginLogoutTestCase End ******************************");
+//    }
+//}
 
