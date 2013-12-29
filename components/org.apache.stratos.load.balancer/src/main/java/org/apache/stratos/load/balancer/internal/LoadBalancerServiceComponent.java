@@ -27,12 +27,15 @@ import org.apache.stratos.load.balancer.EndpointDeployer;
 import org.apache.stratos.load.balancer.LoadBalancerTenantReceiver;
 import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
+import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
+import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -100,6 +103,7 @@ public class LoadBalancerServiceComponent {
     private boolean activated = false;
     private LoadBalancerTopologyReceiver topologyReceiver;
     private LoadBalancerTenantReceiver tenantReceiver;
+    private LoadBalancerStatisticsNotifier statisticsNotifier;
 
     protected void activate(ComponentContext ctxt) {
         try {
@@ -179,6 +183,19 @@ public class LoadBalancerServiceComponent {
                 }
             }
 
+            if(configuration.isCepStatsPublisherEnabled()) {
+                // Get stats reader
+                LoadBalancerStatisticsReader statsReader = LoadBalancerStatisticsCollector.getInstance();
+
+                // Start stats notifier thread
+                statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
+                Thread statsNotifierThread = new Thread(statisticsNotifier);
+                statsNotifierThread.start();
+                if (log.isInfoEnabled()) {
+                    log.info("Load balancer statistics notifier thread started");
+                }
+            }
+
             activated = true;
             if (log.isInfoEnabled()) {
                 log.info("Load balancer service component is activated ");
@@ -206,6 +223,8 @@ public class LoadBalancerServiceComponent {
         tenantReceiver.terminate();
         // Terminate topology receiver
         topologyReceiver.terminate();
+        // Terminate statistics notifier
+        statisticsNotifier.terminate();
     }
 
     /**

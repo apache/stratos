@@ -27,11 +27,11 @@ import java.io.Serializable;
 public class MemoryConsumption implements Serializable {
 
 	private static final long serialVersionUID = 5755634390464664663L;
-	private float average;
-    private float secondDerivative;
-    private float gradient;
-    private float scaleDownMarginOfGradient;
-    private float scaleDownMarginOfSecondDerivative;
+	private float average =  0.0f;
+    private float secondDerivative =  0.0f;
+    private float gradient =  0.0f;
+    private float scaleDownMarginOfGradient =  0.0f;
+    private float scaleDownMarginOfSecondDerivative =  0.0f;
 
 
     /**
@@ -108,4 +108,9 @@ public class MemoryConsumption implements Serializable {
         this.scaleDownMarginOfSecondDerivative = scaleDownMarginOfSecondDerivative;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[average] %f [second-derivative] %f [gradient] %f [scale-down-margin-of-gradient] %f [scale-down-margin-of-second-derivative] %f",
+                getAverage(), getSecondDerivative(), getGradient(), getScaleDownMarginOfGradient(), getScaleDownMarginOfSecondDerivative());
+    }
 }

@@ -17,14 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.extension.api;
+package org.apache.stratos.load.balancer.common.statistics;
 
 import java.util.HashMap;
 
 /**
  * Load balancer statistics reader interface.
  */
-public interface LoadBalancerStatsReader {
+public interface LoadBalancerStatisticsReader {
 
     /**
      * Get in-flight request count of a given cluster.

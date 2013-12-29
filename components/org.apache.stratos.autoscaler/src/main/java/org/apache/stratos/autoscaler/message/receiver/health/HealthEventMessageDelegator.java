@@ -55,16 +55,23 @@ public class HealthEventMessageDelegator implements Runnable {
 
     @Override
     public void run() {
-        log.info("Health event message delegator started");
+        if(log.isInfoEnabled()) {
+            log.info("Health event message delegator started");
+        }
+
+        if(log.isDebugEnabled()) {
+            log.debug("Waiting for topology to be initialized");
+        }
+        while(!TopologyManager.getTopology().isInitialized());
 
         while (!terminate) {
             try {
                 TextMessage message = HealthEventQueue.getInstance().take();
 
                 String messageText = message.getText();
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("Health event message received: [message] " + messageText);
-
+                }
                 Event event = jsonToEvent(messageText);
                 String eventName = event.getEventName();
 
@@ -79,11 +86,27 @@ public class HealthEventMessageDelegator implements Runnable {
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName, clusterId, networkPartitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName,
+                                clusterId, networkPartitionId, value));
                     }
 
-                    AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
-                            .setAverageRequestsInFlight(floatValue);
+                    AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    if(null != monitor){
+                        NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
+                        if(null != networkPartitionContext){
+                            networkPartitionContext.setAverageRequestsInFlight(floatValue);
+                        } else {
+                            if(log.isErrorEnabled()) {
+                               log.error(String.format("Network partition context is not available for :" +
+                                       " [network partition] %s", networkPartitionId));
+                            }
+                        }
+                    } else {
+
+                        if(log.isErrorEnabled()) {
+                           log.error(String.format("Cluster monitor is not available for : [cluster] %s", clusterId));
+                        }
+                    }
 
                 } else if (Constants.GRADIENT_OF_REQUESTS_IN_FLIGHT.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
@@ -92,11 +115,26 @@ public class HealthEventMessageDelegator implements Runnable {
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName, clusterId, networkPartitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName,
+                                clusterId, networkPartitionId, value));
                     }
+                    AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    if(null != monitor){
+                        NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
+                        if(null != networkPartitionContext){
+                            networkPartitionContext.setRequestsInFlightGradient(floatValue);
+                        } else {
+                            if(log.isErrorEnabled()) {
+                               log.error(String.format("Network partition context is not available for :" +
+                                       " [network partition] %s", networkPartitionId));
+                            }
+                        }
+                    } else {
 
-                    AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
-                            .setRequestsInFlightGradient(floatValue);
+                        if(log.isErrorEnabled()) {
+                           log.error(String.format("Cluster monitor is not available for : [cluster] %s", clusterId));
+                        }
+                    }
 
                 } else if (Constants.SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
@@ -105,12 +143,26 @@ public class HealthEventMessageDelegator implements Runnable {
                     Float floatValue = Float.parseFloat(value);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName, clusterId, networkPartitionId, value));
+                        log.debug(String.format("%s event: [cluster] %s [network-partition] %s [value] %s", eventName,
+                                clusterId, networkPartitionId, value));
                     }
+                    AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    if(null != monitor){
+                        NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
+                        if(null != networkPartitionContext){
+                            networkPartitionContext.setRequestsInFlightSecondDerivative(floatValue);
+                        } else {
+                            if(log.isErrorEnabled()) {
+                               log.error(String.format("Network partition context is not available for :" +
+                                       " [network partition] %s", networkPartitionId));
+                            }
+                        }
+                    } else {
 
-                    AutoscalerContext.getInstance().getMonitor(clusterId).getNetworkPartitionCtxt(networkPartitionId)
-                            .setRequestsInFlightSecondDerivative(floatValue);
-
+                        if(log.isErrorEnabled()) {
+                           log.error(String.format("Cluster monitor is not available for : [cluster] %s", clusterId));
+                        }
+                    }
                 } else if (Constants.MEMBER_FAULT_EVENT_NAME.equals(eventName)) {
                     String clusterId = event.getProperties().get("cluster_id");
                     String memberId = event.getProperties().get("member_id");
@@ -245,11 +297,6 @@ public class HealthEventMessageDelegator implements Runnable {
         }
 
         LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-
-        if(loadAverage == null) {
-            loadAverage = new LoadAverage();
-            memberStatsContext.setLoadAverage(loadAverage);
-        }
         return loadAverage;
     }
 
@@ -291,10 +338,6 @@ public class HealthEventMessageDelegator implements Runnable {
         }
         MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
 
-        if(memoryConsumption == null) {
-            memoryConsumption = new MemoryConsumption();
-            memberStatsContext.setMemoryConsumption(memoryConsumption);
-        }
         return memoryConsumption;
     }
 

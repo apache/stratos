@@ -19,50 +19,39 @@
 package org.apache.stratos.load.balancer.statistics;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.statistics.observers.WSO2CEPInFlightRequestCountObserver;
+import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This is the load balancing in-flight request count collector and any observer can get registered here
- * and receive notifications periodically.
- * This is a Singleton object.
- *
- * @author nirmal
+ * This is the load balancer statistics collector.
  */
-public class LoadBalancerInFlightRequestCountCollector extends Observable {
-    private static final Log log = LogFactory.getLog(LoadBalancerInFlightRequestCountCollector.class);
+public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsReader {
+    private static final Log log = LogFactory.getLog(LoadBalancerStatisticsCollector.class);
 
-    private static LoadBalancerInFlightRequestCountCollector collector;
+    private static volatile LoadBalancerStatisticsCollector instance;
     // Map<ClusterId, Map<PartitionId, InFlightRequestCount>
     private Map<String, Integer> inFlightRequestCountMap;
-    private Thread notifier;
 
-    private LoadBalancerInFlightRequestCountCollector() {
+    private LoadBalancerStatisticsCollector() {
         inFlightRequestCountMap = new ConcurrentHashMap<String, Integer>();
-        if (notifier == null || (notifier != null && !notifier.isAlive())) {
-            notifier = new Thread(new ObserverNotifier());
-            notifier.start();
-        }
     }
 
-    public static LoadBalancerInFlightRequestCountCollector getInstance() {
-        if (collector == null) {
-            synchronized (LoadBalancerInFlightRequestCountCollector.class) {
-                if (collector == null) {
-                    collector = new LoadBalancerInFlightRequestCountCollector();
-                    // add observers
-                    collector.addObserver(new WSO2CEPInFlightRequestCountObserver());
+    public static LoadBalancerStatisticsCollector getInstance() {
+        if (instance == null) {
+            synchronized (LoadBalancerStatisticsCollector.class) {
+                if (instance == null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Load balancer in-flight request count collector instance created");
+                    }
+                    instance = new LoadBalancerStatisticsCollector();
                 }
             }
         }
-        return collector;
+        return instance;
     }
 
     public int getInFlightRequestCount(String clusterId) {
@@ -78,10 +67,9 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
         }
 
         inFlightRequestCountMap.put(clusterId, value);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("In-flight request count updated: [cluster] %s [value] %d", clusterId, value));
         }
-        setChanged();
     }
 
     public void incrementInFlightRequestCount(String clusterId) {
@@ -109,28 +97,5 @@ public class LoadBalancerInFlightRequestCountCollector extends Observable {
         int count = getInFlightRequestCount(clusterId);
         int newValue = (count - value) < 0 ? 0 : (count - value);
         setInFlightRequestCount(clusterId, newValue);
-    }
-
-
-    /**
-     * This thread will notify all the observers of this subject.
-     *
-     * @author nirmal
-     */
-    private class ObserverNotifier implements Runnable {
-
-        @Override
-        public void run() {
-            if (log.isInfoEnabled()) {
-                log.info("Load balancing statistics notifier thread started");
-            }
-            while (true) {
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException ignore) {
-                }
-                LoadBalancerInFlightRequestCountCollector.getInstance().notifyObservers(new HashMap<String, Integer>(inFlightRequestCountMap));
-            }
-        }
     }
 }

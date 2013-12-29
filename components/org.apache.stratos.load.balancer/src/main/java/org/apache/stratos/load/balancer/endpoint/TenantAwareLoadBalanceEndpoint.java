@@ -27,7 +27,7 @@ import org.apache.stratos.load.balancer.RequestDelegator;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
-import org.apache.stratos.load.balancer.statistics.LoadBalancerInFlightRequestCountCollector;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -526,7 +526,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             if(StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }
-            LoadBalancerInFlightRequestCountCollector.getInstance().incrementInFlightRequestCount(clusterId);
+            LoadBalancerStatisticsCollector.getInstance().incrementInFlightRequestCount(clusterId);
         }
         catch (Exception e) {
             if(log.isDebugEnabled()) {
