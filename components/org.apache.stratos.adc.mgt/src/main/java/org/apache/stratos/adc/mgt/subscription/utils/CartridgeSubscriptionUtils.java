@@ -23,13 +23,19 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.deploy.service.Service;
+import org.apache.stratos.adc.mgt.exception.ADCException;
+import org.apache.stratos.adc.mgt.exception.DuplicateCartridgeAliasException;
+import org.apache.stratos.adc.mgt.exception.InvalidCartridgeAliasException;
 import org.apache.stratos.adc.mgt.payload.BasicPayloadData;
+import org.apache.stratos.adc.mgt.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.util.Constants;
+
+import java.util.regex.Pattern;
 
 public class CartridgeSubscriptionUtils {
 
@@ -129,5 +135,38 @@ public class CartridgeSubscriptionUtils {
                 log.error(String.format("Could not publish tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
             }
         }
+    }
+
+    public static void validateCartridgeAlias (int tenantId, String cartridgeType, String alias) throws InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException {
+
+        String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
+        Pattern pattern = Pattern.compile(patternString);
+
+        if (!pattern.matcher(alias).matches()) {
+            String msg = "The alias " + alias + " can contain only alpha-numeric lowercase characters. Please enter a valid alias.";
+            log.error(msg);
+            throw new InvalidCartridgeAliasException(msg, tenantId, cartridgeType, alias);
+        }
+
+        boolean isAliasTaken = false;
+        try {
+            isAliasTaken = isAliasTaken(tenantId, alias);
+        } catch (Exception e) {
+            String msg = "Exception : " + e.getMessage();
+            log.error(msg, e);
+            throw new ADCException("Error when checking alias is already taken", e);
+        }
+
+        if (isAliasTaken) {
+            String msg = "The alias " + alias + " is already taken. Please try again with a different alias.";
+            log.error(msg);
+            throw new DuplicateCartridgeAliasException(msg, cartridgeType, alias);
+        }
+    }
+
+    public static boolean isAliasTaken (int tenantId, String alias) {
+
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+        return (dataInsertionAndRetrievalManager.getCartridgeSubscription(tenantId, alias) == null) ? false : true;
     }
 }

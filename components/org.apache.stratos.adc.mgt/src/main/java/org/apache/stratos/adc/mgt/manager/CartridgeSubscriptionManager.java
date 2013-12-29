@@ -23,8 +23,6 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
-import org.apache.stratos.adc.mgt.connector.CartridgeSubscriptionConnector;
-import org.apache.stratos.adc.mgt.connector.CartridgeSubscriptionConnectorFactory;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.*;
@@ -33,6 +31,7 @@ import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadFactory;
 import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.adc.mgt.repository.Repository;
+import org.apache.stratos.adc.mgt.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.factory.CartridgeSubscriptionFactory;
@@ -42,14 +41,11 @@ import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.adc.mgt.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.wso2.carbon.context.CarbonContext;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -58,12 +54,13 @@ import java.util.Set;
 public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
+    private DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
 
     /**
      * Subscribes to a cartridge
      *
      * @param cartridgeType Cartridge type
-     * @param cartridgeAlias Cartridge alias
+     * @param subscriptionAlias Cartridge alias
      * @param autoscalingPolicyName Autoscaling policy name
      * @param deploymentPolicyName Deployment Policy name
      * @param tenantDomain Subscriing tenant's domain
@@ -87,7 +84,7 @@ public class CartridgeSubscriptionManager {
      * @throws AlreadySubscribedException
      * @throws InvalidRepositoryException
      */
-    public CartridgeSubscription subscribeToCartridge (String cartridgeType, String cartridgeAlias,
+    public CartridgeSubscription subscribeToCartridge (String cartridgeType, String subscriptionAlias,
                                                   String autoscalingPolicyName, String deploymentPolicyName,
                                                   String tenantDomain, int tenantId,
                                                   String tenantAdminUsername, String repositoryType,
@@ -98,7 +95,7 @@ public class CartridgeSubscriptionManager {
             UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
             RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
 
-        return subscribeToCartridgeWithProperties(cartridgeType, cartridgeAlias, autoscalingPolicyName, 
+        return subscribeToCartridgeWithProperties(cartridgeType, subscriptionAlias, autoscalingPolicyName,
                                                   deploymentPolicyName, tenantDomain, tenantId, tenantAdminUsername, 
                                                   repositoryType, repositoryURL, isPrivateRepository, repositoryUsername, 
                                                   repositoryPassword, null);
@@ -121,7 +118,7 @@ public class CartridgeSubscriptionManager {
         InvalidRepositoryException {
 
         // validate cartridge alias
-        ApplicationManagementUtil.validateCartridgeAlias(cartridgeAlias, cartridgeType);
+        CartridgeSubscriptionUtils.validateCartridgeAlias(tenantId, cartridgeType, cartridgeAlias);
 
         CartridgeInfo cartridgeInfo;
         try {
@@ -217,9 +214,6 @@ public class CartridgeSubscriptionManager {
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                 cartridgeSubscription.getCartridgeInfo().getType());
         
-        // publish artifact-deployment event for multi-tenant subscription
-        //CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
-        
         if(cartridgeInfo.getMultiTenant()) {
         	log.info(" Multitenant --> Publishing Artifact update event -- ");
             ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(),
@@ -243,61 +237,61 @@ public class CartridgeSubscriptionManager {
      * @throws NotSubscribedException
      * @throws AxisFault
      */
-    public void connectCartridges (String tenantDomain, CartridgeSubscription cartridgeSubscription,
-                                   String connectingSubscriptionAlias)
-            throws ADCException, NotSubscribedException, AxisFault {
-
-        //TODO: retrieve from the cache and connect. For now, new objects are created
-
-        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscription(tenantDomain,
-                connectingSubscriptionAlias);
-
-        if(cartridgeSubscription == null) {
-            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + "  connecting aborted";
-            log.error(errorMsg);
-            return;
-        }
-
-        if(connectingCartridgeSubscription == null) {
-            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + ", alias " +
-                    connectingSubscriptionAlias + ",  connecting aborted";
-            log.error(errorMsg);
-            return;
-        }
-
-        CartridgeSubscriptionConnector cartridgeSubscriptionConnector = CartridgeSubscriptionConnectorFactory.
-                getCartridgeInstanceConnector(connectingCartridgeSubscription.getType());
-
-        cartridgeSubscription.connect(connectingSubscriptionAlias);
-
-        //PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
-
-        //get additional payload params for connecting cartridges
-        Properties payloadProperties = cartridgeSubscriptionConnector.createConnection(cartridgeSubscription,
-                connectingCartridgeSubscription);
-        StringBuilder connectionParamsBuilder = new StringBuilder();
-        Set<Map.Entry<Object,Object>> payloadParamEntries = payloadProperties.entrySet();
-
-        for (Map.Entry<Object, Object> payloadParamEntry : payloadParamEntries) {
-            connectionParamsBuilder.append(",");
-            connectionParamsBuilder.append(payloadParamEntry.getKey().toString());
-            connectionParamsBuilder.append("=");
-            connectionParamsBuilder.append(payloadParamEntry.getValue().toString());
-        }
-
-        //add connection relates parameters to the payload
-        if(cartridgeSubscription.getPayloadData() != null) {
-            //cartridgeSubscription.getPayloadData().populatePayload(connectionParamsBuilder.toString());
-        } else {
-            //no existing payload
-            /*Payload payload = PayloadFactory.getPayloadDataInstance(cartridgeSubscription.getCartridgeInfo().getProvider(),
-                    cartridgeSubscription.getType(), "/tmp/" + tenantDomain + "-" + cartridgeSubscription.getAlias() +
-                    ".zip");
-            payload.populatePayload(connectionParamsBuilder.toString());
-            cartridgeSubscription.setPayloadData(payload);*/
-        }
-
-    }
+//    public void connectCartridges (String tenantDomain, CartridgeSubscription cartridgeSubscription,
+//                                   String connectingSubscriptionAlias)
+//            throws ADCException, NotSubscribedException, AxisFault {
+//
+//        //TODO: retrieve from the cache and connect. For now, new objects are created
+//
+//        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscription(tenantDomain,
+//                connectingSubscriptionAlias);
+//
+//        if(cartridgeSubscription == null) {
+//            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + "  connecting aborted";
+//            log.error(errorMsg);
+//            return;
+//        }
+//
+//        if(connectingCartridgeSubscription == null) {
+//            String errorMsg = "No cartridge subscription found in cache for tenant " + tenantDomain + ", alias " +
+//                    connectingSubscriptionAlias + ",  connecting aborted";
+//            log.error(errorMsg);
+//            return;
+//        }
+//
+//        CartridgeSubscriptionConnector cartridgeSubscriptionConnector = CartridgeSubscriptionConnectorFactory.
+//                getCartridgeInstanceConnector(connectingCartridgeSubscription.getType());
+//
+//        cartridgeSubscription.connect(connectingSubscriptionAlias);
+//
+//        //PayloadArg payloadArg = cartridgeSubscription.createPayloadParameters();
+//
+//        //get additional payload params for connecting cartridges
+//        Properties payloadProperties = cartridgeSubscriptionConnector.createConnection(cartridgeSubscription,
+//                connectingCartridgeSubscription);
+//        StringBuilder connectionParamsBuilder = new StringBuilder();
+//        Set<Map.Entry<Object,Object>> payloadParamEntries = payloadProperties.entrySet();
+//
+//        for (Map.Entry<Object, Object> payloadParamEntry : payloadParamEntries) {
+//            connectionParamsBuilder.append(",");
+//            connectionParamsBuilder.append(payloadParamEntry.getKey().toString());
+//            connectionParamsBuilder.append("=");
+//            connectionParamsBuilder.append(payloadParamEntry.getValue().toString());
+//        }
+//
+//        //add connection relates parameters to the payload
+//        if(cartridgeSubscription.getPayloadData() != null) {
+//            //cartridgeSubscription.getPayloadData().populatePayload(connectionParamsBuilder.toString());
+//        } else {
+//            //no existing payload
+//            /*Payload payload = PayloadFactory.getPayloadDataInstance(cartridgeSubscription.getCartridgeInfo().getProvider(),
+//                    cartridgeSubscription.getType(), "/tmp/" + tenantDomain + "-" + cartridgeSubscription.getAlias() +
+//                    ".zip");
+//            payload.populatePayload(connectionParamsBuilder.toString());
+//            cartridgeSubscription.setPayloadData(payload);*/
+//        }
+//
+//    }
 
     /**
      * Registers the cartridge subscription for the given CartridgeSubscriptionInfo object
@@ -313,7 +307,11 @@ public class CartridgeSubscriptionManager {
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(null);
 
-        int subscriptionId;
+        //set status as 'SUBSCRIBED'
+        cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /*int subscriptionId;
         try {
             subscriptionId = PersistenceManager.persistSubscription(cartridgeSubscriptionInfo);
 
@@ -322,12 +320,24 @@ public class CartridgeSubscriptionManager {
                     cartridgeSubscription.getSubscriber().getTenantDomain() + ", alias " + cartridgeSubscription.getType();
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
+        }*/
+
+        //cartridgeSubscription.setSubscriptionId(subscriptionId);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        try {
+            dataInsertionAndRetrievalManager.cacheAndPersistSubcription(cartridgeSubscription);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error saving subscription for tenant " +
+                    cartridgeSubscription.getSubscriber().getTenantDomain() + ", alias " + cartridgeSubscription.getType();
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
         }
 
-        cartridgeSubscription.setSubscriptionId(subscriptionId);
         ApplicationManagementUtil.addDNSEntry(cartridgeSubscriptionInfo.getAlias(), cartridgeSubscription.getType());
 
-        log.info("Successful Subscription: "+cartridgeSubscription.toString());
+        log.info("Successful Subscription: " + cartridgeSubscription.toString());
         return ApplicationManagementUtil.
                 createSubscriptionResponse(cartridgeSubscriptionInfo, cartridgeSubscription.getRepository());
     }
@@ -343,9 +353,8 @@ public class CartridgeSubscriptionManager {
     public void unsubscribeFromCartridge (String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
-        //TODO: retrieve from the cache and connect. For now, new objects are created
-
-        CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantDomain, alias);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /*CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantDomain, alias);
 
         if(cartridgeSubscription != null) {
             cartridgeSubscription.removeSubscription();
@@ -358,9 +367,40 @@ public class CartridgeSubscriptionManager {
             if(log.isDebugEnabled()) {
                 log.debug("No cartridge subscription found with alias " + alias + " for tenant " + tenantDomain);
             }
+        }*/
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //fix properly
+        CartridgeSubscription cartridgeSubscription = dataInsertionAndRetrievalManager.getCartridgeSubscription(CarbonContext.getThreadLocalCarbonContext().getTenantId(), alias);
+        if(cartridgeSubscription != null) {
+            cartridgeSubscription.removeSubscription();
+
+            //set status as 'UNSUBSCRIBED'
+            cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
+
+            // persist changes
+            try {
+                dataInsertionAndRetrievalManager.cacheAndPersistSubcription(cartridgeSubscription);
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error saving subscription for tenant " +
+                        cartridgeSubscription.getSubscriber().getTenantDomain() + ", alias " + cartridgeSubscription.getAlias();
+                log.error(errorMsg);
+                throw new ADCException(errorMsg, e);
+            }
+
+            // Publish tenant un-subscribed event to message broker
+            CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                    cartridgeSubscription.getCartridgeInfo().getType());
+        }
+        else {
+            String errorMsg = "No cartridge subscription found with alias " + alias + " for tenant " + tenantDomain;
+            log.error(errorMsg);
+            throw new NotSubscribedException(errorMsg, alias);
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
     /**
      * Creates and returns a CartridgeSubscription object
      *
@@ -371,7 +411,7 @@ public class CartridgeSubscriptionManager {
      * @throws ADCException
      * @throws NotSubscribedException
      */
-    public CartridgeSubscription getCartridgeSubscription(String tenantDomain, String alias)
+    /*public CartridgeSubscription getCartridgeSubscription(String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(tenantDomain, alias);
@@ -385,7 +425,8 @@ public class CartridgeSubscriptionManager {
         }
 
         return populateCartridgeSubscriptionInformation(cartridgeInfo, cartridgeSubscriptionInfo);
-    }
+    }*/
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //TODO: remove
     /*public CartridgeSubscription deployMultitenantService(String cartridgeType, String cartridgeAlias,
@@ -482,7 +523,7 @@ public class CartridgeSubscriptionManager {
     	
     }*/
 
-    private CartridgeSubscriptionInfo getCartridgeSubscriptionInfo(String tenantDomain, String alias)
+    /*private CartridgeSubscriptionInfo getCartridgeSubscriptionInfo (String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
         CartridgeSubscriptionInfo subscription;
@@ -503,9 +544,9 @@ public class CartridgeSubscriptionManager {
 
         return subscription;
 
-    }
+    }*/
 
-    private List<CartridgeSubscriptionInfo> getCartridgeSubscriptions (int tenantId) throws ADCException, NotSubscribedException {
+    /*private List<CartridgeSubscriptionInfo> getCartridgeSubscriptions (int tenantId) throws ADCException, NotSubscribedException {
 
         List<CartridgeSubscriptionInfo> subscriptions;
         try {
@@ -524,7 +565,7 @@ public class CartridgeSubscriptionManager {
         }
 
         return subscriptions;
-    }
+    }*/
 
     private CartridgeSubscription populateCartridgeSubscriptionInformation(CartridgeInfo cartridgeInfo,
                                                                            CartridgeSubscriptionInfo cartridgeSubscriptionInfo)

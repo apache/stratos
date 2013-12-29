@@ -25,9 +25,9 @@ import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.AlreadySubscribedException;
 import org.apache.stratos.adc.mgt.exception.NotSubscribedException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
+import org.apache.stratos.adc.mgt.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 
 
@@ -45,8 +45,12 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
             // If the cartridge is multi-tenant. We should not let users createSubscription twice.
             boolean subscribed;
             try {
-                subscribed = PersistenceManager.isAlreadySubscribed(cartridgeSubscription.getType(),
-                        cartridgeSubscription.getSubscriber().getTenantId());
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //subscribed = PersistenceManager.isAlreadySubscribed(cartridgeSubscription.getType(),
+                //        cartridgeSubscription.getSubscriber().getTenantId());
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////
+                subscribed = hasAlreadySubscribed(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getType());
+
             } catch (Exception e) {
                 String msg = "Error checking whether the cartridge type " + cartridgeSubscription.getType() +
                         " is already subscribed";
@@ -97,4 +101,10 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
                 "unregister services");
     }
 
+    private static boolean hasAlreadySubscribed(int tenantId, String cartridgeType) {
+
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+        return ( dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType) == null ||
+                 dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType).isEmpty() ) ? false : true;
+    }
 }

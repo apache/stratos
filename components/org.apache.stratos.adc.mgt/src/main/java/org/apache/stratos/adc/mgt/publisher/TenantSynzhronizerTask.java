@@ -21,9 +21,9 @@ package org.apache.stratos.adc.mgt.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.internal.DataHolder;
-import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.adc.mgt.retriever.DataInsertionAndRetrievalManager;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
@@ -32,6 +32,7 @@ import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -64,13 +65,16 @@ public class TenantSynzhronizerTask implements Task {
                 }
                 tenant = new Tenant(carbonTenant.getId(), carbonTenant.getDomain());
                 // Add subscriptions
-                List<CartridgeSubscriptionInfo> subscriptions = PersistenceManager.getSubscriptionsForTenant(tenant.getTenantId());
-                for (CartridgeSubscriptionInfo subscription : subscriptions) {
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //List<CartridgeSubscriptionInfo> cartridgeSubscriptions = PersistenceManager.getSubscriptionsForTenant(tenant.getTenantId());
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                Collection<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(tenant.getTenantId());
+                for (CartridgeSubscription subscription : cartridgeSubscriptions) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Tenant subscription found: [tenant-id] %d [tenant-domain] %s [service] %s",
-                                   carbonTenant.getId(), carbonTenant.getDomain(), subscription.getCartridge()));
+                                   carbonTenant.getId(), carbonTenant.getDomain(), subscription.getType()));
                     }
-                    tenant.addServiceSubscription(subscription.getCartridge());
+                    tenant.addServiceSubscription(subscription.getType());
                 }
                 tenants.add(tenant);
             }

@@ -23,7 +23,6 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
-import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dto.*;
 import org.apache.stratos.adc.mgt.exception.*;
@@ -37,10 +36,6 @@ import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.mgt.utils.PolicyHolder;
 import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
-import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -60,7 +55,7 @@ import java.util.regex.Pattern;
 public class ApplicationManagementService extends AbstractAdmin {
 
     private static final Log log = LogFactory.getLog(ApplicationManagementService.class);
-    private RegistryManager registryManager = new RegistryManager();
+    //private RegistryManager registryManager = new RegistryManager();
     private CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
 
     /*
@@ -399,7 +394,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 
         if(dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
 
-            dataCartridgeAlias = dataCartridgeAlias.trim();
+            /*dataCartridgeAlias = dataCartridgeAlias.trim();
 
             CartridgeSubscription connectingCartridgeSubscription = null;
             try {
@@ -425,7 +420,7 @@ public class ApplicationManagementService extends AbstractAdmin {
             } else {
                 log.error("Failed to connect. No cartridge subscription found for tenant " +
                         ApplicationManagementUtil.getTenantId(configurationContext) + " with alias " + alias);
-            }
+            } */
         }
 
         return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
@@ -551,7 +546,9 @@ public class ApplicationManagementService extends AbstractAdmin {
 
         try {
         	actualHost = getActualHost(cartridgeAlias);
-            registryManager.addDomainMappingToRegistry(mappedDomain, actualHost);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //registryManager.addDomainMappingToRegistry(mappedDomain, actualHost);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             log.info("Domain mapping is added for " + mappedDomain + " tenant: " + getTenantDomain());
             PersistenceManager.updateDomainMapping(
                     ApplicationManagementUtil.getTenantId(getConfigContext()), cartridgeAlias, mappedDomain);
@@ -596,7 +593,9 @@ public class ApplicationManagementService extends AbstractAdmin {
         
         try {
         	actualHost = getActualHost(cartridgeAlias);
-            registryManager.removeDomainMappingFromRegistry(actualHost);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //registryManager.removeDomainMappingFromRegistry(actualHost);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             log.info("Domain mapping is removed for " + actualHost + " tenant: " + getTenantDomain());
             PersistenceManager.updateDomainMapping(ApplicationManagementUtil.getTenantId(getConfigContext()),
                     cartridgeAlias, null);

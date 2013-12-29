@@ -21,21 +21,16 @@ package org.apache.stratos.adc.mgt.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.custom.domain.RegistryManager;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.Cluster;
-import org.apache.stratos.adc.mgt.dns.DNSManager;
 import org.apache.stratos.adc.mgt.exception.*;
-import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.repository.Repository;
 import org.apache.stratos.adc.mgt.subscriber.Subscriber;
 import org.apache.stratos.adc.mgt.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
-import org.apache.stratos.adc.mgt.utils.PersistenceManager;
 import org.apache.stratos.adc.mgt.utils.RepositoryFactory;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 
@@ -57,7 +52,7 @@ public abstract class CartridgeSubscription implements Serializable {
     private CartridgeInfo cartridgeInfo;
     private PayloadData payloadData;
     private Cluster cluster;
-    //private String subscriptionStatus;
+    private String subscriptionStatus;
     //private String serviceStatus;
     private String mappedDomain;
     //private List<String> connectedSubscriptionAliases;
@@ -243,17 +238,20 @@ public abstract class CartridgeSubscription implements Serializable {
             log.error(errorMsg);
         }
 
-        try {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /*try {
             PersistenceManager.updateSubscriptionState(subscriptionId, "UNSUBSCRIBED");
 
         } catch (Exception e) {
             String errorMsg = "Error in unscubscribing from cartridge, alias " + alias + ", tenant " +
                     subscriber.getTenantDomain();
             throw new ADCException(errorMsg, e);
-        }
+        }*/
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //TODO: FIXME: do we need this?
-        new DNSManager().removeSubDomain(getCluster().getHostName());
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /*new DNSManager().removeSubDomain(getCluster().getHostName());
 
         try {
             new RegistryManager().removeDomainMappingFromRegistry(getCluster().getHostName());
@@ -262,9 +260,10 @@ public abstract class CartridgeSubscription implements Serializable {
             String errorMsg = "Error in removing domain mapping, alias " + alias + ", tenant " +
                     subscriber.getTenantDomain();
             log.error(errorMsg, e);
-        }
+        }*/
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
+        /*TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
         String[] ips = topologyMgtService.getActiveIPs(type, getCluster().getClusterDomain(), getCluster().getClusterSubDomain());
         try {
             PersistenceManager.updateInstanceState("INACTIVE", ips, getCluster().getClusterDomain(), getCluster().getClusterSubDomain(), type);
@@ -272,7 +271,7 @@ public abstract class CartridgeSubscription implements Serializable {
         } catch (Exception e) {
             String errorMsg = "Error in updating state to INACTIVE";
             log.error(errorMsg, e);
-        }
+        }*/
 
         //this.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
     }
@@ -399,13 +398,13 @@ public abstract class CartridgeSubscription implements Serializable {
         this.mappedDomain = mappedDomain;
     }
 
-    /*public String getSubscriptionStatus() {
+    public String getSubscriptionStatus() {
         return subscriptionStatus;
     }
 
     public void setSubscriptionStatus(String subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
-    }*/
+    }
 
     public String getSubscriptionKey() {
         return subscriptionKey;

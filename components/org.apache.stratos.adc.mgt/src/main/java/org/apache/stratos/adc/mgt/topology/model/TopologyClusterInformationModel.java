@@ -67,14 +67,14 @@ public class TopologyClusterInformationModel {
 
         try {
             //[Tenant Id + Subscription Alias] -> Cluster map
-            tenantIdAndAliasTopologyKeyToClusterMap.put(new TenantIdAndAliasTopologyKey(tenantId, subscriptionAlias), cluster);
+            tenantIdAndAliasTopologyKeyToClusterMap.putSubscription(new TenantIdAndAliasTopologyKey(tenantId, subscriptionAlias), cluster);
 
             //Tenant Id -> Cluster map
             clusters = tenantIdToClusterMap.get(tenantId);
             if(clusters == null) {
                 clusters = new ArrayList<Cluster>();
                 clusters.add(cluster);
-                tenantIdToClusterMap.put(tenantId, clusters);
+                tenantIdToClusterMap.putSubscription(tenantId, clusters);
             } else {
                 clusters.add(cluster);
             }
@@ -84,7 +84,7 @@ public class TopologyClusterInformationModel {
             if(clusters == null) {
                 clusters = new ArrayList<Cluster>();
                 clusters.add(cluster);
-                tenantIdAndTypeTopologyKeyToClusterMap.put(new TenantIdAndTypeTopologyKey(tenantId, cartridgeType), clusters);
+                tenantIdAndTypeTopologyKeyToClusterMap.putSubscription(new TenantIdAndTypeTopologyKey(tenantId, cartridgeType), clusters);
             } else {
                 clusters.add(cluster);
             }

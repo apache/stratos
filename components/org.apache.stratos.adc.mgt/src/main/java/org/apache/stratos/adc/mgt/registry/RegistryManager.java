@@ -31,8 +31,8 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 public class RegistryManager {
 
     private final static Log log = LogFactory.getLog(RegistryManager.class);
-                                                                                                                          ;
-    private static final String STRATOS_MANAGER_REOSURCE = "/stratos.manager";
+
+    private static final String STRATOS_MANAGER_REOSURCE = "/stratos_manager";
 
     private static RegistryService registryService;
     private static volatile RegistryManager registryManager;
@@ -120,7 +120,7 @@ public class RegistryManager {
             tenantGovRegistry.beginTransaction();
             Resource nodeResource = tenantGovRegistry.newResource();
             nodeResource.setContent(Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
-            tenantGovRegistry.put(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT, nodeResource);
+            tenantGovRegistry.putSubscription(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT, nodeResource);
             tenantGovRegistry.commitTransaction();
 
         } catch (Exception e) {
@@ -193,7 +193,7 @@ public class RegistryManager {
             govRegistry.beginTransaction();
             Resource nodeResource = govRegistry.newResource();
             nodeResource.setContent(Serializer.serializeClusterIdToSubscriptionToByteArray(clusterIdToSubscription));
-            govRegistry.put(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION, nodeResource);
+            govRegistry.putSubscription(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION, nodeResource);
             govRegistry.commitTransaction();
 
         } catch (Exception e) {
@@ -228,7 +228,7 @@ public class RegistryManager {
         }
     }*/
 
-    public void persist (String path, byte [] resourceBytes) throws RegistryException {
+    public void persist (String path, byte [] resourceBytes, String tag) throws RegistryException {
 
         UserRegistry registry = initRegistry();
 
@@ -236,13 +236,27 @@ public class RegistryManager {
             registry.beginTransaction();
             Resource nodeResource = registry.newResource();
             nodeResource.setContent(resourceBytes);
+            // store the resource in the registry
             registry.put(path, nodeResource);
+            if (tag != null) {
+                // apply the tag
+                registry.applyTag(path, tag);
+            }
+            // commit
             registry.commitTransaction();
 
         } catch (RegistryException e) {
-            registry.rollbackTransaction();
             String errorMsg = "Failed to persist the given resource in registry path " + path;
             log.error(errorMsg, e);
+            // rollback
+            try {
+                registry.rollbackTransaction();
+
+            } catch (RegistryException e1) {
+                errorMsg = "Failed to rollback the transaction in registry path " + path;
+                log.error(errorMsg, e1);
+                throw e1;
+            }
             throw e;
         }
     }
@@ -257,18 +271,16 @@ public class RegistryManager {
             resource = registry.get(resourcePath);
 
         } catch (ResourceNotFoundException ignore) {
-            String errorMsg = "Resource not found at path " + resourcePath;
-            log.error(errorMsg);
+            // nothing has been persisted in the registry yet
+            if(log.isDebugEnabled()) {
+                log.debug("No resource found in the registry path " + resourcePath);
+            }
             return null;
 
         } catch (RegistryException e) {
             String errorMsg = "Failed to retrieve the Resource at " + resourcePath + " from registry.";
             log.error(errorMsg, e);
             throw e;
-        }
-
-        if(resource == null) {
-            return null;
         }
 
         return resource.getContent();

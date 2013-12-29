@@ -20,7 +20,7 @@
 package org.apache.stratos.adc.mgt.utils;
 
 import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
-import org.apache.stratos.adc.mgt.lookup.SubscriptionContext;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,18 +31,18 @@ public class Serializer {
 
     /**
      * Serialize a SubscriptionContext instance to a byte array.
-     * @param subscriptionContext
+     * @param cartridgeSubscription
      * @return byte[]
      * @throws java.io.IOException
      */
-    public static byte[] serializeSubscriptionSontextToByteArray(SubscriptionContext subscriptionContext)
+    public static byte[] serializeSubscriptionSontextToByteArray(CartridgeSubscription cartridgeSubscription)
             throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(subscriptionContext);
+            out.writeObject(cartridgeSubscription);
 
             return bos.toByteArray();
 

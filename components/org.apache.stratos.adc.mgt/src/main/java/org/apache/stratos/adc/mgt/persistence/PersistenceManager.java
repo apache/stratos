@@ -22,7 +22,7 @@ package org.apache.stratos.adc.mgt.persistence;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
-import java.util.List;
+import java.util.Collection;
 
 public abstract class PersistenceManager {
 
@@ -32,20 +32,23 @@ public abstract class PersistenceManager {
     public abstract void removeCartridgeSubscription (int tenantId, String alias)
             throws PersistenceManagerException;
 
-    public abstract CartridgeSubscription getCartridgeSubscription(int tenantId, String alias)
+    //public abstract CartridgeSubscription getCartridgeSubscription(int tenantId, String alias)
+    //        throws PersistenceManagerException;
+
+    public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions()
             throws PersistenceManagerException;
 
-    public abstract List<CartridgeSubscription> getCartridgeSubscriptions()
+    public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
             throws PersistenceManagerException;
 
-    public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
-            throws PersistenceManagerException;
+    //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
+    //        throws PersistenceManagerException;
 
-    public abstract CartridgeSubscription getCartridgeSubscription (String clusterDomain)
-            throws PersistenceManagerException;
+    //public abstract CartridgeSubscription getCartridgeSubscription (String clusterDomain)
+    //        throws PersistenceManagerException;
 
-    public abstract List<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
-            throws PersistenceManagerException;
+    //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
+    //        throws PersistenceManagerException;
 
     /*public abstract Repository getRepository (int tenantId, String alias)
             throws PersistenceManagerException;

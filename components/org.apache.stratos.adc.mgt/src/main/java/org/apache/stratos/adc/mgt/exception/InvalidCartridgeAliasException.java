@@ -28,6 +28,8 @@ public class InvalidCartridgeAliasException extends Exception {
 
 	private final String cartridgeAlias;
 
+    private int tenantId;
+
 	public InvalidCartridgeAliasException(String message, String cartridgeType, String cartridgeAlias, Throwable cause) {
 		super(message, cause);
 		this.message = message;
@@ -41,6 +43,14 @@ public class InvalidCartridgeAliasException extends Exception {
 		this.cartridgeType = cartridgeType;
 		this.cartridgeAlias = cartridgeAlias;
 	}
+
+    public InvalidCartridgeAliasException(String message, int tenantId, String cartridgeType, String cartridgeAlias) {
+        super(message);
+        this.message = message;
+        this.tenantId = tenantId;
+        this.cartridgeType = cartridgeType;
+        this.cartridgeAlias = cartridgeAlias;
+    }
 
 	public String getMessage() {
 		return message;

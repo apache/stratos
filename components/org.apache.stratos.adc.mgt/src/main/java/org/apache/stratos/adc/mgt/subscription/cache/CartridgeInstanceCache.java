@@ -57,7 +57,7 @@ public class CartridgeInstanceCache {
 
     public void addCartridgeInstances (int tenantId, List<CartridgeSubscription> cartridgeSubscriptions) {
 
-        //tenantIdToCartridgeInstance.put(tenantId, cartridgeSubscriptions);
+        //tenantIdToCartridgeInstance.putSubscription(tenantId, cartridgeSubscriptions);
         for(CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
             addCartridgeInstance(new CartridgeInstanceCacheKey(tenantId, cartridgeSubscription.getAlias()),
                     cartridgeSubscription);

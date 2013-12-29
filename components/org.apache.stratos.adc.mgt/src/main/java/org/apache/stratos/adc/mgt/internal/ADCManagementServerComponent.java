@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.listener.InstanceStatusListener;
 import org.apache.stratos.adc.mgt.publisher.TenantEventPublisher;
 import org.apache.stratos.adc.mgt.publisher.TenantSynchronizerTaskScheduler;
+import org.apache.stratos.adc.mgt.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.adc.mgt.topology.receiver.StratosManagerTopologyReceiver;
 import org.apache.stratos.adc.mgt.utils.CartridgeConfigFileReader;
 import org.apache.stratos.adc.mgt.utils.StratosDBUtils;
@@ -114,6 +115,9 @@ public class ADCManagementServerComponent {
             Thread topologyReceiverThread = new Thread(stratosManagerTopologyReceiver);
             topologyReceiverThread.start();
             log.info("Topology receiver thread started");
+
+            // retrieve persisted CartridgeSubscriptions
+            new DataInsertionAndRetrievalManager().cachePersistedSubscriptions();
 
             //Component activated successfully
             log.info("ADC management server component is activated");

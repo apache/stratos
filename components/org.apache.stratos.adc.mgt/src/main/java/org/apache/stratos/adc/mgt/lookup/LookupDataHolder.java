@@ -57,100 +57,90 @@ public class LookupDataHolder implements Serializable {
         return lookupDataHolder;
     }
 
-    public void put (CartridgeSubscription cartridgeSubscription) {
+    public void putSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        writeLock.lock();
-
-        try {
-            if (clusterIdToSubscription.getSubscription(cartridgeSubscription.getClusterDomain()) != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Overwriting the existing CartridgeSubscription for tenant " + cartridgeSubscription.getSubscriber().getTenantId() +
-                            ", alias " + cartridgeSubscription.getAlias());
-                }
+        if (clusterIdToSubscription.getSubscription(cartridgeSubscription.getClusterDomain()) != null) {
+            if(log.isDebugEnabled()) {
+                log.debug("Overwriting the existing CartridgeSubscription for tenant " + cartridgeSubscription.getSubscriber().getTenantId() +
+                        ", alias " + cartridgeSubscription.getAlias());
             }
-            // add or update
-            clusterIdToSubscription.addSubscription(cartridgeSubscription);
-
-            // check if an existing SubscriptionContext is available
-            SubscriptionContext existingSubscriptionCtx = tenantIdToSubscriptionContext.getSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId());
-            if(existingSubscriptionCtx != null) {
-                existingSubscriptionCtx.addSubscription(cartridgeSubscription);
-
-            } else {
-                //create a new subscription context and add the subscription
-                SubscriptionContext subscriptionContext = new SubscriptionContext();
-                subscriptionContext.addSubscription(cartridgeSubscription);
-                tenantIdToSubscriptionContext.addSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId(), subscriptionContext);
-            }
-
-        } finally {
-            writeLock.unlock();
         }
+        // add or update
+        clusterIdToSubscription.addSubscription(cartridgeSubscription);
+
+        // check if an existing SubscriptionContext is available
+        SubscriptionContext existingSubscriptionCtx = tenantIdToSubscriptionContext.getSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId());
+        if(existingSubscriptionCtx != null) {
+            existingSubscriptionCtx.addSubscription(cartridgeSubscription);
+
+        } else {
+            //create a new subscription context and add the subscription
+            SubscriptionContext subscriptionContext = new SubscriptionContext();
+            subscriptionContext.addSubscription(cartridgeSubscription);
+            tenantIdToSubscriptionContext.addSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId(), subscriptionContext);
+        }
+
     }
 
     public Collection<CartridgeSubscription> getSubscriptions (int tenantId) {
 
-        readLock.lock();
 
-        try {
-            SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
-            if (subscriptionContext == null) {
-                // no subscriptions
-                return null;
-            }
-
-            return subscriptionContext.getSubscriptions();
-
-        } finally {
-            readLock.unlock();
+        SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
+        if (subscriptionContext == null) {
+            // no subscriptions
+            return null;
         }
+
+        return subscriptionContext.getSubscriptions();
+
     }
 
     public Collection<CartridgeSubscription> getSubscriptionForType (int tenantId, String cartridgeType) {
 
-        readLock.lock();
+         SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
+         if (subscriptionContext == null) {
+            // no subscriptions
+            return null;
+         }
 
-        try {
-            SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
-            if (subscriptionContext == null) {
-                // no subscriptions
-                return null;
-            }
-
-            return subscriptionContext.getSubscriptionsOfType(cartridgeType);
-
-        } finally {
-            readLock.unlock();
-        }
+         return subscriptionContext.getSubscriptionsOfType(cartridgeType);
     }
 
     public CartridgeSubscription getSubscriptionForAlias (int tenantId, String subscriptionAlias) {
 
-        readLock.lock();
-
-        try {
-            SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
-            if (subscriptionContext == null) {
-                // no subscriptions
-                return null;
-            }
-
-            return subscriptionContext.getSubscriptionForAlias(subscriptionAlias);
-
-        } finally {
-            readLock.unlock();
+        SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
+        if (subscriptionContext == null) {
+            // no subscriptions
+            return null;
         }
+
+        return subscriptionContext.getSubscriptionForAlias(subscriptionAlias);
+
     }
 
     public CartridgeSubscription getSubscription (String clusterId) {
 
+        return clusterIdToSubscription.getSubscription(clusterId);
+
+    }
+
+    public void acquireWriteLock () {
+
+        writeLock.lock();
+    }
+
+    public void releaseWriteLock () {
+
+        writeLock.unlock();
+    }
+
+    public void acquireReadLock () {
+
         readLock.lock();
+    }
 
-        try {
-            return clusterIdToSubscription.getSubscription(clusterId);
+    public void releaseReadLock () {
 
-        } finally {
-            readLock.unlock();
-        }
+        readLock.unlock();
     }
 }

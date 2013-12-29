@@ -28,42 +28,110 @@ import org.jgroups.logging.Log;
 import org.jgroups.logging.LogFactory;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DataInsertionAndRetrievalManager {
 
     private static final Log log = LogFactory.getLog(DataInsertionAndRetrievalManager.class);
 
-    //locks
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-
     // TODO: use a global object
     PersistenceManager persistenceManager = new RegistryBasedPersistenceManager();
 
-    public void putCartridgeSubscription (CartridgeSubscription cartridgeSubscription) {
+    public void cacheAndPersistSubcription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
 
-        writeLock.lock();
+        // get the write lock
+        LookupDataHolder.getInstance().acquireWriteLock();
 
         try {
             // store in LookupDataHolder
-            LookupDataHolder.getInstance().put(cartridgeSubscription);
+            LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
 
             try {
                 // store in Persistence Manager
                 persistenceManager.persistCartridgeSubscription(cartridgeSubscription);
 
             } catch (PersistenceManagerException e) {
-                log.error("Error in persisting CartridgeSubscription in Persistence Manager", e);
+                String errorMsg = "Error in persisting CartridgeSubscription in Persistence Manager";
+                log.error(errorMsg, e);
+                throw e;
             }
 
         } finally {
-            writeLock.unlock();
+            // release the write lock
+            LookupDataHolder.getInstance().releaseWriteLock();
         }
     }
 
-    public void persistAll (int tenantId) {
+    public void cachePersistedSubscriptions () throws PersistenceManagerException {
+
+        Collection<CartridgeSubscription> cartridgeSubscriptions;
+
+        // get the write lock
+        LookupDataHolder.getInstance().acquireWriteLock();
+
+        try {
+            try {
+                cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions();
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error in retrieving CartridgeSubscriptions from Persistence Manager";
+                log.error(errorMsg, e);
+                throw e;
+            }
+
+            if(cartridgeSubscriptions != null || cartridgeSubscriptions.isEmpty()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("No CartridgeSubscriptions found to add to the cache");
+                    return;
+                }
+            }
+            cacheSubscriptions(cartridgeSubscriptions);
+
+        } finally {
+            // release the write lock
+            LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
+
+    public void cachePersistedSubscriptions (int tenantId) throws PersistenceManagerException {
+
+        Collection<CartridgeSubscription> cartridgeSubscriptions;
+
+        // get the write lock
+        LookupDataHolder.getInstance().acquireWriteLock();
+
+        try {
+            try {
+                cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId);
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error in retrieving CartridgeSubscriptions from Persistence Manager";
+                log.error(errorMsg, e);
+                throw e;
+            }
+
+            if(cartridgeSubscriptions != null || cartridgeSubscriptions.isEmpty()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("No CartridgeSubscriptions found to add to the cache");
+                    return;
+                }
+            }
+            cacheSubscriptions(cartridgeSubscriptions);
+
+        } finally {
+            // release the write lock
+            LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
+
+    private void cacheSubscriptions (Collection<CartridgeSubscription> cartridgeSubscriptions) {
+
+        // cache all
+        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+            LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
+        }
+    }
+
+    /*public void persistAll (int tenantId) {
 
         Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptions(tenantId);
 
@@ -82,111 +150,149 @@ public class DataInsertionAndRetrievalManager {
         } finally {
             writeLock.unlock();
         }
-    }
+    }*/
 
     public CartridgeSubscription getCartridgeSubscription (int tenantId, String subscriptionAlias) {
 
-        CartridgeSubscription cartridgeSubscription = LookupDataHolder.getInstance().getSubscriptionForAlias(tenantId, subscriptionAlias);
-        if (cartridgeSubscription == null) {
-            // not available in the cache, look in the registry
-            if (log.isDebugEnabled()) {
-                log.debug("CartridgeSubscription for tenant " + tenantId + ", alias " + subscriptionAlias + " not available in memory");
-            }
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
 
-            try {
-                cartridgeSubscription = persistenceManager.getCartridgeSubscription(tenantId, subscriptionAlias);
+        try {
+            CartridgeSubscription cartridgeSubscription = LookupDataHolder.getInstance().getSubscriptionForAlias(tenantId, subscriptionAlias);
 
-            } catch (PersistenceManagerException e) {
-                String errorMsg = "Error in accessing Persistence Manager";
-                log.error(errorMsg, e);
-                return null;
-            }
+            /*if (cartridgeSubscription == null) {
+                // not available in the cache, look in the registry
+                if (log.isDebugEnabled()) {
+                    log.debug("CartridgeSubscription for tenant " + tenantId + ", alias " + subscriptionAlias + " not available in memory");
+                }
 
-            // add to the LookupDataHolder
-            LookupDataHolder.getInstance().put(cartridgeSubscription);
+                try {
+                    cartridgeSubscription = persistenceManager.getCartridgeSubscription(tenantId, subscriptionAlias);
+
+                } catch (PersistenceManagerException e) {
+                    String errorMsg = "Error in accessing Persistence Manager";
+                    log.error(errorMsg, e);
+                    return null;
+                }
+
+                // add to the LookupDataHolder
+                // LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
+            }*/
+
+            return cartridgeSubscription;
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
         }
-
-        return cartridgeSubscription;
     }
 
     public CartridgeSubscription getCartridgeSubscription (String clusterId) {
 
-        CartridgeSubscription cartridgeSubscription = LookupDataHolder.getInstance().getSubscription(clusterId);
-        if (cartridgeSubscription == null) {
-            // not available in the cache, look in the registry
-            if (log.isDebugEnabled()) {
-                log.debug("CartridgeSubscription for cluster " + clusterId + " not available in memory");
-            }
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
 
-            try {
-                cartridgeSubscription = persistenceManager.getCartridgeSubscription(clusterId);
+        try {
+            CartridgeSubscription cartridgeSubscription = LookupDataHolder.getInstance().getSubscription(clusterId);
+            /*if (cartridgeSubscription == null) {
+                // not available in the cache, look in the registry
+                if (log.isDebugEnabled()) {
+                    log.debug("CartridgeSubscription for cluster " + clusterId + " not available in memory");
+                }
 
-            } catch (PersistenceManagerException e) {
-                String errorMsg = "Error in accessing Persistence Manager";
-                log.error(errorMsg, e);
-                return null;
-            }
+                try {
+                    cartridgeSubscription = persistenceManager.getCartridgeSubscription(clusterId);
 
-            // add to the LookupDataHolder
-            LookupDataHolder.getInstance().put(cartridgeSubscription);
+                } catch (PersistenceManagerException e) {
+                    String errorMsg = "Error in accessing Persistence Manager";
+                    log.error(errorMsg, e);
+                    return null;
+                }
+
+                // add to the LookupDataHolder
+                // LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
+            }*/
+
+            return cartridgeSubscription;
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
         }
-
-        return cartridgeSubscription;
     }
 
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) {
 
-        Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptions(tenantId);
-        if (cartridgeSubscriptions == null) {
-            // not available in the cache, look in the registry
-            if (log.isDebugEnabled()) {
-                log.debug("CartridgeSubscriptions for tenant " + tenantId + " not available in memory");
-            }
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
 
-            try {
-                cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId);
+        try {
+            Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptions(tenantId);
+            /*if (cartridgeSubscriptions == null) {
+                // not available in the cache, look in the registry
+                if (log.isDebugEnabled()) {
+                    log.debug("CartridgeSubscriptions for tenant " + tenantId + " not available in memory");
+                }
 
-            } catch (PersistenceManagerException e) {
-                String errorMsg = "Error in accessing Persistence Manager";
-                log.error(errorMsg, e);
-                return null;
-            }
+                try {
+                    cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId);
 
-            // add to the LookupDataHolder
-            Iterator<CartridgeSubscription> iterator = cartridgeSubscriptions.iterator();
-            while (iterator.hasNext()) {
-                LookupDataHolder.getInstance().put(iterator.next());
-            }
+                } catch (PersistenceManagerException e) {
+                    String errorMsg = "Error in accessing Persistence Manager";
+                    log.error(errorMsg, e);
+                    return null;
+                }
+
+                // add to the LookupDataHolder
+                //Iterator<CartridgeSubscription> iterator = cartridgeSubscriptions.iterator();
+                //while (iterator.hasNext()) {
+                //    LookupDataHolder.getInstance().putSubscription(iterator.next());
+                //}
+            }*/
+
+            return cartridgeSubscriptions;
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
         }
-
-        return cartridgeSubscriptions;
     }
 
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String cartridgeType) {
 
-        Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptionForType(tenantId, cartridgeType);
-        if (cartridgeSubscriptions == null) {
-            // not available in the cache, look in the registry
-            if (log.isDebugEnabled()) {
-                log.debug("CartridgeSubscriptions for tenant " + tenantId + ", type " + cartridgeType + " not available in memory");
-            }
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
 
-            try {
-                cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId, cartridgeType);
+        try {
 
-            } catch (PersistenceManagerException e) {
-                String errorMsg = "Error in accessing Persistence Manager";
-                log.error(errorMsg, e);
-                return null;
-            }
+            Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptionForType(tenantId, cartridgeType);
+            /*if (cartridgeSubscriptions == null) {
+                // not available in the cache, look in the registry
+                if (log.isDebugEnabled()) {
+                    log.debug("CartridgeSubscriptions for tenant " + tenantId + ", type " + cartridgeType + " not available in memory");
+                }
 
-            // add to the LookupDataHolder
-            Iterator<CartridgeSubscription> iterator = cartridgeSubscriptions.iterator();
-            while (iterator.hasNext()) {
-                LookupDataHolder.getInstance().put(iterator.next());
-            }
+                try {
+                    cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId, cartridgeType);
+
+                } catch (PersistenceManagerException e) {
+                    String errorMsg = "Error in accessing Persistence Manager";
+                    log.error(errorMsg, e);
+                    return null;
+                }
+
+                // add to the LookupDataHolder
+                // Iterator<CartridgeSubscription> iterator = cartridgeSubscriptions.iterator();
+                // while (iterator.hasNext()) {
+                //    LookupDataHolder.getInstance().putSubscription(iterator.next());
+                //}
+            }*/
+
+            return cartridgeSubscriptions;
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
         }
-
-        return cartridgeSubscriptions;
     }
 }

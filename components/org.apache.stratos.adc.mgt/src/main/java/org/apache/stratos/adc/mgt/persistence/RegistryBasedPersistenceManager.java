@@ -22,8 +22,6 @@ package org.apache.stratos.adc.mgt.persistence;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
-import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
-import org.apache.stratos.adc.mgt.lookup.SubscriptionContext;
 import org.apache.stratos.adc.mgt.registry.RegistryManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.Deserializer;
@@ -32,27 +30,32 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 public class RegistryBasedPersistenceManager extends PersistenceManager {
 
     private static final Log log = LogFactory.getLog(RegistryBasedPersistenceManager.class);
     // Registry paths
-    private static final String STRATOS_MANAGER_REOSURCE = "/stratos.manager";
-    private static final String CLUSTER_ID_TO_SUBSCRIPTION = "/clusterIdToSubscription";
-    private static final String TENANT_ID_TO_SUBSCRIPTION_CONTEXT = "/tenantIdToSubscriptionContext";
+    private static final String STRATOS_MANAGER_REOSURCE = "/stratos_manager";
+    //private static final String CLUSTER_ID_TO_SUBSCRIPTION = "/clusterIdToSubscription";
+    //private static final String SUBSCRIPTION_CONTEXT = "/subscription_context";
+    private static final String SUBSCRIPTIONS = "/subscriptions";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
 
-        SubscriptionContext subscriptionContext = new SubscriptionContext();
-        subscriptionContext.addSubscription(cartridgeSubscription);
+        //SubscriptionContext subscriptionContext = new SubscriptionContext();
+        //subscriptionContext.addSubscription(cartridgeSubscription);
 
-        //TODO: need to synchronize?
-        // persist in the path TENANT_ID_TO_SUBSCRIPTION_CONTEXT
+        // persist in the path SUBSCRIPTION_CONTEXT
         try {
-            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT + "/" +
-                    Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()), Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
+            //RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" +
+            //        Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()), Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" +
+                    Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()) + "/" +
+                    cartridgeSubscription.getType() + "/" +
+                    cartridgeSubscription.getAlias(), Serializer.serializeSubscriptionSontextToByteArray(cartridgeSubscription), cartridgeSubscription.getClusterDomain());
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
@@ -62,7 +65,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
 
         // persist in the path CLUSTER_ID_TO_SUBSCRIPTION
-        try {
+        /*try {
             RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION + "/" +
                     cartridgeSubscription.getClusterDomain(), Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
 
@@ -71,7 +74,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
         } catch (IOException e) {
             throw new PersistenceManagerException(e);
-        }
+        }*/
     }
 
     @Override
@@ -79,13 +82,13 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         //TODO
     }
 
-    @Override
+    /*@Override
     public CartridgeSubscription getCartridgeSubscription (int tenantId, String alias) throws PersistenceManagerException {
 
         Object byteObj;
 
         try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT + "/" +
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" +
                 Integer.toString(tenantId));
 
         } catch (RegistryException e) {
@@ -112,15 +115,15 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
 
         return null;
-    }
+    }*/
 
-    @Override
-    public List<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
+    /*@Override
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
 
         Object resourceObj;
 
         try {
-            resourceObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
+            resourceObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT);
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
@@ -130,10 +133,10 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             return null;
         }
 
-        // get the paths for all SubscriptionContext instnaces
+        // get the paths for all SubscriptionContext instances
         String[] subscriptionCtxtResourcePaths = (String[]) resourceObj;
 
-        List<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+        Collection<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
         //for each path, get the SubscriptionContext instance
         for (String subscriptionCtxResourcePath : subscriptionCtxtResourcePaths) {
 
@@ -165,15 +168,74 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
 
         return cartridgeSubscriptions;
-    }
+    }*/
 
     @Override
-    public List<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
+
+        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS);
+    }
+
+    private Collection<CartridgeSubscription> traverseAndGetCartridgeSubscriptions (String resourcePath) throws PersistenceManagerException  {
+
+        Object resourceObj;
+
+        try {
+            resourceObj = RegistryManager.getInstance().retrieve(resourcePath);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (resourceObj == null) {
+            // there is no resource at the given path
+            return null;
+
+        } else if (resourceObj instanceof String[]) {
+
+            // get the paths for all SubscriptionContext instances
+            String[] subscriptionResourcePaths = (String[]) resourceObj;
+
+            Collection<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+            // traverse the paths recursively
+            for (String subscriptionResourcePath : subscriptionResourcePaths) {
+                cartridgeSubscriptions.addAll(traverseAndGetCartridgeSubscriptions(subscriptionResourcePath));
+                // remove any nulls
+                cartridgeSubscriptions.removeAll(Collections.singleton(null));
+                // return the CartridgeSubscription list
+                return cartridgeSubscriptions;
+            }
+
+        } else {
+            // De-serialize
+            Object subscriptionObj;
+
+            try {
+                subscriptionObj = Deserializer.deserializeFromByteArray((byte[]) resourceObj);
+
+            } catch (Exception e) {
+                // issue might be de-serializing only this object, therefore log and continue without throwing
+                log.error("Error while de-serializing the object retrieved from "  + resourcePath, e);
+                return null;
+            }
+
+            if (subscriptionObj != null && subscriptionObj instanceof CartridgeSubscription) {
+                // return a list out of the CartridgeSubscription instance
+                return Collections.singletonList((CartridgeSubscription) subscriptionObj);
+
+            }
+        }
+
+        return null;
+    }
+
+    /*@Override
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
 
         Object byteObj;
 
         try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
@@ -188,16 +250,50 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
 
-        List<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
         if (subscriptionContextObj instanceof SubscriptionContext) {
             //get all Subscriptions for this tenant
-            cartridgeSubscriptions.addAll(((SubscriptionContext) subscriptionContextObj).getSubscriptions());
+            return ((SubscriptionContext) subscriptionContextObj).getSubscriptions();
         }
 
-        return cartridgeSubscriptions;
-    }
+        return null;
+    }*/
 
     @Override
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
+
+        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" + Integer.toString(tenantId));
+    }
+
+    /*@Override
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        Object subscriptionContextObj;
+
+        try {
+            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (subscriptionContextObj instanceof SubscriptionContext) {
+            //get all Subscriptions for this tenant
+            return ((SubscriptionContext) subscriptionContextObj).getSubscriptions();
+        }
+
+        return null;
+    }*/
+
+    /*@Override
     public CartridgeSubscription getCartridgeSubscription (String clusterDomain) throws PersistenceManagerException {
 
         Object byteObj;
@@ -223,15 +319,15 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
 
         return null;
-    }
+    }*/
 
-    @Override
-    public List<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String cartridgeType) throws PersistenceManagerException {
+    /*@Override
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String cartridgeType) throws PersistenceManagerException {
 
         Object byteObj;
 
         try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
@@ -246,12 +342,12 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
 
-        List<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+
         if (subscriptionContextObj instanceof SubscriptionContext) {
             //get all Subscriptions for this tenant and the type
-            cartridgeSubscriptions.addAll(((SubscriptionContext) subscriptionContextObj).getSubscriptionsOfType(cartridgeType));
+            return ((SubscriptionContext) subscriptionContextObj).getSubscriptionsOfType(cartridgeType);
         }
 
-        return cartridgeSubscriptions;
-    }
+        return null;
+    }*/
 }

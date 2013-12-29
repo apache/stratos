@@ -26,7 +26,6 @@ import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ClusterIdToSubscription implements Serializable {
 
@@ -35,23 +34,13 @@ public class ClusterIdToSubscription implements Serializable {
     // Map: Cluster Id (Domain) -> CartridgeSubscription
     private Map<String, CartridgeSubscription> clusterIdToCartridgeSubscription;
 
-    //locks
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-
     public ClusterIdToSubscription() {
         clusterIdToCartridgeSubscription = new HashMap<String, CartridgeSubscription>();
     }
 
     public void addSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        writeLock.lock();
-        try {
-            add(cartridgeSubscription);
-
-        } finally {
-            writeLock.unlock();
-        }
+        add(cartridgeSubscription);
     }
 
     private void add (CartridgeSubscription cartridgeSubscription) {

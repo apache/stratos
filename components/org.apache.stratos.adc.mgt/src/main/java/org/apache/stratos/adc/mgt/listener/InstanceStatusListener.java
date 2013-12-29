@@ -20,9 +20,9 @@ package org.apache.stratos.adc.mgt.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.publisher.ArtifactUpdatePublisher;
-import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.adc.mgt.retriever.DataInsertionAndRetrievalManager;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
@@ -57,8 +57,9 @@ public class InstanceStatusListener implements MessageListener {
                 if(log.isInfoEnabled()) {
                     log.info("Cluster id: " + clusterId);
                 }
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                /*CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
 
-                CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
                 if (subscription.getRepository() != null) {
                     ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
                     publisher.publish();
@@ -67,7 +68,15 @@ public class InstanceStatusListener implements MessageListener {
                     //TODO: make this log debug
                     log.info("No repository found for subscription with alias: " + subscription.getAlias() + ", type: " + subscription.getCartridge() +
                         ". Not sending the Depsync event");
+                }*/
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                CartridgeSubscription cartridgeSubscription = new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterId);
+                if (cartridgeSubscription.getRepository() != null) {
+                    ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(), clusterId,
+                            String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+                    publisher.publish();
                 }
+
             }
         } catch (Exception e) {
             if(log.isErrorEnabled()) {

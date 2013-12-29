@@ -25,7 +25,6 @@ import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class SubscriptionContext implements Serializable {
 
@@ -37,10 +36,6 @@ public class SubscriptionContext implements Serializable {
     // Map: Subscription Alias -> CartridgeSubscription
     private Map<String, CartridgeSubscription> aliasToSubscription;
 
-    //locks
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-
     public SubscriptionContext () {
 
         cartridgeTypeToSubscriptions = new HashMap<String, Set<CartridgeSubscription>>();
@@ -48,17 +43,6 @@ public class SubscriptionContext implements Serializable {
     }
 
     public void addSubscription (CartridgeSubscription cartridgeSubscription) {
-
-        writeLock.lock();
-        try {
-            add(cartridgeSubscription);
-
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    private void add (CartridgeSubscription cartridgeSubscription) {
 
         String cartridgeType = cartridgeSubscription.getType();
         if (cartridgeTypeToSubscriptions.containsKey(cartridgeType)) {
@@ -79,7 +63,7 @@ public class SubscriptionContext implements Serializable {
             cartridgeTypeToSubscriptions.put(cartridgeType, subscriptions);
         }
 
-        // put to aliasToSubscription map
+        // putSubscription to aliasToSubscription map
         if (aliasToSubscription.put(cartridgeSubscription.getAlias(), cartridgeSubscription) != null) {
             if(log.isDebugEnabled()) {
                 log.debug("Overwrote the existing Cartridge Subscription for alias " + cartridgeSubscription.getAlias());

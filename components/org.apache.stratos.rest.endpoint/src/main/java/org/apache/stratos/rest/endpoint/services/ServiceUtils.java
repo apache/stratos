@@ -806,7 +806,7 @@ public class ServiceUtils {
 
         if (dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
 
-            dataCartridgeAlias = dataCartridgeAlias.trim();
+            /*dataCartridgeAlias = dataCartridgeAlias.trim();
 
             CartridgeSubscription connectingCartridgeSubscription = null;
             try {
@@ -833,7 +833,7 @@ public class ServiceUtils {
                 log.error("Failed to connect. No cartridge subscription found for tenant " +
                           ApplicationManagementUtil.getTenantId(configurationContext) +
                           " with alias " + alias);
-            }
+            }*/
         }
         
         SubscriptionInfo registerCartridgeSubscription = cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
