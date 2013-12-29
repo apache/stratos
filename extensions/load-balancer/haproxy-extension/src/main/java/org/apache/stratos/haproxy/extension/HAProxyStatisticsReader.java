@@ -21,7 +21,7 @@ package org.apache.stratos.haproxy.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.extension.api.LoadBalancerStatsReader;
+import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Port;
@@ -33,13 +33,13 @@ import java.io.IOException;
 /**
  * HAProxy statistics reader.
  */
-public class HAProxyStatsReader implements LoadBalancerStatsReader {
-    private static final Log log = LogFactory.getLog(HAProxyStatsReader.class);
+public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
+    private static final Log log = LogFactory.getLog(HAProxyStatisticsReader.class);
 
     private String scriptsPath;
     private String statsSocketFilePath;
 
-    public HAProxyStatsReader() {
+    public HAProxyStatisticsReader() {
         this.scriptsPath = HAProxyContext.getInstance().getScriptsPath();
         this.statsSocketFilePath = HAProxyContext.getInstance().getStatsSocketFilePath();
     }

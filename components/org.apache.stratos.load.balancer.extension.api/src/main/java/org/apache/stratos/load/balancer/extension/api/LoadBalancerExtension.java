@@ -21,6 +21,8 @@ package org.apache.stratos.load.balancer.extension.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
+import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
@@ -36,13 +38,13 @@ public class LoadBalancerExtension implements Runnable {
     private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
 
     private LoadBalancer loadBalancer;
-    private LoadBalancerStatsReader statsReader;
+    private LoadBalancerStatisticsReader statsReader;
     private boolean loadBalancerStarted;
     private TopologyReceiver topologyReceiver;
-    private LoadBalancerInFlightRequestCountNotifier inFlightRequestCountNotifier;
+    private LoadBalancerStatisticsNotifier statisticsNotifier;
     private boolean terminated;
 
-    public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatsReader statsReader) {
+    public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader) {
         this.loadBalancer = loadBalancer;
         this.statsReader = statsReader;
     }
@@ -60,8 +62,8 @@ public class LoadBalancerExtension implements Runnable {
             topologyReceiverThread.start();
 
             // Start stats notifier thread
-            inFlightRequestCountNotifier = new LoadBalancerInFlightRequestCountNotifier(statsReader);
-            Thread statsNotifierThread = new Thread(inFlightRequestCountNotifier);
+            statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
+            Thread statsNotifierThread = new Thread(statisticsNotifier);
             statsNotifierThread.start();
 
             // Keep the thread live until terminated
@@ -146,7 +148,7 @@ public class LoadBalancerExtension implements Runnable {
 
     public void terminate() {
         topologyReceiver.terminate();
-        inFlightRequestCountNotifier.terminate();
+        statisticsNotifier.terminate();
         terminated = true;
     }
 }

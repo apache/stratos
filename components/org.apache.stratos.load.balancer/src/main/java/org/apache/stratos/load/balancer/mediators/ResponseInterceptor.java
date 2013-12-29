@@ -19,7 +19,7 @@
 package org.apache.stratos.load.balancer.mediators;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.stratos.load.balancer.statistics.LoadBalancerInFlightRequestCountCollector;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
@@ -40,7 +40,7 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
             if (StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }
-            LoadBalancerInFlightRequestCountCollector.getInstance().decrementInFlightRequestCount(clusterId);
+            LoadBalancerStatisticsCollector.getInstance().decrementInFlightRequestCount(clusterId);
         } catch (Exception e) {
             if(log.isErrorEnabled()) {
                 log.error("Could not decrement in-flight request count", e);
