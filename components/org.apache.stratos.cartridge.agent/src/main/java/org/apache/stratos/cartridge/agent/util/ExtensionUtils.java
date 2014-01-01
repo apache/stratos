@@ -22,7 +22,7 @@ package org.apache.stratos.cartridge.agent.util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.util.CommandUtil;
+import org.apache.stratos.common.util.CommandUtils;
 
 import java.io.File;
 
@@ -53,7 +53,7 @@ public class ExtensionUtils {
                 log.debug("Executing start servers extension");
             }
             String command = prepareCommand(CartridgeAgentConstants.START_SERVERS_SH);
-            CommandUtil.executeCommand(command);
+            CommandUtils.executeCommand(command);
         }
         catch (Exception e) {
             log.error("Could not execute start servers extension", e);
@@ -66,7 +66,7 @@ public class ExtensionUtils {
                 log.debug("Executing instance started extension");
             }
             String command = prepareCommand(CartridgeAgentConstants.INSTANCE_STARTED_SH);
-            CommandUtil.executeCommand(command);
+            CommandUtils.executeCommand(command);
         }
         catch (Exception e) {
             log.error("Could not execute instance started extension", e);
@@ -79,7 +79,7 @@ public class ExtensionUtils {
                 log.debug("Executing instance activated extension");
             }
             String command = prepareCommand(CartridgeAgentConstants.INSTANCE_ACTIVATED_SH);
-            CommandUtil.executeCommand(command);
+            CommandUtils.executeCommand(command);
         }
         catch (Exception e) {
             log.error("Could not execute instance activated extension", e);
@@ -92,7 +92,7 @@ public class ExtensionUtils {
                 log.debug("Executing artifacts updated extension");
             }
             String command = prepareCommand(CartridgeAgentConstants.ARTIFACTS_UPDATED_SH);
-            CommandUtil.executeCommand(command);
+            CommandUtils.executeCommand(command);
         }
         catch (Exception e) {
             log.error("Could not execute artifacts updated extension", e);

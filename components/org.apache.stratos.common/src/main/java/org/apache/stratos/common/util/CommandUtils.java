@@ -29,8 +29,8 @@ import java.io.InputStreamReader;
 /**
  * A utility class for executing shell commands.
  */
-public class CommandUtil {
-    private static final Log log = LogFactory.getLog(CommandUtil.class);
+public class CommandUtils {
+    private static final Log log = LogFactory.getLog(CommandUtils.class);
     private static final String NEW_LINE = System.getProperty("line.separator");
 
     public static String executeCommand(String command) throws IOException {
