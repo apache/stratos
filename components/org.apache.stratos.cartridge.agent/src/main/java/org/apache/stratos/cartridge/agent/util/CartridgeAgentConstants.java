@@ -25,6 +25,12 @@ public class CartridgeAgentConstants implements Serializable{
 
 	public static final String JNDI_PROPERTIES_DIR = "jndi.properties.dir";
 	public static final String PARAM_FILE_PATH = "param.file.path";
+    public static final String EXTENSIONS_DIR = "extensions.dir";
+
+    public static final String INSTANCE_STARTED_SH = "instance-started.sh";
+    public static final String START_SERVERS_SH = "start-servers.sh";
+    public static final String INSTANCE_ACTIVATED_SH = "instance-activated.sh";
+    public static final String ARTIFACTS_UPDATED_SH = "artifacts-updated.sh";
 	
 	public static final String CARTRIDGE_KEY = "CARTRIDGE_KEY";
 	public static final String APP_PATH = "APP_PATH";

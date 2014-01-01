@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.haproxy.extension;
+package org.apache.stratos.common.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

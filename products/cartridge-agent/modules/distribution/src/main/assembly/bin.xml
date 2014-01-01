@@ -42,6 +42,17 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/extensions</directory>
+            <outputDirectory>/extensions</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>artifacts-updated.sh</include>
+                <include>instance-activated.sh</include>
+                <include>instance-started.sh</include>
+                <include>start-servers.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/main/conf/templates</directory>
             <outputDirectory>/conf/templates</outputDirectory>
             <fileMode>0600</fileMode>

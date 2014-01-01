@@ -9,6 +9,7 @@ import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.i
 import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPublisher;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
+import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
@@ -41,6 +42,11 @@ public class CartridgeAgent implements Runnable {
             throw new RuntimeException(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
         }
 
+        String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
+        if(StringUtils.isBlank(extensionsDir)) {
+            throw new RuntimeException(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
+        }
+
         // Start instance notifier listener thread
         if(log.isDebugEnabled()) {
             log.debug("Starting instance notifier event message receiver thread");
@@ -68,6 +74,9 @@ public class CartridgeAgent implements Runnable {
 
         // Publish instance started event
         CartridgeAgentEventPublisher.publishInstanceStartedEvent();
+
+        // Execute start servers extension
+        ExtensionUtils.executeStartServersExtension();
 
         // Wait for all ports to be active
         CartridgeAgentUtils.waitUntilPortsActive();
@@ -118,6 +127,9 @@ public class CartridgeAgent implements Runnable {
             repoInformation.setTenantId(tenantId);
             boolean cloneExists = GitBasedArtifactRepository.cloneExists(repoInformation);
             GitBasedArtifactRepository.checkout(repoInformation);
+
+            ExtensionUtils.executeArtifactsUpdatedExtension();
+
             if(!cloneExists){
                 // Executed git clone, publish instance activated event
                 CartridgeAgentEventPublisher.publishInstanceActivatedEvent();

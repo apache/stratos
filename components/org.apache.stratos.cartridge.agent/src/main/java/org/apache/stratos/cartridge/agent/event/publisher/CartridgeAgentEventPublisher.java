@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.statistics.publisher.HealthStatisticsNotifier;
+import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
@@ -35,6 +36,8 @@ public class CartridgeAgentEventPublisher {
             if (log.isInfoEnabled()) {
                 log.info("Instance started event published");
             }
+
+            ExtensionUtils.executeInstanceStartedExtension();
         } else {
             if (log.isWarnEnabled()) {
                 log.warn("Instance already started");
@@ -59,6 +62,8 @@ public class CartridgeAgentEventPublisher {
             if (log.isInfoEnabled()) {
                 log.info("Instance activated event published");
             }
+
+            ExtensionUtils.executeInstanceActivatedExtension();
 
             if (log.isInfoEnabled()) {
                 log.info("Starting health statistics notifier");
