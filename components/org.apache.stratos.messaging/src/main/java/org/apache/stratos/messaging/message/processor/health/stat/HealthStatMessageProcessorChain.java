@@ -8,63 +8,65 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
  * Defines default health stat message processor chain.
  */
 public class HealthStatMessageProcessorChain extends MessageProcessorChain {
+
     private AverageLoadAverageMessageProcessor averageLoadAverageMessageProcessor;
     private AverageMemoryConsumptionMessageProcessor averageMemoryConsumptionMessageProcessor;
     private AverageRequestsInFlightMessageProcessor averageRequestsInFlightMessageProcessor;
-
     private GradientOfLoadAverageMessageProcessor gradientOfLoadAverageMessageProcessor;
     private GradientOfMemoryConsumptionMessageProcessor gradientOfMemoryConsumptionMessageProcessor;
     private GradientOfRequestsInFlightMessageProcessor gradientOfRequestsInFlightMessageProcessor;
-
     private SecondDerivativeOfLoadAverageMessageProcessor secondDerivativeOfLoadAverageMessageProcessor;
     private SecondDerivativeOfMemoryConsumptionMessageProcessor secondDerivativeOfMemoryConsumptionMessageProcessor;
     private SecondDerivativeOfRequestsInFlightMessageProcessor secondDerivativeOfRequestsInFlightMessageProcessor;
-
     private MemberAverageLoadAverageMessageProcessor memberAverageLoadAverageMessageProcessor;
     private MemberAverageMemoryConsumptionMessageProcessor memberAverageMemoryConsumptionMessageProcessor;
-
     private MemberGradientOfLoadAverageMessageProcessor memberGradientOfLoadAverageMessageProcessor;
     private MemberGradientOfMemoryConsumptionMessageProcessor memberGradientOfMemoryConsumptionMessageProcessor;
-
     private MemberSecondDerivativeOfLoadAverageMessageProcessor memberSecondDerivativeOfLoadAverageMessageProcessor;
     private MemberSecondDerivativeOfMemoryConsumptionMessageProcessor memberSecondDerivativeOfMemoryConsumptionMessageProcessor;
 
     private MemberFaultMessageProcessor memberFaultMessageProcessor;
 
     protected void initialize() {
-        averageLoadAverageMessageProcessor = new AverageLoadAverageMessageProcessor();
-        add(averageLoadAverageMessageProcessor);
-        averageMemoryConsumptionMessageProcessor = new AverageMemoryConsumptionMessageProcessor();
-        add(averageMemoryConsumptionMessageProcessor);
-        averageRequestsInFlightMessageProcessor = new AverageRequestsInFlightMessageProcessor();
-        add(averageRequestsInFlightMessageProcessor);
-        gradientOfLoadAverageMessageProcessor = new GradientOfLoadAverageMessageProcessor();
-        add(gradientOfLoadAverageMessageProcessor);
-        gradientOfMemoryConsumptionMessageProcessor = new GradientOfMemoryConsumptionMessageProcessor();
-        add(gradientOfMemoryConsumptionMessageProcessor);
-        gradientOfRequestsInFlightMessageProcessor = new GradientOfRequestsInFlightMessageProcessor();
-        add(gradientOfRequestsInFlightMessageProcessor);
+
+        //Most frequent first order is defined in default
         memberAverageLoadAverageMessageProcessor = new MemberAverageLoadAverageMessageProcessor();
         add(memberAverageLoadAverageMessageProcessor);
-        memberAverageMemoryConsumptionMessageProcessor = new MemberAverageMemoryConsumptionMessageProcessor();
-        add(memberAverageMemoryConsumptionMessageProcessor);
-        memberFaultMessageProcessor = new MemberFaultMessageProcessor();
-        add(memberFaultMessageProcessor);
         memberGradientOfLoadAverageMessageProcessor = new MemberGradientOfLoadAverageMessageProcessor();
         add(memberGradientOfLoadAverageMessageProcessor);
-        memberGradientOfMemoryConsumptionMessageProcessor = new MemberGradientOfMemoryConsumptionMessageProcessor();
-        add(memberGradientOfMemoryConsumptionMessageProcessor);
         memberSecondDerivativeOfLoadAverageMessageProcessor = new MemberSecondDerivativeOfLoadAverageMessageProcessor();
         add(memberSecondDerivativeOfLoadAverageMessageProcessor);
+
+        memberAverageMemoryConsumptionMessageProcessor = new MemberAverageMemoryConsumptionMessageProcessor();
+        add(memberAverageMemoryConsumptionMessageProcessor);
+        memberGradientOfMemoryConsumptionMessageProcessor = new MemberGradientOfMemoryConsumptionMessageProcessor();
+        add(memberGradientOfMemoryConsumptionMessageProcessor);
         memberSecondDerivativeOfMemoryConsumptionMessageProcessor = new MemberSecondDerivativeOfMemoryConsumptionMessageProcessor();
         add(memberSecondDerivativeOfMemoryConsumptionMessageProcessor);
-        secondDerivativeOfLoadAverageMessageProcessor = new SecondDerivativeOfLoadAverageMessageProcessor();
-        add(secondDerivativeOfLoadAverageMessageProcessor);
-        secondDerivativeOfMemoryConsumptionMessageProcessor = new SecondDerivativeOfMemoryConsumptionMessageProcessor();
-        add(secondDerivativeOfMemoryConsumptionMessageProcessor);
+
+        averageRequestsInFlightMessageProcessor = new AverageRequestsInFlightMessageProcessor();
+        add(averageRequestsInFlightMessageProcessor);
+        gradientOfRequestsInFlightMessageProcessor = new GradientOfRequestsInFlightMessageProcessor();
+        add(gradientOfRequestsInFlightMessageProcessor);
         secondDerivativeOfRequestsInFlightMessageProcessor = new SecondDerivativeOfRequestsInFlightMessageProcessor();
         add(secondDerivativeOfRequestsInFlightMessageProcessor);
 
+        averageLoadAverageMessageProcessor = new AverageLoadAverageMessageProcessor();
+        add(averageLoadAverageMessageProcessor);
+        gradientOfLoadAverageMessageProcessor = new GradientOfLoadAverageMessageProcessor();
+        add(gradientOfLoadAverageMessageProcessor);
+        secondDerivativeOfLoadAverageMessageProcessor = new SecondDerivativeOfLoadAverageMessageProcessor();
+        add(secondDerivativeOfLoadAverageMessageProcessor);
+
+        averageMemoryConsumptionMessageProcessor = new AverageMemoryConsumptionMessageProcessor();
+        add(averageMemoryConsumptionMessageProcessor);
+        gradientOfMemoryConsumptionMessageProcessor = new GradientOfMemoryConsumptionMessageProcessor();
+        add(gradientOfMemoryConsumptionMessageProcessor);
+        secondDerivativeOfMemoryConsumptionMessageProcessor = new SecondDerivativeOfMemoryConsumptionMessageProcessor();
+        add(secondDerivativeOfMemoryConsumptionMessageProcessor);
+
+        memberFaultMessageProcessor = new MemberFaultMessageProcessor();
+        add(memberFaultMessageProcessor);
     }
 
     public void addEventListener(EventListener eventListener) {
