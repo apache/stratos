@@ -1,0 +1,37 @@
+<%
+(function(){
+    var dataConfig = require('/config/console.js').config(),
+            sso = require("sso"),
+            process = require("process"),
+            sessionId = session.getId(),
+            requestURI,
+            requestedPage = request.getParameter("requestedPage"),
+            relayState = '/publisher',
+            encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer),
+            log = new Log(),
+            postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + process.getProperty('https.port');
+
+
+    if (!session.get("Loged")) {
+        %>
+
+                <div>
+
+                            <p>You are now being redirected to Identity Server. If the
+                            redirection fails, please click on the button below.</p>
+                            <form method="post" action="<%=postUrl%>/admin/samlsso">
+                            <p>
+                               <input type="hidden" name="SAMLRequest" value="<%= encodedSAMLAuthRequest %>"/>
+                               <input type="hidden" name="RelayState" value="<%= relayState %>"/>
+                               <input type="hidden" name="SSOAuthSessionID" value="<%= sessionId %>"/>
+                               <button type="submit">Redirect manually</button>
+                           </p>
+                       </form>
+                   </div>
+                   <script type = "text/javascript" >
+                          document.forms[0].submit();
+                   </script>
+        <%
+    }
+}());
+%>
