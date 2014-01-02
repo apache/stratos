@@ -74,4 +74,48 @@ function getServerUrl(){
     return serverUrl;
 }
 
+function getAuthenticationHeader(){
+    return {"Authorization": "Basic YWRtaW46YWRtaW4="};
+}
+
+function getBackendServerURL(){
+    var config = require('/config/console.json');
+    return config.backendServerConfiguration.url;
+}
+
+consoleAppUtil = new function(){
+    var log = new Log();
+    this.makeRequest = function(httpMethod,urlPostFix,data){
+        var endpoint = getBackendServerURL() + urlPostFix;
+        var headers = getAuthenticationHeader();
+        var type="json";
+        if(log.isDebugEnabeld()){
+            log.debug("HTTPMethod : " + httpMethod);
+            log.debug("HTTPEndpoint : "+endpoint);
+            log.debug("HTTPHeaders : "+headers);
+        }
+        var response;
+        switch(httpMethod){
+            case "GET":
+               response = get(endpoint,data,headers,type);
+                break;
+            case "POST":
+                response = post(endpoint,data,headers,type);
+                break;
+            case "DELETE":
+                response = del(endpoint,data,headers,type);
+                break;
+            case "PUT":
+                response = put(endpoint,data,headers,type);
+                break;
+            default :
+                response = {"data":"wrong data"}; // TODO: proper error handling.
+        }
+        log.info(response.data);
+        return response;
+    };
+};
+
+
+
 %>
