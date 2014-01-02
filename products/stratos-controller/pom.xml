@@ -308,8 +308,8 @@
     <properties>
         <rampart.mar.version>1.6.1-wso2v8</rampart.mar.version>
         <features-dashboard.war.version>1.0.0</features-dashboard.war.version>
-        <carbon.version>4.1.0</carbon.version>
-	<synapse.version>2.1.1.wso2v4</synapse.version>
+        <carbon.version>4.2.0</carbon.version>
+	   <synapse.version>2.1.2.wso2v3</synapse.version>
         <stratos.controller.version>1.0.1</stratos.controller.version>
         <stratos.component.version>2.1.0</stratos.component.version>
 	<project.version>4.0.0-SNAPSHOT</project.version>
@@ -318,10 +318,10 @@
         <servlet-api.version>2.4</servlet-api.version>
         <shoppingcart.version>2.1.0</shoppingcart.version>
 	<shoppingcart.global.version>2.1.0</shoppingcart.global.version>
-	<carbon.kernel.version>4.1.0.stratos</carbon.kernel.version>
+	<carbon.kernel.version>4.2.0</carbon.kernel.version>
 	<version.synapse>2.1.1-wso2v3</version.synapse>
 	<carbon.p2.plugin.version>1.5.2</carbon.p2.plugin.version>
-	<carbon.platform.version>4.1.0</carbon.platform.version>
+	<carbon.platform.version>4.2.0</carbon.platform.version>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <opencsv.version>1.8</opencsv.version>
         <poi.version>3.0-FINAL</poi.version>
