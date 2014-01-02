@@ -1,15 +1,15 @@
 <%
 (function(){
-    var dataConfig = require('/config/console.js').config(),
+    var dataConfig = require('/config/console.json'),
             sso = require("sso"),
             process = require("process"),
             sessionId = session.getId(),
             requestURI,
             requestedPage = request.getParameter("requestedPage"),
-            relayState = '/publisher',
-            encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer),
-            log = new Log(),
-            postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + process.getProperty('https.port');
+            relayState = '/console',log = new Log();
+    log.info(dataConfig.ssoConfiguration.issuer);
+    var        encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer);
+    postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + process.getProperty('https.port');
 
 
     if (!session.get("Loged")) {

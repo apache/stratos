@@ -1,65 +1,35 @@
-[
+{"cartridge": [
     {
-        kind: "service",
-        cartridges: [
-            {
-                name: "MyPHP-lakmal",
-                type: "php",
-                version: "PHP 5.4",
-                lb_ip: "192.168.1.1, 192.168.1.2",
-                access_url: "myweb-lakmal.php.stratos.com",
-                state: "active"
-            },
-            {
-                name: "MyPython-lakmal",
-                type: "python",
-                version: "Python 2.6",
-                lb_ip: "192.168.1.1, 192.168.1.2",
-                access_url: "mypython-lakmal.python.stratos.com",
-                state: "active"
-            },
-            {
-                name: "MyRuby-lakmal",
-                type: "ruby",
-                version: "Ruby 1.9",
-                lb_ip: "192.168.1.1, 192.168.1.2",
-                access_url: "myruby-lakmal.ruby.stratos.com",
-                state:"inactive"
-            },
-            {
-                name: "CakePHP-lakmal",
-                type: "cakephp",
-                version: "CakePHP 1.9",
-                lb_ip: "192.168.1.1, 192.168.1.2",
-                access_url: "cakephp-lakmal.cakephp.stratos.com",
-                state:"active"
-            }
-        ]
+        "activeInstances": 0,
+        "cartridgeAlias": "-",
+        "cartridgeType": "lb",
+        "description": "LB Cartridge",
+        "displayName": "load balancer",
+        "multiTenant": false,
+        "provider": "apache",
+        "status": "NOT-SUBSCRIBED",
+        "version": 4
     },
     {
-        kind: "data",
-        cartridges: [
-            {
-                name: "MyMySQL-lakmal",
-                type: "mysql",
-                version: "MySQL 5.1",
-                lb_ip: "192.168.1.1, 192.168.1.2",
-                access_url: "mymysql-lakmal.mysql.stratos.com",
-                state: "active"
-            }
-        ]
+        "activeInstances": 0,
+        "cartridgeAlias": "-",
+        "cartridgeType": "php",
+        "description": "Apache Stratos PHP Cartridge",
+        "displayName": "Apache Stratos PHP Cartridge",
+        "multiTenant": false,
+        "provider": "Apache Stratos",
+        "status": "NOT-SUBSCRIBED",
+        "version": 1
     },
     {
-        kind: "application",
-        cartridges: [
-            {
-                name: "MyDrupal-lakmal",
-                type: "drupal",
-                version: "Drupal 7",
-                lb_ip: "192.168.1.1, 192.168.1.2",
-                access_url: "mydrupal-lakmal.dupal.stratos.com",
-                state: "active"
-            }
-        ]
+        "activeInstances": 0,
+        "cartridgeAlias": "-",
+        "cartridgeType": "stratos-lb",
+        "description": "Apache Stratos Load Balancer Cartridge",
+        "displayName": "Apache Stratos Load Balancer Cartridge",
+        "multiTenant": false,
+        "provider": "apache",
+        "status": "NOT-SUBSCRIBED",
+        "version": 4
     }
-]
+]}
