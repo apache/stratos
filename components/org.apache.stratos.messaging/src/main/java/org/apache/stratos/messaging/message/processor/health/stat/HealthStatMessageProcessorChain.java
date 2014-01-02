@@ -11,20 +11,25 @@ public class HealthStatMessageProcessorChain extends MessageProcessorChain {
     private AverageLoadAverageMessageProcessor averageLoadAverageMessageProcessor;
     private AverageMemoryConsumptionMessageProcessor averageMemoryConsumptionMessageProcessor;
     private AverageRequestsInFlightMessageProcessor averageRequestsInFlightMessageProcessor;
+
     private GradientOfLoadAverageMessageProcessor gradientOfLoadAverageMessageProcessor;
     private GradientOfMemoryConsumptionMessageProcessor gradientOfMemoryConsumptionMessageProcessor;
     private GradientOfRequestsInFlightMessageProcessor gradientOfRequestsInFlightMessageProcessor;
-    private MemberAverageLoadAverageMessageProcessor memberAverageLoadAverageMessageProcessor;
-    private MemberAverageMemoryConsumptionMessageProcessor memberAverageMemoryConsumptionMessageProcessor;
-    private MemberFaultMessageProcessor memberFaultMessageProcessor;
-    private MemberGradientOfLoadAverageMessageProcessor memberGradientOfLoadAverageMessageProcessor;
-    private MemberGradientOfMemoryConsumptionMessageProcessor memberGradientOfMemoryConsumptionMessageProcessor;
-    private MemberSecondDerivativeOfLoadAverageMessageProcessor memberSecondDerivativeOfLoadAverageMessageProcessor;
-    private MemberSecondDerivativeOfMemoryConsumptionMessageProcessor memberSecondDerivativeOfMemoryConsumptionMessageProcessor;
+
     private SecondDerivativeOfLoadAverageMessageProcessor secondDerivativeOfLoadAverageMessageProcessor;
     private SecondDerivativeOfMemoryConsumptionMessageProcessor secondDerivativeOfMemoryConsumptionMessageProcessor;
     private SecondDerivativeOfRequestsInFlightMessageProcessor secondDerivativeOfRequestsInFlightMessageProcessor;
 
+    private MemberAverageLoadAverageMessageProcessor memberAverageLoadAverageMessageProcessor;
+    private MemberAverageMemoryConsumptionMessageProcessor memberAverageMemoryConsumptionMessageProcessor;
+
+    private MemberGradientOfLoadAverageMessageProcessor memberGradientOfLoadAverageMessageProcessor;
+    private MemberGradientOfMemoryConsumptionMessageProcessor memberGradientOfMemoryConsumptionMessageProcessor;
+
+    private MemberSecondDerivativeOfLoadAverageMessageProcessor memberSecondDerivativeOfLoadAverageMessageProcessor;
+    private MemberSecondDerivativeOfMemoryConsumptionMessageProcessor memberSecondDerivativeOfMemoryConsumptionMessageProcessor;
+
+    private MemberFaultMessageProcessor memberFaultMessageProcessor;
 
     protected void initialize() {
         averageLoadAverageMessageProcessor = new AverageLoadAverageMessageProcessor();
