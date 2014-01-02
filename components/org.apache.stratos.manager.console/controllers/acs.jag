@@ -1,7 +1,9 @@
 <%
 (function () {
-    var log = new Log(),
-            configs = require('/config/publisher.js').config(),
+    var log = new Log();
+    log.info("console ACS page....");
+    var    configs = require('/config/console.js').config(),
+            process = require("process"),
             samlResponse = request.getParameter('SAMLResponse'),
             sessionId = session.getId(),
             samlRequest = request.getParameter('SAMLRequest'),
@@ -14,6 +16,8 @@
                 IDP_ALIAS: configs.ssoConfiguration.identityAlias
             },
             sso_sessions = application.get('sso_sessions');
+    log.info("SAML request :"+ samlRequest);
+    log.info("SAML response : "+ samlResponse);
 
     if (!sso_sessions) {
         application.put('sso_sessions', {});
@@ -22,6 +26,7 @@
 
     if (samlResponse != null) {
         samlRespObj = sso.client.getSamlObject(samlResponse);
+        log.info("SAML response object :" + samlRespObj);
         if (!sso.client.isLogoutResponse(samlRespObj)) {
 
             // validating the signature
@@ -32,7 +37,7 @@
 
                     if (sessionObj.sessionIndex != null || sessionObj.sessionIndex != 'undefined') {
                         session.put("LOGGED_IN_USER", sessionObj.loggedInUser);
-                        session.put("Loged", "true");
+                        session.put("Logged", "true");
 
                         //sso_sessions[sessionObj.sessionIndex] = sessionObj.sessionId;
 
@@ -45,13 +50,13 @@
                         //sso_sessions[sso_sessions[sessionObj.sessionIndex] = sessionObj.sessionId] = sessionObj.sessionIndex;
 
                         sso_sessions[sessionObj.sessionId] = sessionObj.sessionIndex;
+                        response.sendRedirect('/console');
+                        //var user = require('store').user;
 
-                        var user = require('store').user;
-
-                        if (user.loginWithSAML(sessionObj.loggedInUser)) {
-                            log.debug('user is set :::' + sessionObj.loggedInUser);
-                            response.sendRedirect('/publisher');
-                        }
+                        //if (user.loginWithSAML(sessionObj.loggedInUser)) {
+                        //    log.debug('user is set :::' + sessionObj.loggedInUser);
+                        //    response.sendRedirect('/publisher');
+                        //}
 
                     }
                 }
