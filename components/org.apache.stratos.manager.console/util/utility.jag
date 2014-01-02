@@ -85,6 +85,12 @@ function getBackendServerURL(){
 
 consoleAppUtil = new function(){
     var log = new Log();
+
+    this.getAvailableCartridges = function(){
+        return this.makeRequest()
+    };
+
+
     this.makeRequest = function(httpMethod,urlPostFix,data){
         var endpoint = getBackendServerURL() + urlPostFix;
         var headers = getAuthenticationHeader();
