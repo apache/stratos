@@ -73,9 +73,9 @@
         <module>org.apache.stratos.validate.domain</module>
         <module>org.apache.stratos.validate.domain.ui</module>
         <!-- Throttling -->
-        <module>org.apache.stratos.throttling.agent</module>
+        <!--module>org.apache.stratos.throttling.agent</module>
         <module>org.apache.stratos.throttling.manager</module>
-        <module>org.apache.stratos.throttling.ui</module>
+        <module>org.apache.stratos.throttling.ui</module-->
         <!-- Redirector -->
         <module>org.apache.stratos.sso.redirector.ui</module>
         <module>org.apache.stratos.redirector.servlet</module>
@@ -254,11 +254,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <wso2carbon.version>4.1.0</wso2carbon.version>
+        <wso2carbon.version>4.2.0</wso2carbon.version>
         <junit.version>4.11</junit.version>
         <synapse.core.version>2.1.1-wso2v4</synapse.core.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
-        <carbon.platform.version>4.1.0</carbon.platform.version>
+        <carbon.platform.version>4.2.0</carbon.platform.version>
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
         <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
         <axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>

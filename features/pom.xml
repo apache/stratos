@@ -59,9 +59,9 @@
     </build>
 
     <properties>
-        <wso2carbon.version>4.1.0</wso2carbon.version>
-	<carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1>
-	<carbon.p2.plugin.version>1.5.2</carbon.p2.plugin.version>
+        <wso2carbon.version>4.2.0</wso2carbon.version>
+	<!--carbon.patch.version.4.1.1>4.1.1</carbon.patch.version.4.1.1-->
+	<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 	<synapse.wso2.version>2.1.1-wso2v4</synapse.wso2.version>        
 	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
 	<google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>

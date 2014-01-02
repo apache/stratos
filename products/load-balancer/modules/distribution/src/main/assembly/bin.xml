@@ -78,13 +78,13 @@
             </excludes>
         </fileSet>
         <!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
-        <fileSet>
+        <!--fileSet>
             <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.1.0-0002/</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
             <includes>
                 <include>**/patch0002/axis2_1.6.1.wso2v9.jar</include>
             </includes>
-        </fileSet>
+        </fileSet-->
         <fileSet>
             <directory>src/main/conf/synapse-configs</directory>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/deployment/server/synapse-configs
@@ -185,14 +185,14 @@
             </source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
         </file>
-        <file>
+        <!--file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/zoo.cfg</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/coordination-client-config.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
-        </file>
+        </file-->
         <file>
             <source>src/main/conf/user-mgt.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
