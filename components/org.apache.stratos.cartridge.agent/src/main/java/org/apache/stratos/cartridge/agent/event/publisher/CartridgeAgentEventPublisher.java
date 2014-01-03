@@ -7,6 +7,7 @@ import org.apache.stratos.cartridge.agent.statistics.publisher.HealthStatisticsN
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -17,6 +18,7 @@ public class CartridgeAgentEventPublisher {
     private static final Log log = LogFactory.getLog(CartridgeAgentEventPublisher.class);
     private static boolean started;
     private static boolean activated;
+    private static boolean readyToShutdown;
 
     public static void publishInstanceStartedEvent() {
         if (!started) {
@@ -77,6 +79,31 @@ public class CartridgeAgentEventPublisher {
         } else {
             if (log.isWarnEnabled()) {
                 log.warn("Instance already activated");
+            }
+        }
+    }
+
+     public static void publishInstanceReadyToShutdownEvent() {
+        if (!readyToShutdown) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing instance activated event");
+            }
+            InstanceReadyToShutdownEvent event = new InstanceReadyToShutdownEvent(
+                    CartridgeAgentConfiguration.getInstance().getServiceName(),
+                    CartridgeAgentConfiguration.getInstance().getClusterId(),
+                    CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+                    CartridgeAgentConfiguration.getInstance().getPartitionId(),
+                    CartridgeAgentConfiguration.getInstance().getMemberId());
+
+            EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
+            eventPublisher.publish(event);
+            readyToShutdown = true;
+            if (log.isInfoEnabled()) {
+                log.info("Instance ReadyToShutDown event published");
+            }
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Instance already sent ReadyToShutDown event....");
             }
         }
     }
