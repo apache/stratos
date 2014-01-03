@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
@@ -27,6 +25,8 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -95,10 +95,17 @@ public class ClusterMonitor extends AbstractMonitor{
 
             }
 
-            if(networkPartitionContext.isRifReset()){
+            boolean rifReset = networkPartitionContext.isRifReset();
+            boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
+            boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
+            if(rifReset || memoryConsumptionReset || loadAverageReset){
+
                 scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
                 scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
+                scaleCheckKnowledgeSession.setGlobal("rif", rifReset);
+                scaleCheckKnowledgeSession.setGlobal("memoryConsumption", memoryConsumptionReset);
+                scaleCheckKnowledgeSession.setGlobal("loadAverage", loadAverageReset);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
@@ -106,9 +113,12 @@ public class ClusterMonitor extends AbstractMonitor{
 
                 scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
                         , scaleCheckFactHandle, networkPartitionContext);
+
                 networkPartitionContext.setRifReset(false);
+                networkPartitionContext.setMemoryConsumptionReset(false);
+                networkPartitionContext.setLoadAverageReset(false);
             } else if(log.isDebugEnabled()){
-                    log.debug(String.format("Scale will not run since the LB statistics have not received before this " +
+                    log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
                             "cycle for network partition %s", networkPartitionContext.getId()) );
             }
         }

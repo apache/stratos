@@ -18,24 +18,17 @@
  */
 package org.apache.stratos.messaging.event.instance.status;
 
-
-import org.apache.stratos.messaging.event.topology.TopologyEvent;
-
 import java.io.Serializable;
 
-/**
- * This event is fired by cartridge agent when the its started.
- */
-public class InstanceStartedEvent extends InstanceStatusEvent implements Serializable {
-    private static final long serialVersionUID = 7447068435627208619L;
-
+public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements Serializable {
     private final String serviceName;
     private final String clusterId;
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
 
-    public InstanceStartedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+    public InstanceReadyToShutdownEvent(String serviceName, String clusterId,
+                                        String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.networkPartitionId = networkPartitionId;
@@ -62,4 +55,6 @@ public class InstanceStartedEvent extends InstanceStatusEvent implements Seriali
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+
+
 }

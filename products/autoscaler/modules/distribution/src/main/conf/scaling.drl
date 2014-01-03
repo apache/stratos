@@ -50,9 +50,12 @@ global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
+global java.lang.Boolean rifReset;
+global java.lang.Boolean mcReset;
+global java.lang.Boolean laReset;
 
 
-rule "Scaler-up Rule"
+rule "Scale-up Rule: Rif"
 dialect "mvel"
 	when
         $networkPartitionContext : NetworkPartitionContext ()
@@ -69,16 +72,35 @@ dialect "mvel"
         eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " Partition is null: " + (partition == null)))
         eval(partition != null)
 
-        lbStatAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
-        lbStatGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
-        lbStatSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
-        averageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
+        rifAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
+        rifGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
+        rifSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
+        rifAverageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
+	    rifPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
 
-	    predictedValue : Double() from $delegator.getPredictedValueForNextMinute(lbStatAverage, lbStatGradient, lbStatSecondDerivative, 1)
-        scaleUpAction : Boolean() from (predictedValue > averageLimit * $delegator.SCALE_UP_FACTOR)
+        memoryConsumptionAverage : Float() from  $networkPartitionContext.getAverageMemoryConsumption()
+        memoryConsumptionGradient : Float() from  $networkPartitionContext.getMemoryConsumptionGradient()
+        memoryConsumptionSecondDerivative : Float() from  $networkPartitionContext.getMemoryConsumptionSecondDerivative()
+        mcAverageLimit : Float() from  $loadThresholds.getMemoryConsumption().getAverage()
+	    mcPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(memoryConsumptionAverage, memoryConsumptionGradient, memoryConsumptionSecondDerivative, 1)
 
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Predicted value: " + predictedValue))
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Average limit: " + averageLimit))
+        loadAverageAverage : Float() from  $networkPartitionContext.getAverageLoadAverage()
+        loadAverageGradient : Float() from  $networkPartitionContext.getLoadAverageGradient()
+        loadAverageSecondDerivative : Float() from  $networkPartitionContext.getLoadAverageSecondDerivative()
+        laAverageLimit : Float() from  $loadThresholds.getLoadAverage().getAverage()
+	    laPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
+
+        scaleUpAction : Boolean() from ((rifReset && (rifPredictedValue > rifAverageLimit * $delegator.SCALE_UP_FACTOR)) || (mcReset && (mcPredictedValue > mcAverageLimit * $delegator.SCALE_UP_FACTOR)) || (laReset && (laPredictedValue > laAverageLimit * $delegator.SCALE_UP_FACTOR)))
+
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
+
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " MC average limit: " + mcAverageLimit))
+
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " LA redicted value: " + laPredictedValue))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
+
         eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-up factor: " + $delegator.SCALE_UP_FACTOR))
         eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-up action: " + scaleUpAction))
 

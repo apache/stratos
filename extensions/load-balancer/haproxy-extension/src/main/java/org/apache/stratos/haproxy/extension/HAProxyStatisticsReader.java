@@ -21,6 +21,7 @@ package org.apache.stratos.haproxy.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.util.CommandUtils;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -66,7 +67,7 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
                             // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
                             command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
                             try {
-                                output = CommandUtil.executeCommand(command);
+                                output = CommandUtils.executeCommand(command);
                                 if ((output != null) && (output.length() > 0)) {
                                     array = output.split(" ");
                                     if ((array != null) && (array.length > 0)) {

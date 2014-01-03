@@ -1,0 +1,22 @@
+{
+    "backendServerConfiguration":{
+        "url":"https://localhost:9443"
+    },
+
+    "oauthConfiguration":{
+        "clientId":"",
+        "clientSecret":"",
+        "tokenGrantEndpoint":""
+    },
+
+    "ssoConfiguration": {
+        "enabled": true,
+        "issuer": "console",
+        "identityProviderURL": "https://localhost:9446/sso/samlsso.jag",
+        "keyStorePassword": "wso2carbon",
+        "identityAlias": "wso2carbon",
+        "responseSigningEnabled": "true",
+        "storeAcs" : "https://localhost:9443/console/controllers/acs",
+        "keyStoreName": "/repository/resources/security/wso2carbon.jks"
+    }
+}

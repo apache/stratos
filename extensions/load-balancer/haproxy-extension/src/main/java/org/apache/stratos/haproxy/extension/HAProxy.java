@@ -21,6 +21,7 @@ package org.apache.stratos.haproxy.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.util.CommandUtils;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -70,7 +71,7 @@ public class HAProxy implements LoadBalancer {
 
             // Execute hot configuration deployment
             String command = executableFilePath + " -f " + confFilePath + " -p " + processIdFilePath + " -sf " + pid;
-            CommandUtil.executeCommand(command);
+            CommandUtils.executeCommand(command);
             if (log.isInfoEnabled()) {
                 log.info("Configuration done");
             }
@@ -119,7 +120,7 @@ public class HAProxy implements LoadBalancer {
         // Start haproxy and write pid to processIdFilePath
         try {
             String command = executableFilePath + " -f " + confFilePath + " -p " + processIdFilePath;
-            CommandUtil.executeCommand(command);
+            CommandUtils.executeCommand(command);
             if (log.isInfoEnabled()) {
                 log.info("haproxy started");
             }
@@ -145,7 +146,7 @@ public class HAProxy implements LoadBalancer {
             // Kill all haproxy processes
             for (String pid : pids) {
                 String command = "kill -s 9 " + pid;
-                CommandUtil.executeCommand(command);
+                CommandUtils.executeCommand(command);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("haproxy stopped [pid] %s", pid));
                 }

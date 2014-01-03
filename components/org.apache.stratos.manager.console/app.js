@@ -1,7 +1,7 @@
 var caramel = require('caramel');
 
 caramel.configs({
-    context: '/stratos',
+    context: '/console',
     cache: true,
     negotiation: true,
     themer: function () {

@@ -27,8 +27,6 @@ public class CartridgeAgentConfiguration {
     private final String appPath;
     private final String repoUrl;
     private final List<Integer> ports;
-    private CharSequence mbIp;
-    private Object mbPort;
 
     private CartridgeAgentConfiguration() {
         serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
@@ -143,21 +141,5 @@ public class CartridgeAgentConfiguration {
 
     public List<Integer> getPorts() {
         return ports;
-    }
-
-    public CharSequence getMbIp() {
-        return mbIp;
-    }
-
-    public void setMbIp(CharSequence mbIp) {
-        this.mbIp = mbIp;
-    }
-
-    public Object getMbPort() {
-        return mbPort;
-    }
-
-    public void setMbPort(Object mbPort) {
-        this.mbPort = mbPort;
     }
 }

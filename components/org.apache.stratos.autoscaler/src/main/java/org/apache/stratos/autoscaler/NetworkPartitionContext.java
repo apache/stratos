@@ -20,6 +20,9 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.policy.model.LoadAverage;
+import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.io.Serializable;
@@ -46,16 +49,22 @@ public class NetworkPartitionContext implements Serializable{
 
     //boolean values to keep whether the requests in flight parameters are reset or not
     private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
-    
+    //boolean values to keep whether the memory consumption parameters are reset or not
+    private boolean memoryConsumptionReset = false, averageMemoryConsumptionReset = false,
+            gradientMemoryConsumptionReset = false, secondDerivativeMemoryConsumptionRest = false;
+    //boolean values to keep whether the load average parameters are reset or not
+    private boolean loadAverageReset = false, averageLoadAverageReset = false, gradientLoadAverageReset = false,
+            secondDerivativeLoadAverageRest = false;
+
     //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
     private int minInstanceCount = 1, maxInstanceCount = 1;
 
-    private Partition[] partitions;
+    private final Partition[] partitions;
 
     //Following information will keep events details
-    private float averageRequestsInFlight;
-    private float requestsInFlightSecondDerivative;
-    private float requestsInFlightGradient;
+    private RequestsInFlight requestsInFlight;
+    private MemoryConsumption memoryConsumption;
+    private LoadAverage loadAverage;
 
     //details required for partition selection algorithms
     private int currentPartitionIndex;
@@ -74,6 +83,9 @@ public class NetworkPartitionContext implements Serializable{
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
 //        partitionToMemberCountMap = new HashMap<String, Integer>();
         partitionCtxts = new HashMap<String, PartitionContext>();
+        requestsInFlight = new RequestsInFlight();
+        loadAverage = new LoadAverage();
+        memoryConsumption = new MemoryConsumption();
 
     }
 
@@ -224,11 +236,11 @@ public class NetworkPartitionContext implements Serializable{
     }
 
     public float getAverageRequestsInFlight() {
-        return averageRequestsInFlight;
+        return requestsInFlight.getAverage();
     }
 
     public void setAverageRequestsInFlight(float averageRequestsInFlight) {
-        this.averageRequestsInFlight = averageRequestsInFlight;
+        requestsInFlight.setAverage(averageRequestsInFlight);
         averageRifReset = true;
         if(secondDerivativeRifRest && gradientRifReset){
             rifReset = true;
@@ -240,11 +252,11 @@ public class NetworkPartitionContext implements Serializable{
     }
 
     public float getRequestsInFlightSecondDerivative() {
-        return requestsInFlightSecondDerivative;
+        return requestsInFlight.getSecondDerivative();
     }
 
     public void setRequestsInFlightSecondDerivative(float requestsInFlightSecondDerivative) {
-        this.requestsInFlightSecondDerivative = requestsInFlightSecondDerivative;
+        requestsInFlight.setSecondDerivative(requestsInFlightSecondDerivative);
         secondDerivativeRifRest = true;
         if(averageRifReset && gradientRifReset){
             rifReset = true;
@@ -256,11 +268,11 @@ public class NetworkPartitionContext implements Serializable{
     }
 
     public float getRequestsInFlightGradient() {
-        return requestsInFlightGradient;
+        return requestsInFlight.getGradient();
     }
 
     public void setRequestsInFlightGradient(float requestsInFlightGradient) {
-        this.requestsInFlightGradient = requestsInFlightGradient;
+        requestsInFlight.setGradient(requestsInFlightGradient);
         gradientRifReset = true;
         if(secondDerivativeRifRest && averageRifReset){
             rifReset = true;
@@ -281,6 +293,128 @@ public class NetworkPartitionContext implements Serializable{
         this.gradientRifReset = rifReset;
         this.secondDerivativeRifRest = rifReset;
     }
+
+
+    public float getAverageMemoryConsumption() {
+        return memoryConsumption.getAverage();
+    }
+
+    public void setAverageMemoryConsumption(float averageMemoryConsumption) {
+        memoryConsumption.setAverage(averageMemoryConsumption);
+        averageMemoryConsumptionReset = true;
+        if(secondDerivativeMemoryConsumptionRest && gradientMemoryConsumptionReset){
+            memoryConsumptionReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
+                        , this.id));
+            }
+        }
+    }
+
+    public float getMemoryConsumptionSecondDerivative() {
+        return memoryConsumption.getSecondDerivative();
+    }
+
+    public void setMemoryConsumptionSecondDerivative(float memoryConsumptionSecondDerivative) {
+        memoryConsumption.setSecondDerivative(memoryConsumptionSecondDerivative);
+        secondDerivativeMemoryConsumptionRest = true;
+        if(averageMemoryConsumptionReset && gradientMemoryConsumptionReset){
+            memoryConsumptionReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
+                        , this.id));
+            }
+        }
+    }
+
+    public float getMemoryConsumptionGradient() {
+        return memoryConsumption.getGradient();
+    }
+
+    public void setMemoryConsumptionGradient(float memoryConsumptionGradient) {
+        memoryConsumption.setGradient(memoryConsumptionGradient);
+        gradientMemoryConsumptionReset = true;
+        if(secondDerivativeMemoryConsumptionRest && averageMemoryConsumptionReset){
+            memoryConsumptionReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
+                        , this.id));
+            }
+        }
+    }
+
+    public boolean isMemoryConsumptionReset() {
+        return memoryConsumptionReset;
+    }
+
+    public void setMemoryConsumptionReset(boolean memoryConsumptionReset) {
+        this.memoryConsumptionReset = memoryConsumptionReset;
+        this.averageMemoryConsumptionReset = memoryConsumptionReset;
+        this.gradientMemoryConsumptionReset = memoryConsumptionReset;
+        this.secondDerivativeMemoryConsumptionRest = memoryConsumptionReset;
+    }
+
+
+    public float getAverageLoadAverage() {
+        return loadAverage.getAverage();
+    }
+
+    public void setAverageLoadAverage(float averageLoadAverage) {
+        loadAverage.setAverage(averageLoadAverage);
+        averageLoadAverageReset = true;
+        if(secondDerivativeLoadAverageRest && gradientLoadAverageReset){
+            loadAverageReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
+                        , this.id));
+            }
+        }
+    }
+
+    public float getLoadAverageSecondDerivative() {
+        return loadAverage.getSecondDerivative();
+    }
+
+    public void setLoadAverageSecondDerivative(float loadAverageSecondDerivative) {
+        loadAverage.setSecondDerivative(loadAverageSecondDerivative);
+        secondDerivativeLoadAverageRest = true;
+        if(averageLoadAverageReset && gradientLoadAverageReset){
+            loadAverageReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
+                        , this.id));
+            }
+        }
+    }
+
+    public float getLoadAverageGradient() {
+        return loadAverage.getGradient();
+    }
+
+    public void setLoadAverageGradient(float loadAverageGradient) {
+        loadAverage.setGradient(loadAverageGradient);
+        gradientLoadAverageReset = true;
+        if(secondDerivativeLoadAverageRest && averageLoadAverageReset){
+            loadAverageReset = true;
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Requests in flights stats are reset, ready to do scale check [network partition] %s"
+                        , this.id));
+            }
+        }
+    }
+
+    public boolean isLoadAverageReset() {
+        return loadAverageReset;
+    }
+
+    public void setLoadAverageReset(boolean loadAverageReset) {
+        this.loadAverageReset = loadAverageReset;
+        this.averageLoadAverageReset = loadAverageReset;
+        this.gradientLoadAverageReset = loadAverageReset;
+        this.secondDerivativeLoadAverageRest = loadAverageReset;
+    }
+
+
 
     public String getId() {
         return id;
@@ -343,12 +477,12 @@ public class NetworkPartitionContext implements Serializable{
         return partitions;
     }
 
-    public void setPartitions(Partition[] partitions) {
-        this.partitions = partitions;
+//    public void setPartitions(Partition[] partitions) {
+//        this.partitions = partitions;
 //        for (Partition partition: partitions){
 //            partitionToMemberCountMap.put(partition.getId(), 0);
 //        }
-    }
+//    }
 
 //    public void setPartitionToMemberCountMap(Map<String, Integer> partitionToMemberCountMap) {
 //        this.partitionToMemberCountMap = partitionToMemberCountMap;

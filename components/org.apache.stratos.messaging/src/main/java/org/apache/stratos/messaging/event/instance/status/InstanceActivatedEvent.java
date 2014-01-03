@@ -27,7 +27,7 @@ import java.io.Serializable;
  * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class InstanceActivatedEvent extends TopologyEvent implements Serializable {
+public class InstanceActivatedEvent extends InstanceStatusEvent implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private final String serviceName;

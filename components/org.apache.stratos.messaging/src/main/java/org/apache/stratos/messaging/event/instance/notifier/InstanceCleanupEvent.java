@@ -16,15 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.event.instance.notifier;
 
-package org.apache.stratos.messaging.domain.topology;
+import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class InstanceCleanupEvent extends InstanceNotifierEvent implements Serializable {
+    private String clusterId;
+    private String memberId;
 
-/**
- * Represents status of a member during its lifecycle.
- */
-@XmlRootElement
-public enum MemberStatus {
-    Created, Starting, Activated, Suspended, ReadyToShutDown, ShuttingDown, Terminated
+    public InstanceCleanupEvent(String clusterId, String memberId) {
+        this.clusterId = clusterId;
+        this.memberId = memberId;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
 }
