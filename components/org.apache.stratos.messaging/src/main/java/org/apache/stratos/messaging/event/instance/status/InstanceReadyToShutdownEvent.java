@@ -20,6 +20,10 @@ package org.apache.stratos.messaging.event.instance.status;
 
 import java.io.Serializable;
 
+/**
+ *  This event is fired by cartridge agent when it has cleaned up the data and
+ *  ready to shutdown.
+ */
 public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements Serializable {
     private final String serviceName;
     private final String clusterId;

@@ -20,6 +20,11 @@ package org.apache.stratos.messaging.event.instance.notifier;
 
 import java.io.Serializable;
 
+/**
+ * This event is fired by SM when AS requests to notify an instance
+ * for the termination. So that instance which receives this event will perform
+ * the clean up task before the actual termination.
+ */
 public class InstanceCleanupEvent extends InstanceNotifierEvent implements Serializable {
     private String clusterId;
     private String memberId;
