@@ -22,9 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
-import org.apache.stratos.cloud.controller.pojo.Registrant;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Port;
@@ -36,7 +33,6 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * this is to send the relevant events from cloud controller to topology topic
@@ -125,6 +121,14 @@ public class TopologyEventPublisher {
                     memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), memberActivatedEvent.getNetworkPartitionId(), memberActivatedEvent.getPartitionId(), memberActivatedEvent.getMemberId()));
          }
          publishEvent(memberActivatedEvent);
+    }
+
+    public static void sendMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
+         if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing member activated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
+                    memberReadyToShutdownEvent.getServiceName(), memberReadyToShutdownEvent.getClusterId(), memberReadyToShutdownEvent.getNetworkPartitionId(), memberReadyToShutdownEvent.getPartitionId(), memberReadyToShutdownEvent.getMemberId()));
+         }
+         publishEvent(memberReadyToShutdownEvent);
     }
 
     public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
