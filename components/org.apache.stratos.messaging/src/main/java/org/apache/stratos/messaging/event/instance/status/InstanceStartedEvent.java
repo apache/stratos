@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * This event is fired by cartridge agent when the its started.
  */
-public class InstanceStartedEvent extends TopologyEvent implements Serializable {
+public class InstanceStartedEvent extends InstanceStatusEvent implements Serializable {
     private static final long serialVersionUID = 7447068435627208619L;
 
     private final String serviceName;
