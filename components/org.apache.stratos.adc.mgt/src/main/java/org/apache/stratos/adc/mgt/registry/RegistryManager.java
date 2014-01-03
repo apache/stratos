@@ -42,9 +42,8 @@ public class RegistryManager {
         if (registryManager == null) {
             synchronized (RegistryManager.class) {
                 if (registryManager == null) {
-                    return registryManager;
+                    registryManager = new RegistryManager();
                 }
-                registryManager = new RegistryManager();
             }
         }
         return registryManager;
@@ -254,6 +253,31 @@ public class RegistryManager {
 
             } catch (RegistryException e1) {
                 errorMsg = "Failed to rollback the transaction in registry path " + path;
+                log.error(errorMsg, e1);
+                throw e1;
+            }
+            throw e;
+        }
+    }
+
+    public void delete (String resourcePath) throws RegistryException {
+
+        UserRegistry registry = initRegistry();
+
+        try {
+            registry.beginTransaction();
+            registry.delete(resourcePath);
+            registry.commitTransaction();
+
+        } catch (RegistryException e) {
+            String errorMsg = "Could not delete resource at "+ resourcePath;
+            log.error(errorMsg, e);
+            // rollback
+            try {
+                registry.rollbackTransaction();
+
+            } catch (RegistryException e1) {
+                errorMsg = "Failed to rollback the transaction in registry path " + resourcePath;
                 log.error(errorMsg, e1);
                 throw e1;
             }

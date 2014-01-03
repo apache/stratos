@@ -40,16 +40,20 @@ public class ClusterIdToSubscription implements Serializable {
 
     public void addSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        add(cartridgeSubscription);
-    }
-
-    private void add (CartridgeSubscription cartridgeSubscription) {
-
         clusterIdToCartridgeSubscription.put(cartridgeSubscription.getClusterDomain(), cartridgeSubscription);
     }
 
     public CartridgeSubscription getSubscription (String clusterId) {
 
         return clusterIdToCartridgeSubscription.get(clusterId);
+    }
+
+    public void removeSubscription (String clusterId) {
+
+        if (clusterIdToCartridgeSubscription.remove(clusterId) != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted the subscription for cluster " + clusterId + " from [Cluster Id -> CartridgeSubscription] map");
+            }
+        }
     }
 }

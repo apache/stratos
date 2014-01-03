@@ -162,9 +162,9 @@ public class ApplicationManagementService extends AbstractAdmin {
 					cartridge.setDescription(cartridgeInfo.getDescription());
 					cartridge.setVersion(cartridgeInfo.getVersion());
 					cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-					cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
+					//cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
 					cartridge.setCartridgeAlias("-");
-					cartridge.setActiveInstances(0);
+					//cartridge.setActiveInstances(0);
 					cartridges.add(cartridge);
 					
 					if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
@@ -176,7 +176,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 								log.debug("Already subscribed to " + cartridgeType
 										+ ". This multi-tenant cartridge will not be available to createSubscription");
 							}
-							cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
+							//cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
 						}
 					}
 				}

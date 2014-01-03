@@ -45,6 +45,7 @@ import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.wso2.carbon.context.CarbonContext;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +55,7 @@ import java.util.Set;
 public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
-    private DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+    //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
 
     /**
      * Subscribes to a cartridge
@@ -72,7 +73,7 @@ public class CartridgeSubscriptionManager {
      * @param repositoryUsername Repository username
      * @param repositoryPassword Repository password
      *
-     * @return Subscribed CartridgeSubscriptionInfo object
+     * @return Subscribed CartridgeSubscription object
      * @throws ADCException
      * @throws InvalidCartridgeAliasException
      * @throws DuplicateCartridgeAliasException
@@ -326,7 +327,7 @@ public class CartridgeSubscriptionManager {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         try {
-            dataInsertionAndRetrievalManager.cacheAndPersistSubcription(cartridgeSubscription);
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
 
         } catch (PersistenceManagerException e) {
             String errorMsg = "Error saving subscription for tenant " +
@@ -340,6 +341,21 @@ public class CartridgeSubscriptionManager {
         log.info("Successful Subscription: " + cartridgeSubscription.toString());
         return ApplicationManagementUtil.
                 createSubscriptionResponse(cartridgeSubscriptionInfo, cartridgeSubscription.getRepository());
+    }
+
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String type) throws ADCException {
+
+        if (type == null || type.isEmpty()) {
+            return new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(tenantId);
+
+        } else {
+            return new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(tenantId, type);
+        }
+    }
+
+    public CartridgeSubscription getCartridgeSubscription (int tenantId, String subscriptionAlias) {
+
+        return new DataInsertionAndRetrievalManager().getCartridgeSubscription(tenantId, subscriptionAlias);
     }
 
     /**
@@ -370,6 +386,8 @@ public class CartridgeSubscriptionManager {
         }*/
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //fix properly
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
         CartridgeSubscription cartridgeSubscription = dataInsertionAndRetrievalManager.getCartridgeSubscription(CarbonContext.getThreadLocalCarbonContext().getTenantId(), alias);
         if(cartridgeSubscription != null) {
             cartridgeSubscription.removeSubscription();
@@ -377,13 +395,23 @@ public class CartridgeSubscriptionManager {
             //set status as 'UNSUBSCRIBED'
             cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
 
-            // persist changes
+            // currently this is disabled
+            // remove subscription
+            /*try {
+                dataInsertionAndRetrievalManager.removeSubscription(CarbonContext.getThreadLocalCarbonContext().getTenantId(), alias);
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error removing subscription for tenant " + tenantDomain + ", alias " + cartridgeSubscription.getAlias();
+                log.error(errorMsg);
+                throw new ADCException(errorMsg, e);
+            }*/
+
+            // update with new state
             try {
                 dataInsertionAndRetrievalManager.cacheAndPersistSubcription(cartridgeSubscription);
 
             } catch (PersistenceManagerException e) {
-                String errorMsg = "Error saving subscription for tenant " +
-                        cartridgeSubscription.getSubscriber().getTenantDomain() + ", alias " + cartridgeSubscription.getAlias();
+                String errorMsg = "Error updating subscription for tenant " + tenantDomain + ", alias " + cartridgeSubscription.getAlias();
                 log.error(errorMsg);
                 throw new ADCException(errorMsg, e);
             }
@@ -567,7 +595,7 @@ public class CartridgeSubscriptionManager {
         return subscriptions;
     }*/
 
-    private CartridgeSubscription populateCartridgeSubscriptionInformation(CartridgeInfo cartridgeInfo,
+    /*private CartridgeSubscription populateCartridgeSubscriptionInformation(CartridgeInfo cartridgeInfo,
                                                                            CartridgeSubscriptionInfo cartridgeSubscriptionInfo)
             throws ADCException {
 
@@ -595,5 +623,5 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.setRepository(cartridgeSubscriptionInfo.getRepository());
 
         return cartridgeSubscription;
-    }
+    }*/
 }

@@ -24,34 +24,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.client.AutoscalerServiceClient;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
-import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.adc.mgt.dto.Cartridge;
 import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
 import org.apache.stratos.adc.mgt.exception.*;
-import org.apache.stratos.adc.mgt.internal.DataHolder;
 import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.adc.mgt.utils.ApplicationManagementUtil;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.apache.stratos.cloud.controller.pojo.Property;
-import org.apache.stratos.messaging.util.Constants;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -453,9 +446,9 @@ public class ServiceUtils {
                     cartridge.setDescription(cartridgeInfo.getDescription());
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-                    cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
+                    //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
-                    cartridge.setActiveInstances(0);
+                    //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
 
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
@@ -467,7 +460,7 @@ public class ServiceUtils {
                                 log.debug("Already subscribed to " + cartridgeType
                                         + ". This multi-tenant cartridge will not be available to createSubscription");
                             }
-                            cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
+                            //cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
                         }
                     }
                 }
@@ -501,12 +494,14 @@ public class ServiceUtils {
         try {
             Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);
 
-            List<CartridgeSubscriptionInfo> subscriptionList = PersistenceManager
-                    .retrieveSubscribedCartridges(ApplicationManagementUtil.getTenantId(configurationContext));
+            //List<CartridgeSubscriptionInfo> subscriptionList = PersistenceManager
+            //        .retrieveSubscribedCartridges(ApplicationManagementUtil.getTenantId(configurationContext));
+            Collection<CartridgeSubscription> subscriptions = cartridgeSubsciptionManager.getCartridgeSubscriptions(ApplicationManagementUtil.
+                    getTenantId(configurationContext), null);
 
-            if (subscriptionList != null && !subscriptionList.isEmpty()) {
-                for (CartridgeSubscriptionInfo subscription : subscriptionList) {
-                    CartridgeInfo cartridgeInfo = null;
+            if (subscriptions != null && !subscriptions.isEmpty()) {
+                for (CartridgeSubscription subscription : subscriptions) {
+                    /*CartridgeInfo cartridgeInfo = null;
                     try {
                         cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(
                                 subscription.getCartridge());
@@ -522,15 +517,36 @@ public class ServiceUtils {
                             log.debug("Cartridge Info not found: " + subscription.getCartridge());
                         }
                         continue;
-                    }
-                    if (!cartridgeMatches(cartridgeInfo, subscription, searchPattern)) {
+                    }*/
+                    if (!cartridgeMatches(subscription.getCartridgeInfo(), subscription, searchPattern)) {
                         continue;
                     }
-                    TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
+
+                    if (!subscription.getSubscriptionStatus().equals(CartridgeConstants.SUBSCRIBED)) {
+                        // not in the subscribed state, skip
+                        continue;
+                    }
+                    /*TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
                     String[] ips = topologyMgtService.getActiveIPs(subscription.getCartridge(),
                             subscription.getClusterDomain(), subscription.getClusterSubdomain());
                     String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
                     Cartridge cartridge = ApplicationManagementUtil.populateCartridgeInfo(cartridgeInfo, subscription, ips, tenantDomain);
+                    cartridges.add(cartridge);*/
+                    Cartridge cartridge = new Cartridge();
+                    cartridge.setCartridgeType(subscription.getCartridgeInfo().getType());
+                    cartridge.setMultiTenant(subscription.getCartridgeInfo().getMultiTenant());
+                    cartridge.setProvider(subscription.getCartridgeInfo().getProvider());
+                    cartridge.setVersion(subscription.getCartridgeInfo().getVersion());
+                    cartridge.setDescription(subscription.getCartridgeInfo().getDescription());
+                    cartridge.setDisplayName(subscription.getCartridgeInfo().getDisplayName());
+                    cartridge.setCartridgeAlias(subscription.getAlias());
+                    cartridge.setHostName(subscription.getHostName());
+                    cartridge.setMappedDomain(subscription.getMappedDomain());
+                    if (subscription.getRepository() != null) {
+                        cartridge.setRepoURL(subscription.getRepository().getUrl());
+                    }
+                    cartridge.setStatus(subscription.getSubscriptionStatus());
+
                     cartridges.add(cartridge);
                 }
             } else {
@@ -585,7 +601,7 @@ public class ServiceUtils {
         return true;
     }
 
-    static boolean cartridgeMatches(CartridgeInfo cartridgeInfo, CartridgeSubscriptionInfo cartridgeSubscriptionInfo, Pattern pattern) {
+    static boolean cartridgeMatches(CartridgeInfo cartridgeInfo, CartridgeSubscription cartridgeSubscription, Pattern pattern) {
         if (pattern != null) {
             boolean matches = false;
             if (cartridgeInfo.getDisplayName() != null) {
@@ -594,11 +610,11 @@ public class ServiceUtils {
             if (!matches && cartridgeInfo.getDescription() != null) {
                 matches = pattern.matcher(cartridgeInfo.getDescription().toLowerCase()).find();
             }
-            if (!matches && cartridgeSubscriptionInfo.getCartridge() != null) {
-                matches = pattern.matcher(cartridgeSubscriptionInfo.getCartridge().toLowerCase()).find();
+            if (!matches && cartridgeSubscription.getType() != null) {
+                matches = pattern.matcher(cartridgeSubscription.getType().toLowerCase()).find();
             }
-            if (!matches && cartridgeSubscriptionInfo.getAlias() != null) {
-                matches = pattern.matcher(cartridgeSubscriptionInfo.getAlias().toLowerCase()).find();
+            if (!matches && cartridgeSubscription.getAlias() != null) {
+                matches = pattern.matcher(cartridgeSubscription.getAlias().toLowerCase()).find();
             }
             return matches;
         }

@@ -75,6 +75,10 @@ public class InstanceStatusListener implements MessageListener {
                     ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(), clusterId,
                             String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
                     publisher.publish();
+                } else {
+                    //TODO: make this log debug
+                    log.info("No repository found for subscription with alias: " + cartridgeSubscription.getAlias() + ", type: " + cartridgeSubscription.getType()+
+                            ". Not sending the Depsync event");
                 }
 
             }

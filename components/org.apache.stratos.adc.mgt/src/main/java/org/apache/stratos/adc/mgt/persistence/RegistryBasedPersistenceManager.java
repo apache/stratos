@@ -57,6 +57,11 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
                     cartridgeSubscription.getType() + "/" +
                     cartridgeSubscription.getAlias(), Serializer.serializeSubscriptionSontextToByteArray(cartridgeSubscription), cartridgeSubscription.getClusterDomain());
 
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted CartridgeSubscription successfully: [ " + cartridgeSubscription.getSubscriber().getTenantDomain()
+                        + ", " + cartridgeSubscription.getType() + ", " + cartridgeSubscription.getAlias() + " ] ");
+            }
+
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
 
@@ -78,8 +83,19 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }
 
     @Override
-    public void removeCartridgeSubscription (int tenantId, String alias) throws PersistenceManagerException {
-        //TODO
+    public void removeCartridgeSubscription (int tenantId, String type, String alias) throws PersistenceManagerException {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
+
+        try {
+            RegistryManager.getInstance().delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted CartridgeSubscription on path " + resourcePath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
     }
 
     /*@Override
@@ -178,6 +194,10 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
     private Collection<CartridgeSubscription> traverseAndGetCartridgeSubscriptions (String resourcePath) throws PersistenceManagerException  {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Root resource path: " + resourcePath);
+        }
+
         Object resourceObj;
 
         try {
@@ -187,6 +207,8 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
 
+        Collection<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+
         if (resourceObj == null) {
             // there is no resource at the given path
             return null;
@@ -195,15 +217,20 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
             // get the paths for all SubscriptionContext instances
             String[] subscriptionResourcePaths = (String[]) resourceObj;
+            if (log.isDebugEnabled()) {
+                for (String retrievedResourcePath : subscriptionResourcePaths) {
+                    log.debug("Retrieved resource sub-path " + retrievedResourcePath);
+                }
+            }
 
-            Collection<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
             // traverse the paths recursively
             for (String subscriptionResourcePath : subscriptionResourcePaths) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Traversing resource path " + subscriptionResourcePath);
+                }
+
                 cartridgeSubscriptions.addAll(traverseAndGetCartridgeSubscriptions(subscriptionResourcePath));
-                // remove any nulls
-                cartridgeSubscriptions.removeAll(Collections.singleton(null));
-                // return the CartridgeSubscription list
-                return cartridgeSubscriptions;
             }
 
         } else {
@@ -220,13 +247,21 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             }
 
             if (subscriptionObj != null && subscriptionObj instanceof CartridgeSubscription) {
-                // return a list out of the CartridgeSubscription instance
-                return Collections.singletonList((CartridgeSubscription) subscriptionObj);
+
+                CartridgeSubscription deserilizedCartridgeSubscription = (CartridgeSubscription) subscriptionObj;
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully de-serialized CartridgeSubscription: " + deserilizedCartridgeSubscription.toString());
+                }
+
+                //return Collections.singletonList(deserilizedCartridgeSubscription);
+                cartridgeSubscriptions.add(deserilizedCartridgeSubscription);
 
             }
         }
 
-        return null;
+        // remove any nulls
+        cartridgeSubscriptions.removeAll(Collections.singleton(null));
+        return cartridgeSubscriptions;
     }
 
     /*@Override

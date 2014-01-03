@@ -241,7 +241,7 @@ public class ApplicationManagementUtil {
                                 // This cannot happen here.
                             }
                             if (c != null) {
-                                if (!c.getStatus().equals("ACTIVE")) {
+                               /* if (!c.getStatus().equals("ACTIVE")) {
                                     try {
                                         Thread.sleep(3000);
                                     } catch (InterruptedException ignore) {
@@ -250,7 +250,7 @@ public class ApplicationManagementUtil {
                                     mySQLPassword = c.getPassword();
                                     mySQLHostName = c.getIp();
                                     break;
-                                }
+                                }*/
                             }
                         }
                         log.info(" MYSQL Cartridge info retrieved ");
@@ -977,7 +977,7 @@ public class ApplicationManagementUtil {
 			}
 			if (CartridgeConstants.DATA_CARTRIDGE_PROVIDER.equals(sub.getProvider())) {
 				// FIXME Temporary fix for SPI-301
-				cartridge.setIp(ips[ips.length - 1]);
+				//cartridge.setIp(ips[ips.length - 1]);
 				if (sub.getDataCartridge() != null) {
 					if (log.isDebugEnabled()) {
 						log.debug("Data Cartridge Info: " + sub.getDataCartridge().getUserName());
@@ -987,22 +987,22 @@ public class ApplicationManagementUtil {
 				}
 			}
 			if (cartridgeInfo.getMultiTenant()) { // TODO refactor logic for carbon cartridges.
-				cartridge.setStatus(CartridgeConstants.ACTIVE);
-				cartridge.setActiveInstances(ips.length);
+				//cartridge.setStatus(CartridgeConstants.ACTIVE);
+				//cartridge.setActiveInstances(ips.length);
 			} else {
 				Map<String, String> instanceIpMap;
 				try {
 					instanceIpMap = PersistenceManager.getCartridgeInstanceInfo(ips, sub.getClusterDomain(),
 							sub.getClusterSubdomain());
-					cartridge.setActiveInstances(ips.length);
-					cartridge.setStatus(CartridgeConstants.ACTIVE);
+					//cartridge.setActiveInstances(ips.length);
+					//cartridge.setStatus(CartridgeConstants.ACTIVE);
 				} catch (Exception e) {
 					throw new ADCException("Error checking cartridge status");
 				}
 
                 if(cartridgeInfo.getProvider().equalsIgnoreCase(CartridgeConstants.PROVIDER_NAME_WSO2)) {
-                    cartridge.setActiveInstances(ips.length);
-                    cartridge.setStatus(CartridgeConstants.ACTIVE);
+                    //cartridge.setActiveInstances(ips.length);
+                    //cartridge.setStatus(CartridgeConstants.ACTIVE);
                     /*List<Member> members = getMemberInstances(sub.getClusterDomain(), sub.getClusterSubdomain());
                     if(members != null) {
                         int activeInstancesCount = 0;
@@ -1018,7 +1018,7 @@ public class ApplicationManagementUtil {
 			}
         } else {
             log.warn("IPs have not returned through Topology Management for " + sub.getAlias());
-            cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
+            //cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
         }
         cartridge.setDisplayName(cartridgeInfo.getDisplayName());
         cartridge.setDescription(cartridgeInfo.getDescription());
@@ -1067,10 +1067,10 @@ public class ApplicationManagementUtil {
         cartridge.setCartridgeAlias(sub.getAlias());
         cartridge.setCartridgeType(sub.getCartridge());
         cartridge.setHostName(sub.getHostName());
-        cartridge.setPolicy(sub.getPolicy());
+        //cartridge.setPolicy(sub.getPolicy());
         Policy policy = PolicyHolder.getInstance().getPolicy(sub.getPolicy());
         if (policy != null) {
-        	cartridge.setPolicyDescription(policy.getDescription());
+        //	cartridge.setPolicyDescription(policy.getDescription());
         }
         cartridge.setProvider(sub.getProvider());
         cartridge.setMappedDomain(sub.getMappedDomain());

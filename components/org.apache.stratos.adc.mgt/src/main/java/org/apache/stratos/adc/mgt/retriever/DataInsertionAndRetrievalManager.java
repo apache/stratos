@@ -19,13 +19,13 @@
 
 package org.apache.stratos.adc.mgt.retriever;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.lookup.LookupDataHolder;
 import org.apache.stratos.adc.mgt.persistence.PersistenceManager;
 import org.apache.stratos.adc.mgt.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-import org.jgroups.logging.Log;
-import org.jgroups.logging.LogFactory;
 
 import java.util.Collection;
 
@@ -34,7 +34,7 @@ public class DataInsertionAndRetrievalManager {
     private static final Log log = LogFactory.getLog(DataInsertionAndRetrievalManager.class);
 
     // TODO: use a global object
-    PersistenceManager persistenceManager = new RegistryBasedPersistenceManager();
+    private static PersistenceManager persistenceManager = new RegistryBasedPersistenceManager();
 
     public void cacheAndPersistSubcription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
 
@@ -61,6 +61,34 @@ public class DataInsertionAndRetrievalManager {
         }
     }
 
+    public void removeSubscription (int tenantId, String subscriptionAlias) throws PersistenceManagerException {
+
+        CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+
+        String cartridgeType = cartridgeSubscription.getType();
+        String clusterId = cartridgeSubscription.getClusterDomain();
+
+        LookupDataHolder.getInstance().acquireWriteLock();
+
+        try {
+            // remove from cache
+            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId);
+
+            // remove from persistence manager
+            try {
+                persistenceManager.removeCartridgeSubscription(tenantId, cartridgeType, subscriptionAlias);
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error in removing CartridgeSubscription from Persistence Manager";
+                log.error(errorMsg, e);
+                throw e;
+            }
+
+        } finally {
+            LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
+
     public void cachePersistedSubscriptions () throws PersistenceManagerException {
 
         Collection<CartridgeSubscription> cartridgeSubscriptions;
@@ -78,11 +106,11 @@ public class DataInsertionAndRetrievalManager {
                 throw e;
             }
 
-            if(cartridgeSubscriptions != null || cartridgeSubscriptions.isEmpty()) {
+            if(cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
                 if(log.isDebugEnabled()) {
                     log.debug("No CartridgeSubscriptions found to add to the cache");
-                    return;
                 }
+                return;
             }
             cacheSubscriptions(cartridgeSubscriptions);
 
@@ -109,11 +137,11 @@ public class DataInsertionAndRetrievalManager {
                 throw e;
             }
 
-            if(cartridgeSubscriptions != null || cartridgeSubscriptions.isEmpty()) {
+            if(cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
                 if(log.isDebugEnabled()) {
                     log.debug("No CartridgeSubscriptions found to add to the cache");
-                    return;
                 }
+                return;
             }
             cacheSubscriptions(cartridgeSubscriptions);
 
@@ -128,6 +156,9 @@ public class DataInsertionAndRetrievalManager {
         // cache all
         for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
             LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
+            if (log.isDebugEnabled()) {
+                log.debug("Updated the in memory cache with the CartridgeSubscription: " + cartridgeSubscription.toString());
+            }
         }
     }
 

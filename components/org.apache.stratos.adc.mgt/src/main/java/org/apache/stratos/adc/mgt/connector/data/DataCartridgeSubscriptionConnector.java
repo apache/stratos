@@ -59,7 +59,7 @@ public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionCon
                 // This cannot happen here.
             }
             if (cartridge != null) {
-                if (!cartridge.getStatus().equals("ACTIVE")) {
+                /*if (!cartridge.getStatus().equals("ACTIVE")) {
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException ignore) {
@@ -71,7 +71,7 @@ public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionCon
                     log.info("Connection information retrieved for " + cartridgeSubscription + " and " +
                             connectingCartridgeSubscription);
                     break;
-                }
+                }*/
             }
 
             if(attempts == maxAttempts) {

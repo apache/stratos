@@ -50,11 +50,16 @@ public class SubscriptionContext implements Serializable {
             // if an existing subscription is present, remove it
             if(existingSubscriptions.remove(cartridgeSubscription)){
                 if(log.isDebugEnabled()) {
-                    log.debug("Removed the existing Cartridge Subscription for type " + cartridgeType + ", alias " + cartridgeSubscription.getAlias());
+                    log.debug("Removed the existing Cartridge Subscription for type " + cartridgeType + ", alias " + cartridgeSubscription.getAlias() +
+                    " in [Cartridge Type -> Set<CartridgeSubscription>] map");
                 }
             }
             // add or update
             existingSubscriptions.add(cartridgeSubscription);
+            if(log.isDebugEnabled()) {
+                log.debug("Overwrote the existing Cartridge Subscription for type " + cartridgeType + ", alias " + cartridgeSubscription.getAlias() +
+                " in [Cartridge Type -> Set<CartridgeSubscription>] map");
+            }
 
         } else {
             // create a new set and add it
@@ -63,10 +68,11 @@ public class SubscriptionContext implements Serializable {
             cartridgeTypeToSubscriptions.put(cartridgeType, subscriptions);
         }
 
-        // putSubscription to aliasToSubscription map
+        // put Subscription to aliasToSubscription map
         if (aliasToSubscription.put(cartridgeSubscription.getAlias(), cartridgeSubscription) != null) {
             if(log.isDebugEnabled()) {
-                log.debug("Overwrote the existing Cartridge Subscription for alias " + cartridgeSubscription.getAlias());
+                log.debug("Overwrote the existing Cartridge Subscription for alias " + cartridgeSubscription.getAlias() +
+                " in [Subscription Alias -> CartridgeSubscription] map");
             }
         }
     }
@@ -84,6 +90,42 @@ public class SubscriptionContext implements Serializable {
     public CartridgeSubscription getSubscriptionForAlias (String subscriptionAlias) {
 
         return aliasToSubscription.get(subscriptionAlias);
+    }
+
+    public void deleteSubscription (String type, String subscriptionAlias) {
+
+        // remove Subscription from cartridgeTypeToSubscriptions map
+        Set<CartridgeSubscription> existingSubscriptions = cartridgeTypeToSubscriptions.get(type);
+        if (existingSubscriptions != null && !existingSubscriptions.isEmpty()) {
+            // iterate through the set
+            Iterator<CartridgeSubscription> iterator = existingSubscriptions.iterator();
+            while (iterator.hasNext()) {
+                CartridgeSubscription cartridgeSubscription = iterator.next();
+                // if a matching CartridgeSubscription is found, remove
+                if (cartridgeSubscription.getAlias().equals(subscriptionAlias)) {
+                    iterator.remove();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Deleted the subscription for alias " + subscriptionAlias + " and type " + type + " from [Type -> Set<CartridgeSubscription>] map");
+                    }
+                    break;
+                }
+            }
+        }
+
+        // if the Subscriptions set is empty now, remove it from cartridgeTypeToSubscriptions map
+        if (existingSubscriptions.isEmpty()) {
+            cartridgeTypeToSubscriptions.remove(type);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted the subscriptions set for type " + type + " from [Type -> Set<CartridgeSubscription>] map");
+            }
+        }
+
+        // remove from aliasToSubscription map
+        if (aliasToSubscription.remove(subscriptionAlias) != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted the subscription for alias " + subscriptionAlias + " from [Alias -> CartridgeSubscription] map");
+            }
+        }
     }
 
 }

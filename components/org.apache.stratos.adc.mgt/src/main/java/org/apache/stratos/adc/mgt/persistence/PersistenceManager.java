@@ -29,7 +29,7 @@ public abstract class PersistenceManager {
     public abstract void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription)
             throws PersistenceManagerException;
 
-    public abstract void removeCartridgeSubscription (int tenantId, String alias)
+    public abstract void removeCartridgeSubscription (int tenantId, String type, String alias)
             throws PersistenceManagerException;
 
     //public abstract CartridgeSubscription getCartridgeSubscription(int tenantId, String alias)

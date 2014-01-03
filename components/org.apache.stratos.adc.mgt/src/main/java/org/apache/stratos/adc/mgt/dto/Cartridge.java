@@ -28,16 +28,16 @@ public class Cartridge implements Comparable<Cartridge> {
     private String description;
 	private String cartridgeAlias;
 	private String cartridgeType;
-	private int activeInstances;
+	//private int activeInstances;
 	private String status;
-	private String ip;
+	//private String ip;
 	private String password;
 	private String provider;
 	private String version;
 	private boolean multiTenant;
 	private String hostName;
-	private String policy;
-	private String policyDescription;
+	//private String policy;
+	//private String policyDescription;
 	private String repoURL;
 	private String dbUserName;
 	private String mappedDomain;
@@ -76,13 +76,13 @@ public class Cartridge implements Comparable<Cartridge> {
 		this.cartridgeType = cartridgeType;
 	}
 
-	public int getActiveInstances() {
+	/*public int getActiveInstances() {
 		return activeInstances;
 	}
 
 	public void setActiveInstances(int activeInstances) {
 		this.activeInstances = activeInstances;
-	}
+	}*/
 
 	public String getStatus() {
 		return status;
@@ -92,13 +92,13 @@ public class Cartridge implements Comparable<Cartridge> {
 		this.status = status;
 	}
 
-	public String getIp() {
+	/*public String getIp() {
 		return ip;
 	}
 
 	public void setIp(String ip) {
 		this.ip = ip;
-	}
+	}*/
 
 	public String getPassword() {
 		return password;
@@ -140,7 +140,7 @@ public class Cartridge implements Comparable<Cartridge> {
     	this.hostName = hostName;
     }
 
-	public String getPolicy() {
+	/*public String getPolicy() {
 		return policy;
 	}
 
@@ -154,7 +154,7 @@ public class Cartridge implements Comparable<Cartridge> {
 
 	public void setPolicyDescription(String policyDescription) {
 		this.policyDescription = policyDescription;
-	}
+	}*/
 
 	public String getRepoURL() {
     	return repoURL;
