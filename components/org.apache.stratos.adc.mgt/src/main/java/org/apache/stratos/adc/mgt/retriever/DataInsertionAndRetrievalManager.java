@@ -52,6 +52,10 @@ public class DataInsertionAndRetrievalManager {
             } catch (PersistenceManagerException e) {
                 String errorMsg = "Error in persisting CartridgeSubscription in Persistence Manager";
                 log.error(errorMsg, e);
+                // remove from the in memory model since persisting failed
+                LookupDataHolder.getInstance().removeSubscription(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getType(),
+                        cartridgeSubscription.getAlias(), cartridgeSubscription.getClusterDomain());
+
                 throw e;
             }
 

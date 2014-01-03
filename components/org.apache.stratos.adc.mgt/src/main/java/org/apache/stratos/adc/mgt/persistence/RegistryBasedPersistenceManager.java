@@ -26,7 +26,10 @@ import org.apache.stratos.adc.mgt.registry.RegistryManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.utils.Deserializer;
 import org.apache.stratos.adc.mgt.utils.Serializer;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,20 +41,35 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final Log log = LogFactory.getLog(RegistryBasedPersistenceManager.class);
     // Registry paths
     private static final String STRATOS_MANAGER_REOSURCE = "/stratos_manager";
-    //private static final String CLUSTER_ID_TO_SUBSCRIPTION = "/clusterIdToSubscription";
-    //private static final String SUBSCRIPTION_CONTEXT = "/subscription_context";
     private static final String SUBSCRIPTIONS = "/subscriptions";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
 
-        //SubscriptionContext subscriptionContext = new SubscriptionContext();
-        //subscriptionContext.addSubscription(cartridgeSubscription);
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistSubscription(cartridgeSubscription);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            persistSubscription(cartridgeSubscription);
+        }
+    }
+
+    private void persistSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
 
         // persist in the path SUBSCRIPTION_CONTEXT
         try {
-            //RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" +
-            //        Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()), Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
             RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" +
                     Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()) + "/" +
                     cartridgeSubscription.getType() + "/" +
@@ -68,22 +86,31 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         } catch (IOException e) {
             throw new PersistenceManagerException(e);
         }
-
-        // persist in the path CLUSTER_ID_TO_SUBSCRIPTION
-        /*try {
-            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION + "/" +
-                    cartridgeSubscription.getClusterDomain(), Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-
-        } catch (IOException e) {
-            throw new PersistenceManagerException(e);
-        }*/
     }
 
     @Override
     public void removeCartridgeSubscription (int tenantId, String type, String alias) throws PersistenceManagerException {
+
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                removeSubscription(tenantId, type, alias);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            removeSubscription(tenantId, type, alias);
+        }
+    }
+
+    private void removeSubscription (int tenantId, String type, String alias) throws PersistenceManagerException {
 
         String resourcePath = STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
 

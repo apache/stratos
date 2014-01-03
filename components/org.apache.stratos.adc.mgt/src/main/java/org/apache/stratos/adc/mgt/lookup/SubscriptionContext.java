@@ -57,7 +57,7 @@ public class SubscriptionContext implements Serializable {
             // add or update
             existingSubscriptions.add(cartridgeSubscription);
             if(log.isDebugEnabled()) {
-                log.debug("Overwrote the existing Cartridge Subscription for type " + cartridgeType + ", alias " + cartridgeSubscription.getAlias() +
+                log.debug("Added Cartridge Subscription for type " + cartridgeType + ", alias " + cartridgeSubscription.getAlias() +
                 " in [Cartridge Type -> Set<CartridgeSubscription>] map");
             }
 
