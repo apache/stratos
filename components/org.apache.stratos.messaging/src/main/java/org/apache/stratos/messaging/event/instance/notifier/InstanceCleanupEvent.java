@@ -37,4 +37,8 @@ public class InstanceCleanupEvent extends InstanceNotifierEvent implements Seria
     public String getClusterId() {
         return clusterId;
     }
+
+    public String getMemberId() {
+        return memberId;
+    }
 }
