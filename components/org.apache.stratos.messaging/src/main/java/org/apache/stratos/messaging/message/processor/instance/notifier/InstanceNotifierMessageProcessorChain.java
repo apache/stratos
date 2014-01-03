@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
@@ -32,11 +33,14 @@ public class InstanceNotifierMessageProcessorChain extends MessageProcessorChain
     private static final Log log = LogFactory.getLog(InstanceNotifierMessageProcessorChain.class);
 
     private ArtifactUpdateMessageProcessor artifactUpdateMessageProcessor;
+    private InstanceCleanupNotifierMessageProcessor instanceCleanupNotifierMessageProcessor;
 
     public void initialize() {
         // Add instance notifier event processors
         artifactUpdateMessageProcessor = new ArtifactUpdateMessageProcessor();
         add(artifactUpdateMessageProcessor);
+        instanceCleanupNotifierMessageProcessor = new InstanceCleanupNotifierMessageProcessor();
+        add(instanceCleanupNotifierMessageProcessor);
 
         if (log.isDebugEnabled()) {
             log.debug("Instance notifier message processor chain initialized");
@@ -45,6 +49,8 @@ public class InstanceNotifierMessageProcessorChain extends MessageProcessorChain
 
     public void addEventListener(EventListener eventListener) {
         if (eventListener instanceof ArtifactUpdateEventListener) {
+            artifactUpdateMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof InstanceCleanupEventListener) {
             artifactUpdateMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");

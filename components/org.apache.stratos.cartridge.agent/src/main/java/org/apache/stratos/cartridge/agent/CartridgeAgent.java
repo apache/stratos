@@ -3,16 +3,18 @@ package org.apache.stratos.cartridge.agent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.RepositoryInformation;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.impl.GitBasedArtifactRepository;
+import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPublisher;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupEvent;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupEventListener;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageReceiver;
@@ -56,6 +58,13 @@ public class CartridgeAgent implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 onArtifactUpdateEvent((ArtifactUpdatedEvent) event);
+            }
+        });
+
+        processorChain.addEventListener(new InstanceCleanupEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+               onInstanceCleanupEvent((InstanceCleanupEvent) event);
             }
         });
         InstanceNotifierEventMessageDelegator messageDelegator = new InstanceNotifierEventMessageDelegator(processorChain);
@@ -134,6 +143,22 @@ public class CartridgeAgent implements Runnable {
                 // Executed git clone, publish instance activated event
                 CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
             }
+        }
+    }
+
+    private void onInstanceCleanupEvent(InstanceCleanupEvent event) {
+        InstanceCleanupEvent instanceCleanupEvent = (InstanceCleanupEvent)event;
+        String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
+        String memberId = instanceCleanupEvent.getMemberId();
+        if(memberId != null && memberId.equals(memberIdInPayload)) {
+            if(log.isInfoEnabled()) {
+                log.info("Executing cleaning up the data in the cartridge instance...");
+            }
+            // TODO
+            //cleaning up the cartridge instance's data
+
+            //publishing the Ready to shutdown event after performing the cleanup
+            CartridgeAgentEventPublisher.publishInstanceReadyToShutdownEvent();
         }
     }
 

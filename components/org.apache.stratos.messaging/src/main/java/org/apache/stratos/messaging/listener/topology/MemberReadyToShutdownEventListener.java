@@ -16,29 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.instance.notifier;
+package org.apache.stratos.messaging.listener.topology;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.listener.EventListener;
 
-/**
- * This event is fired by SM when AS requests to notify an instance
- * for the termination. So that instance which receives this event will perform
- * the clean up task before the actual termination.
- */
-public class InstanceCleanupEvent extends InstanceNotifierEvent implements Serializable {
-    private String clusterId;
-    private String memberId;
+public abstract class MemberReadyToShutdownEventListener extends EventListener {
 
-    public InstanceCleanupEvent(String clusterId, String memberId) {
-        this.clusterId = clusterId;
-        this.memberId = memberId;
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public String getMemberId() {
-        return memberId;
-    }
 }

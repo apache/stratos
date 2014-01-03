@@ -20,6 +20,9 @@ package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
+import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
+import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
@@ -28,8 +31,10 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.List;
@@ -270,6 +275,48 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
+    }
+
+    public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
+                            throws InvalidMemberException, InvalidCartridgeTypeException {
+        String memberId = instanceReadyToShutdownEvent.getMemberId();
+        Topology topology = TopologyManager.getTopology();
+        Service service = topology.getService(instanceReadyToShutdownEvent.getServiceName());
+        //update the status of the member
+        if (service == null) {
+            throw new RuntimeException(String.format("Service %s does not exist",
+                                                     instanceReadyToShutdownEvent.getServiceName()));
+        }
+
+        Cluster cluster = service.getCluster(instanceReadyToShutdownEvent.getClusterId());
+        if (cluster == null) {
+            throw new RuntimeException(String.format("Cluster %s does not exist",
+                                                     instanceReadyToShutdownEvent.getClusterId()));
+        }
+        Member member = cluster.getMember(instanceReadyToShutdownEvent.getMemberId());
+        if (member == null) {
+            throw new RuntimeException(String.format("Member %s does not exist",
+                    instanceReadyToShutdownEvent.getMemberId()));
+        }
+        MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
+                                                                instanceReadyToShutdownEvent.getServiceName(),
+                                                                instanceReadyToShutdownEvent.getClusterId(),
+                                                                instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                                                                instanceReadyToShutdownEvent.getPartitionId(),
+                                                                instanceReadyToShutdownEvent.getMemberId());
+        try {
+            TopologyManager.acquireWriteLock();
+            member.setStatus(MemberStatus.ReadyToShutDown);
+            log.info("member started event adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
+        //calling the actual termination of the instance
+        new CloudControllerServiceImpl().terminateInstance(memberId);
+
     }
 
     public static void handleMemberTerminated(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
