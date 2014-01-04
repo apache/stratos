@@ -164,9 +164,9 @@
                                     org.wso2.carbon:org.wso2.carbon.task.server.feature:${carbon.version}
                                 </featureArtifactDef>
 
-                                <!--                                <featureArtifactDef>
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.mediation.initializer.feature:${carbon.version}
-                                </featureArtifactDef> -->
+                                </featureArtifactDef>
 
                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.logging.mgt.feature:${carbon.version}
@@ -176,13 +176,12 @@
                                     org.wso2.carbon:org.wso2.carbon.endpoint.server.feature:${carbon.version}
                                 </featureArtifactDef>
 
-                                <!--                                <featureArtifactDef>
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.sequences.server.feature:${carbon.version}
-                                </featureArtifactDef> -->
-
-<!--                                <featureArtifactDef>
+                                </featureArtifactDef>
+                                <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.mediators.server.feature:${carbon.version}
-                                </featureArtifactDef> -->
+                                </featureArtifactDef>
 
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.relay.server.feature:${carbon.version}
@@ -263,10 +262,10 @@
                                     <id>org.wso2.carbon.datasource.server.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--                                <feature>
+                                <feature>
                                     <id>org.wso2.carbon.mediation.initializer.feature.group</id>
                                     <version>${carbon.version}</version>
-                                </feature> -->
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.service.mgt.server.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -283,14 +282,14 @@
                                     <id>org.wso2.carbon.endpoint.server.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--                                <feature>
+                                <feature>
                                     <id>org.wso2.carbon.sequences.server.feature.group</id>
                                     <version>${carbon.version}</version>
-                                </feature> -->
-<!--                                <feature>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.carbon.mediators.server.feature.group</id>
                                     <version>${carbon.version}</version>
-                                </feature> -->
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.relay.server.feature.group</id>
                                     <version>${carbon.version}</version>
