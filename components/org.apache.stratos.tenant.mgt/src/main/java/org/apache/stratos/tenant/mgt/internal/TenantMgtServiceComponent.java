@@ -18,7 +18,13 @@
  */
 package org.apache.stratos.tenant.mgt.internal;
 
-import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.neethi.Policy;
+import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -32,19 +38,10 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.description.AxisService;
-import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.neethi.Policy;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import org.osgi.service.component.ComponentContext;
 
 /**
  * @scr.component name="org.apache.stratos.tenant.mgt" immediate="true"
@@ -71,11 +68,6 @@ import org.osgi.service.component.ComponentContext;
  *                cardinality="0..1" policy="dynamic"
  *                bind="setTenantBillingService"
  *                unbind="unsetTenantBillingService"
- * @scr.reference name="default.tenant.persistor"
- *                interface="org.wso2.carbon.core.multitenancy.persistence.TenantPersistor"
- *                cardinality="1..1" policy="dynamic"
- *                bind="setTenantPersistor"
- *                unbind="unsetTenantPersistor"
  */
 public class TenantMgtServiceComponent {
     private static Log log = LogFactory.getLog(TenantMgtServiceComponent.class);
@@ -88,7 +80,6 @@ public class TenantMgtServiceComponent {
     private static ConfigurationContextService configurationContextService;
     
     private static List<TenantMgtListener> tenantMgtListeners = new ArrayList<TenantMgtListener>();
-    private static TenantPersistor tenantPersistor = null;
     private static TenantBillingService billingService = null;
 
     protected void activate(ComponentContext context) {
@@ -210,18 +201,6 @@ public class TenantMgtServiceComponent {
 
     public static UserRegistry getConfigSystemRegistry(int tenantId) throws RegistryException {
         return registryService.getConfigSystemRegistry(tenantId);
-    }
-
-    public static TenantPersistor getTenantPersistor() {
-        return tenantPersistor;
-    }
-
-    protected void setTenantPersistor(TenantPersistor defaultTenantPersistor) {
-        tenantPersistor = defaultTenantPersistor;
-    }
-
-    public void unsetTenantPersistor(TenantPersistor defaultTenantPersistor) {
-        tenantPersistor = null;
     }
 
     

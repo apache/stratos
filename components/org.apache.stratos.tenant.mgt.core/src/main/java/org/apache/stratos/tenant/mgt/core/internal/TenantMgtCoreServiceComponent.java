@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
@@ -30,7 +29,6 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
-import org.apache.stratos.tenant.mgt.core.DefaultTenantPersistor;
 
 /**
  * @scr.component name="org.apache.stratos.tenant.mgt.core" immediate="true"
@@ -53,14 +51,11 @@ public class TenantMgtCoreServiceComponent {
     private static BundleContext bundleContext;
     private static RealmService realmService;
     private static RegistryService registryService;
-    private static TenantPersistor tenantPersistor;
     private static TenantRegistryLoader registryLoader;
     
     protected void activate(ComponentContext context) {
         try {
-            tenantPersistor = new DefaultTenantPersistor();
             bundleContext = context.getBundleContext();
-            bundleContext.registerService(TenantPersistor.class.getName(), tenantPersistor, null);
             log.debug("******* Tenant Core bundle is activated ******* ");
         } catch (Exception e) {
             log.error("Error occurred while activating tenant.mgt.core bundle. " + e);

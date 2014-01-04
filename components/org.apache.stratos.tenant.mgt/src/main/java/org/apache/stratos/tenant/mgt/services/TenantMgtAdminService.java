@@ -19,7 +19,6 @@
 package org.apache.stratos.tenant.mgt.services;
 
 import org.wso2.carbon.core.AbstractAdmin;
-import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
@@ -36,6 +35,7 @@ import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.DataPaginator;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,34 +68,17 @@ public class TenantMgtAdminService extends AbstractAdmin {
         }
         String tenantDomain = tenantInfoBean.getTenantDomain();
         TenantMgtUtil.validateDomain(tenantDomain);
-        UserRegistry userRegistry = (UserRegistry) getGovernanceRegistry();
-        if (userRegistry == null) {
-            log.error("Security Alert! User registry is null. A user is trying create a tenant "
-                      + " without an authenticated session.");
-            throw new Exception("Invalid data."); // obscure error message.
-        }
-
-        if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
-            log.error("Security Alert! Non super tenant trying to create a tenant.");
-            throw new Exception("Invalid data."); // obscure error message.
-        }
+        checkIsSuperTenantInvoking();
         Tenant tenant = TenantMgtUtil.initializeTenant(tenantInfoBean);
-        TenantPersistor persistor = TenantMgtServiceComponent.getTenantPersistor();
+        TenantPersistor persistor = new TenantPersistor();
         // not validating the domain ownership, since created by super tenant
         int tenantId = persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
-                                tenantInfoBean.getOriginatedService());
+                                tenantInfoBean.getOriginatedService(),false);
         tenantInfoBean.setTenantId(tenantId);
         
         TenantMgtUtil.addClaimsToUserStoreManager(tenant);
         
-        //Notify tenant addition
-        try {
-            TenantMgtUtil.triggerAddTenant(tenantInfoBean);
-        } catch (StratosException e) {
-            String msg = "Error in notifying tenant addition.";
-            log.error(msg, e);
-            throw new Exception(msg, e);
-        }
+        notifyTenantAddition(tenantInfoBean);
         //adding the subscription entry
         /*try {
             if (TenantMgtServiceComponent.getBillingService() != null) {
@@ -116,6 +99,69 @@ public class TenantMgtAdminService extends AbstractAdmin {
 
         return TenantMgtUtil.prepareStringToShowThemeMgtPage(tenant.getId());
     }
+
+
+
+    private void notifyTenantAddition(TenantInfoBean tenantInfoBean) throws Exception {
+        //Notify tenant addition
+        try {
+            TenantMgtUtil.triggerAddTenant(tenantInfoBean);
+        } catch (StratosException e) {
+            String msg = "Error in notifying tenant addition.";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+    }
+
+    private void checkIsSuperTenantInvoking() throws Exception {
+        UserRegistry userRegistry = (UserRegistry) getGovernanceRegistry();
+        if (userRegistry == null) {
+            log.error("Security Alert! User registry is null. A user is trying create a tenant "
+                    + " without an authenticated session.");
+            throw new Exception("Invalid data."); // obscure error message.
+        }
+
+        if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
+            log.error("Security Alert! Non super tenant trying to create a tenant.");
+            throw new Exception("Invalid data."); // obscure error message.
+        }
+    }
+
+    /**
+     * Super admin add tenant.This method will be used whenever the user store is shared between two deployment.
+     * This method will persist tenant not in user store level but will do other post tenant creation actions.
+     *
+     * @param tenantInfoBean
+     * @return
+     * @throws Exception
+     */
+    public String addSkeletonTenant(TenantInfoBean tenantInfoBean) throws Exception {
+        int tenantId;
+        checkIsSuperTenantInvoking();
+        try {
+            tenantId=TenantMgtServiceComponent.getTenantManager().getTenantId(tenantInfoBean.getTenantDomain());
+        } catch (org.wso2.carbon.user.api.UserStoreException e) {
+            String msg = "Error in getting tenant id";
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+        if(tenantId<0){
+            String msg = "Tenant is not added in user store "+tenantInfoBean.getTenantDomain();
+            log.error(msg);
+            throw new Exception(msg);
+        }
+        Tenant tenant = TenantMgtUtil.initializeTenant(tenantInfoBean);
+        tenant.setId(tenantId);
+        TenantPersistor persistor = new TenantPersistor();
+        // not validating the domain ownership, since created by super tenant
+        persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
+                tenantInfoBean.getOriginatedService(), true);
+        tenantInfoBean.setTenantId(tenantId);
+        notifyTenantAddition(tenantInfoBean);
+        return TenantMgtUtil.prepareStringToShowThemeMgtPage(tenantId);
+    }
+
+
 
     /**
      * Get the list of the tenants

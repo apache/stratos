@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.common.util;
 
-import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -58,7 +58,7 @@
                 <exclude>**/axis2/tenant-axis2.xml</exclude>
                 <exclude>**/authenticators.xml</exclude>
                 <exclude>**/embedded-ldap.xml</exclude>
-                <exclude>**/user-mgt.xml</exclude>
+                <!--<exclude>**/user-mgt.xml</exclude> -->
                 <exclude>**/*.aar</exclude>
                 <exclude>**/webapp-mode/**</exclude>
                 <exclude>**/repository/components/**</exclude>
@@ -193,11 +193,11 @@
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/coordination-client-config.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/etc</outputDirectory>
         </file-->
-        <file>
+        <!--<file>
             <source>src/main/conf/user-mgt.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>user-mgt.xml</destName>
-        </file>
+        </file> -->
         <file>
             <source>src/main/conf/embedded-ldap.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
