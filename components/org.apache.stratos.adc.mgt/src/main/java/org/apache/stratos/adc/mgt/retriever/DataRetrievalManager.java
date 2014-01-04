@@ -26,8 +26,8 @@ import org.apache.stratos.adc.mgt.lookup.LookupDataHolder;
 import org.apache.stratos.adc.mgt.lookup.SubscriptionAliasToCartridgeSubscriptionMap;
 import org.apache.stratos.adc.mgt.persistence.PersistenceManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
-import org.jgroups.logging.Log;
-import org.jgroups.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
