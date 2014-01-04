@@ -41,7 +41,8 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final Log log = LogFactory.getLog(RegistryBasedPersistenceManager.class);
     // Registry paths
     private static final String STRATOS_MANAGER_REOSURCE = "/stratos_manager";
-    private static final String SUBSCRIPTIONS = "/subscriptions";
+    private static final String ACTIVE_SUBSCRIPTIONS = "/subscriptions/active";
+    private static final String INACTIVE_SUBSCRIPTIONS = "/subscriptions/inactive";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
@@ -68,9 +69,9 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
     private void persistSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
 
-        // persist in the path SUBSCRIPTION_CONTEXT
+        // persist
         try {
-            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" +
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" +
                     Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()) + "/" +
                     cartridgeSubscription.getType() + "/" +
                     cartridgeSubscription.getAlias(), Serializer.serializeSubscriptionSontextToByteArray(cartridgeSubscription), cartridgeSubscription.getClusterDomain());
@@ -112,12 +113,26 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
     private void removeSubscription (int tenantId, String type, String alias) throws PersistenceManagerException {
 
-        String resourcePath = STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
+        /*String resourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
 
         try {
             RegistryManager.getInstance().delete(resourcePath);
             if (log.isDebugEnabled()) {
                 log.debug("Deleted CartridgeSubscription on path " + resourcePath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }*/
+
+        // move the subscription from active set to inactive set
+        String sourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
+        String targetPath = STRATOS_MANAGER_REOSURCE + INACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
+
+        try {
+            RegistryManager.getInstance().move(sourcePath, targetPath);
+            if (log.isDebugEnabled()) {
+                log.debug("Moved CartridgeSubscription on " + sourcePath + " to " + targetPath + " successfully");
             }
 
         } catch (RegistryException e) {
@@ -216,7 +231,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     @Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
 
-        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS);
+        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS);
     }
 
     private Collection<CartridgeSubscription> traverseAndGetCartridgeSubscriptions (String resourcePath) throws PersistenceManagerException  {
@@ -323,7 +338,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     @Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
 
-        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + SUBSCRIPTIONS + "/" + Integer.toString(tenantId));
+        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId));
     }
 
     /*@Override

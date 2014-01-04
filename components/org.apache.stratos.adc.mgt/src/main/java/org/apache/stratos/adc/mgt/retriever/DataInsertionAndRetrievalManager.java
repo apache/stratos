@@ -75,9 +75,6 @@ public class DataInsertionAndRetrievalManager {
         LookupDataHolder.getInstance().acquireWriteLock();
 
         try {
-            // remove from cache
-            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId);
-
             // remove from persistence manager
             try {
                 persistenceManager.removeCartridgeSubscription(tenantId, cartridgeType, subscriptionAlias);
@@ -87,6 +84,9 @@ public class DataInsertionAndRetrievalManager {
                 log.error(errorMsg, e);
                 throw e;
             }
+
+            // remove from cache
+            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId);
 
         } finally {
             LookupDataHolder.getInstance().releaseWriteLock();

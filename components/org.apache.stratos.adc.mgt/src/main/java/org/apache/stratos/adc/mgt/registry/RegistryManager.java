@@ -260,6 +260,31 @@ public class RegistryManager {
         }
     }
 
+    public void move (String sourcePath, String targetPath) throws RegistryException {
+
+        UserRegistry registry = initRegistry();
+
+        try {
+            registry.beginTransaction();
+            registry.move(sourcePath, targetPath);
+            registry.commitTransaction();
+
+        } catch (RegistryException e) {
+            String errorMsg = "Could not move the resource at "+ sourcePath + " to " + targetPath;
+            log.error(errorMsg, e);
+            // rollback
+            try {
+                registry.rollbackTransaction();
+
+            } catch (RegistryException e1) {
+                errorMsg = "Failed to rollback moving the resource at " + sourcePath + " to " + targetPath;
+                log.error(errorMsg, e1);
+                throw e1;
+            }
+            throw e;
+        }
+    }
+
     public void delete (String resourcePath) throws RegistryException {
 
         UserRegistry registry = initRegistry();

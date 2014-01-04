@@ -522,16 +522,10 @@ public class ServiceUtils {
                         continue;
                     }
 
-                    if (!subscription.getSubscriptionStatus().equals(CartridgeConstants.SUBSCRIBED)) {
+                    /*if (!subscription.getSubscriptionStatus().equals(CartridgeConstants.SUBSCRIBED)) {
                         // not in the subscribed state, skip
                         continue;
-                    }
-                    /*TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
-                    String[] ips = topologyMgtService.getActiveIPs(subscription.getCartridge(),
-                            subscription.getClusterDomain(), subscription.getClusterSubdomain());
-                    String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-                    Cartridge cartridge = ApplicationManagementUtil.populateCartridgeInfo(cartridgeInfo, subscription, ips, tenantDomain);
-                    cartridges.add(cartridge);*/
+                    }*/
                     Cartridge cartridge = new Cartridge();
                     cartridge.setCartridgeType(subscription.getCartridgeInfo().getType());
                     cartridge.setMultiTenant(subscription.getCartridgeInfo().getMultiTenant());

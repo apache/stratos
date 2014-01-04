@@ -393,28 +393,27 @@ public class CartridgeSubscriptionManager {
             cartridgeSubscription.removeSubscription();
 
             //set status as 'UNSUBSCRIBED'
-            cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
+            //cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
 
-            // currently this is disabled
             // remove subscription
-            /*try {
-                dataInsertionAndRetrievalManager.removeSubscription(CarbonContext.getThreadLocalCarbonContext().getTenantId(), alias);
+            try {
+                dataInsertionAndRetrievalManager.removeSubscription(cartridgeSubscription.getSubscriber().getTenantId(), alias);
 
             } catch (PersistenceManagerException e) {
                 String errorMsg = "Error removing subscription for tenant " + tenantDomain + ", alias " + cartridgeSubscription.getAlias();
                 log.error(errorMsg);
                 throw new ADCException(errorMsg, e);
-            }*/
+            }
 
             // update with new state
-            try {
+            /*try {
                 dataInsertionAndRetrievalManager.cacheAndPersistSubcription(cartridgeSubscription);
 
             } catch (PersistenceManagerException e) {
                 String errorMsg = "Error updating subscription for tenant " + tenantDomain + ", alias " + cartridgeSubscription.getAlias();
                 log.error(errorMsg);
                 throw new ADCException(errorMsg, e);
-            }
+            }*/
 
             // Publish tenant un-subscribed event to message broker
             CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
