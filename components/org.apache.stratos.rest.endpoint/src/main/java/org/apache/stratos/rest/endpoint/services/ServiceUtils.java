@@ -861,7 +861,7 @@ public class ServiceUtils {
     public static Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
-                getTenantId(configurationContext));
+                getTenantId(configurationContext), null);
 
         return (clusterSet != null && clusterSet.size() > 0 ) ?
                 clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];

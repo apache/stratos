@@ -64,6 +64,7 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 try {
                     TopologyManager.acquireReadLock();
+
                     for (Service service : TopologyManager.getTopology().getServices()) {
                         //iterate through all clusters
                         for (Cluster cluster : service.getClusters()) {
@@ -103,16 +104,16 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     try {
                         cluster = TopologyManager.getTopology().
                                 getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                        //add the information to Topology Cluster Info. model
+                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+
                     } finally {
                         //release read lock
                         TopologyManager.releaseReadLock();
                     }
-
-                    //add the information to Topology Cluster Info. model
-                    TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                            cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
                 }
-
             }
         });
 
@@ -153,16 +154,18 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
+
                     try {
                         cluster = TopologyManager.getTopology().
                                 getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+
                     } finally {
                         //release read lock
                         TopologyManager.releaseReadLock();
                     }
-
-                    TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                            cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
                 }
 
             }
@@ -185,17 +188,19 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
+
                     try {
                         cluster = TopologyManager.getTopology().
                                 getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(),
+                                cartridgeSubscription.getAlias(), cluster);
+
                     } finally {
                         //release read lock
                         TopologyManager.releaseReadLock();
                     }
-
-                    TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                            cartridgeSubscription.getType(),
-                            cartridgeSubscription.getAlias(), cluster);
                 }
 
             }
@@ -218,16 +223,18 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
+
                     try {
                         cluster = TopologyManager.getTopology().
                                 getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+
                     } finally {
                         //release read lock
                         TopologyManager.releaseReadLock();
                     }
-
-                    TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                            cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
                 }
 
             }
@@ -250,16 +257,18 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
+
                     try {
                         cluster = TopologyManager.getTopology().
                                 getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+
                     } finally {
                         //release read lock
                         TopologyManager.releaseReadLock();
                     }
-
-                    TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                            cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
                 }
 
             }

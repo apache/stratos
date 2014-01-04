@@ -237,14 +237,36 @@ public class TopologyClusterInformationModel {
                 while (typeCtxIterator.hasNext()) {
                     //iterate and get each of SubscriptionAliasContext sets
                     CartridgeTypeContext cartridgeTypeContext = typeCtxIterator.next();
-                    subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
 
-                    if (subscriptionAliasContextSet != null) {
-                        //iterate and convert to Cluster set
-                        Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
-                        clusterSet = new HashSet<Cluster>();
-                        while (aliasCtxIterator.hasNext()) {
-                            clusterSet.add(aliasCtxIterator.next().getCluster());
+                    if (cartridgeType != null) {
+                        // check if CartridgeTypeContext instance matches the cartridgeType
+                        if (cartridgeTypeContext.equals(new CartridgeTypeContext(cartridgeType))) {
+
+                            subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
+
+                            if (subscriptionAliasContextSet != null) {
+                                //iterate and convert to Cluster set
+                                Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
+
+                                clusterSet = new HashSet<Cluster>();
+                                while (aliasCtxIterator.hasNext()) {
+                                    clusterSet.add(aliasCtxIterator.next().getCluster());
+                                }
+                            }
+                        }
+
+                    } else {
+                        // no cartridgeType specified
+                        subscriptionAliasContextSet = cartridgeTypeContext.getSubscriptionAliasContextSet();
+
+                        if (subscriptionAliasContextSet != null) {
+                            //iterate and convert to Cluster set
+                            Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
+
+                            clusterSet = new HashSet<Cluster>();
+                            while (aliasCtxIterator.hasNext()) {
+                                clusterSet.add(aliasCtxIterator.next().getCluster());
+                            }
                         }
                     }
                 }
@@ -257,7 +279,7 @@ public class TopologyClusterInformationModel {
         return clusterSet;
     }
 
-    public Set<Cluster> getClusters (int tenantId) {
+    /*public Set<Cluster> getClusters (int tenantId) {
 
         Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
         Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
@@ -289,7 +311,7 @@ public class TopologyClusterInformationModel {
         }
 
         return clusterSet;
-    }
+    }*/
 
     public void removeCluster (int tenantId, String cartridgeType, String subscriptionAlias) {
 
