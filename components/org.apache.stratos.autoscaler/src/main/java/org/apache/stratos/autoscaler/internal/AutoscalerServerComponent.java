@@ -18,28 +18,25 @@
  */
 package org.apache.stratos.autoscaler.internal;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageDelegator;
-import org.apache.stratos.autoscaler.message.receiver.health.HealthEventMessageReceiver;
+import org.apache.stratos.autoscaler.message.receiver.health.AutoscalerHealthStatReceiver;
+import org.apache.stratos.autoscaler.message.receiver.topology.AutoscalerTopologyReceiver;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.autoscaler.message.receiver.topology.AutoscalerTopologyReceiver;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
@@ -55,8 +52,8 @@ public class AutoscalerServerComponent {
 
     private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
     AutoscalerTopologyReceiver asTopologyReceiver;
-    TopicSubscriber healthStatTopicSubscriber;
-    HealthEventMessageDelegator healthEventMessageDelegator;
+//    TopicSubscriber healthStatTopicSubscriber;
+    AutoscalerHealthStatReceiver autoscalerHealthStatReceiver;
 
     protected void activate(ComponentContext componentContext) throws Exception {
         try {
@@ -67,18 +64,18 @@ public class AutoscalerServerComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Topology receiver thread started");
             }
+//            healthStatTopicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
+//            healthStatTopicSubscriber.setMessageListener(new HealthEventMessageReceiver());
+//            Thread healthStatTopicSubscriberThread = new Thread(healthStatTopicSubscriber);
+//            healthStatTopicSubscriberThread.start();
+//            if (log.isDebugEnabled()) {
+//                log.debug("Health event message receiver thread started");
+//            }
+
 
             // Start health stat receiver
-            healthStatTopicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
-            healthStatTopicSubscriber.setMessageListener(new HealthEventMessageReceiver());
-            Thread healthStatTopicSubscriberThread = new Thread(healthStatTopicSubscriber);
-            healthStatTopicSubscriberThread.start();
-            if (log.isDebugEnabled()) {
-                log.debug("Health event message receiver thread started");
-            }
-
-            healthEventMessageDelegator = new HealthEventMessageDelegator();
-            Thread healthDelegatorThread = new Thread(healthEventMessageDelegator);
+            autoscalerHealthStatReceiver = new AutoscalerHealthStatReceiver();
+            Thread healthDelegatorThread = new Thread(autoscalerHealthStatReceiver);
             healthDelegatorThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Health message processor thread started");
@@ -124,8 +121,7 @@ public class AutoscalerServerComponent {
 
     protected void deactivate(ComponentContext context) {
     	asTopologyReceiver.terminate();
-    	healthStatTopicSubscriber.terminate();
-    	healthEventMessageDelegator.terminate();
+    	autoscalerHealthStatReceiver.terminate();
     }
     
     protected void setRegistryService(RegistryService registryService) {

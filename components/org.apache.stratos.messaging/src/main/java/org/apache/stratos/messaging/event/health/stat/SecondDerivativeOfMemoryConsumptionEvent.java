@@ -25,10 +25,13 @@ import org.apache.stratos.messaging.event.Event;
  *  This event is fired by Event processing engine to send second derivative of memory consumption
  */
 public class SecondDerivativeOfMemoryConsumptionEvent extends Event {
+
+    private final String networkPartitionId;
     private final String clusterId;
     private final float value;
 
-    public SecondDerivativeOfMemoryConsumptionEvent(String clusterId, float value) {
+    public SecondDerivativeOfMemoryConsumptionEvent(String networkPartitionId, String clusterId, float value) {
+        this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
         this.value = value;
     }
@@ -40,5 +43,9 @@ public class SecondDerivativeOfMemoryConsumptionEvent extends Event {
 
     public float getValue() {
         return value;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
     }
 }
