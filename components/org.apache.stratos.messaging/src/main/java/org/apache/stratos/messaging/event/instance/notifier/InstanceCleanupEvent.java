@@ -16,48 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.instance.status;
-
+package org.apache.stratos.messaging.event.instance.notifier;
 
 import java.io.Serializable;
 
 /**
- * This event is fired by cartridge agent when its started.
+ * This event is fired by SM when AS requests to notify an instance
+ * for the termination. So that instance which receives this event will perform
+ * the clean up task before the actual termination.
  */
-public class InstanceStartedEvent extends InstanceStatusEvent implements Serializable {
-    private static final long serialVersionUID = 7447068435627208619L;
+public class InstanceCleanupEvent extends InstanceNotifierEvent implements Serializable {
+    private String clusterId;
+    private String memberId;
 
-    private final String serviceName;
-    private final String clusterId;
-    private final String networkPartitionId;
-    private final String partitionId;
-    private final String memberId;
-
-    public InstanceStartedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
-        this.serviceName = serviceName;
+    public InstanceCleanupEvent(String clusterId, String memberId) {
         this.clusterId = clusterId;
-        this.networkPartitionId = networkPartitionId;
-        this.partitionId = partitionId;
         this.memberId = memberId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public String getPartitionId() {
-        return partitionId;
-    }
-
     public String getMemberId() {
         return memberId;
-    }
-
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
     }
 }

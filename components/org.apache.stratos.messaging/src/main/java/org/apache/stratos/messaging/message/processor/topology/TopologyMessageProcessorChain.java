@@ -39,6 +39,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
     private MemberActivatedMessageProcessor memberActivatedMessageProcessor;
+    private MemberReadyToShutdownMessageProcessor memberReadyToShutdownProcessor;
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
 
@@ -68,6 +69,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         memberActivatedMessageProcessor = new MemberActivatedMessageProcessor();
         add(memberActivatedMessageProcessor);
 
+        memberReadyToShutdownProcessor = new MemberReadyToShutdownMessageProcessor();
+        add(memberReadyToShutdownProcessor);
+
         memberSuspendedMessageProcessor = new MemberSuspendedMessageProcessor();
         add(memberSuspendedMessageProcessor);
 
@@ -92,6 +96,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             memberActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberStartedEventListener) {
             memberStartedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof MemberReadyToShutdownEventListener) {
+            memberReadyToShutdownProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberSuspendedEventListener) {
             memberSuspendedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberTerminatedEventListener) {
