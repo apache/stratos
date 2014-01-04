@@ -23,9 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.health.stat.HealthStatMessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageQueue;
-import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
 
@@ -59,13 +56,18 @@ public class HealthStatEventMessageDelegator implements Runnable {
                 try {
                     TextMessage message = HealthStatEventMessageQueue.getInstance().take();
 
-                    // Retrieve the header
-                    //TODO get the type from json since this is sent by CEP
-                    String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
+                    String messageText = message.getText();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Health event message received: [message] " + messageText);
+                    }
+                    EventMessage eventMessage = jsonToEventMessage(messageText);
+                    if(eventMessage == null){
+                        log.error("Error occurred while extracting message");
+                        continue;
+                    }
+                    String type = eventMessage.getEventName();
+                    String json = eventMessage.getMessage();
 
-                    // Retrieve the actual message
-                    //TODO get the 'message' from full json message
-                    String json = message.getText();
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Instance notifier event message received from queue: %s", type));
                     }
@@ -91,5 +93,59 @@ public class HealthStatEventMessageDelegator implements Runnable {
      */
     public void terminate() {
         terminated = true;
+    }
+
+
+    public EventMessage jsonToEventMessage(String json) {
+
+        EventMessage event = new EventMessage();
+        String message;
+
+        //split the message to 3 parts using ':' first is class name, second contains the text 'message' and the third contains
+        //message
+        String[] MessageParts = json.split(":", 3);
+
+        String eventType = MessageParts[0].trim();
+        eventType = eventType.substring(eventType.indexOf("\"") + 1, eventType.lastIndexOf("\""));
+
+        event.setEventName(eventType);
+        String messageTag = MessageParts[1];
+        messageTag = messageTag.substring(messageTag.indexOf("\"") + 1, messageTag.lastIndexOf("\""));
+
+        if("message".equals(messageTag)){
+            message = MessageParts[2].trim();
+            //Remove trailing bracket twice to get the message
+            message = message.substring(0, message.lastIndexOf("}")).trim();
+            message = message.substring(0, message.lastIndexOf("}")).trim();
+            if(message.indexOf('{') == 0 && message.indexOf('}') == message.length() - 1){
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("[Extracted message] %s ", message));
+                }
+                event.setMessage(message);
+                return event;
+            }
+        }
+        return null;
+    }
+
+    private class EventMessage {
+        private String eventName;
+        private String message;
+
+        private String getEventName() {
+            return eventName;
+        }
+
+        private void setEventName(String eventName) {
+            this.eventName = eventName;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
 }
