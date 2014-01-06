@@ -45,9 +45,11 @@ public class AutoscalerRuleEvaluator {
 
 	private static final String DRL_FILE_NAME = "mincheck.drl";
 	private static final String SCALING_DRL_FILE_NAME = "scaling.drl";
+	private static final String TERMINATE_ALL_DRL_FILE_NAME = "terminateall.drl";
 
 	private static KnowledgeBase minCheckKbase;
 	private static KnowledgeBase scaleCheckKbase;
+	private static KnowledgeBase terminateAllKbase;
 
     public AutoscalerRuleEvaluator(){
 
@@ -61,6 +63,11 @@ public class AutoscalerRuleEvaluator {
 
         if (log.isDebugEnabled()) {
             log.debug("Scale check rule is parsed successfully");
+        }
+        terminateAllKbase = readKnowledgeBase(TERMINATE_ALL_DRL_FILE_NAME);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Terminate all rule is parsed successfully");
         }
     }
 
@@ -101,6 +108,24 @@ public class AutoscalerRuleEvaluator {
 
 
 
+    public static FactHandle evaluateTerminateAll(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+
+        if (handle == null) {
+
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        ksession.fireAllRules();
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate all check executed for : %s ", obj));
+        }
+        return handle;
+    }
+
+
+
     public StatefulKnowledgeSession getMinCheckStatefulSession() {
         StatefulKnowledgeSession ksession;
         ksession = minCheckKbase.newStatefulKnowledgeSession();
@@ -108,6 +133,12 @@ public class AutoscalerRuleEvaluator {
         return ksession;
     }
     public StatefulKnowledgeSession getScaleCheckStatefulSession() {
+        StatefulKnowledgeSession ksession;
+        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+        ksession.setGlobal("log", RuleLog.getInstance());
+        return ksession;
+    }
+    public StatefulKnowledgeSession getTerminateAllStatefulSession() {
         StatefulKnowledgeSession ksession;
         ksession = scaleCheckKbase.newStatefulKnowledgeSession();
         ksession.setGlobal("log", RuleLog.getInstance());
