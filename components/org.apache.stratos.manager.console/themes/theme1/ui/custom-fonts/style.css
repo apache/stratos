@@ -9,7 +9,7 @@
 	font-style: normal;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icons-"], [class*=" icons-"] {
 	font-family: 'stratos';
 	speak: none;
 	font-style: normal;
@@ -23,36 +23,36 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.icon-active:before {
+.icons-active:before {
 	content: "\e600";
 }
-.icon-refresh:before {
+.icons-refresh:before {
 	content: "\e601";
 }
-.icon-mysql:before {
+.icons-mysql:before {
 	content: "\e602";
 }
-.icon-ruby:before {
+.icons-ruby:before {
 	content: "\e603";
 }
-.icon-php:before {
+.icons-php:before {
 	content: "\e604";
 }
-.icon-cakephp:before {
+.icons-cakephp:before {
 	content: "\e605";
 }
-.icon-python:before {
+.icons-python:before {
 	content: "\e606";
 }
-.icon-topology:before {
+.icons-topology:before {
 	content: "\e607";
 }
-.icon-help:before {
+.icons-help:before {
 	content: "\e608";
 }
-.icon-cartridge:before {
+.icons-cartridge:before {
 	content: "\e609";
 }
-.icon-tenant:before {
+.icons-tenant:before {
 	content: "\e60a";
 }
