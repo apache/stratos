@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.persistence;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.registry.RegistryManager;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
@@ -43,6 +44,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final String STRATOS_MANAGER_REOSURCE = "/stratos_manager";
     private static final String ACTIVE_SUBSCRIPTIONS = "/subscriptions/active";
     private static final String INACTIVE_SUBSCRIPTIONS = "/subscriptions/inactive";
+    private static final String SERVICES = "/services";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
@@ -341,6 +343,140 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId));
     }
 
+    @Override
+    public void persistService(Service service) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistDeployedService(service);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            persistDeployedService(service);
+        }
+    }
+
+    private void persistDeployedService (Service service) throws PersistenceManagerException  {
+
+        // persist Service
+        try {
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SERVICES + "/" + service.getType(),
+                    Serializer.serializeServiceToByteArray(service), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted Service successfully: [ " + service.getType() + ", " + service.getTenantRange() + " ]");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public Service getService(String cartridgeType) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+               return getDeployedService(cartridgeType);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            return getDeployedService(cartridgeType);
+        }
+    }
+
+    public Service getDeployedService (String cartridgeType) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SERVICES + "/" + cartridgeType);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (byteObj == null) {
+            return null;
+        }
+
+        Object serviceObj;
+
+        try {
+            serviceObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (serviceObj instanceof Service) {
+            return (Service) serviceObj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeService(String cartridgeType) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                removeDeployedService(cartridgeType);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            removeDeployedService(cartridgeType);
+        }
+    }
+
+    private void removeDeployedService (String cartridgeType) throws PersistenceManagerException {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + SERVICES + "/" + cartridgeType;
+
+        try {
+            RegistryManager.getInstance().delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted Service on path " + resourcePath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
     /*@Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
 
@@ -427,4 +563,5 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
         return null;
     }*/
+
 }
