@@ -71,8 +71,8 @@ public class CloudCommonServiceComponent {
 
             //Register manager configuration OSGI service
             try {
-                //StratosConfiguration stratosConfiguration = CommonUtil.loadStratosConfiguration();
-                //bundleContext.registerService(StratosConfiguration.class.getName(), stratosConfiguration, null);
+                StratosConfiguration stratosConfiguration = CommonUtil.loadStratosConfiguration();
+                bundleContext.registerService(StratosConfiguration.class.getName(), stratosConfiguration, null);
                 if (log.isDebugEnabled()) {
                     log.debug("******* Cloud Common Service bundle is activated ******* ");
                 }

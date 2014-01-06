@@ -238,8 +238,7 @@ public class CloudControllerUtil {
       }
     }
     
-    public static Topology retrieveTopology() {
-
+    public static Topology retrieveTopology() {    	
           Object obj = RegistryManager.getInstance().retrieveTopology();
           if (obj != null) {
               try {

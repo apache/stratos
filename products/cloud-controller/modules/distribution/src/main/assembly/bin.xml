@@ -196,7 +196,7 @@
 
     <files>
         <file>
-            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/axis2/axis2.xml</source>
+            <source>src/main/conf/axis2.xml</source>
             <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/axis2</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>

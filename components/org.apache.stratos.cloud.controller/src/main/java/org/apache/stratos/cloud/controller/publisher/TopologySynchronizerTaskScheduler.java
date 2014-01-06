@@ -22,12 +22,7 @@ package org.apache.stratos.cloud.controller.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologySynchronizerTask;
-import org.wso2.carbon.ntask.common.TaskException;
-import org.wso2.carbon.ntask.core.TaskInfo;
-import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
-
-import java.util.HashMap;
 
 /**
  * Topology synchronizer task scheduler for scheduling the topology synchronizer task
@@ -49,7 +44,7 @@ public class TopologySynchronizerTaskScheduler {
 
     private static class TaskRunnable implements Runnable {
         @Override
-        public void run() {
+        public void run() {        	
             while (true) {
                 try {
                     log.debug("Running topology synchronizer task");
