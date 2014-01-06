@@ -42,7 +42,6 @@ import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
-import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -50,6 +49,7 @@ import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 
 import javax.ws.rs.*;
 import java.util.ArrayList;
@@ -369,7 +369,7 @@ public class StratosAdmin extends AbstractAdmin {
         TenantPersistor persistor = ServiceHolder.getTenantPersistor();
         // not validating the domain ownership, since created by super tenant
         int tenantId = persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
-                tenantInfoBean.getOriginatedService());
+                tenantInfoBean.getOriginatedService(),false); //TODO verify whether this is the correct approach (isSkeleton)
         tenantInfoBean.setTenantId(tenantId);
 
         TenantMgtUtil.addClaimsToUserStoreManager(tenant);
