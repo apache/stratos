@@ -340,7 +340,6 @@
 	    <opensaml2.wso2.version>2.4.1.wso2v1</opensaml2.wso2.version>
     	<openid4java.wso2.version>0.9.6.wso2v1</openid4java.wso2.version>
 	    <httpcomponents-httpclient.wso2.version>4.1.1-wso2v1</httpcomponents-httpclient.wso2.version>
-    	<httpcomponents-httpcore.wso2.version>4.1.0-wso2v1</httpcomponents-httpcore.wso2.version>
 	    <scxml.version>0.9.0.wso2v1</scxml.version>
     	<google.step2.wso2.version>1.0.wso2v1</google.step2.wso2.version>
 	    <google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>

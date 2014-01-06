@@ -136,8 +136,8 @@
     <properties>
         <eclipse.version>3.2.0</eclipse.version>
         <!-- Component versions == Carbon version, if not, please change the properties below. -->
-        <registry-component.version>4.1.0</registry-component.version>
-       <governance-component.version>4.1.0</governance-component.version>
+        <registry-component.version>4.2.0</registry-component.version>
+       <governance-component.version>4.2.0</governance-component.version>
     </properties>
 
 

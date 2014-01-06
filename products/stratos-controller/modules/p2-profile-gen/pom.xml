@@ -60,7 +60,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-		    <execution>
+                    <!--		    <execution>
                         <id>2-unpack-kernel-patch</id>
                         <phase>test</phase>
                         <goals>
@@ -78,7 +78,7 @@
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
-                    </execution>
+                    </execution> -->
                 </executions>
             </plugin>
             <plugin>
