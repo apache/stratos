@@ -237,6 +237,10 @@ public class TenantMgtUtil {
         tenant.setEmail(tenantInfoBean.getEmail());
         tenant.setAdminName(tenantInfoBean.getAdmin());
 
+        // set tenantId given in tenantInfoBean, if it is set,
+        // underline tenant manager will try to create the tenant with given tenant Id.
+        tenant.setId(tenantInfoBean.getTenantId());
+
         // we are duplicating the params stored in the claims here as well; they
         // are in Tenant class
         // to make it work with LDAP; but they do not make it to the databases.

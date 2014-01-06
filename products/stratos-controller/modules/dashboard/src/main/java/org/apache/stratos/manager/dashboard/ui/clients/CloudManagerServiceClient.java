@@ -89,7 +89,7 @@ public class CloudManagerServiceClient {
     }
 
     public CloudService[] retrieveCloudServiceInfo() throws Exception {
-        try {
+        /*try {
             if (CarbonContext.getCurrentContext().getCache(null).containsKey(CLOUD_SERVICE)) {
                 return (CloudService[]) CarbonContext.getCurrentContext()
                         .getCache(null).get(CLOUD_SERVICE);
@@ -100,12 +100,13 @@ public class CloudManagerServiceClient {
         }
         CloudService[] cloudServices = stub.retrieveCloudServiceInfo();
         CarbonContext.getCurrentContext().getCache(null).put(CLOUD_SERVICE, cloudServices);
-        return cloudServices;
+        return cloudServices;*/
+    	return null;
     }
 
 
     public void saveCloudServicesActivity(String[] activeServiceNames) throws Exception {
-        CloudService[] cloudServices =
+       /* CloudService[] cloudServices =
                 (CloudService[]) CarbonContext.getCurrentContext().getCache(null).get(CLOUD_SERVICE);
 
         for (CloudService cloudService : cloudServices) {
@@ -119,6 +120,6 @@ public class CloudManagerServiceClient {
             }
         }
 
-        stub.saveCloudServicesActivity(activeServiceNames);
+        stub.saveCloudServicesActivity(activeServiceNames);*/
     }
 }

@@ -29,10 +29,12 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 /**
  *
@@ -122,7 +124,11 @@ public class RegistryManager {
     public Object retrieve() {
 
         try {
-            Resource resource = registryService.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + CloudControllerConstants.DATA_RESOURCE);
+        	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            Resource resource = registryService.get(
+            		CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + CloudControllerConstants.DATA_RESOURCE);
 
             return resource.getContent();
 
@@ -140,8 +146,14 @@ public class RegistryManager {
     public Object retrieveTopology() {
 
         try {
-            Resource resource = registryService.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE +
-                    CloudControllerConstants.TOPOLOGY_RESOURCE);
+			PrivilegedCarbonContext ctx = PrivilegedCarbonContext
+					.getThreadLocalCarbonContext();
+			ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+			ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+			Resource resource = registryService
+					.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE
+							+ CloudControllerConstants.TOPOLOGY_RESOURCE);
 
             return resource.getContent();
 
@@ -152,7 +164,7 @@ public class RegistryManager {
             String msg = "Failed to retrieve cloud controller data from registry.";
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
-        }
+        } 
 
     }
 

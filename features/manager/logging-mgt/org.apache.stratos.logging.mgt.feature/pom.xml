@@ -96,7 +96,7 @@
                                 <importFeatureDef>org.wso2.carbon.core.ui:${wso2carbon.version}</importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.logging.mgt.server.feature:${carbon.platform.patch.version.4.1.1}</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.logging.mgt.server.feature:4.2.1</includedFeatureDef>
 			    </includedFeatures>
                         </configuration>
                     </execution>

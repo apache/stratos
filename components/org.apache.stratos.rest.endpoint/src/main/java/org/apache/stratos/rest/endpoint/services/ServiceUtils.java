@@ -920,10 +920,10 @@ public class ServiceUtils {
      * 
      */
     static void deployService (String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, 
-    		String tenantDomain, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) {
+    		String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) {
     	log.info("Deploying service..");
     	try {
-    		serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange);
+    		serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange, tenantDomain, tenantUsername);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -163,13 +163,14 @@
         </fileSet>
 
 	<!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
-        <fileSet>
+	<!-- N/A for carbon 4.2.0 -->
+        <!--fileSet>
            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.1.0-0002/</directory>
            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
            <includes>
               <include>**/patch0002/axis2_1.6.1.wso2v9.jar</include>
            </includes>
-        </fileSet>
+        </fileSet-->
 
 	<fileSet>
 	  <directory>src/main/autoscale-policies</directory>

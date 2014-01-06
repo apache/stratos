@@ -163,13 +163,14 @@
         </fileSet>
 
 	<!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
-        <fileSet>
+	<!-- N/A for carbon 4.2.0 -->
+        <!--fileSet>
            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.1.0-0002/</directory>
            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
            <includes>
               <include>**/patch0002/axis2_1.6.1.wso2v9.jar</include>
            </includes>
-        </fileSet>
+        </fileSet-->
     </fileSets>
 
     <dependencySets>
@@ -195,7 +196,7 @@
 
     <files>
         <file>
-            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/axis2/axis2.xml</source>
+            <source>src/main/conf/axis2.xml</source>
             <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/axis2</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
@@ -352,9 +353,9 @@
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/cartridges.xsd</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
         </file>
-	<file>
+	<!--file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/coordination-client-config.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
-        </file>
+        </file-->
     </files>
 </assembly>

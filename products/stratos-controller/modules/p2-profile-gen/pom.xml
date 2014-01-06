@@ -84,7 +84,7 @@
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
+                <version>1.5.3</version>
                 <executions>
                     <execution>
                         <id>2-p2-repo-generation</id>
@@ -102,7 +102,7 @@
 				<!--**************************************************Manager features start*********************************************-->
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.databridge.datapublisher.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.ntask.feature:${carbon.version}</featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.coordination.core.feature:${carbon.version}</featureArtifactDef>
+                    <!--				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.coordination.core.feature:${carbon.version}</featureArtifactDef> -->
 				    <!-- registry related features-->
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.registry.core.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.registry.resource.properties.feature:${carbon.version}</featureArtifactDef>
@@ -125,9 +125,12 @@
 				    <!--featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.throttling.manager.feature:${project.version}
 				    </featureArtifactDef-->
-				    <featureArtifactDef>
+<!--				    <featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.throttling.agent.feature:${project.version}
-				    </featureArtifactDef>
+                    </featureArtifactDef> -->
+                    <featureArtifactDef>
+                          org.wso2.carbon:org.wso2.carbon.throttle.server.feature:${carbon.version}
+                    </featureArtifactDef>
 				    <!--featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.billing.server.feature:2.1.3
 				    </featureArtifactDef-->
@@ -147,15 +150,15 @@
 				    <featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.webapp.mgt.server.feature:${carbon.version}
 				    </featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.admin.mgt.server.feature:${carbon.version}</featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.admin.mgt.ui.feature:${carbon.version}</featureArtifactDef>
+                    <!--				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.admin.mgt.server.feature:${carbon.version}</featureArtifactDef> -->
+                    <!--				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.admin.mgt.ui.feature:${carbon.version}</featureArtifactDef> -->
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.captcha.mgt.server.feature:${carbon.version}</featureArtifactDef>
 				    <!-- start BAM feature -->
 				    <featureArtifactDef>org.wso2.carbon:org.apache.synapse.wso2.feature:2.1.1-wso2v4</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.task.server.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.datasource.server.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.transaction.manager.feature:${carbon.version}</featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.service.mgt.server.feature:${carbon.version}</featureArtifactDef>
+				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.service.mgt.server.feature:4.2.1</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.transport.mgt.server.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.common.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.server.feature:${carbon.version}</featureArtifactDef>
@@ -177,16 +180,16 @@
 					org.wso2.carbon:org.wso2.carbon.identity.sso.saml.feature:${carbon.version}
 				    </featureArtifactDef>
 				    <featureArtifactDef>
-					org.wso2.carbon:org.wso2.stratos.identity.saml2.sso.mgt.feature:${stratos.component.version}
+					org.wso2.carbon:org.wso2.stratos.identity.saml2.sso.mgt.feature:2.2.0
 				    </featureArtifactDef>
 
 				    <featureArtifactDef>
 					org.wso2.carbon:org.wso2.carbon.registry.ui.menu.feature:${carbon.version}
 				    </featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.module.mgt.server.feature:${carbon.version}</featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.throttle.feature:${carbon.version}</featureArtifactDef>
+                    <!--				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.throttle.feature:${carbon.version}</featureArtifactDef> -->
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.caching.feature:${carbon.version}</featureArtifactDef>
-				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.rm.server.feature:4.0.0</featureArtifactDef>
+				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.rm.server.feature:4.2.0</featureArtifactDef>
 				    <featureArtifactDef>org.apache.stratos:org.apache.stratos.adc.mgt.feature:${project.version}</featureArtifactDef>
 				<featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.cartridge.mgt.ui.feature:${project.version}
@@ -200,6 +203,7 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.ui.feature:${wso2carbon.version}
                                 </featureArtifactDef>
+                     <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.application.authentication.framework.server.feature:4.2.1</featureArtifactDef>
 				<!--**************************************************Manager features end*********************************************-->
 
 				
@@ -216,7 +220,7 @@
 			    <goal>p2-profile-gen</goal>
 			</goals>
 			<configuration>
-			    <profile>WSO2CarbonProfile</profile>
+			    <profile>default</profile>
 			    <p2AgentLocation>${basedir}/target/p2-agent</p2AgentLocation>
 			    <metadataRepository>file:${basedir}/target/p2-repo</metadataRepository>
 			    <artifactRepository>file:${basedir}/target/p2-repo</artifactRepository>
@@ -234,7 +238,7 @@
 				</feature>
 				<feature>
 				    <id>org.wso2.stratos.identity.saml2.sso.mgt.feature.group</id>
-				    <version>${stratos.component.version}</version>
+				    <version>2.2.0</version>
 				</feature>
 				<feature>
                                     <id>org.apache.stratos.logging.mgt.feature.group</id>
@@ -264,10 +268,10 @@
 				    <id>org.wso2.carbon.ntask.feature.group</id>
 				    <version>${carbon.version}</version>
 				</feature>
-				<feature>
+                <!--				<feature>
 				    <id>org.wso2.carbon.coordination.core.feature.group</id>
 				    <version>${carbon.version}</version>
-				</feature>
+                </feature>-->
 
 				<feature>
 				    <id>org.apache.stratos.feature.group</id>
@@ -282,10 +286,10 @@
 				    <id>org.apache.synapse.wso2.feature.group</id>
 				    <version>2.1.1-wso2v4</version>
 				</feature>
-				<feature>
+                <!--				<feature>
 				    <id>org.wso2.carbon.task.server.feature.group</id>
 				    <version>${carbon.version}</version>
-				</feature>
+                </feature> -->
 				<feature>
 				    <id>org.wso2.carbon.transaction.manager.feature.group</id>
 				    <version>${carbon.version}</version>
@@ -302,14 +306,14 @@
 				    <id>org.wso2.carbon.event.common.feature.group</id>
 				    <version>${carbon.version}</version>
 				</feature>
-				<feature>
+                <!--				<feature>
 				    <id>org.wso2.carbon.admin.mgt.server.feature.group</id>
 				    <version>${carbon.version}</version>
-				</feature>
-				<feature>
+                </feature> -->
+    			<!--            	<feature>
 				    <id>org.wso2.carbon.admin.mgt.ui.feature.group</id>
 				    <version>${carbon.version}</version>
-				</feature>
+                </feature> -->
 				<feature>
 				    <id>org.wso2.carbon.captcha.mgt.server.feature.group</id>
 				    <version>${carbon.version}</version>
@@ -344,10 +348,10 @@
 				    <id>org.apache.stratos.throttling.manager.feature.group</id>
 				    <version>${project.version}</version>
 				</feature-->
-				<feature>
+<!--				<feature>
 				    <id>org.apache.stratos.throttling.agent.feature.group</id>
-				    <version>${project.version}</version>
-				</feature>
+                    <version>${project.version}</version>
+                </feature>-->
 				<!--feature>
 				    <id>org.wso2.carbon.billing.server.feature.group</id>
 				    <version>2.1.3</version>

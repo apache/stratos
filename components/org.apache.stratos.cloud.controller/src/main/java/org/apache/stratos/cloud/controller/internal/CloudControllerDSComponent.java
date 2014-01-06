@@ -36,10 +36,13 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.ConfigurationContextService;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.List;
 
@@ -72,6 +75,7 @@ public class CloudControllerDSComponent {
 
     protected void activate(ComponentContext context) {
         try {
+               	
             // Start instance status event message listener
             TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
             subscriber.setMessageListener(new InstanceStatusEventMessageListener());
@@ -90,10 +94,11 @@ public class CloudControllerDSComponent {
             if(log.isInfoEnabled()) {
                 log.info("Scheduling tasks");
             }
-
-            TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
-
-            log.debug("******* Cloud Controller Service bundle is activated ******* ");
+            
+			TopologySynchronizerTaskScheduler
+						.schedule(ServiceReferenceHolder.getInstance()
+								.getTaskService());
+			
         } catch (Throwable e) {
             log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
         }
@@ -117,14 +122,16 @@ public class CloudControllerDSComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting the Registry Service");
 		}
-		try {
+		
+		try {			
+			UserRegistry registry = registryService.getGovernanceSystemRegistry();
 	        ServiceReferenceHolder.getInstance()
-	                                             .setRegistry(registryService.getGovernanceSystemRegistry());
+	                                             .setRegistry(registry);
         } catch (RegistryException e) {
         	String msg = "Failed when retrieving Governance System Registry.";
         	log.error(msg, e);
         	throw new CloudControllerException(msg, e);
-        }
+        } 
 	}
 
 	protected void unsetRegistryService(RegistryService registryService) {

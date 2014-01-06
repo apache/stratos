@@ -61,7 +61,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-		    <execution>
+		    <!--execution>
                         <id>2-unpack-kernel-patch</id>
                         <phase>test</phase>
                         <goals>
@@ -79,7 +79,7 @@
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
-                    </execution>
+                    </execution-->
                 </executions>
             </plugin>
             <plugin>
@@ -124,12 +124,12 @@
 				<featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.cloud.controller.feature:${project.version}
                                 </featureArtifactDef>
-         			 <featureArtifactDef>
+         			 <!--featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.server.feature:${carbon.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.coordination.core.feature:${carbon.version}
-                                </featureArtifactDef>
+                                </featureArtifactDef-->
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.tryit.feature:${carbon.version}
                                 </featureArtifactDef>
@@ -179,7 +179,6 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.sequences.server.feature:${carbon.version}
                                 </featureArtifactDef>
-
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.mediators.server.feature:${carbon.version}
                                 </featureArtifactDef>
@@ -214,7 +213,7 @@
                             <goal>p2-profile-gen</goal>
                         </goals>
                         <configuration>
-                            <profile>WSO2CarbonProfile</profile>
+                            <profile>default</profile>
                             <metadataRepository>file:${basedir}/target/p2-repo</metadataRepository>
                             <artifactRepository>file:${basedir}/target/p2-repo</artifactRepository>
                             <destination>
@@ -231,14 +230,14 @@
                                     <id>org.wso2.carbon.logging.mgt.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-				<feature>
+				<!--feature>
                                     <id>org.wso2.carbon.coordination.server.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.coordination.core.feature.group</id>
                                     <version>${carbon.version}</version>
-                                </feature>
+                                </feature-->
                                 <feature>
                                     <id>org.wso2.carbon.ntask.core.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -342,7 +341,7 @@
                         <configuration>
                             <tasks>
                                 <replace token="false" value="true"
-                                         dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/configuration/org.eclipse.equinox.simpleconfigurator">
+                                         dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/default/configuration/org.eclipse.equinox.simpleconfigurator">
                                     <include name="**/bundles.info"/>
                                 </replace>
                             </tasks>

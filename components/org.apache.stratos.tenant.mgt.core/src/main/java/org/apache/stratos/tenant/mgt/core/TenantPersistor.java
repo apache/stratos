@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.tenant.mgt.core;
 
-import org.apache.stratos.tenant.mgt.core.internal.TenantMgtCoreServiceComponent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.core.multitenancy.persistence.TenantPersistor;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -30,14 +30,11 @@ import org.apache.stratos.common.config.CloudServicesDescConfig;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.util.CloudServicesUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.tenant.mgt.core.internal.TenantMgtCoreServiceComponent;
 import org.apache.stratos.tenant.mgt.core.util.TenantCoreUtil;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.TenantMgtConfiguration;
-import org.wso2.carbon.user.core.AuthorizationManager;
-import org.wso2.carbon.user.core.UserCoreConstants;
-import org.wso2.carbon.user.core.UserRealm;
-import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.user.core.UserStoreManager;
+import org.wso2.carbon.user.core.*;
 import org.wso2.carbon.user.core.config.multitenancy.MultiTenantRealmConfigBuilder;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.Tenant;
@@ -45,15 +42,12 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * TenantPersistenceManager - Methods related to persisting the tenant.
  */
-public class DefaultTenantPersistor implements TenantPersistor {
+public class TenantPersistor {
 
-    private static final Log log = LogFactory.getLog(DefaultTenantPersistor.class);
+    private static final Log log = LogFactory.getLog(TenantPersistor.class);
     private static final String ILLEGAL_CHARACTERS_FOR_PATH = ".*[~!#$;%^*()+={}\\[\\]\\|\\\\<>].*";
 
     private static CloudServicesDescConfig cloudServicesDesc = null;
@@ -69,7 +63,25 @@ public class DefaultTenantPersistor implements TenantPersistor {
      * @throws Exception, if persisting tenant failed.
      */
     public int persistTenant(Tenant tenant, boolean checkDomainValidation, String successKey,
-                             String originatedService) throws Exception {
+                             String originatedService,boolean isSkeleton) throws Exception {
+        int tenantId = 0;
+        if(!isSkeleton){
+           tenantId=persistTenantInUserStore(tenant,checkDomainValidation,successKey);
+        }else {
+           tenantId=tenant.getId();
+        }
+        
+        try {
+            doPostTenantCreationActions(tenant, originatedService);
+        } catch (Exception e) {
+            String msg = "Error performing post tenant creation actions";
+            throw new Exception(msg, e);
+        }
+
+        return tenantId;
+    }
+
+    private int persistTenantInUserStore(Tenant tenant, boolean checkDomainValidation, String successKey) throws Exception {
         int tenantId;
         validateAdminUserName(tenant);
         String tenantDomain = tenant.getDomain();
@@ -86,16 +98,16 @@ public class DefaultTenantPersistor implements TenantPersistor {
                 getRealmService().getMultiTenantRealmConfigBuilder();
         RealmConfiguration realmConfigToPersist =
                 builder.getRealmConfigForTenantToPersist(realmConfig, tenantMgtConfiguration,
-                                                         tenant, -1);
+                        tenant, -1);
         tenant.setRealmConfig(realmConfigToPersist);
         tenantId = addTenant(tenant);
         tenant.setId(tenantId);
 
-        if (checkDomainValidation) { 
+        if (checkDomainValidation) {
             if (successKey != null) {
                 if (CommonUtil.validateDomainFromSuccessKey(TenantMgtCoreServiceComponent.
                         getGovernanceSystemRegistry(MultitenantConstants.SUPER_TENANT_ID),
-                                                            tenant.getDomain(), successKey)) {
+                        tenant.getDomain(), successKey)) {
                     storeDomainValidationFlagToRegistry(tenant);
                 } else {
                     String msg = "Failed to validate domain";
@@ -105,29 +117,14 @@ public class DefaultTenantPersistor implements TenantPersistor {
         } else {
             storeDomainValidationFlagToRegistry(tenant);
         }
-        
-        try {
-            doPostTenantCreationActions(tenant, originatedService);
-        } catch (Exception e) {
-            String msg = "Error performing post tenant creation actions";
-            throw new Exception(msg, e);
-        }
 
+        updateTenantAdminPassword(tenant);
         return tenantId;
     }
 
     private void doPostTenantCreationActions(Tenant tenant,
                                              String originatedService) throws Exception {
-        RealmService realmService = TenantMgtCoreServiceComponent.getRealmService();
-        UserRealm userRealm;
-        try {
-            userRealm = (UserRealm) realmService.getTenantUserRealm(tenant.getId());
-        } catch (UserStoreException e) {
-            String msg = "Error in creating Realm for tenant: " + tenant.getDomain();
-            throw new Exception(msg, e);
-        }
 
-        updateTenantAdminPassword(userRealm, tenant);
         TenantMgtCoreServiceComponent.getRegistryLoader().loadTenantRegistry(tenant.getId());
         copyUIPermissions(tenant.getId());
 
@@ -145,7 +142,7 @@ public class DefaultTenantPersistor implements TenantPersistor {
      * @param tenant - the tenant
      * @throws RegistryException, if storing the domain validation flag failed.
      */
-    private void storeDomainValidationFlagToRegistry(Tenant tenant) throws RegistryException {
+    protected void storeDomainValidationFlagToRegistry(Tenant tenant) throws RegistryException {
 
         try {
             String domainValidationPath = StratosConstants.TENANT_DOMAIN_VERIFICATION_FLAG_PATH +
@@ -193,10 +190,17 @@ public class DefaultTenantPersistor implements TenantPersistor {
      * Sets the password for the tenant
      * 
      * @param tenant - the tenant
-     * @param userRealm - user realm
      * @throws Exception - UserStoreException
      */
-    private void updateTenantAdminPassword(UserRealm userRealm, Tenant tenant) throws Exception {
+    private void updateTenantAdminPassword(Tenant tenant) throws Exception {
+        RealmService realmService = TenantMgtCoreServiceComponent.getRealmService();
+        UserRealm userRealm;
+        try {
+            userRealm = (UserRealm) realmService.getTenantUserRealm(tenant.getId());
+        } catch (UserStoreException e) {
+            String msg = "Error in creating Realm for tenant: " + tenant.getDomain();
+            throw new Exception(msg, e);
+        }
         try {
             UserStoreManager userStoreManager = userRealm.getUserStoreManager();
             if (!userStoreManager.isReadOnly()) {
@@ -220,7 +224,7 @@ public class DefaultTenantPersistor implements TenantPersistor {
      * @param tenantId - tenant id
      * @throws Exception - UserStoreException
      */
-    private void copyUIPermissions(int tenantId) throws Exception {
+    protected void copyUIPermissions(int tenantId) throws Exception {
         try {
             UserRealm realm = (UserRealm) TenantMgtCoreServiceComponent.
                     getRealmService().getTenantUserRealm(tenantId);
@@ -243,7 +247,7 @@ public class DefaultTenantPersistor implements TenantPersistor {
         }
     }
     
-    private void setActivationFlags(int tenantId, String originalService) throws Exception {
+    protected void setActivationFlags(int tenantId, String originalService) throws Exception {
 
         boolean useDefaultConfig = true;
         try {
@@ -299,7 +303,7 @@ public class DefaultTenantPersistor implements TenantPersistor {
                 throw new Exception(msg, e);
             }
         }
-        if (tenant.getAdminName().matches(DefaultTenantPersistor.ILLEGAL_CHARACTERS_FOR_PATH)) {
+        if (tenant.getAdminName().matches(TenantPersistor.ILLEGAL_CHARACTERS_FOR_PATH)) {
             String msg = "The tenant admin ' " + tenant.getAdminName() +
                                  " ' contains one or more illegal characters" +
                                  " (~!@#$;%^*()+={}[]|\\<>)";

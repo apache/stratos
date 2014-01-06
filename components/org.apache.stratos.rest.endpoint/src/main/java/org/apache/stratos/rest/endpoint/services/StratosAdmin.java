@@ -684,7 +684,7 @@ public class StratosAdmin extends AbstractAdmin {
     	// super tenant Deploying service (MT) 
     	// here an alias is generated
        ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
-    		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getTenantId(),
+    		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
     		   serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
     		   serviceDefinitionBean.getTenantRange());
     }
