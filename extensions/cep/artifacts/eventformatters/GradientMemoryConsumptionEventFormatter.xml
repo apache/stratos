@@ -3,7 +3,7 @@
   statistics="disable" trace="enable" xmlns="http://wso2.org/carbon/eventformatter">
   <from streamName="gradient_memory_consumption_stats" version="1.0.0"/>
   <mapping customMapping="enable" type="json">
-    <inline>{"gradient_memory_consumption":{"cluster_id":"{{cluster_id}}","network_partition_id":"{{network_partition_id}}","value":"{{gradient_memory_consumption}}"}}</inline>
+    <inline>{"org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent":{"message":{"cluster_id":"{{cluster_id}}","network_partition_id":"{{network_partition_id}}","value":"{{gradient_memory_consumption}}"}}}</inline>
   </mapping>
   <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
     <property name="transport.jms.Destination">summarized-health-stats</property>

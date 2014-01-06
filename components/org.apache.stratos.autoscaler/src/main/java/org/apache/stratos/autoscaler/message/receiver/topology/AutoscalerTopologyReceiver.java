@@ -82,6 +82,12 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
     private TopologyEventMessageDelegator createMessageDelegator() {
         TopologyMessageProcessorChain processorChain = createEventProcessorChain();
+        return new TopologyEventMessageDelegator(processorChain);
+    }
+
+    private TopologyMessageProcessorChain createEventProcessorChain() {
+        // Listen to topology events that affect clusters
+        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
         processorChain.addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -107,12 +113,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             }
 
         });
-        return new TopologyEventMessageDelegator(processorChain);
-    }
 
-    private TopologyMessageProcessorChain createEventProcessorChain() {
-        // Listen to topology events that affect clusters
-        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
         processorChain.addEventListener(new ClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {

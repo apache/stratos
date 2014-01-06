@@ -96,7 +96,7 @@ public class HealthStatEventMessageDelegator implements Runnable {
     }
 
 
-    public EventMessage jsonToEventMessage(String json) {
+    private EventMessage jsonToEventMessage(String json) {
 
         EventMessage event = new EventMessage();
         String message;
@@ -107,6 +107,9 @@ public class HealthStatEventMessageDelegator implements Runnable {
 
         String eventType = MessageParts[0].trim();
         eventType = eventType.substring(eventType.indexOf("\"") + 1, eventType.lastIndexOf("\""));
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Extracted [event type] %s", eventType));
+        }
 
         event.setEventName(eventType);
         String messageTag = MessageParts[1];
