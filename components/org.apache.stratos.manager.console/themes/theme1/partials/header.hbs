@@ -10,7 +10,7 @@
 {{/if}}
 {{#unless login}}
 <div class="navbar navbar-inverse navbar-fixed-top main-menu">
-    <div class="shadow-wrapper">
+<div class="shadow-wrapper">
         <div class="top-blue-strip"></div>
         <div class="container">
             <div class="row">
@@ -19,11 +19,13 @@
                  </div>
                  <div class="col-lg-9 custom-nav">
                     <ul class="pull-left">
-                        <li {{#if my_cartridges}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icon-cartridge"></i> <span><br>My Cartridges</span></a></li>
-                        <li><a href="{{url "/"}}"><i class="icon-dashboard"></i> <span><br>Dashboard</span></a></li>
+                        <li {{#if dashboard}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icon-dashboard"></i> <span><br>Dashboard</span></a></li>
+                        <li {{#if configure_stratos}} class="active" {{/if}}><a href="{{url "/configure_stratos.jag"}}"><i class="icon-cogs"></i> <span><br>Configure Stratos</span></a></li>
+                        <li {{#if tenant_mgt}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icon-user"></i> <span><br>Tenant Mgt</span></a></li>
+                        <li {{#if my_cartridges}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icons-cartridge"></i> <span><br>My Cartridges</span></a></li>
                      </ul>
                      <ul class="pull-right">
-                         <li><a><i class="icon-tenant"></i><br> logout section</a></li>
+                         <li><a><i class="icon-user"></i><br> logout section</a></li>
                      </ul>
                  </div>
             </div>
@@ -35,11 +37,22 @@
             <div class="row">
 
                 <div class="col-lg-3">
-                    <a class="btn {{css}}" href="{{link}}">{{name}}</a>
+                    <a class="btn {{button.class_name}}" href="{{url button.link }}"><i class="{{button.class_icon}}"></i> {{button.name}}</a>
                 </div>
                 <div class="col-lg-9 help-section">
-                    <i class="icon-help"></i>
-                    <p>Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..</p>
+                    {{#if has_help}}
+                        <i class="icons-help"></i>
+                        <p>{{help}}</p>
+                    {{/if}}
+                    {{#unless has_help}}
+                    <ul class="sub-menu">
+                        <li {{#if pa_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Partition Deployments</a></li>
+                        <li {{#if po_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Policy Deployments</a></li>
+                        <li {{#if lbs}} class="active" {{/if}}><a href="{{url "/" }}">LBs</a></li>
+                        <li {{#if c_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Cartridge Deployments</a></li>
+                        <li {{#if mt_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Multi-Tenant Service Deployments</a></li>
+                    </ul>
+                    {{/unless}}
                 </div>
             </div>
         </div>

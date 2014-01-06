@@ -21,6 +21,7 @@ package org.apache.stratos.adc.mgt.retriever;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.lookup.LookupDataHolder;
 import org.apache.stratos.adc.mgt.persistence.PersistenceManager;
@@ -164,6 +165,21 @@ public class DataInsertionAndRetrievalManager {
                 log.debug("Updated the in memory cache with the CartridgeSubscription: " + cartridgeSubscription.toString());
             }
         }
+    }
+
+    public void persistService (Service service) throws PersistenceManagerException {
+
+        persistenceManager.persistService(service);
+    }
+
+    public Service getService (String cartridgeType) throws PersistenceManagerException {
+
+        return persistenceManager.getService(cartridgeType);
+    }
+
+    public void removeService (String cartridgeType) throws PersistenceManagerException {
+
+        persistenceManager.removeService(cartridgeType);
     }
 
     /*public void persistAll (int tenantId) {

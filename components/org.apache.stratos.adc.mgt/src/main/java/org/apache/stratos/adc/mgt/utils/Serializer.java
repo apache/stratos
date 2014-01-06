@@ -19,6 +19,7 @@
 
 package org.apache.stratos.adc.mgt.utils;
 
+import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.lookup.ClusterIdToSubscription;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
@@ -69,6 +70,26 @@ public class Serializer {
         try {
             out = new ObjectOutputStream(bos);
             out.writeObject(clusterIdToSubscription);
+
+            return bos.toByteArray();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
+
+    }
+
+    public static byte[] serializeServiceToByteArray(Service service)
+            throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(service);
 
             return bos.toByteArray();
 
