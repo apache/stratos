@@ -127,9 +127,9 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Bundle-Activator>
+						<!--Bundle-Activator>
 							org.apache.stratos.adc.mgt.internal.HostingManagementActivator
-                                                </Bundle-Activator>
+                                                </Bundle-Activator-->
 						<Private-Package>org.apache.stratos.adc.mgt.internal.*</Private-Package>
 						<Export-Package>
 							org.apache.stratos.adc.mgt.utils*,

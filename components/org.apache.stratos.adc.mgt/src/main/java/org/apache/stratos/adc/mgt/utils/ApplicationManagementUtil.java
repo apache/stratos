@@ -22,7 +22,6 @@ package org.apache.stratos.adc.mgt.utils;
 
 
 import com.google.gson.Gson;
-
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.clustering.Member;
 import org.apache.axis2.clustering.management.GroupManagementAgent;
@@ -34,7 +33,6 @@ import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.adc.mgt.dao.DataCartridge;
 import org.apache.stratos.adc.mgt.dao.PortMapping;
-import org.apache.stratos.adc.mgt.dns.DNSManager;
 import org.apache.stratos.adc.mgt.dto.Cartridge;
 import org.apache.stratos.adc.mgt.dto.Policy;
 import org.apache.stratos.adc.mgt.dto.RepositoryInformation;
@@ -64,18 +62,12 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -841,7 +833,7 @@ public class ApplicationManagementUtil {
     }
 
     public static void addDNSEntry(String alias, String cartridgeType) {
-        new DNSManager().addNewSubDomain(alias + "." + cartridgeType, System.getProperty(CartridgeConstants.ELB_IP));
+        //new DNSManager().addNewSubDomain(alias + "." + cartridgeType, System.getProperty(CartridgeConstants.ELB_IP));
     }
 
     public static SubscriptionInfo createSubscriptionResponse(CartridgeSubscriptionInfo cartridgeSubscriptionInfo, Repository repository) {
