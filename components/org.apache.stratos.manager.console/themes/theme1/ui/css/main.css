@@ -149,7 +149,7 @@ body {
         box-shadow: 1px 3px 4px 1px rgba(71,71,71,1);
 }
 .breadcrumb-strip{
-    min-height: 78px;
+    min-height: 58px;
     z-index: 1;
     padding-top:10px;
 }
@@ -169,9 +169,9 @@ body {
     border-right:solid 1px #9eafbc;
 }
 .custom-nav ul li a{
-    height: 73px;
+    height: 64px;
     display: block;
-    padding:10px 20px;
+    padding:5px 20px;
     text-align: center;
     font-size: 14px;
     color:#444;
@@ -207,17 +207,17 @@ body {
     margin-right:10px;
 }
 .content-starter{
-    margin-top: 157px;
+    margin-top: 130px;
 }
 h1{
     color:#575757;
-    font-size:44px;
+    font-size:37px;
 }
 h2{
     background: #fff;
     display: inline-block;
     padding:0 10px 0 0;
-    margin:10px 0;
+    margin:10px 0 20px;
     color:#575757;
     text-transform:capitalize;
 
@@ -301,4 +301,35 @@ h4{
 }
 #credential_container h2{
     background: transparent;
+}
+.sub-menu{
+    padding:0;
+    margin:-7px 0 0;
+}
+.sub-menu li{
+    list-style: none;
+    float:left;
+}
+.sub-menu li a{
+    display:block;
+    padding:15px 10px;
+    border-left: solid 1px #f2f5f5;
+    border-right: solid 1px #d1d3d3;
+    height: 55px;
+}
+.sub-menu li.active a{
+    background: #ffae00;
+    color:#3d3d3d;
+}
+
+
+pre {border:none;background: transparent }
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
+textarea{display: block;}
+textarea.jsonEditor{
+    width:100%;
 }

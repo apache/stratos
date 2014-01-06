@@ -1,0 +1,7 @@
+<%
+var caramel = require('caramel');
+var partition_deployment = require('/data/partition_deployment.json');
+caramel.render({
+    partition_deployment:partition_deployment
+});
+%>
