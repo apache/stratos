@@ -19,9 +19,9 @@
                  </div>
                  <div class="col-lg-9 custom-nav">
                     <ul class="pull-left">
-                        <li {{#if dashboard}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icon-dashboard"></i> <span><br>Dashboard</span></a></li>
-                        <li {{#if configure_stratos}} class="active" {{/if}}><a href="{{url "/configure_stratos.jag"}}"><i class="icon-cogs"></i> <span><br>Configure Stratos</span></a></li>
-                        <li {{#if tenant_mgt}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icon-user"></i> <span><br>Tenant Mgt</span></a></li>
+                        <li {{#if dashboard}} class="active" {{/if}}><a href="{{url "/"}}"><i class="fa fa-dashboard"></i> <span><br>Dashboard</span></a></li>
+                        <li {{#if partition_deployments}} class="active" {{/if}}><a href="{{url "/partition_deployments.jag"}}"><i class="fa fa-cogs"></i> <span><br>Configure Stratos</span></a></li>
+                        <li {{#if tenant_mgt}} class="active" {{/if}}><a href="{{url "/"}}"><i class="fa fa-user"></i> <span><br>Tenant Mgt</span></a></li>
                         <li {{#if my_cartridges}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icons-cartridge"></i> <span><br>My Cartridges</span></a></li>
                      </ul>
                      <ul class="pull-right">
@@ -46,16 +46,60 @@
                     {{/if}}
                     {{#unless has_help}}
                     <ul class="sub-menu">
-                        <li {{#if pa_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Partition Deployments</a></li>
-                        <li {{#if po_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Policy Deployments</a></li>
-                        <li {{#if lbs}} class="active" {{/if}}><a href="{{url "/" }}">LBs</a></li>
-                        <li {{#if c_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Cartridge Deployments</a></li>
-                        <li {{#if mt_deploy}} class="active" {{/if}}><a href="{{url "/" }}">Multi-Tenant Service Deployments</a></li>
+                        <li {{#if partition_deployments}} class="active" {{/if}}>
+                            {{#if config_status.first_use}}
+                                <span>Partition Deployments</span>
+                            {{else}}
+                                <a href="{{url "/partition_deployments.jag" }}">Partition Deployments</a>
+                            {{/if}}
+                        </li>
+                        <li {{#if policy_deployments}} class="active" {{/if}}>
+                            {{#if config_status.first_use}}
+                                <span>Policy Deployments</span>
+                            {{else}}
+                                <a href="{{url "/policy_deployments.jag" }}">Policy Deployments</a>
+                            {{/if}}
+                        </li>
+                        <li {{#if lbs}} class="active" {{/if}}>
+                            {{#if config_status.first_use}}
+                                <span>LBs</span>
+                            {{else}}
+                                <a href="{{url "/lbs.jag" }}">LBs</a>
+                            {{/if}}
+                        </li>
+                        <li {{#if cartridge_deployments}} class="active" {{/if}}>
+                            {{#if config_status.first_use}}
+                                <span>Cartridge Deployments</span>
+                            {{else}}
+                                <a href="{{url "/cartridge_deployments.jag" }}">Cartridge Deployments</a>
+                            {{/if}}
+                        </li>
+                        <li {{#if mt_service_deployments}} class="active" {{/if}}>
+                            {{#if config_status.first_use}}
+                                <span>Multi-Tenant Service Deployments</span>
+                            {{else}}
+                                <a href="{{url "/mt_service_deployments.jag" }}">Multi-Tenant Service Deployments</a>
+                            {{/if}}
+                        </li>
                     </ul>
                     {{/unless}}
                 </div>
             </div>
         </div>
     </div>
+    {{#if config_status.not_complete}}
+    <div class="info-bar">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-6">
+                    <i class="icon-exclamation"></i> Configure Stratos is not completed. <a>Take the Wizard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
 </div>
+
 {{/unless}}

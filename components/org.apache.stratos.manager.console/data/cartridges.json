@@ -1,52 +1,35 @@
-[
+{"cartridge": [
     {
-        kind: "service",
-        cartridges: [
-            {
-                type: "php",
-                version: "PHP 5.4",
-                description: "PHP is a popular general-purpose scripting language that is especially suited to web development. Fast, flexible and pragmatic, PHP powers everything from your blog to the most popular websites in the world."
-            },
-            {
-                type: "python",
-                version: "Python 2.6",
-                description: "Python is a programming language that lets you work more quickly and integrate your systems more effectively. You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs."
-            },
-            {
-                type: "ruby",
-                version: "Ruby 1.9",
-                description:"Ruby is a dynamic, open source programming language with a focus on simplicity and productivity. It has an elegant syntax that is natural to read and easy to write."
-            },
-            {
-                type: "cakephp",
-                version: "CakePHP 1.9",
-                description:"CakePHP makes building web applications simpler, faster and require less code."
-            }
-        ]
+        "activeInstances": 0,
+        "cartridgeAlias": "-",
+        "cartridgeType": "lb",
+        "description": "LB Cartridge",
+        "displayName": "load balancer",
+        "multiTenant": false,
+        "provider": "apache",
+        "status": "NOT-SUBSCRIBED",
+        "version": 4
     },
     {
-        kind: "data",
-        cartridges: [
-            {
-                type: "mysql",
-                version: "MySQL 5.1",
-                description: "MySQL is a popular choice of database for use in web applications, and is a central component of the widely used LAMP open source web application software stack (and other 'AMP' stacks). "
-            }
-        ]
+        "activeInstances": 0,
+        "cartridgeAlias": "-",
+        "cartridgeType": "php",
+        "description": "Apache Stratos PHP Cartridge",
+        "displayName": "Apache Stratos PHP Cartridge",
+        "multiTenant": false,
+        "provider": "Apache Stratos",
+        "status": "NOT-SUBSCRIBED",
+        "version": 1
     },
     {
-        kind: "application",
-        cartridges: [
-            {
-                type: "drupal",
-                version: "Drupal 7",
-                description: "Drupal is an open source content management platform powering millions of websites and applications. It’s built, used, and supported by an active and diverse community of people around the world."
-            },
-            {
-                type: "Wordpress",
-                version: "WordPress 3.7.1",
-                description:"WordPress is a free and open source blogging tool and a content management system (CMS) based on PHP and MySQL, which runs on a web hosting service. Features include a plug-in architecture and a template system. WordPress is used by more than 18.9% of the top 10"
-            }
-        ]
+        "activeInstances": 0,
+        "cartridgeAlias": "-",
+        "cartridgeType": "stratos-lb",
+        "description": "Apache Stratos Load Balancer Cartridge",
+        "displayName": "Apache Stratos Load Balancer Cartridge",
+        "multiTenant": false,
+        "provider": "apache",
+        "status": "NOT-SUBSCRIBED",
+        "version": 4
     }
-]
+]}

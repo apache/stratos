@@ -1,0 +1,10 @@
+[
+    {
+        "name":"Partition - deployment1",
+        "policy":"{'partition':{'id': 'P1','provider': 'ec2','property': [{'name': 'region','value': 'ap-southeast-1'}],'partitionMin': '1','partitionMax': '3' }}"
+    },
+    {
+        "name":"Partition - deployment2",
+        "policy":"{'partition':{'id': 'P1','provider': 'ec2','property': [{'name': 'region','value': 'ap-southeast-1'}],'partitionMin': '1','partitionMax': '3' }}"
+    }
+]

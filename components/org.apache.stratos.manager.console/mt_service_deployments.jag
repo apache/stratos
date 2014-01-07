@@ -1,0 +1,7 @@
+<%
+var caramel = require('caramel');
+var mt_service_deployments = require('/data/mt_service_deployments.json');
+caramel.render({
+    mt_service_deployments:mt_service_deployments
+});
+%>

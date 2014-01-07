@@ -1,0 +1,7 @@
+<%
+var caramel = require('caramel');
+var policy_deployments = require('/data/policy_deployments.json');
+caramel.render({
+    policy_deployments:policy_deployments
+});
+%>

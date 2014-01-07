@@ -1,3 +1,4 @@
+<div>kkakaka</div>
 <div class="container content-starter">
     <div class="row">
         <div class="col-lg-12">
@@ -43,59 +44,5 @@
         </div>
     </div>
 </div>
-
-        <script>
-        $(function(){
-            $('pre').each(function () {
-                var jsonStr = $(this).html();
-                jsonStr = jsonStr.replace(/\'/g,'\"');
-                var obj = jQuery.parseJSON(jsonStr);
-                jsonStr = JSON.stringify(obj, undefined, 2);
-                $('textarea',$(this).parent()).val(jsonStr);
-                $(this).html(syntaxHighlight(jsonStr));
-            });
-            $('.js_jsonEdit').click(function(){
-                var $container = $(this).parent();
-                $(this).hide();
-                var preHeight = $('pre',$container).height();
-                $('.js_jsonEdit',$container).hide();
-                $('pre',$container).hide();
-                $('textarea',$container).show().height(preHeight);
-                $('.js_jsonCancel',$container).show();
-                $('.js_jsonSave',$container).show();
-            });
-            $('.js_jsonSave').click(function(){
-                alert('save - ' + $('textarea',$(this).parent()).val())
-            });
-            $('.js_jsonCancel').click(function(){
-                var $container = $(this).parent();
-                $('.js_jsonEdit', $container).show();
-                $('pre', $container).show();
-                $('textarea', $container).hide();
-                $('.js_jsonCancel', $container).hide();
-                $('.js_jsonSave', $container).hide();
-            });
-        });
-
-        function syntaxHighlight(json) {
-            if (typeof json != 'string') {
-                 json = JSON.stringify(json, undefined, 2);
-            }
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                var cls = 'number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'key';
-                    } else {
-                        cls = 'string';
-                    }
-                } else if (/true|false/.test(match)) {
-                    cls = 'boolean';
-                } else if (/null/.test(match)) {
-                    cls = 'null';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
-        }
-        </script>
+<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
+<script src="{{url "/themes/theme1/ui/js/configure_stratos.js"}}"></script>

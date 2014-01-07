@@ -199,7 +199,7 @@ body {
 .help-section p {
     font-size: 12px;
 }
-.help-section i{
+.icons-help{
     font-size: 34px;
     color:#a4a6a6;
     display: block;
@@ -207,7 +207,7 @@ body {
     margin-right:10px;
 }
 .content-starter{
-    margin-top: 130px;
+    margin-top: 125px;
 }
 h1{
     color:#575757;
@@ -321,8 +321,16 @@ h4{
     background: #ffae00;
     color:#3d3d3d;
 }
+.sub-menu li span{
+    display:block;
+    padding:15px 10px;
+    border-left: solid 1px #f2f5f5;
+    border-right: solid 1px #d1d3d3;
+    height: 55px;
+    color:#999;
+}
 
-
+/* syntax highlight styles */
 pre {border:none;background: transparent }
 .string { color: green; }
 .number { color: darkorange; }
@@ -332,4 +340,24 @@ pre {border:none;background: transparent }
 textarea{display: block;}
 textarea.jsonEditor{
     width:100%;
+}
+/*syntax highlight styles */
+.info-bar{
+    background: #ffe096;
+    position: absolute;
+    width:100%;
+    margin-top:-10px;
+}
+.color-a-full-icons{
+    color:#ff9000;
+    font-size:30px;
+}
+.panel-heading{
+    padding:5px 10px;
+}
+.padding-remover-left{
+    padding-left:0;
+}
+label.required{
+    font-weight: bold;
 }

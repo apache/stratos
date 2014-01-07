@@ -2,15 +2,13 @@ var render = function (theme, data, meta, require) {
     for(var i=0;i<data.partition_deployment.length;i++){
         data.partition_deployment[i].key = data.partition_deployment[i].name.replace(/ /g,'');
     }
-
     theme('index', {
         body: [
             {
-                partial: 'configure_stratos',
+                partial: 'lbs',
                 context: {
-                    title:'Configure Stratos',
-                    partition_deployment:data.partition_deployment,
-                    config_status:data.config_status
+                    title:'Configure Stratos - Lbs',
+                    partition_deployment:data.partition_deployment
                 }
             }
         ],
@@ -26,7 +24,7 @@ var render = function (theme, data, meta, require) {
                         class_name:"btn-important"
                     },
                     has_help:false,
-                    pa_deploy:true
+                    lbs:true
                 }
             }
         ],
