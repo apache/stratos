@@ -156,7 +156,7 @@ dialect "mvel"
         eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
 
         eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-down action: " + scaleDownAction))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Scale-down action: " + scaleDownAction))
 
         eval(scaleDownAction)
 
