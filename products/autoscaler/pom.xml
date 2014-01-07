@@ -38,6 +38,7 @@
     <modules>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
+        <module>modules/integration</module>
     </modules>
 
     <pluginRepositories>

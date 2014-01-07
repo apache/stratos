@@ -61,24 +61,22 @@ public class AutoscalerTestServerManager extends TestServerManager {
 
 		String carbonHome = super.startServer();
 		System.setProperty("carbon.home", carbonHome);
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		}
 		return carbonHome;
 	}
 
 	@Override
-	@AfterSuite(timeOut = 60000)
+	@AfterSuite(timeOut = 60000,dependsOnGroups= {"stratos.autoscaler"})
 	public void stopServer() throws Exception {
+		log.info("Stoping carbon server....");
 		super.stopServer();
 		 if (builder.getFrameworkSettings().getEnvironmentSettings().is_builderEnabled()) {  
 	         if (activeMqBroker != null) {  
+	     		log.info("Stoping JMS Broker....");
 	           Assert.assertTrue(activeMqBroker.stop(), "JMS Broker Stopping failed");  
 	         }  
 		 }
 	}
+	
 
 	protected void copyArtifacts(String carbonHome) throws IOException {
 		Assert.assertNotNull(carbonHome, "carbon home cannot be null");
@@ -86,10 +84,20 @@ public class AutoscalerTestServerManager extends TestServerManager {
 				System.getProperty("basedir") + "src" + File.separator + "test" + File.separator + "resources" + File.separator );
 		String libDir = carbonHome + File.separator + "repository"+ File.separator + "components"+ File.separator + "lib";
 		String confDir = carbonHome + File.separator + "repository"+ File.separator + "conf";
+		
+		//FIXME: provider a way to configure carbon startup script filename inside test framework rather than copying stratos.{sh,bat} to wso2server.{sh,bat}
+		FileUtils.copyFile(new File(carbonHome + File.separator + "bin","stratos.sh"),new File(carbonHome + File.separator + "bin","wso2server.sh"));
+		FileUtils.copyFile(new File(carbonHome + File.separator + "bin","stratos.bat"),new File(carbonHome + File.separator + "bin","wso2server.bat"));
+		
+		//copy dummy CC service
+		FileUtils.copyFile(new File(resourceLocation,"CloudControllerService_1.0.0.aar"),new File(carbonHome + File.separator + "repository"+ File.separator + "deployment"+ File.separator + "server"+ File.separator + "axis2services","CloudControllerService.aar"));
+		
 		log.info("Copying jndi.properties file....");
 		FileUtils.copyFile(new File(resourceLocation,"jndi.properties"),new File(confDir,"jndi.properties"));
 		log.info("Copying ActiveMQ dependencies....");
 		FileUtils.copyDirectory(new File(resourceLocation + File.separator + "artifacts"+ File.separator + "jar"), new File(libDir));
+		log.info("Copying autoscaler.xml....");
+		FileUtils.copyFile(new File(resourceLocation,"autoscaler.xml"),new File(confDir,"autoscaler.xml"));
 	}
 
 	private JMSBrokerConfiguration getJMSBrokerConfiguration() {

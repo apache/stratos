@@ -198,14 +198,27 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
             
     </dependencies>
     
     <properties>
-        <clarity.version>4.1.3</clarity.version>
+        <clarity.version>4.2.2</clarity.version>
         <carbon.kernel.version>4.2.0</carbon.kernel.version>
     </properties>
     
