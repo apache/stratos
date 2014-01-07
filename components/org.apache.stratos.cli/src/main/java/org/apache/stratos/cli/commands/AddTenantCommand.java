@@ -72,11 +72,6 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
         passwordOption.setArgName("email");
         options.addOption(emailOption);
 
-        Option acvive = new Option(CliConstants.ACTIVE_OPTION, CliConstants.ACTIVE_LONG_OPTION, true,
-                "Is tenant active");
-        passwordOption.setArgName("active");
-        options.addOption(acvive);
-
         return options;
     }
 
@@ -104,7 +99,6 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
             String password = null;
             String domain = null;
             String email = null;
-            String active = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -153,12 +147,6 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
                     email = commandLine.getOptionValue(CliConstants.EMAIL_OPTION);
 
                 }
-                //if (commandLine.hasOption(CliConstants.ACTIVE_OPTION)) {
-                //    if (logger.isTraceEnabled()) {
-                //        logger.trace("Tenat active option is passed");
-                //    }
-                //    active = commandLine.getOptionValue(CliConstants.ACTIVE_OPTION);
-                //}
 
                 if (admin == null || firstName == null || lastaName == null || password == null || domain == null || email == null) {
                     System.out.println("usage: " + getName() + " [-u <user name>] [-f <first name>] [-l <last name>] [-p <password>] [-d <domain name>] [-e <email>]");
