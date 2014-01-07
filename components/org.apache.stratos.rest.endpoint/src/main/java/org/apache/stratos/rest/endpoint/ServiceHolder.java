@@ -61,8 +61,7 @@ public class ServiceHolder {
     }
 
     public static TenantPersistor getTenantPersistor() {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        TenantPersistor tenantPersistor = (TenantPersistor) carbonContext.getOSGiService(TenantPersistor.class);
+        TenantPersistor tenantPersistor = new TenantPersistor();
         return tenantPersistor;
     }
 
