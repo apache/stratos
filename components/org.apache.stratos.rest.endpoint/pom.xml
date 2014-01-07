@@ -30,8 +30,32 @@
     <packaging>war</packaging>
     <name>Apache Stratos - RESTful admin service module</name>
 
-    <build>
+    <profiles>
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>test</value>
+                </property>
+            </activation>
+            <properties>
+                <appName>stratos-test</appName>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <appName>stratos</appName>
+            </properties>
+        </profile>
+    </profiles>
 
+
+    <build>
         <plugins>
           <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -48,10 +72,10 @@
                     <webResources>
                         <resource>
                             <!-- this is relative to the pom.xml directory -->
-                            <directory>src/main/webapp</directory>
+                            <directory>src/main/webapp/${appName}</directory>
                         </resource>
                     </webResources>
-                    <warName>stratos</warName>
+                    <warName>${appName}</warName>
                 </configuration>
             </plugin>
         </plugins>
