@@ -89,17 +89,17 @@ dialect "mvel"
 
         scaleUpAction : Boolean() from ((rifReset && (rifPredictedValue > rifAverageLimit * $delegator.SCALE_UP_FACTOR)) || (mcReset && (mcPredictedValue > mcAverageLimit * $delegator.SCALE_UP_FACTOR)) || (laReset && (laPredictedValue > laAverageLimit * $delegator.SCALE_UP_FACTOR)))
 
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
 
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " MC average limit: " + mcAverageLimit))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " MC average limit: " + mcAverageLimit))
 
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
 
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-up factor: " + $delegator.SCALE_UP_FACTOR))
-        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-up action: " + scaleUpAction))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Scale-up factor: " + $delegator.SCALE_UP_FACTOR))
+        eval(log.debug("[scale-up] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Scale-up action: " + scaleUpAction))
 
         eval(scaleUpAction)
 
@@ -146,16 +146,16 @@ dialect "mvel"
 
         scaleDownAction : Boolean() from ((rifReset && (rifPredictedValue < rifAverageLimit * $delegator.SCALE_DOWN_FACTOR)) || (mcReset && (mcPredictedValue < mcAverageLimit * $delegator.SCALE_DOWN_FACTOR)) || (laReset && (laPredictedValue < laAverageLimit * $delegator.SCALE_DOWN_FACTOR)))
 
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
 
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " MC average limit: " + mcAverageLimit))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " MC average limit: " + mcAverageLimit))
 
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
 
-        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
+        eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
         eval(log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scale-down action: " + scaleDownAction))
 
         eval(scaleDownAction)
@@ -173,7 +173,7 @@ dialect "mvel"
             for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
 
                 LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [partition] " + partition.getId() + " [cluster] "
+                log.debug("[scale-down] [network-partition] " + $networkPartitionContext.getId() + " [cluster] "
                     + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
 
                 MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
