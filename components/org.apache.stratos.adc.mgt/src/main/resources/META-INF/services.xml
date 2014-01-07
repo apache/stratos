@@ -24,7 +24,7 @@
 		<description>
 			Admin service for ADC activities
 		</description>
-		<parameter name="ServiceClass">org.apache.stratos.adc.mgt.service.ApplicationManagementService
+		<parameter name="ServiceClass">org.apache.stratos.manager.service.ApplicationManagementService
         </parameter>
 		<parameter name="enableMTOM">true</parameter>
 		<parameter name="adminService" locked="true">true</parameter>
@@ -43,8 +43,8 @@
 		<description>
 			Admin service for receiving git repo update notifications
 		</description>
-		<parameter name="ServiceClass">org.apache.stratos.adc.mgt.service.RepoNotificationService
-		</parameter>
+		<parameter name="ServiceClass">org.apache.stratos.manager.service.RepoNotificationService
+        </parameter>
 		<parameter name="enableMTOM">true</parameter>
 		<parameter name="adminService" locked="true">false</parameter>
 		<parameter name="hiddenService" locked="true">false</parameter>
@@ -64,7 +64,7 @@
 			Exposes information related to internally created
 			repositories
         </description>
-		<parameter name="ServiceClass">org.apache.stratos.adc.mgt.service.InstanceInformationManagementService</parameter>
+		<parameter name="ServiceClass">org.apache.stratos.manager.service.InstanceInformationManagementService</parameter>
 		<parameter name="enableMTOM">true</parameter>
 		<parameter name="adminService" locked="true">false</parameter>
 		<parameter name="hiddenService" locked="true">false</parameter>
