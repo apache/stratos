@@ -310,7 +310,7 @@
         <features-dashboard.war.version>1.0.0</features-dashboard.war.version>
         <carbon.version>4.2.0</carbon.version>
 	   <synapse.version>2.1.2.wso2v3</synapse.version>
-        <stratos.controller.version>1.0.1</stratos.controller.version>
+        <stratos.manager.version>${project.version}</stratos.manager.version>
         <stratos.component.version>2.1.0</stratos.component.version>
 	<project.version>4.0.0-SNAPSHOT</project.version>
         <stratos.component.patch.version>2.1.3</stratos.component.patch.version>

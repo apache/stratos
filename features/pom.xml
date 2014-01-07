@@ -70,7 +70,7 @@
 	<sun.jersey.version>1.12</sun.jersey.version>
 	<gson2.version>2.2</gson2.version>
 	<google.collect.osgi.version>1.0.0.wso2v2</google.collect.osgi.version>
-	<axis2.wso2.version>1.6.1.wso2v9</axis2.wso2.version>
+	<axis2.wso2.version>1.6.1.wso2v10</axis2.wso2.version>
 	<axiom.wso2.version>1.2.11.wso2v4</axiom.wso2.version>
     </properties>
 

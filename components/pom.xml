@@ -263,8 +263,8 @@
         <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
         <axiom.osgi.version.range>[1.2.11.wso2v4, 1.3.0)</axiom.osgi.version.range>
         <version.tomcat>7.0.34</version.tomcat>
-        <axis2.wso2.version>1.6.1.wso2v9</axis2.wso2.version>
-        <axis2.kernel.version>1.6.1-wso2v9</axis2.kernel.version>
+        <axis2.wso2.version>1.6.1.wso2v10</axis2.wso2.version>
+        <axis2.kernel.version>1.6.1-wso2v10</axis2.kernel.version>
         <version.log4j>1.2.17</version.log4j>
         <version.commons.logging>1.1.1</version.commons.logging>
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>

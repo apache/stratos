@@ -43,7 +43,7 @@
         <wso2carbon.version>4.2.0</wso2carbon.version>
 	<synapse.version>${version.synapse}</synapse.version>
         <quartz.wso2.version>2.1.1.wso2v1</quartz.wso2.version>
-	<stratos.controller.version>1.0.0</stratos.controller.version>
+	<stratos.manager.version>${project.version}</stratos.manager.version>
     </properties>
 
 </project>

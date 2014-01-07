@@ -424,13 +424,13 @@
         </file>
         <file>
             <source>src/main/notice/NOTICE</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
 	 <file>
             <source>src/main/license/LICENSE</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
@@ -543,49 +543,49 @@
         </file>
 	<file>
             <source>src/bin/stratos.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/stratos.bat</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/git-folder-structure.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/manage-git-repo.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/set-mysql-password.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/bin/add_entry_zone_file.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/bin/remove_entry_zone_file.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 	<file>
             <source>src/bin/update-instance.sh</source>
-            <outputDirectory>apache-stratos-sc-${pom.version}/bin/</outputDirectory>
+            <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
