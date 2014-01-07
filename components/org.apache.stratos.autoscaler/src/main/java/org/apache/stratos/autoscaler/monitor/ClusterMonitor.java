@@ -103,9 +103,9 @@ public class ClusterMonitor extends AbstractMonitor{
                 scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
                 scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
-                scaleCheckKnowledgeSession.setGlobal("rif", rifReset);
-                scaleCheckKnowledgeSession.setGlobal("memoryConsumption", memoryConsumptionReset);
-                scaleCheckKnowledgeSession.setGlobal("loadAverage", loadAverageReset);
+                scaleCheckKnowledgeSession.setGlobal("rifReset", rifReset);
+                scaleCheckKnowledgeSession.setGlobal("mcReset", memoryConsumptionReset);
+                scaleCheckKnowledgeSession.setGlobal("laReset", loadAverageReset);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));

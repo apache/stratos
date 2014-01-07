@@ -19,26 +19,39 @@
 
 package org.apache.stratos.adc.mgt.deploy.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.client.AutoscalerServiceClient;
 import org.apache.stratos.adc.mgt.client.CloudControllerServiceClient;
 import org.apache.stratos.adc.mgt.deploy.service.multitenant.MultiTenantService;
 import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.adc.mgt.exception.UnregisteredCartridgeException;
+import org.apache.stratos.adc.mgt.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.adc.mgt.payload.BasicPayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadData;
 import org.apache.stratos.adc.mgt.payload.PayloadFactory;
+import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 import org.apache.stratos.adc.mgt.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.adc.mgt.utils.CartridgeConstants;
 import org.apache.stratos.adc.mgt.utils.PersistenceManager;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.messaging.util.Constants;
 
 public class ServiceDeploymentManager {
 
     private static Log log = LogFactory.getLog(ServiceDeploymentManager.class);
-
-    public Service deployService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, String tenantRange)
+    private CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
+    
+    public Service deployService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, String tenantRange,
+    		String tenantDomain, String userName)
         throws ADCException, UnregisteredCartridgeException {
 
         //get deployed Cartridge Definition information
@@ -63,6 +76,174 @@ public class ServiceDeploymentManager {
             throw new ADCException(errorMsg);
         }
 
+        
+        // TODO - LB cartridge.... ??
+
+        List<Property> lbRefProp = new ArrayList<Property>();
+
+        // get lb config reference
+        LoadbalancerConfig lbConfig = cartridgeInfo.getLbConfig();
+
+        if (lbConfig == null || lbConfig.getProperties() == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("This Service does not require a load balancer. " + "[Service Name] " +
+                          type);
+            }
+        } else {
+
+            CartridgeInfo lbCartridgeInfo;
+            String lbCartridgeType = lbConfig.getType();
+            try {
+                // retrieve lb Cartridge info
+                lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
+            } catch (Exception e) {
+                String msg = "Cannot get cartridge info: " + type;
+                log.error(msg, e);
+                throw new ADCException(msg, e);
+            }
+
+            Properties lbReferenceProperties = lbConfig.getProperties();
+
+            Property property = new Property();
+            property.setName(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+
+            for (org.apache.stratos.cloud.controller.pojo.Property prop : lbReferenceProperties.getProperties()) {
+
+                String name = prop.getName();
+                String value = prop.getValue();
+
+                // TODO make following a chain of responsibility pattern
+                if (Constants.NO_LOAD_BALANCER.equals(name)) {
+                    if ("true".equals(value)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("This cartridge does not require a load balancer. " +
+                                      "[Type] " + type);
+                        }
+                        property.setValue(name);
+                        lbRefProp.add(property);
+                        break;
+                    }
+                } else if (Constants.EXISTING_LOAD_BALANCERS.equals(name)) {
+                    String clusterIdsVal = value;
+                    if (log.isDebugEnabled()) {
+                        log.debug("This cartridge refers to existing load balancers. " + "[Type] " +
+                                  type + "[Referenced Cluster Ids] " + clusterIdsVal);
+                    }
+
+                    String[] clusterIds = clusterIdsVal.split(",");
+
+                    for (String clusterId : clusterIds) {
+                        
+                            try {
+                            	AutoscalerServiceClient.getServiceClient().checkLBExistenceAgainstPolicy(clusterId,
+                            			deploymentPolicyName);
+                            } catch (Exception ex) {
+                                // we don't need to throw the error here.
+                                log.error(ex.getMessage(), ex);
+                            }
+                        
+                    }
+
+                    property.setValue(name);
+                    lbRefProp.add(property);
+                    break;
+
+                } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
+                    if ("true".equals(value)) {
+                        property.setValue(name);
+                        if (log.isDebugEnabled()) {
+                            log.debug("This cartridge uses default load balancer. " + "[Type] " +
+                                      type);
+                        }
+                        
+                            try {
+                                // get the valid policies for lb cartridge
+                                DeploymentPolicy[] lbCartridgeDepPolicies =
+                                	AutoscalerServiceClient.getServiceClient().getDeploymentPolicies(lbCartridgeType);
+                                // traverse deployment policies of lb cartridge
+                                for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+                                    // check existence of the subscribed policy
+                                    if (deploymentPolicyName.equals(policy.getId())) {
+
+                                        if (!AutoscalerServiceClient.getServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
+
+                                            // if lb cluster doesn't exist
+                                            String lbAlias = "lb" + new Random().nextInt();
+                                            lbCartridgeInfo.addProperties(property);
+                                            subscribeToLb(lbCartridgeType,
+                                                          lbAlias,
+                                                          lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                          deploymentPolicyName, tenantId,
+                                                          userName,
+                                                          tenantDomain,
+                                                          lbCartridgeInfo.getProperties());
+                                        }
+                                    }
+                                }
+
+                            } catch (Exception ex) {
+                                // we don't need to throw the error here.
+                                log.error(ex.getMessage(), ex);
+                            }
+                        
+
+                        lbRefProp.add(property);
+                        break;
+                    } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+                        if ("true".equals(value)) {
+                            property.setValue(name);
+                            if (log.isDebugEnabled()) {
+                                log.debug("This cartridge uses a service aware load balancer. " +
+                                          "[Type] " + type);
+                            }
+                            
+                                try {
+
+                                    // get the valid policies for lb cartridge
+                                    DeploymentPolicy[] lbCartridgeDepPolicies =
+                                    	AutoscalerServiceClient.getServiceClient().getDeploymentPolicies(lbCartridgeType);
+                                    // traverse deployment policies of lb cartridge
+                                    for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+                                        // check existence of the subscribed policy
+                                        if (deploymentPolicyName.equals(policy.getId())) {
+
+                                            if (!AutoscalerServiceClient.getServiceClient().checkServiceLBExistenceAgainstPolicy(type,
+                                                                                                              deploymentPolicyName)) {
+
+                                                // if lb cluster doesn't exist
+                                                String lbAlias =
+                                                                 "lb" + type +
+                                                                         new Random().nextInt();
+                                                lbCartridgeInfo.addProperties(property);
+                                                subscribeToLb(lbCartridgeType,
+                                                              lbAlias,
+                                                              lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                              deploymentPolicyName,
+                                                              tenantId, 
+                                                              userName,
+                                                              tenantDomain,
+                                                              lbCartridgeInfo.getProperties());
+                                            }
+                                        }
+                                    }
+
+                                } catch (Exception ex) {
+                                    // we don't need to throw the error here.
+                                    log.error(ex.getMessage(), ex);
+                                }
+                           
+
+                            lbRefProp.add(property);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
         Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
 
         //generate the cluster ID (domain)for the service
@@ -113,4 +294,37 @@ public class ServiceDeploymentManager {
 
         //TODO:
     }
+    
+  private void configureLBDeployment() {
+    	
+    	
+    	
+    }
+    
+    private void subscribeToLb(String cartridgeType, String lbAlias,
+            String defaultAutoscalingPolicy, String deploymentPolicy,
+            int tenantId, String userName, String tenantDomain, Property[] props) throws ADCException {
+            
+            try {
+                if(log.isDebugEnabled()) {
+                    log.debug("Subscribing to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
+                }
+                CartridgeSubscription cartridgeSubscription = 
+                        cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType, lbAlias.trim(), defaultAutoscalingPolicy, 
+                                                                         deploymentPolicy,
+                                                                         tenantDomain, 
+                                                                         tenantId,
+                                                                         userName, "git", null, false, null, null, props);
+                
+                cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+                
+                if(log.isDebugEnabled()) {
+                    log.debug("Successfully subscribed to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
+                }
+            } catch (Exception e) {
+                String msg = "Error while subscribing to load balancer cartridge [type] "+cartridgeType;
+                log.error(msg, e);
+                throw new ADCException(msg, e);
+            }
+        }
 }

@@ -19,6 +19,7 @@
 
 package org.apache.stratos.adc.mgt.persistence;
 
+import org.apache.stratos.adc.mgt.deploy.service.Service;
 import org.apache.stratos.adc.mgt.exception.PersistenceManagerException;
 import org.apache.stratos.adc.mgt.subscription.CartridgeSubscription;
 
@@ -40,6 +41,12 @@ public abstract class PersistenceManager {
 
     public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
             throws PersistenceManagerException;
+
+    public abstract void persistService (Service service) throws PersistenceManagerException;
+
+    public abstract Service getService (String cartridgeType) throws PersistenceManagerException;
+
+    public abstract void removeService (String cartridgeType) throws PersistenceManagerException;
 
     //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
     //        throws PersistenceManagerException;

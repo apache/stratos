@@ -18,12 +18,12 @@
  */
 package org.apache.stratos.cloud.controller.topology;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.wso2.carbon.ntask.core.Task;
-
-import java.util.Map;
 
 public class TopologySynchronizerTask implements Task{
     private static final Log log = LogFactory.getLog(TopologySynchronizerTask.class);
@@ -33,7 +33,7 @@ public class TopologySynchronizerTask implements Task{
         if (log.isDebugEnabled()) {
             log.debug("Executing topology synchronization task");
         }
-
+        
         if(FasterLookUpDataHolder.getInstance().isTopologySyncRunning() ||
         		// this is a temporary fix to avoid task execution - limitation with ntask
                 (!FasterLookUpDataHolder.getInstance().getEnableTopologySync())){

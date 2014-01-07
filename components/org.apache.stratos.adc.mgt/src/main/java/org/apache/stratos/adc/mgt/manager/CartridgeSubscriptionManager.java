@@ -217,6 +217,8 @@ public class CartridgeSubscriptionManager {
         
         if(cartridgeInfo.getMultiTenant()) {
         	log.info(" Multitenant --> Publishing Artifact update event -- ");
+        	log.info(" Values :  cluster id - " + cartridgeSubscription.getClusterDomain() + "  tenant - " + 
+        			cartridgeSubscription.getSubscriber().getTenantId());
             ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(),
             		cartridgeSubscription.getClusterDomain(), // clusterId 
             		String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));

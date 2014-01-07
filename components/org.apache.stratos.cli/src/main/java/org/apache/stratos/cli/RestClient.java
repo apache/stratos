@@ -122,8 +122,8 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
 
             HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, 300000);
-            HttpConnectionParams.setSoTimeout(params, 300000);
+            HttpConnectionParams.setConnectionTimeout(params, 6000000);
+            HttpConnectionParams.setSoTimeout(params, 6000000);
 
             HttpResponse response = httpClient.execute(getRequest);
 

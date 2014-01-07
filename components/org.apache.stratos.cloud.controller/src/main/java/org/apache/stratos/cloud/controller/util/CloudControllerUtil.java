@@ -35,7 +35,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -238,8 +238,7 @@ public class CloudControllerUtil {
       }
     }
     
-    public static Topology retrieveTopology() {
-
+    public static Topology retrieveTopology() {    	
           Object obj = RegistryManager.getInstance().retrieveTopology();
           if (obj != null) {
               try {
