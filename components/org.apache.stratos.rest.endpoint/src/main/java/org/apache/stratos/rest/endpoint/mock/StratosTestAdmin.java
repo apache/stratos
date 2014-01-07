@@ -20,15 +20,16 @@ package org.apache.stratos.rest.endpoint.mock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.adc.mgt.dto.Cartridge;
+import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
+import org.apache.stratos.adc.mgt.exception.ADCException;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
+import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 
 @Path("/admin/")
 public class StratosTestAdmin {
@@ -45,17 +46,17 @@ public class StratosTestAdmin {
     public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
            log.info("Cartridge definition : " + cartridgeDefinitionBean.toString());
-
+           MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
     }
 
 
-    /*@GET
+    @GET
     @Path("/cartridge/tenanted/list")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge[] getAvailableMultiTenantCartridges() throws ADCException {
-
+          return MockContext.getInstance().getAvailableMultiTenantCartridges();
     }
 
     @GET
@@ -64,8 +65,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge[] getAvailableSingleTenantCartridges() throws ADCException {
-        List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, false, getConfigContext());
-        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+         return MockContext.getInstance().getAvailableSingleTenantCartridges();
     }
 
     @GET
@@ -74,7 +74,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge[] getSubscribedCartridges() throws ADCException {
-
+         return MockContext.getInstance().getSubscribedCartridges();
     }
 
     @POST
@@ -83,7 +83,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) {
-
+          return MockContext.getInstance().subscribeToCartridge(cartridgeInfoBean);
     }
 
 
@@ -95,9 +95,9 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public void unsubscribe(String alias){
-
+          MockContext.getInstance().unsubscribe(alias);
     }
-
+    /*
     @POST
     @Path("/tenant")
     @Consumes("application/json")
