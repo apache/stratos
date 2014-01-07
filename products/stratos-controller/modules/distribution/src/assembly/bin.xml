@@ -325,14 +325,36 @@
 			<directory>target/database</directory>
 			<outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
 		</fileSet>
-		<!-- get axis2_1.6.1.wso2v9.jar from carbon kernel patch 0002 -->
-                <fileSet>
-                   <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.1.0-0002/</directory>
-                   <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
-                   <includes>
-                       <include>**/patch0002/axis2_1.6.1.wso2v9.jar</include>
-                   </includes>
-                </fileSet>
+
+        <!-- Kernel Patches-->       
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0001/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0002/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0003</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0003/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0004</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0004/*.*</include>
+            </includes>
+        </fileSet>
 		<fileSet>
                    <directory>../../dbscripts/</directory>
                    <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
