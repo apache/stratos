@@ -28,7 +28,7 @@
 			<class name="org.apache.stratos.autoscaler.integration.tests.PartitionDeploymentTestCase" />
 			<class name="org.apache.stratos.autoscaler.integration.tests.AutoscalingPolicyDeploymentTestCase"/>
 			<class name="org.apache.stratos.autoscaler.integration.tests.DeploymentPolicyDeploymentTestCase"/>
-			<class name="org.apache.stratos.autoscaler.integration.tests.SecurityVerificationTestCase" />
+			<!--class name="org.apache.stratos.autoscaler.integration.tests.SecurityVerificationTestCase" /-->
 			<!--class name="org.apache.stratos.autoscaler.integration.tests.TopologyEventsPublisherTestCase" /-->
 		</classes>
 	</test>
