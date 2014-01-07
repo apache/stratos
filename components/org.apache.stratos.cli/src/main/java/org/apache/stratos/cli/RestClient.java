@@ -39,6 +39,8 @@ public class RestClient implements GenericRestClient{
     private String username;
     private String password;
 
+    private final int TIME_OUT_PARAM = 6000000;
+
     RestClient(String url, String username, String password) {
         this.setUrl(url);
         this.setUsername(username);
@@ -78,8 +80,8 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
 
             HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, 300000);
-            HttpConnectionParams.setSoTimeout(params, 300000);
+            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
 
             HttpResponse response = httpClient.execute(postRequest);
 
@@ -122,8 +124,8 @@ public class RestClient implements GenericRestClient{
             httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
 
             HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, 6000000);
-            HttpConnectionParams.setSoTimeout(params, 6000000);
+            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
 
             HttpResponse response = httpClient.execute(getRequest);
 
