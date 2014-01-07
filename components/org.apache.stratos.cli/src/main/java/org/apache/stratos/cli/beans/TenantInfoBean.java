@@ -25,7 +25,6 @@ public class TenantInfoBean {
     private String adminPassword;
     private String tenantDomain;
     private String email;
-    private String active;
 
     public String getAdmin() {
         return admin;
@@ -75,11 +74,4 @@ public class TenantInfoBean {
         this.email = email;
     }
 
-    public String getActive() {
-        return active;
-    }
-
-    public void setActive(String active) {
-        this.active = active;
-    }
 }
