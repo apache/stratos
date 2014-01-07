@@ -21,7 +21,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
 	<groupId>org.apache.stratos</groupId>
-	<artifactId>stratos-controller-parent</artifactId>
+	<artifactId>stratos-manager-parent</artifactId>
 	<version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -29,9 +29,9 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apache-stratos-features-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Products Stratos Controller Features Parent</name>
+    <name>Apache Stratos - Products Stratos Manager Features Parent</name>
     <url>http://wso2.org/projects/wsas/java</url>
-    <description>Apache Stratos Features Parent</description>
+    <description>Apache Stratos Manager Features Parent</description>
 
     <modules>
         <module>service</module>

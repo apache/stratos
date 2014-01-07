@@ -23,15 +23,15 @@
 
     <parent>
         <groupId>org.apache.stratos</groupId>
-    	<artifactId>stratos-controller-parent</artifactId>
+    	<artifactId>stratos-manager-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>stratos-controller-profile-gen</artifactId>
+    <artifactId>stratos-manager-profile-gen</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Controller Profile Generation</name>
+    <name>Apache Stratos Manager - Profile Generation</name>
     <url>http://apache.org</url>
 
     <build>

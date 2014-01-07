@@ -20,39 +20,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-     <parent>
+    <parent>
 	<groupId>org.apache.stratos</groupId>
-	<artifactId>stratos-controller-parent</artifactId>
+	<artifactId>stratos-manager-parent</artifactId>
 	<version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.manager.login.ui</artifactId>
+    <artifactId>org.apache.stratos.manager.dashboard.ui</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Cloud Manager Login User Interface</name>
+    <name>Apache Stratos - Cloud Manager Dashboard User Interface</name>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-code/src</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -62,7 +43,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            org.apache.stratos.manager.dashboard.ui.*,
+                        </Export-Package>
                         <Import-Package>
+                            org.wso2.carbon.ui.servlets.*,
                             javax.servlet; version=2.4.0,
                             javax.servlet.http; version=2.4.0,
                             org.apache.lucene.*,
@@ -72,11 +57,12 @@
                     </instructions>
                 </configuration>
             </plugin>
-
+            
         </plugins>
     </build>
 
-   <dependencies>
+   
+    <dependencies>
 
         <dependency>
             <groupId>log4j</groupId>
@@ -85,7 +71,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
-            <version>${registry-component.version}</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -120,12 +106,39 @@
             <artifactId>org.wso2.carbon.core</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.profiles.ui</artifactId>
+            <version>${registry-component.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.resource.ui</artifactId>
+            <version>${governance-component.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.account.mgt.ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.manager.dashboard.stub</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
-
 
     <properties>
         <eclipse.version>3.2.0</eclipse.version>
         <!-- Component versions == Carbon version, if not, please change the properties below. -->
         <registry-component.version>4.2.0</registry-component.version>
-   </properties>
+       <governance-component.version>4.2.0</governance-component.version>
+    </properties>
+
+
 </project>

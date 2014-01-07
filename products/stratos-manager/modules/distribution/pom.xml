@@ -22,16 +22,16 @@
 
     <parent>
         <groupId>org.apache.stratos</groupId>
-        <artifactId>stratos-controller-parent</artifactId>
+        <artifactId>stratos-manager-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>apache-stratos-sc</artifactId>
+    <artifactId>apache-stratos-manager</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Stratos - Distribution</name>
-    <description>Apache Stratos - Distribution</description>
+    <name>Apache Stratos Manager - Distribution</name>
+    <description>Apache Stratos Manager Distribution</description>
 
     <dependencies>
         <dependency>

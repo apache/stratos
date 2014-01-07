@@ -40,7 +40,7 @@
         <module>common</module>
         <module>tenant-mgt</module>
         <module>gapp</module>
-        <module>throttling</module>
+        <!--module>throttling</module-->
         <module>usage</module>
         <module>deployment</module>
         <module>status-monitor</module>

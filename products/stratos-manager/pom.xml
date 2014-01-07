@@ -27,11 +27,11 @@
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
-    <artifactId>stratos-controller-parent</artifactId>
+    <artifactId>stratos-manager-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Controller Parent</name>
+    <name>Apache Stratos Manager - Parent</name>
     <url>http://apache.org</url>
-    <description>Apache Stratos Controller Parent</description>
+    <description>Apache Stratos Manager Parent</description>
 
     <modules>
         <module>modules/styles</module>
