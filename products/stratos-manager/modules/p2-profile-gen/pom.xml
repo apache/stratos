@@ -247,7 +247,7 @@
                     <!--				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.throttle.feature:${carbon.version}</featureArtifactDef> -->
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.caching.feature:${carbon.version}</featureArtifactDef>
 				    <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.rm.server.feature:4.2.0</featureArtifactDef>
-				    <featureArtifactDef>org.apache.stratos:org.apache.stratos.adc.mgt.feature:${project.version}</featureArtifactDef>
+				    <featureArtifactDef>org.apache.stratos:org.apache.stratos.manager.feature:${project.version}</featureArtifactDef>
 				<featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.cartridge.mgt.ui.feature:${project.version}
                                 </featureArtifactDef>
@@ -430,7 +430,7 @@
 				    <version>${project.version}</version>
 				</feature>
 				<feature>
-                                    <id>org.apache.stratos.adc.mgt.feature.group</id>
+                                    <id>org.apache.stratos.manager.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
 				<feature>

@@ -46,7 +46,7 @@
         <module>org.apache.stratos.cloud.controller</module>
         <!-- ADC -->
         <module>org.apache.stratos.adc.topology.mgt</module>
-        <module>org.apache.stratos.adc.mgt</module>
+        <module>org.apache.stratos.manager</module>
         <module>org.apache.stratos.deployment</module>
         <!-- CLI -->
         <module>org.apache.stratos.cli</module>
