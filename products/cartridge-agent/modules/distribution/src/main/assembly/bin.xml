@@ -30,7 +30,7 @@
             <outputDirectory>/bin</outputDirectory>
             <fileMode>0755</fileMode>
             <includes>
-                <include>cartridge-agent.sh</include>
+                <include>stratos.sh</include>
             </includes>
         </fileSet>
         <fileSet>
