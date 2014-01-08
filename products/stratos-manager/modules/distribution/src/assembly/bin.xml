@@ -67,6 +67,10 @@
         <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps</outputDirectory>
             <excludes>
                 <exclude>**/publisher/**</exclude>
+                <exclude>**/store/**</exclude>
+                <exclude>**/store-admin/**</exclude>
+                <exclude>**/storage/**</exclude>
+                <exclude>**/social/**</exclude>
             </excludes>
         </fileSet>
         <fileSet>
