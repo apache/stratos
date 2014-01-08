@@ -1,0 +1,90 @@
+<div class="container content-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>{{title}}</h1>
+        </div>
+    </div>
+</div>
+<div class="container" style="display: none;" id="addItemSection">
+        <div class="row">
+              <div class="col-md-12">
+                  <h2>Deploy New Cartridge</h2>
+                  <form role="form">
+                        <label for="policy" class="required">Policy Configuration</label>
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6 padding-remover-left">
+                                    <textarea class="form-control" rows="11" id="policy"></textarea>
+                                    <button type="button" class="btn btn-primary" id="deployPolicy">Deploy Cartridge</button>
+                                    <a>Cancel</a>
+                                </div>
+                                <div class="col-md-6">
+                                    <i class="icons-help"></i>
+                                    Example configuration:
+                                    <pre>
+                                    {
+                                    "partition":{
+                                          "id": "P1",
+                                          "provider": "ec2",
+                                          "property": [
+                                              {
+                                                "name": "region",
+                                                "value": "ap-southeast-1"
+                                              }
+                                          ],
+                                          "partitionMin": "1",
+                                          "partitionMax": "3"
+                                       }
+                                    }
+                                    </pre>
+                                </div>
+                            </div>
+
+                    </div>
+
+
+                  </form>
+
+              </div>
+        </div>
+    </div>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+
+
+            <div class="panel-group" id="accordion">
+
+
+                {{#each cartridge_deployments}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                {{name}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{key}}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <pre>{{policy}}</pre>
+                            <textarea style="display:none" class="jsonEditor">{{policy}}</textarea>
+                            <button class="btn btn-primary js_jsonEdit">Edit</button>
+                            <button class="btn btn-primary js_jsonSave" style="display:none">Save</button>
+                            <a class="js_jsonCancel" style="display:none">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
+<script src="{{url "/themes/theme1/ui/js/configure_stratos.js"}}"></script>

@@ -1,7 +1,9 @@
 <%
 var caramel = require('caramel');
 var lbs = require('/data/lbs.json');
+var config_status = require('/data/config_status.json');
 caramel.render({
-    lbs:lbs
+    lbs:lbs,
+    config_status:config_status
 });
 %>
