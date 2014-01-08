@@ -27,7 +27,6 @@ import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyReceiver;
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.StratosDBUtils;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;
@@ -54,12 +53,6 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                "org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
  *                unbind="unsetRegistryService"
- * @scr.reference name="topology.mgt.service"
- *                interface=
- *                "org.apache.stratos.adc.topology.mgt.service.TopologyManagementService"
- *                cardinality="1..1" policy="dynamic"
- *                bind="setTopologyManagementService"
- *                unbind="unsetTopologyManagementService"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService"
  *                unbind="unsetTaskService"
@@ -159,12 +152,12 @@ public class ADCManagementServerComponent {
     protected void unsetRegistryService(RegistryService registryService) {
     }
 
-    protected void setTopologyManagementService(TopologyManagementService topologyMgtService) {
+    /*protected void setTopologyManagementService(TopologyManagementService topologyMgtService) {
         DataHolder.setTopologyMgtService(topologyMgtService);
     }
 
     protected void unsetTopologyManagementService(TopologyManagementService topologyMgtService) {
-    }
+    }*/
 
     protected void setTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {

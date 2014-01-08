@@ -22,20 +22,18 @@ package org.apache.stratos.manager.service;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dto.*;
 import org.apache.stratos.manager.exception.*;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
+import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.manager.utils.PolicyHolder;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -254,11 +252,11 @@ public class ApplicationManagementService extends AbstractAdmin {
 					if (!cartridgeMatches(cartridgeInfo, subscription, searchPattern)) {
 						continue;
 					}
-					TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
+					/*TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
 					String[] ips = topologyMgtService.getActiveIPs(subscription.getCartridge(),
 							subscription.getClusterDomain(), subscription.getClusterSubdomain());
 					Cartridge cartridge = ApplicationManagementUtil.populateCartridgeInfo(cartridgeInfo, subscription, ips, getTenantDomain());
-					cartridges.add(cartridge);
+					cartridges.add(cartridge);*/
 				}
 			} else {
 				if (log.isDebugEnabled()) {

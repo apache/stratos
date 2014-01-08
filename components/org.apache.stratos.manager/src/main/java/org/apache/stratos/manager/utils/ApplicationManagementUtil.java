@@ -29,6 +29,11 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.DataCartridge;
@@ -41,13 +46,6 @@ import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.service.RepositoryInfoBean;
-import org.apache.stratos.adc.topology.mgt.service.TopologyManagementService;
-import org.apache.stratos.adc.topology.mgt.serviceobjects.DomainContext;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -286,7 +284,7 @@ public class ApplicationManagementUtil {
 					}
 				}
 
-                TopologyManagementService topologyService = DataHolder.getTopologyMgtService();
+                /*TopologyManagementService topologyService = DataHolder.getTopologyMgtService();
                 DomainContext[] domainContexts = topologyService.getDomainsAndSubdomains(cartridgeType, tenantId);
                 log.info("Retrieved " + domainContexts.length + " domain and corresponding subdomain pairs");
 
@@ -311,7 +309,7 @@ public class ApplicationManagementUtil {
                 	String msg = "Domain contexts not found for " + cartridgeType + " and tenant id " + tenantId;
                     log.warn(msg);
                     throw new ADCException(msg);
-                }
+                }*/
             }
         }
 
@@ -928,13 +926,14 @@ public class ApplicationManagementUtil {
             throw new ADCException("Cannot get cartridge info: " + sub.getCartridge(), e);
         }
 
-        TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
+        /*TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
 
         String[] ips =
                 topologyMgtService.getActiveIPs(sub.getCartridge(),
                         sub.getClusterDomain(),
                         sub.getClusterSubdomain());
-        return populateCartridgeInfo(cartridgeInfo, sub, ips, tenantDomain);
+        return populateCartridgeInfo(cartridgeInfo, sub, ips, tenantDomain);*/
+        return null;
     }
 
     public static void registerService(String cartridgeType, String domain, String subDomain,

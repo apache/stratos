@@ -35,7 +35,7 @@
 
     <modules>
         <module>org.apache.stratos.manager.server.feature</module>
-        <module>org.apache.stratos.adc.topology.mgt.feature</module>
+        <!--module>org.apache.stratos.adc.topology.mgt.feature</module-->
         <module>org.apache.stratos.manager.feature</module>
     </modules>
 

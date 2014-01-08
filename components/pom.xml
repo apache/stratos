@@ -44,8 +44,8 @@
         <module>org.apache.stratos.autoscaler</module>
         <!-- CC -->
         <module>org.apache.stratos.cloud.controller</module>
-        <!-- ADC -->
-        <module>org.apache.stratos.adc.topology.mgt</module>
+        <!-- SM -->
+        <!--module>org.apache.stratos.adc.topology.mgt</module-->
         <module>org.apache.stratos.manager</module>
         <module>org.apache.stratos.deployment</module>
         <!-- CLI -->

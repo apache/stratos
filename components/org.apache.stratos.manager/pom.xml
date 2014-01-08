@@ -51,11 +51,11 @@
             <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.adc.topology.mgt</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
@@ -108,6 +108,11 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
