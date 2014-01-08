@@ -111,7 +111,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/src/test/resources/artifacts/jar
+                            <outputDirectory>${basedir}/target/resources/artifacts/jar
                             </outputDirectory>
                             <includeTypes>jar</includeTypes>
                             <includeArtifactIds>
