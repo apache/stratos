@@ -1,7 +1,9 @@
 <%
 var caramel = require('caramel');
 var policy_deployments = require('/data/policy_deployments.json');
+var config_status = require('/data/config_status.json');
 caramel.render({
-    policy_deployments:policy_deployments
+    policy_deployments:policy_deployments,
+    config_status:config_status
 });
 %>
