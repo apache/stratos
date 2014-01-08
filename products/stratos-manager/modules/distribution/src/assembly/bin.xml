@@ -63,6 +63,13 @@
 	    </excludes>
 	</fileSet>
         <fileSet>
+        <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/jaggeryapps</directory>
+        <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps</outputDirectory>
+            <excludes>
+                <exclude>**/publisher/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>target/shopping-cart-global-${shoppingcart.global.version}</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/samples/bin</outputDirectory>
             <includes>
