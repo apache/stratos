@@ -25,6 +25,7 @@ import org.apache.stratos.manager.subscription.CartridgeSubscription;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LookupDataHolder implements Serializable {
@@ -59,12 +60,12 @@ public class LookupDataHolder implements Serializable {
 
     public void putSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        if (clusterIdToSubscription.getSubscription(cartridgeSubscription.getClusterDomain()) != null) {
+        /*if (clusterIdToSubscription.getSubscription(cartridgeSubscription.getClusterDomain()) != null) {
             if(log.isDebugEnabled()) {
                 log.debug("Overwriting the existing CartridgeSubscription for cluster " + cartridgeSubscription.getClusterDomain() +
                 " in [Cluster Id -> CartridgeSubscription] map");
             }
-        }
+        }*/
         // add or update
         clusterIdToSubscription.addSubscription(cartridgeSubscription);
 
@@ -123,7 +124,7 @@ public class LookupDataHolder implements Serializable {
 
     }
 
-    public CartridgeSubscription getSubscription (String clusterId) {
+    public Set<CartridgeSubscription> getSubscription (String clusterId) {
 
         return clusterIdToSubscription.getSubscription(clusterId);
 

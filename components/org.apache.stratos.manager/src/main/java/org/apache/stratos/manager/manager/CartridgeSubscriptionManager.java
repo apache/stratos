@@ -22,14 +22,12 @@ package org.apache.stratos.manager.manager;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
-import org.apache.stratos.manager.payload.BasicPayloadData;
-import org.apache.stratos.manager.payload.PayloadData;
-import org.apache.stratos.manager.payload.PayloadFactory;
-import org.apache.stratos.manager.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
@@ -41,13 +39,9 @@ import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Property;
 import org.wso2.carbon.context.CarbonContext;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Manager class for the purpose of managing CartridgeSubscriptionInfo subscriptions, groupings, etc.
@@ -176,8 +170,10 @@ public class CartridgeSubscriptionManager {
                  cartridgeType + ", Repo URL: " + repositoryURL + ", Policy: " +
                  autoscalingPolicyName);
 
+        //moved to SubscriptionSingleTenantBehaviour#createSubscription method
+
         //Create the payload
-        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(cartridgeSubscription);
+        /*BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(cartridgeSubscription);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
@@ -210,12 +206,15 @@ public class CartridgeSubscriptionManager {
         }
 
         cartridgeSubscription.setPayloadData(payloadData);
+        */
 
         // Publish tenant subscribed event to message broker
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                 cartridgeSubscription.getCartridgeInfo().getType());
-        
-        if(cartridgeInfo.getMultiTenant()) {
+
+        //moved to SubscriptionMultiTenantBehaviour#createSubscription method
+
+        /*if(cartridgeInfo.getMultiTenant()) {
         	log.info(" Multitenant --> Publishing Artifact update event -- ");
         	log.info(" Values :  cluster id - " + cartridgeSubscription.getClusterDomain() + "  tenant - " + 
         			cartridgeSubscription.getSubscriber().getTenantId());
@@ -223,7 +222,7 @@ public class CartridgeSubscriptionManager {
             		cartridgeSubscription.getClusterDomain(), // clusterId 
             		String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
             publisher.publish();
-        } 
+        }*/
 
         return cartridgeSubscription;
     }

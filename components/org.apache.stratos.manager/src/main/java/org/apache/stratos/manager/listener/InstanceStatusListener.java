@@ -30,6 +30,7 @@ import org.apache.stratos.messaging.util.Util;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import java.util.Set;
 
 public class InstanceStatusListener implements MessageListener {
 
@@ -70,15 +71,23 @@ public class InstanceStatusListener implements MessageListener {
                         ". Not sending the Depsync event");
                 }*/
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                CartridgeSubscription cartridgeSubscription = new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterId);
-                if (cartridgeSubscription.getRepository() != null) {
-                    ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(), clusterId,
-                            String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
-                    publisher.publish();
-                } else {
-                    //TODO: make this log debug
-                    log.info("No repository found for subscription with alias: " + cartridgeSubscription.getAlias() + ", type: " + cartridgeSubscription.getType()+
-                            ". Not sending the Depsync event");
+                Set<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterId);
+
+                for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                    // If only this is a non-multitenant Cartridge Subscription and repository is not null, need to
+                    // send an ArtifactUpdatedEvent event. If this is a multitenant cartridge, sending this event
+                    // will be done in SubscriptionMultiTenantBehaviour#createSubscription method
+                    if (!cartridgeSubscription.getCartridgeInfo().getMultiTenant() && cartridgeSubscription.getRepository() != null) {
+                        ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(), clusterId,
+                                String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+                        publisher.publish();
+
+                    } else {
+                        if(log.isDebugEnabled()) {
+                            log.debug("No repository found for subscription with alias: " + cartridgeSubscription.getAlias() + ", type: " + cartridgeSubscription.getType()+
+                                    ". Not sending the Artifact Updated event");
+                        }
+                    }
                 }
 
             }

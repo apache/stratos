@@ -24,35 +24,80 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ClusterIdToSubscription implements Serializable {
 
     private static final Log log = LogFactory.getLog(ClusterIdToSubscription.class);
 
-    // Map: Cluster Id (Domain) -> CartridgeSubscription
-    private Map<String, CartridgeSubscription> clusterIdToCartridgeSubscription;
+    // Map: Cluster Id (Domain) -> Set<CartridgeSubscription>
+    private Map<String, Set<CartridgeSubscription>> clusterIdToCartridgeSubscription;
 
     public ClusterIdToSubscription() {
-        clusterIdToCartridgeSubscription = new HashMap<String, CartridgeSubscription>();
+        clusterIdToCartridgeSubscription = new HashMap<String, Set<CartridgeSubscription>>();
     }
 
     public void addSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        clusterIdToCartridgeSubscription.put(cartridgeSubscription.getClusterDomain(), cartridgeSubscription);
+        //clusterIdToCartridgeSubscription.put(cartridgeSubscription.getClusterDomain(), cartridgeSubscription);
+        String clusterDomain = cartridgeSubscription.getClusterDomain();
+        if (clusterIdToCartridgeSubscription.containsKey(clusterDomain)) {
+            Set<CartridgeSubscription> existingSubscriptions = clusterIdToCartridgeSubscription.get(clusterDomain);
+            // if an existing subscription is present, remove it
+            if(existingSubscriptions.remove(cartridgeSubscription)){
+                if(log.isDebugEnabled()) {
+                    log.debug("Removed the existing Cartridge Subscription for cluster id " + clusterDomain + " in [Cluster Id -> Set<CartridgeSubscription>] map");
+                }
+            }
+            // add or update
+            existingSubscriptions.add(cartridgeSubscription);
+            if(log.isDebugEnabled()) {
+                log.debug("Added Cartridge Subscription for cluster id " + clusterDomain + " in [Cluster Id -> Set<CartridgeSubscription>] map");
+            }
+
+        } else {
+            // create a new set and add it
+            Set<CartridgeSubscription> subscriptions = new HashSet<CartridgeSubscription>();
+            subscriptions.add(cartridgeSubscription);
+            clusterIdToCartridgeSubscription.put(clusterDomain, subscriptions);
+        }
     }
 
-    public CartridgeSubscription getSubscription (String clusterId) {
+    public Set<CartridgeSubscription> getSubscription (String clusterId) {
 
         return clusterIdToCartridgeSubscription.get(clusterId);
     }
 
     public void removeSubscription (String clusterId) {
 
-        if (clusterIdToCartridgeSubscription.remove(clusterId) != null) {
+        /*if (clusterIdToCartridgeSubscription.remove(clusterId) != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Deleted the subscription for cluster " + clusterId + " from [Cluster Id -> CartridgeSubscription] map");
+            }
+        }*/
+        // remove Subscription from clusterIdToCartridgeSubscription map
+        Set<CartridgeSubscription> existingSubscriptions = clusterIdToCartridgeSubscription.get(clusterId);
+        if (existingSubscriptions != null && !existingSubscriptions.isEmpty()) {
+            // iterate through the set
+            Iterator<CartridgeSubscription> iterator = existingSubscriptions.iterator();
+            while (iterator.hasNext()) {
+                CartridgeSubscription cartridgeSubscription = iterator.next();
+                // if a matching CartridgeSubscription is found, remove
+                if (cartridgeSubscription.getClusterDomain().equals(clusterId)) {
+                    iterator.remove();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Deleted the subscription for cluster id " + clusterId + " from [Cluster Id -> Set<CartridgeSubscription>] map");
+                    }
+                    break;
+                }
+            }
+        }
+
+        // if the Subscriptions set is empty now, remove it from cartridgeTypeToSubscriptions map
+        if (existingSubscriptions != null && existingSubscriptions.isEmpty()) {
+            clusterIdToCartridgeSubscription.remove(clusterId);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted the subscriptions set for cluster id " + clusterId + " from [Cluster Id -> Set<CartridgeSubscription>] map");
             }
         }
     }

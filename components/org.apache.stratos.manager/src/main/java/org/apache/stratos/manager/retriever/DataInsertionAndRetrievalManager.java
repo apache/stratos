@@ -29,6 +29,7 @@ import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 
 import java.util.Collection;
+import java.util.Set;
 
 public class DataInsertionAndRetrievalManager {
 
@@ -238,13 +239,13 @@ public class DataInsertionAndRetrievalManager {
         }
     }
 
-    public CartridgeSubscription getCartridgeSubscription (String clusterId) {
+    public Set<CartridgeSubscription> getCartridgeSubscription (String clusterId) {
 
         // acquire read lock
         LookupDataHolder.getInstance().acquireReadLock();
 
         try {
-            CartridgeSubscription cartridgeSubscription = LookupDataHolder.getInstance().getSubscription(clusterId);
+            Set<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscription(clusterId);
             /*if (cartridgeSubscription == null) {
                 // not available in the cache, look in the registry
                 if (log.isDebugEnabled()) {
@@ -264,7 +265,7 @@ public class DataInsertionAndRetrievalManager {
                 // LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
             }*/
 
-            return cartridgeSubscription;
+            return cartridgeSubscriptions;
 
         } finally {
             // release read lock
