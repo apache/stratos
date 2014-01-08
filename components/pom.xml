@@ -86,10 +86,10 @@
         <module>org.apache.stratos.status.monitor.agent</module>
         <module>org.apache.stratos.status.monitor.ui</module>
         <!-- Usage -->
-        <module>org.apache.stratos.usage.agent</module>
+        <!--module>org.apache.stratos.usage.agent</module>
         <module>org.apache.stratos.usage</module>
         <module>org.apache.stratos.usage.summary.helper</module>
-        <module>org.apache.stratos.usage.ui</module>
+        <module>org.apache.stratos.usage.ui</module-->
 
         <module>org.apache.stratos.tenant.dispatcher</module>
         <module>org.apache.stratos.keystore.mgt</module>
