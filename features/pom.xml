@@ -39,8 +39,6 @@
         <module>load-balancer</module>
         <!-- Auto-Scaler -->
         <module>autoscaler</module>
-        <!-- Artifact Distribution Coordinator -->
-        <module>adc</module>
         <!-- Coud Controller -->
         <module>cloud-controller</module>
         <!-- Manager -->

@@ -16,8 +16,8 @@ package org.apache.stratos.rest.endpoint.mock;/*
 * under the License.
 */
 
-import org.apache.stratos.adc.mgt.dto.Cartridge;
-import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
+import org.apache.stratos.manager.dto.Cartridge;
+import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 
