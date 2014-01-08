@@ -68,7 +68,7 @@ public class ClusterIdToSubscription implements Serializable {
         return clusterIdToCartridgeSubscription.get(clusterId);
     }
 
-    public void removeSubscription (String clusterId) {
+    public void removeSubscription (String clusterId, String subscriptionAlias) {
 
         /*if (clusterIdToCartridgeSubscription.remove(clusterId) != null) {
             if (log.isDebugEnabled()) {
@@ -83,7 +83,7 @@ public class ClusterIdToSubscription implements Serializable {
             while (iterator.hasNext()) {
                 CartridgeSubscription cartridgeSubscription = iterator.next();
                 // if a matching CartridgeSubscription is found, remove
-                if (cartridgeSubscription.getClusterDomain().equals(clusterId)) {
+                if (cartridgeSubscription.getAlias().equals(subscriptionAlias)) {
                     iterator.remove();
                     if (log.isDebugEnabled()) {
                         log.debug("Deleted the subscription for cluster id " + clusterId + " from [Cluster Id -> Set<CartridgeSubscription>] map");

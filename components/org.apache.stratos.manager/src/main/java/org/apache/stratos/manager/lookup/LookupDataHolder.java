@@ -86,7 +86,7 @@ public class LookupDataHolder implements Serializable {
     public void removeSubscription (int tenantId, String type, String subscriptionAlias, String clusterId) {
 
         tenantIdToSubscriptionContext.removeSubscriptionContext(tenantId, type, subscriptionAlias);
-        clusterIdToSubscription.removeSubscription(clusterId);
+        clusterIdToSubscription.removeSubscription(clusterId, subscriptionAlias);
     }
 
     public Collection<CartridgeSubscription> getSubscriptions (int tenantId) {
