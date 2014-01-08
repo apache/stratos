@@ -41,13 +41,7 @@
             <artifactId>org.apache.stratos.manager.server.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-            </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.adc.topology.mgt.feature</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            </dependency>
+        </dependency>
     </dependencies>
 
     <build>
@@ -68,7 +62,6 @@
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <includedFeatures>
                                 <includedFeatureDef>org.apache.stratos:org.apache.stratos.manager.server.feature:${project.version}</includedFeatureDef>
-				<includedFeatureDef>org.apache.stratos:org.apache.stratos.adc.topology.mgt.feature:${project.version}</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

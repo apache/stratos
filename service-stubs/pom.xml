@@ -51,7 +51,6 @@
         <module>org.apache.stratos.tenant.register.gapp.stub</module>
         <module>org.apache.stratos.redirector.servlet.stub</module>
         <module>org.apache.stratos.adc.reponotification.service.stub</module>
-        <!--module>org.apache.stratos.adc.topologymgt.service.stub</module-->
         <module>org.apache.stratos.billing.mgt.stub</module>
         <module>org.apache.stratos.throttle.stub</module>
         <module>org.apache.stratos.usage.meteringqueryds.stub</module>
