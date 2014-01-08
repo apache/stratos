@@ -42,7 +42,7 @@
         <module>tenant-mgt</module>
         <module>gapp</module>
         <!--module>throttling</module-->
-        <module>usage</module>
+        <!--module>usage</module-->
         <module>deployment</module>
         <module>status-monitor</module>
         <module>tenant-activity</module>

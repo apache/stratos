@@ -173,12 +173,12 @@
 				    <featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.tenant.activity.server.feature:${project.version}
 				    </featureArtifactDef>
-				    <featureArtifactDef>
+				    <!--featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.usage.feature:${project.version}
 				    </featureArtifactDef>
 				    <featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.usage.agent.feature:${project.version}
-				    </featureArtifactDef>
+				    </featureArtifactDef-->
 				    <!--featureArtifactDef>
 					org.apache.stratos:org.apache.stratos.throttling.manager.feature:${project.version}
 				    </featureArtifactDef-->
@@ -398,14 +398,14 @@
 				</feature>
 				<!--End GApp SSO features -->
 
-				<feature>
+				<!--feature>
 				    <id>org.apache.stratos.usage.feature.group</id>
 				    <version>${project.version}</version>
 				</feature>
 				<feature>
 				    <id>org.apache.stratos.usage.agent.feature.group</id>
 				    <version>${project.version}</version>
-				</feature>
+				</feature-->
 				<!--feature>
 				    <id>org.apache.stratos.throttling.manager.feature.group</id>
 				    <version>${project.version}</version>
