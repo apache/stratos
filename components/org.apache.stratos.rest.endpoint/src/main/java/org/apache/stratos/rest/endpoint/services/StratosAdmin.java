@@ -20,9 +20,9 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.adc.mgt.dto.Cartridge;
-import org.apache.stratos.adc.mgt.dto.SubscriptionInfo;
-import org.apache.stratos.adc.mgt.exception.ADCException;
+import org.apache.stratos.manager.dto.Cartridge;
+import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;

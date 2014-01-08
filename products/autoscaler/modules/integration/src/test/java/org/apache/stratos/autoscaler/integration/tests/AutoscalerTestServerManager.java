@@ -82,6 +82,9 @@ public class AutoscalerTestServerManager extends TestServerManager {
 		Assert.assertNotNull(carbonHome, "carbon home cannot be null");
 		String resourceLocation = System.getProperty("framework.resource.location", 
 				System.getProperty("basedir") + "src" + File.separator + "test" + File.separator + "resources" + File.separator );
+		String jarArtifactDir =  
+				System.getProperty("basedir") + File.separator + "target" + File.separator + "resources" + File.separator + "artifacts"+ File.separator + "jar" ;
+		
 		String libDir = carbonHome + File.separator + "repository"+ File.separator + "components"+ File.separator + "lib";
 		String confDir = carbonHome + File.separator + "repository"+ File.separator + "conf";
 		
@@ -95,7 +98,7 @@ public class AutoscalerTestServerManager extends TestServerManager {
 		log.info("Copying jndi.properties file....");
 		FileUtils.copyFile(new File(resourceLocation,"jndi.properties"),new File(confDir,"jndi.properties"));
 		log.info("Copying ActiveMQ dependencies....");
-		FileUtils.copyDirectory(new File(resourceLocation + File.separator + "artifacts"+ File.separator + "jar"), new File(libDir));
+		FileUtils.copyDirectory(new File(jarArtifactDir), new File(libDir));
 		log.info("Copying autoscaler.xml....");
 		FileUtils.copyFile(new File(resourceLocation,"autoscaler.xml"),new File(confDir,"autoscaler.xml"));
 	}

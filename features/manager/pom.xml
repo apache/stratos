@@ -37,6 +37,7 @@
     <url>http://apache.org</url>
 
     <modules>
+	<module>stratos-mgt</module>
         <module>common</module>
         <module>tenant-mgt</module>
         <module>gapp</module>

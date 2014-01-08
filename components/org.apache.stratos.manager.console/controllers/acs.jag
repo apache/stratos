@@ -4,6 +4,7 @@
     log.info("console ACS page....");
     var    configs = require('/config/console.js').config(),
             process = require("process"),
+            util = require('/util/utility.jag'),
             samlResponse = request.getParameter('SAMLResponse'),
             sessionId = session.getId(),
             samlRequest = request.getParameter('SAMLRequest'),
@@ -34,10 +35,16 @@
 
                 if (sso.client.validateSignature(samlRespObj, keyStoreProps)) {
                     var sessionObj = sso.client.decodeSAMLLoginResponse(samlRespObj, samlResponse, sessionId);
-
+                    var samlToken = sso.client.getB64EncodedtSAMLAssertion(samlRespObj);
+                    log.info("B64 encoded SAML2Token : " + samlToken.b64Encoded);
+                    var encodedString = sso.client.b64encode("LATjzZ4FvQc2gFEfwcitay78lQQa:LeZD0oN0ZLTLjLmRqphX4Ulrr5wa");
+                    log.info("encoded string : " + encodedString);
+                    var accessToken = util.consoleAppUtil.getOauthAccessToken(samlToken.b64Encoded,encodedString);
+                    log.info(accessToken.data.access_token);
+                    session.put("access_token",accessToken.data.access_token);
                     if (sessionObj.sessionIndex != null || sessionObj.sessionIndex != 'undefined') {
                         session.put("LOGGED_IN_USER", sessionObj.loggedInUser);
-                        session.put("Logged", "true");
+                        //session.put("Logged", "true");
 
                         //sso_sessions[sessionObj.sessionIndex] = sessionObj.sessionId;
 
