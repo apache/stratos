@@ -226,12 +226,6 @@
             <filtered>true</filtered>
         </file>
         <file>
-            <source>src/main/conf/cipher-text.properties</source>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}/lib</outputDirectory>
-            <destName>cipher-text.properties</destName>
-            <filtered>true</filtered>
-        </file>
-        <file>
             <source>src/main/conf/nhttp.properties</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>nhttp.properties</destName>
@@ -296,12 +290,47 @@
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
         </file-->
+
+              <!--Copying config files from kernel patches -->
+
         <file>
-            <source>
-                target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml
-            </source>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts/mysql.sql</source>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/dbscripts</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+
+        <!-- <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/axis2_client.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/axis2.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/tenant-axis2.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+        </file>-->
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties</source>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/security/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-tool.properties</source>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/security/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+
+
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0004/repository/conf/carbon.xml</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
+
     </files>
 </assembly>

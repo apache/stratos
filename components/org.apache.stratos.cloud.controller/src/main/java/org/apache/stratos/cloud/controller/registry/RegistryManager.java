@@ -80,6 +80,11 @@ public class RegistryManager {
      */
     public void persist(FasterLookUpDataHolder dataObj) throws RegistryException {
         try {
+        	
+        	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        	
             registryService.beginTransaction();
 
             Resource nodeResource = registryService.newResource();
@@ -101,6 +106,11 @@ public class RegistryManager {
 
     public void persistTopology(Topology topology) throws RegistryException {
         try {
+        	
+        	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        	
             registryService.beginTransaction();
 
             Resource nodeResource = registryService.newResource();
