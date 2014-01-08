@@ -195,6 +195,18 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					}
 					dataCartridgeAlias = commandLine.getOptionValue(CliConstants.DATA_ALIAS_OPTION);
 				}
+
+                if (depPolicy == null) {
+                    System.out.println("Deployment policy is required.");
+                    context.getStratosApplication().printUsage(getName());
+                    return CliConstants.BAD_ARGS_CODE;
+                }
+
+                if (asPolicy == null) {
+                    System.out.println("Autoscaling policy is required.");
+                    context.getStratosApplication().printUsage(getName());
+                    return CliConstants.BAD_ARGS_CODE;
+                }
 				
 				if (StringUtils.isNotBlank(username) && StringUtils.isBlank(password)) {
 					password = context.getApplication().getInput("GIT Repository Password", '*');

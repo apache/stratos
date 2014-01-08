@@ -763,7 +763,7 @@ public class RestCommandLineService {
             AutoscalePolicy[] policyArry = new AutoscalePolicy[policyList.getAutoscalePolicy().size()];
             policyArry = policyList.getAutoscalePolicy().toArray(policyArry);
 
-            System.out.println("Available Partitions:");
+            System.out.println("Available Autoscale Policies:");
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID", "Display name", "Description");
             System.out.println();
 
