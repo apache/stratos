@@ -36,16 +36,25 @@ public class CartridgeAgent implements Runnable {
 
         String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
         if(StringUtils.isBlank(jndiPropertiesDir)) {
+            if(log.isErrorEnabled()){
+                log.error(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
+            }
             throw new RuntimeException(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
         }
 
         String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
         if(StringUtils.isBlank(payloadPath)) {
+            if(log.isErrorEnabled()){
+                log.error(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
+            }
             throw new RuntimeException(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
         }
 
         String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
         if(StringUtils.isBlank(extensionsDir)) {
+            if(log.isErrorEnabled()){
+                log.error(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
+            }
             throw new RuntimeException(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
         }
 
