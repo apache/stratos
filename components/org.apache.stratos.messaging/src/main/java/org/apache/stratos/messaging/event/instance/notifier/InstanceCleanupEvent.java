@@ -29,8 +29,7 @@ public class InstanceCleanupEvent extends InstanceNotifierEvent implements Seria
     private String clusterId;
     private String memberId;
 
-    public InstanceCleanupEvent(String clusterId, String memberId) {
-        this.clusterId = clusterId;
+    public InstanceCleanupEvent(String memberId) {
         this.memberId = memberId;
     }
 
@@ -40,5 +39,9 @@ public class InstanceCleanupEvent extends InstanceNotifierEvent implements Seria
 
     public String getMemberId() {
         return memberId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 }
