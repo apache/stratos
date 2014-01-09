@@ -383,6 +383,23 @@
 	 org.wso2.carbon.security.util.SecurityTokenStore
 	-->
 	<!--<TokenStoreClassName>org.wso2.carbon.security.util.SecurityTokenStore</TokenStoreClassName> -->
+
+
+         <!--
+            Encrypt Decrypt Store will be used for encrypting and decrypting
+        -->
+        <RegistryKeyStore>
+            <!-- Keystore file location-->
+            <Location>${carbon.home}/repository/resources/security/wso2carbon.jks</Location>
+            <!-- Keystore type (JKS/PKCS12 etc.)-->
+            <Type>JKS</Type>
+            <!-- Keystore password-->
+            <Password>wso2carbon</Password>
+            <!-- Private Key alias-->
+            <KeyAlias>wso2carbon</KeyAlias>
+            <!-- Private Key password-->
+            <KeyPassword>wso2carbon</KeyPassword>
+        </RegistryKeyStore>
     </Security>
 
     <!--

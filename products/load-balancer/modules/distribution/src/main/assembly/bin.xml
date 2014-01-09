@@ -32,7 +32,6 @@
                 <exclude>**/conf/axis2/axis2.xml</exclude>
                 <exclude>**/conf/mgt-transports.xml</exclude>
                 <exclude>**/conf/synapse.xml</exclude>
-                <exclude>**/conf/cipher-text.properties</exclude>
                 <exclude>**/log4j.properties</exclude>
                 <exclude>**/dbscripts/**</exclude>
                 <exclude>**/native/*</exclude>
@@ -52,7 +51,6 @@
                 <exclude>**/build.xml</exclude>
                 <exclude>**/chpasswd.*</exclude>
                 <exclude>**/carbondump.*</exclude>
-                <exclude>**/ciphertool.*</exclude>
                 <exclude>**/jgroups-s3_ping-aws.xml</exclude>
                 <exclude>**/tomcat-users.xml</exclude>
                 <exclude>**/axis2/tenant-axis2.xml</exclude>
@@ -62,6 +60,8 @@
                 <exclude>**/*.aar</exclude>
                 <exclude>**/webapp-mode/**</exclude>
                 <exclude>**/repository/components/**</exclude>
+                <exclude>**/repository/conf/security/cipher-text.properties</exclude>
+                <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
             </excludes>
         </fileSet>
         <!-- Copying p2 profile and osgi bundles-->
@@ -105,6 +105,39 @@
                 <include>*.xsd</include>
             </includes>
         </fileSet>
+
+
+        <!-- Kernel Patches-->
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0001</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0001/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0002/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0003</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0003/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0004</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0004/*.*</include>
+            </includes>
+        </fileSet>
+
+
     </fileSets>
 
     <dependencySets>

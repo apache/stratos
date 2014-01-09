@@ -64,11 +64,11 @@ public class AutoscalerRuleEvaluator {
         if (log.isDebugEnabled()) {
             log.debug("Scale check rule is parsed successfully");
         }
-//        terminateAllKbase = readKnowledgeBase(TERMINATE_ALL_DRL_FILE_NAME);
-//
-//        if (log.isDebugEnabled()) {
-//            log.debug("Terminate all rule is parsed successfully");
-//        }
+        terminateAllKbase = readKnowledgeBase(TERMINATE_ALL_DRL_FILE_NAME);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Terminate all rule is parsed successfully");
+        }
     }
 
     
@@ -108,21 +108,21 @@ public class AutoscalerRuleEvaluator {
 
 
 
-//    public static FactHandle evaluateTerminateAll(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-//
-//        if (handle == null) {
-//
-//            ksession.setGlobal("$delegator", new RuleTasksDelegator());
-//            handle = ksession.insert(obj);
-//        } else {
-//            ksession.update(handle, obj);
-//        }
-//        ksession.fireAllRules();
-//        if(log.isDebugEnabled()){
-//            log.debug(String.format("Terminate all check executed for : %s ", obj));
-//        }
-//        return handle;
-//    }
+    public static FactHandle evaluateTerminateAll(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+
+        if (handle == null) {
+
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        ksession.fireAllRules();
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate all check executed for : %s ", obj));
+        }
+        return handle;
+    }
 
 
 
@@ -138,12 +138,12 @@ public class AutoscalerRuleEvaluator {
         ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }
-//    public StatefulKnowledgeSession getTerminateAllStatefulSession() {
-//        StatefulKnowledgeSession ksession;
-//        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
-//        ksession.setGlobal("log", RuleLog.getInstance());
-//        return ksession;
-//    }
+    public StatefulKnowledgeSession getTerminateAllStatefulSession() {
+        StatefulKnowledgeSession ksession;
+        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+        ksession.setGlobal("log", RuleLog.getInstance());
+        return ksession;
+    }
 
     public static String getLbClusterId(PartitionContext partitionContext, NetworkPartitionContext ctxt) {
         Properties props = partitionContext.getProperties();

@@ -61,7 +61,7 @@ public class CartridgeAgentConfiguration {
      *
      * @return
      */
-    public static synchronized CartridgeAgentConfiguration getInstance() {
+    public static CartridgeAgentConfiguration getInstance() {
         if (instance == null) {
             synchronized (CartridgeAgentConfiguration.class) {
                 if (instance == null) {
