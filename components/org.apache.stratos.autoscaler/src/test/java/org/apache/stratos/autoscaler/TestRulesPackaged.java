@@ -34,6 +34,7 @@ public class TestRulesPackaged {
     private static final Log log = LogFactory.getLog(TestRulesPackaged.class);
     private String minCheckDrlFilePath = "../../products/autoscaler/modules/distribution/src/main/conf/mincheck.drl";
     private String scalingDrlFilePath = "../../products/autoscaler/modules/distribution/src/main/conf/scaling.drl";
+    private String terminateAllDrlFilePath = "../../products/autoscaler/modules/distribution/src/main/conf/terminateall.drl";
     private KnowledgeBase kbase;
     private StatefulKnowledgeSession ksession;
 
@@ -45,6 +46,11 @@ public class TestRulesPackaged {
     @Test
     public void testScalingDroolsFile() {
         parseDroolsFile(scalingDrlFilePath);
+    }
+
+    @Test
+    public void testTerminateAllDroolsFile() {
+        parseDroolsFile(terminateAllDrlFilePath);
     }
 
     private void parseDroolsFile(String droolsFilePath) {
