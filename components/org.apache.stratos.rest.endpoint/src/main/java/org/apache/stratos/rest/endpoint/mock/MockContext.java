@@ -16,10 +16,16 @@ package org.apache.stratos.rest.endpoint.mock;/*
 * under the License.
 */
 
+import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import java.util.*;
 
@@ -29,6 +35,10 @@ public class MockContext {
     private Map<String,Cartridge> availableSingleTenantCartridges = new HashMap<String,Cartridge>();
     private Map<String,Cartridge> availableMultiTenantCartridges = new HashMap<String,Cartridge>();
     private Map<String,Cartridge> subscribedCartridges = new HashMap<String,Cartridge>();
+    private Map<String,TenantInfoBean> tenantMap = new HashMap<String, TenantInfoBean>();
+    private Map<String,Partition> partitionMap = new HashMap<String, Partition>();
+    private Map<String,AutoscalePolicy> autoscalePolicyMap = new HashMap<String, AutoscalePolicy>();
+    private Map<String,DeploymentPolicy> deploymentPolicyMap = new HashMap<String, DeploymentPolicy>();
 
     private Set<Cartridge> temp = new HashSet<Cartridge>();
 
@@ -77,10 +87,10 @@ public class MockContext {
          String alias = cartridgeInfoBean.getAlias();
          Cartridge subscribedCartridge;
          // retrieve the cartridge from available ones
-         if(availableSingleTenantCartridges.containsKey(alias)){
+         if(availableSingleTenantCartridges.containsKey(cartridgeType)){
             subscribedCartridge = availableSingleTenantCartridges.get(cartridgeType);
 
-         }else if(availableMultiTenantCartridges.containsKey(alias)){
+         }else if(availableMultiTenantCartridges.containsKey(cartridgeType)){
              subscribedCartridge = availableMultiTenantCartridges.get(cartridgeType);
          }else {
              throw new RuntimeException("Wrong programme sequence"); // TODO; handle properly
@@ -111,4 +121,121 @@ public class MockContext {
             subscribedCartridges.remove(alias);
         }
     }
+
+    public void addTenant(TenantInfoBean tenantInfoBean){
+          tenantMap.put(tenantInfoBean.getTenantDomain(),tenantInfoBean);
+    }
+
+    public TenantInfoBean getTenant(String tenantDomain){
+          return tenantMap.get(tenantDomain);
+    }
+
+    public void deleteTenant(String tenantDomain) {
+          tenantMap.remove(tenantDomain);
+    }
+
+    public TenantInfoBean[] getTenants() {
+        return tenantMap.values().toArray(new TenantInfoBean[0]);
+    }
+
+    public TenantInfoBean[] retrievePartialSearchTenants(String searchDomain) {
+        List<TenantInfoBean> searchResult = new LinkedList<TenantInfoBean>();
+        for(String tenantDomain : tenantMap.keySet()){
+            if(tenantDomain.contains(searchDomain)){
+                 searchResult.add(new TenantInfoBean(tenantMap.get(tenantDomain)));
+            }
+        }
+        return searchResult.toArray(new TenantInfoBean[0]);
+    }
+
+    public void activateTenant(String tenantDomain) throws RestAPIException{
+        if(tenantMap.containsKey(tenantDomain)){
+            tenantMap.get(tenantDomain).setActive(true);
+        } else{
+            throw new RestAPIException("Invalid tenant domain");
+        }
+    }
+
+    public void deactivateTenant(String tenantDomain) throws RestAPIException{
+        if(tenantMap.containsKey(tenantDomain)){
+            tenantMap.get(tenantDomain).setActive(false);
+        } else{
+            throw new RestAPIException("Invalid tenant domain");
+        }
+    }
+
+    public void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException{
+        if(availableSingleTenantCartridges.containsKey(cartridgeType)){
+            availableSingleTenantCartridges.remove(cartridgeType);
+        } else if(availableMultiTenantCartridges.containsKey(cartridgeType)){
+            availableMultiTenantCartridges.remove(cartridgeType);
+        } else{
+            throw new RestAPIException("invalid cartridge type");
+        }
+    }
+
+    public boolean addPartition(Partition partition) {
+            partitionMap.put(partition.id, partition);
+        return true;
+    }
+
+    public boolean addAutoScalingPolicyDefinition(AutoscalePolicy autoscalePolicy) {
+            autoscalePolicyMap.put(autoscalePolicy.getId(), autoscalePolicy);
+        return true;
+    }
+
+    public boolean addDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy) {
+           deploymentPolicyMap.put(deploymentPolicy.id,deploymentPolicy);
+        return true;
+
+    }
+
+    public Partition[] getPartitions() {
+        return partitionMap.values().toArray(new Partition[0]);
+    }
+
+    public Partition getPartition(String partitionId) {
+        return  partitionMap.get(partitionId);
+    }
+
+
+    public Partition[] getPartitionsOfPolicy(String deploymentPolicyId) {
+        return deploymentPolicyMap.get(deploymentPolicyId).partition.toArray(new Partition[0]);
+    }
+
+    public PartitionGroup[] getPartitionGroups(String deploymentPolicyId) {
+        return deploymentPolicyMap.get(deploymentPolicyId).partitionGroup.toArray(new PartitionGroup[0]);
+    }
+
+    public AutoscalePolicy[] getAutoscalePolicies() {
+         return autoscalePolicyMap.values().toArray(new AutoscalePolicy[0]);
+    }
+
+    public AutoscalePolicy getAutoscalePolicies(String autoscalePolicyId) {
+        return autoscalePolicyMap.get(autoscalePolicyId);
+    }
+
+    public DeploymentPolicy[] getDeploymentPolicies() {
+        return deploymentPolicyMap.values().toArray(new DeploymentPolicy[0]);
+    }
+
+    public DeploymentPolicy getDeploymentPolicies(String deploymentPolicyId) {
+        return deploymentPolicyMap.get(deploymentPolicyId);
+    }
+
+    public Partition[] getPartitions(String deploymentPolicyId, String partitionGroupId) {
+         DeploymentPolicy deploymentPolicy = deploymentPolicyMap.get(deploymentPolicyId);
+         for(PartitionGroup partitionGroup : deploymentPolicy.partitionGroup){
+             if(partitionGroup.id.equals(partitionGroupId)){
+                return partitionGroup.partition.toArray(new Partition[0]);
+             }
+         }
+         return new Partition[0];
+    }
+
+    /*public DeploymentPolicy[] getValidDeploymentPolicies(String cartridgeType) {
+        for(DeploymentPolicy deploymentPolicy : deploymentPolicyMap.values()){
+            deploymentPolicy.
+        }
+    }*/
 }
