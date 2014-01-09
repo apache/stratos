@@ -29,10 +29,12 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
 
     private final String serviceName;
     private final String clusterId;
+    private final boolean isLbCluster;
 
-    public ClusterRemovedEvent(String serviceName, String clusterId) {
+    public ClusterRemovedEvent(String serviceName, String clusterId, boolean isLbCluster) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.isLbCluster = isLbCluster;
     }
 
     public String getServiceName() {
@@ -41,5 +43,9 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public boolean isLbCluster() {
+        return isLbCluster;
     }
 }

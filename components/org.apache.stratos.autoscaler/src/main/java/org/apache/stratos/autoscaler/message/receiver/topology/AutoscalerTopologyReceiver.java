@@ -147,7 +147,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 String clusterId = e.getClusterId();
                 AbstractMonitor monitor;
 
-                if(TopologyManager.getTopology().getService(serviceName).getCluster(clusterId).isLbCluster()){
+                if(e.isLbCluster()){
                     monitor = AutoscalerContext.getInstance().removeLbMonitor(clusterId);
 
                 } else {
