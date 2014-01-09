@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.processor.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
@@ -41,10 +41,10 @@ public class GradientOfLoadAverageMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (AverageRequestsInFlightEvent.class.getName().equals(type)) {
+        if (GradientOfLoadAverageEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            AverageRequestsInFlightEvent event = (AverageRequestsInFlightEvent) Util.jsonToObject(message, AverageRequestsInFlightEvent.class);
+            GradientOfLoadAverageEvent event = (GradientOfLoadAverageEvent) Util.jsonToObject(message, GradientOfLoadAverageEvent.class);
 
             // Notify event listeners
             notifyEventListeners(event);

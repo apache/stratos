@@ -25,7 +25,7 @@ import java.io.Serializable;
  * This event is fired by Cloud Controller when a cluster is removed from the topology.
  */
 public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = -1335777148602870262L;
+    private static final long serialVersionUID = -1053510100805886845L;
 
     private final String serviceName;
     private final String clusterId;
