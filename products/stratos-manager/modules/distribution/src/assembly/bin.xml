@@ -88,7 +88,7 @@
         </fileSet>
         <fileSet>
             <directory>../../../../components/org.apache.stratos.manager.console/console</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/</outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/console</outputDirectory>
             <excludes>
                 <exclude>**/README</exclude>
             </excludes>

@@ -18,14 +18,20 @@
  */
 package org.apache.stratos.rest.endpoint.mock;
 
+import org.apache.catalina.tribes.membership.McastService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
@@ -34,21 +40,6 @@ import javax.ws.rs.*;
 @Path("/admin/")
 public class StratosTestAdmin {
     private static Log log = LogFactory.getLog(StratosTestAdmin.class);
-
-
-
-    @POST
-    @Path("/cartridge/definition/")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    @SuperTenantService(true)
-    public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
-            throws RestAPIException {
-           log.info("Cartridge definition : " + cartridgeDefinitionBean.toString());
-           MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
-    }
-
 
     @GET
     @Path("/cartridge/tenanted/list")
@@ -97,7 +88,7 @@ public class StratosTestAdmin {
     public void unsubscribe(String alias){
           MockContext.getInstance().unsubscribe(alias);
     }
-    /*
+
     @POST
     @Path("/tenant")
     @Consumes("application/json")
@@ -105,7 +96,8 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public String addTenant(TenantInfoBean tenantInfoBean) throws Exception {
-
+         MockContext.getInstance().addTenant(tenantInfoBean);
+         return "tenant added successfully...";  // why this string return type ??
     }
 
 
@@ -115,7 +107,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public void updateTenant(TenantInfoBean tenantInfoBean) throws Exception {
-
+        MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
     @GET
@@ -125,7 +117,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public TenantInfoBean getTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
-
+        return MockContext.getInstance().getTenant(tenantDomain);
     }
 
     @DELETE
@@ -135,7 +127,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public void deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
-
+         MockContext.getInstance().deleteTenant(tenantDomain);
     }
 
 
@@ -145,7 +137,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public TenantInfoBean[] retrieveTenants() throws Exception {
-
+           return MockContext.getInstance().getTenants();
     }
 
     @GET
@@ -155,7 +147,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws Exception {
-
+            return MockContext.getInstance().retrievePartialSearchTenants(domain);
     }
 
 
@@ -165,8 +157,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public void activateTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
-
-
+            MockContext.getInstance().activateTenant(tenantDomain);
     }
 
     @POST
@@ -175,7 +166,171 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public void deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+        MockContext.getInstance().deactivateTenant(tenantDomain);
+    }
+
+    @POST
+    @Path("/cartridge/definition/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
+            throws RestAPIException {
+        MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
+    }
+
+    @DELETE
+    @Path("/cartridge/definition/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public void unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+         MockContext.getInstance().deleteCartridgeDefinition(cartridgeType);
+    }
+
+    @POST
+    @Path("/policy/deployment/partition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployPartition (Partition partition)
+            throws RestAPIException {
+        return MockContext.getInstance().addPartition(partition);
+    }
+
+    @POST
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
+            throws RestAPIException {
+          return MockContext.getInstance().addAutoScalingPolicyDefinition(autoscalePolicy);
+
+    }
+
+    @POST
+    @Path("/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
+            throws RestAPIException {
+           return MockContext.getInstance().addDeploymentPolicyDefinition(deploymentPolicy);
+
+    }
+
+    @GET
+    @Path("/partition")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition[] getPartitions () throws RestAPIException {
+            return MockContext.getInstance().getPartitions();
+
+    }
+
+    @GET
+    @Path("/partition/{partitionId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
+            return MockContext.getInstance().getPartition(partitionId);
+
+    }
+
+    @GET
+    @Path("/partition/group/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public PartitionGroup[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+          return MockContext.getInstance().getPartitionGroups(deploymentPolicyId);
+
+    }
+
+    @GET
+    @Path("/partition/{deploymentPolicyId}/{partitionGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition[] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
+                                       @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
+           return MockContext.getInstance().getPartitions(deploymentPolicyId,partitionGroupId);
+
+    }
+
+    @GET
+    @Path("/partition/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Partition [] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+             return MockContext.getInstance().getPartitionsOfPolicy(deploymentPolicyId);
+
+    }
+
+    @GET
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public AutoscalePolicy[] getAutoscalePolicies () throws RestAPIException {
+            return MockContext.getInstance().getAutoscalePolicies();
+
+    }
+
+    @GET
+    @Path("/policy/autoscale/{autoscalePolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public AutoscalePolicy getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
+            throws RestAPIException {
+        return MockContext.getInstance().getAutoscalePolicies(autoscalePolicyId);
+
+    }
+
+    @GET
+    @Path("/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
+          return MockContext.getInstance().getDeploymentPolicies();
+
+    }
+
+    @GET
+    @Path("/policy/deployment/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public DeploymentPolicy getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+        return MockContext.getInstance().getDeploymentPolicies(deploymentPolicyId);
+
+    }
+
+   /* @GET
+    @Path("{cartridgeType}/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public DeploymentPolicy[] getValidDeploymentPolicies (@PathParam("cartridgeType") String cartridgeType)
+            throws RestAPIException {
+           return   MockContext.getInstance().getValidDeploymentPolicies(cartridgeType);
 
     }*/
+
+
 
 }
