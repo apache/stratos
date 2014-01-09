@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -43,8 +44,8 @@ import org.apache.stratos.messaging.message.processor.topology.TopologyMessagePr
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
-
-import java.util.Collection;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 
 /**
  * Load balancer topology receiver.
@@ -144,16 +145,16 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 TopologyManager.acquireReadLock();
                 String serviceName = e.getServiceName();
                 String clusterId = e.getClusterId();
-
                 AbstractMonitor monitor;
 
-                if(TopologyManager.getTopology().getService(serviceName).getCluster(clusterId).isLbCluster()){
+                if(e.isLbCluster()){
                     monitor = AutoscalerContext.getInstance().removeLbMonitor(clusterId);
 
                 } else {
                     monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
                 }
 
+//                runTerminateAllRule(monitor);
                 monitor.destroy();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
@@ -337,28 +338,17 @@ public class AutoscalerTopologyReceiver implements Runnable {
         }
     }
 
-    private void removeMonitor(String clusterId) {
-        ClusterMonitor monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
-        monitor.destroy();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
-        }
-    }
+    private void runTerminateAllRule(AbstractMonitor monitor){
 
-    private Cluster findCluster(String clusterId) {
-        if(clusterId == null) {
-            return null;
+        FactHandle terminateAllFactHandle = null;
+
+        StatefulKnowledgeSession terminateAllKnowledgeSession = null;
+
+        for(NetworkPartitionContext networkPartitionContext: monitor.getNetworkPartitionCtxts().values()) {
+            terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll(terminateAllKnowledgeSession
+                    , terminateAllFactHandle, networkPartitionContext);
         }
 
-        Collection<Service> services = TopologyManager.getTopology().getServices();
-        for (Service service : services) {
-            for (Cluster cluster : service.getClusters()) {
-                if (clusterId.equals(cluster.getClusterId())) {
-                    return cluster;
-                }
-            }
-        }
-        return null;
     }
 
     /**

@@ -69,12 +69,14 @@ public class TenantSynzhronizerTask implements Task {
                 //List<CartridgeSubscriptionInfo> cartridgeSubscriptions = PersistenceManager.getSubscriptionsForTenant(tenant.getTenantId());
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 Collection<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(tenant.getTenantId());
-                for (CartridgeSubscription subscription : cartridgeSubscriptions) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Tenant subscription found: [tenant-id] %d [tenant-domain] %s [service] %s",
-                                   carbonTenant.getId(), carbonTenant.getDomain(), subscription.getType()));
+                if (cartridgeSubscriptions != null && !cartridgeSubscriptions.isEmpty()) {
+                    for (CartridgeSubscription subscription : cartridgeSubscriptions) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Tenant subscription found: [tenant-id] %d [tenant-domain] %s [service] %s",
+                                    carbonTenant.getId(), carbonTenant.getDomain(), subscription.getType()));
+                        }
+                        tenant.addServiceSubscription(subscription.getType());
                     }
-                    tenant.addServiceSubscription(subscription.getType());
                 }
                 tenants.add(tenant);
             }

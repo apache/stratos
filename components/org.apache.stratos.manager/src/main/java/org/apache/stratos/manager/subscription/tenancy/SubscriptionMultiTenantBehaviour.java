@@ -21,14 +21,15 @@ package org.apache.stratos.manager.subscription.tenancy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.publisher.ArtifactUpdatePublisher;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.pojo.Properties;
 
 
 public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehaviour {
@@ -68,24 +69,23 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
             }
         }
 
-        //TODO: implement getting cluster Id from DB
-        /*TopologyManager.acquireReadLock();
+        if (cartridgeSubscription.getRepository() != null) {
 
-        try {
-            Service service = TopologyManager.getTopology().getService(cartridgeSubscription.getType());
-            if(service == null) {
-                TopologyManager.releaseReadLock();
-                String errorMsg = "Error in subscribing, no service found with the name " + cartridgeSubscription.getType();
-                log.error(errorMsg);
-                throw new ADCException(errorMsg);
+            // publish the ArtifactUpdated event
+            log.info(" Multitenant --> Publishing Artifact update event -- ");
+            log.info(" Values :  cluster id - " + cartridgeSubscription.getClusterDomain() + "  tenant - " +
+                    cartridgeSubscription.getSubscriber().getTenantId());
+            ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(),
+                    cartridgeSubscription.getClusterDomain(), // clusterId
+                    String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+            publisher.publish();
+
+        } else {
+            if(log.isDebugEnabled()) {
+                log.debug("No repository found for subscription with alias: " + cartridgeSubscription.getAlias() + ", type: " + cartridgeSubscription.getType()+
+                        ". Not sending the Artifact Updated event");
             }
-
-            //cartridgeSubscription.getCluster().setClusterDomain(service.getCluster().);
-            //cartridgeSubscription.getCluster().setClusterSubDomain(domainContext.getSubDomain());
-
-        } finally {
-            TopologyManager.releaseReadLock();
-        }*/
+        }
     }
 
     public void registerSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)

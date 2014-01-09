@@ -65,7 +65,6 @@
                         <property name="autoAssignIp" value="true" />
                         <property name="keyPair" value="EC2_KEYPAIR"/>
                         <maxInstanceLimit>30</maxInstanceLimit>
-                        <imageId>EC2_IMAGE_ID</imageId>
                 </iaasProviderEC2_PROVIDER_END>
                 <OPENSTACK_PROVIDER_STARTiaasProvider type="openstack" name="openstack specific details">
             		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
@@ -80,7 +79,6 @@
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
 			<maxInstanceLimit>30</maxInstanceLimit>
-                        <imageId>OPENSTACK_IMAGE_ID</imageId>
         	</iaasProviderOPENSTACK_PROVIDER_END>
         </iaasProviders>
 </cloudController>

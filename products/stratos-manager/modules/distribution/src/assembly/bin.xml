@@ -48,7 +48,10 @@
                 <exclude>**/org.wso2.carbon.roles.mgt.ui_4.1.0-SNAPSHOT.jar</exclude>
                 <exclude>**/org.wso2.carbon.roles.mgt.stub_4.1.0-SNAPSHOT.jar</exclude>
                <exclude>**/log4j.properties</exclude>
-		<exclude>**/repository/components/**</exclude>
+               <exclude>**/repository/components/**</exclude>
+               <exclude>**/dbscripts/mysql.sql</exclude>
+               <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
+               <exclude>**/repository/conf/security/cipher-text.properties</exclude>
             </excludes>
         </fileSet>
 	<!-- Copying p2 profile and osgi bundles-->
@@ -71,6 +74,7 @@
                 <exclude>**/store-admin/**</exclude>
                 <exclude>**/storage/**</exclude>
                 <exclude>**/social/**</exclude>
+                <exclude>**/sso/views/login.jag</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -82,11 +86,15 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../../../../components/org.apache.stratos.manager.console</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/console</outputDirectory>
+            <directory>../../../../components/org.apache.stratos.manager.console/console</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/</outputDirectory>
             <excludes>
                 <exclude>**/README</exclude>
             </excludes>
+	 </fileSet>
+         <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.console/sso</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/sso</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
@@ -524,11 +532,6 @@
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
             <source>target/wso2carbon-core-${carbon.kernel.version}/bin/README.txt</source>
 
             <outputDirectory>${pom.artifactId}-${pom.version}/bin/</outputDirectory>
@@ -669,5 +672,46 @@
             <fileMode>644</fileMode>
         </file>
         <!-- End of REST endpoint webapp -->
+
+   <!--Copying config files from kernel patches -->
+        <file>
+            <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0001/dbscripts/mysql.sql</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+
+        <!-- <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/axis2_client.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/axis2.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/tenant-axis2.xml</source>
+            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+        </file>-->
+        <file>
+            <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-tool.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+
+
+        <file>
+            <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0004/repository/conf/carbon.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+
     </files>
 </assembly>

@@ -28,6 +28,8 @@ set -e # Terminate on any error
 export LOG=/var/log/apache-stratos/cartridge-agent-sh.log
 instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
+cert_truststore=security/client-truststore.jks
+truststore_password=wso2carbon
 
 # ---------------------------------------------
 # Download payload
@@ -67,16 +69,19 @@ popd
 #------------------------------------
 pushd $ca_exec_path
 echo "Configuring cartridge agent executable..." | tee -a $LOG
-cp -f templates/cartridge-agent.sh.template bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/cartridge-agent.sh
-cp -f bin/cartridge-agent.sh bin/cartridge-agent.sh.tmp
-cat bin/cartridge-agent.sh.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/cartridge-agent.sh
-rm -f bin/cartridge-agent.sh.tmp
+cp -f templates/stratos.sh.template bin/stratos.sh.tmp
+cat bin/stratos.sh.tmp | sed -e "s@MB-IP@$MB_IP@g" > bin/stratos.sh
+cp -f bin/stratos.sh bin/stratos.sh.tmp
+cat bin/stratos.sh.tmp | sed -e "s@MB-PORT@$MB_PORT@g" > bin/stratos.sh
+cp -f bin/stratos.sh bin/stratos.sh.tmp
+cat bin/stratos.sh.tmp | sed -e "s@CEP-IP@$CEP_IP@g" > bin/stratos.sh
+cp -f bin/stratos.sh bin/stratos.sh.tmp
+cat bin/stratos.sh.tmp | sed -e "s@CEP-PORT@$CEP_PORT@g" > bin/stratos.sh
+cp -f bin/stratos.sh bin/stratos.sh.tmp
+cat bin/stratos.sh.tmp | sed -e "s@CERT-TRUSTSTORE@$cert_truststore@g" > bin/stratos.sh
+cp -f bin/stratos.sh bin/stratos.sh.tmp
+cat bin/stratos.sh.tmp | sed -e "s@\bTRUSTSTORE-PASSWORD\b@$truststore_password@g" > bin/stratos.sh
+rm -f bin/stratos.sh.tmp
 echo "Starting cartridge agent..." | tee -a $LOG
-sh bin/cartridge-agent.sh
+sh bin/stratos.sh &
 popd
-

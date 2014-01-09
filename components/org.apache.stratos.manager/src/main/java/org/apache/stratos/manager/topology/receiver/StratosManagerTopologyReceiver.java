@@ -34,6 +34,8 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessa
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 
+import java.util.Set;
+
 public class StratosManagerTopologyReceiver implements Runnable {
 
     private static final Log log = LogFactory.getLog(StratosManagerTopologyReceiver.class);
@@ -69,12 +71,15 @@ public class StratosManagerTopologyReceiver implements Runnable {
                         //iterate through all clusters
                         for (Cluster cluster : service.getClusters()) {
                             //get subscription details
-                            CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(cluster.getClusterId());
+                            Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(cluster.getClusterId());
 
-                            if(cartridgeSubscription != null) {
-                                //add the information to Topology Cluster Info. model
-                                TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                        cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                            if(cartridgeSubscriptions != null) {
+                                // iterate and do the relevant changes
+                                for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                                    //add the information to Topology Cluster Info. model
+                                    TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                            cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                                }
                             }
                         }
                     }
@@ -93,21 +98,26 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 ClusterCreatedEvent clustercreatedEvent = (ClusterCreatedEvent) event;
                 //get subscription details
-                CartridgeSubscription cartridgeSubscription =
-                        getCartridgeSubscription(clustercreatedEvent.getClusterId());
+                Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(clustercreatedEvent.getClusterId());
 
-                if(cartridgeSubscription != null) {
+                if(cartridgeSubscriptions != null) {
 
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
-                    try {
-                        cluster = TopologyManager.getTopology().
-                                getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
-                        //add the information to Topology Cluster Info. model
-                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                    try {
+
+                        // iterate and do the relevant changes
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                            //add the information to Topology Cluster Info. model
+                            cluster = TopologyManager.getTopology().
+                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            //add the information to Topology Cluster Info. model
+                            TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        }
 
                     } finally {
                         //release read lock
@@ -126,13 +136,17 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
 
-                CartridgeSubscription cartridgeSubscription =
+                Set<CartridgeSubscription> cartridgeSubscriptions =
                         getCartridgeSubscription(clusterRemovedEvent.getClusterId());
 
-                if(cartridgeSubscription != null) {
-                    //add the information to Topology Cluster Info. model
-                    TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                            cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
+                if(cartridgeSubscriptions != null) {
+
+                    // iterate
+                    for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                        //add the information to Topology Cluster Info. model
+                        TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
+                    }
                 }
             }
         });
@@ -147,20 +161,23 @@ public class StratosManagerTopologyReceiver implements Runnable {
                 MemberStartedEvent memberStartedEvent = (MemberStartedEvent) event;
 
                 String clusterDomain = memberStartedEvent.getClusterId();
-                CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(clusterDomain);
+                Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(clusterDomain);
 
-                if(cartridgeSubscription != null) {
+                if(cartridgeSubscriptions != null) {
 
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
-                        cluster = TopologyManager.getTopology().
-                                getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
 
-                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                            cluster = TopologyManager.getTopology().
+                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        }
 
                     } finally {
                         //release read lock
@@ -181,21 +198,25 @@ public class StratosManagerTopologyReceiver implements Runnable {
                 MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
 
                 String clusterDomain = memberActivatedEvent.getClusterId();
-                CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(clusterDomain);
+                Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(clusterDomain);
 
-                if(cartridgeSubscription != null) {
+                if(cartridgeSubscriptions != null) {
 
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
-                        cluster = TopologyManager.getTopology().
-                                getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
-                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                cartridgeSubscription.getType(),
-                                cartridgeSubscription.getAlias(), cluster);
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+
+                            cluster = TopologyManager.getTopology().
+                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                    cartridgeSubscription.getType(),
+                                    cartridgeSubscription.getAlias(), cluster);
+                        }
 
                     } finally {
                         //release read lock
@@ -216,20 +237,24 @@ public class StratosManagerTopologyReceiver implements Runnable {
                 MemberSuspendedEvent memberSuspendedEvent = (MemberSuspendedEvent) event;
 
                 String clusterDomain = memberSuspendedEvent.getClusterId();
-                CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(clusterDomain);
+                Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(clusterDomain);
 
-                if(cartridgeSubscription != null) {
+                if(cartridgeSubscriptions != null) {
 
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
-                        cluster = TopologyManager.getTopology().
-                                getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
-                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+
+                            cluster = TopologyManager.getTopology().
+                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        }
 
                     } finally {
                         //release read lock
@@ -250,20 +275,24 @@ public class StratosManagerTopologyReceiver implements Runnable {
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
 
                 String clusterDomain = memberTerminatedEvent.getClusterId();
-                CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(clusterDomain);
+                Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(clusterDomain);
 
-                if(cartridgeSubscription != null) {
+                if(cartridgeSubscriptions != null) {
 
                     Cluster cluster;
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
-                        cluster = TopologyManager.getTopology().
-                                getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
-                        TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+
+                            cluster = TopologyManager.getTopology().
+                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        }
 
                     } finally {
                         //release read lock
@@ -277,7 +306,7 @@ public class StratosManagerTopologyReceiver implements Runnable {
         return processorChain;
     }
 
-    private CartridgeSubscription getCartridgeSubscription(String clusterDomain) {
+    private Set<CartridgeSubscription> getCartridgeSubscription(String clusterDomain) {
 
         try {
             return new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterDomain);
