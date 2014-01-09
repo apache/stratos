@@ -75,7 +75,7 @@
                             <directory>src/main/webapp/${appName}</directory>
                         </resource>
                     </webResources>
-                    <warName>${appName}</warName>
+                    <warName>stratos</warName>
                 </configuration>
             </plugin>
         </plugins>
