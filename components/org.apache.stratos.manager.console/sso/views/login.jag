@@ -1,0 +1,128 @@
+<%
+var e = request.getParameter('authFailure');
+if( e == null){
+        e = "";
+        }
+%>
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link href="views/stratos-resources/css/bootstrap.css" rel="stylesheet">
+    <link href="views/stratos-resources/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="views/stratos-resources/css/bootstrap-missing.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="views/stratos-resources/css/main.css">
+</head>
+<body>
+
+<div id="dcontainer"></div>
+
+<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to
+    improve your experience.</p>
+<![endif]-->
+
+
+<!-- Part 1: Wrap all page content here -->
+<div id="wrap">
+
+    
+        <div class="top-blue-strip"></div>
+        <div class="login-logo-section"><a  href="/console/"><img src="views/stratos-resources/img/logo-login.png"/></a></div>
+        <style>
+        body {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    </style>
+
+
+    <h1 class="login-title">The most comprehensive enterprise grade PaaS Framework</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 login-box-wrapper">
+            <form id="loginForm" action="/admin/commonauth" method="POST" >
+            <div class="login-box">
+                <div class="login-box-top">
+                    <h2 class="login-sub-title">Login to create cartridges</h2>
+
+
+
+                        <div class="username-wrapper">
+                            <input class="input-username" type="text" placeholder="Email" id="username" name="username"  />
+                        </div>
+                        <div class="password-wrapper">
+                            <input class="input-password" type="password" placeholder="Password"  id="password" name="password" />
+                        </div>
+                        <div class="login-button-wrapper">
+                            <input type="hidden" name="sessionDataKey"  value="<%=request.getParameter("sessionDataKey")%>">
+                            <button class="btn btn-primary login-button" type="submit">Sign in</button>
+                        </div>
+                    <% if(e){ %>
+                    <div class="login-error">Username or password is invalid</div>
+                    <% } %>
+
+                </div>
+                <div class="login-box-bottom">
+                    <label class="checkbox lblRemember">
+                      <input type="checkbox" value="remember-me"> Stay Signed In
+                    </label>
+
+                    <label class="pull-right"><a>Create an account</a></label>
+                    <div style="clear: both"></div>
+                </div>
+            </div>
+            </form>
+            <br />
+            <div class="login-box-footer"></div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- /container -->
+    <div id="push"></div>
+</div>
+
+<footer id="footer">
+    <div class="container">
+        <div class="pull-left"><img src="views/stratos-resources/img/egg-logo.png" /></div>
+        <div class="pull-right footer-right">
+        Copyright © 2013 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
+        Apache SIS, Apache, the Apache feather logo are trademarks of The Apache Software Foundation.
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</footer>
+
+
+<!-- Le javascript
+   ================================================== -->
+   <!-- Placed at the end of the document so the pages load faster -->
+   <script src="views/js/jquery-1.8.3.min.js"></script>
+   <script src="views/js/bootstrap.min.js"></script>
+   <script src="views/js/jquery.validate.js"></script>
+ 	<script type="text/javascript">
+	$(function(){
+		jQuery.validator.addMethod("usrName", function(value, element) {
+			return this.optional(element) || /^[a-zA-Z0-9\-]*$/.test(value);
+		}, "Only alphanumeric characters and '-' allowed");
+	});
+
+</script>
+
+</body>
+</html>
