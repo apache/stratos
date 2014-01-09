@@ -35,13 +35,7 @@ public class ClusterContext implements Serializable{
     // payload as a String
     private String payload;
     private String hostName;
-    
-    public ClusterContext(String clusterId, String cartridgeType, String payload) {
-        this.clusterId = clusterId;
-        this.cartridgeType = cartridgeType;
-        this.payload = payload;
-    }
-    
+
     public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName) {
         this.clusterId = clusterId;
         this.cartridgeType = cartridgeType;
@@ -75,5 +69,5 @@ public class ClusterContext implements Serializable{
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
-    
+
 }

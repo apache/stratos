@@ -74,6 +74,7 @@
                 <exclude>**/store-admin/**</exclude>
                 <exclude>**/storage/**</exclude>
                 <exclude>**/social/**</exclude>
+                <exclude>**/sso/views/login.jag</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -85,11 +86,15 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../../../../components/org.apache.stratos.manager.console</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/console</outputDirectory>
+            <directory>../../../../components/org.apache.stratos.manager.console/console</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/</outputDirectory>
             <excludes>
                 <exclude>**/README</exclude>
             </excludes>
+	 </fileSet>
+         <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.console/sso</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/sso</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>

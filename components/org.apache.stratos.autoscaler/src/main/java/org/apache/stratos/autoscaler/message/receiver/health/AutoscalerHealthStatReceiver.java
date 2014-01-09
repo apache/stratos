@@ -52,6 +52,10 @@ public class AutoscalerHealthStatReceiver implements Runnable {
     private boolean terminated = false;
 
     private HealthStatReceiver healthStatReceiver;
+
+    public AutoscalerHealthStatReceiver() {
+		this.healthStatReceiver = new HealthStatReceiver(createMessageDelegator());
+    }
 //    @Override
 //    public void run() {
 //        if(log.isInfoEnabled()) {
@@ -418,6 +422,8 @@ public class AutoscalerHealthStatReceiver implements Runnable {
 //
 
 
+
+
     @Override
     public void run() {
         //FIXME this activated before autoscaler deployer activated.
@@ -428,13 +434,13 @@ public class AutoscalerHealthStatReceiver implements Runnable {
         Thread thread = new Thread(healthStatReceiver);
         thread.start();
         if(log.isInfoEnabled()) {
-            log.info("Autoscaler topology receiver thread started");
+            log.info("Autoscaler heal stat receiver thread started");
         }
 
         // Keep the thread live until terminated
         while (!terminated);
         if(log.isInfoEnabled()) {
-            log.info("Autoscaler topology receiver thread terminated");
+            log.info("Autoscaler health stat receiver thread terminated");
         }
     }
 
