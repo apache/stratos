@@ -26,7 +26,7 @@ import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.publisher.ArtifactUpdatePublisher;
+import org.apache.stratos.manager.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.utils.CartridgeConstants;
@@ -75,10 +75,10 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
             log.info(" Multitenant --> Publishing Artifact update event -- ");
             log.info(" Values :  cluster id - " + cartridgeSubscription.getClusterDomain() + "  tenant - " +
                     cartridgeSubscription.getSubscriber().getTenantId());
-            ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(),
+            InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
+            publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
                     cartridgeSubscription.getClusterDomain(), // clusterId
                     String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
-            publisher.publish();
 
         } else {
             if(log.isDebugEnabled()) {

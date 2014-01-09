@@ -20,7 +20,7 @@ package org.apache.stratos.manager.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.publisher.ArtifactUpdatePublisher;
+import org.apache.stratos.manager.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
@@ -62,7 +62,7 @@ public class InstanceStatusListener implements MessageListener {
                 /*CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
 
                 if (subscription.getRepository() != null) {
-                    ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
+                    InstanceNotificationPublisher publisher = new InstanceNotificationPublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
                     publisher.publish();
                 }
                 else {
@@ -78,9 +78,9 @@ public class InstanceStatusListener implements MessageListener {
                     // send an ArtifactUpdatedEvent event. If this is a multitenant cartridge, sending this event
                     // will be done in SubscriptionMultiTenantBehaviour#createSubscription method
                     if (!cartridgeSubscription.getCartridgeInfo().getMultiTenant() && cartridgeSubscription.getRepository() != null) {
-                        ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(), clusterId,
+                        InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
+                        publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(), clusterId,
                                 String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
-                        publisher.publish();
 
                     } else {
                         if(log.isDebugEnabled()) {
