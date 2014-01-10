@@ -159,11 +159,13 @@ public class CartridgeSubscriptionManager {
         //Create subscriber
         Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
 
+        //Set the key
+        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey());
+
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                  deploymentPolicyName, repository);
-        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey()); // TODO ---- fix
-                                                                             // properly
+
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
                  " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " +
