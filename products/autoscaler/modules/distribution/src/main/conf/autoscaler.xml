@@ -30,5 +30,10 @@
 			<port>9444</port>
             <clientTimeout>300000</clientTimeout>
 		</cloudController>
+        <stratosManager>
+			<hostname>localhost</hostname>
+			<port>9445</port>
+            <clientTimeout>300000</clientTimeout>
+		</stratosManager>
 	</autoscaler>
 </configuration>

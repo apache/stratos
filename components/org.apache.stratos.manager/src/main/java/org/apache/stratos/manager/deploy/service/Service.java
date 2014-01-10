@@ -19,15 +19,24 @@
 
 package org.apache.stratos.manager.deploy.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.payload.PayloadData;
+import org.apache.stratos.manager.payload.PayloadFactory;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.io.Serializable;
 
 public abstract class Service implements Serializable {
+
+    private static Log log = LogFactory.getLog(Service.class);
 
     private String type;
     private String autoscalingPolicyName;
@@ -52,9 +61,52 @@ public abstract class Service implements Serializable {
         this.subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
     }
 
-    public abstract void deploy () throws ADCException, UnregisteredCartridgeException;
+    public void deploy () throws ADCException, UnregisteredCartridgeException {
 
-    public abstract void undeploy (String clusterId) throws ADCException;
+        //generate the cluster ID (domain)for the service
+        setClusterId(type + "." + cartridgeInfo.getHostName() + ".domain");
+        //host name is the hostname defined in cartridge definition
+        setHostName(cartridgeInfo.getHostName());
+
+        //Create payload
+        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(this);
+        //populate
+        basicPayloadData.populatePayload();
+        PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
+                cartridgeInfo.getType(), basicPayloadData);
+
+        // get the payload parameters defined in the cartridge definition file for this cartridge type
+        if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
+
+            for (Property property : cartridgeInfo.getProperties()) {
+                // check if a property is related to the payload. Currently this is done by checking if the
+                // property name starts with 'payload_parameter.' suffix. If so the payload param name will
+                // be taken as the substring from the index of '.' to the end of the property name.
+                if (property.getName()
+                        .startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
+                    String payloadParamName = property.getName();
+                    payloadData.add(payloadParamName.substring(payloadParamName.indexOf(".") + 1), property.getValue());
+                }
+            }
+        }
+
+        //set PayloadData instance
+        setPayloadData(payloadData);
+    }
+
+    public void undeploy () throws ADCException {
+
+        try {
+            CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);
+
+        } catch (Exception e) {
+            String errorMsg = "Error in unregistering service cluster with domain " + clusterId;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Unregistered service with domain " + clusterId);
+    }
 
     public String getType() {
         return type;

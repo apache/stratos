@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,32 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.instance.notifier;
 
-import java.io.Serializable;
+package org.apache.stratos.manager.exception;
 
-/**
- * This event is fired by SM when AS requests to notify an instance
- * for the termination. So that instance which receives this event will perform
- * the clean up task before the actual termination.
- */
-public class InstanceCleanupEvent extends InstanceNotifierEvent implements Serializable {
-    private String clusterId;
-    private String memberId;
+public class ServiceAlreadyDeployedException extends Exception {
 
-    public InstanceCleanupEvent(String memberId) {
-        this.memberId = memberId;
+    private static final long serialVersionUID = 1L;
+
+    private final String message;
+
+    private final String type;
+
+    public ServiceAlreadyDeployedException (String message, String type, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+        this.type = type;
     }
 
-    public String getClusterId() {
-        return clusterId;
+    public ServiceAlreadyDeployedException (String message, String type) {
+        super(message);
+        this.message = message;
+        this.type = type;
     }
 
-    public String getMemberId() {
-        return memberId;
+    public String getMessage() {
+        return message;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
+    public String getType() {
+        return type;
     }
 }

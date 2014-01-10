@@ -60,6 +60,19 @@ public class ExtensionUtils {
         }
     }
 
+    public static void executeCleanupExtension() {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug("Executing start servers extension");
+            }
+            String command = prepareCommand(CartridgeAgentConstants.CLEAN_UP_SH);
+            CommandUtils.executeCommand(command);
+        }
+        catch (Exception e) {
+            log.error("Could not execute start servers extension", e);
+        }
+    }
+
     public static void executeInstanceStartedExtension() {
         try {
             if(log.isDebugEnabled()) {

@@ -17,23 +17,22 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.deploy.service.multitenant;
+package org.apache.stratos.manager.deploy.service.multitenant.lb;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
-public class MultiTenantService extends Service {
+public class MultiTenantLBService extends Service {
 
-    private static Log log = LogFactory.getLog(MultiTenantService.class);
+    private static Log log = LogFactory.getLog(MultiTenantLBService.class);
 
-    public MultiTenantService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
-    		String tenantRange) {
+    public MultiTenantLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo, String tenantRange) {
         super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
     }
 

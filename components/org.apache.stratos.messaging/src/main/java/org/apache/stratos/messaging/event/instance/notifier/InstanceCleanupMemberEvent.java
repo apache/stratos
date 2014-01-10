@@ -16,36 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.event.instance.notifier;
 
-package org.apache.stratos.messaging.event.health.stat;
-
-import org.apache.stratos.messaging.event.Event;
+import java.io.Serializable;
 
 /**
- *  This event is fired by Event processing engine to send average of Load average
+ * This event is fired by SM when AS requests to notify an instance
+ * for the termination. So that instance which receives this event will perform
+ * the clean up task before the actual termination.
  */
-public class AverageLoadAverageEvent extends Event {
-    private final String networkPartitionId;
-    private final String clusterId;
-    private final float value;
+public class InstanceCleanupMemberEvent extends InstanceNotifierEvent implements Serializable {
+    private String memberId;
 
-    public AverageLoadAverageEvent(String networkPartitionId, String clusterId, float value){
-
-        this.networkPartitionId = networkPartitionId;
-        this.clusterId = clusterId;
-        this.value = value;
+    public InstanceCleanupMemberEvent(String memberId) {
+        this.memberId = memberId;
     }
 
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
+    public String getMemberId() {
+        return memberId;
     }
 }

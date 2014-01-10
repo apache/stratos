@@ -3,7 +3,7 @@
   statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventformatter">
   <from streamName="member_second_derivative_memory_consumption_stats" version="1.0.0"/>
   <mapping customMapping="enable" type="json">
-    <inline>{"org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfMemoryConsumptionEvent":{"message":{"member_id":"{{member_id}}","cluster_id":"{{cluster_id}}","network_partition_id":"{{network_partition_id}}","value":"{{member_second_derivative_memory_consumption}}"}}}</inline>
+    <inline>{"org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfMemoryConsumptionEvent":{"message":{"memberId":"{{member_id}}","clusterId":"{{cluster_id}}","networkPartitionId":"{{network_partition_id}}","value":"{{member_second_derivative_memory_consumption}}"}}}</inline>
   </mapping>
   <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
     <property name="transport.jms.Destination">summarized-health-stats</property>
