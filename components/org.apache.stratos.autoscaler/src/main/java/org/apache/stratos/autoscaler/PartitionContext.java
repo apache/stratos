@@ -227,7 +227,7 @@ public class PartitionContext implements Serializable{
     }
 
     public MemberStatsContext getMemberStatsContext(String memberId) {
-        return memberStatsContexts.get(networkPartitionId);
+        return memberStatsContexts.get(memberId);
     }
 
     public void addMemberStatsContext(MemberStatsContext ctxt) {
