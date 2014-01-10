@@ -19,7 +19,10 @@
 
 package org.apache.stratos.manager.deploy.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.payload.BasicPayloadData;
@@ -32,6 +35,8 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import java.io.Serializable;
 
 public abstract class Service implements Serializable {
+
+    private static Log log = LogFactory.getLog(Service.class);
 
     private String type;
     private String autoscalingPolicyName;
@@ -89,7 +94,19 @@ public abstract class Service implements Serializable {
         setPayloadData(payloadData);
     }
 
-    public abstract void undeploy (String clusterId) throws ADCException;
+    public void undeploy () throws ADCException {
+
+        try {
+            CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);
+
+        } catch (Exception e) {
+            String errorMsg = "Error in unregistering service cluster with domain " + clusterId;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Unregistered service with domain " + clusterId);
+    }
 
     public String getType() {
         return type;

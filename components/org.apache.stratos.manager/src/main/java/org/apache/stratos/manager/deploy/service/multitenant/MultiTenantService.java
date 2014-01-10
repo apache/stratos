@@ -47,9 +47,4 @@ public class MultiTenantService extends Service {
                 getPayloadData().getCompletePayloadData(), getTenantRange(), getHostName(), getAutoscalingPolicyName(),
                 getDeploymentPolicyName(), null);
     }
-
-    @Override
-    public void undeploy(String clusterId) throws ADCException {
-
-    }
 }

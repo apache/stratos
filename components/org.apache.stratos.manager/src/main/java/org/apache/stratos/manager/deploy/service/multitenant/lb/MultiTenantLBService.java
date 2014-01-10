@@ -46,9 +46,4 @@ public class MultiTenantLBService extends Service {
                 getPayloadData().getCompletePayloadData(), getTenantRange(), getHostName(), getAutoscalingPolicyName(),
                 getDeploymentPolicyName(), null);
     }
-
-    @Override
-    public void undeploy(String clusterId) throws ADCException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

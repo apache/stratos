@@ -329,7 +329,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public void unsubscribe(String alias){
+    public void unsubscribe(String alias) throws RestAPIException {
         try {
             ServiceUtils.unsubscribe(alias, getTenantDomain());
         } catch (Exception exception) {
@@ -687,6 +687,18 @@ public class StratosAdmin extends AbstractAdmin {
     		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
     		   serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
     		   serviceDefinitionBean.getTenantRange());
+    }
+
+    @DELETE
+    @Path("/service/definition/{serviceType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public void unDeployService (@PathParam("serviceType") String serviceType)
+            throws RestAPIException {
+
+        ServiceUtils.undeployService(serviceType);
     }
 
 

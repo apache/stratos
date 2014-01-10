@@ -72,6 +72,13 @@ public class InstanceStatusListener implements MessageListener {
                 }*/
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 Set<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterId);
+                if (cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
+                    // No subscriptions, return
+                    if (log.isDebugEnabled()) {
+                        log.debug("No subscription information found for cluster id " + clusterId);
+                    }
+                    return;
+                }
 
                 for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
                     // If only this is a non-multitenant Cartridge Subscription and repository is not null, need to
