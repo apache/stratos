@@ -9,6 +9,7 @@ import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.cloud.controller.InstanceNotificationClient;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
@@ -110,8 +111,9 @@ public class RuleTasksDelegator {
 
     public void delegateTerminate(String memberId) {
         try {
-
-            CloudControllerClient.getInstance().terminate(memberId);
+            //calling SM to send the instance notification event.
+            InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
+            //CloudControllerClient.getInstance().terminate(memberId);
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
         }
