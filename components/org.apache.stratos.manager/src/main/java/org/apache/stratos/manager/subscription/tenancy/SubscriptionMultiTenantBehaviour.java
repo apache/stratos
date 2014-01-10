@@ -22,10 +22,8 @@ package org.apache.stratos.manager.subscription.tenancy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.AlreadySubscribedException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
@@ -68,6 +66,29 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
                 throw new AlreadySubscribedException(msg, cartridgeSubscription.getType());
             }
         }
+
+        // get the cluster domain and host name from deployed Service
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+        Service deployedService;
+        try {
+            deployedService = dataInsertionAndRetrievalManager.getService(cartridgeSubscription.getType());
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in checking if Service is available is PersistenceManager";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+
+        if (deployedService == null) {
+            String errorMsg = "There is no deployed Service for type " + cartridgeSubscription.getType();
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
+
+        //set the cluster and hostname
+        cartridgeSubscription.setClusterDomain(deployedService.getClusterId());
+        cartridgeSubscription.setHostName(deployedService.getHostName());
 
         if (cartridgeSubscription.getRepository() != null) {
 

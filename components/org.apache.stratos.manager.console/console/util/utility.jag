@@ -89,6 +89,10 @@ consoleAppUtil = new function(){
         return this.makeRequest("GET","/cartridge/list/subscribed",{}).data;
     }
 
+    this.deployCartridgeDefinition = function(cartridgeDefintion){
+        return this.makeRequest("POST","/cartridge/definition",cartridgeDefintion).data;
+    };
+
     this.makeRequest = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
