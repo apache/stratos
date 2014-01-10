@@ -119,6 +119,14 @@ public class RuleTasksDelegator {
         }
     }
 
+    public void terminateObsoleteInstance(String memberId) {
+        try {
+            CloudControllerClient.getInstance().terminate(memberId);
+        } catch (Throwable e) {
+            log.error("Cannot terminate instance", e);
+        }
+    }
+
    	public void delegateTerminateAll(String clusterId) {
            try {
 
