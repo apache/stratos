@@ -51,10 +51,10 @@ public class InstanceNotificationClient {
                     Constants.STRATOS_MANAGER_DEFAULT_PORT);
             String hostname = conf.getString(Constants.STRATOS_MANAGER_HOSTNAME_ELEMENT, "localhost");
             String epr = "https://" + hostname + ":" + port + "/" + Constants.STRATOS_MANAGER_SERVICE_SFX;
-            int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
+            int instanceNotificationTimeOut = conf.getInt(Constants.STRATOS_MANAGER_CLIENT_TIMEOUT_ELEMENT, 180000);
             stub = new InstanceCleanupNotificationServiceStub(epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, cloudControllerClientTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, instanceNotificationTimeOut);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, instanceNotificationTimeOut);
 		} catch (Exception e) {
 			log.error("Stub init error", e);
 		}
