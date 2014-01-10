@@ -29,7 +29,7 @@ import org.apache.stratos.manager.cleanup.notification.stub.*;
 import java.rmi.RemoteException;
 
 public class InstanceNotificationClient {
-     private static final Log log = LogFactory.getLog(CloudControllerClient.class);
+    private static final Log log = LogFactory.getLog(InstanceNotificationClient.class);
     private static InstanceCleanupNotificationServiceStub stub;
 
     /* An instance of a InstanceNotificationClient is created when the class is loaded.
