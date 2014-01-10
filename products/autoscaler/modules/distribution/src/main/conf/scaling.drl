@@ -106,7 +106,7 @@ dialect "mvel"
         partition :  Partition() from autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId)
         eval(log.debug("[scale-up] " + " Partition available: " + (partition != null)))
         eval(partition != null)
-
+        eval($delegator.setScaledUp(true))
 	then
         log.debug("[scale-up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId + " Scaling up cluster");
         $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
@@ -116,6 +116,10 @@ end
 rule "Scaler-down Rule"
 dialect "mvel"
 	when
+
+	    eval(!$delegator.isScaledUp())
+	    eval(log.debug("[scale-down] " + " [cluster] " + clusterId + " Running scale down rule since not scaled up... "))
+
         $networkPartitionContext : NetworkPartitionContext ()
 
         $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()

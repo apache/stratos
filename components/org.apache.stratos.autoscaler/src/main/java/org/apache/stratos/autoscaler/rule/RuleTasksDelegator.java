@@ -22,6 +22,8 @@ public class RuleTasksDelegator {
     public static final double SCALE_UP_FACTOR = 0.8;   //get from config
     public static final double SCALE_DOWN_FACTOR = 0.2;
 
+    private boolean scaledUp = false;
+
     private static final Log log = LogFactory.getLog(RuleTasksDelegator.class);
 
     public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative, int timeInterval){
@@ -137,5 +139,11 @@ public class RuleTasksDelegator {
        }
 
 
+    public boolean isScaledUp() {
+        return scaledUp;
+    }
 
+    public void setScaledUp(boolean scaledUp) {
+        this.scaledUp = scaledUp;
+    }
 }
