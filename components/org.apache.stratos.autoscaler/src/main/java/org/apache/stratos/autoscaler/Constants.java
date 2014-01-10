@@ -20,12 +20,8 @@ public class Constants {
 
     public static final String STRATOS_MANAGER_SERVICE_SFX = "services/InstanceCleanupNotificationService";
     public static final int STRATOS_MANAGER_DEFAULT_PORT = 9444;
-    public static final String STRATOS_MANAGER_HOSTNAME_ELEMENT = "stratos.manager.hostname";
-    public static final String STRATOS_MANAGER_DEFAULT_PORT_ELEMENT = "stratos.manager.port";
-
-
-
-
+    public static final String STRATOS_MANAGER_HOSTNAME_ELEMENT = "autoscaler.stratosManager.hostname";
+    public static final String STRATOS_MANAGER_DEFAULT_PORT_ELEMENT = "autoscaler.stratosManager.port";
     
     // partition properties
     public static final String REGION_PROPERTY = "region";

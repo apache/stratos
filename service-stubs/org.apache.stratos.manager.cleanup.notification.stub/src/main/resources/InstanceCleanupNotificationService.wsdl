@@ -1,0 +1,91 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://service.manager.stratos.apache.org" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.manager.stratos.apache.org">
+    <wsdl:documentation>InstanceCleanupNotificationService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ns="http://org.apache.axis2/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://org.apache.axis2/xsd">
+            <xs:element name="sendInstanceCleanupNotificationForMember">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sendInstanceCleanupNotificationForCluster">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="sendInstanceCleanupNotificationForClusterRequest">
+        <wsdl:part name="parameters" element="ns1:sendInstanceCleanupNotificationForCluster"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="sendInstanceCleanupNotificationForMemberRequest">
+        <wsdl:part name="parameters" element="ns1:sendInstanceCleanupNotificationForMember"></wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="InstanceCleanupNotificationServicePortType">
+        <wsdl:operation name="sendInstanceCleanupNotificationForCluster">
+            <wsdl:input message="tns:sendInstanceCleanupNotificationForClusterRequest" wsaw:Action="urn:sendInstanceCleanupNotificationForCluster"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="sendInstanceCleanupNotificationForMember">
+            <wsdl:input message="tns:sendInstanceCleanupNotificationForMemberRequest" wsaw:Action="urn:sendInstanceCleanupNotificationForMember"></wsdl:input>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="InstanceCleanupNotificationServiceSoap11Binding" type="tns:InstanceCleanupNotificationServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
+        <wsdl:operation name="sendInstanceCleanupNotificationForCluster">
+            <soap:operation soapAction="urn:sendInstanceCleanupNotificationForCluster" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="sendInstanceCleanupNotificationForMember">
+            <soap:operation soapAction="urn:sendInstanceCleanupNotificationForMember" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="InstanceCleanupNotificationServiceSoap12Binding" type="tns:InstanceCleanupNotificationServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap12:binding>
+        <wsdl:operation name="sendInstanceCleanupNotificationForCluster">
+            <soap12:operation soapAction="urn:sendInstanceCleanupNotificationForCluster" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="sendInstanceCleanupNotificationForMember">
+            <soap12:operation soapAction="urn:sendInstanceCleanupNotificationForMember" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="InstanceCleanupNotificationServiceHttpBinding" type="tns:InstanceCleanupNotificationServicePortType">
+        <http:binding verb="POST"></http:binding>
+        <wsdl:operation name="sendInstanceCleanupNotificationForCluster">
+            <http:operation location="sendInstanceCleanupNotificationForCluster"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="sendInstanceCleanupNotificationForMember">
+            <http:operation location="sendInstanceCleanupNotificationForMember"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="InstanceCleanupNotificationService">
+        <wsdl:port name="InstanceCleanupNotificationServiceHttpsSoap11Endpoint" binding="tns:InstanceCleanupNotificationServiceSoap11Binding">
+            <soap:address location="https://10.100.1.142:9452/services/InstanceCleanupNotificationService.InstanceCleanupNotificationServiceHttpsSoap11Endpoint/"></soap:address>
+        </wsdl:port>
+        <wsdl:port name="InstanceCleanupNotificationServiceHttpsSoap12Endpoint" binding="tns:InstanceCleanupNotificationServiceSoap12Binding">
+            <soap12:address location="https://10.100.1.142:9452/services/InstanceCleanupNotificationService.InstanceCleanupNotificationServiceHttpsSoap12Endpoint/"></soap12:address>
+        </wsdl:port>
+        <wsdl:port name="InstanceCleanupNotificationServiceHttpsEndpoint" binding="tns:InstanceCleanupNotificationServiceHttpBinding">
+            <http:address location="https://10.100.1.142:9452/services/InstanceCleanupNotificationService.InstanceCleanupNotificationServiceHttpsEndpoint/"></http:address>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
