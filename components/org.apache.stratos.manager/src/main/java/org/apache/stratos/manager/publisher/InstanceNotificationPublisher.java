@@ -25,8 +25,8 @@ import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupEvent;
-
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 
 /**
  * Creating the relevant instance notification event and publish it to the instances.
@@ -69,8 +69,13 @@ public class InstanceNotificationPublisher {
      *
      * @param memberId
      */
-    public void sendInstanceCleanupEvent(String memberId) {
+    public void sendInstanceCleanupEventForMember(String memberId) {
         log.info(String.format("Publishing Instance Cleanup Event: [member] %s", memberId));
-        publish(new InstanceCleanupEvent(memberId));
+        publish(new InstanceCleanupMemberEvent(memberId));
+    }
+
+    public void sendInstanceCleanupEventForCluster(String clusterId) {
+         log.info(String.format("Publishing Instance Cleanup Event: [cluster] %s", clusterId));
+        publish(new InstanceCleanupClusterEvent(clusterId));
     }
 }
