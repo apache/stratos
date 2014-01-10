@@ -94,6 +94,7 @@ public class AutoscalerRuleEvaluator {
 
         if (handle == null) {
             ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            ksession.setGlobal("log", log);
 
             handle = ksession.insert(obj);
         } else {
