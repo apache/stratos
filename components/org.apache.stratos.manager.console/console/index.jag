@@ -1,7 +1,8 @@
 <%
 var caramel = require('caramel')
-var mycartridges = require('/data/mycartridges.json');
+var utils = require('/util/utility.jag');
+var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
 caramel.render({
-    mycartridges:mycartridges
+    mycartridges:subscribedCartridges
 });
 %>
