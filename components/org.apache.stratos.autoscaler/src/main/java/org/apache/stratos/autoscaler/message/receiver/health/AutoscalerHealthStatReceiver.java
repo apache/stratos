@@ -421,9 +421,6 @@ public class AutoscalerHealthStatReceiver implements Runnable {
 //    }
 //
 
-
-
-
     @Override
     public void run() {
         //FIXME this activated before autoscaler deployer activated.
@@ -434,7 +431,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
         Thread thread = new Thread(healthStatReceiver);
         thread.start();
         if(log.isInfoEnabled()) {
-            log.info("Autoscaler heal stat receiver thread started");
+            log.info("Autoscaler health stat receiver thread started");
         }
 
         // Keep the thread live until terminated
@@ -497,7 +494,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 Float floatValue = e.getValue();
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Avg MC event: [cluster] %s [network-partition] %s [value] %s",
+                    log.debug(String.format("Avg Memory Consumption event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
                 AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
@@ -599,7 +596,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 Float floatValue = e.getValue();
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Grad of MC event: [cluster] %s [network-partition] %s [value] %s",
+                    log.debug(String.format("Grad of Memory Consumption event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
                 AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
@@ -685,7 +682,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                     memoryConsumption.setAverage(floatValue);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member avg MC event: [member] %s [value] %s", e.getMemberId(),
+                        log.debug(String.format("Member avg Memory Consumption event: [member] %s [value] %s", e.getMemberId(),
                                 floatValue));
                     }
                 }
@@ -740,7 +737,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                     memoryConsumption.setGradient(floatValue);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Meber grad of MC event: [member] %s [value] %s", e.getMemberId(),
+                        log.debug(String.format("Meber grad of Memory Consumption event: [member] %s [value] %s", e.getMemberId(),
                                 floatValue));
                     }
                 }
@@ -759,7 +756,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                     loadAverage.setSecondDerivative(floatValue);
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member SD of load avg event: [member] %s [value] %s", e.getMemberId()
+                        log.debug(String.format("Member Second Derivation of load avg event: [member] %s [value] %s", e.getMemberId()
                                 , floatValue));
                     }
                 }
@@ -783,7 +780,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 Float floatValue = e.getValue();
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("SD of load avg event: [cluster] %s [network-partition] %s [value] %s",
+                    log.debug(String.format("Second Derivation of load avg event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
                 AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
@@ -817,7 +814,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 Float floatValue = e.getValue();
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("SD of MC event: [cluster] %s [network-partition] %s [value] %s",
+                    log.debug(String.format("Second Derivation of Memory Consumption event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
                 AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
