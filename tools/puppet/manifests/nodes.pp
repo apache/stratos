@@ -64,3 +64,32 @@ node /[0-9]{1,12}.default.php/ {
         }
 }
 
+node /[0-9]{1,12}.default.lb/ inherits confignode{
+        $server_ip      = $ec2_local_ipv4
+
+	include java
+
+        class {"stratos::lb":
+                version            => "4.0.0-SNAPSHOT",
+                offset             => 0,
+                tribes_port        => 4100,
+                maintenance_mode   => "false",
+                owner              => "root",
+                group              => "root",
+                stage              => "deploy",
+                adc_host           => "sc.stratos.org",
+                adc_port           => 9445,
+                cartridge_type     => "load-balancer",
+                generic            => 1,
+                mb_ip             => "54.251.196.18",
+                mb_port           => "5677",
+                cep_ip            => "54.251.196.18",
+                cep_port          => "7615",
+                java_truststore   => "client-truststore.jks",
+                java_truststore_password => "wso2carbon",
+
+
+        }   
+
+}
+
