@@ -19,31 +19,25 @@
 
 package org.apache.stratos.manager.deploy.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.client.AutoscalerServiceClient;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.payload.BasicPayloadData;
-import org.apache.stratos.manager.payload.PayloadData;
-import org.apache.stratos.manager.payload.PayloadFactory;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
-import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.manager.client.AutoscalerServiceClient;
+import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.service.multitenant.lb.MultiTenantLBService;
+import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
+import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.messaging.util.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServiceDeploymentManager {
 
@@ -90,6 +84,8 @@ public class ServiceDeploymentManager {
                           type);
             }
         } else {
+
+            Service lbService;
 
             CartridgeInfo lbCartridgeInfo;
             String lbCartridgeType = lbConfig.getType();
@@ -168,15 +164,20 @@ public class ServiceDeploymentManager {
                                         if (!AutoscalerServiceClient.getServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
 
                                             // if lb cluster doesn't exist
-                                            String lbAlias = "lb" + new Random().nextInt();
                                             lbCartridgeInfo.addProperties(property);
-                                            subscribeToLb(lbCartridgeType,
+                                            /*subscribeToLb(lbCartridgeType,
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicyName, tenantId,
                                                           userName,
                                                           tenantDomain,
-                                                          lbCartridgeInfo.getProperties());
+                                                          lbCartridgeInfo.getProperties());*/
+                                            lbService = new MultiTenantLBService(lbCartridgeType,
+                                                    lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                    deploymentPolicyName, tenantId,
+                                                    lbCartridgeInfo,
+                                                    tenantRange);
+                                            lbService.deploy();
                                         }
                                     }
                                 }
@@ -210,19 +211,21 @@ public class ServiceDeploymentManager {
                                             if (!AutoscalerServiceClient.getServiceClient().checkServiceLBExistenceAgainstPolicy(type,
                                                                                                               deploymentPolicyName)) {
 
-                                                // if lb cluster doesn't exist
-                                                String lbAlias =
-                                                                 "lb" + type +
-                                                                         new Random().nextInt();
                                                 lbCartridgeInfo.addProperties(property);
-                                                subscribeToLb(lbCartridgeType,
+                                                /*subscribeToLb(lbCartridgeType,
                                                               lbAlias,
                                                               lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                               deploymentPolicyName,
                                                               tenantId, 
                                                               userName,
                                                               tenantDomain,
-                                                              lbCartridgeInfo.getProperties());
+                                                              lbCartridgeInfo.getProperties());*/
+                                                lbService = new MultiTenantLBService(lbCartridgeType,
+                                                        lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                        deploymentPolicyName, tenantId,
+                                                        lbCartridgeInfo,
+                                                        tenantRange);
+                                                lbService.deploy();
                                             }
                                         }
                                     }
@@ -240,13 +243,13 @@ public class ServiceDeploymentManager {
                 }
             }
         }
-        
-        
-        
+
+
+
         
         Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
 
-        //generate the cluster ID (domain)for the service
+        /*//generate the cluster ID (domain)for the service
         service.setClusterId(type + "." + cartridgeInfo.getHostName() + ".domain");
         //host name is the hostname defined in cartridge definition
         service.setHostName(cartridgeInfo.getHostName());
@@ -274,7 +277,7 @@ public class ServiceDeploymentManager {
         }
 
         //set PayloadData instance
-        service.setPayloadData(payloadData);
+        service.setPayloadData(payloadData);*/
 
         //deploy the service
         service.deploy();
@@ -301,7 +304,7 @@ public class ServiceDeploymentManager {
     	
     }
     
-    private void subscribeToLb(String cartridgeType, String lbAlias,
+    /*private void subscribeToLb(String cartridgeType, String lbAlias,
             String defaultAutoscalingPolicy, String deploymentPolicy,
             int tenantId, String userName, String tenantDomain, Property[] props) throws ADCException {
             
@@ -326,5 +329,5 @@ public class ServiceDeploymentManager {
                 log.error(msg, e);
                 throw new ADCException(msg, e);
             }
-        }
+        }*/
 }
