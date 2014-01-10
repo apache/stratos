@@ -12,9 +12,11 @@ import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupEventListener;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageReceiver;
@@ -69,10 +71,25 @@ public class CartridgeAgent implements Runnable {
             }
         });
 
-        processorChain.addEventListener(new InstanceCleanupEventListener() {
+        processorChain.addEventListener(new InstanceCleanupMemberEventListener() {
             @Override
             protected void onEvent(Event event) {
-               onInstanceCleanupEvent((InstanceCleanupMemberEvent) event);
+                String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
+                InstanceCleanupMemberEvent instanceCleanupMemberEvent = (InstanceCleanupMemberEvent)event;
+                if(memberIdInPayload.equals(instanceCleanupMemberEvent.getMemberId())) {
+                    onInstanceCleanupEvent();
+                }
+            }
+        });
+
+        processorChain.addEventListener(new InstanceCleanupClusterEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
+                InstanceCleanupClusterEvent instanceCleanupClusterEvent = (InstanceCleanupClusterEvent)event;
+                if(clusterIdInPayload.equals(instanceCleanupClusterEvent.getClusterId())) {
+                    onInstanceCleanupEvent();
+                }
             }
         });
         InstanceNotifierEventMessageDelegator messageDelegator = new InstanceNotifierEventMessageDelegator(processorChain);
@@ -154,20 +171,20 @@ public class CartridgeAgent implements Runnable {
         }
     }
 
-    private void onInstanceCleanupEvent(InstanceCleanupMemberEvent event) {
-        InstanceCleanupMemberEvent instanceCleanupEvent = (InstanceCleanupMemberEvent)event;
-        String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
-        String memberId = instanceCleanupEvent.getMemberId();
-        if(memberId != null && memberId.equals(memberIdInPayload)) {
-            if(log.isInfoEnabled()) {
-                log.info("Executing cleaning up the data in the cartridge instance...");
-            }
-            // TODO
-            //cleaning up the cartridge instance's data
-
-            //publishing the Ready to shutdown event after performing the cleanup
-            CartridgeAgentEventPublisher.publishInstanceReadyToShutdownEvent();
+    private void onInstanceCleanupEvent() {
+        if(log.isInfoEnabled()) {
+            log.info("Executing cleaning up the data in the cartridge instance...");
         }
+        //cleaning up the cartridge instance's data
+        ExtensionUtils.executeCleanupExtension();
+        if(log.isInfoEnabled()) {
+            log.info("cleaning up finished in the cartridge instance...");
+        }
+        if(log.isInfoEnabled()) {
+            log.info("publishing ready to shutdown event...");
+        }
+        //publishing the Ready to shutdown event after performing the cleanup
+        CartridgeAgentEventPublisher.publishInstanceReadyToShutdownEvent();
     }
 
     public void terminate() {

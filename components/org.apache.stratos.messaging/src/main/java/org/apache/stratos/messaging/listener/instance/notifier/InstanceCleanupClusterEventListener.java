@@ -20,6 +20,5 @@ package org.apache.stratos.messaging.listener.instance.notifier;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
-public abstract class InstanceCleanupEventListener extends EventListener {
-
+public abstract class InstanceCleanupClusterEventListener extends EventListener {
 }
