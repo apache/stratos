@@ -25,14 +25,16 @@ import java.io.Serializable;
  * This event is fired by Cloud Controller when a cluster is removed from the topology.
  */
 public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
-    private static final long serialVersionUID = -1335777148602870262L;
+    private static final long serialVersionUID = -1053510100805886845L;
 
     private final String serviceName;
     private final String clusterId;
+    private final boolean isLbCluster;
 
-    public ClusterRemovedEvent(String serviceName, String clusterId) {
+    public ClusterRemovedEvent(String serviceName, String clusterId, boolean isLbCluster) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.isLbCluster = isLbCluster;
     }
 
     public String getServiceName() {
@@ -41,5 +43,9 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public boolean isLbCluster() {
+        return isLbCluster;
     }
 }

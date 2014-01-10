@@ -1,7 +1,0 @@
-<%
-var caramel = require('caramel')
-var mycartridges = require('/data/mycartridges.json');
-caramel.render({
-    mycartridges:mycartridges
-});
-%>

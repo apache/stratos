@@ -73,4 +73,22 @@
     	</parameter>
 	</service>
 
+    <service name="InstanceCleanupNotificationService" scope="transportsession">
+		<schema schemaNamespace="http://org.apache.axis2/xsd"
+			elementFormDefaultQualified="true" />
+		<transports>
+			<transport>https</transport>
+		</transports>
+		<description>
+			Instance cleanup notification
+        </description>
+		<parameter name="ServiceClass">org.apache.stratos.manager.service.InstanceCleanupNotificationService</parameter>
+		<parameter name="enableMTOM">true</parameter>
+		<parameter name="adminService" locked="true">false</parameter>
+		<parameter name="hiddenService" locked="true">false</parameter>
+		<parameter name="AuthorizationAction" locked="false">
+			/permission/admin/manage/modify/webapp
+    	</parameter>
+	</service>
+
 </serviceGroup>

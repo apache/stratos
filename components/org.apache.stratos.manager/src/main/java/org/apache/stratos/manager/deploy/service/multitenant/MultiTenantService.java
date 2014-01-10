@@ -40,14 +40,11 @@ public class MultiTenantService extends Service {
     @Override
     public void deploy() throws ADCException, UnregisteredCartridgeException {
 
+        super.deploy();
+
         //register the service
         ApplicationManagementUtil.registerService(getType(), getClusterId(), CartridgeConstants.DEFAULT_SUBDOMAIN,
                 getPayloadData().getCompletePayloadData(), getTenantRange(), getHostName(), getAutoscalingPolicyName(),
                 getDeploymentPolicyName(), null);
-    }
-
-    @Override
-    public void undeploy(String clusterId) throws ADCException {
-
     }
 }

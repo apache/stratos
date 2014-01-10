@@ -29,11 +29,11 @@ public class AverageLoadAverageEvent extends Event {
     private final String clusterId;
     private final float value;
 
-    public AverageLoadAverageEvent(String networkPartitionId, String clusterId, float value, String networkPartitionId1, String clusterId1, float value1){
+    public AverageLoadAverageEvent(String networkPartitionId, String clusterId, float value){
 
-        this.networkPartitionId = networkPartitionId1;
-        this.clusterId = clusterId1;
-        this.value = value1;
+        this.networkPartitionId = networkPartitionId;
+        this.clusterId = clusterId;
+        this.value = value;
     }
 
 

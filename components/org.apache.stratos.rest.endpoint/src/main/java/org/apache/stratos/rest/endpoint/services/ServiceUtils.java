@@ -905,9 +905,17 @@ public class ServiceUtils {
         }
     }
 
-    static void unsubscribe(String alias, String tenantDomain) throws ADCException, NotSubscribedException {
+    static void unsubscribe(String alias, String tenantDomain) throws RestAPIException {
 
-        cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
+        try {
+            cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
+
+        } catch (ADCException e) {
+            throw new RestAPIException(e);
+
+        } catch (NotSubscribedException e) {
+            throw new RestAPIException(e);
+        }
     }
     
     /**
@@ -920,13 +928,25 @@ public class ServiceUtils {
      * 
      */
     static void deployService (String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, 
-    		String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) {
+    		String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) throws RestAPIException {
     	log.info("Deploying service..");
     	try {
     		serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange, tenantDomain, tenantUsername);
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RestAPIException(e);
 		}
     }
 
+    static void undeployService (String serviceType) throws RestAPIException {
+
+        try {
+            serviceDeploymentManager.undeployService(serviceType);
+
+        } catch (Exception e) {
+            throw new RestAPIException(e);
+        }
+
+
+    }
 }

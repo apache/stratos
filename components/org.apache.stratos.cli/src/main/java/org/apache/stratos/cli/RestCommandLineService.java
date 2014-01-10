@@ -135,7 +135,7 @@ public class RestCommandLineService {
             System.out.println("Authentication failed!");
             return false;
         } catch (ConnectException e) {
-            System.out.println("Authentication failed. Please set the STRTOS_URL");
+            System.out.println("Could not connect to stratos manager");
             return false;
         } finally {
             httpClient.getConnectionManager().shutdown();

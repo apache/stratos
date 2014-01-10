@@ -37,7 +37,7 @@
                 <exclude>**/version.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/LICENSE.txt</exclude>
-               <exclude>**/NOTICE</exclude>
+                <exclude>**/NOTICE</exclude>
                 <exclude>**/release-notes.html</exclude>
                 <exclude>**/carbon.xml</exclude>
                 <exclude>**/README*</exclude>
@@ -47,11 +47,12 @@
 		<!--Removing roles mgt ui to fix STRATOS-2114-->
                 <exclude>**/org.wso2.carbon.roles.mgt.ui_4.1.0-SNAPSHOT.jar</exclude>
                 <exclude>**/org.wso2.carbon.roles.mgt.stub_4.1.0-SNAPSHOT.jar</exclude>
-               <exclude>**/log4j.properties</exclude>
-               <exclude>**/repository/components/**</exclude>
-               <exclude>**/dbscripts/mysql.sql</exclude>
-               <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
-               <exclude>**/repository/conf/security/cipher-text.properties</exclude>
+                <exclude>**/log4j.properties</exclude>
+                <exclude>**/repository/components/**</exclude>
+                <exclude>**/dbscripts/mysql.sql</exclude>
+                <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
+                <exclude>**/repository/conf/security/cipher-text.properties</exclude>
+		<exclude>**/repository/conf/axis2/axis2.xml</exclude>
             </excludes>
         </fileSet>
 	<!-- Copying p2 profile and osgi bundles-->
@@ -74,6 +75,7 @@
                 <exclude>**/store-admin/**</exclude>
                 <exclude>**/storage/**</exclude>
                 <exclude>**/social/**</exclude>
+                <exclude>**/sso/views/login.jag</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -85,11 +87,15 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../../../../components/org.apache.stratos.manager.console</directory>
+            <directory>../../../../components/org.apache.stratos.manager.console/console</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/console</outputDirectory>
             <excludes>
                 <exclude>**/README</exclude>
             </excludes>
+	 </fileSet>
+         <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.console/sso</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/sso</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
@@ -259,6 +265,15 @@
            </includes>
         </fileSet>
 	<!-- end of adc.mgt related files -->
+
+	<!-- axis2.xml -->
+	<fileSet>
+           <directory>src/main/conf/</directory>
+           <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/axis2</outputDirectory>
+           <includes>
+               <include>axis2.xml</include>
+           </includes>
+        </fileSet>
 
 	 <fileSet>
            <directory>../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/etc/</directory>

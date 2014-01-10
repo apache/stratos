@@ -159,11 +159,13 @@ public class CartridgeSubscriptionManager {
         //Create subscriber
         Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
 
+        //Set the key
+        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey());
+
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                  deploymentPolicyName, repository);
-        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey()); // TODO ---- fix
-                                                                             // properly
+
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
                  " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " +
@@ -218,7 +220,7 @@ public class CartridgeSubscriptionManager {
         	log.info(" Multitenant --> Publishing Artifact update event -- ");
         	log.info(" Values :  cluster id - " + cartridgeSubscription.getClusterDomain() + "  tenant - " + 
         			cartridgeSubscription.getSubscriber().getTenantId());
-            ArtifactUpdatePublisher publisher = new ArtifactUpdatePublisher(cartridgeSubscription.getRepository(),
+            InstanceNotificationPublisher publisher = new InstanceNotificationPublisher(cartridgeSubscription.getRepository(),
             		cartridgeSubscription.getClusterDomain(), // clusterId 
             		String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
             publisher.publish();

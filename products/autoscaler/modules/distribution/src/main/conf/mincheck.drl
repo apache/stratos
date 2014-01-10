@@ -74,6 +74,6 @@ dialect "mvel"
             eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
             eval($ctxt.removeObsoleteMember(memberId))
         then
-           $delegator.delegateTerminate(memberId);
+           $delegator.terminateObsoleteInstance(memberId);
 end
 

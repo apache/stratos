@@ -19,40 +19,53 @@
 
 package org.apache.stratos.manager.deploy.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.client.AutoscalerServiceClient;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.payload.BasicPayloadData;
-import org.apache.stratos.manager.payload.PayloadData;
-import org.apache.stratos.manager.payload.PayloadFactory;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
-import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.manager.client.AutoscalerServiceClient;
+import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
+import org.apache.stratos.manager.deploy.service.multitenant.lb.MultiTenantLBService;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.PersistenceManagerException;
+import org.apache.stratos.manager.exception.ServiceAlreadyDeployedException;
+import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.messaging.util.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServiceDeploymentManager {
 
     private static Log log = LogFactory.getLog(ServiceDeploymentManager.class);
-    private CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     
     public Service deployService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, String tenantRange,
     		String tenantDomain, String userName)
-        throws ADCException, UnregisteredCartridgeException {
+            throws ADCException, UnregisteredCartridgeException, ServiceAlreadyDeployedException {
+
+        //check if already we have a Multitenant service deployed for the same type
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+        Service deployedService;
+        try {
+            deployedService = dataInsertionAndRetrievalManager.getService(type);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in checking if Service is available is PersistenceManager";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+
+        if (deployedService != null) {
+            String errorMsg = "There is an already deployed Service for type " + type;
+            log.error(errorMsg);
+            throw new ServiceAlreadyDeployedException(errorMsg, type);
+        }
 
         //get deployed Cartridge Definition information
         CartridgeInfo cartridgeInfo;
@@ -90,6 +103,8 @@ public class ServiceDeploymentManager {
                           type);
             }
         } else {
+
+            Service lbService;
 
             CartridgeInfo lbCartridgeInfo;
             String lbCartridgeType = lbConfig.getType();
@@ -168,15 +183,20 @@ public class ServiceDeploymentManager {
                                         if (!AutoscalerServiceClient.getServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
 
                                             // if lb cluster doesn't exist
-                                            String lbAlias = "lb" + new Random().nextInt();
                                             lbCartridgeInfo.addProperties(property);
-                                            subscribeToLb(lbCartridgeType,
+                                            /*subscribeToLb(lbCartridgeType,
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicyName, tenantId,
                                                           userName,
                                                           tenantDomain,
-                                                          lbCartridgeInfo.getProperties());
+                                                          lbCartridgeInfo.getProperties());*/
+                                            lbService = new MultiTenantLBService(lbCartridgeType,
+                                                    lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                    deploymentPolicyName, tenantId,
+                                                    lbCartridgeInfo,
+                                                    tenantRange);
+                                            lbService.deploy();
                                         }
                                     }
                                 }
@@ -210,19 +230,21 @@ public class ServiceDeploymentManager {
                                             if (!AutoscalerServiceClient.getServiceClient().checkServiceLBExistenceAgainstPolicy(type,
                                                                                                               deploymentPolicyName)) {
 
-                                                // if lb cluster doesn't exist
-                                                String lbAlias =
-                                                                 "lb" + type +
-                                                                         new Random().nextInt();
                                                 lbCartridgeInfo.addProperties(property);
-                                                subscribeToLb(lbCartridgeType,
+                                                /*subscribeToLb(lbCartridgeType,
                                                               lbAlias,
                                                               lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                               deploymentPolicyName,
                                                               tenantId, 
                                                               userName,
                                                               tenantDomain,
-                                                              lbCartridgeInfo.getProperties());
+                                                              lbCartridgeInfo.getProperties());*/
+                                                lbService = new MultiTenantLBService(lbCartridgeType,
+                                                        lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                        deploymentPolicyName, tenantId,
+                                                        lbCartridgeInfo,
+                                                        tenantRange);
+                                                lbService.deploy();
                                             }
                                         }
                                     }
@@ -240,13 +262,13 @@ public class ServiceDeploymentManager {
                 }
             }
         }
-        
-        
-        
+
+
+
         
         Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
 
-        //generate the cluster ID (domain)for the service
+        /*//generate the cluster ID (domain)for the service
         service.setClusterId(type + "." + cartridgeInfo.getHostName() + ".domain");
         //host name is the hostname defined in cartridge definition
         service.setHostName(cartridgeInfo.getHostName());
@@ -274,34 +296,66 @@ public class ServiceDeploymentManager {
         }
 
         //set PayloadData instance
-        service.setPayloadData(payloadData);
+        service.setPayloadData(payloadData);*/
 
         //deploy the service
         service.deploy();
 
         //persist Service
-        try {
+        /*try {
 			PersistenceManager.persistService(service);
 		} catch (Exception e) {
             String message = "Error getting info for " + type;
             log.error(message, e);
             throw new ADCException(message, e);
+        }*/
+
+        try {
+            dataInsertionAndRetrievalManager.persistService(service);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in persisting Service in PersistenceManager";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
         }
+
         return service;
     }
 
-    public void undeployService (String clusterId) {
+    public void undeployService (String type) throws ADCException {
 
-        //TODO:
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+        Service service;
+        try {
+            service = dataInsertionAndRetrievalManager.getService(type);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in checking if Service is available is PersistenceManager";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+
+        if (service == null) {
+            String errorMsg = "No service found for type " + type;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
+
+        // if service is found, undeploy
+        service.undeploy();
+
+        try {
+            dataInsertionAndRetrievalManager.removeService(type);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in removing Service from PersistenceManager";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
     }
     
-  private void configureLBDeployment() {
-    	
-    	
-    	
-    }
-    
-    private void subscribeToLb(String cartridgeType, String lbAlias,
+    /*private void subscribeToLb(String cartridgeType, String lbAlias,
             String defaultAutoscalingPolicy, String deploymentPolicy,
             int tenantId, String userName, String tenantDomain, Property[] props) throws ADCException {
             
@@ -326,5 +380,5 @@ public class ServiceDeploymentManager {
                 log.error(msg, e);
                 throw new ADCException(msg, e);
             }
-        }
+        }*/
 }

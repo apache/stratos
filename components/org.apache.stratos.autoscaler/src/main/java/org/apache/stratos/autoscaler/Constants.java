@@ -17,6 +17,12 @@ public class Constants {
 
     public static final String CLOUD_CONTROLLER_SERVICE_SFX = "services/CloudControllerService";
     public static final int CLOUD_CONTROLLER_DEFAULT_PORT = 9444;
+
+    public static final String STRATOS_MANAGER_SERVICE_SFX = "services/InstanceCleanupNotificationService";
+    public static final int STRATOS_MANAGER_DEFAULT_PORT = 9445;
+    public static final String STRATOS_MANAGER_HOSTNAME_ELEMENT = "autoscaler.stratosManager.hostname";
+    public static final String STRATOS_MANAGER_DEFAULT_PORT_ELEMENT = "autoscaler.stratosManager.port";
+    public static final String STRATOS_MANAGER_CLIENT_TIMEOUT_ELEMENT= "autoscaler.stratosManager.clientTimeout";
     
     // partition properties
     public static final String REGION_PROPERTY = "region";
