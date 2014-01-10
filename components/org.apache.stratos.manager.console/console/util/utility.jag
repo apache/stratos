@@ -13,32 +13,32 @@ function E4XtoJSON(xml, ignored) {
     if(r == undefined) {
         r = {};
         for each (var child in children) {
-             var name = child.localName();
-             var json = E4XtoJSON(child, ignored);
-             var value = r[name];
-             if(value) {
-               if(value.length) {
-                 value.push(json);
-               } else {
-                 r[name] = [value, json]
-               }
-             } else {
-               r[name] = json;
-             }
+            var name = child.localName();
+            var json = E4XtoJSON(child, ignored);
+            var value = r[name];
+            if(value) {
+                if(value.length) {
+                    value.push(json);
+                } else {
+                    r[name] = [value, json]
+                }
+            } else {
+                r[name] = json;
+            }
         }
     }
     if(attributes.length()) {
         var a = {}, c = 0;
         for each (var attribute in attributes) {
-          var name = attribute.localName();
-          if(ignored && ignored.indexOf(name) == -1) {
-            a["_" + name] = attribute.toString();
-            c ++;
-          }
+            var name = attribute.localName();
+            if(ignored && ignored.indexOf(name) == -1) {
+                a["_" + name] = attribute.toString();
+                c ++;
+            }
         }
         if(c) {
-          if(r) a._ = r;
-          return a;
+            if(r) a._ = r;
+            return a;
         }
     }
     return r;
@@ -50,12 +50,12 @@ function sortNumber(jsonArray, property, ascending, zeroLast) {
         var bProp = parseFloat(b[property]);
 
         if(zeroLast){
-             if(aProp == 0){
+            if(aProp == 0){
                 aProp = 500000;
-             }
-             if(bProp == 0 ){
+            }
+            if(bProp == 0 ){
                 bProp = 500000;
-             }
+            }
         }
 
         return aProp === bProp ? 0 : ( ascending ? (aProp >= bProp ? 1 : -1 ) : (aProp >= bProp ? -1 : 1 ));
@@ -77,19 +77,23 @@ function getServerUrl(){
 consoleAppUtil = new function(){
     var log = new Log();
 
-    this.getAvailableCartridges = function(){
+    this.getAvailableSingleTenantCartridges = function(){
+        return this.makeRequest("GET","/cartridge/list",{}).data;
+    };
 
+    this.getAvailableMultiTenantCartridges = function(){
+        return this.makeRequest("GET","/cartridge/tenanted/list",{}).data;
     };
 
     this.getSubscribedCartridges = function(){
-
+        return this.makeRequest("GET","/cartridge/list/subscribed",{}).data;
     }
 
     this.makeRequest = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
         // getting the access token from the session.
-        var endpoint = backendServerURL + urlPostfix;
+        var endpoint = backendServerURL + urlPostFix;
         var accessToken = this.getAccessTokenFromSession();
         // the header values are constant
         var headers = {
@@ -100,8 +104,8 @@ consoleAppUtil = new function(){
         var response;
         switch (httpMethod){
             case  "GET":
-               response = get(endpoint,{},headers,type);
-               break;
+                response = get(endpoint,{},headers,type);
+                break;
             case   "POST":
                 response = post(endpoint,data,headers,type);
                 break;

@@ -1,7 +1,8 @@
 <%
 var caramel = require('caramel')
-var cartridges = require('/data/cartridges.json');
+var utils = require('/util/utility.jag');
+var availableSingleTenantCartridges = utils.consoleAppUtil.getAvailableSingleTenantCartridges();
 caramel.render({
-    cartridges:cartridges
+    cartridges:availableSingleTenantCartridges
 });
 %>
