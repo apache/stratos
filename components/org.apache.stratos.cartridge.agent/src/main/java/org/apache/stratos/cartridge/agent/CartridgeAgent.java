@@ -12,7 +12,7 @@ import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupEventListener;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
@@ -72,7 +72,7 @@ public class CartridgeAgent implements Runnable {
         processorChain.addEventListener(new InstanceCleanupEventListener() {
             @Override
             protected void onEvent(Event event) {
-               onInstanceCleanupEvent((InstanceCleanupEvent) event);
+               onInstanceCleanupEvent((InstanceCleanupMemberEvent) event);
             }
         });
         InstanceNotifierEventMessageDelegator messageDelegator = new InstanceNotifierEventMessageDelegator(processorChain);
@@ -154,8 +154,8 @@ public class CartridgeAgent implements Runnable {
         }
     }
 
-    private void onInstanceCleanupEvent(InstanceCleanupEvent event) {
-        InstanceCleanupEvent instanceCleanupEvent = (InstanceCleanupEvent)event;
+    private void onInstanceCleanupEvent(InstanceCleanupMemberEvent event) {
+        InstanceCleanupMemberEvent instanceCleanupEvent = (InstanceCleanupMemberEvent)event;
         String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
         String memberId = instanceCleanupEvent.getMemberId();
         if(memberId != null && memberId.equals(memberIdInPayload)) {
