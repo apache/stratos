@@ -30,8 +30,13 @@ import org.wso2.carbon.core.AbstractAdmin;
 public class InstanceCleanupNotificationService extends AbstractAdmin {
     private static final Log log = LogFactory.getLog(InstanceCleanupNotificationService.class);
 
-    public void sendInstanceCleanupNotificationOnTermination(String memberId) {
+    public void sendInstanceCleanupNotificationForMember(String memberId) {
         //sending the notification event to the instance
-        new InstanceNotificationPublisher().sendInstanceCleanupEvent(memberId);
+        new InstanceNotificationPublisher().sendInstanceCleanupEventForMember(memberId);
+    }
+
+    public void sendInstanceCleanupNotificationForCluster(String clusterId) {
+        //sending the notification event to the cluster
+        new InstanceNotificationPublisher().sendInstanceCleanupEventForCluster(clusterId);
     }
 }
