@@ -53,7 +53,6 @@ global java.lang.String lbRef;
 global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;
 global java.lang.Boolean laReset;
-global org.apache.commons.logging.Log log;
 
 rule "Scaling Rule"
 dialect "mvel"
@@ -114,7 +113,7 @@ dialect "mvel"
                 log.debug("[scaling up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
                 $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
             }
-        } else {
+        } else if(scaleDown){
 
             MemberStatsContext selectedMemberStatsContext = null;
             double lowestOverallLoad = 0.0;
@@ -162,9 +161,10 @@ dialect "mvel"
 
                     $delegator.delegateTerminate(selectedMemberStatsContext.getMemberId());
                 }
-
-
             }
+        }  else{
+            log.debug("[scaling] No decision made to scale up or down ... ");
+
         }
 
 end
