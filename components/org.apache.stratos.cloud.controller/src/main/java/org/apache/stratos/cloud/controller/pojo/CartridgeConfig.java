@@ -49,11 +49,13 @@ public class CartridgeConfig implements Serializable {
 
     private PortMapping[] portMappings;
     
+    private PersistanceMapping [] persistanceMappings;
+    
     private String defaultAutoscalingPolicy;
 
     private Properties properties;
 
-    private IaasConfig[] iaasConfigs;
+    private IaasConfig[] iaasConfigs;    
     
     private LoadbalancerConfig lbConfig;
 
@@ -165,7 +167,7 @@ public class CartridgeConfig implements Serializable {
     private String getDeploymentDetails () {
 
         StringBuilder deploymentDetailBuilder = new StringBuilder();
-        deploymentDetailBuilder.append("Base direcotry: " + baseDir);
+        deploymentDetailBuilder.append("Base direcotry: " + getBaseDir());
         if(deploymentDirs != null) {
             if(deploymentDirs.length > 0) {
                 deploymentDetailBuilder.append(" Direcotries: ");
@@ -233,4 +235,18 @@ public class CartridgeConfig implements Serializable {
     public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
         this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
+
+	/**
+	 * @return the persistanceMappings
+	 */
+	public PersistanceMapping [] getPersistanceMappings() {
+		return persistanceMappings;
+	}
+
+	/**
+	 * @param persistanceMappings the persistanceMappings to set
+	 */
+	public void setPersistanceMappings(PersistanceMapping [] persistanceMappings) {
+		this.persistanceMappings = persistanceMappings;
+	}
 }

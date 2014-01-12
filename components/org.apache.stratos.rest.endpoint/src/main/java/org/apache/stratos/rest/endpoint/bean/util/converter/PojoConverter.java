@@ -27,8 +27,11 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.Deploy
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +63,12 @@ public class PojoConverter {
         if(cartridgeDefinitionBean.portMapping != null && !cartridgeDefinitionBean.portMapping.isEmpty()) {
             cartridgeConfig.setPortMappings(getPortMappingsAsArray(cartridgeDefinitionBean.portMapping));
         }
+        
+        //persistance mapping
+        if(cartridgeDefinitionBean.persistanceMapping != null && !cartridgeDefinitionBean.persistanceMapping.isEmpty()) {
+            cartridgeConfig.setPersistanceMappings(getPersistanceMappingsAsArray(cartridgeDefinitionBean.persistanceMapping));
+        }
+        
         //IaaS
         if(cartridgeDefinitionBean.iaasProvider != null & !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
             cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.iaasProvider));
@@ -76,7 +85,27 @@ public class PojoConverter {
         return cartridgeConfig;
     }
 
-    private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
+    private static PersistanceMapping[] getPersistanceMappingsAsArray(List<PersistanceMappingBean> persistanceMappingBeans) {
+    	System.out.println("no of persistance beans " + persistanceMappingBeans.size());
+    	PersistanceMappingBean[] persistBeanArr = new PersistanceMappingBean[persistanceMappingBeans.size()];
+        persistBeanArr = (PersistanceMappingBean[])persistanceMappingBeans.toArray(new PersistanceMappingBean[0]);
+
+        PersistanceMapping[] persistanceMappingArr = new PersistanceMapping[persistBeanArr.length];
+        for (int i = 0; i < persistanceMappingArr.length; i++)
+        {
+          System.out.println("persistance bean " + persistBeanArr[i].toString());
+          PersistanceMapping persistMapping = new PersistanceMapping();
+          persistMapping.setSnapshotId(persistBeanArr[i].snapshotId);
+          persistMapping.setDevice(persistBeanArr[i].device);
+          persistMapping.setSize(persistBeanArr[i].size);
+          persistMapping.setRemoveOntermination(persistBeanArr[i].removeOnTermination);
+          persistanceMappingArr[i] = persistMapping;
+        }
+
+        return persistanceMappingArr;
+	}
+
+	private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
         LoadbalancerConfig lbConfig = new LoadbalancerConfig();
         lbConfig.setType(loadBalancer.type);
         if (loadBalancer.property != null && !loadBalancer.property.isEmpty()) {

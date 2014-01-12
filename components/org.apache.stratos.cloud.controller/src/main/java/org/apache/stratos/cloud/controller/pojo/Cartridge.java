@@ -57,6 +57,8 @@ public class Cartridge implements Serializable{
     
     private List<PortMapping> portMappings = new ArrayList<PortMapping>();
     
+    private List<PersistanceMapping> peristanceMappings = new ArrayList<PersistanceMapping>();
+    
     private List<AppType> appTypeMappings = new ArrayList<AppType>();
     
     /**
@@ -301,5 +303,19 @@ public class Cartridge implements Serializable{
     public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
         this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
+
+	/**
+	 * @return the peristanceMappings
+	 */
+	public List<PersistanceMapping> getPeristanceMappings() {
+		return peristanceMappings;
+	}
+
+	/**
+	 * @param peristanceMappings the peristanceMappings to set
+	 */
+	public void setPeristanceMappings(List<PersistanceMapping> peristanceMappings) {
+		this.peristanceMappings = peristanceMappings;
+	}
     
 }
