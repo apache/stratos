@@ -34,8 +34,9 @@ import javax.ws.rs.core.Response;
  * This class responsible for OAuth based authentication/authorization. A client has to bring a valid OAuth token from a
  * a OAuth provider. This class intercept the request and calls the OAuthTokenValidation endpoint of the provider.
  */
-public class OAuthHandler implements RequestHandler {
+public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
     private static Log log = LogFactory.getLog(OAuthHandler.class);
+    private static String SUPPORTED_AUTHENTICATION_TYPE = "Bearer";
     private static String oauthValidationEndpoint;
     private static String username;
     private static String password;
@@ -52,7 +53,11 @@ public class OAuthHandler implements RequestHandler {
         OAuthHandler.password = password;
     }
 
-    public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
+    public boolean canHandle(String authHeaderPrefix) {
+        return SUPPORTED_AUTHENTICATION_TYPE.equals(authHeaderPrefix);
+    }
+
+    public Response handle(Message message, ClassResourceInfo classResourceInfo) {
         try {
             OAuth2TokenValidationResponseDTO respDTO;
             ValidationServiceClient validationServiceClient = new
