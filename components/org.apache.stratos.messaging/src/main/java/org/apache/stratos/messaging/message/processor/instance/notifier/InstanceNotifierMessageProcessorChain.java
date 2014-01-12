@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
@@ -51,6 +52,8 @@ public class InstanceNotifierMessageProcessorChain extends MessageProcessorChain
         if (eventListener instanceof ArtifactUpdateEventListener) {
             artifactUpdateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceCleanupMemberEventListener) {
+            artifactUpdateMessageProcessor.addEventListener(eventListener);
+        }  else if (eventListener instanceof InstanceCleanupClusterEventListener) {
             artifactUpdateMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");
