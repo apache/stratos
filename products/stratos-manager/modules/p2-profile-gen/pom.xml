@@ -270,6 +270,12 @@
                                     org.wso2.store:org.wso2.store.feature:1.0.0
                                 </featureArtifactDef>
 				<featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.identity.application.authenticator.basicauth.server.feature:4.2.1
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.identity.application.authentication.framework.server.feature:4.2.1
+                                </featureArtifactDef>
+				<featureArtifactDef>
                                     org.apache.stratos:org.apache.stratos.messaging.feature:${project.version}
                                 </featureArtifactDef>
 
@@ -471,6 +477,14 @@
                         <id>org.wso2.store.feature.group</id>
                         <version>1.0.0</version>
                     </feature>
+                    <feature>
+                                    <id>org.wso2.carbon.identity.application.authenticator.basicauth.server.feature.group</id>
+                                    <version>4.2.1</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.identity.application.authentication.framework.server.feature.group</id>
+                                    <version>4.2.1</version>
+                                </feature>
                		   </features>
 
 			 </configuration>
