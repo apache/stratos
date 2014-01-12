@@ -204,6 +204,20 @@ public class DataInsertionAndRetrievalManager {
         }
     }*/
 
+    public Collection<CartridgeSubscription> getCartridgeSubscriptions(String cartridgeType) {
+
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
+
+        try {
+            return LookupDataHolder.getInstance().getSubscriptions(cartridgeType);
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
+        }
+    }
+
     public CartridgeSubscription getCartridgeSubscription (int tenantId, String subscriptionAlias) {
 
         // acquire read lock

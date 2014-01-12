@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -87,6 +88,28 @@ public class LookupDataHolder implements Serializable {
 
         tenantIdToSubscriptionContext.removeSubscriptionContext(tenantId, type, subscriptionAlias);
         clusterIdToSubscription.removeSubscription(clusterId, subscriptionAlias);
+    }
+
+    public Collection<CartridgeSubscription> getSubscriptions (String cartridgeType) {
+
+        Collection<SubscriptionContext> subscriptionContexts = tenantIdToSubscriptionContext.getSubscriptionContexts();
+        if (subscriptionContexts == null) {
+            // no subscriptions
+            return null;
+        }
+
+        Collection<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
+        //  iterate through the SubscriptionContexts
+        for (SubscriptionContext subscriptionContext : subscriptionContexts) {
+            // check if CartridgeSubscriptions exist for the given type, in each SubscriptionContext instance
+            Collection<CartridgeSubscription> cartridgeSubscriptionsOfType = subscriptionContext.getSubscriptionsOfType(cartridgeType);
+            if (cartridgeSubscriptionsOfType != null && !cartridgeSubscriptions.isEmpty()) {
+                // collect the relevant CartridgeSubscriptions
+                cartridgeSubscriptions.addAll(cartridgeSubscriptionsOfType);
+            }
+        }
+
+        return cartridgeSubscriptions;
     }
 
     public Collection<CartridgeSubscription> getSubscriptions (int tenantId) {

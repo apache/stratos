@@ -35,9 +35,11 @@ import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.exception.ServiceAlreadyDeployedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
+import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ServiceDeploymentManager {
@@ -325,6 +327,15 @@ public class ServiceDeploymentManager {
     public void undeployService (String type) throws ADCException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+        // check if there are already created Subscriptions for this type
+        Collection<CartridgeSubscription> cartridgeSubscriptions = dataInsertionAndRetrievalManager.getCartridgeSubscriptions(type);
+        if (cartridgeSubscriptions != null && !cartridgeSubscriptions.isEmpty()) {
+            // can't undeploy; there are existing Subscriptions
+            String errorMsg = "Cannot undeploy Service since existing Subscriptions are found";
+            log.error(errorMsg);
+            throw new ADCException(errorMsg);
+        }
 
         Service service;
         try {
