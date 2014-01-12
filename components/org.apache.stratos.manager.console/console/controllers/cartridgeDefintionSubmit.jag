@@ -1,0 +1,8 @@
+<%
+(function(){
+    var log = new Log();
+    var utils = require('/util/utility.jag');
+    var cartridgeDefinition = request.getParameter("cartridge-definition").trim();
+    utils.consoleAppUtil.deployCartridgeDefinition(cartridgeDefinition);
+}());
+%>

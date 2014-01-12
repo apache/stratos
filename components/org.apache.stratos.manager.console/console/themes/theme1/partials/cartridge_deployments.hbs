@@ -9,16 +9,19 @@
         <div class="row">
               <div class="col-md-12">
                   <h2>Deploy New Cartridge</h2>
-                  <form role="form">
-                        <label for="policy" class="required">Policy Configuration</label>
 
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-6 padding-remover-left">
-                                    <textarea class="form-control" rows="11" id="policy"></textarea>
-                                    <button type="button" class="btn btn-primary" id="deployPolicy">Deploy Cartridge</button>
-                                    <a>Cancel</a>
-                                </div>
+                  <form method="post" role="form" action="{{url "
+                  /controllers/cartridgeDefintionSubmit.jag"}}">
+                  <label for="policy" class="required">Policy Configuration</label>
+
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-md-6 padding-remover-left">
+                              <textarea name="cartridge-definition" class="form-control" rows="11"
+                                        id="policy"></textarea>
+                              <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Cartridge</button>
+                              <a>Cancel</a>
+                          </div>
                                 <div class="col-md-6">
                                     <i class="icons-help"></i>
                                     Example configuration:
