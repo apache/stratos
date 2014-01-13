@@ -85,7 +85,8 @@ class stratos {
 		exec { "strating_${name}":
 			user		=> $owner,
 			path            => "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/java/bin/",
-	                command         => "${target}/bin/stratos.sh > /dev/null 2>&1 &",
+			environment     => 'JAVA_HOME=/opt/java',
+	                command         => "${target}/bin/stratos.sh > /var/log/lb_start.log 2>&1 &",
         	        creates         => "${target}/repository/wso2server.log",
 		}
 	}
