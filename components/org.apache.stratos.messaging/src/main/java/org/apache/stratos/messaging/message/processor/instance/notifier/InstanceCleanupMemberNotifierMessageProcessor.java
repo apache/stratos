@@ -24,8 +24,8 @@ import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMembe
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class InstanceCleanupNotifierMessageProcessor  extends MessageProcessor {
-     private static final Log log = LogFactory.getLog(InstanceCleanupNotifierMessageProcessor.class);
+public class InstanceCleanupMemberNotifierMessageProcessor extends MessageProcessor {
+     private static final Log log = LogFactory.getLog(InstanceCleanupMemberNotifierMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
     @Override
