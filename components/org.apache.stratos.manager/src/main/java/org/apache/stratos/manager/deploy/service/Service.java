@@ -21,6 +21,7 @@ package org.apache.stratos.manager.deploy.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
@@ -29,7 +30,6 @@ import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.payload.PayloadFactory;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.io.Serializable;
@@ -95,6 +95,17 @@ public abstract class Service implements Serializable {
     }
 
     public void undeploy () throws ADCException {
+
+        try {
+            CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
+
+        } catch (Exception e) {
+            String errorMsg = "Error in undeploying Service with type " + type;
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("terminated instance with Service Type " + type);
 
         try {
             CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);

@@ -48,9 +48,10 @@ import java.util.*;
  * details using annotations present in the service bean. This particular implementation is inspired
  * by the {@link org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter}
  */
-public class StratosAuthorizingHandler implements RequestHandler {
+public class StratosAuthorizingHandler extends AbstractAuthenticationAuthorizationHandler {
     private Log log = LogFactory.getLog(StratosAuthorizingHandler.class);
 
+    private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
     private static final String AUTHORIZATION_ANNOTATION_CLASS_NAME = "org.apache.stratos.rest.endpoint.annotation.AuthorizationAction";
     private static final String TENANT_ANNOTATION_CLASS_NAME = "org.apache.stratos.rest.endpoint.annotation.SuperTenantService";
     private static final String ACTION_ON_RESOURCE = "ui.execute";
@@ -65,8 +66,11 @@ public class StratosAuthorizingHandler implements RequestHandler {
                         "equals", "toString", "hashCode"}));
     }
 
+    public boolean canHandle(String authHeaderPrefix){
+        return SUPPORTED_AUTHENTICATION_TYPE.equals(authHeaderPrefix);
+    }
 
-    public Response handleRequest(Message message, ClassResourceInfo resourceClass) {
+    public Response handle(Message message, ClassResourceInfo resourceClass) {
         try {
             SecurityContext securityContext = message.get(SecurityContext.class);
             Method method = getTargetMethod(message);

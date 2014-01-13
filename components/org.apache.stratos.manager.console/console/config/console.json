@@ -6,7 +6,7 @@
     "oauthConfiguration":{
         "clientId":"",
         "clientSecret":"",
-        "tokenGrantEndpoint":""
+        "tokenEndpoint":"https://localhost:9445/oauth2/token"
     },
 
     "ssoConfiguration": {

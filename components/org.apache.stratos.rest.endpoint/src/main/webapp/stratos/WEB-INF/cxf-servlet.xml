@@ -34,12 +34,8 @@
             <ref bean="exceptionHandler"/>
             <ref bean="authenticationFilter"/>
             <ref bean="authorizationFilter"/>
-        </jaxrs:providers>
-
-        <!--The below config enables OAuth based authentication/authorization for REST API-->
-        <!--jaxrs:providers>
             <ref bean="OAuthFilter"/>
-        </jaxrs:providers-->
+        </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="stratosRestEndpointBean" class="org.apache.stratos.rest.endpoint.services.StratosAdmin"/>
@@ -48,12 +44,11 @@
         <property name="securedObject" ref="stratosRestEndpointBean"/>
     </bean>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
-
     <!--The below config enables OAuth based authentication/authorization for REST API-->
-    <!--bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
+    <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
         <property name="password" value="admin"/>
         <property name="username" value="admin"/>
         <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
-    </bean-->
+    </bean>
 
 </beans>

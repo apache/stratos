@@ -22,6 +22,7 @@ package org.apache.stratos.manager.lookup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +35,11 @@ public class TenantIdToSubscriptionContext {
 
     public TenantIdToSubscriptionContext() {
         tenantIdToSubscriptionContext = new HashMap<Integer, SubscriptionContext>();
+    }
+
+    public Collection<SubscriptionContext> getSubscriptionContexts () {
+
+        return tenantIdToSubscriptionContext.values();
     }
 
     public SubscriptionContext getSubscriptionContext (int tenantId) {

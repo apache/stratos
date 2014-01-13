@@ -8,9 +8,9 @@
             requestedPage = request.getParameter("requestedPage"),
             relayState = '/console',log = new Log();
     log.info(dataConfig.ssoConfiguration.issuer);
-    var        encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer);
-    postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + process.getProperty('https.port');
-
+    var encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer);
+    postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + "9443";
+    log.info(postUrl);
 
     if (!session.get("Loged")) {
         %>
@@ -19,7 +19,7 @@
 
                             <p>You are now being redirected to Identity Server. If the
                             redirection fails, please click on the button below.</p>
-                            <form method="post" action="<%=postUrl%>/admin/samlsso">
+                            <form method="post" action="<%=postUrl%>/samlsso">
                             <p>
                                <input type="hidden" name="SAMLRequest" value="<%= encodedSAMLAuthRequest %>"/>
                                <input type="hidden" name="RelayState" value="<%= relayState %>"/>
