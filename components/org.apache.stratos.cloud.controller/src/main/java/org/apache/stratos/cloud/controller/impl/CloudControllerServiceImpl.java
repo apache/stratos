@@ -41,6 +41,7 @@ import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidato
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
+import org.jclouds.ec2.compute.options.EC2TemplateOptions;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
@@ -264,6 +265,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
             
+            StringBuilder persistancePayload = new StringBuilder();            
+            if(isPersistanceMappingAvailable(cartridge)){
+            	int i=0;
+            	for(; i<cartridge.getPeristanceMappings().size()-1;i++){
+            		if(log.isDebugEnabled()){
+            			log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
+            		}
+            		persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
+            		persistancePayload.append("|");
+            	}
+            	persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
+            }
+            addToPayload(payload, "PERSISTANCE_MAPPING", persistancePayload.toString());
+            
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
@@ -291,6 +306,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
+            
+            // set volume mappings
+            if(isPersistanceMappingAvailable(cartridge)){
+            	Iterator< PersistanceMapping> it = cartridge.getPeristanceMappings().iterator();
+            	while(it.hasNext()){            		
+            		PersistanceMapping maping = it.next();
+            		template.getOptions().as(EC2TemplateOptions.class)
+                	.mapEBSSnapshotToDeviceName(maping.getDevice(), maping.getSnapshotId(), maping.getSize(), maping.isRemoveOntermination());
+            	}
+            	
+            }
 
             if (template == null) {
                 String msg =
@@ -346,6 +372,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
     }
+
+	private boolean isPersistanceMappingAvailable(Cartridge cartridge) {
+		return cartridge.getPeristanceMappings() != null && !cartridge.getPeristanceMappings().isEmpty();
+	}
 
 	private void addToPayload(StringBuilder payload, String name, String value) {
 	    payload.append(",");
