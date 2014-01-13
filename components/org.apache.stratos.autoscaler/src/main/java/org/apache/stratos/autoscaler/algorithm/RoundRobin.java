@@ -54,16 +54,9 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	        // point to next partition
     	        int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
     	        networkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
-    	        
-    	        // current partition has no partitionid-instanceid info in cluster context
-//	        	if(!networkPartitionContext.partitionCountExists(currentPartitionId))
-//                    AutoscalerContext.getInstance().getMonitor(clusterId)
-//                                                .getNetworkPartitionCtxt(networkPartitionContext.getId())
-//                                                .addPartitionCount(currentPartitionId, 0);
-	        	
+
     	        if(networkPartitionContext.getMemberCountOfPartition(currentPartitionId) < currentPartition.getPartitionMax()){
-    	        	// current partition is free    	        	
-//    	        	networkPartitionContext.increaseMemberCountOfPartition(currentPartitionId, 1);
+    	        	// current partition is free
     	        	if(log.isDebugEnabled())
     	        		log.debug("Free space found in partition " + currentPartition.getId());
 	                return currentPartition;
@@ -108,14 +101,9 @@ public class RoundRobin implements AutoscaleAlgorithm{
                 Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                 String currentPartitionId = currentPartition.getId();
 
-//                if (!networkPartitionContext.partitionCountExists(currentPartitionId))
-//                    AutoscalerContext.getInstance().getMonitor(clusterId)
-//                            .getNetworkPartitionCtxt(networkPartitionContext.getId())
-//                            .addPartitionCount(currentPartitionId, 0);
                 // has more than minimum instances.
                 if (networkPartitionContext.getMemberCountOfPartition(currentPartitionId) > currentPartition.getPartitionMin()) {
                     // current partition is free
-//                    networkPartitionContext.decreaseMemberCountOfPartition(currentPartitionId, 1);
                     if (log.isDebugEnabled()) {
                         log.debug("Returning partition for scaling down " +
                                   currentPartition.getId());

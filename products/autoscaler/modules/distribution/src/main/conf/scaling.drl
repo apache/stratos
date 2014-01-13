@@ -109,7 +109,7 @@ dialect "mvel"
 
             Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId);
             if(partition != null){
-                log.debug("[scaling up] Partition available to scale up ");
+                log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                 log.debug("[scaling up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
                 $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
             }
@@ -120,7 +120,7 @@ dialect "mvel"
             boolean foundAValue = false;
             Partition partition =  autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId);
             if(partition != null){
-                log.debug("[scaling down] Partition available to scale up ");
+                log.info("[scaling down] Partition available to scale down ");
                 log.debug("[scaling down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
                 partitionContext = $networkPartitionContext.getPartitionCtxt(partition.getId());
 
@@ -156,6 +156,7 @@ dialect "mvel"
                     }
                 }
                 if(selectedMemberStatsContext != null) {
+                    log.info("[scale-down] Trying to terminating an instace to scale down!" );
                     log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                         + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
 
@@ -163,7 +164,7 @@ dialect "mvel"
                 }
             }
         }  else{
-            log.debug("[scaling] No decision made to scale up or down ... ");
+            log.debug("[scaling] No decision made to either scale up or scale down ... ");
 
         }
 
