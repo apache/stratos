@@ -1,23 +1,25 @@
 #!/bin/sh
 # ----------------------------------------------------------------------------
-#  Copyright 2005-2012 WSO2, Inc. http://www.wso2.org
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
 #
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
 # ----------------------------------------------------------------------------
-# Main Script for the WSO2 Carbon Server
+# Main Script for the Apache Stratos (incubating)
 #
-# Environment Variable Prequisites
+# Environment Variable Prerequisites
 #
 #   CARBON_HOME   Home of WSO2 Carbon installation. If not set I will  try
 #                   to figure it out.
@@ -136,6 +138,7 @@ if [ -e "$CARBON_HOME/wso2carbon.pid" ]; then
 fi
 
 # ----- Process the input command ----------------------------------------------
+args=""
 for c in $*
 do
     if [ "$c" = "--debug" ] || [ "$c" = "-debug" ] || [ "$c" = "debug" ]; then
@@ -155,6 +158,8 @@ do
           CMD="restart"
     elif [ "$c" = "--test" ] || [ "$c" = "-test" ] || [ "$c" = "test" ]; then
           CMD="test"
+    else
+        args="$args $c"
     fi
 done
 
@@ -178,7 +183,7 @@ elif [ "$CMD" = "start" ]; then
   fi
   export CARBON_HOME=$CARBON_HOME
 # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/stratos.sh > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/stratos.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME=$CARBON_HOME
@@ -197,7 +202,7 @@ elif [ "$CMD" = "restart" ]; then
   done
 
 # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/stratos.sh > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/stratos.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "test" ]; then
     JAVACMD="exec "$JAVACMD""
@@ -267,6 +272,7 @@ do
     $JAVACMD \
     -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
     -Xms256m -Xmx1024m -XX:MaxPermSize=256m \
+    -server \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
     $JAVA_OPTS \
@@ -279,12 +285,11 @@ do
     -Dcarbon.registry.root=/ \
     -Djava.command="$JAVACMD" \
     -Dcarbon.home="$CARBON_HOME" \
-    -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/log4j.properties" \
     -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
     -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
+    -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/etc/logging-bridge.properties" \
     -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
     -Dconf.location="$CARBON_HOME/repository/conf"\
-    -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
     -Dcom.atomikos.icatch.hide_init_file_path=true \
     -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true \
@@ -293,7 +298,7 @@ do
     -Dorg.terracotta.quartz.skipUpdateCheck=true \
     -Djava.security.egd=file:/dev/./urandom \
     -Dfile.encoding=UTF8 \
-    -Dloadbalancer.conf=file:repository/conf/loadbalancer.conf \
+    -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done

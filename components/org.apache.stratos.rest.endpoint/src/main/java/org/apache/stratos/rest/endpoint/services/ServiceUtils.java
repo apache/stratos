@@ -639,6 +639,20 @@ public class ServiceUtils {
             throw new ADCException(msg, e);
         }
 
+        // If multitenant, return for now. TODO -- fix properly
+        if(cartridgeInfo != null && cartridgeInfo.getMultiTenant()) {
+               log.info(" ******* MT cartridge ******* ");
+                       
+               CartridgeSubscription cartridgeSubscription = 
+               cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType, alias, autoscalingPolicy, 
+                                                                         deploymentPolicy ,tenantDomain, 
+                                                                         ApplicationManagementUtil.getTenantId(configurationContext),
+                                                                         userName, "git", repoURL, false, repoUsername, repoPassword, null);
+               log.info(" --- ** -- ");
+              return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+                       
+        }
+        
         List<Property> lbRefProp = new ArrayList<Property>();
 
         // get lb config reference

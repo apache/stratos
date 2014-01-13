@@ -675,6 +675,12 @@
 	    <destName>jaas.conf</destName>
             <filtered>true</filtered>
         </file>
+        <!--Application authenticators -->
+        <file>
+            <source>../../conf/application-authenticators.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
         <!-- REST endpoint webapp -->
         <file>
             <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/stratos.war</source>

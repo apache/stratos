@@ -54,7 +54,7 @@ if( e == null){
 <div class="container">
     <div class="row">
         <div class="col-lg-12 login-box-wrapper">
-            <form id="loginForm" action="/admin/commonauth" method="POST" >
+            <form id="loginForm" action="/commonauth" method="POST" >
             <div class="login-box">
                 <div class="login-box-top">
                     <h2 class="login-sub-title">Login to create cartridges</h2>

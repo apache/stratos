@@ -39,14 +39,20 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Here we are doing the request authentication within a {@link RequestHandler}. The request handlers
  * are get invoked just before the actual method invocation. This authentication handler make use
  * of HTTP basic auth headers as the authentication mechanism.
  */
-public class StratosAuthenticationHandler implements RequestHandler {
+public class StratosAuthenticationHandler extends AbstractAuthenticationAuthorizationHandler {
     private static Log log = LogFactory.getLog(StratosAuthenticationHandler.class);
+    private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
+
+    public boolean canHandle(String authHeaderPrefix){
+        return SUPPORTED_AUTHENTICATION_TYPE.equals(authHeaderPrefix);
+    }
 
     /**
      * Authenticate the user against the user store. Once authenticate, populate the {@link org.wso2.carbon.context.CarbonContext}
@@ -55,7 +61,7 @@ public class StratosAuthenticationHandler implements RequestHandler {
      * @param classResourceInfo
      * @return
      */
-    public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
+    public Response handle(Message message, ClassResourceInfo classResourceInfo) {
         AuthorizationPolicy policy = (AuthorizationPolicy) message.get(AuthorizationPolicy.class);
         String username = policy.getUserName().trim();
         String password = policy.getPassword().trim();
