@@ -37,13 +37,13 @@ class stratos::lb ( $version,
 
        define push_templates ( $directory, $target ) {
        
-               file { "${target}/repository/${name}":
-                       owner   => $owner,
-                       group   => $group,
-                       mode    => 755,
-                       content => template("${directory}/${name}.erb"),
-                       ensure  => present,
-               }
+             #  file { "${target}/repository/${name}":
+             #          owner   => $owner,
+             #          group   => $group,
+             #          mode    => 755,
+             #          content => template("${directory}/${name}.erb"),
+             #          ensure  => present,
+             #  }
        }
 
 	clean { $deployment_code:
