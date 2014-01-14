@@ -265,20 +265,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
-            
-            StringBuilder persistancePayload = new StringBuilder();            
-            if(isPersistanceMappingAvailable(cartridge)){
-            	int i=0;
-            	for(; i<cartridge.getPeristanceMappings().size()-1;i++){
-            		if(log.isDebugEnabled()){
-            			log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
-            		}
-            		persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-            		persistancePayload.append("|");
-            	}
-            	persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-            }
-            addToPayload(payload, "PERSISTANCE_MAPPING", persistancePayload.toString());
+                        
+            addToPayload(payload, "PERSISTANCE_MAPPING", getPersistancePayload(cartridge).toString());
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -307,18 +295,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
-            
-            // set volume mappings
-            if(isPersistanceMappingAvailable(cartridge)){
-            	Iterator< PersistanceMapping> it = cartridge.getPeristanceMappings().iterator();
-            	while(it.hasNext()){            		
-            		PersistanceMapping maping = it.next();
-            		template.getOptions().as(EC2TemplateOptions.class)
-                	.mapEBSSnapshotToDeviceName(maping.getDevice(), maping.getSnapshotId(), maping.getSize(), maping.isRemoveOntermination());
-            	}
-            	
-            }
-
+                        
             if (template == null) {
                 String msg =
                              "Failed to start an instance. " +
@@ -330,6 +307,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new CloudControllerException(msg);
             }
 
+            iaas.mapPersistanceVolumes(template, cartridge.getPeristanceMappings());
             // generate the group id from domain name and sub domain
             // name.
             // Should have lower-case ASCII letters, numbers, or dashes.
@@ -373,6 +351,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
     }
+
+	private StringBuilder getPersistancePayload(Cartridge cartridge) {
+		StringBuilder persistancePayload = new StringBuilder();
+		if(isPersistanceMappingAvailable(cartridge)){
+			int i=0;
+			for(; i<cartridge.getPeristanceMappings().size()-1;i++){
+				if(log.isDebugEnabled()){
+					log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
+				}
+				persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
+				persistancePayload.append("|");
+			}
+			persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
+		}
+		return persistancePayload;
+	}
 
 	private boolean isPersistanceMappingAvailable(Cartridge cartridge) {
 		return cartridge.getPeristanceMappings() != null && !cartridge.getPeristanceMappings().isEmpty();
