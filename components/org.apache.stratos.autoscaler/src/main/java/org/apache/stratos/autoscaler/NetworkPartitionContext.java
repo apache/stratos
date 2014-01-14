@@ -477,6 +477,13 @@ public class NetworkPartitionContext implements Serializable{
         return partitions;
     }
 
+    public int getNonTerminatedMemberCountOfPartition(String partitionId) {
+        if(partitionCtxts.containsKey(partitionId)){
+            return getPartitionCtxt(partitionId).getNonTerminatedMemberCount();
+        }
+        return 0;
+    }
+
 //    public void setPartitions(Partition[] partitions) {
 //        this.partitions = partitions;
 //        for (Partition partition: partitions){

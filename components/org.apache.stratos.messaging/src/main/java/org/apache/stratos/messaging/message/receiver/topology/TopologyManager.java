@@ -67,7 +67,7 @@ public class TopologyManager {
         writeLock.unlock();
     }
 
-    public static synchronized Topology getTopology() {
+    public static Topology getTopology() {
         if (topology == null) {
             synchronized (TopologyManager.class){
                 if (topology == null) {

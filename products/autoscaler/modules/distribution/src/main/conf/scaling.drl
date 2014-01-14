@@ -160,7 +160,7 @@ dialect "mvel"
                     log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                         + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
 
-                    $delegator.delegateTerminate(selectedMemberStatsContext.getMemberId());
+                    $delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
                 }
             }
         }  else{

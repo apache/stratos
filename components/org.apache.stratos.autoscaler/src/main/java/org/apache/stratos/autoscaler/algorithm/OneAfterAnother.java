@@ -60,7 +60,8 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                     Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                     String currentPartitionId = currentPartition.getId();
 
-                    if (networkPartitionContext.getMemberCountOfPartition(currentPartitionId) < currentPartition.getPartitionMax()) {
+                    if (networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId)
+                            < currentPartition.getPartitionMax()) {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
@@ -100,7 +101,8 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                     String currentPartitionId = currentPartition.getId();
 
                     // has more than minimum instances.
-                    if (networkPartitionContext.getMemberCountOfPartition(currentPartitionId) > currentPartition.getPartitionMin()) {
+                    if (networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId) >
+                            currentPartition.getPartitionMin()) {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",

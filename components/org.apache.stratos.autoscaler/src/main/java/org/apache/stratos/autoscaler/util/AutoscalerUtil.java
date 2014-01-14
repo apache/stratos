@@ -134,14 +134,14 @@ public class AutoscalerUtil {
                         if(MemberStatus.Activated.equals(member.getStatus())){
                             partitionContext.addActiveMember(memberContext);
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
-                            partitionContext.incrementCurrentActiveMemberCount(1);
+//                            partitionContext.incrementCurrentActiveMemberCount(1);
 
                         } else if(MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())){
                             partitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
                         } else if(MemberStatus.Suspended.equals(member.getStatus())){
-                            partitionContext.addFaultyMember(memberId);
+//                            partitionContext.addFaultyMember(memberId);
                         }
                         partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                         if(log.isInfoEnabled()){
@@ -238,13 +238,13 @@ public class AutoscalerUtil {
                     if (MemberStatus.Activated.equals(member.getStatus())) {
                         partitionContext.addActiveMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
-                        partitionContext.incrementCurrentActiveMemberCount(1);
+//                        partitionContext.incrementCurrentActiveMemberCount(1);
                     } else if (MemberStatus.Created.equals(member.getStatus()) ||
                                MemberStatus.Starting.equals(member.getStatus())) {
                         partitionContext.addPendingMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
                     } else if (MemberStatus.Suspended.equals(member.getStatus())) {
-                        partitionContext.addFaultyMember(memberId);
+//                        partitionContext.addFaultyMember(memberId);
                     }
 
                     partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));

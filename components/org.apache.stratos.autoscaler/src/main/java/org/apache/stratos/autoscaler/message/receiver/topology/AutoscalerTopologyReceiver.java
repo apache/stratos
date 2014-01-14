@@ -200,11 +200,16 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
                 PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
                 partitionContext.removeMemberStatsContext(e.getMemberId());
-                partitionContext.decrementCurrentActiveMemberCount(1);
+                if(!partitionContext.removeTerminationPendingMember(e.getMemberId())){
 
-                if(log.isInfoEnabled()){
+                    if(log.isErrorEnabled()){
+                        log.error(String.format("Member is not available in termination pending list: [member] %s", e.getMemberId()));
+                    }
+                } else if(log.isInfoEnabled()){
                     log.info(String.format("Member stat context has been removed: [member] %s", e.getMemberId()));
                 }
+//                partitionContext.decrementCurrentActiveMemberCount(1);
+
 
             } finally {
                 TopologyManager.releaseReadLock();
@@ -240,8 +245,8 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 if(log.isInfoEnabled()){
                     log.info(String.format("Member stat context has been added: [member] %s", memberId));
                 }
-                partitionContext.incrementCurrentActiveMemberCount(1);
-                partitionContext.removePendingMember(memberId);
+//                partitionContext.incrementCurrentActiveMemberCount(1);
+                partitionContext.movePendingMemberToActiveMembers(memberId);
 
             }
             finally{

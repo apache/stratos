@@ -60,7 +60,7 @@ public class TestMinimumRule {
         kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
     }
-    
+
     @Test
     public void testMinimumRule() {
         if(kbase == null) {
