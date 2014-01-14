@@ -963,11 +963,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                                                   CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
             // add to a temporary Map
             partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
+            
+            if (log.isDebugEnabled()) {
+            	log.debug("Partition "+partition.toString()+ " is validated successfully "
+            			+ "against the Cartridge: "+cartridgeType);
+            }
 
         }
 
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
+        
+        log.info("All partitions were validated successfully, against the Cartridge: "+cartridgeType);
         
         return true;
     }
