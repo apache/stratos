@@ -1,0 +1,53 @@
+<%
+
+authenticationUtil = new function(){
+    var log = new Log();
+};
+
+authorizationUtil = new function(){
+    var log = new Log();
+
+    // primitive acl impl.
+    this.isAllowed = function(tenant,roleObj,resource){
+        var aclconfig = require('/config/acl.json');
+        if(tenant == null){ // check for undefine as well
+            return false;
+        }else if(tenant == "carbon.super"){
+            return this.checkPermission(roleObj,aclconfig.carbonsuper,resource);
+        }else{
+            return this.checkPermission(roleObj,aclconfig.tenants,resource);
+        }
+
+        return false;
+    };
+    // user roles: {[admin,Internal]}
+    // permission config :
+    //{
+    //    "admin": ["view", "edit", "add_tenant", "tenant-edit"],
+    //        "everyone": ["view", "tenant-edit"]
+    //}
+    this.checkPermission = function(roleArray, permissionConfig, resource) {
+        for(var i=0; i < roleArray.length; i++){
+            for(var permissionKey in permissionConfig) {
+                if(permissionKey == roleArray[i]){
+                    var permissionArray = permissionConfig[permissionKey];
+                    for(var i=0;i< permissionArray.length;i++){
+                        if(resource != null && resource == permissionArray[i]){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    };
+};
+
+//var testLog = new Log();
+//testLog.info(authorizationUtil.isAllowed("carbon.super",["admin","Internal/Everyone"],"view"));
+//testLog.info(authorizationUtil.isAllowed("pradeep.org",["admin","Internal/Everyone"],"edit"));
+//testLog.info(authorizationUtil.isAllowed("pradeep.org",["admin","Internal/Everyone"],"tenant-edit"));
+//testLog.info(authorizationUtil.isAllowed("test.org",["Internal/Everyone"],"view"));
+//testLog.info(authorizationUtil.isAllowed("someorg.com",["admin","Internal/Everyone"],"view"));
+
+%>
