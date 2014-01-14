@@ -33,9 +33,6 @@ public class RuleTasksDelegator {
         }
         predictedValue = average + gradient * timeInterval + 0.5 * secondDerivative * timeInterval * timeInterval;
 
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Predicted value: %s ", predictedValue));
-        }
         return predictedValue;
     }
 

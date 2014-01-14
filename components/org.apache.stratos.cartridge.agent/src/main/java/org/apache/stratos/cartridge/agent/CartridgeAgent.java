@@ -74,7 +74,7 @@ public class CartridgeAgent implements Runnable {
         processorChain.addEventListener(new InstanceCleanupMemberEventListener() {
             @Override
             protected void onEvent(Event event) {
-                String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
+                String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
                 InstanceCleanupMemberEvent instanceCleanupMemberEvent = (InstanceCleanupMemberEvent)event;
                 if(memberIdInPayload.equals(instanceCleanupMemberEvent.getMemberId())) {
                     onInstanceCleanupEvent();
@@ -136,7 +136,7 @@ public class CartridgeAgent implements Runnable {
     }
 
     private void onArtifactUpdateEvent(ArtifactUpdatedEvent event) {
-        ArtifactUpdatedEvent artifactUpdatedEvent = (ArtifactUpdatedEvent) event;
+        ArtifactUpdatedEvent artifactUpdatedEvent = event;
         if(log.isInfoEnabled()) {
             log.info(String.format("Artifact update event received: %s", artifactUpdatedEvent.toString()));
         }
