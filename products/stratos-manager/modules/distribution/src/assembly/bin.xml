@@ -64,6 +64,8 @@
 	        <exclude>**/*.lock</exclude>
 	        <exclude>**/.data</exclude>
 	        <exclude>**/.settings</exclude>
+	        <exclude>**/org.wso2.store.sso.common_1.0.0.jar</exclude>
+	        <exclude>**/org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</exclude>
 	    </excludes>
 	</fileSet>
         <fileSet>
@@ -399,6 +401,24 @@
                    <directory>../../payload/user-data/</directory>
                    <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/user-data</outputDirectory>
                 </fileSet> 
+	<fileSet>
+            <directory>../../conf/temp-artifacts/sso</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/modules/sso</outputDirectory>
+        </fileSet>
+	<fileSet>
+            <directory>../../conf/temp-artifacts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
+            <includes>
+                <include>org.wso2.store.sso.common_1.0.0.jar</include>
+            </includes>
+        </fileSet>
+	<fileSet>
+            <directory>../../conf/temp-artifacts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
+            <includes>
+                <include>org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <dependencySets>
