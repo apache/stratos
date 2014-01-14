@@ -106,13 +106,16 @@ public class Partition implements Serializable{
         return provider;
     }
 
-    public void setProvider(String provider) {
+	public void setProvider(String provider) {
         this.provider = provider;
     }
-    
-    public String toString() {
-        return "Partition Id: "+this.id+", Partition Provider: "+this.provider;
-    }
+	
+	@Override
+	public String toString() {
+		return "Partition [id=" + id + ", provider=" + provider
+				+ ", partitionMin=" + partitionMin + ", partitionMax="
+				+ partitionMax + ", properties=" + properties + "]";
+	}
     
     public boolean equals(Object obj) {
         if(obj != null && obj instanceof Partition) {

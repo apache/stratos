@@ -37,6 +37,10 @@
                     var sessionObj = sso.client.decodeSAMLLoginResponse(samlRespObj, samlResponse, sessionId);
                     var samlToken = sso.client.getB64EncodedtSAMLAssertion(samlRespObj);
                     log.info("B64 encoded SAML2Token : " + samlToken.b64Encoded);
+                    log.info("Logged in user : " + sessionObj.loggedInUser);
+                    log.info("Tenant domain : " + sso.client.getTenantDomain(samlRespObj));
+                    log.info("Role List of current tenant : "+ sso.client.getRoleList(samlRespObj)[1]);
+                    log.info("B64 encoded SAML2Token : " + samlToken.b64Encoded);
                     var encodedString = sso.client.b64encode("LATjzZ4FvQc2gFEfwcitay78lQQa:LeZD0oN0ZLTLjLmRqphX4Ulrr5wa");
                     log.info("encoded string : " + encodedString);
                     var accessToken = util.consoleAppUtil.getOauthAccessToken(samlToken.b64Encoded,encodedString);
