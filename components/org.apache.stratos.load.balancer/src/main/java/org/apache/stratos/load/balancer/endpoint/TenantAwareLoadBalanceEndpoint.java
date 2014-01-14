@@ -526,7 +526,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             if(StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }
-            LoadBalancerStatisticsCollector.getInstance().incrementInFlightRequestCount(clusterId);
+            LoadBalancerStatisticsCollector.getInstance().addAnInFlightRequest(clusterId);
         }
         catch (Exception e) {
             if(log.isDebugEnabled()) {
