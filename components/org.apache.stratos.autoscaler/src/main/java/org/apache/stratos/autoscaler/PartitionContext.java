@@ -329,6 +329,21 @@ public class PartitionContext implements Serializable{
         return activeMembers.size() + pendingMembers.size();
     }
 
+    public void removeActiveMemberById(String memberId) {
+
+        synchronized (activeMembers) {
+
+            for (Iterator<MemberContext> iterator = activeMembers.listIterator(); iterator.hasNext();) {
+                String currentMemberId = ((MemberContext) iterator).getMemberId();
+                if(memberId.equals(currentMemberId)){
+
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
