@@ -207,7 +207,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String clusterId = memberContext.getClusterId();
         Partition partition = memberContext.getPartition();
 
-        log.info("Received an instance spawn request : " + memberContext.toString());
+		log.debug("Received an instance spawn request : " + memberContext.toString());
 
         ComputeService computeService = null;
         Template template = null;
@@ -247,11 +247,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
             String msg =
-                         "Instance start-up failed. " + memberContext.toString() + ". " +
-                                 "There's no IaaS provided for the partition: " + partitionId +
-                                 " and for the Cartridge type: " + cartridgeType+". Only following "
-                                 		+ "partitions can be found in this Cartridge: "
-                                 +cartridge.getPartitionToIaasProvider().keySet().toString();
+                         "Instance start-up failed. " + "There's no IaaS provided for the partition: " + partitionId +
+                         " and for the Cartridge type: " + cartridgeType+". Only following "
+                  		+ "partitions can be found in this Cartridge: "
+                  		+cartridge.getPartitionToIaasProvider().keySet().toString()+ memberContext.toString() + ". ";
             log.fatal(msg);
             throw new CloudControllerException(msg);
         }
@@ -534,7 +533,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPublicAddresses().iterator().hasNext()) {
                         ip = node.getPublicAddresses().iterator().next();
                         memberContext.setPublicIpAddress(ip);
-                        log.info("Public ip address: " + memberContext.toString());
+                        log.info("Public IP Address has been set. " + memberContext.toString());
                     }
 
                     // private IP
@@ -542,7 +541,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPrivateAddresses().iterator().hasNext()) {
                         ip = node.getPrivateAddresses().iterator().next();
                         memberContext.setPrivateIpAddress(ip);
-                        log.info("Private ip address: " + memberContext.toString());
+                        log.info("Private IP Address has been set. " + memberContext.toString());
                     }
 
                     dataHolder.addMemberContext(memberContext);
@@ -559,7 +558,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     // update the topology with the newly spawned member
                     // publish data
                     if (log.isDebugEnabled()) {
-                        log.debug("Node details: \n" + node.toString() + "\n***************\n");
+                        log.debug("Node details: \n" + node.toString());
                     }
 
             } catch (Exception e) {
@@ -964,6 +963,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
+        
+        // persist data
+        persist();
         
         log.info("All partitions "+CloudControllerUtil.getPartitionIds(partitions)+
         		" were validated successfully, against the Cartridge: "+cartridgeType);
