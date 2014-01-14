@@ -32,7 +32,7 @@ public class TopologyEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
     private TopologyEventMessageQueue(){
     }
 
-    public static synchronized TopologyEventMessageQueue getInstance() {
+    public static TopologyEventMessageQueue getInstance() {
         if (instance == null) {
             synchronized (TopologyEventMessageQueue.class){
                 if (instance == null) {
