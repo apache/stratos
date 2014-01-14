@@ -37,7 +37,7 @@ dialect "mvel"
             eval(log.debug("[terminate all] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
 
         then
-           $delegator.delegateTerminate(memberId);
+           $delegator.delegateTerminate($ctxt, memberId);
 end
 
 

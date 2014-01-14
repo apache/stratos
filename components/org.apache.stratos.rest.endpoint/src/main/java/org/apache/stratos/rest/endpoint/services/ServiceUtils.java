@@ -762,52 +762,53 @@ public class ServiceUtils {
 
                         lbRefProp.add(property);
                         break;
-                    } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
-                        if ("true".equals(value)) {
-                            property.setValue(name);
-                            if (log.isDebugEnabled()) {
-                                log.debug("This cartridge uses a service aware load balancer. " +
-                                          "[Type] " + cartridgeType);
-                            }
-                            if (autoscalerServiceClient != null) {
-                                try {
+                    }
 
-                                    // get the valid policies for lb cartridge
-                                    DeploymentPolicy[] lbCartridgeDepPolicies =
-                                                                                autoscalerServiceClient.getDeploymentPolicies(lbCartridgeType);
-                                    // traverse deployment policies of lb cartridge
-                                    for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
-                                        // check existence of the subscribed policy
-                                        if (deploymentPolicy.equals(policy.getId())) {
+                } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+                    if ("true".equals(value)) {
+                        property.setValue(name);
+                        if (log.isDebugEnabled()) {
+                            log.debug("This cartridge uses a service aware load balancer. " +
+                                    "[Type] " + cartridgeType);
+                        }
+                        if (autoscalerServiceClient != null) {
+                            try {
 
-                                            if (!autoscalerServiceClient.checkServiceLBExistenceAgainstPolicy(cartridgeType,
-                                                                                                              deploymentPolicy)) {
+                                // get the valid policies for lb cartridge
+                                DeploymentPolicy[] lbCartridgeDepPolicies =
+                                        autoscalerServiceClient.getDeploymentPolicies(lbCartridgeType);
+                                // traverse deployment policies of lb cartridge
+                                for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+                                    // check existence of the subscribed policy
+                                    if (deploymentPolicy.equals(policy.getId())) {
 
-                                                // if lb cluster doesn't exist
-                                                String lbAlias =
-                                                                 "lb" + cartridgeType +
-                                                                         new Random().nextInt();
-                                                lbCartridgeInfo.addProperties(property);
-                                                subscribeToLb(lbCartridgeType,
-                                                              lbAlias,
-                                                              lbCartridgeInfo.getDefaultAutoscalingPolicy(),
-                                                              deploymentPolicy,
-                                                              configurationContext, userName,
-                                                              tenantDomain,
-                                                              lbCartridgeInfo.getProperties());
-                                            }
+                                        if (!autoscalerServiceClient.checkServiceLBExistenceAgainstPolicy(cartridgeType,
+                                                deploymentPolicy)) {
+
+                                            // if lb cluster doesn't exist
+                                            String lbAlias =
+                                                    "lb" + cartridgeType +
+                                                            new Random().nextInt();
+                                            lbCartridgeInfo.addProperties(property);
+                                            subscribeToLb(lbCartridgeType,
+                                                    lbAlias,
+                                                    lbCartridgeInfo.getDefaultAutoscalingPolicy(),
+                                                    deploymentPolicy,
+                                                    configurationContext, userName,
+                                                    tenantDomain,
+                                                    lbCartridgeInfo.getProperties());
                                         }
                                     }
-
-                                } catch (Exception ex) {
-                                    // we don't need to throw the error here.
-                                    log.error(ex.getMessage(), ex);
                                 }
-                            }
 
-                            lbRefProp.add(property);
-                            break;
+                            } catch (Exception ex) {
+                                // we don't need to throw the error here.
+                                log.error(ex.getMessage(), ex);
+                            }
                         }
+
+                        lbRefProp.add(property);
+                        break;
                     }
                 }
             }

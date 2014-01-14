@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.AppType;
@@ -36,7 +37,6 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.Arrays;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -274,5 +274,15 @@ public class CloudControllerUtil {
 	public static void handleException(String msg){
 		log.error(msg);
 		throw new CloudControllerException(msg);
+	}
+
+	public static String getPartitionIds(Partition[] partitions) {
+		StringBuilder str = new StringBuilder("");
+		for (Partition partition : partitions) {
+			str.append(partition.getId()+", ");
+		}
+		
+		String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length()-2);
+		return "[" +partitionStr+ "]";
 	}
 }

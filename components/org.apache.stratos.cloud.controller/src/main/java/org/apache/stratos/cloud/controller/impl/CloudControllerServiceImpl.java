@@ -207,7 +207,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String clusterId = memberContext.getClusterId();
         Partition partition = memberContext.getPartition();
 
-        log.info("Received an instance spawn request : " + memberContext.toString());
+		log.debug("Received an instance spawn request : " + memberContext.toString());
 
         ComputeService computeService = null;
         Template template = null;
@@ -247,9 +247,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
             String msg =
-                         "Instance start-up failed. " + memberContext.toString() + ". " +
-                                 "There's no IaaS provided for the partition: " + partitionId +
-                                 " and for the Cartridge type: " + cartridgeType;
+                         "Instance start-up failed. " + "There's no IaaS provided for the partition: " + partitionId +
+                         " and for the Cartridge type: " + cartridgeType+". Only following "
+                  		+ "partitions can be found in this Cartridge: "
+                  		+cartridge.getPartitionToIaasProvider().keySet().toString()+ memberContext.toString() + ". ";
             log.fatal(msg);
             throw new CloudControllerException(msg);
         }
@@ -264,20 +265,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
-            
-            StringBuilder persistancePayload = new StringBuilder();            
-            if(isPersistanceMappingAvailable(cartridge)){
-            	int i=0;
-            	for(; i<cartridge.getPeristanceMappings().size()-1;i++){
-            		if(log.isDebugEnabled()){
-            			log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
-            		}
-            		persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-            		persistancePayload.append("|");
-            	}
-            	persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-            }
-            addToPayload(payload, "PERSISTANCE_MAPPING", persistancePayload.toString());
+                        
+            addToPayload(payload, "PERSISTANCE_MAPPING", getPersistancePayload(cartridge).toString());
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -306,18 +295,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
-            
-            // set volume mappings
-            if(isPersistanceMappingAvailable(cartridge)){
-            	Iterator< PersistanceMapping> it = cartridge.getPeristanceMappings().iterator();
-            	while(it.hasNext()){            		
-            		PersistanceMapping maping = it.next();
-            		template.getOptions().as(EC2TemplateOptions.class)
-                	.mapEBSSnapshotToDeviceName(maping.getDevice(), maping.getSnapshotId(), maping.getSize(), maping.isRemoveOntermination());
-            	}
-            	
-            }
-
+                        
             if (template == null) {
                 String msg =
                              "Failed to start an instance. " +
@@ -329,11 +307,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new CloudControllerException(msg);
             }
 
+            iaas.mapPersistanceVolumes(template, cartridge.getPeristanceMappings());
             // generate the group id from domain name and sub domain
             // name.
             // Should have lower-case ASCII letters, numbers, or dashes.
             // Should have a length between 3-15
-            String str = clusterId.substring(0, 10);
+            String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
             String group = str.replaceAll("[^a-z0-9-]", "");
             NodeMetadata node;
 
@@ -346,7 +325,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             //Start allocating ip as a new job
 
             ThreadExecutor exec = ThreadExecutor.getInstance();
-            exec.execute(new IpAllocator(memberContext, computeService, template, iaasProvider, cartridgeType, node));
+            exec.execute(new IpAllocator(memberContext, iaasProvider, cartridgeType, node));
 
 
             // node id
@@ -372,6 +351,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
     }
+
+	private StringBuilder getPersistancePayload(Cartridge cartridge) {
+		StringBuilder persistancePayload = new StringBuilder();
+		if(isPersistanceMappingAvailable(cartridge)){
+			int i=0;
+			for(; i<cartridge.getPeristanceMappings().size()-1;i++){
+				if(log.isDebugEnabled()){
+					log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
+				}
+				persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
+				persistancePayload.append("|");
+			}
+			persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
+		}
+		return persistancePayload;
+	}
 
 	private boolean isPersistanceMappingAvailable(Cartridge cartridge) {
 		return cartridge.getPeristanceMappings() != null && !cartridge.getPeristanceMappings().isEmpty();
@@ -490,17 +485,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private class IpAllocator implements Runnable {
 
         private MemberContext memberContext;
-        private ComputeService computeService;
-        private Template template;
         private IaasProvider iaasProvider;
         private String cartridgeType;
         NodeMetadata node;
 
-        public IpAllocator(MemberContext memberContext, ComputeService computeService, Template template,
-                           IaasProvider iaasProvider, String cartridgeType, NodeMetadata node) {
+        public IpAllocator(MemberContext memberContext, IaasProvider iaasProvider, 
+        		String cartridgeType, NodeMetadata node) {
             this.memberContext = memberContext;
-            this.computeService = computeService;
-            this.template = template;
             this.iaasProvider = iaasProvider;
             this.cartridgeType = cartridgeType;
             this.node = node;
@@ -512,13 +503,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String clusterId = memberContext.getClusterId();
             Partition partition = memberContext.getPartition();
-
-            // generate the group id from domain name and sub domain
-            // name.
-            // Should have lower-case ASCII letters, numbers, or dashes.
-            // Should have a length between 3-15
-            String str = clusterId.substring(0, 10);
-            String group = str.replaceAll("[^a-z0-9-]", "");
 
             try{
 
@@ -543,7 +527,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPublicAddresses().iterator().hasNext()) {
                         ip = node.getPublicAddresses().iterator().next();
                         memberContext.setPublicIpAddress(ip);
-                        log.info("Public ip address: " + memberContext.toString());
+                        log.info("Public IP Address has been set. " + memberContext.toString());
                     }
 
                     // private IP
@@ -551,7 +535,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPrivateAddresses().iterator().hasNext()) {
                         ip = node.getPrivateAddresses().iterator().next();
                         memberContext.setPrivateIpAddress(ip);
-                        log.info("Private ip address: " + memberContext.toString());
+                        log.info("Private IP Address has been set. " + memberContext.toString());
                     }
 
                     dataHolder.addMemberContext(memberContext);
@@ -568,7 +552,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     // update the topology with the newly spawned member
                     // publish data
                     if (log.isDebugEnabled()) {
-                        log.debug("Node details: \n" + node.toString() + "\n***************\n");
+                        log.debug("Node details: \n" + node.toString());
                     }
 
             } catch (Exception e) {
@@ -974,7 +958,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
         
-        log.info("All partitions were validated successfully, against the Cartridge: "+cartridgeType);
+        // persist data
+        persist();
+        
+        log.info("All partitions "+CloudControllerUtil.getPartitionIds(partitions)+
+        		" were validated successfully, against the Cartridge: "+cartridgeType);
         
         return true;
     }

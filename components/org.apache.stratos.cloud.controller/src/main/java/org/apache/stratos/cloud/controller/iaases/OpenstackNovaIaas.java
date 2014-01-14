@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
@@ -54,6 +55,7 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class OpenstackNovaIaas extends Iaas {
 
@@ -349,5 +351,12 @@ public class OpenstackNovaIaas extends Iaas {
     public PartitionValidator getPartitionValidator() {
         return new OpenstackNovaPartitionValidator();
     }
+
+	@Override
+	public void mapPersistanceVolumes(Template template,
+			List<PersistanceMapping> persistancemapings) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -330,11 +330,17 @@ public class ServiceDeploymentManager {
 
         // check if there are already created Subscriptions for this type
         Collection<CartridgeSubscription> cartridgeSubscriptions = dataInsertionAndRetrievalManager.getCartridgeSubscriptions(type);
-        if (cartridgeSubscriptions != null && !cartridgeSubscriptions.isEmpty()) {
-            // can't undeploy; there are existing Subscriptions
-            String errorMsg = "Cannot undeploy Service since existing Subscriptions are found";
-            log.error(errorMsg);
-            throw new ADCException(errorMsg);
+        if (cartridgeSubscriptions != null) {
+            if (!cartridgeSubscriptions.isEmpty()) {
+                // can't undeploy; there are existing Subscriptions
+                String errorMsg = "Cannot undeploy Service since existing Subscriptions are found";
+                log.error(errorMsg);
+                throw new ADCException(errorMsg);
+            }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("No subscriptions found for service type: " + type + " , proceeding with undeploying service");
         }
 
         Service service;

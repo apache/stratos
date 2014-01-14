@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.interfaces;
 
+import java.util.List;
+
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -25,6 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 
 /**
@@ -114,5 +117,7 @@ public abstract class Iaas {
     public abstract PartitionValidator getPartitionValidator();
 
     public abstract void buildTemplate(IaasProvider iaas);
+    
+    public abstract void mapPersistanceVolumes(Template template, List<PersistanceMapping> persistancemapings);
     
 }
