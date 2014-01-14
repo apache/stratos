@@ -1,0 +1,4 @@
+{
+    "admin":["view","edit","add","tenant-edit"],
+    "user" :["view","tenant-edit"]
+}
