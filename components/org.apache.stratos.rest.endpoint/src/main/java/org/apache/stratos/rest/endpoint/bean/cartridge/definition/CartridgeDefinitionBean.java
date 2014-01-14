@@ -43,6 +43,8 @@ public class CartridgeDefinitionBean {
     public DeploymentBean deployment;
 
     public List<PortMappingBean> portMapping;
+    
+    public List<PersistanceMappingBean> persistanceMapping;
 
     public List<IaasProviderBean> iaasProvider;
 
@@ -57,10 +59,20 @@ public class CartridgeDefinitionBean {
         return "Type: " + type + ", Provider: " + provider + ", Host: " + host + ", Display Name: " + displayName +
                 ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties();
+                "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties() +"\n Volume mappings "+ getPersistanceMappings();
     }
 
-    private String getDeploymentDetails () {
+    private String getPersistanceMappings() {
+    	StringBuilder persistanceMappingBuilder = new StringBuilder();
+        if(persistanceMapping != null && !persistanceMapping.isEmpty()) {
+            for(PersistanceMappingBean persistancetMappingBean : persistanceMapping) {
+            	persistanceMappingBuilder.append(persistancetMappingBean.toString());
+            }
+        }
+        return persistanceMappingBuilder.toString();
+	}
+
+	private String getDeploymentDetails () {
 
         if(deployment != null) {
             return deployment.toString();

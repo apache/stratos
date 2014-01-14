@@ -91,6 +91,12 @@ public class Cluster implements Serializable {
         return memberMap.values();
     }
 
+    public boolean hasMembers() {
+        return  memberMap.isEmpty();
+    }
+
+
+
     public void addMember(Member member) {
         memberMap.put(member.getMemberId(), member);
     }

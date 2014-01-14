@@ -96,6 +96,7 @@
                         <Export-Package>
                             org.apache.stratos.manager.cleanup.notification.stub.*; version="${project.version}",
                             org.apache.stratos.manager.service.*; version="${project.version}",
+			    axis2.apache.org.xsd.*; version="${project.version}",
                         </Export-Package>
                         <Import-Package>
                             !org.apache.stratos.manager.cleanup.notification.stub.*
@@ -120,7 +121,7 @@
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
        </dependency>
@@ -135,7 +136,7 @@
        <dependency>
             <groupId>org.apache.neethi.wso2</groupId>
             <artifactId>neethi</artifactId>
-       </dependency-->
+       </dependency>
     </dependencies>
 
 </project>

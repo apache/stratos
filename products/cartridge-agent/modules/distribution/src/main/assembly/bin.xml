@@ -50,6 +50,7 @@
                 <include>instance-activated.sh</include>
                 <include>instance-started.sh</include>
                 <include>start-servers.sh</include>
+                <include>clean.sh</include>
             </includes>
         </fileSet>
         <fileSet>

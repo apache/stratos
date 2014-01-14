@@ -34,14 +34,18 @@ public class InstanceNotifierMessageProcessorChain extends MessageProcessorChain
     private static final Log log = LogFactory.getLog(InstanceNotifierMessageProcessorChain.class);
 
     private ArtifactUpdateMessageProcessor artifactUpdateMessageProcessor;
-    private InstanceCleanupNotifierMessageProcessor instanceCleanupNotifierMessageProcessor;
+    private InstanceCleanupMemberNotifierMessageProcessor instanceCleanupMemberNotifierMessageProcessor;
+    private InstanceCleanupClusterNotifierMessageProcessor instanceCleanupClusterNotifierMessageProcessor;
 
     public void initialize() {
         // Add instance notifier event processors
         artifactUpdateMessageProcessor = new ArtifactUpdateMessageProcessor();
         add(artifactUpdateMessageProcessor);
-        instanceCleanupNotifierMessageProcessor = new InstanceCleanupNotifierMessageProcessor();
-        add(instanceCleanupNotifierMessageProcessor);
+        instanceCleanupMemberNotifierMessageProcessor = new InstanceCleanupMemberNotifierMessageProcessor();
+        add(instanceCleanupMemberNotifierMessageProcessor);
+        instanceCleanupClusterNotifierMessageProcessor = new InstanceCleanupClusterNotifierMessageProcessor();
+        add(instanceCleanupClusterNotifierMessageProcessor);
+
 
         if (log.isDebugEnabled()) {
             log.debug("Instance notifier message processor chain initialized");
@@ -52,9 +56,9 @@ public class InstanceNotifierMessageProcessorChain extends MessageProcessorChain
         if (eventListener instanceof ArtifactUpdateEventListener) {
             artifactUpdateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceCleanupMemberEventListener) {
-            artifactUpdateMessageProcessor.addEventListener(eventListener);
+            instanceCleanupMemberNotifierMessageProcessor.addEventListener(eventListener);
         }  else if (eventListener instanceof InstanceCleanupClusterEventListener) {
-            artifactUpdateMessageProcessor.addEventListener(eventListener);
+            instanceCleanupClusterNotifierMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");
         }

@@ -1,26 +1,28 @@
 #!/bin/sh
 # ----------------------------------------------------------------------------
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
 # ----------------------------------------------------------------------------
-# Main Script for the Apache Stratos
+# Main Script for the Apache Stratos (incubating)
 #
 # Environment Variable Prerequisites
+#
+#   CARBON_HOME   Home of WSO2 Carbon installation. If not set I will  try
+#                   to figure it out.
 #
 #   JAVA_HOME       Must point at your Java Development Kit installation.
 #
@@ -31,6 +33,7 @@
 # -----------------------------------------------------------------------------
 
 # OS specific support.  $var _must_ be set to either true or false.
+#ulimit -n 100000
 
 cygwin=false;
 darwin=false;
@@ -130,7 +133,12 @@ if [ -z "$JAVA_HOME" ]; then
   exit 1
 fi
 
+if [ -e "$CARBON_HOME/wso2carbon.pid" ]; then
+  PID=`cat "$CARBON_HOME"/wso2carbon.pid`
+fi
+
 # ----- Process the input command ----------------------------------------------
+args=""
 for c in $*
 do
     if [ "$c" = "--debug" ] || [ "$c" = "-debug" ] || [ "$c" = "debug" ]; then
@@ -140,29 +148,18 @@ do
           if [ -z "$PORT" ]; then
                 PORT=$c
           fi
-    elif [ "$c" = "--n" ] || [ "$c" = "-n" ] || [ "$c" = "n" ]; then
-          CMD="--n"
-          continue
-    elif [ "$CMD" = "--n" ]; then
-          if [ -z "$INSTANCES" ]; then
-                INSTANCES=$c
-          fi
     elif [ "$c" = "--stop" ] || [ "$c" = "-stop" ] || [ "$c" = "stop" ]; then
           CMD="stop"
     elif [ "$c" = "--start" ] || [ "$c" = "-start" ] || [ "$c" = "start" ]; then
           CMD="start"
-    elif [ "$c" = "--console" ] || [ "$c" = "-console" ] || [ "$c" = "console" ]; then
-          CMD="console"
     elif [ "$c" = "--version" ] || [ "$c" = "-version" ] || [ "$c" = "version" ]; then
           CMD="version"
     elif [ "$c" = "--restart" ] || [ "$c" = "-restart" ] || [ "$c" = "restart" ]; then
           CMD="restart"
-    elif [ "$c" = "--dump" ] || [ "$c" = "-dump" ] || [ "$c" = "dump" ]; then
-          CMD="dump"
     elif [ "$c" = "--test" ] || [ "$c" = "-test" ] || [ "$c" = "test" ]; then
           CMD="test"
-    elif [ "$c" = "--status" ] || [ "$c" = "-status" ] || [ "$c" = "status" ]; then
-          CMD="status"
+    else
+        args="$args $c"
     fi
 done
 
@@ -177,23 +174,35 @@ if [ "$CMD" = "--debug" ]; then
   CMD="RUN"
   JAVA_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=$PORT"
   echo "Please start the remote debugging client to continue..."
-elif [ "$CMD" = "--n" ]; then
-  if [ "$INSTANCES" = "" ] || [ ! -z `echo $INSTANCES | sed 's/[0-9]//g'` ]]; then
-    echo " Please specify the number of instances to start after the --n option"
-    exit 1
-  fi
 elif [ "$CMD" = "start" ]; then
+  if [ -e "$CARBON_HOME/wso2carbon.pid" ]; then
+    if  ps -p $PID >&- ; then
+      echo "Process is already running"
+      exit 0
+    fi
+  fi
   export CARBON_HOME=$CARBON_HOME
-  nohup $CARBON_HOME/bin/stratos.sh &
+# using nohup bash to avoid erros in solaris OS.TODO
+  nohup bash $CARBON_HOME/bin/stratos.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME=$CARBON_HOME
-  kill -9 `cat $CARBON_HOME/wso2carbon.pid`
+  kill -term `cat $CARBON_HOME/wso2carbon.pid`
   exit 0
 elif [ "$CMD" = "restart" ]; then
   export CARBON_HOME=$CARBON_HOME
-  kill -9 `cat $CARBON_HOME/wso2carbon.pid`
-  nohup $CARBON_HOME/bin/stratos.sh &
+  kill -term `cat $CARBON_HOME/wso2carbon.pid`
+  process_status=0
+  pid=`cat $CARBON_HOME/wso2carbon.pid`
+  while [ "$process_status" -eq "0" ]
+  do
+        sleep 1;
+        ps -p$pid 2>&1 > /dev/null
+        process_status=$?
+  done
+
+# using nohup bash to avoid erros in solaris OS.TODO
+  nohup bash $CARBON_HOME/bin/stratos.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "test" ]; then
     JAVACMD="exec "$JAVACMD""
@@ -230,7 +239,10 @@ do
         CARBON_CLASSPATH="$CARBON_CLASSPATH":$f
     fi
 done
-
+for t in "$CARBON_HOME"/lib/commons-lang*.jar
+do
+    CARBON_CLASSPATH="$CARBON_CLASSPATH":$t
+done
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
   JAVA_HOME=`cygpath --absolute --windows "$JAVA_HOME"`
@@ -252,25 +264,18 @@ cd "$CARBON_HOME"
 START_EXIT_STATUS=121
 status=$START_EXIT_STATUS
 
+#To monitor a Carbon server in remote JMX mode on linux host machines, set the below system property.
+#   -Djava.rmi.server.hostname="your.IP.goes.here"
+
 while [ "$status" = "$START_EXIT_STATUS" ]
 do
     $JAVACMD \
-     -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
-     -d64 \
-     -server \
-     -Xms1500m -Xmx3000m \
-     -XX:PermSize=256m -XX:MaxPermSize=512m \
-     -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:-UseGCOverheadLimit \
-     -XX:+CMSClassUnloadingEnabled \
-     -XX:+OptimizeStringConcat \
-     -XX:+HeapDumpOnOutOfMemoryError \
-     -XX:OnOutOfMemoryError="kill -9 `echo $$`;nohup ./stratos.sh &" \
-     -XX:HeapDumpPath=repository/logs/heap-dump.hprof \
-     -XX:ErrorFile=repository/logs/hs_err_pid.log \
-     -XX:OnError="nohup ./stratos.sh &" \
+    -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
+    -Xms256m -Xmx1024m -XX:MaxPermSize=256m \
+    -server \
+    -XX:+HeapDumpOnOutOfMemoryError \
+    -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
     $JAVA_OPTS \
-    -DandesConfig=qpid-config.xml \
-    -Ddisable.cassandra.server.startup=true \
     -Dcom.sun.management.jmxremote \
     -classpath "$CARBON_CLASSPATH" \
     -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
@@ -280,16 +285,20 @@ do
     -Dcarbon.registry.root=/ \
     -Djava.command="$JAVACMD" \
     -Dcarbon.home="$CARBON_HOME" \
-    -Dwso2.transports.xml="$CARBON_HOME/repository/conf/mgt-transports.xml" \
-    -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/log4j.properties" \
+    -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
     -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
+    -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/etc/logging-bridge.properties" \
     -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
+    -Dconf.location="$CARBON_HOME/repository/conf"\
     -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
     -Dcom.atomikos.icatch.hide_init_file_path=true \
     -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true \
     -Dcom.sun.jndi.ldap.connect.pool.authentication=simple  \
     -Dcom.sun.jndi.ldap.connect.pool.timeout=3000  \
     -Dorg.terracotta.quartz.skipUpdateCheck=true \
+    -Djava.security.egd=file:/dev/./urandom \
+    -Dfile.encoding=UTF8 \
+    -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done

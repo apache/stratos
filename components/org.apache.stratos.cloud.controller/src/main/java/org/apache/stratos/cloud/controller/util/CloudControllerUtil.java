@@ -67,7 +67,14 @@ public class CloudControllerUtil {
         cartridge.setProvider(config.getProvider());
         cartridge.setVersion(config.getVersion());
         cartridge.setBaseDir(config.getBaseDir());
-        cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
+        
+        if (config.getPortMappings() != null) {
+			cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
+		}
+        
+        if(config.getPersistanceMappings() != null && config.getPersistanceMappings().length >0){
+        	cartridge.setPeristanceMappings(Arrays.asList(config.getPersistanceMappings()));
+        }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
 
