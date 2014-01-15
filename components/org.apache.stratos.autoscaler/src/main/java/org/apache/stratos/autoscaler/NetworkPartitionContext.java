@@ -446,16 +446,16 @@ public class NetworkPartitionContext implements Serializable{
 //         return partitionToMemberCountMap.containsKey(partitionId);
 //     }
 
-     public int getMemberCountOfPartition(String partitionId){
+//     public int getMemberCountOfPartition(String partitionId){
 //         if(partitionToMemberCountMap.containsKey(partitionId)) {
 //             return partitionToMemberCountMap.get(partitionId);
 //         }
 //         return 0;
-         if(partitionCtxts.containsKey(partitionId)){
-             return getPartitionCtxt(partitionId).getTotalMemberCount();
-         }
-         return 0;
-     }
+//         if(partitionCtxts.containsKey(partitionId)){
+//             return getPartitionCtxt(partitionId).getTotalMemberCount();
+//         }
+//         return 0;
+//     }
 
     public Map<String, PartitionContext> getPartitionCtxts() {
         return partitionCtxts;

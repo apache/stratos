@@ -65,7 +65,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
-                                    currentPartitionId, networkPartitionContext.getMemberCountOfPartition(currentPartitionId),
+                                    currentPartitionId, networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
                                                                     currentPartition.getPartitionMax()))  ;
                         return currentPartition;
                     } else {
@@ -106,7 +106,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",
-                                    currentPartitionId, networkPartitionContext.getMemberCountOfPartition(currentPartitionId),
+                                    currentPartitionId, networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
                                                                     currentPartition.getPartitionMin()))  ;
                         return currentPartition;
                     } else {
@@ -114,7 +114,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                             if (log.isDebugEnabled())
                                 log.debug(String.format("Partition %s reached with no space to scale down," +
                                         "[current] %s [mib] %s", currentPartitionId,
-                                        networkPartitionContext.getMemberCountOfPartition(currentPartitionId),
+                                        networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
                                         currentPartition.getPartitionMin()));
                             return null;
                         }

@@ -54,9 +54,9 @@ dialect "mvel"
        when
            $ctxt : PartitionContext ()
            eval(log.debug("Running minimum rule: [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId()))
-	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Total member count: " + $ctxt.getTotalMemberCount()))
+	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Non termnated member count: " + $ctxt.getNonTerminatedMemberCount()))
 	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Minimum member count: " + $ctxt.getMinimumMemberCount()))
-	       eval($ctxt.getTotalMemberCount() < $ctxt.getMinimumMemberCount())
+	       eval($ctxt.getNonTerminatedMemberCount() < $ctxt.getMinimumMemberCount())
 
        then
 	       $delegator.delegateSpawn($ctxt, clusterId, lbRef);

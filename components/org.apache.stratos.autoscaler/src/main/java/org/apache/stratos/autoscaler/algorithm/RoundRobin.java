@@ -57,9 +57,11 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
     	        if(networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId)
                         < currentPartition.getPartitionMax()){
-    	        	// current partition is free
-    	        	if(log.isDebugEnabled())
-    	        		log.debug("Free space found in partition " + currentPartition.getId());
+                    // current partition is free
+                    if (log.isDebugEnabled())
+                        log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
+                                currentPartitionId, networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
+                                                                currentPartition.getPartitionMax()))  ;
 	                return currentPartition;
 	            }
 
