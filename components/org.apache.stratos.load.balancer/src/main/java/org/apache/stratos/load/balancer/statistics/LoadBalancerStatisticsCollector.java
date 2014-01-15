@@ -57,8 +57,8 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     public int getInFlightRequestCountOfSlidingWindow(String clusterId) {
         //Clear the list before returning...
 
-        //Sliding window in seconds
-        int slidingWindow = 60;//TODO get this from a config
+        //Sliding window in Milliseconds
+        int slidingWindow = 60000;//TODO get this from a config
 
         if (inFlightRequestToDateListMap.containsKey(clusterId)) {
             Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
@@ -94,7 +94,7 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
             inFlightRequestToDateListMap.get(clusterId).add(new Date());
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("In-flight request count updated: [cluster] %s ", clusterId));
+            log.debug(String.format("In-flight request added to counting list: [cluster] %s ", clusterId));
         }
     }
 
@@ -113,10 +113,12 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
                 log.debug(String.format("In-flight list not available for cluster : [cluster] %s ", clusterId));
             }
         } else {
-            inFlightRequestToDateListMap.remove(clusterId);
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("In-flight request count updated: [cluster] %s ", clusterId));
+            Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
+            vector.remove(vector.size() - 1);
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("In-flight request removed from counting list: [cluster] %s ", clusterId));
+            }
         }
     }
 
