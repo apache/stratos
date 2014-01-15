@@ -22,7 +22,9 @@ package org.apache.stratos.autoscaler.util;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.MemberStatsContext;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -43,10 +45,7 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 
 /**
  * This class contains utility methods used by Autoscaler.
@@ -258,21 +257,34 @@ public class AutoscalerUtil {
             
             // populate lb cluster id in network partition context.
             java.util.Properties props = cluster.getProperties();
+
+            // get service type of load balanced cluster
+            String loadBalancedServiceType = props.getProperty(Constants.LOAD_BALANCED_SERVICE_TYPE);
             
             if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
                 String value = props.getProperty(Constants.LOAD_BALANCER_REF);
                 
                 if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
                     networkPartitionContext.setDefaultLbClusterId(clusterId);
+
                 } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
                     String serviceName = cluster.getServiceName();
+                    // TODO: check if this is correct
                     networkPartitionContext.addServiceLB(serviceName, clusterId);
+
+                    if (loadBalancedServiceType != null && !loadBalancedServiceType.isEmpty()) {
+                        networkPartitionContext.addServiceLB(loadBalancedServiceType, clusterId);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Added cluster id " + clusterId + " as the LB cluster id for service type " + loadBalancedServiceType);
+                        }
+                    }
                 }
             }
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
         }
 
+        log.info("LB Cluster monitor created: "+clusterMonitor.toString());
         return clusterMonitor;
     }
 
