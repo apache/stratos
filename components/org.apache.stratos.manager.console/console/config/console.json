@@ -9,6 +9,18 @@
         "tokenEndpoint":"https://localhost:9445/oauth2/token"
     },
 
+    "paths": {
+        "ASSET_EXT_PATH": "/assets",
+        "ASSET_DEFAULT_PATH": "/assets/default",
+        "ASSETS_EXT_PATH": "/assets",
+        "ASSETS_DEFAULT_PATH": "/assets/default",
+        "RXT_EXTENSION_PATH": "/config/ext/"
+    },
+
+    "urls": {
+        "MGT": "/mgt"
+    },
+
     "ssoConfiguration": {
         "enabled": true,
         "issuer": "console",

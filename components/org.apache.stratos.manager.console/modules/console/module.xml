@@ -1,0 +1,8 @@
+<module name="console" xmlns="http://wso2.org/projects/jaggery/module.xml">
+   <script>
+       <name>[console]/server.js</name>
+       <path>scripts/server.js</path>
+   </script>
+</module>
+
+
