@@ -484,6 +484,13 @@ public class NetworkPartitionContext implements Serializable{
         return 0;
     }
 
+    public int getActiveMemberCount(String currentPartitionId) {
+        if(partitionCtxts.containsKey(currentPartitionId)){
+            return getPartitionCtxt(currentPartitionId).getActiveMemberCount();
+        }
+        return 0;
+    }
+
 //    public void setPartitions(Partition[] partitions) {
 //        this.partitions = partitions;
 //        for (Partition partition: partitions){

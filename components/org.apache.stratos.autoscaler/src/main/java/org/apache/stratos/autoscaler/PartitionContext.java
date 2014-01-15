@@ -105,8 +105,8 @@ public class PartitionContext implements Serializable{
         this.pendingMembers = pendingMembers;
     }
     
-    public List<MemberContext> getActiveMembers() {
-        return activeMembers;
+    public int getActiveMemberCount() {
+        return activeMembers.size();
     }
     
     public void setActiveMembers(List<MemberContext> activeMembers) {

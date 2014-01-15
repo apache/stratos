@@ -101,7 +101,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                     String currentPartitionId = currentPartition.getId();
 
                     // has more than minimum instances.
-                    if (networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId) >
+                    if (networkPartitionContext.getActiveMemberCount(currentPartitionId) >
                             currentPartition.getPartitionMin()) {
                         // current partition is free
                         if (log.isDebugEnabled())
