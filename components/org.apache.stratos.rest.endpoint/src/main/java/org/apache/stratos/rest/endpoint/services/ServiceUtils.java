@@ -766,7 +766,14 @@ public class ServiceUtils {
 
                 } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
                     if ("true".equals(value)) {
+
+                        // add a property for the service type
+                        Property loadBalancedServiceTypeProperty = new Property();
+                        loadBalancedServiceTypeProperty.setName(Constants.LOAD_BALANCED_SERVICE_TYPE);
+
                         property.setValue(name);
+                        // set the load balanced service type
+                        loadBalancedServiceTypeProperty.setValue(cartridgeType);
                         if (log.isDebugEnabled()) {
                             log.debug("This cartridge uses a service aware load balancer. " +
                                     "[Type] " + cartridgeType);
@@ -789,7 +796,11 @@ public class ServiceUtils {
                                             String lbAlias =
                                                     "lb" + cartridgeType +
                                                             new Random().nextInt();
+
+
                                             lbCartridgeInfo.addProperties(property);
+                                            lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
+
                                             subscribeToLb(lbCartridgeType,
                                                     lbAlias,
                                                     lbCartridgeInfo.getDefaultAutoscalingPolicy(),

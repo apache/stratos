@@ -19,16 +19,14 @@
 
 package org.apache.stratos.load.balancer.common.statistics;
 
-import java.util.HashMap;
-
 /**
  * Load balancer statistics reader interface.
  */
 public interface LoadBalancerStatisticsReader {
 
     /**
-     * Get in-flight request count of a given cluster.
+     * Get in-flight request count of a sliding window configured e.g. Requests in flight of last minute.
      * @param clusterId
      */
-    int getInFlightRequestCount(String clusterId);
+    int getInFlightRequestCountOfSlidingWindow(String clusterId);
 }

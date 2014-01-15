@@ -31,7 +31,7 @@ public class TenantEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
     private TenantEventMessageQueue(){
     }
 
-    public static synchronized TenantEventMessageQueue getInstance() {
+    public static TenantEventMessageQueue getInstance() {
         if (instance == null) {
             synchronized (TenantEventMessageQueue.class){
                 if (instance == null) {
