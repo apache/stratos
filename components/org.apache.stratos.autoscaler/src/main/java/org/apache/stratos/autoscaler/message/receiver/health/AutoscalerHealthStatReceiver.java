@@ -583,8 +583,8 @@ public class AutoscalerHealthStatReceiver implements Runnable {
         Member member = findMember(memberId);
         
         if(null == member){
-        	if(log.isErrorEnabled()) {
-                log.error(String.format("Member not found in the Topology: [member] %s", memberId));
+        	if(log.isDebugEnabled()) {
+                log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
             }
         	return null;
         }
