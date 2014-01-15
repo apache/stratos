@@ -99,6 +99,10 @@
             <directory>../../../../components/org.apache.stratos.manager.console/sso</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/sso</outputDirectory>
         </fileSet>
+         <fileSet>
+            <directory>../../../../components/org.apache.stratos.manager.console/modules/console</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/modules/console</outputDirectory>
+        </fileSet>
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>

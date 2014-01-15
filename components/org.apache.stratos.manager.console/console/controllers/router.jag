@@ -1,0 +1,91 @@
+<%
+
+(function(){
+    var config=require('/config/console.json');
+
+    var DEFAULT_ROUTER_NAME='/asset.jag';
+    var EXT_ROUTER_NAME='/pages/asset.jag';
+    var EXT_PATH=config.paths.ASSET_EXT_PATH;
+    var DEFAULT_PATH=config.paths.ASSET_DEFAULT_PATH;
+    var URL=config.urls.MGT;
+
+    var MSG_404='Asset not found';	//Eror 404 message
+
+    var securityModule=require('/modules/security/security.manager.js').securityManagementModule();
+
+    var sm=securityModule.cached();
+
+    //This will short circuit the handling of the requests
+    //var passed=sm.check(session);
+    var passed=true;
+
+    //Stop servicing the request if the check failed
+    if(!passed){
+        return;
+    }
+
+    /*
+     Checks the pattern array with the request uri
+     @pattern:     An array of patterns e.g./{context}/[ASSET_PATH]/{type}
+     @uriMatcher : A URIMatcher object
+     @return: true if the pattern matches,else false
+     */
+    function isMatchingPattern(patterns,uriMatcher){
+
+        for each(var pattern in patterns){
+
+            if(uriMatcher.match(pattern)){
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    var matcher=new URIMatcher(request.getRequestURI());
+
+
+    var patterns=[ '/{context}'+URL+'/{type}/{+suffix}',
+        '/{context}'+URL+'/{type}'];
+
+
+
+    if(isMatchingPattern(patterns,matcher)){
+
+        var params=matcher.elements();
+
+        var theme=params.theme;
+        var type=params.type;
+        var log = new Log("stratos.router");
+        log.info("type : "+ params.type);
+        log.info("context :"+ params.cotext);
+        var extLocation ='/'+type;
+        var path = extLocation; //Assume there is an extension
+        log.info(path);
+
+
+        //Check if an extension asset router exists
+        var fileTester=new File(path);
+
+        if(fileTester.isExists()){
+            request.getMappedPath = function() {
+                return path;
+            };
+            include(path);
+            return;
+        }
+
+        //Set the default path
+        path=DEFAULT_PATH+DEFAULT_ROUTER_NAME;
+
+        //Default
+        include(path);
+        return;
+    }
+
+    response.sendError(404,MSG_404);
+
+}());
+%>
