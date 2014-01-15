@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.AWSEC2PartitionValidator;
@@ -47,6 +48,7 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.ec2.EC2ApiMetadata;
 import org.jclouds.ec2.EC2Client;
+import org.jclouds.ec2.compute.options.EC2TemplateOptions;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
@@ -55,6 +57,8 @@ import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("deprecation")
@@ -268,6 +272,19 @@ public class AWSEC2Iaas extends Iaas {
 		return ip;
 
 	}
+	
+	@Override
+	public void mapPersistanceVolumes(Template template, List<PersistanceMapping> persistancemapings){
+		if(persistancemapings ==null || persistancemapings.isEmpty())
+			return;
+		
+        Iterator< PersistanceMapping> it = persistancemapings.iterator();
+        while(it.hasNext()){  
+        	PersistanceMapping maping = it.next();
+        	template.getOptions().as(EC2TemplateOptions.class)
+            	.mapEBSSnapshotToDeviceName(maping.getDevice(), maping.getSnapshotId(), maping.getSize(), maping.isRemoveOntermination());
+        }
+    }
 
 	/**
 	 * @param ec2Client

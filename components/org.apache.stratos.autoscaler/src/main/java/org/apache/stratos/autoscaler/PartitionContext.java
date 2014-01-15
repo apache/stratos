@@ -48,7 +48,7 @@ public class PartitionContext implements Serializable{
     private String serviceName;
     private String networkPartitionId;
     private Partition partition;
-    private int currentActiveMemberCount = 0;
+//    private int currentActiveMemberCount = 0;
     private int minimumMemberCount = 0;
     
     // properties
@@ -63,15 +63,24 @@ public class PartitionContext implements Serializable{
     private List<String> obsoletedMembers;
     
     // Contains the members that CEP notified as faulty members.
-    private List<String> faultyMembers;
+//    private List<String> faultyMembers;
     
     // active members
     private List<MemberContext> activeMembers;
 
+    // termination pending members, member is added to this when Autoscaler send grace fully shut down event
+    private List<MemberContext> terminationPendingMembers;
+
+    //Keep statistics come from CEP
     private Map<String, MemberStatsContext> memberStatsContexts;
-    
+    private int nonTerminatedMemberCount;
+//    private int totalMemberCount;
+
     // for the use of tests
     public PartitionContext() {
+
+        this.activeMembers = new ArrayList<MemberContext>();
+        this.terminationPendingMembers = new ArrayList<MemberContext>();
     }
     
     public PartitionContext(Partition partition) {
@@ -80,8 +89,9 @@ public class PartitionContext implements Serializable{
         this.partitionId = partition.getId();
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
-        this.obsoletedMembers = new CopyOnWriteArrayList<String>(); 
-        this.faultyMembers = new CopyOnWriteArrayList<String>();
+        this.terminationPendingMembers = new ArrayList<MemberContext>();
+        this.obsoletedMembers = new CopyOnWriteArrayList<String>();
+//        this.faultyMembers = new CopyOnWriteArrayList<String>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
@@ -109,19 +119,19 @@ public class PartitionContext implements Serializable{
     public void setPartitionId(String partitionId) {
         this.partitionId = partitionId;
     }
-    public int getTotalMemberCount() {
-        // live count + pending count
-        return currentActiveMemberCount + pendingMembers.size();
-    }
+//    public int getTotalMemberCount() {
+//        // live count + pending count
+//        return currentActiveMemberCount + pendingMembers.size();
+//    }
 
-    public void incrementCurrentActiveMemberCount(int count) {
-
-        this.currentActiveMemberCount += count;
-    }
+//    public void incrementCurrentActiveMemberCount(int count) {
+//
+//        this.currentActiveMemberCount += count;
+//    }
     
-    public void decrementCurrentActiveMemberCount(int count) {
-        this.currentActiveMemberCount -= count;
-    }
+//    public void decrementCurrentActiveMemberCount(int count) {
+//        this.currentActiveMemberCount -= count;
+//    }
 
     public int getMinimumMemberCount() {
         return minimumMemberCount;
@@ -143,7 +153,7 @@ public class PartitionContext implements Serializable{
         this.pendingMembers.add(ctxt);
     }
     
-    public void removePendingMember(String memberId) {
+    public void movePendingMemberToActiveMembers(String memberId) {
         if (memberId == null) {
             return;
         }
@@ -161,8 +171,35 @@ public class PartitionContext implements Serializable{
                 // add to the activated list
                 this.activeMembers.add(pendingMember);
                 if (log.isDebugEnabled()) {
-                    log.debug("Pending member is removed and added to the " +
-                            "activated member list. Id: "+memberId);
+                    log.debug(String.format("Pending member is removed and added to the " +
+                            "activated member list. [Member Id] %s",memberId));
+                }
+                break;
+            }
+        }
+    }
+
+
+    public void moveActiveMemberToTerminationPendingMembers(String memberId) {
+        if (memberId == null) {
+            return;
+        }
+        for (Iterator<MemberContext> iterator = activeMembers.listIterator();
+                iterator.hasNext();) {
+            MemberContext activeMember = (MemberContext) iterator.next();
+            if(activeMember == null) {
+                iterator.remove();
+                continue;
+            }
+            if(memberId.equals(activeMember.getMemberId())){
+                // member is activated
+                // remove from pending list
+                iterator.remove();
+                // add to the activated list
+                this.terminationPendingMembers.add(activeMember);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Active member is removed and added to the " +
+                            "termination pending member list. [Member Id] %s", memberId));
                 }
                 break;
             }
@@ -176,6 +213,18 @@ public class PartitionContext implements Serializable{
     public void removeActiveMember(MemberContext ctxt) {
         this.activeMembers.remove(ctxt);
     }
+
+    public boolean removeTerminationPendingMember(String memberId) {
+        boolean terminationPendingMemberAvailable = false;
+        for (MemberContext memberContext: activeMembers){
+            if(memberContext.getMemberId().equals(memberId)){
+                terminationPendingMemberAvailable =true;
+                activeMembers.remove(memberContext);
+                break;
+            }
+        }
+        return terminationPendingMemberAvailable;
+    }
     
     public void addObsoleteMember(String memberId) {
         this.obsoletedMembers.add(memberId);
@@ -184,18 +233,18 @@ public class PartitionContext implements Serializable{
     public boolean removeObsoleteMember(String memberId) {
         return this.obsoletedMembers.remove(memberId);
     }
-    
-    public void addFaultyMember(String memberId) {
-        this.faultyMembers.add(memberId);
-    }
-    
-    public boolean removeFaultyMember(String memberId) {
-        return this.faultyMembers.remove(memberId);
-    }
-    
-    public List<String> getFaultyMembers() {
-        return this.faultyMembers;
-    }
+//
+//    public void addFaultyMember(String memberId) {
+//        this.faultyMembers.add(memberId);
+//    }
+//
+//    public boolean removeFaultyMember(String memberId) {
+//        return this.faultyMembers.remove(memberId);
+//    }
+//
+//    public List<String> getFaultyMembers() {
+//        return this.faultyMembers;
+//    }
 
     public long getExpiryTime() {
         return expiryTime;
@@ -262,6 +311,39 @@ public class PartitionContext implements Serializable{
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
+
+    public List<MemberContext> getTerminationPendingMembers() {
+        return terminationPendingMembers;
+    }
+
+    public void setTerminationPendingMembers(List<MemberContext> terminationPendingMembers) {
+        this.terminationPendingMembers = terminationPendingMembers;
+    }
+
+    public int getTotalMemberCount() {
+
+        return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+    }
+
+    public int getNonTerminatedMemberCount() {
+        return activeMembers.size() + pendingMembers.size();
+    }
+
+    public void removeActiveMemberById(String memberId) {
+
+        synchronized (activeMembers) {
+
+            for (Iterator<MemberContext> iterator = activeMembers.listIterator(); iterator.hasNext();) {
+                String currentMemberId = ((MemberContext) iterator).getMemberId();
+                if(memberId.equals(currentMemberId)){
+
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;

@@ -380,6 +380,10 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                         log.error("Member id not found in received message");
                     }
                 } else {
+
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member fault event: [member] %s ", e.getMemberId()));
+                    }
                     handleMemberFaultEvent(clusterId, memberId);
                 }
             }
@@ -579,8 +583,8 @@ public class AutoscalerHealthStatReceiver implements Runnable {
         Member member = findMember(memberId);
         
         if(null == member){
-        	if(log.isErrorEnabled()) {
-                log.error(String.format("Member not found in the Topology: [member] %s", memberId));
+        	if(log.isDebugEnabled()) {
+                log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
             }
         	return null;
         }
@@ -734,12 +738,16 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             ccClient.terminate(memberId);
 
+
             // start a new member in the same Partition
             String partitionId = monitor.getPartitionOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+
+            partitionCtxt.removeActiveMemberById(memberId);
             
             String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
+
             partitionCtxt.addPendingMember(ccClient.spawnAnInstance(partition, clusterId, lbClusterId, nwPartitionCtxt.getId()));
             if (log.isInfoEnabled()) {
                 log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s [lb cluster] %s ", 

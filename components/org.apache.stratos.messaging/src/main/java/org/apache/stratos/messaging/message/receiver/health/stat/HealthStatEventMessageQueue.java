@@ -13,7 +13,7 @@ public class HealthStatEventMessageQueue extends LinkedBlockingQueue<TextMessage
     private HealthStatEventMessageQueue(){
     }
 
-    public static synchronized HealthStatEventMessageQueue getInstance() {
+    public static HealthStatEventMessageQueue getInstance() {
         if (instance == null) {
             synchronized (HealthStatEventMessageQueue.class){
                 if (instance == null) {

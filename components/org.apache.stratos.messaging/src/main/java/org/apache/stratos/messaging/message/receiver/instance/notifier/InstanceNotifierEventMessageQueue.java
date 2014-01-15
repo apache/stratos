@@ -31,7 +31,7 @@ public class InstanceNotifierEventMessageQueue extends LinkedBlockingQueue<TextM
     private InstanceNotifierEventMessageQueue(){
     }
 
-    public static synchronized InstanceNotifierEventMessageQueue getInstance() {
+    public static InstanceNotifierEventMessageQueue getInstance() {
         if (instance == null) {
             synchronized (InstanceNotifierEventMessageQueue.class){
                 if (instance == null) {

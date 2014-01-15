@@ -105,6 +105,10 @@ public class AutoscalerTopologyReceiver implements Runnable {
                         }
 
                         th.start();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Cluster monitor thread has been started successfully: [cluster] %s "
+                                    , cluster.getClusterId()));
+                        }
                     }
                 }
             }
@@ -157,7 +161,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //                runTerminateAllRule(monitor);
                 monitor.destroy();
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster monitor has been removed: [cluster] %s ", clusterId));
+                    log.debug(String.format("Cluster monitor has been removed successfully: [cluster] %s ", clusterId));
                 }
             }
             finally {
@@ -200,11 +204,16 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
                 PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
                 partitionContext.removeMemberStatsContext(e.getMemberId());
-                partitionContext.decrementCurrentActiveMemberCount(1);
+                if(!partitionContext.removeTerminationPendingMember(e.getMemberId())){
 
-                if(log.isInfoEnabled()){
-                    log.info(String.format("Member stat context has been removed: [member] %s", e.getMemberId()));
+                    if(log.isErrorEnabled()){
+                        log.error(String.format("Member is not available in termination pending list: [member] %s", e.getMemberId()));
+                    }
+                } else if(log.isInfoEnabled()){
+                    log.info(String.format("Member stat context has been removed successfully: [member] %s", e.getMemberId()));
                 }
+//                partitionContext.decrementCurrentActiveMemberCount(1);
+
 
             } finally {
                 TopologyManager.releaseReadLock();
@@ -238,10 +247,10 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 }
                 partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                 if(log.isInfoEnabled()){
-                    log.info(String.format("Member stat context has been added: [member] %s", memberId));
+                    log.info(String.format("Member stat context has been added successfully: [member] %s", memberId));
                 }
-                partitionContext.incrementCurrentActiveMemberCount(1);
-                partitionContext.removePendingMember(memberId);
+//                partitionContext.incrementCurrentActiveMemberCount(1);
+                partitionContext.movePendingMemberToActiveMembers(memberId);
 
             }
             finally{
@@ -299,7 +308,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             th.start();
             AutoscalerContext.getInstance().addLbMonitor(monitor);
             if(log.isInfoEnabled()){
-                log.info(String.format("LB Cluster monitor has been added: [cluster] %s",
+                log.info(String.format("LB Cluster monitor has been added successfully: [cluster] %s",
                                                         cluster.getClusterId()));
             }
         }
@@ -332,7 +341,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             th.start();
             AutoscalerContext.getInstance().addMonitor(monitor);
             if(log.isInfoEnabled()){
-                log.info(String.format("Cluster monitor has been added: [cluster] %s",
+                log.info(String.format("Cluster monitor has been added successfully: [cluster] %s",
                                                         cluster.getClusterId()));
             }
         }

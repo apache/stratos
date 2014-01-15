@@ -131,7 +131,7 @@ public class CloudControllerClient {
                     clusterId, partition.getId(), lbClusterId, networkPartitionId));
             }
 
-            org.apache.stratos.cloud.controller.pojo.MemberContext member = new org.apache.stratos.cloud.controller.pojo.MemberContext();
+            MemberContext member = new MemberContext();
             member.setClusterId(clusterId);
             member.setPartition(partition);
             member.setLbClusterId(lbClusterId);
