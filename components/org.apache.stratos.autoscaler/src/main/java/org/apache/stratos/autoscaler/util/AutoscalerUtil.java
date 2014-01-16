@@ -225,6 +225,7 @@ public class AutoscalerUtil {
             partitionContext.setServiceName(cluster.getServiceName());
             partitionContext.setProperties(cluster.getProperties());
             partitionContext.setNetworkPartitionId(partitionGroup.getId());
+            partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
