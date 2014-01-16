@@ -1,0 +1,19 @@
+[
+    {
+        "active":true,
+        "domain":"mysite.com",
+        "email":"admin@mysite.com",
+        "created":"16th Dec 13 - 23:55"
+    },{
+        "active":false,
+        "domain":"yoursite.com",
+        "email":"chanaka@yoursite.com",
+        "created":"15th Jan 14 - 13:45"
+    },{
+        "active":true,
+        "domain":"mysite2.com",
+        "email":"admin@mysite2.com",
+        "created":"16th Dec 13 - 23:55"
+    },
+
+]

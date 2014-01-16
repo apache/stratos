@@ -1,34 +1,38 @@
 var render = function (theme, data, meta, require) {
-    // Re-create the data structure of the cartridges.
-    /* var mycartridges = [
-     {
-     kind: "cartridges",
-     cartridges: []}
-     ];
-     var cartridgesToPush;
-     for(var i=0;i<data.mycartridges.length;i++){
-     if(data.mycartridges[i].category == undefined){
-     cartridgesToPush = null;
-     for(var j=0;j<mycartridges.length;j++){
-     if(mycartridges[j].kind == "cartridges" ){
-     cartridgesToPush = mycartridges[j].cartridges;
-     }
-     }
-     cartridgesToPush.push(data.mycartridges[i]);
-     }else{
-     cartridgesToPush = null;
-     for (var j = 0; j < mycartridges.length; j++) {
-     if (mycartridges[j].kind == data.mycartridges[i].category) {
-     cartridgesToPush = mycartridges[j].cartridges;
-     }
-     }
-     if(cartridgesToPush == null){
-     mycartridges.push({kind:data.mycartridges[i].category,cartridges:[data.mycartridges[i]]})
-     }else{
-     cartridgesToPush.push(data.mycartridges[i]);
-     }
-     }
-     }*/
+      // Re-create the data structure of the cartridges.
+    var log = new Log();
+    var cartridges_old = data.mycartridges.cartridge;
+    var cartridges_new = [
+        {
+            kind: "Cartridges",
+            cartridges: []}
+    ];
+    var cartridgesToPush;
+    for (var i = 0; i < cartridges_old.length; i++) {
+        if (cartridges_old[i].category == undefined) {
+            cartridgesToPush = null;
+            for (var j = 0; j < cartridges_new.length; j++) {
+                if (cartridges_new[j].kind == "Cartridges") {
+                    cartridgesToPush = cartridges_new[j].cartridges;
+                }
+            }
+            cartridgesToPush.push(cartridges_old[i]);
+            log.info(cartridges_old[i]);
+        } else {
+            cartridgesToPush = null;
+            for (var j = 0; j < cartridges_new.length; j++) {
+                if (cartridges_new[j].kind == cartridges_old[i].category) {
+                    cartridgesToPush = cartridges_new[j].cartridges;
+                }
+            }
+            if (cartridgesToPush == null) {
+                cartridges_new.push({kind: cartridges_old[i].category, cartridges: [cartridges_old[i]]})
+            } else {
+                cartridgesToPush.push(cartridges_old[i]);
+            }
+        }
+    }
+    log.info(cartridges_new);
 
     theme('index', {
         body: [
@@ -36,7 +40,7 @@ var render = function (theme, data, meta, require) {
                 partial: 'mycartridges',
                 context: {
                     title: 'My Cartridges',
-                    mycartridges: {}
+                    mycartridges: cartridges_new
                 }
             }
         ],

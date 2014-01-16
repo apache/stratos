@@ -5,3 +5,33 @@
         </div>
     </div>
 </div>
+{{#each cartridges}}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="h2-wrapper"><h2>{{kind}}</h2></div>
+        </div>
+    </div>
+    <div class="row">
+        {{#each cartridges}}
+        <div class="col-md-6">
+            <div class="box-container">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="box-left"><i class="icons-{{cartridgeType}} big-pro-icons"></i></div>
+                            <div class="big-pro-icons-title">{{version}}</div>
+                        </div>
+                        <div class="col-lg-9">
+                            <a href="{{url "/subscribe_cartridge.jag"}}"><h3>{{displayName}} - {{version}}</h3></a>
+                            <div class="cartridge-description">{{description}}</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+{{/each}}
