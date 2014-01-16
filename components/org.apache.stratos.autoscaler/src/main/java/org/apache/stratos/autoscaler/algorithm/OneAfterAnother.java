@@ -59,14 +59,12 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                     currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
                     Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
                     String currentPartitionId = currentPartition.getId();
-
-                    if (networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId)
-                            < currentPartition.getPartitionMax()) {
+                    int nonTerminatedMemberCountOfPartition = networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId);
+                    if (nonTerminatedMemberCountOfPartition < currentPartition.getPartitionMax()) {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
-                                    currentPartitionId, networkPartitionContext.getMemberCountOfPartition(currentPartitionId),
-                                                                    currentPartition.getPartitionMax()))  ;
+                                    currentPartitionId, nonTerminatedMemberCountOfPartition, currentPartition.getPartitionMax()))  ;
                         return currentPartition;
                     } else {
                         // last partition is reached which is not free
@@ -101,20 +99,18 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                     String currentPartitionId = currentPartition.getId();
 
                     // has more than minimum instances.
-                    if (networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId) >
-                            currentPartition.getPartitionMin()) {
+                    int currentlyActiveMemberCount = networkPartitionContext.getActiveMemberCount(currentPartitionId);
+                    if ( currentlyActiveMemberCount > currentPartition.getPartitionMin()) {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",
-                                    currentPartitionId, networkPartitionContext.getMemberCountOfPartition(currentPartitionId),
-                                                                    currentPartition.getPartitionMin()))  ;
+                                    currentPartitionId, currentlyActiveMemberCount, currentPartition.getPartitionMin()))  ;
                         return currentPartition;
                     } else {
                         if (currentPartitionIndex == 0) {
                             if (log.isDebugEnabled())
                                 log.debug(String.format("Partition %s reached with no space to scale down," +
-                                        "[current] %s [mib] %s", currentPartitionId,
-                                        networkPartitionContext.getMemberCountOfPartition(currentPartitionId),
+                                        "[current] %s [min] %s", currentPartitionId, currentlyActiveMemberCount,
                                         currentPartition.getPartitionMin()));
                             return null;
                         }

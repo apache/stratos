@@ -68,7 +68,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
             logger.debug("Executing {} command...", getName());
         }
 
-        if (args != null || args.length > 0) {
+        if (args != null && args.length > 0) {
             String resourcePath = null;
             String partionDeployment = null;
 

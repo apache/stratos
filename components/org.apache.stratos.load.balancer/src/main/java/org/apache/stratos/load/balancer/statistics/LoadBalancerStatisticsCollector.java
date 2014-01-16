@@ -60,6 +60,7 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
         //Sliding window in Milliseconds
         int slidingWindow = 60000;//TODO get this from a config
 
+
         if (inFlightRequestToDateListMap.containsKey(clusterId)) {
             Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
             Iterator<Date> itr = vector.iterator();
@@ -79,22 +80,36 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     }
 
     public void addAnInFlightRequest(String clusterId) {
+
         if (StringUtils.isBlank(clusterId)) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster id is blank which try to set requests in flight" +
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cluster id is blank which try to set requests in flight" +
                         " : [cluster] %s", clusterId));
             }
             return;
         }
-        if (!inFlightRequestToDateListMap.containsKey(clusterId)) {
-            Vector<Date> list = inFlightRequestToDateListMap.get(clusterId);
-            list.add(new Date());
-            inFlightRequestToDateListMap.put(clusterId, list);
+        if (inFlightRequestToDateListMap.containsKey(clusterId)) {
+
+            Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
+            vector.add(new Date());
+            inFlightRequestToDateListMap.put(clusterId, vector);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("In-flight request added to counting list: [cluster] %s [list size] %s ", clusterId,
+                        inFlightRequestToDateListMap.get(clusterId).size()));
+
+            }
+
         } else {
+
+            Vector<Date> vector = new Vector<Date>();
+            vector.add(new Date());
+            inFlightRequestToDateListMap.put(clusterId, vector);
             inFlightRequestToDateListMap.get(clusterId).add(new Date());
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("In-flight request added to counting list: [cluster] %s ", clusterId));
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("New list is created for storing request in flight count: [cluster] %s ", clusterId));
+                log.debug(String.format("In-flight request added to counting list: [cluster] %s ", clusterId));
+            }
         }
     }
 
@@ -117,7 +132,8 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
             vector.remove(vector.size() - 1);
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("In-flight request removed from counting list: [cluster] %s ", clusterId));
+                log.debug(String.format("In-flight request removed from counting list: [cluster] %s [list size] %s ", clusterId,
+                                        inFlightRequestToDateListMap.get(clusterId).size()));
             }
         }
     }

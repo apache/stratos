@@ -68,7 +68,7 @@ public class DeploymentPolicyDeploymentCommand implements Command<StratosCommand
             logger.debug("Executing {} command...", getName());
         }
 
-        if (args != null || args.length > 0) {
+        if (args != null && args.length > 0) {
             String resourcePath = null;
             String deploymentPolicyDeployment = null;
 
