@@ -92,7 +92,7 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
             logger.debug("Executing {} command...", getName());
         }
 
-        if (args != null || args.length > 0) {
+        if (args != null && args.length > 0) {
             String admin = null;
             String firstName = null;
             String lastaName = null;
