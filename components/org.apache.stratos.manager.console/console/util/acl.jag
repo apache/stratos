@@ -22,7 +22,6 @@ authorizationUtil = new function(){
     };
     // user roles: {[admin,Internal]}
     // permission config :
-    //{
     //    "admin": ["view", "edit", "add_tenant", "tenant-edit"],
     //        "everyone": ["view", "tenant-edit"]
     //}
@@ -41,10 +40,38 @@ authorizationUtil = new function(){
         }
         return false;
     };
+
+    this.getPermissionObj = function(tenant,roleArray) {
+        var aclconfig = require('/config/acl.json');
+        if(tenant == null){ // check for undefine as well
+            return false;
+        }else if(tenant == "carbon.super"){
+            return this.getUnionOfPermissions(roleArray,aclconfig.carbonsuper);
+        }else{
+            return this.getUnionOfPermissions(roleArray,aclconfig.tenants);
+        }
+    };
+
+    this.getUnionOfPermissions = function(roleArray,permissionConfig) {   // i dont like these methods. O(n^4) :((
+        var permObj = {};
+        for(var i=0; i < roleArray.length; i++){
+            for(var permissionKey in permissionConfig) {
+                if(permissionKey == roleArray[i]){
+                    var permissionArray = permissionConfig[permissionKey];
+                    for(var j=0;j< permissionArray.length;j++){
+                        if(!permObj[permissionArray[j]]){
+                            permObj[permissionArray[j]] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return permObj;
+    };
 };
 
 //var testLog = new Log();
-//testLog.info(authorizationUtil.isAllowed("carbon.super",["admin","Internal/Everyone"],"view"));
+//testLog.info(authorizationUtil.getPermissionObj("carbon.super",["admin"]));
 //testLog.info(authorizationUtil.isAllowed("pradeep.org",["admin","Internal/Everyone"],"edit"));
 //testLog.info(authorizationUtil.isAllowed("pradeep.org",["admin","Internal/Everyone"],"tenant-edit"));
 //testLog.info(authorizationUtil.isAllowed("test.org",["Internal/Everyone"],"view"));

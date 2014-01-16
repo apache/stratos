@@ -68,7 +68,7 @@ public class AutoscalingPolicyDeploymentCommand implements Command<StratosComman
             logger.debug("Executing {} command...", getName());
         }
 
-        if (args != null || args.length > 0) {
+        if (args != null && args.length > 0) {
             String resourcePath = null;
             String autoscalingPolicyDeployment = null;
 

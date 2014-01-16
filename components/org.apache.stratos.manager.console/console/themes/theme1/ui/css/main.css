@@ -206,6 +206,9 @@ body {
     float:left;
     margin-right:10px;
 }
+i.icons-small-size{
+    font-size: 20px;
+}
 .content-starter{
     margin-top: 125px;
 }
@@ -329,7 +332,70 @@ h4{
     height: 55px;
     color:#999;
 }
-
+/* wizard menu */
+.sub-menu-wizard{
+    padding:0;
+    margin:-7px 0 0;
+}
+.sub-menu-wizard li{
+    list-style: none;
+    float:left;
+    background: #dcdcdc;
+    text-align: center;
+}
+.sub-menu-wizard li.no-background{
+    background: transparent;
+}
+.sub-menu-wizard li a{
+    display:block;
+    padding:5px 10px;
+    height: 55px;
+    text-align: center;
+}
+.sub-menu-wizard li.active a{
+    background: #ffae00;
+    color:#fff;
+}
+.sub-menu-wizard li span{
+    display:block;
+    padding:15px 10px;
+    border-left: solid 1px #f2f5f5;
+    border-right: solid 1px #d1d3d3;
+    height: 55px;
+    color:#999;
+}
+.sub-menu-wizard-pointer {
+    content: '';
+    border-style: solid;
+    border-width: 27px 0 28px 10px;
+    border-color: transparent #dcdcdc;
+    display: block;
+    width: 0;
+    z-index: 1;
+}
+ul li.active-pointer{
+    border-color: transparent #ffae00;
+    background: #ffae00;
+}
+div.wizard-number{
+    display: inline-block;
+    width:20px;
+    padding:2px 5px;
+    background: #595a5a;
+    color:#fff;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 11px;
+    -moz-border-radius: 11px;
+    -webkit-border-radius: 11px;
+}
+div.in-active-wizard-item{
+    padding:5px 10px;
+    height: 55px;
+}
+ul.sub-menu-wizard li.active-no-background{
+    background: #dcdcdc;
+}
 /* syntax highlight styles */
 pre {border:none;background: transparent }
 .string { color: green; }
@@ -360,4 +426,52 @@ textarea.jsonEditor{
 }
 label.required{
     font-weight: bold;
+}
+li.dropdown ul.dropdown-menu li{
+    float: none;
+}
+li.dropdown ul.dropdown-menu li a{
+    height: 28px;
+    padding: 3px 20px;
+    text-align: left;
+}
+li.dropdown ul.dropdown-menu li a:hover{
+    background: #3e3f3f;
+}
+li.dropdown ul.dropdown-menu li a i{
+    font-size: 20px;
+}
+.green-check{
+    color: #00b600;
+    font-size:18px;
+}.orange-check{
+    color: #e68d00;
+    font-size:18px;
+}
+.table thead > tr > th{
+    vertical-align: top;
+    background: #9d9f9f;
+    color:#fff;
+}
+.table thead > tr > th div{
+    font-size: 11px;
+    color:#d9d9d9;
+}
+.terms-of-use{
+    padding:10px;
+    background: #f7f7f7;
+    border: solid 1px #d1d1d1;
+}
+#wrap > div.container, .main-menu div.container{
+    min-width: 800px;
+}
+@media (max-width: 980px) {
+    .sub-menu-wizard{
+        font-size: 11px;
+    }
+}
+@media (max-width: 1200px) {
+    .sub-menu{
+            font-size: 11px;
+        }
 }

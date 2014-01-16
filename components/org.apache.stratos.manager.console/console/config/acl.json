@@ -1,4 +1,10 @@
 {
-    "admin":["view","edit","add","tenant-edit"],
-    "user" :["view","tenant-edit"]
+    "carbonsuper": {
+        "admin": ["view", "edit", "add", "tenant-edit"],
+        "Internal/Everyone": ["view", "tenant-edit"]
+    },
+    "tenants": {
+        "admin": ["view", "post"],
+        "Internal/Everyone": ["test1","test2","view"]
+    }
 }
