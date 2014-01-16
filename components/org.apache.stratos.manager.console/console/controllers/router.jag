@@ -8,6 +8,7 @@
     var EXT_PATH=config.paths.ASSET_EXT_PATH;
     var DEFAULT_PATH=config.paths.ASSET_DEFAULT_PATH;
     var URL=config.urls.MGT;
+    var acl = require('/util/acl.jag');
 
     var MSG_404='Asset not found';	//Eror 404 message
 
@@ -73,6 +74,9 @@
             request.getMappedPath = function() {
                 return path;
             };
+            var permissionObject = acl.authorizationUtil.getPermissionObj("carbon.super",["admin","Internal/Everyone"]);
+            log.info(permissionObject);
+            request.permissions = permissionObject;
             include(path);
             return;
         }

@@ -1,0 +1,11 @@
+<%
+var caramel = require('caramel');
+var tenants = require('data/tenants.json');
+var config_status = require('/data/config_status.json');
+var log = new Log();
+log.info(tenants);
+caramel.render({
+    tenants:tenants,
+    config_status:config_status
+});
+%>

@@ -1,0 +1,28 @@
+<%
+var caramel = require('caramel');
+var step = request.getParameter('step');
+if(step == null){
+    step = 1;
+}
+
+var step_data = {};
+
+var wizard = {
+        "step":step
+}
+if(wizard.step == 1){
+    step_data = require('data/partition_deployments.json');
+}else if(wizard.step == 2){
+    step_data = require('data/policy_deployments.json');
+}else if(wizard.step == 3){
+    step_data = require('data/lbs.json');
+}else if(wizard.step == 4){
+    step_data = require('data/cartridge_deployments.json');
+}else if(wizard.step == 5){
+    step_data = require('data/mt_service_deployments.json');
+}
+caramel.render({
+    step_data:step_data,
+    wizard:wizard
+});
+%>

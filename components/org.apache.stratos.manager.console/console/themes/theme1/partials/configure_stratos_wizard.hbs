@@ -1,0 +1,87 @@
+<div class="container content-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>Configure Stratos - {{title}}</h1>
+        </div>
+    </div>
+</div>
+<div class="container" id="addItemSection">
+        <div class="row">
+              <div class="col-md-12">
+                  <form role="form">
+                        <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
+                        <div style="clear: both"></div>
+                        <label for="policy" class="required" style="margin-top:10px;">Policy Configuration</label>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6 padding-remover-left">
+                                    <textarea class="form-control" rows="11" id="policy"></textarea>
+                                    <button data-step="{{step}}" type="button" class="btn btn-default" {{#unless wizard_on_2}} disabled="disabled" {{/unless}} id="wizardBack" id="wizardBack"><< Back</button>
+                                    <button data-step="{{step}}" type="button" class="btn {{#unless wizard_on_5}}btn-primary{{else}}btn-default{{/unless}}" id="wizardNext" {{#if wizard_on_5}} disabled="disabled" {{/if}}>Next >></button>
+                                    <button data-step="{{step}}" type="button" class="btn {{#if wizard_on_5}}btn-primary{{else}}btn-default{{/if}}" id="wizardFinish" {{#unless wizard_on_5}} disabled="disabled" {{/unless}}>Finish</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <i class="icons-help"></i>
+                                    Example configuration:
+                                    <pre>
+                                    {
+                                    "partition":{
+                                          "id": "P1",
+                                          "provider": "ec2",
+                                          "property": [
+                                              {
+                                                "name": "region",
+                                                "value": "ap-southeast-1"
+                                              }
+                                          ],
+                                          "partitionMin": "1",
+                                          "partitionMax": "3"
+                                       }
+                                    }
+                                    </pre>
+                                </div>
+                            </div>
+
+                    </div>
+
+
+                  </form>
+
+              </div>
+        </div>
+    </div>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12">
+
+
+            <div class="panel-group" id="accordion">
+
+
+                {{#each step_data}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                {{name}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{key}}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <pre>{{policy}}</pre>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
+<script src="{{url "/themes/theme1/ui/js/wizard.js"}}"></script>
