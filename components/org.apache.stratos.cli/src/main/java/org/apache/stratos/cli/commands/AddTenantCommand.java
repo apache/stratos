@@ -54,7 +54,7 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
 
         Option lastnameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
                 "Tenant last name");
-        fistnameOption.setArgName("lastname");
+        lastnameOption.setArgName("lastname");
         options.addOption(lastnameOption);
 
         Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
@@ -64,12 +64,12 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
 
         Option domainOption = new Option(CliConstants.DOMAIN_NAME_OPTION, CliConstants.DOMAIN_NAME_LONG_OPTION, true,
                 "Tenant domain");
-        passwordOption.setArgName("domain");
+        domainOption.setArgName("domain");
         options.addOption(domainOption);
 
         Option emailOption = new Option(CliConstants.EMAIL_OPTION, CliConstants.EMAIL_LONG_OPTION, true,
                 "Tenant email");
-        passwordOption.setArgName("email");
+        emailOption.setArgName("email");
         options.addOption(emailOption);
 
         return options;
