@@ -33,9 +33,9 @@ import java.util.List;
  *
 */
 public class RoundRobin implements AutoscaleAlgorithm{
-	
+
 	private static final Log log = LogFactory.getLog(RoundRobin.class);
-    
+
     public Partition getNextScaleUpPartition(NetworkPartitionContext networkPartitionContext, String clusterId){
 
     	List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
@@ -50,13 +50,12 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	    if (partitions.get(currentPartitionIndex) instanceof Partition) {
     		    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
     	        String currentPartitionId =  currentPartition.getId();
-    	        
+
     	        // point to next partition
     	        int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
     	        networkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
-
-    	        if(networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId)
-                        < currentPartition.getPartitionMax()){
+                int nonTerminatedMemberCountOfPartition = networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId);
+    	        if(nonTerminatedMemberCountOfPartition < currentPartition.getPartitionMax()){
                     // current partition is free
                     if (log.isDebugEnabled())
                         log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
@@ -70,10 +69,10 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
     	    }
     	}
-    	
+
     	// none of the partitions were free.
     	if(log.isDebugEnabled()) {
-    		log.debug("No free partition found at partition group " + networkPartitionContext);
+    		log.debug("No free partition found at network partition " + networkPartitionContext);
     	}
         return null;
     }
@@ -105,18 +104,22 @@ public class RoundRobin implements AutoscaleAlgorithm{
                 String currentPartitionId = currentPartition.getId();
 
                 // has more than minimum instances.
-                if (networkPartitionContext.getActiveMemberCount(currentPartitionId) >
-                        currentPartition.getPartitionMin()) {
+                int currentlyActiveMemberCount = networkPartitionContext.getActiveMemberCount(currentPartitionId);
+                if (currentlyActiveMemberCount > currentPartition.getPartitionMin()) {
                     // current partition is free
-                    if (log.isDebugEnabled()) {
-                        log.debug("Returning partition for scaling down " +
-                                  currentPartition.getId());
-                    }
+                    if (log.isDebugEnabled())
+                        log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",
+                                currentPartitionId, currentlyActiveMemberCount, currentPartition.getPartitionMin()))  ;
                     return currentPartition;
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("Found no members to scale down at partition" +
-                              currentPartition.getId());
+                }else {
+
+                    if (currentPartitionIndex == 0) {
+                        if (log.isDebugEnabled())
+                            log.debug(String.format("Partition %s reached with no space to scale down," +
+                                    "[current] %s [min] %s", currentPartitionId, currentlyActiveMemberCount,
+                                    currentPartition.getPartitionMin()));
+                        return null;
+                    }
                 }
             }
         }
@@ -127,7 +130,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
         // none of the partitions were free.
         return null;
     }
-	
+
 
     @Override
     public boolean scaleUpPartitionAvailable(String clusterId) {
