@@ -157,9 +157,9 @@ public class PartitionContext implements Serializable{
         if (memberId == null) {
             return;
         }
-        for (Iterator<MemberContext> iterator = pendingMembers.listIterator(); 
-                iterator.hasNext();) {
-            MemberContext pendingMember = (MemberContext) iterator.next();
+        Iterator<MemberContext> iterator = pendingMembers.listIterator();
+        while (iterator.hasNext()) {
+            MemberContext pendingMember = iterator.next();
             if(pendingMember == null) {
                 iterator.remove();
                 continue;
@@ -184,9 +184,9 @@ public class PartitionContext implements Serializable{
         if (memberId == null) {
             return;
         }
-        for (Iterator<MemberContext> iterator = activeMembers.listIterator();
-                iterator.hasNext();) {
-            MemberContext activeMember = (MemberContext) iterator.next();
+        Iterator<MemberContext> iterator = activeMembers.listIterator();
+        while ( iterator.hasNext()) {
+            MemberContext activeMember = iterator.next();
             if(activeMember == null) {
                 iterator.remove();
                 continue;
@@ -332,10 +332,11 @@ public class PartitionContext implements Serializable{
     public void removeActiveMemberById(String memberId) {
 
         synchronized (activeMembers) {
+            Iterator<MemberContext> iterator = activeMembers.listIterator();
+            while (iterator.hasNext()) {
+                MemberContext memberContext = iterator.next();
 
-            for (Iterator<MemberContext> iterator = activeMembers.listIterator(); iterator.hasNext();) {
-                String currentMemberId = ((MemberContext) iterator).getMemberId();
-                if(memberId.equals(currentMemberId)){
+                if(memberId.equals(memberContext.getMemberId())){
 
                     iterator.remove();
                     break;
@@ -360,9 +361,9 @@ public class PartitionContext implements Serializable{
                 List<MemberContext> pendingMembers = ctxt.getPendingMembers();
                 
                 synchronized (pendingMembers) {
-
-                    for (Iterator<MemberContext> iterator = pendingMembers.listIterator(); iterator.hasNext();) {
-                        MemberContext pendingMember = (MemberContext) iterator.next();
+                    Iterator<MemberContext> iterator = pendingMembers.listIterator();
+                    while ( iterator.hasNext()) {
+                        MemberContext pendingMember = iterator.next();
 
                         if (pendingMember == null) {
                             continue;

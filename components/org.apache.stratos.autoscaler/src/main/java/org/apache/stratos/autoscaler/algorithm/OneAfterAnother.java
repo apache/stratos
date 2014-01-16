@@ -106,15 +106,15 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
                         // current partition is free
                         if (log.isDebugEnabled())
                             log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",
-                                    currentPartitionId, networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
+                                    currentPartitionId, networkPartitionContext.getActiveMemberCount(currentPartitionId),
                                                                     currentPartition.getPartitionMin()))  ;
                         return currentPartition;
                     } else {
                         if (currentPartitionIndex == 0) {
                             if (log.isDebugEnabled())
                                 log.debug(String.format("Partition %s reached with no space to scale down," +
-                                        "[current] %s [mib] %s", currentPartitionId,
-                                        networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
+                                        "[current] %s [min] %s", currentPartitionId,
+                                        networkPartitionContext.getActiveMemberCount(currentPartitionId),
                                         currentPartition.getPartitionMin()));
                             return null;
                         }
