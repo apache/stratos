@@ -86,11 +86,8 @@ dialect "mvel"
         laAverageLimit : Float() from  $loadThresholds.getLoadAverage().getAverage()
 	    laPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
 
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-up factor: " + $delegator.SCALE_UP_FACTOR))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-down factor: " + $delegator.SCALE_DOWN_FACTOR))
-
-        scaleUp : Boolean() from ((rifReset && (rifPredictedValue > rifAverageLimit * $delegator.SCALE_UP_FACTOR)) || (mcReset && (mcPredictedValue > mcAverageLimit * $delegator.SCALE_UP_FACTOR)) || (laReset && (laPredictedValue > laAverageLimit * $delegator.SCALE_UP_FACTOR)))
-        scaleDown : Boolean() from ((rifReset && (rifPredictedValue < rifAverageLimit * $delegator.SCALE_DOWN_FACTOR)) || (mcReset && (mcPredictedValue < mcAverageLimit * $delegator.SCALE_DOWN_FACTOR)) || (laReset && (laPredictedValue < laAverageLimit * $delegator.SCALE_DOWN_FACTOR)))
+        scaleUp : Boolean() from ((rifReset && (rifPredictedValue > rifAverageLimit * 0.8)) || (mcReset && (mcPredictedValue > mcAverageLimit * 0.8)) || (laReset && (laPredictedValue > laAverageLimit * 0.8)))
+        scaleDown : Boolean() from ((rifReset && (rifPredictedValue < rifAverageLimit * 0.1)) || (mcReset && (mcPredictedValue < mcAverageLimit * 0.1)) || (laReset && (laPredictedValue < laAverageLimit * 0.1)))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
@@ -116,7 +113,7 @@ dialect "mvel"
             }
         } else if(scaleDown){
 
-            if($networkPartitionContext.getScaleDownRequestsCount() > $networkPartitionContext.getScaleDownWaitCount()){
+            if($networkPartitionContext.getScaleDownRequestsCount() > 5 ){
 
                 $networkPartitionContext.resetScaleDownRequestsCount();
                 MemberStatsContext selectedMemberStatsContext = null;
