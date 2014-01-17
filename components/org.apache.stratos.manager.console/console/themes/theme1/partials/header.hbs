@@ -1,3 +1,4 @@
+
 {{#if login}}
         <div class="top-blue-strip"></div>
         <div class="login-logo-section"><a  href="{{url "/"}}"><img src="{{url "/themes/theme1/ui/img/logo-login.png"}}"/></a></div>
@@ -15,14 +16,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
+                    {{#ifAllowed "tenant-mgt"}}
+                        can tenant-mgt
+                    {{else}}
+                        can't tenant-mgt
+                    {{/ifAllowed}}
                     <a class="navbar-brand" href="{{url "/"}}"><img src="{{url "/themes/theme1/ui/img/logo-inside.png"}}"/></a>
                  </div>
                  <div class="col-lg-9 custom-nav">
                     <ul class="pull-left">
                         <!-- li {{#if dashboard}} class="active" {{/if}}><a href="{{url "/"}}"><i class="fa fa-dashboard"></i> <span><br>Dashboard</span></a></li -->
                         <li {{#if my_cartridges}} class="active" {{/if}}><a href="{{url "/"}}"><i class="fa fa-tasks"></i>  <span><br>My Cartridges</span></a></li>
-                        <li {{#if configure_stratos}} class="active" {{/if}}><a href="{{url "/partition_deployments.jag"}}"><i class="fa fa-cogs"></i> <span><br>Configure Stratos</span></a></li>
-                        <li {{#if tenant_mgt}} class="active" {{/if}}><a href="{{url "/tenant_management.jag"}}"><i class="fa fa-user"></i> <span><br>Tenant Mgt</span></a></li>
+                        {{#isAllowed "edit"}}<li {{#if configure_stratos}} class="active" {{/if}}><a href="{{url "/partition_deployments.jag"}}"><i class="fa fa-cogs"></i> <span><br>Configure Stratos</span></a></li>{{/isAllowed}}
+                        {{#isAllowed "tenant-mgt"}}<li {{#if tenant_mgt}} class="active" {{/if}}><a href="{{url "/tenant_management.jag"}}"><i class="fa fa-user"></i> <span><br>Tenant Mgt</span></a></li>{{/isAllowed}}
                      </ul>
                      <ul class="pull-right">
                      <li class="dropdown">
@@ -95,7 +101,7 @@
                                         <a href="{{url "/cartridge_deployments.jag" }}">Cartridge Deployments</a>
                                     {{/if}}
                                 </li>
-                                <li {{#if mt_service_deployments}} class="active" {{/if}}>
+                                <li {{#if mt_service_deployments}} class="active" {{/if}} style="display:none">
                                     {{#if config_status.first_use}}
                                         <span>Multi-Tenant Service Deployments</span>
                                     {{else}}

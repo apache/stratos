@@ -1,6 +1,6 @@
 var render = function (theme, data, meta, require) {
       // Re-create the data structure of the cartridges.
-    var log = new Log();
+
     var cartridges_old = data.mycartridges.cartridge;
     var cartridges_new = [
         {
@@ -17,7 +17,6 @@ var render = function (theme, data, meta, require) {
                 }
             }
             cartridgesToPush.push(cartridges_old[i]);
-            log.info(cartridges_old[i]);
         } else {
             cartridgesToPush = null;
             for (var j = 0; j < cartridges_new.length; j++) {
@@ -32,7 +31,8 @@ var render = function (theme, data, meta, require) {
             }
         }
     }
-    log.info(cartridges_new);
+    var log = new Log();
+    log.info(meta.request.permissions);
 
     theme('index', {
         body: [
