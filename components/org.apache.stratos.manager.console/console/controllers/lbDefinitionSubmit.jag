@@ -1,0 +1,9 @@
+<%
+(function(){
+    var log = new Log("controller.lbDefinitionSubmit");
+    var utils = require('/util/utility.jag');
+    var lbDefinition = request.getParameter("lb-definition").trim();
+    utils.consoleAppUtil.deployLbDefinition(lbDefinition);
+    response.sendRedirect(request.getContextPath() + '/lbs.jag');
+}());
+%>
