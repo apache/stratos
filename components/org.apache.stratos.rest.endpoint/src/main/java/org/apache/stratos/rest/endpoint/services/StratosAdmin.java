@@ -263,7 +263,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge[] getSubscribedCartridges() throws ADCException {
-        List<Cartridge> cartridgeList = ServiceUtils.getSubscribedCartridges(null, getConfigContext());
+        List<Cartridge> cartridgeList = ServiceUtils.getSubscriptions(null, getConfigContext());
         // Following is very important when working with axis2
         return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
     }

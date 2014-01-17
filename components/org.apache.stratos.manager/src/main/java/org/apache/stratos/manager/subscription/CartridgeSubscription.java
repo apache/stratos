@@ -194,12 +194,13 @@ public abstract class CartridgeSubscription implements Serializable {
             throws ADCException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
             RepositoryTransportException, InvalidRepositoryException {
 
-        if (!new Boolean(System.getProperty(CartridgeConstants.FEATURE_INTERNAL_REPO_ENABLED))) {
+        /*if (!new Boolean(System.getProperty(CartridgeConstants.FEATURE_INTERNAL_REPO_ENABLED))) {
             if (log.isDebugEnabled()) {
                 log.debug("Internal repo feature is not enabled.");
             }
-        }
+        }*/
 
+        //TODO: throw if repo is not given for this cartridge type
         Repository repository = null;
         if (repoURL != null && repoURL.trim().length() > 0) {
         	repository = new Repository();
@@ -210,12 +211,11 @@ public abstract class CartridgeSubscription implements Serializable {
             repository.setUserName(repoUserName);
             repository.setPassword(repoUserPassword);
             repository.setPrivateRepository(privateRepo);
-
         }
 
         // Validate Remote Repository.
-        ApplicationManagementUtil.validateRepository(repoURL, repoUserName, repoUserPassword, privateRepo,
-                new Boolean(System.getProperty(CartridgeConstants.FEATURE_EXTERNAL_REPO_VAIDATION_ENABLED)));
+        //ApplicationManagementUtil.validateRepository(repoURL, repoUserName, repoUserPassword, privateRepo,
+        //        new Boolean(System.getProperty(CartridgeConstants.FEATURE_EXTERNAL_REPO_VAIDATION_ENABLED)));
 
         return repository;
     }

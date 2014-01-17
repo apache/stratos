@@ -41,7 +41,7 @@
 //    public DataCartridgeSubscription(CartridgeInfo cartridgeInfo) {
 //
 //        super(cartridgeInfo);
-//        this.setHost("localhost");
+//        this.setDBHost("localhost");
 //        this.setUsername(CartridgeConstants.MYSQL_DEFAULT_USER);
 //        this.setPassword(ApplicationManagementUtil.generatePassword());
 //    }
@@ -68,7 +68,7 @@
 //    public PayloadArg createPayloadParameters() throws ADCException {
 //
 //        PayloadArg payloadArg = super.createPayloadParameters();
-//        payloadArg.setDataCartridgeHost(this.getHost());
+//        payloadArg.setDataCartridgeHost(this.getDBHost());
 //        payloadArg.setDataCartridgeAdminUser(getUsername());
 //        payloadArg.setDataCartridgeAdminPassword(getPassword());
 //
@@ -101,11 +101,11 @@
 //
 //    }
 //
-//    public String getHost() {
+//    public String getDBHost() {
 //        return host;
 //    }
 //
-//    public void setHost(String host) {
+//    public void setDBHost(String host) {
 //        this.host = host;
 //    }
 //

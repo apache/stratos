@@ -73,7 +73,7 @@
 //        if(cartridgeSubscription.getCartridgeInfo().getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER) &&
 //                cartridgeSubscription instanceof DataCartridgeSubscription) {
 //            DataCartridgeSubscription dataCartridgeSubscription = (DataCartridgeSubscription) cartridgeSubscription;
-//            dataCartridgeInfoId = persistDataCartridgeInformation(connection, dataCartridgeSubscription.getHost(),
+//            dataCartridgeInfoId = persistDataCartridgeInformation(connection, dataCartridgeSubscription.getDBHost(),
 //                    dataCartridgeSubscription.getUsername(), dataCartridgeSubscription.getPassword());
 //        }
 //
@@ -526,7 +526,7 @@
 ////        if (resultSet.getInt("DATA_CARTRIDGE_ID") != -1 && cartridgeSubscription instanceof
 ////                SingleTenantCartridgeSubscription) {
 ////            DataCartridgeSubscription dataCartridgeSubscription = (DataCartridgeSubscription)cartridgeSubscription;
-////            dataCartridgeSubscription.setHost(resultSet.getString("HOST"));
+////            dataCartridgeSubscription.setDBHost(resultSet.getString("HOST"));
 ////            dataCartridgeSubscription.setUsername(resultSet.getString("ADMIN_USERNAME"));
 ////            dataCartridgeSubscription.setPassword(RepoPasswordMgtUtil.decryptPassword(resultSet.
 ////                    getString("ADMIN_PASSWORD")));
@@ -925,7 +925,7 @@
 //        DataCartridge dataCartridge = new DataCartridge();
 //        dataCartridge.setId(resultSet.getInt("DATA_CARTRIDGE_ID"));
 //        dataCartridge.setDataCartridgeType(resultSet.getString("CARTRIDGE_TYPE"));
-//        dataCartridge.setHost(resultSet.getString("HOST"));
+//        dataCartridge.setDBHost(resultSet.getString("HOST"));
 //        dataCartridge.setUserName(resultSet.getString("ADMIN_USERNAME"));
 //        dataCartridge.setPassword(resultSet.getString("ADMIN_PASSWORD"));
 //
