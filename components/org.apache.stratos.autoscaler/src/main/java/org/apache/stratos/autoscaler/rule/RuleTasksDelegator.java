@@ -85,18 +85,26 @@ public class RuleTasksDelegator {
 
     public static String getLbClusterId(String lbRefType, PartitionContext partitionCtxt, 
         NetworkPartitionContext nwPartitionCtxt) {
-       
+
        String lbClusterId = null;
 
         if (lbRefType != null) {
             if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
+                lbClusterId = PartitionManager.getInstance().getNetworkPartition(nwPartitionCtxt.getId()).getDefaultLbClusterId();
+//                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
             } else if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
                 String serviceName = partitionCtxt.getServiceName();
-                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
+                lbClusterId = PartitionManager.getInstance().getNetworkPartition(serviceName)
+                        .getLBClusterIdOfService(nwPartitionCtxt.getId());
+//                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
             } else {
                 log.warn("Invalid LB reference type defined: [value] "+lbRefType);
             }
+        }
+        if (log.isDebugEnabled()){
+            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
+                    " [partition] %s [network partition] %s [Lb id] %s " , lbRefType, partitionCtxt.getPartitionId(),
+                    nwPartitionCtxt.getId(), lbClusterId));
         }
        return lbClusterId;
     }
