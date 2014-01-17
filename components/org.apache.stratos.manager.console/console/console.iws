@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2a216222-994f-4b4b-8241-afb5024e6741" name="Default" comment="" />
+    <list default="true" id="2a216222-994f-4b4b-8241-afb5024e6741" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../products/stratos-manager/modules/distribution/src/assembly/bin.xml" afterPath="$PROJECT_DIR$/../../../products/stratos-manager/modules/distribution/src/assembly/bin.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag" afterPath="$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../products/stratos-manager/modules/distribution/target/apache-stratos-manager-4.0.0-SNAPSHOT/repository/deployment/server/jaggeryapps/console/controllers/cartridgeDefintionSubmit.jag" afterPath="$PROJECT_DIR$/../../../products/stratos-manager/modules/distribution/target/apache-stratos-manager-4.0.0-SNAPSHOT/repository/deployment/server/jaggeryapps/console/controllers/cartridgeDefintionSubmit.jag" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs" afterPath="$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../products/stratos-manager/modules/distribution/target/apache-stratos-manager-4.0.0-SNAPSHOT/repository/deployment/server/jaggeryapps/console/themes/theme1/partials/cartridge_deployments.hbs" afterPath="$PROJECT_DIR$/../../../products/stratos-manager/modules/distribution/target/apache-stratos-manager-4.0.0-SNAPSHOT/repository/deployment/server/jaggeryapps/console/themes/theme1/partials/cartridge_deployments.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/console.iws" afterPath="$PROJECT_DIR$/console.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/util/utility.jag" afterPath="$PROJECT_DIR$/util/utility.jag" />
+    </list>
     <ignored path="console.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -64,20 +72,74 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="utility.jag" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="utility.jag" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/util/utility.jag">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="96" column="50" selection-start="2566" selection-end="2595" vertical-scroll-proportion="-18.208334" vertical-offset="1003" max-vertical-offset="2385">
+            <state line="95" column="4" selection-start="2477" selection-end="2477" vertical-scroll-proportion="-1.8747628" vertical-offset="2413" max-vertical-offset="2940">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="acl.jag" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="cartridge_deployments.jag" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cartridge_deployments.jag">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="210">
+              <folding>
+                <marker date="1389180176443" expanded="true" signature="182:266" placeholder="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cartridge_deployments.hbs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="12" column="65" selection-start="403" selection-end="403" vertical-scroll-proportion="-6.25" vertical-offset="30" max-vertical-offset="1455">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cartridgeDefintionSubmit.jag" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="7" selection-start="370" selection-end="370" vertical-scroll-proportion="-4.375" vertical-offset="0" max-vertical-offset="210">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="acl.jag" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/util/acl.jag">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="86" selection-start="2685" selection-end="2714" vertical-scroll-proportion="0.686907" vertical-offset="748" max-vertical-offset="1275">
-              <folding />
+            <state line="74" column="86" selection-start="2685" selection-end="2714" vertical-scroll-proportion="-15.083333" vertical-offset="748" max-vertical-offset="1275">
+              <folding>
+                <marker date="1389862168370" expanded="true" signature="39:67" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="104:2520" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="213:607" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="294:361" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="394:486" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="490:578" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="613:797" placeholder="//..." />
+                <marker date="1389862168370" expanded="true" signature="873:1409" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="922:1381" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="979:1371" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1030:1357" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1169:1339" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1249:1317" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1467:1836" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1548:1615" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1648:1739" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1743:1830" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="1909:2517" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="2027:2487" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="2084:2477" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="2135:2463" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="2274:2445" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="2332:2423" placeholder="{...}" />
+                <marker date="1389862168370" expanded="true" signature="2523:3011" placeholder="//..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -93,32 +155,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="acs.jag" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controllers/acs.jag">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="103" selection-start="2059" selection-end="2059" vertical-scroll-proportion="-14.375" vertical-offset="270" max-vertical-offset="1530">
-              <folding>
-                <marker date="1389674842353" expanded="true" signature="16:4412" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="550:818" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="997:1105" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="1137:3910" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="1314:3804" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="1422:3793" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="1503:3779" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="2686:3761" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="3505:3738" placeholder="//..." />
-                <marker date="1389674842353" expanded="true" signature="3810:3904" placeholder="{...}" />
-                <marker date="1389674842353" expanded="true" signature="4011:4410" placeholder="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="acl.json" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/acl.json">
           <provider selected="true" editor-type-id="text-editor">
             <state line="9" column="22" selection-start="0" selection-end="253" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="225">
-              <folding />
+              <folding>
+                <marker date="1389861122086" expanded="true" signature="155:251" placeholder="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -138,27 +181,6 @@
             <state line="4" column="30" selection-start="170" selection-end="170" vertical-scroll-proportion="-2.5" vertical-offset="0" max-vertical-offset="195">
               <folding>
                 <marker date="1389333163237" expanded="true" signature="169:210" placeholder="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="jaggery.conf" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaggery.conf">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="1" selection-start="344" selection-end="344" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="login.jag" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controllers/login.jag">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="67" selection-start="555" selection-end="555" vertical-scroll-proportion="-6.875" vertical-offset="0" max-vertical-offset="630">
-              <folding>
-                <marker date="1389516957973" expanded="true" signature="14:1581" placeholder="{...}" />
-                <marker date="1389516957973" expanded="true" signature="625:1579" placeholder="{...}" />
               </folding>
             </state>
           </provider>
@@ -190,9 +212,6 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/cartridges.jag" />
-        <option value="$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag" />
-        <option value="$PROJECT_DIR$/util/utility.jag" />
-        <option value="$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/controllers/login.jag" />
         <option value="$PROJECT_DIR$/util/authUtils.jag" />
@@ -203,6 +222,9 @@
         <option value="$PROJECT_DIR$/config/acl.json" />
         <option value="$PROJECT_DIR$/util/acl.jag" />
         <option value="$PROJECT_DIR$/controllers/router.jag" />
+        <option value="$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs" />
+        <option value="$PROJECT_DIR$/util/utility.jag" />
+        <option value="$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag" />
       </list>
     </option>
   </component>
@@ -589,22 +611,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="5" selection-start="248" selection-end="248" vertical-scroll-proportion="-3.75" vertical-offset="0" max-vertical-offset="195">
-          <folding>
-            <marker date="1389355612584" expanded="true" signature="-1:-1" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="43" selection-start="1032" selection-end="1032" vertical-scroll-proportion="-11.875" vertical-offset="45" max-vertical-offset="1470">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
         <state />
@@ -619,17 +625,17 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="41" column="103" selection-start="2059" selection-end="2059" vertical-scroll-proportion="-14.375" vertical-offset="270" max-vertical-offset="1530">
           <folding>
-            <marker date="1389674842353" expanded="true" signature="16:4412" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="550:818" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="997:1105" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="1137:3910" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="1314:3804" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="1422:3793" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="1503:3779" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="2686:3761" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="3505:3738" placeholder="//..." />
-            <marker date="1389674842353" expanded="true" signature="3810:3904" placeholder="{...}" />
-            <marker date="1389674842353" expanded="true" signature="4011:4410" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="//..." />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389674842353" expanded="true" signature="-1:-1" placeholder="{...}" />
           </folding>
         </state>
       </provider>
@@ -638,8 +644,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="11" column="67" selection-start="555" selection-end="555" vertical-scroll-proportion="-6.875" vertical-offset="0" max-vertical-offset="630">
           <folding>
-            <marker date="1389516957973" expanded="true" signature="14:1581" placeholder="{...}" />
-            <marker date="1389516957973" expanded="true" signature="625:1579" placeholder="{...}" />
+            <marker date="1389516957973" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1389516957973" expanded="true" signature="-1:-1" placeholder="{...}" />
           </folding>
         </state>
       </provider>
@@ -664,13 +670,6 @@
     <entry file="file://$PROJECT_DIR$/themes/theme1/theme.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="551">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/utility.jag">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="50" selection-start="2566" selection-end="2595" vertical-scroll-proportion="-18.208334" vertical-offset="1003" max-vertical-offset="2385">
           <folding />
         </state>
       </provider>
@@ -703,13 +702,70 @@
     <entry file="file://$PROJECT_DIR$/config/acl.json">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="22" selection-start="0" selection-end="253" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="225">
-          <folding />
+          <folding>
+            <marker date="1389861122086" expanded="true" signature="155:251" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/util/acl.jag">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="86" selection-start="2685" selection-end="2714" vertical-scroll-proportion="0.686907" vertical-offset="748" max-vertical-offset="1275">
+        <state line="74" column="86" selection-start="2685" selection-end="2714" vertical-scroll-proportion="-15.083333" vertical-offset="748" max-vertical-offset="1275">
+          <folding>
+            <marker date="1389862168370" expanded="true" signature="39:67" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="104:2520" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="213:607" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="294:361" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="394:486" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="490:578" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="613:797" placeholder="//..." />
+            <marker date="1389862168370" expanded="true" signature="873:1409" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="922:1381" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="979:1371" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1030:1357" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1169:1339" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1249:1317" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1467:1836" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1548:1615" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1648:1739" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1743:1830" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="1909:2517" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="2027:2487" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="2084:2477" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="2135:2463" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="2274:2445" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="2332:2423" placeholder="{...}" />
+            <marker date="1389862168370" expanded="true" signature="2523:3011" placeholder="//..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cartridge_deployments.jag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="551">
+          <folding>
+            <marker date="1389180176443" expanded="true" signature="182:266" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/cartridgeDefintionSubmit.jag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="7" selection-start="370" selection-end="370" vertical-scroll-proportion="-4.375" vertical-offset="0" max-vertical-offset="210">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/themes/theme1/partials/cartridge_deployments.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="65" selection-start="403" selection-end="403" vertical-scroll-proportion="-6.25" vertical-offset="30" max-vertical-offset="1455">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/utility.jag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="95" column="4" selection-start="2477" selection-end="2477" vertical-scroll-proportion="-1.8747628" vertical-offset="2413" max-vertical-offset="2940">
           <folding />
         </state>
       </provider>

@@ -78,22 +78,26 @@ consoleAppUtil = new function(){
     var log = new Log();
 
     this.getAvailableSingleTenantCartridges = function(){
-        return this.makeRequest("GET","/cartridge/list",{}).data;
+        return this.sendReceive("GET","/cartridge/list",{}).data;
     };
 
     this.getAvailableMultiTenantCartridges = function(){
-        return this.makeRequest("GET","/cartridge/tenanted/list",{}).data;
+        return this.sendReceive("GET","/cartridge/tenanted/list",{}).data;
     };
 
     this.getSubscribedCartridges = function(){
-        return this.makeRequest("GET","/cartridge/list/subscribed",{}).data;
+        return this.sendReceive("GET","/cartridge/list/subscribed",{}).data;
     }
 
     this.deployCartridgeDefinition = function(cartridgeDefintion){
-        return this.makeRequest("POST","/cartridge/definition",cartridgeDefintion).data;
+        return this.send("POST","/cartridge/definition",cartridgeDefintion).data;
     };
 
-    this.makeRequest = function(httpMethod,urlPostFix,data){
+
+
+
+    // refactor sendRecive and send method. duplicate code...
+    this.sendReceive = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
         // getting the access token from the session.
@@ -118,6 +122,39 @@ consoleAppUtil = new function(){
                 break;
             case    "DELETE":
                 response = del(endpoint,data,headers,type);
+                break;
+            default :
+                log.error("Error in the programme flow.");
+        }
+        log.debug(response.data);
+        return response;
+    };
+
+    this.send = function(httpMethod,urlPostFix,data){
+        var config = require('/config/console.js').config();
+        var backendServerURL = config.backendServerConfiguration.url;
+        // getting the access token from the session.
+        var endpoint = backendServerURL + urlPostFix;
+        var accessToken = this.getAccessTokenFromSession();
+        // the header values are constant
+        var headers = {
+            "Authorization": "Bearer "+accessToken,
+            "Content-Type": "application/json"
+        };
+        var type = "json"; // response format
+        var response;
+        switch (httpMethod){
+            case  "GET":
+                response = get(endpoint,{},headers);
+                break;
+            case   "POST":
+                response = post(endpoint,data,headers);
+                break;
+            case    "PUT":
+                response = put(endpoint,data,headers);
+                break;
+            case    "DELETE":
+                response = del(endpoint,data,headers);
                 break;
             default :
                 log.error("Error in the programme flow.");
