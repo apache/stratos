@@ -89,10 +89,21 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/cartridge/list/subscribed",{}).data;
     }
 
-    this.deployCartridgeDefinition = function(cartridgeDefintion){
-        return this.send("POST","/cartridge/definition",cartridgeDefintion).data;
+    this.deployCartridgeDefinition = function(cartridgeDefinition){
+        return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
     };
 
+    this.deployLbDefinition = function(lbDefinition){
+        return this.send("POST","/cartridge/definition",lbDefinition).data;
+    };
+
+    this.deployPartitionDefinition = function(partitionDefinition){
+        return this.send("POST","/policy/deployment/partition",partitionDefinition).data;
+    };
+
+    this.deployPolicyDefinition = function(policyDefinition){
+        return this.send("POST","/policy/deployment",policyDefinition).data;
+    };
 
 
 
