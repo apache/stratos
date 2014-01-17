@@ -752,7 +752,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
 
             partitionCtxt.removeActiveMemberById(memberId);
 
-            String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
+            String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt.getId());
 
             partitionCtxt.addPendingMember(ccClient.spawnAnInstance(partition, clusterId, lbClusterId, nwPartitionCtxt.getId()));
             if (log.isInfoEnabled()) {

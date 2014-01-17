@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -132,13 +133,13 @@ public class AutoscalerUtil {
 
                         if(MemberStatus.Activated.equals(member.getStatus())){
                             partitionContext.addActiveMember(memberContext);
-//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
+//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                            partitionContext.incrementCurrentActiveMemberCount(1);
 
                         } else if(MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())){
                             partitionContext.addPendingMember(memberContext);
 
-//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
+//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                         } else if(MemberStatus.Suspended.equals(member.getStatus())){
 //                            partitionContext.addFaultyMember(memberId);
                         }
@@ -215,9 +216,11 @@ public class AutoscalerUtil {
         // partition group = network partition context
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
-            NetworkPartitionContext networkPartitionContext =
+            NetworkPartitionLbHolder networkPartitionLbHolder =
                                                               PartitionManager.getInstance()
-                                                                              .getNetworkPartition(partitionGroup.getId());
+                                                                              .getNetworkPartitionLbHolder(partitionGroup.getId());
+//                                                              PartitionManager.getInstance()
+//                                                                              .getNetworkPartitionLbHolder(partitionGroup.getId());
             // FIXME pick a random partition
             Partition partition =
                                   partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
@@ -227,6 +230,8 @@ public class AutoscalerUtil {
             partitionContext.setNetworkPartitionId(partitionGroup.getId());
             partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
+            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
+                    partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions()) ;
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
                 if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
@@ -237,12 +242,12 @@ public class AutoscalerUtil {
 
                     if (MemberStatus.Activated.equals(member.getStatus())) {
                         partitionContext.addActiveMember(memberContext);
-//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
+//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                        partitionContext.incrementCurrentActiveMemberCount(1);
                     } else if (MemberStatus.Created.equals(member.getStatus()) ||
                                MemberStatus.Starting.equals(member.getStatus())) {
                         partitionContext.addPendingMember(memberContext);
-//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getId(), 1);
+//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                     } else if (MemberStatus.Suspended.equals(member.getStatus())) {
 //                        partitionContext.addFaultyMember(memberId);
                     }
@@ -266,15 +271,15 @@ public class AutoscalerUtil {
                 String value = props.getProperty(Constants.LOAD_BALANCER_REF);
                 
                 if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-                    networkPartitionContext.setDefaultLbClusterId(clusterId);
+                    networkPartitionLbHolder.setDefaultLbClusterId(clusterId);
 
                 } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
                     String serviceName = cluster.getServiceName();
                     // TODO: check if this is correct
-                    networkPartitionContext.addServiceLB(serviceName, clusterId);
+                    networkPartitionLbHolder.addServiceLB(serviceName, clusterId);
 
                     if (loadBalancedServiceType != null && !loadBalancedServiceType.isEmpty()) {
-                        networkPartitionContext.addServiceLB(loadBalancedServiceType, clusterId);
+                        networkPartitionLbHolder.addServiceLB(loadBalancedServiceType, clusterId);
                         if (log.isDebugEnabled()) {
                             log.debug("Added cluster id " + clusterId + " as the LB cluster id for service type " + loadBalancedServiceType);
                         }
@@ -384,7 +389,7 @@ public class AutoscalerUtil {
 //           for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
 //
 //               NetworkPartitionContext networkPartitionContext
-//                       = PartitionManager.getInstance().getNetworkPartition(partitionGroup.getId());
+//                       = PartitionManager.getInstance().getNetworkPartitionLbHolder(partitionGroup.getNetworkPartitionId());
 //               clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
 //           }
 //        return null;
