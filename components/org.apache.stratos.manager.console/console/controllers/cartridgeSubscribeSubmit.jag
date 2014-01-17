@@ -1,0 +1,32 @@
+<%
+(function(){
+    var log = new Log("controller.cartridgeSubscribeSubmit");
+    var utils = require('/util/utility.jag');
+    var jsonRequest = {};
+    jsonRequest.cartridgeInfoBean = {};
+    var cartridgeType = request.getParameter('cartridgeType');
+    var alias = request.getParameter('alias');
+    var repoURL = request.getParameter('repoURL');
+    var isPublicRepo = request.getParameter('isPublicRepo');
+    var repoUsername = request.getParameter('repoUsername');
+    var repoPassword = request.getParameter('repoPassword');
+    var autoscalePolicy = request.getParameter('autoscalePolicy');
+    var deploymentPolicy = request.getParameter('deploymentPolicy');
+
+    // constructing the json request
+    jsonRequest.cartridgeInfoBean.cartridgeType = cartridgeType;
+    jsonRequest.cartridgeInfoBean.alias = alias;
+    jsonRequest.cartridgeInfoBean.repoURL = repoURL;
+    jsonRequest.cartridgeInfoBean.privateRepo = !isPublicRepo;
+    if(!isPublicRepo){
+        jsonRequest.cartridgeInfoBean.repoUsername = repoUsername;
+        jsonRequest.cartridgeInfoBean.repoPassword = repoPassword;
+
+    }
+    jsonRequest.cartridgeInfoBean.autoscalePolicy = autoscalePolicy;
+    jsonRequest.cartridgeInfoBean.deploymentPolicy = deploymentPolicy;
+
+    var result = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
+    response.sendRedirect(request.getContextPath() + '/index.jag');
+}());
+%>

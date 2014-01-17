@@ -9,11 +9,13 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-            <form role="form">
-              <div class="form-group">
+            <form method="post" role="form" action="{{url "/controllers/cartridgeSubscribeSubmit.jag"}}">
+            <div class="form-group">
                 <label class="required">Public URL:</label>
                 <div class="form-inline">
-                    <input type="url"
+                    <input name="cartridgeType" type="hidden" value="{{cartridgeType}}"/>
+                    <input name="alias"
+                           type="url"
                            class="form-control input-xlarge js-help"
                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
                                    nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
@@ -23,103 +25,108 @@
                            placeholder="myphp" />
                     <label>-lakmal.php.stratos.com</label>
                 </div>
-              </div>
-                <div class="form-group">
-                    <label class="required">Repo URL:</label>
-                    <div class="form-inline">
-                        <input type="url"
-                               class="form-control input-xlarge js-help"
-                               data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
+            </div>
+            <div class="form-group">
+                <label class="required">Repo URL:</label>
+                <div class="form-inline">
+                    <input name="repoURL"
+                           type="url"
+                           class="form-control input-xlarge js-help"
+                           data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
                                        nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
                                        Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
-                               data-help-x-offset="200"
-                               data-help-y-offset="-10"
-                               placeholder="myphp" />
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                          <input type="checkbox" checked="checked" id="public_check" /> This is a public repository
-                        </label>
-                      </div>
+                           data-help-x-offset="200"
+                           data-help-y-offset="-10"
+                           placeholder="myphp" />
                 </div>
-                <div id="credential_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
-                    <h2>Provide Credentials</h2>
-                    <div class="form-group">
-                        <label class="required">Username:</label>
-                        <div class="form-inline">
-                            <input type="url" class="form-control input-xlarge" placeholder="myphp"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="required">Password:</label>
-                        <div class="form-inline">
-                            <input type="url" class="form-control input-xlarge" placeholder="myphp"/>
-                        </div>
+                <div class="checkbox">
+                    <label>
+                        <input name="isPublicRepo" type="checkbox" checked="checked" id="public_check" /> This is a public repository
+                    </label>
+                </div>
+            </div>
+            <div id="credential_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
+                <h2>Provide Credentials</h2>
+                <div class="form-group">
+                    <label class="required">Username:</label>
+                    <div class="form-inline">
+                        <input name="repoUsername" type="url" class="form-control input-xlarge" placeholder="myphp"/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="required">Autoscale Policy:</label>
+                    <label class="required">Password:</label>
                     <div class="form-inline">
-                        <select
-                               class="form-control input-xlarge js-help"
-                               data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
-                                       nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
-                                       Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
-                               data-help-x-offset="50"
-                               data-help-y-offset="-10" >
-                            <option>policyx</option>
-                            <option>policyy</option>
-                                </select>
+                        <input name="repoPassword" type="url" class="form-control input-xlarge" placeholder="myphp"/>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="required">Deployment Policy:</label>
-                    <div class="form-inline">
-                        <select
-                               class="form-control input-xlarge js-help"
-                               data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
+            </div>
+            <div class="form-group">
+                <label class="required">Autoscale Policy:</label>
+                <div class="form-inline">
+                    <select
+                            name="autoscalePolicy"
+                            class="form-control input-xlarge js-help"
+                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
                                        nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
                                        Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
-                               data-help-x-offset="50"
-                               data-help-y-offset="-10" >
-                            <option>policyx</option>
-                            <option>policyy</option>
-                                </select>
-                    </div>
+                            data-help-x-offset="50"
+                            data-help-y-offset="-10" >
+                        {{#each autoScalePolicies}}
+                        <option>{{foo}}</option>
+                        {{/each}}
+                    </select>
                 </div>
-              <button type="submit" class="btn btn-primary">Subscribe to Cartridge</button>
+            </div>
+            <div class="form-group">
+                <label class="required">Deployment Policy:</label>
+                <div class="form-inline">
+                    <select
+                            name="deploymentPolicy"
+                            class="form-control input-xlarge js-help"
+                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
+                                       nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
+                                       Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
+                            data-help-x-offset="50"
+                            data-help-y-offset="-10" >
+                        {{#each deploymentPolicies}}
+                            <option>{{foo}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Subscribe to Cartridge</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-$(function(){
-    $('.js-help')
-        .focus(
-        function () {
-            var $input = $(this);
-            var bubbleLeft = $input.offset().left + $input.width();
-            var bubbleTop = $input.offset().top - $input.height() / 2;
-            $('#speech_bubble_container p').html($input.attr('data-help'));
-            bubbleLeft += parseInt($input.attr('data-help-x-offset'));
-            bubbleTop += parseInt($input.attr('data-help-y-offset'));
-            var bubbleWidth = Math.floor($(document).width() - bubbleLeft - 105);
-            $('#speech_bubble_container').css({'width': bubbleWidth + "px"}).show('fast').css({"position": "absolute", "left": bubbleLeft + "px", "top": bubbleTop + "px"});
-            console.info(Math.floor(bubbleWidth));
-        }
+    $(function(){
+        $('.js-help')
+                .focus(
+                function () {
+                    var $input = $(this);
+                    var bubbleLeft = $input.offset().left + $input.width();
+                    var bubbleTop = $input.offset().top - $input.height() / 2;
+                    $('#speech_bubble_container p').html($input.attr('data-help'));
+                    bubbleLeft += parseInt($input.attr('data-help-x-offset'));
+                    bubbleTop += parseInt($input.attr('data-help-y-offset'));
+                    var bubbleWidth = Math.floor($(document).width() - bubbleLeft - 105);
+                    $('#speech_bubble_container').css({'width': bubbleWidth + "px"}).show('fast').css({"position": "absolute", "left": bubbleLeft + "px", "top": bubbleTop + "px"});
+                    console.info(Math.floor(bubbleWidth));
+                }
         ).blur(
-        function () {
-            $('#speech_bubble_container').hide();
-        });
+                function () {
+                    $('#speech_bubble_container').hide();
+                });
 
-    var $public_check = $('#public_check');
-    if(!$public_check.is(':checked')){
-        $('#public_check').prop("checked",true);
-    }
-    $public_check.click(function(){
-               $('#credential_container').toggle($public_check.checked);
+        var $public_check = $('#public_check');
+        if(!$public_check.is(':checked')){
+            $('#public_check').prop("checked",true);
+        }
+        $public_check.click(function(){
+            $('#credential_container').toggle($public_check.checked);
+        });
     });
-});
 
 </script>
