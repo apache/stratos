@@ -38,6 +38,9 @@ public class NetworkPartitionContext implements Serializable{
 	private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private static final long serialVersionUID = 572769304374110159L;
     private final String id;
+    private boolean scaleDownAllowed = false;
+    private int scaleDownWaitCount = 5; //TODO get from a config
+    private int scaleDownRequestsCount = 0;
 
 //    private String defaultLbClusterId;
 //
@@ -489,6 +492,22 @@ public class NetworkPartitionContext implements Serializable{
         }
         return 0;
     }
+
+    public int getScaleDownWaitCount() {
+        return scaleDownWaitCount;
+    }
+
+    public int getScaleDownRequestsCount() {
+        return scaleDownRequestsCount;
+    }
+
+    public void resetScaleDownRequestsCount() {
+        this.scaleDownRequestsCount = 0;
+    }
+    public void increaseScaleDownRequestsCount() {
+        this.scaleDownRequestsCount += 1;
+    }
+
 
 //    public void setPartitions(Partition[] partitions) {
 //        this.partitions = partitions;

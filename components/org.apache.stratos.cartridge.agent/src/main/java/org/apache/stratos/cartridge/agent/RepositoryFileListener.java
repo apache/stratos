@@ -32,7 +32,7 @@ public class RepositoryFileListener implements Runnable {
         if(log.isInfoEnabled()) {
 		    log.info("Executing repository file listener");
         }
-		boolean commitStatus = GitBasedArtifactRepository.commit();
+		boolean commitStatus = GitBasedArtifactRepository.getInstance().commit();
         if(log.isInfoEnabled()) {
 		    log.info("Commit status: " + commitStatus);
         }
