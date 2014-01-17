@@ -25,6 +25,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
 import java.io.File;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Git Repository Context class. Keeps track of git configurations per tenant.
@@ -43,6 +44,7 @@ public class RepositoryContext {
     private boolean keyBasedAuthentication;
     private String repoUsername;
     private String repoPassword;
+    private ScheduledExecutorService artifactSyncSchedular;
 
     public RepositoryContext () {
 
@@ -127,5 +129,12 @@ public class RepositoryContext {
 	public void setRepoPassword(String repoPassword) {
 		this.repoPassword = repoPassword;
 	}
-    
+
+    public ScheduledExecutorService getArtifactSyncSchedular() {
+        return artifactSyncSchedular;
+    }
+
+    public void setArtifactSyncSchedular(ScheduledExecutorService artifactSyncSchedular) {
+        this.artifactSyncSchedular = artifactSyncSchedular;
+    }
 }
