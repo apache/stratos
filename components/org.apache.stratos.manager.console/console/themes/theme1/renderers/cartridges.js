@@ -17,7 +17,6 @@ var render = function (theme, data, meta, require) {
                 }
             }
             cartridgesToPush.push(cartridges_old[i]);
-            log.info(cartridges_old[i]);
         } else {
             cartridgesToPush = null;
             for (var j = 0; j < cartridges_new.length; j++) {
@@ -32,7 +31,6 @@ var render = function (theme, data, meta, require) {
             }
         }
     }
-    log.info(cartridges_new);
     theme('index', {
         body: [
             {
