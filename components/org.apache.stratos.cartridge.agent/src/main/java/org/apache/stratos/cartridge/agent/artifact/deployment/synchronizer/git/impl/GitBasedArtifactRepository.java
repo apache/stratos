@@ -26,6 +26,7 @@ import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.i
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.internal.GitDeploymentSynchronizerConstants;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.internal.RepositoryContext;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.util.Utilities;
+import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.Ref;
@@ -39,7 +40,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 /**
  * Git based artifact repository.
@@ -53,11 +54,24 @@ public class GitBasedArtifactRepository {
     //Map to keep track of git context per tenant (remote urls, jgit git objects, etc.)
     private static ConcurrentHashMap<Integer, RepositoryContext>
     					tenantToRepoContextMap = new ConcurrentHashMap<Integer, RepositoryContext>();
+    private static volatile GitBasedArtifactRepository gitBasedArtifactRepository;
     private static String SUPER_TENANT_APP_PATH = "/repository/deployment/server/";
     private static String TENANT_PATH = "/repository/tenants/";
 
     private GitBasedArtifactRepository () {
 
+    }
+
+    public static GitBasedArtifactRepository getInstance () {
+
+        if (gitBasedArtifactRepository == null) {
+            synchronized (GitBasedArtifactRepository.class) {
+                if (gitBasedArtifactRepository == null) {
+                    gitBasedArtifactRepository = new GitBasedArtifactRepository();
+                }
+            }
+        }
+        return gitBasedArtifactRepository;
     }
 
     /**
@@ -66,7 +80,7 @@ public class GitBasedArtifactRepository {
      * @param repositoryInformation id of the tenant
      *
      */
-    private static void initGitContext (RepositoryInformation repositoryInformation)  {
+    private void initGitContext (RepositoryInformation repositoryInformation)  {
 
      /*   if (tenantId == GitDeploymentSynchronizerConstants.SUPER_TENANT_ID)
             return;*/
@@ -158,7 +172,7 @@ public class GitBasedArtifactRepository {
      *
      * @return true if SSH authentication is required, else false
      */
-    private static boolean isKeyBasedAuthentication(String url, int tenantId) {
+    private boolean isKeyBasedAuthentication(String url, int tenantId) {
 
         if (url.startsWith(GitDeploymentSynchronizerConstants.GIT_HTTP_REPO_URL_PREFIX) ||
                 url.startsWith(GitDeploymentSynchronizerConstants.GIT_HTTPS_REPO_URL_PREFIX)) {//http or https url
@@ -186,7 +200,7 @@ public class GitBasedArtifactRepository {
     /**
      * Initializes SSH authentication
      */
-    private static void initSSHAuthentication () {
+    private void initSSHAuthentication () {
 
         SshSessionFactory.setInstance(new CustomJschConfigSessionFactory());
     }
@@ -197,7 +211,7 @@ public class GitBasedArtifactRepository {
      * @param tenantId tenant repository path
      * @param gitRepoCtx RepositoryContext instance for tenant
      */
-    private static void cacheGitRepoContext(int tenantId, RepositoryContext gitRepoCtx) {
+    private void cacheGitRepoContext(int tenantId, RepositoryContext gitRepoCtx) {
 
     	log.info("caching repo context");
         tenantToRepoContextMap.put(tenantId, gitRepoCtx);
@@ -211,7 +225,7 @@ public class GitBasedArtifactRepository {
      * @return corresponding RepositoryContext instance for the
      * tenant's local repo if available, else null
      */
-    private static RepositoryContext retrieveCachedGitContext (int tenantId) {
+    private RepositoryContext retrieveCachedGitContext (int tenantId) {
 
         return tenantToRepoContextMap.get(tenantId);
     }
@@ -222,7 +236,7 @@ public class GitBasedArtifactRepository {
      * @return
      *      
      */
-    public static boolean commit() {
+    public boolean commit() {
     	// TODO implement later, this is applicable for management node.
 
 		for (Entry<Integer, RepositoryContext> tenantMap : tenantToRepoContextMap
@@ -279,7 +293,7 @@ public class GitBasedArtifactRepository {
      *
      * @return artifact names set
      */
-    private static Set<String> getNewArtifacts (Status status) {
+    private Set<String> getNewArtifacts (Status status) {
 
         return status.getUntracked();
     }
@@ -291,7 +305,7 @@ public class GitBasedArtifactRepository {
      *
      * @return artifact names set
      */
-    private static Set<String> getRemovedArtifacts (Status status) {
+    private Set<String> getRemovedArtifacts (Status status) {
 
         return status.getMissing();
     }
@@ -303,7 +317,7 @@ public class GitBasedArtifactRepository {
      *
      * @return artifact names set
      */
-    private static Set<String> getModifiedArtifacts (Status status) {
+    private Set<String> getModifiedArtifacts (Status status) {
 
         return status.getModified();
     }
@@ -314,7 +328,7 @@ public class GitBasedArtifactRepository {
      * @param gitRepoCtx RepositoryContext instance
      * @param artifacts set of artifacts
      */
-    private static void addArtifacts (RepositoryContext gitRepoCtx, Set<String> artifacts) {
+    private void addArtifacts (RepositoryContext gitRepoCtx, Set<String> artifacts) {
 
         if(artifacts.isEmpty())
             return;
@@ -339,7 +353,7 @@ public class GitBasedArtifactRepository {
      * @param gitRepoCtx RepositoryContext instance
      * @param artifacts Set of artifact names to remove
      */
-    private static void removeArtifacts (RepositoryContext gitRepoCtx, Set<String> artifacts) {
+    private void removeArtifacts (RepositoryContext gitRepoCtx, Set<String> artifacts) {
 
         if(artifacts.isEmpty())
             return;
@@ -364,7 +378,7 @@ public class GitBasedArtifactRepository {
      *
      * @param gitRepoCtx RepositoryContext instance for the tenant
      */
-    private static void commitToLocalRepo (RepositoryContext gitRepoCtx) {
+    private void commitToLocalRepo (RepositoryContext gitRepoCtx) {
 
         CommitCommand commitCmd = gitRepoCtx.getGit().commit();
         commitCmd.setMessage("tenant " + gitRepoCtx.getTenantId() + "'s artifacts committed to local repo at " +
@@ -384,7 +398,7 @@ public class GitBasedArtifactRepository {
      *
      * @param gitRepoCtx RepositoryContext instance for the tenant
      */
-    private static void pushToRemoteRepo(RepositoryContext gitRepoCtx) {
+    private void pushToRemoteRepo(RepositoryContext gitRepoCtx) {
 
         PushCommand pushCmd = gitRepoCtx.getGit().push();
         if(!gitRepoCtx.getKeyBasedAuthentication()) {
@@ -402,10 +416,16 @@ public class GitBasedArtifactRepository {
         }
     }
 
-    public static boolean checkout(RepositoryInformation repositoryInformation) {
-        if(log.isInfoEnabled()) {
+    public boolean checkout(RepositoryInformation repositoryInformation) {
+        /*if(log.isInfoEnabled()) {
     	    log.info("Executing checkout");
+        }*/
+
+        if (log.isDebugEnabled()) {
+            log.debug("Artifact checkout done by thread " + Thread.currentThread().getName() + " - " +
+                Thread.currentThread().getId());
         }
+
     	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
     	
     	// if context for tenant is not initialized
@@ -421,17 +441,46 @@ public class GitBasedArtifactRepository {
             return true;
         }
 
-        /*if(gitRepoCtx.getTenantId() == GitDeploymentSynchronizerConstants.SUPER_TENANT_ID)
-            return true;  */
-        if(!gitRepoCtx.cloneExists())
-            cloneRepository(gitRepoCtx);
+        synchronized (gitRepoCtx) {
+            if(!gitRepoCtx.cloneExists())
+                cloneRepository(gitRepoCtx);
 
-        return pullArtifacts(gitRepoCtx);
+            return pullArtifacts(gitRepoCtx);
+        }
     }
     
+    public void scheduleSyncTask (RepositoryInformation repoInformation, long delay) {
+
+        int tenantId = Integer.parseInt(repoInformation.getTenantId());
+
+        RepositoryContext repoCtxt = tenantToRepoContextMap.get(tenantId);
+        if (repoCtxt == null) {
+            log.error("Unable to schedule artifact sync task, repositoryContext null for tenant " + tenantId);
+            return;
+        }
+
+        if (repoCtxt.getArtifactSyncSchedular() == null) {
+           synchronized (repoCtxt) {
+               if (repoCtxt.getArtifactSyncSchedular() == null) {
+                   // create a new ScheduledExecutorService instance
+                   final ScheduledExecutorService artifactSyncScheduler = Executors.newScheduledThreadPool(1,
+                           new ArtifactSyncTaskThreadFactory(repoInformation));
+
+                   // schedule at the given interval
+                   artifactSyncScheduler.scheduleAtFixedRate(new ArtifactSyncTask(repoInformation), delay, delay, TimeUnit.SECONDS);
+                   // cache
+                   repoCtxt.setArtifactSyncSchedular(artifactSyncScheduler);
+
+                   log.info("Scheduled Artifact Synchronization Task for path " + repoCtxt.getGitLocalRepoPath());
+
+               } else {
+                   log.info("Artifact Synchronization Task for path " + repoCtxt.getGitLocalRepoPath() + " already scheduled");
+               }
+           }
+        }
+    }
     
-    
-    public static boolean cloneExists(RepositoryInformation repositoryInformation) {
+    public boolean cloneExists(RepositoryInformation repositoryInformation) {
     	
     	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
     	
@@ -458,7 +507,7 @@ public class GitBasedArtifactRepository {
      *
      * @return true if success, else false
      */
-    private static boolean pullArtifacts (RepositoryContext gitRepoCtx) {
+    private boolean pullArtifacts (RepositoryContext gitRepoCtx) {
         if(log.isInfoEnabled())  {
     	    log.info("Pulling artifacts");
         }
@@ -471,7 +520,17 @@ public class GitBasedArtifactRepository {
         }
 
         try {
-            pullCmd.call();
+            PullResult pullResult = pullCmd.call();
+            // check if we have received any updates
+            if (!pullResult.getFetchResult().getTrackingRefUpdates().isEmpty()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Artifacts were updated as a result of the pull operation, thread: " + Thread.currentThread().getName() + " - " +
+                            Thread.currentThread().getId());
+                }
+
+                // execute artifact update extension
+                ExtensionUtils.executeArtifactsUpdatedExtension();
+            }
 
         } catch (InvalidConfigurationException e) {
             log.warn("Git pull unsuccessful for tenant " + gitRepoCtx.getTenantId() + ", " + e.getMessage());
@@ -479,6 +538,8 @@ public class GitBasedArtifactRepository {
             //return false;
             Utilities.deleteFolderStructure(new File(gitRepoCtx.getGitLocalRepoPath()));
             cloneRepository(gitRepoCtx);
+            // execute artifact update extension
+            ExtensionUtils.executeArtifactsUpdatedExtension();
             return true;
 
         } catch (JGitInternalException e) {
@@ -494,6 +555,8 @@ public class GitBasedArtifactRepository {
             log.warn("Git pull for the path " + e.getConflictingPaths().toString() + " failed due to conflicts");
             Utilities.deleteFolderStructure(new File(gitRepoCtx.getGitLocalRepoPath()));
             cloneRepository(gitRepoCtx);
+            // execute artifact update extension
+            ExtensionUtils.executeArtifactsUpdatedExtension();
             return true;
 
         } catch (GitAPIException e) {
@@ -711,6 +774,31 @@ public class GitBasedArtifactRepository {
      /*   return false;
     }*/
 
-	
+	private class ArtifactSyncTask implements Runnable {
+
+        private RepositoryInformation repositoryInformation;
+
+        public ArtifactSyncTask (RepositoryInformation repositoryInformation) {
+            this.repositoryInformation = repositoryInformation;
+        }
+
+        @Override
+        public void run() {
+            checkout(repositoryInformation);
+        }
+    }
+
+    class ArtifactSyncTaskThreadFactory implements ThreadFactory {
+
+        private RepositoryInformation repositoryInformation;
+
+        public ArtifactSyncTaskThreadFactory (RepositoryInformation repositoryInformation) {
+            this.repositoryInformation = repositoryInformation;
+        }
+
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "Artifact Update Thread - " + repositoryInformation.getRepoPath());
+        }
+    }
 
 }

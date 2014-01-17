@@ -159,8 +159,8 @@ public class CartridgeAgent implements Runnable {
             repoInformation.setRepoUrl(repoURL);
             repoInformation.setRepoPath(localRepoPath);
             repoInformation.setTenantId(tenantId);
-            boolean cloneExists = GitBasedArtifactRepository.cloneExists(repoInformation);
-            GitBasedArtifactRepository.checkout(repoInformation);
+            boolean cloneExists = GitBasedArtifactRepository.getInstance().cloneExists(repoInformation);
+            GitBasedArtifactRepository.getInstance().checkout(repoInformation);
 
             ExtensionUtils.executeArtifactsUpdatedExtension();
 
@@ -168,6 +168,10 @@ public class CartridgeAgent implements Runnable {
                 // Executed git clone, publish instance activated event
                 CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
             }
+
+            // Start the artifact update task
+            GitBasedArtifactRepository.getInstance().scheduleSyncTask(repoInformation, 10);
+
         }
     }
 
