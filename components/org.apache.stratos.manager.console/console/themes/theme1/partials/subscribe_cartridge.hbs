@@ -71,8 +71,9 @@
                                        Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
                             data-help-x-offset="50"
                             data-help-y-offset="-10" >
-                        <option>policyx</option>
-                        <option>policyy</option>
+                        {{#each autoScalePolicies}}
+                        <option>{{foo}}</option>
+                        {{/each}}
                     </select>
                 </div>
             </div>
@@ -87,8 +88,9 @@
                                        Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
                             data-help-x-offset="50"
                             data-help-y-offset="-10" >
-                        <option>policyx</option>
-                        <option>policyy</option>
+                        {{#each deploymentPolicies}}
+                            <option>{{foo}}</option>
+                        {{/each}}
                     </select>
                 </div>
             </div>

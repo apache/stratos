@@ -5,6 +5,8 @@ var render = function (theme, data, meta, require) {
                 partial: 'subscribe_cartridge',
                 context: {
                     title:data.name,
+                    autoScalePolicies:data.autoScalePolicies,
+                    deploymentPolicies:data.deploymentPolicies,
                     cartridgeType:meta.request.getParameter('cartridgeType')
                 }
             }

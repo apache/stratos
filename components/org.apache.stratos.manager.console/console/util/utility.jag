@@ -106,10 +106,16 @@ consoleAppUtil = new function(){
     };
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
-        log.info(cartridgeBeanInfo);
         return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;
     }
 
+    this.getAutoScalePolicies = function(){
+        return this.sendReceive("GET","/policy/autoscale",{}).data;
+    }
+
+    this.getDeploymentPolicies = function(){
+        return this.sendReceive("GET","/policy/deployment",{}).data;
+    }
 
     // refactor sendRecive and send method. duplicate code...
     this.sendReceive = function(httpMethod,urlPostFix,data){
