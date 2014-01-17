@@ -123,11 +123,16 @@ public class CartridgeSubscriptionManager {
             if (props != null) {
                 // TODO: temp fix, need to do a proper fix
                 Property[] cartridgeInfoProperties = cartridgeInfo.getProperties();
-                int length = cartridgeInfoProperties.length + props.length;
-                Property[] combined = new Property[length];
-                System.arraycopy(cartridgeInfoProperties, 0, combined, 0, cartridgeInfoProperties.length);
-                System.arraycopy(props, 0, combined, cartridgeInfoProperties.length, props.length);
-                cartridgeInfo.setProperties(combined);
+                if(cartridgeInfoProperties != null) {
+                     int length = cartridgeInfoProperties.length + props.length;
+                    Property[] combined = new Property[length];
+                    System.arraycopy(cartridgeInfoProperties, 0, combined, 0, cartridgeInfoProperties.length);
+                    System.arraycopy(props, 0, combined, cartridgeInfoProperties.length, props.length);
+                    cartridgeInfo.setProperties(combined);
+                } else {
+                    cartridgeInfo.setProperties(props);
+                }
+
             }
 
         } catch (UnregisteredCartridgeException e) {

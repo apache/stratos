@@ -1,6 +1,14 @@
 <%
-var caramel = require('caramel')
+var log = new Log("subscribe_cartridge");
+var caramel = require('caramel');
+var utils = require('/util/utility.jag');
+var autoScalePolicies = utils.consoleAppUtil.getAutoScalePolicies();
+log.info(autoScalePolicies);
+var deploymentPolicies = utils.consoleAppUtil.getDeploymentPolicies();
+log.info(deploymentPolicies);
 caramel.render({
-        name:"PHP 5.4 Cartridge"
+        name:"PHP 5.4 Cartridge",
+        autoScalePolicies:autoScalePolicies,
+        deploymentPolicies:deploymentPolicies
 });
 %>

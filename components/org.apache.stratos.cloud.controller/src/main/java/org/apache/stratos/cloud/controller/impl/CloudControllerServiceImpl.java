@@ -28,25 +28,17 @@ import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
-import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisherTask;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.topology.TopologySynchronizerTask;
-import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageDelegator;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
-import org.jclouds.ec2.compute.options.EC2TemplateOptions;
-import org.wso2.carbon.ntask.common.TaskException;
-import org.wso2.carbon.ntask.core.TaskInfo;
-import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
-import org.wso2.carbon.ntask.core.TaskManager;
-import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
@@ -878,20 +870,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     @Override
 	public void unregisterService(String clusterId) throws UnregisteredClusterException {
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
-        
-        if(ctxt == null) {
-            String msg = "Unregistration of service cluster failed. Cluster not found: "+clusterId;
-            log.error(msg);
-            throw new UnregisteredClusterException(msg);
-        }
-        
-        TopologyBuilder.handleClusterRemoved(ctxt);
-
-        dataHolder.removeClusterContext(clusterId);
-        dataHolder.removeMemberContext(clusterId);
-        
-        persist();
+        final String clusterId_ = clusterId;
+            Runnable r = new Runnable() {
+                 public void run() {
+                     ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                     Collection<Member> members = TopologyManager.getTopology().
+                             getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                     while(members.size() > 0) {
+                        //waiting until all the members got removed from the Topology
+                        CloudControllerUtil.sleep(1000);
+                     }
+                    if(ctxt == null) {
+                        String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                        log.error(msg);
+                    }
+                     log.info("Unregistration of service cluster: " + clusterId_);
+                     TopologyBuilder.handleClusterRemoved(ctxt);
+                     dataHolder.removeClusterContext(clusterId_);
+                     dataHolder.removeMemberContext(clusterId_);
+                     persist();
+                 }
+            };
+        new Thread(r).start();
         
 	}
 
