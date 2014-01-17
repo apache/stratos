@@ -26,6 +26,7 @@ import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.i
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.internal.GitDeploymentSynchronizerConstants;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.internal.RepositoryContext;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.util.Utilities;
+import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.Ref;
@@ -519,7 +520,17 @@ public class GitBasedArtifactRepository {
         }
 
         try {
-            pullCmd.call();
+            PullResult pullResult = pullCmd.call();
+            // check if we have received any updates
+            if (!pullResult.getFetchResult().getTrackingRefUpdates().isEmpty()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Artifacts were updated as a result of the pull operation, thread: " + Thread.currentThread().getName() + " - " +
+                            Thread.currentThread().getId());
+                }
+
+                // execute artifact update extension
+                ExtensionUtils.executeArtifactsUpdatedExtension();
+            }
 
         } catch (InvalidConfigurationException e) {
             log.warn("Git pull unsuccessful for tenant " + gitRepoCtx.getTenantId() + ", " + e.getMessage());
@@ -527,6 +538,8 @@ public class GitBasedArtifactRepository {
             //return false;
             Utilities.deleteFolderStructure(new File(gitRepoCtx.getGitLocalRepoPath()));
             cloneRepository(gitRepoCtx);
+            // execute artifact update extension
+            ExtensionUtils.executeArtifactsUpdatedExtension();
             return true;
 
         } catch (JGitInternalException e) {
@@ -542,6 +555,8 @@ public class GitBasedArtifactRepository {
             log.warn("Git pull for the path " + e.getConflictingPaths().toString() + " failed due to conflicts");
             Utilities.deleteFolderStructure(new File(gitRepoCtx.getGitLocalRepoPath()));
             cloneRepository(gitRepoCtx);
+            // execute artifact update extension
+            ExtensionUtils.executeArtifactsUpdatedExtension();
             return true;
 
         } catch (GitAPIException e) {
