@@ -40,6 +40,7 @@ import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
 import org.wso2.carbon.context.CarbonContext;
 
 import java.util.Arrays;
@@ -155,11 +156,14 @@ public class CartridgeSubscriptionManager {
         //Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
                 getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
-
+        
+        String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+        String encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
+        
         //Create repository
         Repository repository = cartridgeSubscription.manageRepository(repositoryURL,
                                                                        repositoryUsername,
-                                                                       repositoryPassword,
+                                                                       encryptedRepoPassword,
                                                                        isPrivateRepository,
                                                                        cartridgeAlias,
                                                                        cartridgeInfo, tenantDomain);
@@ -168,7 +172,7 @@ public class CartridgeSubscriptionManager {
         Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
 
         //Set the key
-        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey());
+        cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
