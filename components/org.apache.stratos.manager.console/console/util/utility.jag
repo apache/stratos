@@ -75,7 +75,7 @@ function getServerUrl(){
 }
 
 consoleAppUtil = new function(){
-    var log = new Log();
+    var log = new Log('utility.consoleAppUtil');
 
     this.getAvailableSingleTenantCartridges = function(){
         return this.sendReceive("GET","/cartridge/list",{}).data;
@@ -105,6 +105,10 @@ consoleAppUtil = new function(){
         return this.send("POST","/policy/deployment",policyDefinition).data;
     };
 
+    this.subscribeToCartridge = function(cartridgeBeanInfo){
+        log.info(cartridgeBeanInfo);
+        return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;
+    }
 
 
     // refactor sendRecive and send method. duplicate code...
@@ -113,6 +117,8 @@ consoleAppUtil = new function(){
         var backendServerURL = config.backendServerConfiguration.url;
         // getting the access token from the session.
         var endpoint = backendServerURL + urlPostFix;
+        //var endpoint = "http://localhost:9000/stratos/admin" + urlPostFix;
+
         var accessToken = this.getAccessTokenFromSession();
         // the header values are constant
         var headers = {
@@ -126,13 +132,13 @@ consoleAppUtil = new function(){
                 response = get(endpoint,{},headers,type);
                 break;
             case   "POST":
-                response = post(endpoint,data,headers,type);
+                response = post(endpoint,stringify(data),headers,type);
                 break;
             case    "PUT":
-                response = put(endpoint,data,headers,type);
+                response = put(endpoint,stringify(data),headers,type);
                 break;
             case    "DELETE":
-                response = del(endpoint,data,headers,type);
+                response = del(endpoint,stringify(data),headers,type);
                 break;
             default :
                 log.error("Error in the programme flow.");
