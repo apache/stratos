@@ -744,7 +744,7 @@ public class ServiceUtils {
                                             // if lb cluster doesn't exist
                                             String lbAlias = "lb" + new Random().nextInt();
                                             lbCartridgeInfo.addProperties(property);
-                                            subscribeToLb(lbCartridgeType,
+                                            subscribeToLb(lbCartridgeType, cartridgeType,
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicy, configurationContext,
@@ -801,7 +801,7 @@ public class ServiceUtils {
                                             lbCartridgeInfo.addProperties(property);
                                             lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
 
-                                            subscribeToLb(lbCartridgeType,
+                                            subscribeToLb(lbCartridgeType, cartridgeType,
                                                     lbAlias,
                                                     lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                     deploymentPolicy,
@@ -905,7 +905,7 @@ public class ServiceUtils {
 
     }
     
-    private static void subscribeToLb(String cartridgeType, String lbAlias,
+    private static void subscribeToLb(String cartridgeType, String loadBalancedCartridgeType, String lbAlias,
         String defaultAutoscalingPolicy, String deploymentPolicy,
         ConfigurationContext configurationContext, String userName, String tenantDomain, Property[] props) throws ADCException {
         
@@ -918,6 +918,9 @@ public class ServiceUtils {
                                                                      deploymentPolicy ,tenantDomain, 
                                                                      ApplicationManagementUtil.getTenantId(configurationContext),
                                                                      userName, "git", null, false, null, null, props);
+
+            //set a payload parameter to indicate the load balanced cartridge type
+            cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);
             
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
             

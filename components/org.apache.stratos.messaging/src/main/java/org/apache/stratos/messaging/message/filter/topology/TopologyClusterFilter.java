@@ -37,7 +37,7 @@ public class TopologyClusterFilter extends MessageFilter {
         super(Constants.TOPOLOGY_CLUSTER_FILTER);
     }
 
-    public static synchronized TopologyClusterFilter getInstance() {
+    public static TopologyClusterFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyClusterFilter.class) {
                 if (instance == null) {

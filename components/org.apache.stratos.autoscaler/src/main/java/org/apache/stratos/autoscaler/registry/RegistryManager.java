@@ -2,19 +2,19 @@ package org.apache.stratos.autoscaler.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
+import org.apache.stratos.autoscaler.util.Serializer;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
-import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.autoscaler.util.Serializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,11 +93,12 @@ public class RegistryManager {
         }
     }
     
-    public void persistNetworkPartition(NetworkPartitionContext nwPartitionCtxt) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_RESOURCE + "/"+nwPartitionCtxt.getId();
-        persist(nwPartitionCtxt, resourcePath);
+    public void persistNetworkPartitionIbHolder(NetworkPartitionLbHolder nwPartitionLbHolder) {
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants
+                .NETWORK_PARTITION_LB_HOLDER_RESOURCE + "/"+nwPartitionLbHolder.getNetworkPartitionId();
+        persist(nwPartitionLbHolder, resourcePath);
         if(log.isDebugEnabled()) {
-            log.debug("NetworkPartitionContext written to registry: "+nwPartitionCtxt.toString());
+            log.debug("NetworkPartitionContext written to registry: "+nwPartitionLbHolder.toString());
         }
     }
 
@@ -167,37 +168,37 @@ public class RegistryManager {
         return partitionList;
     }
     
-    public List<NetworkPartitionContext> retrieveNetworkPartitions() {
-        List<NetworkPartitionContext> nwPartitionList = new ArrayList<NetworkPartitionContext>();
+    public List<NetworkPartitionLbHolder> retrieveNetworkPartitionLbHolders() {
+        List<NetworkPartitionLbHolder> nwPartitionLbHolderList = new ArrayList<NetworkPartitionLbHolder>();
         RegistryManager registryManager = RegistryManager.getInstance();
         String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + 
-                                                                              AutoScalerConstants.NETWORK_PARTITION_RESOURCE);
+                                                                              AutoScalerConstants.NETWORK_PARTITION_LB_HOLDER_RESOURCE);
 
         if (partitionsResourceList != null) {
-            NetworkPartitionContext nwPartition;
+            NetworkPartitionLbHolder nwPartitionLbHolder;
             for (String resourcePath : partitionsResourceList) {
                 Object serializedObj = registryManager.retrieve(resourcePath);
                 if (serializedObj != null) {
                     try {
 
                         Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-                        if (dataObj instanceof NetworkPartitionContext) {
-                            nwPartition = (NetworkPartitionContext) dataObj;
+                        if (dataObj instanceof NetworkPartitionLbHolder) {
+                            nwPartitionLbHolder = (NetworkPartitionLbHolder) dataObj;
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("NetworkPartitionContext read from registry: "+nwPartition.toString()));
+                                log.debug(String.format("NetworkPartitionLbHolder read from registry: " + nwPartitionLbHolder.toString()));
                             }
-                            nwPartitionList.add(nwPartition);
+                            nwPartitionLbHolderList.add(nwPartitionLbHolder);
                         } else {
                             return null;
                         }
                     } catch (Exception e) {
-                        String msg = "Unable to retrieve data from Registry. Hence, any historical NetworkPartitionContext will not get reflected.";
+                        String msg = "Unable to retrieve data from Registry. Hence, any historical NetworkPartitionLbHolder will not get reflected.";
                         log.warn(msg, e);
                     }
                 }
             }
         }
-        return nwPartitionList;
+        return nwPartitionLbHolderList;
     }
 
     public List<AutoscalePolicy> retrieveASPolicies() {
@@ -283,7 +284,7 @@ public class RegistryManager {
 	}
 	
 	public void removeNetworkPartition(String networkPartition){
-		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_RESOURCE;
+		String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_LB_HOLDER_RESOURCE;
 		this.delete(resourcePath);
 		if(log.isDebugEnabled()) {
 	          log.debug(String.format("Network partition deleted from registry: [id] %s" ,

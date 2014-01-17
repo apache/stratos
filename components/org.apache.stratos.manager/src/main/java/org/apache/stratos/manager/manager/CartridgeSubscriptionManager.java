@@ -120,7 +120,9 @@ public class CartridgeSubscriptionManager {
             cartridgeInfo =
                             CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
             if (props != null) {
-                cartridgeInfo.setProperties(props);
+                // TODO: temp fix, need to do a proper fix
+                for (Property property : props)
+                cartridgeInfo.addProperties(property);
             }
 
         } catch (UnregisteredCartridgeException e) {

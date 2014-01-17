@@ -31,7 +31,7 @@ public class InstanceStatusEventMessageQueue extends LinkedBlockingQueue<TextMes
     private InstanceStatusEventMessageQueue(){
     }
 
-    public static synchronized InstanceStatusEventMessageQueue getInstance() {
+    public static InstanceStatusEventMessageQueue getInstance() {
         if (instance == null) {
             synchronized (InstanceStatusEventMessageQueue.class){
                 if (instance == null) {

@@ -734,24 +734,30 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }finally{
             	TopologyManager.releaseReadLock();
             }
-            // terminate the faulty member
-            CloudControllerClient ccClient = CloudControllerClient.getInstance();
-            ccClient.terminate(memberId);
-
-
             // start a new member in the same Partition
             String partitionId = monitor.getPartitionOfMember(memberId);
             Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
 
+            if(!partitionCtxt.activeMemberExist(memberId)){
+                if(log.isDebugEnabled()){
+                    log.debug(String.format("Could not find the active member in partition context, [member] %s ", memberId));
+                }
+                return;
+            }
+            // terminate the faulty member
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            ccClient.terminate(memberId);
+
+
             partitionCtxt.removeActiveMemberById(memberId);
-            
-            String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt);
+
+            String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt.getId());
 
             partitionCtxt.addPendingMember(ccClient.spawnAnInstance(partition, clusterId, lbClusterId, nwPartitionCtxt.getId()));
             if (log.isInfoEnabled()) {
-                log.info(String.format("Instance spawned for fault member: [partition] %s [cluster] %s [lb cluster] %s ", 
-                                       partitionId, clusterId, lbClusterId));
+                log.info(String.format("Instance spawned for fault member: [member] %s [partition] %s [cluster] %s [lb cluster] %s ",
+                                       memberId, partitionId, clusterId, lbClusterId));
             }
 
 

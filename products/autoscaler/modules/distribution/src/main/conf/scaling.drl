@@ -110,7 +110,7 @@ dialect "mvel"
             Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId);
             if(partition != null){
                 log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
-                log.debug("[scaling up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
+                log.debug("[scaling up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
                 $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
             }
         } else if(scaleDown){

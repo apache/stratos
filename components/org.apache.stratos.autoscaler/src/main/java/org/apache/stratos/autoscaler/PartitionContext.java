@@ -345,6 +345,16 @@ public class PartitionContext implements Serializable{
         }
     }
 
+    public boolean activeMemberExist(String memberId) {
+
+        for (MemberContext memberContext: activeMembers) {
+            if(memberId.equals(memberContext.getMemberId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;

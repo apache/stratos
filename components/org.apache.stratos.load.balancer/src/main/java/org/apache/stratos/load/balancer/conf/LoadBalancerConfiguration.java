@@ -78,7 +78,7 @@ public class LoadBalancerConfiguration {
      *
      * @return
      */
-    public static synchronized LoadBalancerConfiguration getInstance() {
+    public static LoadBalancerConfiguration getInstance() {
         if (instance == null) {
             synchronized (LoadBalancerConfiguration.class) {
                 if (instance == null) {
@@ -94,7 +94,7 @@ public class LoadBalancerConfiguration {
     /**
      * Clear load balancer configuration singleton instance and referencing contexts.
      */
-    public static synchronized void clear() {
+    public static void clear() {
         synchronized (LoadBalancerConfiguration.class) {
             instance = null;
             // Clear load balancer context
