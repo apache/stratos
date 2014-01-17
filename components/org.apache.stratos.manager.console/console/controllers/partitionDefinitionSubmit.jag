@@ -1,0 +1,9 @@
+<%
+(function(){
+    var log = new Log("controller.partitionDefinitionSubmit");
+    var utils = require('/util/utility.jag');
+    var partitionDefinition = request.getParameter("cartridge-definition").trim();
+    utils.consoleAppUtil.deployCartridgeDefinition(partitionDefinition);
+    response.sendRedirect(request.getContextPath() + '/partition_deployments.jag');
+}());
+%>

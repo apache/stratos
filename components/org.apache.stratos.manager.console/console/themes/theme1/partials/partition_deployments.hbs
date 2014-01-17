@@ -10,14 +10,14 @@
         <div class="row">
               <div class="col-md-12">
                   <h2>Deploy New Partition</h2>
-                  <form role="form">
+                  <form method="post" role="form" action="{{url "/controllers/partitionDefintionSubmit.jag"}}">
                         <label for="policy" class="required">Partition Configuration</label>
 
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-6 padding-remover-left">
-                                    <textarea class="form-control" rows="11" id="policy"></textarea>
-                                    <button type="button" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
+                                    <textarea name="partition-definition" class="form-control" rows="11" id="policy"></textarea>
+                                    <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
                                     <a>Cancel</a>
                                 </div>
                                 <div class="col-md-6">
