@@ -20,6 +20,7 @@
 package org.apache.stratos.manager.manager;
 
 import org.apache.axis2.AxisFault;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
@@ -39,8 +40,10 @@ import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
 import org.wso2.carbon.context.CarbonContext;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -121,8 +124,12 @@ public class CartridgeSubscriptionManager {
                             CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
             if (props != null) {
                 // TODO: temp fix, need to do a proper fix
-                for (Property property : props)
-                cartridgeInfo.addProperties(property);
+                Property[] cartridgeInfoProperties = cartridgeInfo.getProperties();
+                int length = cartridgeInfoProperties.length + props.length;
+                Property[] combined = new Property[length];
+                System.arraycopy(cartridgeInfoProperties, 0, combined, 0, cartridgeInfoProperties.length);
+                System.arraycopy(props, 0, combined, cartridgeInfoProperties.length, props.length);
+                cartridgeInfo.setProperties(combined);
             }
 
         } catch (UnregisteredCartridgeException e) {
@@ -149,11 +156,14 @@ public class CartridgeSubscriptionManager {
         //Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
                 getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
-
+        
+        String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+        String encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
+        
         //Create repository
         Repository repository = cartridgeSubscription.manageRepository(repositoryURL,
                                                                        repositoryUsername,
-                                                                       repositoryPassword,
+                                                                       encryptedRepoPassword,
                                                                        isPrivateRepository,
                                                                        cartridgeAlias,
                                                                        cartridgeInfo, tenantDomain);
@@ -162,7 +172,7 @@ public class CartridgeSubscriptionManager {
         Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
 
         //Set the key
-        cartridgeSubscription.setSubscriptionKey(CartridgeSubscriptionUtils.generateSubscriptionKey());
+        cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,

@@ -3,7 +3,7 @@ package org.apache.stratos.autoscaler.rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
@@ -58,12 +58,15 @@ public class RuleTasksDelegator {
         try {
 
             String nwPartitionId = partitionContext.getNetworkPartitionId();
-            NetworkPartitionContext ctxt =
+//            NetworkPartitionContext ctxt =
+//                                          PartitionManager.getInstance()
+//                                                          .getNetworkPartitionLbHolder(nwPartitionId);
+            NetworkPartitionLbHolder lbHolder =
                                           PartitionManager.getInstance()
-                                                          .getNetworkPartition(nwPartitionId);
+                                                          .getNetworkPartitionLbHolder(nwPartitionId);
 
             
-            String lbClusterId = getLbClusterId(lbRefType, partitionContext, ctxt);
+            String lbClusterId = getLbClusterId(lbRefType, partitionContext, lbHolder);
 
             MemberContext memberContext =
                                          CloudControllerClient.getInstance()
@@ -84,19 +87,26 @@ public class RuleTasksDelegator {
 
 
     public static String getLbClusterId(String lbRefType, PartitionContext partitionCtxt, 
-        NetworkPartitionContext nwPartitionCtxt) {
-       
+        NetworkPartitionLbHolder networkPartitionLbHolder) {
+
        String lbClusterId = null;
 
         if (lbRefType != null) {
             if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
+                lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
+//                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
             } else if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
                 String serviceName = partitionCtxt.getServiceName();
-                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
+                lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
+//                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
             } else {
                 log.warn("Invalid LB reference type defined: [value] "+lbRefType);
             }
+        }
+        if (log.isDebugEnabled()){
+            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
+                    " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
+                    networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
         }
        return lbClusterId;
     }

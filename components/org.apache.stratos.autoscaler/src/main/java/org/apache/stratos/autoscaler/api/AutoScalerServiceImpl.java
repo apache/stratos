@@ -18,11 +18,9 @@
  */
 package org.apache.stratos.autoscaler.api;
 
-import java.util.ArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
@@ -35,6 +33,8 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+
+import java.util.ArrayList;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -143,9 +143,9 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 	    boolean exist = false;
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
-            NetworkPartitionContext nwPartitionCtxt = partitionManager.getNetworkPartition(partitionGroup.getId());
+            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
 
-            if (nwPartitionCtxt.isLBExist(lbClusterId)) {
+            if (nwPartitionLbHolder.isLBExist(lbClusterId)) {
                 exist = true;
                 break;
             }
@@ -163,12 +163,12 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
-            NetworkPartitionContext nwPartitionCtxt = partitionManager.getNetworkPartition(partitionGroup.getId());
+            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
 
-            if (!nwPartitionCtxt.isDefaultLBExist()) {
+            if (!nwPartitionLbHolder.isDefaultLBExist()) {
                 if (log.isDebugEnabled()) {
                     log.debug("Default LB does not exist in [network partition] " +
-                              nwPartitionCtxt.getId() + " of [Deployment Policy] " +
+                              nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
                               deploymentPolicyId);
 
                 }
@@ -185,12 +185,12 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
-                        NetworkPartitionContext nwPartitionCtxt = partitionManager.getNetworkPartition(partitionGroup.getId());
+                        NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
 
-                if (!nwPartitionCtxt.isServiceLBExist(serviceName)) {
+                if (!nwPartitionLbHolder.isServiceLBExist(serviceName)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Service LB [service name] "+serviceName+" does not exist in [network partition] " +
-                                  nwPartitionCtxt.getId() + " of [Deployment Policy] " +
+                                  nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
                                   deploymentPolicyId);
 
                     }
@@ -207,12 +207,12 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
-                        NetworkPartitionContext nwPartitionCtxt = partitionManager.getNetworkPartition(partitionGroup.getId());
+                        NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
 
-                if (!nwPartitionCtxt.isClusterLBExist(clusterId)) {
+                if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster LB [cluster id] "+clusterId+" does not exist in [network partition] " +
-                                  nwPartitionCtxt.getId() + " of [Deployment Policy] " +
+                                  nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
                                   deploymentPolicyId);
 
                     }

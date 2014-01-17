@@ -129,7 +129,9 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
             }
         } else {
             Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
-            vector.remove(vector.size() - 1);
+            if(!vector.isEmpty()){
+                vector.remove(vector.size() - 1);
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("In-flight request removed from counting list: [cluster] %s [list size] %s ", clusterId,

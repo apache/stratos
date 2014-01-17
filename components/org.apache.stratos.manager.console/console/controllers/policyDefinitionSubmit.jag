@@ -1,0 +1,9 @@
+<%
+(function(){
+    var log = new Log("controller.policyDefinitionSubmit");
+    var utils = require('/util/utility.jag');
+    var policyDefinition = request.getParameter("policy-definition").trim();
+    utils.consoleAppUtil.deployPolicyDefinition(policyDefinition);
+    response.sendRedirect(request.getContextPath() + '/policy_deployments.jag');
+}());
+%>

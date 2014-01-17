@@ -1,0 +1,9 @@
+<%
+(function(){
+    var log = new Log("controller.partitionDefinitionSubmit");
+    var utils = require('/util/utility.jag');
+    var partitionDefinition = request.getParameter("partition-definition").trim();
+    utils.consoleAppUtil.deployPartitionDefinition(partitionDefinition);
+    response.sendRedirect(request.getContextPath() + '/partition_deployments.jag');
+}());
+%>

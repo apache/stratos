@@ -54,6 +54,8 @@ public class GitBasedArtifactRepository {
     private static ConcurrentHashMap<Integer, RepositoryContext>
     					tenantToRepoContextMap = new ConcurrentHashMap<Integer, RepositoryContext>();
     private static volatile GitBasedArtifactRepository gitBasedArtifactRepository;
+    private static String SUPER_TENANT_APP_PATH = "/repository/deployment/server/";
+    private static String TENANT_PATH = "/repository/tenants/";
 
     private GitBasedArtifactRepository () {
 
@@ -94,8 +96,8 @@ public class GitBasedArtifactRepository {
         log.info("tenant " + tenantId);
         
         gitRepoCtx.setTenantId(tenantId);
-        gitRepoCtx.setGitLocalRepoPath(gitLocalRepoPath);        
-		gitRepoCtx.setGitRemoteRepoUrl(gitRemoteRepoUrl);
+        gitRepoCtx.setGitLocalRepoPath(getRepoPathForTenantId(tenantId,gitLocalRepoPath));        
+        gitRepoCtx.setGitRemoteRepoUrl(gitRemoteRepoUrl);
 		
 		gitRepoCtx.setRepoUsername(repositoryInformation.getRepoUsername());
 		gitRepoCtx.setRepoPassword(repositoryInformation.getRepoPassword());
@@ -125,6 +127,41 @@ public class GitBasedArtifactRepository {
 
         cacheGitRepoContext(tenantId, gitRepoCtx);
     }
+
+
+
+    // If tenant id is "-1234", then its super tenant, else tenant
+    private static String getRepoPathForTenantId(int tenantId,
+                       String gitLocalRepoPath) {
+               
+       StringBuilder repoPathBuilder = new StringBuilder();
+       
+       if(tenantId == -1234) {
+               repoPathBuilder.append(gitLocalRepoPath).append(SUPER_TENANT_APP_PATH);
+       } else {
+               // create folder with tenant id
+               createTenantDir(tenantId, gitLocalRepoPath);                    
+               repoPathBuilder.append(gitLocalRepoPath).append(TENANT_PATH).append(tenantId);
+       }
+       
+               String repoPath = repoPathBuilder.toString();
+               log.info("Repo path returned : " + repoPath);
+               return repoPath;
+       }
+
+       private static void createTenantDir(int tenantId, String path) {
+               String dirPathName = path+TENANT_PATH+tenantId;
+               boolean dirStatus = new File(dirPathName).mkdir();
+               if(dirStatus){
+                       log.info("Successfully created directory ["+dirPathName+"] ");
+               }else {
+                       log.error("Directory creating failed in ["+dirPathName+"] ");
+               }       
+       }
+
+
+
+
 
     /**
      * Checks if key based authentication (SSH) is required

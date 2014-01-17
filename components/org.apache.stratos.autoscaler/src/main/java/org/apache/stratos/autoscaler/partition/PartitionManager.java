@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.partition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
@@ -47,7 +47,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	 * Key - network partition id
 	 * Value - reference to NetworkPartition
 	 */
-	private Map<String, NetworkPartitionContext> networkPartitionContexts;
+	private Map<String, NetworkPartitionLbHolder> networkPartitionLbHolders;
 
 	private static class Holder {
         static final PartitionManager INSTANCE = new PartitionManager();
@@ -58,7 +58,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	}
 	
 	private PartitionManager(){
-        networkPartitionContexts = new HashMap<String, NetworkPartitionContext>();
+        networkPartitionLbHolders = new HashMap<String, NetworkPartitionLbHolder>();
 	}
 	
 	
@@ -95,8 +95,8 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 		partitions.put(partition.getId(), partition);
 	}
 
-	public NetworkPartitionContext getNetworkPartition(String networkPartitionId) {
-	    return this.networkPartitionContexts.get(networkPartitionId);
+	public NetworkPartitionLbHolder getNetworkPartitionLbHolder(String networkPartitionId) {
+	    return this.networkPartitionLbHolders.get(networkPartitionId);
 	}
 
     public Partition getPartitionById(String partitionId){
@@ -121,12 +121,11 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
     public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {
         for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
             String id = partitionGroup.getId();
-            if (!networkPartitionContexts.containsKey(id)) {
-                NetworkPartitionContext networkPartitionContext =
-                        new NetworkPartitionContext(
-                                id, partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions());
-                addNetworkPartitionContext(networkPartitionContext);
-                RegistryManager.getInstance().persistNetworkPartition(networkPartitionContext);
+            if (!networkPartitionLbHolders.containsKey(id)) {
+                NetworkPartitionLbHolder networkPartitionLbHolder =
+                        new NetworkPartitionLbHolder(id);
+                addNetworkPartitionLbHolder(networkPartitionLbHolder);
+                RegistryManager.getInstance().persistNetworkPartitionIbHolder(networkPartitionLbHolder);
             }
 
         }
@@ -135,12 +134,12 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
     public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
         for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
             String id = partitionGroup.getId();
-            if (networkPartitionContexts.containsKey(id)) {                
-                NetworkPartitionContext netPartCtx = this.getNetworkPartition(id);
+            if (networkPartitionLbHolders.containsKey(id)) {                
+                NetworkPartitionLbHolder netPartCtx = this.getNetworkPartitionLbHolder(id);
                 // remove from information model
-                this.removeNetworkPartitionContext(netPartCtx);
+                this.removeNetworkPartitionLbHolder(netPartCtx);
                 //remove from the registry
-                RegistryManager.getInstance().removeNetworkPartition(this.getNetworkPartition(id).getId());
+                RegistryManager.getInstance().removeNetworkPartition(this.getNetworkPartitionLbHolder(id).getNetworkPartitionId());
             }else{
             	String errMsg = "Network partition context not found for policy " + depPolicy;
             	log.error(errMsg);
@@ -150,12 +149,12 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
         }
     }
     
-    private void removeNetworkPartitionContext(NetworkPartitionContext netPartCtx) {
-    	 networkPartitionContexts.remove(netPartCtx.getId());		
+    private void removeNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
+    	 networkPartitionLbHolders.remove(nwPartLbHolder.getNetworkPartitionId());
 	}
 
-	public void addNetworkPartitionContext(NetworkPartitionContext ctxt) {
-        networkPartitionContexts.put(ctxt.getId(), ctxt);
+	public void addNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
+        networkPartitionLbHolders.put(nwPartLbHolder.getNetworkPartitionId(), nwPartLbHolder);
     }
 
 }

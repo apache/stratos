@@ -6,22 +6,22 @@
     </div>
 </div>
 <div class="container" style="display: none;" id="addItemSection">
-        <div class="row">
-              <div class="col-md-12">
-                  <h2>Deploy New Policy</h2>
-                  <form role="form">
-                        <label for="policy" class="required">Policy Configuration</label>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Deploy New Policy</h2>
+            <form method="post" role="form" action="{{url "/controllers/partitionDefintionSubmit.jag"}}">
+            <label for="policy" class="required">Policy Configuration</label>
 
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-6 padding-remover-left">
-                                    <textarea class="form-control" rows="11" id="policy"></textarea>
-                                    <button type="button" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
-                                    <a>Cancel</a>
-                                </div>
-                                <div class="col-md-6">
-                                    <i class="icons-help"></i>
-                                    Example configuration:
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 padding-remover-left">
+                        <textarea name="policy-definition" class="form-control" rows="11" id="policy"></textarea>
+                        <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
+                        <a>Cancel</a>
+                    </div>
+                    <div class="col-md-6">
+                        <i class="icons-help"></i>
+                        Example configuration:
                                     <pre>
                                     {
                                     "partition":{
@@ -38,17 +38,17 @@
                                        }
                                     }
                                     </pre>
-                                </div>
-                            </div>
-
                     </div>
+                </div>
+
+            </div>
 
 
-                  </form>
+            </form>
 
-              </div>
         </div>
     </div>
+</div>
 
 <div class="container">
 
