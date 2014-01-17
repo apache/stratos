@@ -37,7 +37,7 @@ public class TopologyServiceFilter extends MessageFilter {
         super(Constants.TOPOLOGY_SERVICE_FILTER);
     }
 
-    public static synchronized TopologyServiceFilter getInstance() {
+    public static TopologyServiceFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyServiceFilter.class) {
                 if (instance == null) {

@@ -80,7 +80,7 @@ public class TenantManager {
         this.tenantDomainTenantMap = new HashMap<String, Tenant>();
     }
 
-    public static synchronized TenantManager getInstance() {
+    public static TenantManager getInstance() {
         if (instance == null) {
             synchronized (TenantManager.class){
                 if (instance == null) {

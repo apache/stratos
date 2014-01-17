@@ -18,7 +18,7 @@ public class TopologyMemberFilter extends MessageFilter {
         super(Constants.TOPOLOGY_MEMBER_FILTER);
     }
 
-    public static synchronized TopologyMemberFilter getInstance() {
+    public static TopologyMemberFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyMemberFilter.class){
                 if (instance == null) {
