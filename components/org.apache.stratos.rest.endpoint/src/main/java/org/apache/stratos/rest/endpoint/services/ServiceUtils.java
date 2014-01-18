@@ -30,6 +30,7 @@ import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
@@ -484,7 +485,8 @@ public class ServiceUtils {
         return cartridges;
     }
 
-    static List<Cartridge> getSubscribedCartridges(String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
+    static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
+
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
         if (log.isDebugEnabled()) {
@@ -494,54 +496,18 @@ public class ServiceUtils {
         try {
             Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);
 
-            //List<CartridgeSubscriptionInfo> subscriptionList = PersistenceManager
-            //        .retrieveSubscribedCartridges(ApplicationManagementUtil.getTenantId(configurationContext));
             Collection<CartridgeSubscription> subscriptions = cartridgeSubsciptionManager.getCartridgeSubscriptions(ApplicationManagementUtil.
                     getTenantId(configurationContext), null);
 
             if (subscriptions != null && !subscriptions.isEmpty()) {
+
                 for (CartridgeSubscription subscription : subscriptions) {
-                    /*CartridgeInfo cartridgeInfo = null;
-                    try {
-                        cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(
-                                subscription.getCartridge());
-                    } catch (Exception e) {
-                        if (log.isWarnEnabled()) {
-                            log.warn("Error when calling getCartridgeInfo for " + subscription.getCartridge()
-                                    + ", Error: " + e.getMessage());
-                        }
-                    }
-                    if (cartridgeInfo == null) {
-                        // This cannot happen. But continue
-                        if (log.isDebugEnabled()) {
-                            log.debug("Cartridge Info not found: " + subscription.getCartridge());
-                        }
-                        continue;
-                    }*/
+
                     if (!cartridgeMatches(subscription.getCartridgeInfo(), subscription, searchPattern)) {
                         continue;
                     }
 
-                    /*if (!subscription.getSubscriptionStatus().equals(CartridgeConstants.SUBSCRIBED)) {
-                        // not in the subscribed state, skip
-                        continue;
-                    }*/
-                    Cartridge cartridge = new Cartridge();
-                    cartridge.setCartridgeType(subscription.getCartridgeInfo().getType());
-                    cartridge.setMultiTenant(subscription.getCartridgeInfo().getMultiTenant());
-                    cartridge.setProvider(subscription.getCartridgeInfo().getProvider());
-                    cartridge.setVersion(subscription.getCartridgeInfo().getVersion());
-                    cartridge.setDescription(subscription.getCartridgeInfo().getDescription());
-                    cartridge.setDisplayName(subscription.getCartridgeInfo().getDisplayName());
-                    cartridge.setCartridgeAlias(subscription.getAlias());
-                    cartridge.setHostName(subscription.getHostName());
-                    cartridge.setMappedDomain(subscription.getMappedDomain());
-                    if (subscription.getRepository() != null) {
-                        cartridge.setRepoURL(subscription.getRepository().getUrl());
-                    }
-                    cartridge.setStatus(subscription.getSubscriptionStatus());
-
-                    cartridges.add(cartridge);
+                    cartridges.add(getCartridgeFromSubscription(subscription));
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -561,6 +527,34 @@ public class ServiceUtils {
         }
 
         return cartridges;
+    }
+
+    private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
+
+        Cartridge cartridge = new Cartridge();
+        cartridge.setCartridgeType(subscription.getCartridgeInfo().getType());
+        cartridge.setMultiTenant(subscription.getCartridgeInfo().getMultiTenant());
+        cartridge.setProvider(subscription.getCartridgeInfo().getProvider());
+        cartridge.setVersion(subscription.getCartridgeInfo().getVersion());
+        cartridge.setDescription(subscription.getCartridgeInfo().getDescription());
+        cartridge.setDisplayName(subscription.getCartridgeInfo().getDisplayName());
+        cartridge.setCartridgeAlias(subscription.getAlias());
+        cartridge.setHostName(subscription.getHostName());
+        cartridge.setMappedDomain(subscription.getMappedDomain());
+        if (subscription.getRepository() != null) {
+            cartridge.setRepoURL(subscription.getRepository().getUrl());
+        }
+
+        if (subscription instanceof DataCartridgeSubscription) {
+            DataCartridgeSubscription dataCartridgeSubscription = (DataCartridgeSubscription) subscription;
+            cartridge.setDbHost(dataCartridgeSubscription.getDBHost());
+            cartridge.setDbUserName(dataCartridgeSubscription.getDBUsername());
+            cartridge.setPassword(dataCartridgeSubscription.getDBPassword());
+        }
+
+        cartridge.setStatus(subscription.getSubscriptionStatus());
+
+        return cartridge;
     }
 
     static Pattern getSearchStringPattern(String searchString) {
