@@ -74,7 +74,13 @@ public class RuleTasksDelegator {
                                                                       clusterId,
                                                                       lbClusterId, partitionContext.getNetworkPartitionId());
             if (memberContext != null) {
-               partitionContext.addPendingMember(memberContext);
+                partitionContext.addPendingMember(memberContext);
+                if(log.isDebugEnabled()){
+                    log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
+                            memberContext.getPartition().getId()));
+                }
+            } else if(log.isDebugEnabled()){
+                log.debug("Returned member context is null, did not add to pending members");
             }
 
         } catch (Throwable e) {

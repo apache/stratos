@@ -108,21 +108,21 @@ dialect "mvel"
             Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId);
             if(partition != null){
                 log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
-                log.debug("[scaling up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
+                log.debug("[scale-up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
                 $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
             }
         } else if(scaleDown){
 
             if($networkPartitionContext.getScaleDownRequestsCount() > 5 ){
-
+                log.debug("[scale-down] Reached scale down requests threshold [cluster] " + clusterId);
                 $networkPartitionContext.resetScaleDownRequestsCount();
                 MemberStatsContext selectedMemberStatsContext = null;
                 double lowestOverallLoad = 0.0;
                 boolean foundAValue = false;
                 Partition partition =  autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId);
                 if(partition != null){
-                    log.info("[scaling down] Partition available to scale down ");
-                    log.debug("[scaling down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
+                    log.info("[scale-down] Partition available to scale down ");
+                    log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
                     partitionContext = $networkPartitionContext.getPartitionCtxt(partition.getId());
 
                     for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
@@ -165,6 +165,7 @@ dialect "mvel"
                     }
                 } else{
                     $networkPartitionContext.increaseScaleDownRequestsCount();
+                    log.debug("[scale-down] Not reached scale down requests threshold. " + " [cluster] " + clusterId);
                 }
             }
         }  else{

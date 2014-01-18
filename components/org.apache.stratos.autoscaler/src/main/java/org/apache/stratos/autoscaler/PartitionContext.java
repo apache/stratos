@@ -50,7 +50,9 @@ public class PartitionContext implements Serializable{
     private Partition partition;
 //    private int currentActiveMemberCount = 0;
     private int minimumMemberCount = 0;
-    
+    private int pendingMembersFailureCount = 0;
+    private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
+
     // properties
     private Properties properties;
     
@@ -170,6 +172,7 @@ public class PartitionContext implements Serializable{
                 iterator.remove();
                 // add to the activated list
                 this.activeMembers.add(pendingMember);
+                pendingMembersFailureCount = 0;
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Pending member is removed and added to the " +
                             "activated member list. [Member Id] %s",memberId));
@@ -380,11 +383,18 @@ public class PartitionContext implements Serializable{
                         }
                         long pendingTime = System.currentTimeMillis() - pendingMember.getInitTime();
                         if (pendingTime >= expiryTime) {
+
+
                             iterator.remove();
                             log.info("Pending state of member: " + pendingMember.getMemberId() +
                                      " is expired. " + "Adding as an obsoleted member.");
                             // member should be terminated
                             ctxt.addObsoleteMember(pendingMember.getMemberId());
+                            pendingMembersFailureCount++;
+                            if( pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD){
+                                setExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold of failure exceeded
+                                //TODO Implement an alerting system: STRATOS-369
+                            }
                         }
                     }
                 }
