@@ -37,97 +37,108 @@ public class RoundRobin implements AutoscaleAlgorithm{
 	private static final Log log = LogFactory.getLog(RoundRobin.class);
 
     public Partition getNextScaleUpPartition(NetworkPartitionContext networkPartitionContext, String clusterId){
+        try{
 
-    	List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
-    	int noOfPartitions = partitions.size();
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Selecting a partition from 'Round Robin' algorithm, " +
-                    "%s partitions in the [network partition]: %s ", noOfPartitions, networkPartitionContext.getId()));
-        }
-    	for(int i=0; i < noOfPartitions; i++)
-    	{
-    	    int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-    	    if (partitions.get(currentPartitionIndex) instanceof Partition) {
-    		    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
-    	        String currentPartitionId =  currentPartition.getId();
+            if (log.isDebugEnabled())
+                log.debug(String.format("Searching for a partition to scale up %s [network partition] %s",
+                        networkPartitionContext.getId()))  ;
+            List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
+            int noOfPartitions = partitions.size();
 
-    	        // point to next partition
-    	        int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
-    	        networkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
-                int nonTerminatedMemberCountOfPartition = networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId);
-    	        if(nonTerminatedMemberCountOfPartition < currentPartition.getPartitionMax()){
-                    // current partition is free
-                    if (log.isDebugEnabled())
-                        log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
-                                currentPartitionId, networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
-                                                                currentPartition.getPartitionMax()))  ;
-	                return currentPartition;
-	            }
+            for(int i=0; i < noOfPartitions; i++)
+            {
+                int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
+                if (partitions.get(currentPartitionIndex) instanceof Partition) {
+                    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+                    String currentPartitionId =  currentPartition.getId();
 
-    	        if(log.isDebugEnabled())
-    	        	log.debug("No free space for a new instance in partition " + currentPartition.getId());
+                    // point to next partition
+                    int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
+                    networkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
+                    int nonTerminatedMemberCountOfPartition = networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId);
+                    if(nonTerminatedMemberCountOfPartition < currentPartition.getPartitionMax()){
+                        // current partition is free
+                        if (log.isDebugEnabled())
+                            log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
+                                    currentPartitionId, networkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
+                                                                    currentPartition.getPartitionMax()))  ;
+                        return currentPartition;
+                    }
 
+                    if(log.isDebugEnabled())
+                        log.debug("No free space for a new instance in partition " + currentPartition.getId());
+
+                }
+            }
+
+            // none of the partitions were free.
+            if(log.isDebugEnabled()) {
+                log.debug("No free partition found at network partition " + networkPartitionContext);
     	    }
-    	}
-
-    	// none of the partitions were free.
-    	if(log.isDebugEnabled()) {
-    		log.debug("No free partition found at network partition " + networkPartitionContext);
-    	}
-        return null;
+        } catch (Exception e) {
+            log.error("Could not find next scale up partition", e);
+        }
+    return null;
     }
 
 
 	@Override
     public Partition getNextScaleDownPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
+        try{
+            if (log.isDebugEnabled())
+                log.debug(String.format("Searching for a partition to scale up %s [network partition] %s",
+                        networkPartitionContext.getId()))  ;
+            List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
+            int noOfPartitions = partitions.size();
 
-        List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
-        int noOfPartitions = partitions.size();
+            for (int i = 0; i < noOfPartitions; i++) {
+                int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
+                // point to next partition
+                if (currentPartitionIndex == 0) {
 
-        for (int i = 0; i < noOfPartitions; i++) {
-            int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
-            // point to next partition
-            if (currentPartitionIndex == 0) {
+                    currentPartitionIndex = noOfPartitions - 1;
+                } else {
 
-                currentPartitionIndex = noOfPartitions - 1;
-            } else {
+                    currentPartitionIndex = currentPartitionIndex - 1;
+                }
 
-                currentPartitionIndex = currentPartitionIndex - 1;
-            }
+                // Set next partition as current partition in Autoscaler Context
+                networkPartitionContext.setCurrentPartitionIndex(currentPartitionIndex);
 
-            // Set next partition as current partition in Autoscaler Context
-            networkPartitionContext.setCurrentPartitionIndex(currentPartitionIndex);
+                if (partitions.get(currentPartitionIndex) instanceof Partition) {
 
-            if (partitions.get(currentPartitionIndex) instanceof Partition) {
+                    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
+                    String currentPartitionId = currentPartition.getId();
 
-                Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
-                String currentPartitionId = currentPartition.getId();
-
-                // has more than minimum instances.
-                int currentlyActiveMemberCount = networkPartitionContext.getActiveMemberCount(currentPartitionId);
-                if (currentlyActiveMemberCount > currentPartition.getPartitionMin()) {
-                    // current partition is free
-                    if (log.isDebugEnabled())
-                        log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",
-                                currentPartitionId, currentlyActiveMemberCount, currentPartition.getPartitionMin()))  ;
-                    return currentPartition;
-                }else {
-
-                    if (currentPartitionIndex == 0) {
+                    // has more than minimum instances.
+                    int currentlyActiveMemberCount = networkPartitionContext.getActiveMemberCount(currentPartitionId);
+                    if (currentlyActiveMemberCount > currentPartition.getPartitionMin()) {
+                        // current partition is free
                         if (log.isDebugEnabled())
-                            log.debug(String.format("Partition %s reached with no space to scale down," +
-                                    "[current] %s [min] %s", currentPartitionId, currentlyActiveMemberCount,
-                                    currentPartition.getPartitionMin()));
-                        return null;
+                            log.debug(String.format("A free space found for scale down in partition %s [current] %s [min] %s",
+                                    currentPartitionId, currentlyActiveMemberCount, currentPartition.getPartitionMin()))  ;
+                        return currentPartition;
+                    }else {
+
+                        if (currentPartitionIndex == 0) {
+                            if (log.isDebugEnabled())
+                                log.debug(String.format("Partition %s reached with no space to scale down," +
+                                        "[current] %s [min] %s", currentPartitionId, currentlyActiveMemberCount,
+                                        currentPartition.getPartitionMin()));
+                            return null;
+                        }
                     }
                 }
             }
-        }
 
-        if (log.isDebugEnabled())
-            log.debug("No partition found for scale down at network partition " +
-                      networkPartitionContext.getId());
-        // none of the partitions were free.
+            if (log.isDebugEnabled())
+                log.debug("No partition found for scale down at network partition " +
+                          networkPartitionContext.getId());
+            // none of the partitions were free.
+
+        } catch (Exception e) {
+            log.error("Could not find next scale up partition", e);
+        }
         return null;
     }
 
