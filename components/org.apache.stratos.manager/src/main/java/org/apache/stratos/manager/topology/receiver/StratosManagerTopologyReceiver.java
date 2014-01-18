@@ -309,7 +309,7 @@ public class StratosManagerTopologyReceiver implements Runnable {
     private Set<CartridgeSubscription> getCartridgeSubscription(String clusterDomain) {
 
         try {
-            return new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterDomain);
+            return new DataInsertionAndRetrievalManager().getCartridgeSubscriptionForCluster(clusterDomain);
 
         } catch (Exception e) {
             log.error("Error getting subscription information for cluster " + clusterDomain, e);

@@ -73,9 +73,15 @@ public class LookupDataHolder implements Serializable {
         // check if an existing SubscriptionContext is available
         SubscriptionContext existingSubscriptionCtx = tenantIdToSubscriptionContext.getSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId());
         if(existingSubscriptionCtx != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Existing SubscriptionContext found for tenant " + cartridgeSubscription.getSubscriber().getTenantId());
+            }
             existingSubscriptionCtx.addSubscription(cartridgeSubscription);
 
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Existing SubscriptionContext not found for tenant " + cartridgeSubscription.getSubscriber().getTenantId());
+            }
             //create a new subscription context and add the subscription
             SubscriptionContext subscriptionContext = new SubscriptionContext();
             subscriptionContext.addSubscription(cartridgeSubscription);
@@ -103,7 +109,7 @@ public class LookupDataHolder implements Serializable {
         for (SubscriptionContext subscriptionContext : subscriptionContexts) {
             // check if CartridgeSubscriptions exist for the given type, in each SubscriptionContext instance
             Collection<CartridgeSubscription> cartridgeSubscriptionsOfType = subscriptionContext.getSubscriptionsOfType(cartridgeType);
-            if (cartridgeSubscriptionsOfType != null && !cartridgeSubscriptions.isEmpty()) {
+            if (cartridgeSubscriptionsOfType != null && !cartridgeSubscriptionsOfType.isEmpty()) {
                 // collect the relevant CartridgeSubscriptions
                 cartridgeSubscriptions.addAll(cartridgeSubscriptionsOfType);
             }
@@ -140,6 +146,9 @@ public class LookupDataHolder implements Serializable {
         SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
         if (subscriptionContext == null) {
             // no subscriptions
+            if (log.isDebugEnabled()) {
+                log.debug("No SubscriptionContext found for tenant " + tenantId + ", subscription alias " + subscriptionAlias);
+            }
             return null;
         }
 

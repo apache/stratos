@@ -396,7 +396,7 @@ public class ApplicationManagementService extends AbstractAdmin {
 
             CartridgeSubscription connectingCartridgeSubscription = null;
             try {
-                connectingCartridgeSubscription = cartridgeSubsciptionManager.getCartridgeSubscription(getTenantDomain(),
+                connectingCartridgeSubscription = cartridgeSubsciptionManager.getCartridgeSubscriptionForCluster(getTenantDomain(),
                         dataCartridgeAlias);
             } catch (NotSubscribedException e) {
                 log.error(e.getMessage(), e);

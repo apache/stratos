@@ -71,6 +71,13 @@ public class DataInsertionAndRetrievalManager {
 
         CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
 
+        if (cartridgeSubscription == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No CartridgeSubscription found for tenant " + tenantId + ", subscription alias " + subscriptionAlias);
+            }
+            return;
+        }
+
         String cartridgeType = cartridgeSubscription.getType();
         String clusterId = cartridgeSubscription.getClusterDomain();
 
@@ -157,6 +164,44 @@ public class DataInsertionAndRetrievalManager {
         }
     }
 
+    public void cacheSubscriptionsWithoutPersisting (Collection<CartridgeSubscription> cartridgeSubscriptions) {
+
+        // get the write lock
+        LookupDataHolder.getInstance().acquireWriteLock();
+
+        try {
+            cacheSubscriptions(cartridgeSubscriptions);
+
+        } finally {
+            // release the write lock
+            LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
+
+    public void removeSubscriptionFromCache (int tenantId, String subscriptionAlias) {
+
+        LookupDataHolder.getInstance().acquireWriteLock();
+
+        CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+        if (cartridgeSubscription == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No CartridgeSubscription found for tenant " + tenantId + ", subscription alias " + subscriptionAlias);
+            }
+            return;
+        }
+
+        String cartridgeType = cartridgeSubscription.getType();
+        String clusterId = cartridgeSubscription.getClusterDomain();
+
+        try {
+            // remove from cache
+            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId);
+
+        } finally {
+            LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
+
     private void cacheSubscriptions (Collection<CartridgeSubscription> cartridgeSubscriptions) {
 
         // cache all
@@ -233,7 +278,7 @@ public class DataInsertionAndRetrievalManager {
                 }
 
                 try {
-                    cartridgeSubscription = persistenceManager.getCartridgeSubscription(tenantId, subscriptionAlias);
+                    cartridgeSubscription = persistenceManager.getCartridgeSubscriptionForCluster(tenantId, subscriptionAlias);
 
                 } catch (PersistenceManagerException e) {
                     String errorMsg = "Error in accessing Persistence Manager";
@@ -253,7 +298,7 @@ public class DataInsertionAndRetrievalManager {
         }
     }
 
-    public Set<CartridgeSubscription> getCartridgeSubscription (String clusterId) {
+    public Set<CartridgeSubscription> getCartridgeSubscriptionForCluster (String clusterId) {
 
         // acquire read lock
         LookupDataHolder.getInstance().acquireReadLock();
@@ -267,7 +312,7 @@ public class DataInsertionAndRetrievalManager {
                 }
 
                 try {
-                    cartridgeSubscription = persistenceManager.getCartridgeSubscription(clusterId);
+                    cartridgeSubscription = persistenceManager.getCartridgeSubscriptionForCluster(clusterId);
 
                 } catch (PersistenceManagerException e) {
                     String errorMsg = "Error in accessing Persistence Manager";
