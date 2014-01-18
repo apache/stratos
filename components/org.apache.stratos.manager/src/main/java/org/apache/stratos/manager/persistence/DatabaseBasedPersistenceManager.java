@@ -384,7 +384,7 @@
 //    }
 //
 //    @Override
-//    public CartridgeSubscription getCartridgeSubscription(int tenantId, String alias) throws PersistenceManagerException {
+//    public CartridgeSubscription getCartridgeSubscriptionForCluster(int tenantId, String alias) throws PersistenceManagerException {
 //
 //        Connection connection = null;
 //        try {

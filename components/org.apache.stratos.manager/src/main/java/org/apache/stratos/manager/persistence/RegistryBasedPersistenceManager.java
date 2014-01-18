@@ -143,7 +143,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }
 
     /*@Override
-    public CartridgeSubscription getCartridgeSubscription (int tenantId, String alias) throws PersistenceManagerException {
+    public CartridgeSubscription getCartridgeSubscriptionForCluster (int tenantId, String alias) throws PersistenceManagerException {
 
         Object byteObj;
 
@@ -507,7 +507,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }*/
 
     /*@Override
-    public CartridgeSubscription getCartridgeSubscription (String clusterDomain) throws PersistenceManagerException {
+    public CartridgeSubscription getCartridgeSubscriptionForCluster (String clusterDomain) throws PersistenceManagerException {
 
         Object byteObj;
 
