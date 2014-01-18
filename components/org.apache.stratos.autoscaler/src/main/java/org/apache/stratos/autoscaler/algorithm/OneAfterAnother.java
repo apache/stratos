@@ -48,7 +48,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 
         try {
             if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to up down %s [network partition] %s",
+                log.debug(String.format("Searching for a partition to up down [network partition] %s",
                         networkPartitionContext.getId()))  ;
             int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
             List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
@@ -83,7 +83,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
             if (log.isDebugEnabled())
                 log.debug(String.format("No free partition found at network partition %s" , networkPartitionContext));
         } catch (Exception e) {
-            log.error("Could not find next scale up partition", e);
+            log.error("Error occurred while searching for next scale up partition", e);
         }
         return null;
     }
@@ -93,7 +93,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
         try {
 
             if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to scale down %s [network partition] %s",
+                log.debug(String.format("Searching for a partition to scale down [network partition] %s",
                         networkPartitionContext.getId()))  ;
             int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
             List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
@@ -130,7 +130,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
             if (log.isDebugEnabled())
                 log.debug("No space found in this network partition " + networkPartitionContext.getId());
         } catch (Exception e) {
-            log.error("Could not find next scale down partition", e);
+            log.error("Error occurred while searching for scale down partition", e);
         }
         return null;
     }

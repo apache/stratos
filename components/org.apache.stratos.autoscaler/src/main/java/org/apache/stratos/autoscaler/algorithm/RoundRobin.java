@@ -40,7 +40,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
         try{
 
             if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to scale up %s [network partition] %s",
+                log.debug(String.format("Searching for a partition to scale up [network partition] %s",
                         networkPartitionContext.getId()))  ;
             List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
             int noOfPartitions = partitions.size();
@@ -76,7 +76,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
                 log.debug("No free partition found at network partition " + networkPartitionContext);
     	    }
         } catch (Exception e) {
-            log.error("Could not find next scale up partition", e);
+            log.error("Error occurred while searching for next scale up partition", e);
         }
     return null;
     }
@@ -86,7 +86,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
     public Partition getNextScaleDownPartition(NetworkPartitionContext networkPartitionContext, String clusterId) {
         try{
             if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to scale up %s [network partition] %s",
+                log.debug(String.format("Searching for a partition to scale up [network partition] %s",
                         networkPartitionContext.getId()))  ;
             List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
             int noOfPartitions = partitions.size();
@@ -137,7 +137,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
             // none of the partitions were free.
 
         } catch (Exception e) {
-            log.error("Could not find next scale up partition", e);
+            log.error("Error occurred while searching for next scale down partition", e);
         }
         return null;
     }
