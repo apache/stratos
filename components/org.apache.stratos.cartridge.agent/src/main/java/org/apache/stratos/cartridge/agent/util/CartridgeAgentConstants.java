@@ -45,4 +45,5 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String MEMORY_CONSUMPTION = "memory_consumption";
     public static final String LOAD_AVERAGE = "load_average";
     public static final String PORTS_NOT_OPEN = "ports_not_open";
+    public static final String MULTITENANT = "MULTITENANT";
 }
