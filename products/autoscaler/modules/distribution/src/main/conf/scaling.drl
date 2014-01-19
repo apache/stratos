@@ -113,8 +113,9 @@ dialect "mvel"
             }
         } else if(scaleDown){
 
+            log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
             if($networkPartitionContext.getScaleDownRequestsCount() > 5 ){
-                log.debug("[scale-down] Reached scale down requests threshold [cluster] " + clusterId);
+                log.debug("[scale-down] Reached scale down requests threshold [cluster] " + clusterId + " Count " + $networkPartitionContext.getScaleDownRequestsCount());
                 $networkPartitionContext.resetScaleDownRequestsCount();
                 MemberStatsContext selectedMemberStatsContext = null;
                 double lowestOverallLoad = 0.0;
@@ -163,11 +164,12 @@ dialect "mvel"
 
                         $delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
                     }
-                } else{
-                    $networkPartitionContext.increaseScaleDownRequestsCount();
-                    log.debug("[scale-down] Not reached scale down requests threshold. " + " [cluster] " + clusterId);
                 }
-            }
+            } else{
+                 log.debug("[scale-down] Not reached scale down requests threshold. " + clusterId + " Count " + $networkPartitionContext.getScaleDownRequestsCount());
+                 $networkPartitionContext.increaseScaleDownRequestsCount();
+
+             }
         }  else{
             log.debug("[scaling] No decision made to either scale up or scale down ... ");
 
