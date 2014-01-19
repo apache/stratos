@@ -48,9 +48,9 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
             subscriptionTenancyBehaviour) {
 
         super(cartridgeInfo, subscriptionTenancyBehaviour);
-        setHost("localhost");
-        setUsername("root");
-        setPassword(ApplicationManagementUtil.generatePassword());
+        setDBHost("localhost");
+        setDBUsername("root");
+        setDBPassword(ApplicationManagementUtil.generatePassword());
     }
 
     @Override
@@ -62,8 +62,8 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
         getSubscriptionTenancyBehaviour().registerSubscription(this, props);
 
         DataCartridge dataCartridge = new DataCartridge();
-        dataCartridge.setUserName(getUsername());
-        dataCartridge.setPassword(getPassword());
+        dataCartridge.setUserName(getDBUsername());
+        dataCartridge.setPassword(getDBPassword());
         dataCartridge.setDataCartridgeType(getType());
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
@@ -84,34 +84,34 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
     public Map<String, String> getCustomPayloadEntries() {
 
         Map<String, String> payloadEntriesMap = new HashMap<String, String>();
-        payloadEntriesMap.put("MYSQL_HOST", host);
-        payloadEntriesMap.put("MYSQL_USER", username);
-        payloadEntriesMap.put("MYSQL_PASSWORD", password);
+        payloadEntriesMap.put("DB_HOST", host);
+        payloadEntriesMap.put("DB_USER", username);
+        payloadEntriesMap.put("DB_PASSWORD", password);
 
         return payloadEntriesMap;
     }
 
-    public String getHost() {
+    public String getDBHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setDBHost(String host) {
         this.host = host;
     }
 
-    public String getUsername() {
+    public String getDBUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setDBUsername(String username) {
         this.username = username;
     }
 
-    public String getPassword() {
+    public String getDBPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setDBPassword(String password) {
         this.password = password;
     }
 }

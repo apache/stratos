@@ -31,7 +31,6 @@ public class Cartridge implements Comparable<Cartridge> {
 	//private int activeInstances;
 	private String status;
 	//private String ip;
-	private String password;
 	private String provider;
 	private String version;
 	private boolean multiTenant;
@@ -39,8 +38,12 @@ public class Cartridge implements Comparable<Cartridge> {
 	//private String policy;
 	//private String policyDescription;
 	private String repoURL;
-	private String dbUserName;
 	private String mappedDomain;
+
+    //DB specific
+    private String dbHost;
+    private String dbUserName;
+    private String password;
 
 	private String[] accessURLs;
 
@@ -199,4 +202,12 @@ public class Cartridge implements Comparable<Cartridge> {
 		}
 		return compare;
 	}
+
+    public String getDbHost() {
+        return dbHost;
+    }
+
+    public void setDbHost(String dbHost) {
+        this.dbHost = dbHost;
+    }
 }

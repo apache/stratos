@@ -20,7 +20,6 @@
 package org.apache.stratos.manager.manager;
 
 import org.apache.axis2.AxisFault;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
@@ -43,7 +42,6 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
 import org.wso2.carbon.context.CarbonContext;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -163,7 +161,8 @@ public class CartridgeSubscriptionManager {
                 getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
         
         String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
-        String encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
+        String encryptedRepoPassword = repositoryPassword != null && !repositoryPassword.isEmpty() ?
+                RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey) : "";
         
         //Create repository
         Repository repository = cartridgeSubscription.manageRepository(repositoryURL,
@@ -264,7 +263,7 @@ public class CartridgeSubscriptionManager {
 //
 //        //TODO: retrieve from the cache and connect. For now, new objects are created
 //
-//        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscription(tenantDomain,
+//        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscriptionForCluster(tenantDomain,
 //                connectingSubscriptionAlias);
 //
 //        if(cartridgeSubscription == null) {
@@ -390,7 +389,7 @@ public class CartridgeSubscriptionManager {
             throws ADCException, NotSubscribedException {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /*CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantDomain, alias);
+        /*CartridgeSubscription cartridgeSubscription = getCartridgeSubscriptionForCluster(tenantDomain, alias);
 
         if(cartridgeSubscription != null) {
             cartridgeSubscription.removeSubscription();
@@ -458,7 +457,7 @@ public class CartridgeSubscriptionManager {
      * @throws ADCException
      * @throws NotSubscribedException
      */
-    /*public CartridgeSubscription getCartridgeSubscription(String tenantDomain, String alias)
+    /*public CartridgeSubscription getCartridgeSubscriptionForCluster(String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(tenantDomain, alias);

@@ -23,6 +23,7 @@ import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
@@ -38,6 +39,14 @@ public class LBCartridgeSubscription extends CartridgeSubscription {
     public LBCartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour
             subscriptionTenancyBehaviour) {
         super(cartridgeInfo, subscriptionTenancyBehaviour);
+    }
+
+    public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
+                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
+                                        String tenantDomain) {
+
+        //no repository for data cartridge instances
+        return null;
     }
 
     @Override

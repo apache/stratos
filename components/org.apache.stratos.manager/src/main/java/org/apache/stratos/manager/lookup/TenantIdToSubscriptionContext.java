@@ -59,7 +59,7 @@ public class TenantIdToSubscriptionContext {
             subscriptionContext.deleteSubscription(type, subscriptionAlias);
 
             // delete the SubscriptionContext instance for the tenant if it carries no information
-            if (subscriptionContext.getSubscriptionsOfType(type) == null && subscriptionContext.getSubscriptionForAlias(subscriptionAlias) == null) {
+            if (subscriptionContext.isEmpty()) {
                 tenantIdToSubscriptionContext.remove(tenantId);
                 if (log.isDebugEnabled()) {
                     log.debug("Deleted the subscriptionContext instance for tenant " + tenantId);

@@ -70,18 +70,20 @@ public class CartridgeSubscriptionFactory {
             cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
 
         } else {
+            // TODO: fix properly with cartridgeCategory element
             if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
                 cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
             }
+            else if (cartridgeInfo.getProvider().equals("application")) {
+                cartridgeSubscription = new ApplicationCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
+            }
             else {
-                //cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
                 cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
             }
         }
 
         if(cartridgeSubscription == null) {
-            throw new ADCException("Unable to create a CartridgeSubscription subscription for "
-                    + cartridgeInfo);
+            throw new ADCException("Unable to create a CartridgeSubscription subscription for " + cartridgeInfo);
         }
 
         return cartridgeSubscription;
