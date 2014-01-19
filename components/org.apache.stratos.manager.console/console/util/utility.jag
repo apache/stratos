@@ -113,6 +113,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;
     }
 
+    this.addTenant = function(tenantInfoBean){
+        return this.sendReceive("POST","/tenant",tenantInfoBean).data;
+    }
+
     this.getAutoScalePolicies = function(){
         return this.sendReceive("GET","/policy/autoscale",{}).data;
     }
