@@ -10,11 +10,24 @@
         <div class="col-md-12">
             <h2>Deploy New Policy</h2>
             <form method="post" role="form" action="{{url "/controllers/partitionDefintionSubmit.jag"}}">
-            <label for="policy" class="required">Policy Configuration</label>
+
 
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 padding-remover-left">
+                        <label class="required">Policy Type</label>
+
+                        <div class="form-inline" style="padding-bottom: 10px;">
+                            <div class="radio">
+                                <label style="padding-right: 20px;">
+                                    <input name="policyType" type="radio" checked="checked"> Auto scale
+                                </label>
+                                <label>
+                                    <input name="policyType" type="radio"> Deployment
+                                </label>
+                            </div>
+                        </div>
+                        <label for="policy" class="required">Policy Configuration</label>
                         <textarea name="policy-definition" class="form-control" rows="11" id="policy"></textarea>
                         <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
                         <a>Cancel</a>

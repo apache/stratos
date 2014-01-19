@@ -89,6 +89,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/cartridge/list/subscribed",{}).data;
     }
 
+    this.getTenants = function(){
+        return this.sendReceive("GET","/tenant/list",{}).data;
+    };
+
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
     };
@@ -107,6 +111,10 @@ consoleAppUtil = new function(){
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
         return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;
+    }
+
+    this.addTenant = function(tenantInfoBean){
+        return this.sendReceive("POST","/tenant",tenantInfoBean).data;
     }
 
     this.getAutoScalePolicies = function(){

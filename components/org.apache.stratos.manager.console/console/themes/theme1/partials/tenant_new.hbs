@@ -6,12 +6,12 @@
     </div>
 </div>
 <div class="container">
-<div class="row">
-    <div class="col-md-12">
-        <form method="post" action="{{url "/tenant_management.jag" }}">
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post" action="{{url "/controllers/newTenantSubmit.jag" }}">
             <div class="h2-wrapper"><h2>Domain Information</h2></div>
             <label class="required">Domain:</label>
-            <div class="form-inline"><input type="text" placeholder="example.com"/> <button class="btn btn-default">Check Availability</button></div>
+            <div class="form-inline"><input name="tenantDomain" type="text" placeholder="example.com"/> <button class="btn btn-default">Check Availability</button></div>
             <label><input type="checkbox"/> Validate the domain now (Optional)</label>
 
             <div class="h2-wrapper"><h2>Usage Plan Information</h2></div>
@@ -25,20 +25,20 @@
 
             <div class="col-md-3 padding-remover-left">
                 <label class="required">First Name:</label>
-                <input type="text"/>
+                <input name="firstName" type="text"/>
             </div>
             <div class="col-md-3">
                 <label class="required">Last Name:</label>
-                <input type="text"/>
+                <input name="lastName" type="text"/>
             </div>
             <div class="clearfix"></div>
             <label class="required">Admin User Name:</label>
-            <input type="text"/>
+            <input name="adminName" type="text"/>
             <div class="clearfix"></div>
 
             <div class="col-md-3 padding-remover-left">
-                <label class="required">Admin Password:</label>
-                <input type="text"/>
+                <label  class="required">Admin Password:</label>
+                <input name="adminPassword" type="text"/>
             </div>
             <div class="col-md-3">
                 <label class="required">Admin Password (Repeat):</label>
@@ -47,7 +47,7 @@
 
             <div class="clearfix"></div>
             <label class="required">Email:</label>
-            <input type="text"/>
+            <input name="email" type="text"/>
 
             <label class="required">Are you human?</label>
             <div style="padding-bottom:10px;"><i class="icons-help icons-small-size"></i> Type the characters you see in the picture below.</div>
@@ -59,9 +59,9 @@
             <label><input type="checkbox"/> I agree</label>
 
             <button class="btn btn-primary" type="submit">Add new Tenant</button>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 </div>
 <script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
 <script src="{{url "/themes/theme1/ui/js/tenant_management.js"}}"></script>

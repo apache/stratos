@@ -1,9 +1,0 @@
-<%
-(function(){
-    var log = new Log("controller.addTenantSubmit");
-    var utils = require('/util/utility.jag');
-    var policyDefinition = request.getParameter("policy-definition").trim();
-    utils.consoleAppUtil.deployCartridgeDefinition(policyDefinition);
-    response.sendRedirect(request.getContextPath() + '/policy_deployments.jag');
-}());
-%>
