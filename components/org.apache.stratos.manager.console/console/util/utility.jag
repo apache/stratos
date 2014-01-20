@@ -105,9 +105,14 @@ consoleAppUtil = new function(){
         return this.send("POST","/policy/deployment/partition",partitionDefinition).data;
     };
 
-    this.deployPolicyDefinition = function(policyDefinition){
+    this.deployDeploymentPolicyDefinition = function(policyDefinition){
         return this.send("POST","/policy/deployment",policyDefinition).data;
     };
+
+    this.deployAutoscalePolicyDefinition = function(policyDefinition){
+        return this.send("POST","/policy/autoscale",policyDefinition).data;
+    };
+
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
         return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;

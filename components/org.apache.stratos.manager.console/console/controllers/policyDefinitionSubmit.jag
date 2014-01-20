@@ -3,6 +3,15 @@
     var log = new Log("controller.policyDefinitionSubmit");
     var utils = require('/util/utility.jag');
     var policyDefinition = request.getParameter("policy-definition").trim();
+    var policyType = request.getParameter("policyType").trim();
+    if(policyType == "autoscale-policy"){
+        utils.consoleAppUtil.deployAutoscalePolicyDefinition(policyDefinition);
+    }else if(policyType == "deployment-policy"){
+        utils.consoleAppUtil.deployDeploymentPolicyDefinition(policyDefinition);
+    }else{
+        // exception
+    }
+
     utils.consoleAppUtil.deployPolicyDefinition(policyDefinition);
     response.sendRedirect(request.getContextPath() + '/policy_deployments.jag');
 }());

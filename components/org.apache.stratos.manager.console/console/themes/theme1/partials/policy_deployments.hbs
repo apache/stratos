@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-md-12">
             <h2>Deploy New Policy</h2>
-            <form method="post" role="form" action="{{url "/controllers/partitionDefintionSubmit.jag"}}">
+            <form method="post" role="form" action="{{url "/controllers/policyDefintionSubmit.jag"}}">
 
 
             <div class="container">
@@ -20,10 +20,10 @@
                         <div class="form-inline" style="padding-bottom: 10px;">
                             <div class="radio">
                                 <label style="padding-right: 20px;">
-                                    <input name="policyType" type="radio" checked="checked"> Auto scale
+                                    <input name="policyType" value="autoscale-policy" type="radio" checked="checked"> Auto scale
                                 </label>
                                 <label>
-                                    <input name="policyType" type="radio"> Deployment
+                                    <input name="policyType" value="deployment-policy" type="radio"> Deployment
                                 </label>
                             </div>
                         </div>
