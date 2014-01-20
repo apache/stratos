@@ -11,8 +11,6 @@
     }else{
         // exception
     }
-
-    utils.consoleAppUtil.deployPolicyDefinition(policyDefinition);
     response.sendRedirect(request.getContextPath() + '/policy_deployments.jag');
 }());
 %>
