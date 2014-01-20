@@ -2,7 +2,7 @@
 
 (function(){
     var config=require('/config/console.json');
-
+    var log = new Log("controller.router");
     var DEFAULT_ROUTER_NAME='/asset.jag';
     var EXT_ROUTER_NAME='/pages/asset.jag';
     var EXT_PATH=config.paths.ASSET_EXT_PATH;
@@ -17,8 +17,20 @@
     var sm=securityModule.cached();
 
     //This will short circuit the handling of the requests
-    //var passed=sm.check(session);
-    var passed=true;
+    var passed=sm.check(session);
+    var tenantDomain = session.get("TENANT_DOMAIN");
+    var roleArray = session.get("ROLE_ARRAY");
+
+    log.info(tenantDomain);
+    log.info(roleArray);
+
+    // comment out the above and uncomment below code bits for testing. It removes authentication/authorization
+    // of the app.
+
+    //var passed=true;
+    //var tenantDomain = "carbon.super";
+    //var roleArray = "["admin","Internal/Everyone"]";
+
 
     //Stop servicing the request if the check failed
     if(!passed){
@@ -59,7 +71,6 @@
 
         var theme=params.theme;
         var type=params.type;
-        var log = new Log("stratos.router");
         log.info("type : "+ params.type);
         log.info("context :"+ params.cotext);
         var extLocation ='/'+type;
@@ -74,7 +85,7 @@
             request.getMappedPath = function() {
                 return path;
             };
-            var permissionObject = acl.authorizationUtil.getPermissionObj("carbon.super",["admin","Internal/Everyone"]);
+            var permissionObject = acl.authorizationUtil.getPermissionObj(tenantDomain,roleArray);
             log.info(permissionObject);
             request.permissions = permissionObject;
             include(path);
