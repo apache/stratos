@@ -48,7 +48,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 
         try {
             if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to up down [network partition] %s",
+                log.debug(String.format("Searching for a partition to up [network partition] %s",
                         networkPartitionContext.getId()))  ;
             int currentPartitionIndex = networkPartitionContext.getCurrentPartitionIndex();
             List<?> partitions = Arrays.asList(networkPartitionContext.getPartitions());
