@@ -94,6 +94,25 @@ public class KeyStoreGenerator {
     }
 
     /**
+     * This method checks the existance of a keystore
+     *
+     * @return
+     * @throws KeyStoreMgtException
+     */
+    public boolean isKeyStoreExists() throws KeyStoreMgtException {
+        boolean isKeyStoreExists = false;
+        String keyStoreName = generateKSNameFromDomainName();
+        try {
+            isKeyStoreExists = govRegistry.resourceExists(RegistryResources.SecurityManagement.KEY_STORES + "/" + keyStoreName);
+        } catch (RegistryException e) {
+            String msg = "Error while checking the existance of keystore";
+            log.error(msg, e);
+            throw new KeyStoreMgtException(msg, e);
+        }
+        return isKeyStoreExists;
+    }
+
+    /**
      * This method generates the keypair and stores it in the keystore
      *
      * @param keyStore A keystore instance

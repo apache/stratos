@@ -40,7 +40,9 @@ public class KeystoreTenantMgtListener implements TenantMgtListener {
     public void onTenantCreate(TenantInfoBean tenantInfo) throws StratosException {
         try {
             KeyStoreGenerator ksGenerator = new KeyStoreGenerator(tenantInfo.getTenantId());
-            ksGenerator.generateKeyStore();
+            if (!ksGenerator.isKeyStoreExists()){
+                ksGenerator.generateKeyStore();
+            }
         } catch (KeyStoreMgtException e) {
             String message = "Error when generating the keystore";
             log.error(message, e);
