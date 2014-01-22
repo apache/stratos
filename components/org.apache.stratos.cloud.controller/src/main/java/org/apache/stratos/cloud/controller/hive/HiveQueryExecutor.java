@@ -18,25 +18,25 @@
  */
 package org.apache.stratos.cloud.controller.hive;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.wso2.carbon.analytics.hive.stub.HiveExecutionServiceHiveExecutionException;
 import org.wso2.carbon.analytics.hive.stub.HiveExecutionServiceStub;
 import org.wso2.carbon.analytics.hive.stub.HiveExecutionServiceStub.QueryResult;
 import org.wso2.carbon.analytics.hive.stub.HiveExecutionServiceStub.QueryResultRow;
 import org.wso2.carbon.base.ServerConfiguration;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HiveQueryExecutor {
     private static final Log log = LogFactory.getLog(HiveQueryExecutor.class);
@@ -88,9 +88,12 @@ public class HiveQueryExecutor {
     public void createHiveTable(){
         String query = 
                 "CREATE EXTERNAL TABLE IF NOT EXISTS "+hiveTable+" (id STRING, " +
-                payloadPrefix+CloudControllerConstants.NODE_ID_COL+" STRING," +
+                payloadPrefix+CloudControllerConstants.MEMBER_ID_COL +" STRING," +
                 payloadPrefix+CloudControllerConstants.CARTRIDGE_TYPE_COL+" STRING," +
-                payloadPrefix+CloudControllerConstants.DOMAIN_COL+" STRING," +
+                payloadPrefix+CloudControllerConstants.CLUSTER_ID_COL +" STRING," +
+                payloadPrefix+CloudControllerConstants.LB_CLUSTER_ID_COL +" STRING," +
+                payloadPrefix+CloudControllerConstants.PARTITION_ID_COL +" STRING," +
+                payloadPrefix+CloudControllerConstants.NETWORK_ID_COL +" STRING," +
                 payloadPrefix+CloudControllerConstants.HOST_NAME_COL+" STRING," +
                 payloadPrefix+CloudControllerConstants.HYPERVISOR_COL+" STRING," +
                 payloadPrefix+CloudControllerConstants.IAAS_COL+" STRING," +
@@ -99,7 +102,6 @@ public class HiveQueryExecutor {
                 payloadPrefix+CloudControllerConstants.PRIV_IP_COL+" STRING," +
                 payloadPrefix+CloudControllerConstants.PUB_IP_COL+" STRING," +
                 payloadPrefix+CloudControllerConstants.STATUS_COL+" STRING," +
-                payloadPrefix+CloudControllerConstants.SUB_DOMAIN_COL+" STRING" +
                 ") STORED BY 'org.apache.hadoop.hive.cassandra.CassandraStorageHandler' " +
                 "WITH SERDEPROPERTIES ( \"cassandra.host\" = \""+dataHolder.getDataPubConfig().getCassandraConnUrl().split(":")[0]+"\"," +
                 "\"cassandra.port\" = \""+dataHolder.getDataPubConfig().getCassandraConnUrl().split(":")[1]+
@@ -108,9 +110,12 @@ public class HiveQueryExecutor {
                 "\", \"cassandra.ks.password\" = \""+dataHolder.getDataPubConfig().getCassandraPassword()+"\"," +
                 "\"cassandra.cf.name\" = \""+CloudControllerConstants.CLOUD_CONTROLLER_COL_FAMILY+"\"," +
                 "\"cassandra.columns.mapping\" = \"" +
-                payloadPrefix+CloudControllerConstants.NODE_ID_COL+"," +
+                payloadPrefix+CloudControllerConstants.MEMBER_ID_COL +"," +
                 payloadPrefix+CloudControllerConstants.CARTRIDGE_TYPE_COL+"," +
-                payloadPrefix+CloudControllerConstants.DOMAIN_COL+"," +
+                payloadPrefix+CloudControllerConstants.CLUSTER_ID_COL +"," +
+                        payloadPrefix+CloudControllerConstants.LB_CLUSTER_ID_COL +" STRING," +
+                payloadPrefix+CloudControllerConstants.PARTITION_ID_COL +" STRING," +
+                payloadPrefix+CloudControllerConstants.NETWORK_ID_COL +" STRING," +
                 payloadPrefix+CloudControllerConstants.HOST_NAME_COL+"," +
                 payloadPrefix+CloudControllerConstants.HYPERVISOR_COL+"," +
                 payloadPrefix+CloudControllerConstants.IAAS_COL+"," +
@@ -119,7 +124,6 @@ public class HiveQueryExecutor {
                 payloadPrefix+CloudControllerConstants.PRIV_IP_COL+"," +
                 payloadPrefix+CloudControllerConstants.PUB_IP_COL+"," +
                 payloadPrefix+CloudControllerConstants.STATUS_COL+"," +
-                payloadPrefix+CloudControllerConstants.SUB_DOMAIN_COL +
                 "\");";
         
         execute(query);
@@ -128,7 +132,7 @@ public class HiveQueryExecutor {
     public List<String> getRunningNodeIds() {
         List<String> nodeIds = new ArrayList<String>();
         String query =
-//                       "select " + payloadPrefix + AutoscalerConstant.NODE_ID_COL + " from " +
+//                       "select " + payloadPrefix + AutoscalerConstant.MEMBER_ID_COL + " from " +
 //                               hiveTable + " where payload_status='RUNNING' OR payload_status='PENDING' ;";
 
 //        "select id1 from (select distinct payload_nodeId from cloud1  where payload_status='RUNNING' OR payload_status='PENDING') table1
@@ -136,10 +140,10 @@ public class HiveQueryExecutor {
 //(select distinct payload_nodeId as nodeId from cloud1  where payload_status='TERMINATED') table2
 //ON(table2.nodeId = table1.payload_nodeId)
 //where table2.nodeId is null;";
-                "select table1.id1 from (select distinct "+payloadPrefix+CloudControllerConstants.NODE_ID_COL+
+                "select table1.id1 from (select distinct "+payloadPrefix+CloudControllerConstants.MEMBER_ID_COL +
                 " as id1 from "+ hiveTable +" where "+payloadPrefix+CloudControllerConstants.STATUS_COL+
                 "='RUNNING' OR "+payloadPrefix+CloudControllerConstants.STATUS_COL+"='PENDING') table1 " +
-                "LEFT OUTER JOIN " +"(select distinct "+payloadPrefix+CloudControllerConstants.NODE_ID_COL+
+                "LEFT OUTER JOIN " +"(select distinct "+payloadPrefix+CloudControllerConstants.MEMBER_ID_COL +
                 " as id2 from "+hiveTable+" where "+payloadPrefix+CloudControllerConstants.STATUS_COL+"='TERMINATED') table2 " +
                 "ON(table1.id1 = table2.id2) where table2.id2 is null;";
         

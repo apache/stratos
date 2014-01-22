@@ -101,10 +101,11 @@ public final class CloudControllerConstants {
      * column names
      */
     public static final String PAYLOAD_PREFIX = "payload_";
-    public static final String NODE_ID_COL = "nodeId";
+    public static final String MEMBER_ID_COL = "memberId";
     public static final String CARTRIDGE_TYPE_COL = "cartridgeType";
-    public static final String DOMAIN_COL = "domain";
-    public static final String SUB_DOMAIN_COL = "subDomain";
+    public static final String CLUSTER_ID_COL = "clusterId";
+    public static final String PARTITION_ID_COL = "partitionId";
+    public static final String NETWORK_ID_COL = "networkId";
     public static final String ALIAS_COL = "alias";
     public static final String TENANT_RANGE_COL = "tenantRange";
     public static final String IS_MULTI_TENANT_COL = "isMultiTenant";
@@ -121,6 +122,8 @@ public final class CloudControllerConstants {
     public static final String OS_BIT_COL = "is64bitOS";
     public static final String PRIV_IP_COL = "privateIPAddresses";
     public static final String PUB_IP_COL = "publicIPAddresses";
+    public static final String ALLOCATE_IP_COL = "allocateIPAddresses";
+
     
     
     /**
@@ -204,7 +207,7 @@ public final class CloudControllerConstants {
     public static final String DATA_PUB_TASK_TYPE = "CLOUD_CONTROLLER_DATA_PUBLISHER_TASK";
     // default is : data publisher will run in first second of every minute
     public static final String PUB_CRON_EXPRESSION = "1 * * * * ? *";
-    public static final String DATA_PUB_TASK_NAME = "CartridgeInstanceDataPublisherTask";
+    public static final String DATA_PUB_TASK_NAME = "CartridgeInstanceDataPublisher";
     public static final String DEFAULT_BAM_SERVER_USER_NAME = "admin";
     public static final String DEFAULT_BAM_SERVER_PASSWORD = "admin";
     public static final String DEFAULT_CASSANDRA_URL = "localhost:9160";
@@ -245,4 +248,5 @@ public final class CloudControllerConstants {
     public static final String AUTO_ASSIGN_IP = "autoAssignIp";
     public static final String INSTANCE_TYPE = "instanceType";
 
+    public static final String LB_CLUSTER_ID_COL = "lbclusterId";
 }

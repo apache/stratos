@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -225,6 +226,14 @@ public class TopologyBuilder {
         }
         //memberStartedEvent.
         TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
+        //publishing data
+        CartridgeInstanceDataPublisher.publish(instanceStartedEvent.getMemberId(),
+                                            instanceStartedEvent.getPartitionId(),
+                                            instanceStartedEvent.getNetworkPartitionId(),
+                                            instanceStartedEvent.getClusterId(),
+                                            instanceStartedEvent.getServiceName(),
+                                            MemberStatus.Starting.toString(),
+                                            null);
     }
 
     public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
@@ -275,6 +284,14 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
+        //publishing data
+        CartridgeInstanceDataPublisher.publish(memberActivatedEvent.getMemberId(),
+                                            memberActivatedEvent.getPartitionId(),
+                                            memberActivatedEvent.getNetworkPartitionId(),
+                                            memberActivatedEvent.getClusterId(),
+                                            memberActivatedEvent.getServiceName(),
+                                            MemberStatus.Activated.toString(),
+                                            null);
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
@@ -314,6 +331,14 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
+        //publishing data
+        CartridgeInstanceDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
+                                            instanceReadyToShutdownEvent.getPartitionId(),
+                                            instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                                            instanceReadyToShutdownEvent.getClusterId(),
+                                            instanceReadyToShutdownEvent.getServiceName(),
+                                            MemberStatus.ReadyToShutDown.toString(),
+                                            null);
         //calling the actual termination of the instance
         new CloudControllerServiceImpl().terminateInstance(memberId);
 
