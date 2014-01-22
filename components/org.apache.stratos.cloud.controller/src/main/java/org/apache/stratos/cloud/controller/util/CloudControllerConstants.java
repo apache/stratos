@@ -93,7 +93,7 @@ public final class CloudControllerConstants {
     public static final String HOST_PORT_ELEMENT = "port";
     public static final String USER_NAME_ELEMENT = "userName";
     public static final String PASSWORD_ELEMENT = "password";
-    public static final String CLOUD_CONTROLLER_EVENT_STREAM = "org.wso2.stratos.cloud.controller";
+    public static final String CLOUD_CONTROLLER_EVENT_STREAM = "org.apache.stratos.cloud.controller";
     public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM.replaceAll("[/.]", "_");
     
     
