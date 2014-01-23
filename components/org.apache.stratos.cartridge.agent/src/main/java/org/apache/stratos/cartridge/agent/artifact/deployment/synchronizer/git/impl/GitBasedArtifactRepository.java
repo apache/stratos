@@ -117,7 +117,9 @@ public class GitBasedArtifactRepository {
 
         FileRepository localRepo = null;
         try {
-            localRepo = new FileRepository(new File(gitLocalRepoPath + "/.git"));
+            // localRepo = new FileRepository(new File(gitLocalRepoPath + "/.git"));
+            // Fixing STRATOS-380
+            localRepo = new FileRepository(new File(gitRepoCtx.getGitLocalRepoPath() + "/.git"));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -473,7 +475,7 @@ public class GitBasedArtifactRepository {
                if (repoCtxt.getArtifactSyncSchedular() == null) {
                    // create a new ScheduledExecutorService instance
                    final ScheduledExecutorService artifactSyncScheduler = Executors.newScheduledThreadPool(1,
-                           new ArtifactSyncTaskThreadFactory(repoInformation));
+                           new ArtifactSyncTaskThreadFactory(repoCtxt.getGitLocalRepoPath()));
 
                    // schedule at the given interval
                    artifactSyncScheduler.scheduleAtFixedRate(new ArtifactSyncTask(repoInformation), delay, delay, TimeUnit.SECONDS);
@@ -799,14 +801,14 @@ public class GitBasedArtifactRepository {
 
     class ArtifactSyncTaskThreadFactory implements ThreadFactory {
 
-        private RepositoryInformation repositoryInformation;
+        private String localRepoPath;
 
-        public ArtifactSyncTaskThreadFactory (RepositoryInformation repositoryInformation) {
-            this.repositoryInformation = repositoryInformation;
+        public ArtifactSyncTaskThreadFactory (String localRepoPath) {
+            this.localRepoPath = localRepoPath;
         }
 
         public Thread newThread(Runnable r) {
-            return new Thread(r, "Artifact Update Thread - " + repositoryInformation.getRepoPath());
+            return new Thread(r, "Artifact Update Thread - " + localRepoPath);
         }
     }
 
