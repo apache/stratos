@@ -300,6 +300,7 @@ do
     -Djava.security.egd=file:/dev/./urandom \
     -Dfile.encoding=UTF8 \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
+    -Dwso2.loadbalancer=true \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done
