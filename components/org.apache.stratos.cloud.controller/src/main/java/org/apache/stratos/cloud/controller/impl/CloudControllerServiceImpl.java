@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
@@ -36,6 +37,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -543,6 +545,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                     // update the topology with the newly spawned member
                     // publish data
+                    CartridgeInstanceDataPublisher.publish(memberID,
+                                                        memberContext.getPartition().getId(),
+                                                        memberContext.getNetworkPartitionId(),
+                                                        memberContext.getClusterId(),
+                                                        cartridgeType,
+                                                        MemberStatus.Created.toString(),
+                                                        node);
                     if (log.isDebugEnabled()) {
                         log.debug("Node details: \n" + node.toString());
                     }
@@ -672,8 +681,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		
 		if(ctxts == null) {
 		    String msg = "Instance termination failed. No members found for cluster id: "+clusterId;
-		    log.error(msg);
-		    throw new InvalidClusterException(msg);
+		    log.warn(msg);
+            return;
 		}
 		
 		ThreadExecutor exec = ThreadExecutor.getInstance();
@@ -781,7 +790,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 		
 		// publish data to BAM
-//		CartridgeInstanceDataPublisherTask.publish();
+//		CartridgeInstanceDataPublisher.publish();
 
 		log.info("Member is terminated: "+ctxt.toString());
 		return iaasProvider;
@@ -791,6 +800,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         //updating the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getMemberId());
+
+        //publishing data
+        CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
+                                                        memberContext.getPartition().getId(),
+                                                        memberContext.getNetworkPartitionId(),
+                                                        memberContext.getClusterId(),
+                                                        memberContext.getCartridgeType(),
+                                                        MemberStatus.Terminated.toString(),
+                                                        null);
 
 		// persist
 		persist();

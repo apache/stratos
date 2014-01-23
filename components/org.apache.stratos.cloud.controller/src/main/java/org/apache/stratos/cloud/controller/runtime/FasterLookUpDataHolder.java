@@ -18,18 +18,16 @@
  */
 package org.apache.stratos.cloud.controller.runtime;
 
-import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.DataPublisherConfig;
-import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.pojo.TopologyConfig;
+import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
-import org.wso2.carbon.databridge.agent.thrift.DataPublisher;
+import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -125,7 +123,7 @@ public class FasterLookUpDataHolder implements Serializable{
      */
     private transient Map<String, EventPublisher> topicToPublisherMap = new HashMap<String, EventPublisher>();
 
-	private transient DataPublisher dataPublisher;
+	private transient AsyncDataPublisher dataPublisher;
 	private String streamId;
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
@@ -339,11 +337,11 @@ public class FasterLookUpDataHolder implements Serializable{
 //		this.nodeIdToStatusMap = nodeIdToStatusMap;
 //	}
 
-	public DataPublisher getDataPublisher() {
+	public AsyncDataPublisher getDataPublisher() {
 		return dataPublisher;
 	}
 
-	public void setDataPublisher(DataPublisher dataPublisher) {
+	public void setDataPublisher(AsyncDataPublisher dataPublisher) {
 		this.dataPublisher = dataPublisher;
 	}
 
