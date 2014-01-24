@@ -664,7 +664,7 @@ public class ServiceUtils {
             }
         } else {
 
-            CartridgeInfo lbCartridgeInfo;
+            CartridgeInfo lbCartridgeInfo = null;
             String lbCartridgeType = lbConfig.getType();
             try {
                 // retrieve lb Cartridge info
@@ -744,13 +744,21 @@ public class ServiceUtils {
 
                                             // if lb cluster doesn't exist
                                             String lbAlias = "lb" + new Random().nextInt();
-                                            lbCartridgeInfo.addProperties(property);
+                                            if(lbCartridgeInfo != null) {
+                                               lbCartridgeInfo.addProperties(property);
                                             subscribeToLb(lbCartridgeType, cartridgeType,
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicy, configurationContext,
                                                           userName, tenantDomain,
                                                           lbCartridgeInfo.getProperties());
+                                            } else {
+                                                String msg = "Please specify a LB cartridge type for the cartridge: "
+                                                                + cartridgeType + " as category: " +
+                                                                Constants.DEFAULT_LOAD_BALANCER;
+                                                log.error(msg);
+                                                throw new ADCException(msg);
+                                            }
                                         }
                                     }
                                 }
@@ -798,17 +806,24 @@ public class ServiceUtils {
                                                     "lb" + cartridgeType +
                                                             new Random().nextInt();
 
+                                            if(lbCartridgeInfo != null) {
+                                                lbCartridgeInfo.addProperties(property);
+                                                lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
 
-                                            lbCartridgeInfo.addProperties(property);
-                                            lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
-
-                                            subscribeToLb(lbCartridgeType, cartridgeType,
+                                                subscribeToLb(lbCartridgeType, cartridgeType,
                                                     lbAlias,
                                                     lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                     deploymentPolicy,
                                                     configurationContext, userName,
                                                     tenantDomain,
                                                     lbCartridgeInfo.getProperties());
+                                            } else {
+                                                String msg = "Please specify a LB cartridge type for the cartridge: "
+                                                                + cartridgeType + " as category: " +
+                                                                Constants.SERVICE_AWARE_LOAD_BALANCER;
+                                                log.error(msg);
+                                                throw new ADCException(msg);
+                                            }
                                         }
                                     }
                                 }
