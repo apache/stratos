@@ -668,7 +668,9 @@ public class ServiceUtils {
             String lbCartridgeType = lbConfig.getType();
             try {
                 // retrieve lb Cartridge info
-                lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
+                if(lbCartridgeType != null) {
+                    lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
+                }
             } catch (Exception e) {
                 String msg = "Cannot get cartridge info: " + cartridgeType;
                 log.error(msg, e);
