@@ -21,6 +21,7 @@ package org.apache.stratos.manager.deploy.service.multitenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
@@ -38,13 +39,13 @@ public class MultiTenantService extends Service {
     }
 
     @Override
-    public void deploy() throws ADCException, UnregisteredCartridgeException {
+    public void deploy(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        super.deploy();
+        super.deploy(properties);
 
         //register the service
         ApplicationManagementUtil.registerService(getType(), getClusterId(), CartridgeConstants.DEFAULT_SUBDOMAIN,
                 getPayloadData().getCompletePayloadData(), getTenantRange(), getHostName(), getAutoscalingPolicyName(),
-                getDeploymentPolicyName(), null);
+                getDeploymentPolicyName(), properties);
     }
 }

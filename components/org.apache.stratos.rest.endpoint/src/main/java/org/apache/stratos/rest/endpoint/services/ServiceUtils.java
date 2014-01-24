@@ -52,7 +52,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class ServiceUtils {
-    private static Log log = LogFactory.getLog(StratosAdmin.class);
+    private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
