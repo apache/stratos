@@ -30,7 +30,7 @@ import java.io.Serializable;
 
 public abstract class SubscriptionTenancyBehaviour implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6529685098267757690L;
 
     public abstract void createSubscription(CartridgeSubscription cartridgeSubscription)
             throws ADCException, AlreadySubscribedException;

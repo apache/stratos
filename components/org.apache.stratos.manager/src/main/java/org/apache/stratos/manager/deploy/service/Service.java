@@ -22,6 +22,7 @@ package org.apache.stratos.manager.deploy.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
@@ -61,7 +62,7 @@ public abstract class Service implements Serializable {
         this.subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
     }
 
-    public void deploy () throws ADCException, UnregisteredCartridgeException {
+    public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {
 
         //generate the cluster ID (domain)for the service
         setClusterId(type + "." + cartridgeInfo.getHostName() + ".domain");
