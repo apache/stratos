@@ -32,7 +32,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
@@ -55,37 +54,45 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class OpenstackNovaIaas extends Iaas {
+
 
 	private static final Log log = LogFactory.getLog(OpenstackNovaIaas.class);
 	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
 	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
 
+	public OpenstackNovaIaas(IaasProvider iaasProvider) {
+		super(iaasProvider);
+	}
+	
 	@Override
-	public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
+	public void buildComputeServiceAndTemplate() {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		// builds and sets Compute Service
 		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
 
 		// builds and sets Template
-		buildTemplate(iaasInfo);
+		buildTemplate();
 
 	}
 
-	public void buildTemplate(IaasProvider iaas) {
-		if (iaas.getComputeService() == null) {
+	public void buildTemplate() {
+		IaasProvider iaasInfo = getIaasProvider();
+		
+		if (iaasInfo.getComputeService() == null) {
 			throw new CloudControllerException(
 					"Compute service is null for IaaS provider: "
-							+ iaas.getName());
+							+ iaasInfo.getName());
 		}
 
-		TemplateBuilder templateBuilder = iaas.getComputeService()
+		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
-		templateBuilder.imageId(iaas.getImage());
-        if(!(iaas instanceof IaasProvider)) {
-           templateBuilder.locationId(iaas.getType());
+		templateBuilder.imageId(iaasInfo.getImage());
+        if(!(iaasInfo instanceof IaasProvider)) {
+           templateBuilder.locationId(iaasInfo.getType());
         }
 
         // to avoid creation of template objects in each and every time, we
@@ -94,7 +101,7 @@ public class OpenstackNovaIaas extends Iaas {
 		String instanceType;
 
 		// set instance type
-		if (((instanceType = iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
+		if (((instanceType = iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
 
 			templateBuilder.hardwareId(instanceType);
 		}
@@ -105,7 +112,7 @@ public class OpenstackNovaIaas extends Iaas {
 		// blocking, but if you
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+		boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
 				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
@@ -115,17 +122,17 @@ public class OpenstackNovaIaas extends Iaas {
 		template.getOptions().as(TemplateOptions.class)
 				.inboundPorts(new int[] {});
 
-		if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(NovaTemplateOptions.class)
 					.securityGroupNames(
-							iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 		}
 
-		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
-					.keyPairName(iaas.getProperty(CloudControllerConstants.KEY_PAIR));
+					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
 		
 		//TODO
@@ -135,12 +142,14 @@ public class OpenstackNovaIaas extends Iaas {
 //        }
 
 		// set Template
-		iaas.setTemplate(template);
+		iaasInfo.setTemplate(template);
 	}
 
     @Override
-	public void setDynamicPayload(IaasProvider iaasInfo) {
+	public void setDynamicPayload() {
 
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
 		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
 
 			iaasInfo.getTemplate().getOptions().as(NovaTemplateOptions.class)
@@ -150,10 +159,11 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public synchronized boolean createKeyPairFromPublicKey(
-			IaasProvider iaasInfo, String region, String keyPairName,
+	public synchronized boolean createKeyPairFromPublicKey(String region, String keyPairName,
 			String publicKey) {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		String openstackNovaMsg = " Openstack-nova. Region: " + region
 				+ " - Name: ";
 
@@ -181,8 +191,9 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public synchronized String associateAddress(IaasProvider iaasInfo,
-			NodeMetadata node) {
+	public synchronized String associateAddress(NodeMetadata node) {
+		
+		IaasProvider iaasInfo = getIaasProvider();
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
@@ -252,8 +263,10 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public synchronized void releaseAddress(IaasProvider iaasInfo, String ip) {
+	public synchronized void releaseAddress(String ip) {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
@@ -283,7 +296,9 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
     @Override
-    public boolean isValidRegion(IaasProvider iaasInfo, String region) throws InvalidRegionException {
+    public boolean isValidRegion(String region) throws InvalidRegionException {
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         // jclouds' zone = region in openstack
         if (region == null || iaasInfo == null) {
             String msg =
@@ -311,7 +326,9 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
     @Override
-    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) throws InvalidZoneException {
+    public boolean isValidZone(String region, String zone) throws InvalidZoneException {
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         // jclouds doesn't support zone in Openstack-Nova API
         String msg = "Invalid zone: " + zone +" in the region: "+region+ " and of the iaas: "+iaasInfo.getType();
         log.error(msg);
@@ -320,7 +337,9 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
     @Override
-    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) throws InvalidHostException {
+    public boolean isValidHost(String zone, String host) throws InvalidHostException {
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         if (host == null || zone == null || iaasInfo == null) {
             String msg = "Host or Zone or IaaSProvider is null: host: " + host + " - zone: " +
                     zone + " - IaaSProvider: " + iaasInfo;
@@ -351,12 +370,5 @@ public class OpenstackNovaIaas extends Iaas {
     public PartitionValidator getPartitionValidator() {
         return new OpenstackNovaPartitionValidator();
     }
-
-	@Override
-	public void mapPersistanceVolumes(Template template,
-			List<PersistanceMapping> persistancemapings) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

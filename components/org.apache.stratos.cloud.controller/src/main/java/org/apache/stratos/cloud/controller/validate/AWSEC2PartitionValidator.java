@@ -57,16 +57,17 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                     throw new InvalidPartitionException(msg);
                 } 
                 
-                iaas.isValidRegion(iaasProvider, region);
+                iaas.isValidRegion(region);
                 
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
                 Iaas updatedIaas = updatedIaasProvider.getIaas();
+                updatedIaas.setIaasProvider(updatedIaasProvider);
                 
                 if (properties.containsKey(Scope.zone.toString())) {
                     String zone = properties.getProperty(Scope.zone.toString());
-                    iaas.isValidZone(iaasProvider, region, zone);
+                    iaas.isValidZone(region, zone);
                     updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
-                    updatedIaas.buildTemplate(updatedIaasProvider);
+                    updatedIaas.buildTemplate();
                 } 
                 
                 return updatedIaasProvider;

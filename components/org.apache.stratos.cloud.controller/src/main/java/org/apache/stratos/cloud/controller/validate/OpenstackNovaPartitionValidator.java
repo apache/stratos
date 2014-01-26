@@ -57,17 +57,18 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
                     throw new InvalidPartitionException(msg);
                 } 
                 
-                iaas.isValidRegion(iaasProvider, region);
+                iaas.isValidRegion(region);
                 
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
                 Iaas updatedIaas = updatedIaasProvider.getIaas();
+                updatedIaas.setIaasProvider(updatedIaasProvider);
                 
                 if (properties.containsKey(Scope.host.toString())) {
                     String host = properties.getProperty(Scope.host.toString());
-                    iaas.isValidHost(iaasProvider, region, host);
+                    iaas.isValidHost(region, host);
                     
                     updatedIaasProvider.setProperty(CloudControllerConstants.HOST, host);
-                    updatedIaas.buildTemplate(updatedIaasProvider);
+                    updatedIaas.buildTemplate();
                 } 
                 
                 return updatedIaasProvider;

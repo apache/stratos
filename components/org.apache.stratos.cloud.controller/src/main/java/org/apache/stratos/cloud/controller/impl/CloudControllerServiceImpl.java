@@ -41,6 +41,8 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -160,20 +162,32 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
 
-    private Iaas setIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-        try {
-            Iaas iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
-            iaas.buildComputeServiceAndTemplate(iaasProvider);
-            iaasProvider.setIaas(iaas);
-            return iaas;
-        } catch (Exception e) {
-            String msg =
-                         "Unable to build the jclouds object for iaas " + "of type: " +
-                                 iaasProvider.getType();
-            log.error(msg, e);
-            throw new InvalidIaasProviderException(msg, e);
-        }
-    }
+	private Iaas setIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
+
+		Iaas iaas;
+		try {
+			Constructor<?> c = Class.forName(iaasProvider.getClassName())
+					.getConstructor(IaasProvider.class);
+			iaas = (Iaas) c.newInstance(iaasProvider);
+		} catch (Exception e) {
+			String msg = "Class [" + iaasProvider.getClassName()
+					+ "] which represents the iaas of type: ["
+					+ iaasProvider.getType() + "] has failed to instantiate.";
+			log.error(msg, e);
+			throw new InvalidIaasProviderException(msg, e);
+		}
+
+		try {
+			iaas.buildComputeServiceAndTemplate();
+			iaasProvider.setIaas(iaas);
+			return iaas;
+		} catch (Exception e) {
+			String msg = "Unable to build the jclouds object for iaas "
+					+ "of type: " + iaasProvider.getType();
+			log.error(msg, e);
+			throw new InvalidIaasProviderException(msg, e);
+		}
+	}
 
     public void undeployCartridgeDefinition(String cartridgeType) {
 
@@ -283,7 +297,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 
             }
             
-            iaas.setDynamicPayload(iaasProvider);
+            iaas.setDynamicPayload();
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
@@ -299,7 +313,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new CloudControllerException(msg);
             }
 
-            iaas.mapPersistanceVolumes(template, cartridge.getPeristanceMappings());
             // generate the group id from domain name and sub domain
             // name.
             // Should have lower-case ASCII letters, numbers, or dashes.
@@ -509,7 +522,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         Iaas iaas = iaasProvider.getIaas();
                         // allocate an IP address - manual IP assigning mode
-                        ip = iaas.associateAddress(iaasProvider, node);
+                        ip = iaas.associateAddress(node);
                         memberContext.setAllocatedIpAddress(ip);
                         log.info("Allocated an ip address: " + memberContext.toString());
                     }
@@ -776,8 +789,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		// release allocated IP address
 		if (ctxt.getAllocatedIpAddress() != null) {
-            iaas.releaseAddress(iaasProvider,
-					ctxt.getAllocatedIpAddress());
+            iaas.releaseAddress(ctxt.getAllocatedIpAddress());
 		}
 		
 		// publish data to BAM
@@ -969,6 +981,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     @Override
     public boolean validatePartition(Partition partition) throws InvalidPartitionException {
+    	//FIXME add logs
         String provider = partition.getProvider();
         IaasProvider iaasProvider = dataHolder.getIaasProvider(provider);
 
@@ -984,14 +997,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         if (iaas == null) {
             
-            try {
-                iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
-                ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
-                iaasProvider.setIaas(iaas);
-            } catch (Exception e) {
+        	try {
+                iaas = setIaas(iaasProvider);
+            } catch (InvalidIaasProviderException e) {
                 String msg =
-                             "Unable to build the jclouds object for iaas " + "of type: " +
-                                     iaasProvider.getType();
+                        "Invalid Partition - " + partition.toString() +
+                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider;
                 log.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }
