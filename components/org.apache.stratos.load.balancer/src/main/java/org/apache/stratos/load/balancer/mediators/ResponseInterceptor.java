@@ -37,10 +37,14 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
                 log.debug("Response interceptor mediation started");
             }
             String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
-            if (StringUtils.isBlank(clusterId)) {
-                throw new RuntimeException("Cluster id not found in message context");
+            if (StringUtils.isNotBlank(clusterId)) {
+            	LoadBalancerStatisticsCollector.getInstance().removeAnInFlightRequest(clusterId);
+            } else{
+            	if (log.isDebugEnabled()) {
+                    log.debug("Could not decrement in-flight request count : cluster id not found in message context");
+                }
             }
-            LoadBalancerStatisticsCollector.getInstance().removeAnInFlightRequest(clusterId);
+            
         } catch (Exception e) {
             if(log.isErrorEnabled()) {
                 log.error("Could not decrement in-flight request count", e);
