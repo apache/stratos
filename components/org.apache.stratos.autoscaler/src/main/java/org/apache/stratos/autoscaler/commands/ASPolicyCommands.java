@@ -29,7 +29,9 @@ import org.apache.commons.lang.StringUtils;
 public class ASPolicyCommands implements CommandProvider{
  
     public String getHelp() {
-        return "tlistASPolicies - list AutoScaling policies\n";
+    	return "\nlistASPolicies - List AutoScaling policies deployed to AutoScaler. \n"
+        		+ "\t parameters : \n"
+        		+ "\t\t String   policyID : ID of the AutoScaling policy.\n";
     }
  
     public void _listASPolicies (CommandInterpreter ci){

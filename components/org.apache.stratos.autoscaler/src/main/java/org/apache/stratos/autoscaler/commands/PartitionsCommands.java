@@ -28,7 +28,9 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 public class PartitionsCommands implements CommandProvider{
  
     public String getHelp() {
-        return "listPartitions - list partitions\n";
+        return "\nlistPartitions - List partitions deployed to AutoScaler. \n"
+        		+ "\t parameters : \n"
+        		+ "\t\t String   partitionID : ID of the partition.\n";
     }
  
     public void _listPartitions (CommandInterpreter ci){

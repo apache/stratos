@@ -28,7 +28,9 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 public class DeploymentPolicyCommands implements CommandProvider{
  
     public String getHelp() {
-        return "listDeploymentPolicies - list Deployment policies\n";
+    	return "\nlistDeploymentPolicies - List Deployment policies deployed to AutoScaler. \n"
+        		+ "\t parameters : \n"
+        		+ "\t\t String   policyID : ID of the deployment policy.\n";
     }
  
     public void _listDeploymentPolicies (CommandInterpreter ci){
