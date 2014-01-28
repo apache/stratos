@@ -16,10 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.cli.beans;
+package org.apache.stratos.cli.beans.autoscaler.policy.autoscale;
 
-public class DeploymentPolicy {
+public class AutoscalePolicy {
+
     private String id;
+
+    private String displayName;
+
+    private String description;
+
+    private LoadThresholds loadThresholds;
+
 
     public String getId() {
         return id;
@@ -27,5 +35,29 @@ public class DeploymentPolicy {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LoadThresholds getLoadThresholds() {
+        return loadThresholds;
+    }
+
+    public void setLoadThresholds(LoadThresholds loadThresholds) {
+        this.loadThresholds = loadThresholds;
     }
 }
