@@ -31,6 +31,7 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
             <ref bean="authenticationFilter"/>
             <ref bean="authorizationFilter"/>
@@ -49,6 +50,20 @@
         <property name="password" value="admin"/>
         <property name="username" value="admin"/>
         <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
+    </bean>
+    <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+        <property name="serializeAsArray" value="true"/>
+        <property name="arrayKeys">
+            <list>
+                <value>partitions</value>
+                <value>property</value>
+                <value>hostNames</value>
+                <value>memberMap</value>
+                <value>portMap</value>
+                <value>partitionGroup</value>
+                <value>partition</value>
+            </list>
+        </property>
     </bean>
 
 </beans>

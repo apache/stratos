@@ -16,27 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cli.beans;
 
-public class PropertyBean {
+package org.apache.stratos.cli.beans.autoscaler.policy.autoscale;
 
-    private String name;
+public class MemoryConsumption {
 
-    private String value;
+    public float average;
 
-    public String getName() {
-        return name;
-    }
+    public float secondDerivative;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public float gradient;
 
-    public String getValue() {
-        return value;
-    }
+    public float scaleDownMarginOfGradient;
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+    public float scaleDownMarginOfSecondDerivative;
 }
