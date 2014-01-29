@@ -62,6 +62,8 @@
                 <value>portMap</value>
                 <value>partitionGroup</value>
                 <value>partition</value>
+                <value>member</value>
+                <value>hostNames</value>
             </list>
         </property>
     </bean>

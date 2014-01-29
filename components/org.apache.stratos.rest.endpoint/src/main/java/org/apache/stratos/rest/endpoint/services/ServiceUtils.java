@@ -37,7 +37,6 @@ import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.util.Constants;
@@ -47,6 +46,8 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.cloud.controller.pojo.*;
+
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -894,30 +895,45 @@ public class ServiceUtils {
 
     }
 
-    public static Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
 
-        return TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , subscriptionAlias);
+        return PojoConverter.populateClusterPojos(cluster);
     }
 
-    public static Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), null);
-
-        return (clusterSet != null && clusterSet.size() > 0 ) ?
-                clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
+        ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        for(Cluster cluster : clusterSet) {
+            clusters.add(PojoConverter.populateClusterPojos(cluster));
+        }
+        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
+                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        arrCluster = clusters.toArray(arrCluster);
+        return arrCluster;
 
     }
 
-    public static Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
                                                                   String cartridgeType) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), cartridgeType);
+        List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        for(Cluster cluster : clusterSet) {
+            clusters.add(PojoConverter.populateClusterPojos(cluster));
+        }
+         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
+                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        arrCluster = clusters.toArray(arrCluster);
+        return arrCluster;
 
-        return (clusterSet != null && clusterSet.size() > 0 ) ?
-                clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
+
 
     }
     

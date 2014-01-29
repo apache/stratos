@@ -20,14 +20,13 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.dto.Cartridge;
-import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.manager.dto.Cartridge;
+import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
@@ -38,7 +37,9 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
@@ -49,7 +50,6 @@ import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 
 import javax.ws.rs.*;
 import java.util.ArrayList;
@@ -295,7 +295,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
-    @Path("/cluster")
+    @Path("/cluster/")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -305,7 +305,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
-    @Path("/cluster/{cartridgeType}")
+    @Path("/cluster/{cartridgeType}/")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -684,9 +684,9 @@ public class StratosAdmin extends AbstractAdmin {
     	// super tenant Deploying service (MT) 
     	// here an alias is generated
        ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
-    		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
-    		   serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
-    		   serviceDefinitionBean.getTenantRange());
+               serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
+               serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
+               serviceDefinitionBean.getTenantRange());
     }
 
     @DELETE

@@ -20,18 +20,13 @@
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
-
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
+import org.apache.stratos.rest.endpoint.bean.topology.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -291,6 +286,40 @@ public class PojoConverter {
         }
 
         return partitionGroups;
+    }
+
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster populateClusterPojos(Cluster cluster) {
+        org.apache.stratos.rest.endpoint.bean.topology.Cluster cluster1 = new
+                org.apache.stratos.rest.endpoint.bean.topology.Cluster();
+        cluster1.serviceName = cluster.getServiceName();
+        cluster1.clusterId = cluster.getClusterId();
+        cluster1.isLbCluster = cluster.isLbCluster();
+        cluster1.tenantRange = cluster.getTenantRange();
+        cluster1.member = new ArrayList<Member>();
+        cluster1.hostNames = new ArrayList<String>();
+
+        for(org.apache.stratos.messaging.domain.topology.Member tmp : cluster.getMembers()) {
+            Member member = new Member();
+            member.clusterId = tmp.getClusterId();
+            member.lbClusterId  = tmp.getLbClusterId();
+            member.networkPartitionId = tmp.getNetworkPartitionId();
+            member.partitionId = tmp.getPartitionId();
+            member.memberId = tmp.getMemberId();
+            if(tmp.getMemberIp() == null) {
+                member.memberIp = "NULL";
+            } else {
+                member.memberIp = tmp.getMemberIp();
+            }
+            member.serviceName = tmp.getServiceName();
+            member.status = tmp.getStatus().toString();
+            cluster1.member.add(member);
+        }
+
+        for(String tmp1 : cluster.getHostNames()) {
+            cluster1.hostNames.add(tmp1);
+        }
+
+        return cluster1;
     }
 
     private static org.apache.stratos.cloud.controller.deployment.partition.Partition[] convertToCCPartitionPojos
