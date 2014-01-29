@@ -18,8 +18,19 @@
  */
 package org.apache.stratos.cli.beans.autoscaler.policy.deployment;
 
+import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
+import org.apache.stratos.cli.beans.autoscaler.partition.PartitionGroup;
+
+import java.util.List;
+
 public class DeploymentPolicy {
     private String id;
+
+     //partition groups
+     private List<PartitionGroup> partitionGroup;
+
+    //partitions
+    private List<Partition> partition;
 
     public String getId() {
         return id;
@@ -27,5 +38,21 @@ public class DeploymentPolicy {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<PartitionGroup> getPartitionGroup() {
+        return partitionGroup;
+    }
+
+    public void setPartitionGroup(List<PartitionGroup> partitionGroup) {
+        this.partitionGroup = partitionGroup;
+    }
+
+    public List<Partition> getPartition() {
+        return partition;
+    }
+
+    public void setPartition(List<Partition> partition) {
+        this.partition = partition;
     }
 }
