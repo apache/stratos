@@ -30,11 +30,21 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.*;
+import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
+import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.cli.beans.cartridge.Cartridge;
+import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
+import org.apache.stratos.cli.beans.topology.Cluster;
+import org.apache.stratos.cli.beans.topology.Member;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.RowMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -43,9 +53,6 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.stratos.cli.utils.RowMapper;
-import org.apache.stratos.cli.utils.CommandLineUtils;
-import javax.net.ssl.*;
 
 public class RestCommandLineService {
 
@@ -56,7 +63,9 @@ public class RestCommandLineService {
     // REST endpoints
     private final String initializeEndpoint = "/stratos/admin/init";
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
+    private final String describeAvailableCartridgeRestEndpoint = "/stratos/admin/cartridge/list/";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
+    private final String listClusterRestEndpoint = "/stratos/admin/cluster";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
@@ -64,8 +73,11 @@ public class RestCommandLineService {
     private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
     private final String autoscalingPolicyDeploymentEndPoint = "/stratos/admin/policy/autoscale";
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";
+    private final String describeParitionRestEndPoint = "/stratos/admin/partition/";
     private final String listParitionRestEndPoint = "/stratos/admin/partition";
+    private final String describeAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale/";
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
+    private final String describeDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment/";
     private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
 
     private static class SingletonHolder {
@@ -265,6 +277,48 @@ public class RestCommandLineService {
         }
     }
 
+    // List currently available multi tenant and single tenant cartridges
+    public void describeAvailableCartridges(String type) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing available cartridges");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+            if (resultString == null) {
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
+
+            if (cartridgeList == null) {
+                System.out.println("Available cartridge list is null");
+                return;
+            }
+
+            for (Cartridge tmp : cartridgeList.getCartridge()) {
+                if(tmp.getCartridgeType().equalsIgnoreCase(type)) {
+                    System.out.println("The cartridge is:");
+                    System.out.println(gson.toJson(tmp));
+                    return;
+                }
+            }
+            System.out.println("No matching cartridge found...");
+        } catch (Exception e) {
+            handleException("Exception in listing available cartridges", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // List subscribe cartridges
     public void listSubscribedCartridges(final boolean full) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -334,6 +388,79 @@ public class RestCommandLineService {
 
             System.out.println("Subscribed Cartridges:");
             CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+            System.out.println();
+        } catch (Exception e) {
+            handleException("Exception in listing subscribe cartridges", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing members of a cluster");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            Cluster cluster = gson.fromJson(resultString, Cluster.class);
+
+            if (cluster == null) {
+                System.out.println("Subscribe cartridge list is null");
+                return;
+            }
+
+            Member[] members;
+            members = (Member[]) cluster.getMembers().toArray();
+
+            if (members.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No subscribed cartridges found");
+                }
+                System.out.println("There are no subscribed cartridges");
+                return;
+            }
+
+            RowMapper<Member> memberMapper = new RowMapper<Member>() {
+
+                public String[] getData(Member member) {
+                    String[] data = new String[9];
+                    data[0] = member.getServiceName();
+                    data[1] = member.getClusterId();
+                    data[2] = member.getNetworkPartitionId();
+                    data[3] = member.getPartitionId();
+                    data[4] = member.getMemberId();
+                    data[5] = member.getStatus().toString();
+                    data[6] = member.getPorts().toString();
+                    data[7] = member.getLbClusterId();
+
+                    return data;
+                }
+            };
+
+            List<String> headers = new ArrayList<String>();
+            headers.add("ServiceName");
+            headers.add("ClusterId");
+            headers.add("NewtworkPartitionId");
+            headers.add("PartitionId");
+            headers.add("MemberId");
+            headers.add("Status");
+            headers.add("Ports");
+            headers.add("LBCluster");
+
+            System.out.println("List of members in the [cluster]: " + alias);
+            CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
+
+            System.out.println("List of LB members for the [cluster]: " + "TODO" );
             System.out.println();
         } catch (Exception e) {
             handleException("Exception in listing subscribe cartridges", e);
@@ -694,11 +821,9 @@ public class RestCommandLineService {
             RowMapper<Partition> partitionMapper = new RowMapper<Partition>() {
 
                 public String[] getData(Partition partition) {
-                    String[] data = new String[3];
+                    String[] data = new String[2];
                     data[0] = partition.getId();
                     data[1] = partition.getProvider();
-                    data[2] = "" + partition.getPartitionMax();
-                    data[3] = "" + partition.getPartitionMin();
                     return data;
                 }
             };
@@ -706,8 +831,8 @@ public class RestCommandLineService {
             Partition[] partitions = new Partition[partitionList.getPartition().size()];
             partitions = partitionList.getPartition().toArray(partitions);
 
-            System.out.println("Available Partitions:");
-            CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider", "PartitionMax", "PartitionMin");
+            System.out.println("Available Partitions:" );
+            CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider");
             System.out.println();
 
         } catch (Exception e) {
@@ -739,7 +864,6 @@ public class RestCommandLineService {
                 System.out.println("Response content is empty");
                 return;
             }
-
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             AutoscalePolicyList policyList = gson.fromJson(resultString, AutoscalePolicyList.class);
@@ -752,10 +876,8 @@ public class RestCommandLineService {
             RowMapper<AutoscalePolicy> partitionMapper = new RowMapper<AutoscalePolicy>() {
 
                 public String[] getData(AutoscalePolicy policy) {
-                    String[] data = new String[3];
+                    String[] data = new String[1];
                     data[0] = policy.getId();
-                    data[1] = policy.getDisplayName();
-                    data[2] = policy.getDisplayName();
                     return data;
                 }
             };
@@ -764,8 +886,7 @@ public class RestCommandLineService {
             policyArry = policyList.getAutoscalePolicy().toArray(policyArry);
 
             System.out.println("Available Autoscale Policies:");
-            CommandLineUtils.printTable(policyArry, partitionMapper, "ID", "Display name", "Description");
-            System.out.println();
+            CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
 
         } catch (Exception e) {
             handleException("Exception in listing autoscale policies", e);
@@ -804,11 +925,10 @@ public class RestCommandLineService {
                 System.out.println("Deployment policy list is empty");
                 return;
             }
-
             RowMapper<DeploymentPolicy> partitionMapper = new RowMapper<DeploymentPolicy>() {
 
                 public String[] getData(DeploymentPolicy policy) {
-                    String[] data = new String[3];
+                    String[] data = new String[1];
                     data[0] = policy.getId();
                     return data;
                 }
@@ -827,6 +947,205 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
+
+    // This method list deployment policies
+    public void describeDeploymentPolicies(String id) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
+                    + listDeploymentPolicyRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing deployment policies");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            DeploymentPolicyList deploymentPolicyList = gson.fromJson(resultString, DeploymentPolicyList.class);
+
+            if (deploymentPolicyList == null) {
+                System.out.println("Deployment policy list is empty");
+                return;
+            }
+            for (DeploymentPolicy policy : deploymentPolicyList.getDeploymentPolicy()) {
+                if(policy.getId().equals(id)) {
+                    System.out.println("The Deployment policy is: \n");
+                    System.out.println(gson.toJson(policy));
+                    return;
+                }
+            }
+
+            System.out.println("No matching Deployment policy found");
+
+            /*RowMapper<DeploymentPolicy> partitionMapper = new RowMapper<DeploymentPolicy>() {
+
+                public String[] getData(DeploymentPolicy policy) {
+                    String[] data = new String[1];
+                    data[0] = policy.getId();
+                    return data;
+                }
+            };
+
+            DeploymentPolicy[] deploymentPolicies = new DeploymentPolicy[1];
+            deploymentPolicies[0] = deploymentPolicy;
+
+            System.out.println("The Deployment policy is: \n");
+            System.out.println(resultString);*/
+            //CommandLineUtils.printTable(deploymentPolicies, partitionMapper, "ID");
+
+        } catch (Exception e) {
+            handleException("Exception in listing deployment polices", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+
+
+ // This method list deployment policies
+    public void describePartition(String id) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
+                    + listParitionRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing deployment policies");
+                return;
+            }
+            String resultString = getHttpResponseString(response);
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+
+           if (resultString == null) {
+               System.out.println("Response content is empty");
+               return;
+           }
+
+           GsonBuilder gsonBuilder = new GsonBuilder();
+           Gson gson = gsonBuilder.create();
+           PartitionList partitionList = gson.fromJson(resultString, PartitionList.class);
+
+            for (Partition partition : partitionList.getPartition()) {
+                if(partition.getId().equals(id)) {
+                    System.out.println("The Partition is:");
+                    System.out.println(gson.toJson(partition));
+                    return;
+                }
+            }
+            System.out.println("No matching partition found...");
+
+
+            /*GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            Partition partition = gson.fromJson(resultString, Partition.class);
+
+            if (partition == null) {
+                System.out.println("Deployment policy list is empty");
+                return;
+            }
+            RowMapper<Partition> partitionMapper = new RowMapper<Partition>() {
+
+                public String[] getData(Partition policy) {
+                    String[] data = new String[1];
+                    data[0] = policy.getId();
+                    return data;
+                }
+            };
+
+            System.out.println("The Partition is:");
+            System.out.println(resultString);
+            System.out.println(resultString);  */
+            //CommandLineUtils.printTable(deploymentPolicies, partitionMapper, "ID");
+
+        } catch (Exception e) {
+            handleException("Exception in listing deployment polices", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    public void describeAutoScalingPolicy(String id) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
+                    + listAutoscalePolicyRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing deployment policies");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            AutoscalePolicyList policyList = gson.fromJson(resultString, AutoscalePolicyList.class);
+
+            if (policyList == null) {
+                System.out.println("Deployment policy list is empty");
+                return;
+            }
+            for(AutoscalePolicy policy : policyList.getAutoscalePolicy()) {
+               if(policy.getId().equalsIgnoreCase(id)) {
+                   System.out.println("Autoscaling policy is:");
+                   System.out.println(gson.toJson(policy));
+                   return;
+               }
+            }
+            System.out.println("No matching Autoscale Policy found...");
+
+
+            /*RowMapper<AutoscalePolicy> partitionMapper = new RowMapper<AutoscalePolicy>() {
+
+                public String[] getData(AutoscalePolicy policy) {
+                    String[] data = new String[1];
+                    data[0] = policy.getId();
+                    return data;
+                }
+            };
+
+            System.out.println("The Autoscaling Policy is: \n");
+            System.out.println(resultString);*/
+            //CommandLineUtils.printTable(deploymentPolicies, partitionMapper, "ID");
+
+        } catch (Exception e) {
+            handleException("Exception in listing deployment polices", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+
 
     // This class convert JSON string to deploymentpolicylist object
     private class DeploymentPolicyList {

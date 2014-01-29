@@ -127,5 +127,11 @@ public class AutoscalePolicy implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+    
+	@Override
+	public String toString() {
+		return "ASPolicy [id=" + id + ", desplayName=" + displayName
+				+ ", description=" + description + "]";
+	}
+	
 }

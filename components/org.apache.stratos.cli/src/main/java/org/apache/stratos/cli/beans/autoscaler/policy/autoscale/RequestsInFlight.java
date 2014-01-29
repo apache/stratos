@@ -17,18 +17,17 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
+package org.apache.stratos.cli.beans.autoscaler.policy.autoscale;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+public class RequestsInFlight {
 
-@XmlRootElement
-public class PartitionGroup {
+    public float average;
 
-    public String id;
+    public float secondDerivative;
 
-    public String partitionAlgo;
+    public float gradient;
 
-    //partition Ids
-    public List<Partition> partitions;
+    public float scaleDownMarginOfGradient;
+
+    public float scaleDownMarginOfSecondDerivative;
 }

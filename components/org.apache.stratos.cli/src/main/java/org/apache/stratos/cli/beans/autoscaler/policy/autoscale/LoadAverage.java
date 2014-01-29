@@ -16,19 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.cli.beans.autoscaler.policy.autoscale;
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
+public class LoadAverage {
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+    public float average;
 
-@XmlRootElement
-public class PartitionGroup {
+    public float secondDerivative;
 
-    public String id;
+    public float gradient;
 
-    public String partitionAlgo;
+    public float scaleDownMarginOfGradient;
 
-    //partition Ids
-    public List<Partition> partitions;
+    public float scaleDownMarginOfSecondDerivative;
 }

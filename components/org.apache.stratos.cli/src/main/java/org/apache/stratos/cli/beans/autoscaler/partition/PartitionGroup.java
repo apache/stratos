@@ -16,27 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cli.beans;
+package org.apache.stratos.cli.beans.autoscaler.partition;
 
-public class PropertyBean {
+import java.util.List;
 
-    private String name;
+public class PartitionGroup {
+    private String id;
 
-    private String value;
+    private String partitionAlgo;
 
-    public String getName() {
-        return name;
+    //partition Ids
+    private List<Partition> partition;
+
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getValue() {
-        return value;
+    public String getPartitionAlgo() {
+        return partitionAlgo;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setPartitionAlgo(String partitionAlgo) {
+        this.partitionAlgo = partitionAlgo;
+    }
+
+    public List<Partition> getPartition() {
+        return partition;
+    }
+
+    public void setPartition(List<Partition> partition) {
+        this.partition = partition;
     }
 }

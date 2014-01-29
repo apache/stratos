@@ -283,8 +283,8 @@ public class PojoConverter {
             partitionGroup.setId(partitionGroupBeans.get(i).id);
             partitionGroup.setPartitionAlgo(partitionGroupBeans.get(i).partitionAlgo);
 
-            if(partitionGroupBeans.get(i).partition != null && !partitionGroupBeans.get(i).partition.isEmpty()) {
-                partitionGroup.setPartitions(convertToCCPartitionPojos(partitionGroupBeans.get(i).partition));
+            if(partitionGroupBeans.get(i).partitions != null && !partitionGroupBeans.get(i).partitions.isEmpty()) {
+                partitionGroup.setPartitions(convertToCCPartitionPojos(partitionGroupBeans.get(i).partitions));
             }
 
             partitionGroups[i] = partitionGroup;
@@ -501,7 +501,7 @@ public class PojoConverter {
         partitionGroupBean.id = partitionGroup.getId();
         partitionGroupBean.partitionAlgo = partitionGroup.getPartitionAlgo();
         if(partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
-            partitionGroupBean.partition = getPartitionList(partitionGroup.getPartitions());
+            partitionGroupBean.partitions = getPartitionList(partitionGroup.getPartitions());
         }
 
         return partitionGroupBean;

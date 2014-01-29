@@ -16,19 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.cli.beans.autoscaler.policy.autoscale;
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
+public class LoadThresholds {
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+    public RequestsInFlight requestsInFlight;
 
-@XmlRootElement
-public class PartitionGroup {
+    public MemoryConsumption memoryConsumption;
 
-    public String id;
-
-    public String partitionAlgo;
-
-    //partition Ids
-    public List<Partition> partitions;
+    public LoadAverage loadAverage;
 }
