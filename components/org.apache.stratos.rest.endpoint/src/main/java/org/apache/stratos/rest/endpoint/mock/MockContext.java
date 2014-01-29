@@ -227,7 +227,7 @@ public class MockContext {
          DeploymentPolicy deploymentPolicy = deploymentPolicyMap.get(deploymentPolicyId);
          for(PartitionGroup partitionGroup : deploymentPolicy.partitionGroup){
              if(partitionGroup.id.equals(partitionGroupId)){
-                return partitionGroup.partition.toArray(new Partition[0]);
+                return partitionGroup.partitions.toArray(new Partition[0]);
              }
          }
          return new Partition[0];

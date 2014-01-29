@@ -55,13 +55,13 @@
         <property name="serializeAsArray" value="true"/>
         <property name="arrayKeys">
             <list>
-                <value>partitions</value>
+                <!--value>partitions</value-->
                 <value>property</value>
                 <value>hostNames</value>
                 <value>memberMap</value>
                 <value>portMap</value>
-                <value>partitionGroup</value>
-                <value>partition</value>
+                <value>partitionGroups</value>
+                <value>partitions</value>
             </list>
         </property>
     </bean>
