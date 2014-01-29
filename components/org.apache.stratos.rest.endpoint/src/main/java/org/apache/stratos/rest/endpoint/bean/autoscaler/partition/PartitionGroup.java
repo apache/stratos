@@ -30,5 +30,5 @@ public class PartitionGroup {
     public String partitionAlgo;
 
     //partition Ids
-    public List<Partition> partitions;
+    public List<Partition> partition;
 }
