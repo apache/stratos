@@ -65,7 +65,7 @@ public class RestCommandLineService {
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
     private final String describeAvailableCartridgeRestEndpoint = "/stratos/admin/cartridge/list/";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
-    private final String listClusterRestEndpoint = "/stratos/admin/cluster";
+    private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
@@ -399,7 +399,8 @@ public class RestCommandLineService {
     public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
+                    + cartridgeType + "/" + alias,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -409,9 +410,14 @@ public class RestCommandLineService {
             }
 
             String resultString = getHttpResponseString(response);
-
+            String tmp;
+            if(resultString.startsWith("{\"cluster\"")) {
+               tmp = resultString.substring("{\"cluster\"".length() + 1, resultString.length()-1);
+               resultString = tmp;
+            }
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
+
             Cluster cluster = gson.fromJson(resultString, Cluster.class);
 
             if (cluster == null) {
@@ -419,8 +425,10 @@ public class RestCommandLineService {
                 return;
             }
 
-            Member[] members;
-            members = (Member[]) cluster.getMembers().toArray();
+            Member[] members = new Member[cluster.getMember().size()];
+            members = cluster.getMember().toArray(members);
+            System.out.println("Subscribe cartridge list is :" +  cluster.getMember().size());
+
 
             if (members.length == 0) {
                 if (logger.isDebugEnabled()) {
@@ -433,16 +441,14 @@ public class RestCommandLineService {
             RowMapper<Member> memberMapper = new RowMapper<Member>() {
 
                 public String[] getData(Member member) {
-                    String[] data = new String[9];
+                    String[] data = new String[7];
                     data[0] = member.getServiceName();
                     data[1] = member.getClusterId();
                     data[2] = member.getNetworkPartitionId();
                     data[3] = member.getPartitionId();
-                    data[4] = member.getMemberId();
+                    data[4] = member.getMemberIp();
                     data[5] = member.getStatus().toString();
-                    data[6] = member.getPorts().toString();
-                    data[7] = member.getLbClusterId();
-
+                    data[6] = member.getLbClusterId() != null ? member.getLbClusterId() : "";
                     return data;
                 }
             };
@@ -452,17 +458,22 @@ public class RestCommandLineService {
             headers.add("ClusterId");
             headers.add("NewtworkPartitionId");
             headers.add("PartitionId");
-            headers.add("MemberId");
+            headers.add("MemberIp");
             headers.add("Status");
-            headers.add("Ports");
             headers.add("LBCluster");
 
             System.out.println("List of members in the [cluster]: " + alias);
             CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
 
             System.out.println("List of LB members for the [cluster]: " + "TODO" );
-            System.out.println();
         } catch (Exception e) {
+            System.out.println("error while getting Cluster.....");
+            System.out.println(e.fillInStackTrace());
+            System.out.println("error while getting Cluster.....");
+
+            e.printStackTrace();
+            System.out.println();
+
             handleException("Exception in listing subscribe cartridges", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -762,7 +773,7 @@ public class RestCommandLineService {
         try {
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
-
+            System.out.println(deploymentPolicy);
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
