@@ -69,29 +69,29 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	/*
 	 * Deploy a new partition to Auto Scaler.
 	 */
-	public boolean addNewPartition(Partition partition) throws AutoScalerException, InvalidPartitionException {
-        try {
-            if(this.partitionExist(partition.getId())) {
-                throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
-            }
-            if(null == partition.getProvider()) {
-                throw new InvalidPartitionException("Mandatory field provider has not be set for partition "+ partition.getId());
-            }
+    public boolean addNewPartition(Partition partition) throws AutoScalerException, InvalidPartitionException {
 
-        	validatePartitionViaCloudController(partition);
+        if (this.partitionExist(partition.getId())) {
+            throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
+        }
+        if (null == partition.getProvider()) {
+            throw new InvalidPartitionException("Mandatory field provider has not be set for partition " + partition.getId());
+        }
+        try {
+            validatePartitionViaCloudController(partition);
             RegistryManager.getInstance().persistPartition(partition);
-			addPartitionToInformationModel(partition);
-            if(log.isInfoEnabled()) {
+            addPartitionToInformationModel(partition);
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Partition is deployed successfully: [id] %s", partition.getId()));
             }
             return true;
-		} catch(Exception e){
-			throw new AutoScalerException(e);
-		}
-	}
-	
-	
-	public void addPartitionToInformationModel(Partition partition) {
+        } catch (Exception e) {
+            throw new AutoScalerException(e);
+        }
+    }
+
+
+    public void addPartitionToInformationModel(Partition partition) {
 		partitions.put(partition.getId(), partition);
 	}
 

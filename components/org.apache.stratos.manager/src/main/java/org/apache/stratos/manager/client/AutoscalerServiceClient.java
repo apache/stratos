@@ -302,7 +302,7 @@ public class AutoscalerServiceClient {
         } catch (RemoteException e) {
             String errorMsg = "Error in deploying new partition definition";
             log.error(errorMsg, e);
-            throw new Exception(errorMsg, e);
+            throw new Exception(e.getMessage(), e);
         }
     }
 }
