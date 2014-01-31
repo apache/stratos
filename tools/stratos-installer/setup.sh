@@ -220,6 +220,21 @@ function as_conf_validate {
 	helpsetup AS
 	exit 1
     fi
+    if [[ -z $cc_port_offset || -z $sm_port_offset ]]; then
+        echo "Please specify the port offset of SM and/or CC"
+        exit 1
+    fi
+    if [[ -z $sm_ip || -z $cc_ip ]]; then
+        echo "Please specify the ips of SM and/or CC"
+        exit 1
+    elif !(valid_ip $sm_ip && valid_ip $cc_ip ); then
+        echo "Please provide valid ips for SM and/or CC"
+        exit 1
+    fi
+    if [[-z $cc_hostname || -z $sm_hostname ]]; then
+	echo "Please specify valid hostname for SM and/or CC"
+	exit 1
+    fi
 }
 
 function sm_conf_validate {
@@ -240,6 +255,13 @@ function sm_conf_validate {
         exit 1
     elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip && valid_ip $cep_ip); then
         echo "Please provide valid ips for SM and/or AS and/or CC and/or CEP"
+        exit 1
+    fi
+    if [[ -z $puppet_ip ]]; then
+        echo "Please specify the ip of puppet master"
+        exit 1
+    elif !(valid_ip $puppet_ip); then
+        echo "Please provide valid ip for puppet master"
         exit 1
     fi
     if [[-z $cc_hostname || -z $as_hostname ]]; then
@@ -276,8 +298,6 @@ fi
 if [[ ! -d $log_path ]]; then
     mkdir -p $log_path
 fi
-
-
 
 
 echo ""
@@ -435,6 +455,7 @@ function as_setup {
 
     cp -f ./config/as/repository/conf/carbon.xml $as_path/repository/conf/
     cp -f ./config/as/repository/conf/jndi.properties $as_path/repository/conf/
+    cp -f ./config/as/repository/conf/autoscaler.xml $as_path/repository/conf/
 
     pushd $as_path
 
@@ -445,6 +466,19 @@ function as_setup {
     echo "In repository/conf/jndi.properties"
     cp -f repository/conf/jndi.properties repository/conf/jndi.properties.orig
     cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$as_mb_listen_port@g" > repository/conf/jndi.properties
+
+    echo "In repository/conf/autoscaler.xml"
+    cp -f repository/conf/autoscaler.xml repository/conf/autoscaler.xml.orig
+    cat repository/conf/autoscaler.xml.orig | sed -e "s@CC_HOSTNAME@$cc_hostname@g" > repository/conf/autoscaler.xml
+
+    cp -f repository/conf/autoscaler.xml repository/conf/autoscaler.xml.orig
+    cat repository/conf/autoscaler.xml.orig | sed -e "s@CC_LISTEN_PORT@$as_cc_https_port@g" > repository/conf/autoscaler.xml
+
+    cp -f repository/conf/autoscaler.xml repository/conf/autoscaler.xml.orig
+    cat repository/conf/autoscaler.xml.orig | sed -e "s@SM_HOSTNAME@$sm_hostname@g" > repository/conf/autoscaler.xml
+
+    cp -f repository/conf/autoscaler.xml repository/conf/autoscaler.xml.orig
+    cat repository/conf/autoscaler.xml.orig | sed -e "s@SM_LISTEN_PORT@$as_sm_https_port@g" > repository/conf/autoscaler.xml
 
     popd #as_path
     echo "End configuring the Auto smalar"
@@ -520,6 +554,9 @@ function sm_setup {
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_LISTEN_PORT@$sm_cep_tcp_port@g" > repository/conf/cartridge-config.properties
 
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@PUPPET_IP@$sm_puppet_ip@g" > repository/conf/cartridge-config.properties
+
     echo "In repository/conf/datasources/master-datasources.xml" >> $LOG
     cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig
     cat repository/conf/datasources/master-datasources.xml.orig | sed -e "s@USERSTORE_DB_HOSTNAME@$userstore_db_hostname@g" > repository/conf/datasources/master-datasources.xml
@@ -565,7 +602,7 @@ if [[ $sm = "true" ]]; then
     sm_setup
 fi
 
-
+ 
 # ------------------------------------------------
 # Mapping domain/host names 
 # ------------------------------------------------
@@ -575,9 +612,12 @@ cp -f /etc/hosts hosts.tmp
 
 echo "$mb_ip $mb_hostname	# message broker hostname"	>> hosts.tmp
 
-if [[ $sm = "true" ]]; then
+if [[ $sm = "true" || $as = "true" ]]; then
     echo "$sm_ip $sm_hostname	# stratos domain"	>> hosts.tmp
     echo "$cc_ip $cc_hostname	# cloud controller hostname"	>> hosts.tmp
+if
+
+if [[ $sm = "true" ]]; then
     echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
 fi
 
