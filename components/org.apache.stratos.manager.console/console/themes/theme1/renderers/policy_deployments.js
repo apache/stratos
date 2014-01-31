@@ -1,8 +1,5 @@
 var render = function (theme, data, meta, require) {
-    for(var i=0;i<data.policy_deployments.length;i++){
-        data.policy_deployments[i].key = data.policy_deployments[i].name.replace(/ /g,'');
-    }
-    var create_btn_class = 'btn-important js_handle_click';
+    var create_btn_class = 'btn-important';
     var title = 'Configure Stratos - Policy Deployments';
     if(data.config_status.first_use){
         create_btn_class = "btn-default js_handle_click";
@@ -15,6 +12,7 @@ var render = function (theme, data, meta, require) {
                 context: {
                     title:title,
                     policy_deployments:data.policy_deployments,
+                    policy_autoscale:data.policy_autoscale,
                     config_status:data.config_status
                 }
             }
@@ -31,6 +29,7 @@ var render = function (theme, data, meta, require) {
                     },
                     has_help:false,
                     policy_deployments:true,
+                    configure_stratos:true,
                     config_status:data.config_status
                 }
             }

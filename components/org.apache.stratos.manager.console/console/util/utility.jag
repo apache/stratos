@@ -116,20 +116,50 @@ consoleAppUtil = new function(){
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
         return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;
-    }
+    };
 
     this.addTenant = function(tenantInfoBean){
         return this.sendReceive("POST","/tenant",tenantInfoBean).data;
-    }
+    };
 
     this.getAutoScalePolicies = function(){
         return this.sendReceive("GET","/policy/autoscale",{}).data;
-    }
+    };
 
     this.getDeploymentPolicies = function(){
         return this.sendReceive("GET","/policy/deployment",{}).data;
-    }
+    };
 
+    this.getPartitions = function(){
+        return this.sendReceive("GET","/partition",{}).data;
+    };
+
+    this.getPolicyAutoScale = function(){
+        return this.sendReceive("GET","/policy/autoscale",{}).data;
+    };
+
+    this.getPolicyDeployment = function(){
+        return this.sendReceive("GET","/policy/deployment",{}).data;
+    };
+
+    this.getCartridges = function(){
+        return this.sendReceive("GET","/cartridge/list",{}).data;
+    };
+    this.getConfigStatus = function(){
+        var configStatus = {};
+        if(this.sendReceive("GET","/partition",{}).data.partition.length == 0){
+            configStatus.first_use = true;
+        }else{
+            if(this.sendReceive("GET","/cartridge/list",{}).data.cartridge.length == 0){
+                configStatus.first_use = false;
+                configStatus.not_complete = true;
+            }else{
+                configStatus.not_complete = false;
+                configStatus.first_use = false;
+            }
+        }
+        return configStatus;
+    };
     // refactor sendRecive and send method. duplicate code...
     this.sendReceive = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
@@ -220,6 +250,7 @@ consoleAppUtil = new function(){
     this.getAccessTokenFromSession = function(){
         return session.get("access_token");
     };
+
 };
 
 

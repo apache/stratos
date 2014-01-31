@@ -1,7 +1,12 @@
 <%
 var caramel = require('caramel');
-var partition_deployments = require('/data/partition_deployments.json');
-var config_status = require('/data/config_status.json');
+
+var utils = require('/util/utility.jag');
+
+var config_status = utils.consoleAppUtil.getConfigStatus();
+
+var partition_deployments =  utils.consoleAppUtil.getPartitions();
+partition_deployments = partition_deployments.partition;
 caramel.render({
     partition_deployments:partition_deployments,
     config_status:config_status

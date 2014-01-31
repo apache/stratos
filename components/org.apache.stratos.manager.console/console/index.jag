@@ -1,6 +1,6 @@
 <%
 var log = new Log("console.index");
-var caramel = require('caramel')
+var caramel = require('caramel');
 var utils = require('/util/utility.jag');
 var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
 log.info(subscribedCartridges);
