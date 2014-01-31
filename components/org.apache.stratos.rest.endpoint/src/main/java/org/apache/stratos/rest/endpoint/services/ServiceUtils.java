@@ -133,7 +133,7 @@ public class ServiceUtils {
                 return autoscalerServiceClient.deployPartition(partition);
 
             } catch (Exception e) {
-                throw new RestAPIException(e);
+                throw new RestAPIException(e.getMessage(), e);
             }
         }
 

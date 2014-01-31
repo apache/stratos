@@ -104,7 +104,7 @@ public class StratosAdmin extends AbstractAdmin {
     public boolean deployPartition (Partition partition)
             throws RestAPIException {
 
-        return ServiceUtils.deployPartition(partition);
+            return ServiceUtils.deployPartition(partition);
     }
 
     @POST

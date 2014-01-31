@@ -58,7 +58,7 @@ node /[0-9]{1,12}.default.php/ {
                         mb_port       		   => "5677",
                         cep_ip        		   => "54.251.211.89",
                         cep_port      		   => "7615",
-			cert_truststore  	   => "client-truststore.jks",
+	            		cert_truststore  	   => "client-truststore.jks",
                         truststore_password  	   => "wso2carbon",
 
         }
@@ -93,3 +93,17 @@ node /[0-9]{1,12}.default.lb/ inherits confignode{
 
 }
 
+node /[0-9]{1,12}.default.mysql/ {
+
+        include java
+
+        class {"mysql":
+                        mb_ip                  => "54.251.211.89",
+                        mb_port                => "5677",
+                        cep_ip                 => "54.251.211.89",
+                        cep_port               => "7615",
+                        cert_truststore        => "client-truststore.jks",
+                        truststore_password        => "wso2carbon",
+
+        }
+}

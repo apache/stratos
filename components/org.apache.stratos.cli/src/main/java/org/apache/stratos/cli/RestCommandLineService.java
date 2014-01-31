@@ -427,8 +427,6 @@ public class RestCommandLineService {
 
             Member[] members = new Member[cluster.getMember().size()];
             members = cluster.getMember().toArray(members);
-            System.out.println("Subscribe cartridge list is :" +  cluster.getMember().size());
-
 
             if (members.length == 0) {
                 if (logger.isDebugEnabled()) {
@@ -467,13 +465,6 @@ public class RestCommandLineService {
 
             System.out.println("List of LB members for the [cluster]: " + "TODO" );
         } catch (Exception e) {
-            System.out.println("error while getting Cluster.....");
-            System.out.println(e.fillInStackTrace());
-            System.out.println("error while getting Cluster.....");
-
-            e.printStackTrace();
-            System.out.println();
-
             handleException("Exception in listing subscribe cartridges", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
