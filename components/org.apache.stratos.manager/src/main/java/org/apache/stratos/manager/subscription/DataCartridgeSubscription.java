@@ -86,7 +86,7 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
         Map<String, String> payloadEntriesMap = new HashMap<String, String>();
         payloadEntriesMap.put("DB_HOST", host);
         payloadEntriesMap.put("DB_USER", username);
-        payloadEntriesMap.put("DB_PASSWORD", password);
+        payloadEntriesMap.put("MYSQL_PASSWORD", password);
 
         return payloadEntriesMap;
     }
