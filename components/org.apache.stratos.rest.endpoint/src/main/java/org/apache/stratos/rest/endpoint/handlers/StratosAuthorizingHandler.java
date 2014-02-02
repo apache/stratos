@@ -26,7 +26,6 @@ import org.apache.cxf.interceptor.security.AccessDeniedException;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.security.SecurityContext;
 import org.apache.cxf.service.Service;
 import org.apache.cxf.service.model.BindingOperationInfo;
 import org.apache.stratos.rest.endpoint.Utils;
@@ -48,7 +47,7 @@ import java.util.*;
  * details using annotations present in the service bean. This particular implementation is inspired
  * by the {@link org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter}
  */
-public class StratosAuthorizingHandler extends AbstractAuthenticationAuthorizationHandler {
+public class StratosAuthorizingHandler implements RequestHandler {
     private Log log = LogFactory.getLog(StratosAuthorizingHandler.class);
 
     private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
@@ -66,17 +65,18 @@ public class StratosAuthorizingHandler extends AbstractAuthenticationAuthorizati
                         "equals", "toString", "hashCode"}));
     }
 
-    public boolean canHandle(String authHeaderPrefix){
-        return SUPPORTED_AUTHENTICATION_TYPE.equals(authHeaderPrefix);
-    }
 
-    public Response handle(Message message, ClassResourceInfo resourceClass) {
+
+    public Response handleRequest(Message message, ClassResourceInfo resourceClass) {
         try {
-            SecurityContext securityContext = message.get(SecurityContext.class);
-            Method method = getTargetMethod(message);
-            if (!authorize(securityContext, method)) {
-               log.warn("User :"+ securityContext.getUserPrincipal().getName() + "trying to perform unauthrorized action" +
-                       " against the resource :"+ method);
+
+            String userName = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Method targetMethod = getTargetMethod(message);
+            if (!authorize(userName,tenantDomain,tenantId,targetMethod)) {
+               log.warn("User :"+ userName + "trying to perform unauthrorized action" +
+                       " against the resource :"+ targetMethod);
                return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON).
                        entity(Utils.buildMessage("The user does not have required permissions to " +
                                "perform this operation")).build();
@@ -90,15 +90,12 @@ public class StratosAuthorizingHandler extends AbstractAuthenticationAuthorizati
         }
     }
 
-    private boolean authorize(SecurityContext securityContext, Method targetMethod) throws Exception{
+    private boolean authorize(String userName, String tenantDomain,int tenantId, Method targetMethod) throws Exception{
             // first we try to see whether this is a super.tenant only operation
-            String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             if (superTenantServiceSet.contains(targetMethod.getName()) && !isCurrentUserSuperTenant(tenantDomain, tenantId)) {
                 return false;
             }
             // authorize using permissionString given as annotation in the service class
-            String userName = securityContext.getUserPrincipal().getName();
             String permissionString = authorizationActionMap.get(targetMethod.getName());
 
             // get the authorization manager for this tenant..

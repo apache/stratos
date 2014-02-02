@@ -1,37 +1,45 @@
 <%
 (function(){
-    var dataConfig = require('/config/console.json'),
-            sso = require("sso"),
-            process = require("process"),
-            sessionId = session.getId(),
-            requestURI,
-            requestedPage = request.getParameter("requestedPage"),
-            relayState = '/console',log = new Log();
-    log.info(dataConfig.ssoConfiguration.issuer);
-    var encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer);
-    postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + "9443";
-    log.info(postUrl);
+    var log = new Log("controllers.login.jag");
+    var dataConfig = require('/config/console.json');
+    if(!dataConfig.ssoConfiguration.enabled){
+        request.getMappedPath = function() {
+            return '/login.jag'; // setting path for caramel framework
+        };
+        include('/login.jag');
+    } else {
+        var sso = require("sso"),
+                process = require("process"),
+                sessionId = session.getId(),
+                requestURI,
+                requestedPage = request.getParameter("requestedPage"),
+                relayState = '/console',log = new Log();
+        log.debug(dataConfig.ssoConfiguration.issuer);
+        var encodedSAMLAuthRequest = sso.client.getEncodedSAMLAuthRequest(dataConfig.ssoConfiguration.issuer);
+        postUrl = "https://" + process.getProperty('carbon.local.ip') + ":" + "9443";
+        log.debug(postUrl);
 
-    if (!session.get("Loged")) {
-        %>
+        if (!session.get("Loged")) {
+            %>
 
-                <div>
+                    <div>
 
-                            <p>You are now being redirected to Identity Server. If the
-                            redirection fails, please click on the button below.</p>
-                            <form method="post" action="<%=postUrl%>/samlsso">
-                            <p>
-                               <input type="hidden" name="SAMLRequest" value="<%= encodedSAMLAuthRequest %>"/>
-                               <input type="hidden" name="RelayState" value="<%= relayState %>"/>
-                               <input type="hidden" name="SSOAuthSessionID" value="<%= sessionId %>"/>
-                               <button type="submit">Redirect manually</button>
-                           </p>
-                       </form>
-                   </div>
-                   <script type = "text/javascript" >
-                          document.forms[0].submit();
-                   </script>
-        <%
+                                <p>You are now being redirected to Identity Server. If the
+                                redirection fails, please click on the button below.</p>
+                                <form method="post" action="<%=postUrl%>/samlsso">
+                                <p>
+                                   <input type="hidden" name="SAMLRequest" value="<%= encodedSAMLAuthRequest %>"/>
+                                   <input type="hidden" name="RelayState" value="<%= relayState %>"/>
+                                   <input type="hidden" name="SSOAuthSessionID" value="<%= sessionId %>"/>
+                                   <button type="submit">Redirect manually</button>
+                               </p>
+                           </form>
+                       </div>
+                       <script type = "text/javascript" >
+                              document.forms[0].submit();
+                       </script>
+            <%
+        }
     }
 }());
 %>

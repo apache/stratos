@@ -1,0 +1,25 @@
+<%
+(function(){
+    var log = new Log("controller.credentialSubmit");
+    var utils = require('/util/utility.jag');
+    var username = request.getParameter("username").trim();
+    var password = request.getParameter("password"); // not trimming the password
+    log.info("username/password submitted");
+    log.info(username);
+    log.info(password);
+    //authenticate with carbon usr-store
+
+
+    //call the authentication rest-endpoint and get the JSESSION_ID
+    var response =  utils.consoleAppUtil.getSessionCookie(username,password);
+    log.info(response.data.Success.sessionId);
+    //TODO: handle the error scenario
+    //save the JSESSION_ID in current console.session.
+    var jSessionId = response.data.Success.sessionId;
+    session.put("JSESSIONID",jSessionId);
+    require('console').server.current(session,username);
+    //redirect
+    response.sendRedirect(request.getContextPath());
+
+}());
+%>

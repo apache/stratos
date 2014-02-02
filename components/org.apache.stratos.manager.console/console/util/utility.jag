@@ -160,20 +160,31 @@ consoleAppUtil = new function(){
         }
         return configStatus;
     };
+
+    this.getRequestHeaders = function(ssoEnabled){
+        var requestHeaders;
+        if(ssoEnabled){
+            var accessToken = this.getAccessTokenFromSession();
+            requestHeaders = {
+                "Authorization": "Bearer "+accessToken,
+                "Content-Type": "application/json"
+            };
+        }else{
+            requestHeaders = {
+                "Content-Type": "application/json",
+                "Cookie": "JSESSIONID="+session.get("JSESSIONID")
+            };
+        }
+        return requestHeaders;
+    };
+
     // refactor sendRecive and send method. duplicate code...
     this.sendReceive = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
         // getting the access token from the session.
         var endpoint = backendServerURL + urlPostFix;
-        //var endpoint = "http://localhost:9000/stratos/admin" + urlPostFix;
-
-        var accessToken = this.getAccessTokenFromSession();
-        // the header values are constant
-        var headers = {
-            "Authorization": "Bearer "+accessToken,
-            "Content-Type": "application/json"
-        };
+        var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
         var type = "json"; // response format
         var response;
         switch (httpMethod){
@@ -201,12 +212,7 @@ consoleAppUtil = new function(){
         var backendServerURL = config.backendServerConfiguration.url;
         // getting the access token from the session.
         var endpoint = backendServerURL + urlPostFix;
-        var accessToken = this.getAccessTokenFromSession();
-        // the header values are constant
-        var headers = {
-            "Authorization": "Bearer "+accessToken,
-            "Content-Type": "application/json"
-        };
+        var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
         var type = "json"; // response format
         var response;
         switch (httpMethod){
@@ -247,9 +253,26 @@ consoleAppUtil = new function(){
         return response;
     };
 
+    this.getSessionCookie = function(userName, password){
+        var config = require('/config/console.js').config();
+        var backendServerURL = config.backendServerConfiguration.url;
+        var endpoint = backendServerURL + "/cookie";
+        var sso = require("sso"); //TODO: get rid of this...
+        var basicAuthToken = sso.client.b64encode(userName + ":" + password);
+        var headers = {
+            "Authorization": "Basic "+basicAuthToken,
+            "Content-Type": "application/json"
+        };
+        var response = get(endpoint,{},headers,"json");
+        log.info(stringify(response));
+        return response;
+    };
+
     this.getAccessTokenFromSession = function(){
         return session.get("access_token");
     };
+
+
 
 };
 

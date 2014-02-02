@@ -22,7 +22,7 @@ public class Utils {
     public static String buildMessage(int errorCode, String errorMessage) {
         String jsonResponse = "{\"Error\":{" +
                 " \"errorCode\": \" " + errorCode + "\"," +
-                " \"errorMessage\": \" " + errorMessage + "\"," +
+                " \"errorMessage\": \" " + errorMessage + "\"" +
                 "}" +
                 "}";
         return jsonResponse;
@@ -31,7 +31,16 @@ public class Utils {
     public static String buildMessage(String errorMessage) {
         String jsonResponse = "{\"Error\":{" +
                 " \"errorCode\": \" " + -1234 + "\"," +
-                " \"errorMessage\": \" " + errorMessage + "\"," +
+                " \"errorMessage\": \" " + errorMessage + "\"" +
+                "}" +
+                "}";
+        return jsonResponse;
+    }
+
+
+    public static String buildAuthenticationSuccessMessage(String jSessionId) {
+        String jsonResponse = "{\"Success\":{" +
+                " \"sessionId\": \"" + jSessionId + "\"" +
                 "}" +
                 "}";
         return jsonResponse;
