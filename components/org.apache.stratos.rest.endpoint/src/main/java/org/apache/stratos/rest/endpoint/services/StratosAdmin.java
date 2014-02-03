@@ -267,6 +267,15 @@ public class StratosAdmin extends AbstractAdmin {
         // Following is very important when working with axis2
         return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
     }
+    
+    @GET
+    @Path("/cartridge/info/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+        return ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
+    }
 
     @POST
     @Path("/cartridge/subscribe")
@@ -323,6 +332,25 @@ public class StratosAdmin extends AbstractAdmin {
                               @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
 
         return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
+    }
+    
+    @GET
+    @Path("/cluster/clusterId/{clusterId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster getCluster(@PathParam("clusterId") String clusterId) throws ADCException {
+    	log.info("--- clusterID -- " + clusterId);
+    	Cluster cluster = null;
+        Cluster[] clusters = ServiceUtils.getClustersForTenant(getConfigContext());
+        for (Cluster clusterObj : clusters) {
+			if (clusterObj.clusterId.equals(clusterId)){
+				cluster = clusterObj;
+				log.info(" -- CLuster is returned -- ");
+				break;
+			}
+		}
+        return cluster;
     }
 
     @POST

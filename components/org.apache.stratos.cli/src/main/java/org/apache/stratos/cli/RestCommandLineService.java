@@ -52,7 +52,11 @@ import java.net.ConnectException;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import jline.internal.Log;
 
 public class RestCommandLineService {
 
@@ -65,6 +69,7 @@ public class RestCommandLineService {
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
     private final String describeAvailableCartridgeRestEndpoint = "/stratos/admin/cartridge/list/";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
+    private final String listSubscribedCartridgeInfoRestEndpoint = "/stratos/admin/cartridge/info/";
     private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
@@ -396,37 +401,124 @@ public class RestCommandLineService {
         }
     }
 
-    public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
+    
+    // Lists subscribed cartridge info (from alias)
+    public void listSubscribedCartridgeInfo(final boolean full, String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
-                    + cartridgeType + "/" + alias,
-                    restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listSubscribedCartridgeInfoRestEndpoint
+            		+"info/"+alias, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while listing members of a cluster");
+                System.out.println("Error occured while listing subscribe cartridges");
                 return;
             }
 
             String resultString = getHttpResponseString(response);
-            String tmp;
-            if(resultString.startsWith("{\"cluster\"")) {
-               tmp = resultString.substring("{\"cluster\"".length() + 1, resultString.length()-1);
-               resultString = tmp;
-            }
+
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
+            Cartridge cartridge = gson.fromJson(resultString, Cartridge.class);
 
-            Cluster cluster = gson.fromJson(resultString, Cluster.class);
+            if (cartridge == null) {
+                System.out.println("Cartridge is null");
+                return;
+            }
+            // Get LB IP s
+            final Set<String> lbIpList = getLbIpList(cartridge, httpClient);
+            Cartridge[] cartridges = new Cartridge[1];
+            cartridges[0] = cartridge;
+
+            RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
+
+                public String[] getData(Cartridge cartridge) {
+                    String[] data = full ? new String[10] : new String[7];
+                    data[0] = cartridge.getCartridgeType();
+                    data[1] = cartridge.getDisplayName();
+                    data[2] = cartridge.getVersion();
+                    data[3] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
+                    data[4] = cartridge.getCartridgeAlias();
+                    data[5] = cartridge.getStatus();
+                    data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
+                    if (full) {
+                        data[7] = getAccessURLs(cartridge);
+                        data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
+                    }
+                    data[9] = lbIpList.toString();
+                    return data;
+                }
+            };
+
+            List<String> headers = new ArrayList<String>();
+            headers.add("Type");
+            headers.add("Name");
+            headers.add("Version");
+            headers.add("Tenancy Model");
+            headers.add("Alias");
+            headers.add("Status");
+            headers.add("Running Instances");
+            if (full) {
+                headers.add("Access URL(s)");
+                headers.add("Repo URL");
+            }
+            headers.add("LoadBalancer Ip");
+            
+            
+            // Display Database info as well..
+            
+            System.out.println("Subscribed Cartridges Info ************ : [TODO database info]");
+            CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+            System.out.println();
+        } catch (Exception e) {
+            handleException("Exception in listing subscribe cartridges", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+    
+    
+    private Set<String> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) {
+    	
+    	Set<String> lbIpSet = new HashSet<String>();
+    	Member[] members = getMembers(cartridge.getCartridgeType(), cartridge.getCartridgeAlias(), httpClient);
+    	
+    	Set<String> lbClusterIdSet = new HashSet<String>();
+    	
+    	for (Member member : members) {
+			lbClusterIdSet.add(member.getLbClusterId());
+		}
+    	
+        // Invoke  cluster/{clusterId}
+        for (String clusterId : lbClusterIdSet) {
+        	HttpResponse responseCluster = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
+                    +"clusterId/"+ clusterId,
+                    restClientService.getUsername(), restClientService.getPassword());
+            String resultStringCluster = getHttpResponseString(responseCluster);
+            
+            Cluster cluster = getClusterObjectFromString(resultStringCluster);
 
             if (cluster == null) {
                 System.out.println("Subscribe cartridge list is null");
-                return;
+                return null;
             }
 
-            Member[] members = new Member[cluster.getMember().size()];
-            members = cluster.getMember().toArray(members);
+            Member[] lbMembers = new Member[cluster.getMember().size()];
+            lbMembers = cluster.getMember().toArray(lbMembers);
+           
+            for (Member lbMember : lbMembers) {
+            	lbIpSet.add(lbMember.getMemberPublicIp());
+			}
+		}
+
+		return lbIpSet;
+	}
+
+	public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+
+        	Member[] members = getMembers(cartridgeType, alias, httpClient);
 
             if (members.length == 0) {
                 if (logger.isDebugEnabled()) {
@@ -439,7 +531,7 @@ public class RestCommandLineService {
             RowMapper<Member> memberMapper = new RowMapper<Member>() {
 
                 public String[] getData(Member member) {
-                    String[] data = new String[7];
+                    String[] data = new String[8];
                     data[0] = member.getServiceName();
                     data[1] = member.getClusterId();
                     data[2] = member.getNetworkPartitionId();
@@ -447,6 +539,7 @@ public class RestCommandLineService {
                     data[4] = member.getMemberIp();
                     data[5] = member.getStatus().toString();
                     data[6] = member.getLbClusterId() != null ? member.getLbClusterId() : "";
+                    data[7] = member.getMemberPublicIp().toString();
                     return data;
                 }
             };
@@ -459,11 +552,22 @@ public class RestCommandLineService {
             headers.add("MemberIp");
             headers.add("Status");
             headers.add("LBCluster");
+            headers.add("MemberPublicIp");
 
             System.out.println("List of members in the [cluster]: " + alias);
             CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
 
             System.out.println("List of LB members for the [cluster]: " + "TODO" );
+            
+            // Invoke  cluster/{clusterId}
+            for (Member m : members) {
+            	HttpResponse responseCluster = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
+                        +"clusterId/"+ m.getLbClusterId(),
+                        restClientService.getUsername(), restClientService.getPassword());
+                String resultStringCluster = getHttpResponseString(responseCluster);                
+                printLBs(resultStringCluster);                
+			}
+            
         } catch (Exception e) {
             handleException("Exception in listing subscribe cartridges", e);
         } finally {
@@ -471,7 +575,95 @@ public class RestCommandLineService {
         }
     }
 
-    // This method does the cartridge subscription
+	private Member[] getMembers(String cartridgeType, String alias,
+			DefaultHttpClient httpClient) {
+		HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
+		        + cartridgeType + "/" + alias,
+		        restClientService.getUsername(), restClientService.getPassword());
+
+		String responseCode = "" + response.getStatusLine().getStatusCode();
+		if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+		    System.out.println("Error occured while listing members of a cluster");
+		    return null;
+		}
+
+		Cluster cluster = getClusterObjectFromString(getHttpResponseString(response));
+		
+		 if (cluster == null) {
+             System.out.println("Subscribe cartridge list is null");
+             return null;
+         }
+
+         Member[] members = new Member[cluster.getMember().size()];
+         members = cluster.getMember().toArray(members);
+         
+		return members;
+	}
+
+	private Cluster getClusterObjectFromString(String resultString) {
+		String tmp;
+		if(resultString.startsWith("{\"cluster\"")) {
+		   tmp = resultString.substring("{\"cluster\"".length() + 1, resultString.length()-1);
+		   resultString = tmp;
+		}
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		Gson gson = gsonBuilder.create();
+
+		Cluster cluster = gson.fromJson(resultString, Cluster.class);
+		return cluster;
+	}
+
+    private void printLBs(String resultString) {
+    	
+    	Cluster cluster = getClusterObjectFromString(resultString);
+
+        if (cluster == null) {
+            System.out.println("Subscribe cartridge list is null");
+            return;
+        }
+
+        Member[] members = new Member[cluster.getMember().size()];
+        members = cluster.getMember().toArray(members);
+
+        if (members.length == 0) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("No subscribed cartridges found");
+            }
+            System.out.println("There are no subscribed cartridges");
+            return;
+        }
+
+        RowMapper<Member> memberMapper = new RowMapper<Member>() {
+
+            public String[] getData(Member member) {
+                String[] data = new String[8];
+                data[0] = member.getServiceName();
+                data[1] = member.getClusterId();
+                data[2] = member.getNetworkPartitionId();
+                data[3] = member.getPartitionId();
+                data[4] = member.getMemberIp();
+                data[5] = member.getStatus().toString();
+                data[6] = member.getLbClusterId() != null ? member.getLbClusterId() : "";
+                data[7] = member.getMemberPublicIp().toString();
+                return data;
+            }
+        };
+
+        List<String> headers = new ArrayList<String>();
+        headers.add("ServiceName");
+        headers.add("ClusterId");
+        headers.add("NewtworkPartitionId");
+        headers.add("PartitionId");
+        headers.add("MemberIp");
+        headers.add("Status");
+        headers.add("LBCluster");
+        headers.add("MemberPublicIp");
+        
+        CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
+		
+	}
+
+	// This method does the cartridge subscription
     public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
                           String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy, String depPolicy)
             throws CommandException {

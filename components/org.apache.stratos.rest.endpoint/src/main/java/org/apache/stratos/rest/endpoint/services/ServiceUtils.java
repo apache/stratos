@@ -531,6 +531,13 @@ public class ServiceUtils {
         return cartridges;
     }
 
+    
+    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    	return getCartridgeFromSubscription(cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.
+                    getTenantId(configurationContext), cartridgeAlias));
+    	
+    }
+    
     private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
 
         Cartridge cartridge = new Cartridge();
