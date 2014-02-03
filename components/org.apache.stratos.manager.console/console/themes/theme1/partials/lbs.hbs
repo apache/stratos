@@ -5,19 +5,17 @@
         </div>
     </div>
 </div>
-<div class="container" style="display: none;" id="addItemSection">
+<div class="container" id="addItemSection">
     <div class="row">
         <div class="col-md-12">
-            <h2>New LB</h2>
-            <form method="post" role="form" action="{{url "/controllers/lbDefinitionSubmit.jag"}}">
+            <form id="jsonForm" method="post" role="form" action="{{url "/controllers/lbDefinitionSubmit.jag"}}">
             <label for="policy" class="required">LB Configuration</label>
 
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 padding-remover-left">
-                        <textarea name="lb-definition" class="form-control" rows="11" id="policy"></textarea>
+                        <textarea name="lb-definition" class="form-control required" rows="11" id="policy"></textarea>
                         <button type="submit" class="btn btn-primary" id="deployPolicy">Add New LB</button>
-                        <a>Cancel</a>
                     </div>
                     <div class="col-md-6">
                         <i class="icons-help"></i>
@@ -59,12 +57,12 @@
             <div class="panel-group" id="accordion">
 
 
-                {{#each lbs}}
+                {{#each cartridge_deployments }}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
-                                {{name}}
+                                {{displayName}}
                             </a>
                         </h4>
                     </div>

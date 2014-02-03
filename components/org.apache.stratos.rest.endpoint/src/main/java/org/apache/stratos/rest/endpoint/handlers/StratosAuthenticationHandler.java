@@ -27,6 +27,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
+import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.security.StratosSecurityContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -97,7 +98,9 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
                 //populate the secuirtyContext of authenticated user
                 SecurityContext securityContext = new StratosSecurityContext(username);
                 message.put(SecurityContext.class, securityContext);
-                // let request to continue
+
+                // set the authenticated flag and let the request to continue
+                AuthenticationContext.setAuthenticated(true);
                 return null;
             } else {
                 log.warn("unable to authenticate the request");

@@ -1,7 +1,5 @@
 var render = function (theme, data, meta, require) {
-    for(var i=0;i<data.partition_deployments.length;i++){
-        data.partition_deployments[i].key = data.partition_deployments[i].name.replace(/ /g,'');
-    }
+
     var create_btn_class = 'btn-important js_handle_click';
     var title = 'Configure Stratos - Partition Deployments';
     if(data.config_status.first_use){
@@ -31,6 +29,7 @@ var render = function (theme, data, meta, require) {
                     },
                     has_help:false,
                     partition_deployments:true,
+                    configure_stratos:true,
                     config_status:data.config_status
                 }
             }

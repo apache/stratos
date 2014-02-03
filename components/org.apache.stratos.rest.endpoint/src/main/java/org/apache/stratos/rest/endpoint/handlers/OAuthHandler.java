@@ -24,6 +24,7 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.impl.HttpHeadersImpl;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
+import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 import org.apache.stratos.rest.endpoint.oauth2.ValidationServiceClient;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 
@@ -78,6 +79,7 @@ public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
             log.error("Error while validating access token", e);
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        AuthenticationContext.setAuthenticated(true);
         return null;
     }
 }

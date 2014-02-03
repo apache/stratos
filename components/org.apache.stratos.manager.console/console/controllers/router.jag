@@ -3,8 +3,6 @@
 (function(){
     var config=require('/config/console.json');
     var log = new Log("controller.router");
-    var DEFAULT_ROUTER_NAME='/asset.jag';
-    var DEFAULT_PATH=config.paths.ASSET_DEFAULT_PATH;
     var acl = require('/util/acl.jag');
 
     var MSG_404='Asset not found';	//Eror 404 message
@@ -16,15 +14,15 @@
 
     //This will short circuit the handling of the requests
     var passed=sm.check(session);
-    var tenantDomain = session.get("TENANT_DOMAIN");
-    var roleArray = session.get("ROLE_ARRAY");
+    //var tenantDomain = session.get("TENANT_DOMAIN");
+    //var roleArray = session.get("ROLE_ARRAY");
 
     // comment out the above and uncomment below code bits for testing. It removes authentication/authorization
     // of the app.
 
     //var passed=true;
-    //var tenantDomain = "carbon.super";
-    //var roleArray = "["admin","Internal/Everyone"]";
+    var tenantDomain = "carbon.super";
+    var roleArray = ["admin","Internal/Everyone"];
 
     //Stop servicing the request if the check failed
     if(!passed){
@@ -74,7 +72,7 @@
 
         if(fileTester.isExists()){
             request.getMappedPath = function() {
-                return includePath;
+                return includePath; // setting path for caramel framework
             };
             var permissionObject = acl.authorizationUtil.getPermissionObj(tenantDomain,roleArray);
             request.permissions = permissionObject;
@@ -82,11 +80,13 @@
             return;
         }
 
-        //Set the default path
-        path=DEFAULT_PATH+DEFAULT_ROUTER_NAME;
 
-        //Default
-        include(path);
+        var defaultPath='/default_page.jag';
+        //Set the default path
+        request.getMappedPath = function() {
+            return defaultPath; // setting path for caramel framework
+        };
+        include(defaultPath);
         return;
     }
 
