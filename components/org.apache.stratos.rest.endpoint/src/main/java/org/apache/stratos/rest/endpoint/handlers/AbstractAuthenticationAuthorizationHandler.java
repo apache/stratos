@@ -20,6 +20,7 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.impl.HttpHeadersImpl;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
+import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -33,7 +34,8 @@ public abstract class AbstractAuthenticationAuthorizationHandler implements Requ
     public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
         HttpHeaders headers = new HttpHeadersImpl(message);
         List<String> authHeader = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
-        if(authHeader != null && authHeader.size() > 0 && canHandle(authHeader.get(0).trim().split(" ")[0])){
+        if(!AuthenticationContext.isAthenticated() && authHeader != null && authHeader.size() > 0 &&
+                canHandle(authHeader.get(0).trim().split(" ")[0])){
              return handle(message,classResourceInfo);
         }
         // give the control to the next handler

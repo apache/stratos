@@ -28,6 +28,7 @@ import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
+import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
@@ -51,7 +52,12 @@ import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -59,16 +65,31 @@ import java.util.UUID;
 @Path("/admin/")
 public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
+    @Context
+    HttpServletRequest httpServletRequest;
 
-    @POST
-    @Path("/init")
+
+    /*
+    This method gets called by the client who are interested in using session mechanism to authenticate themselves in
+    subsequent calls. This method call get authenticated by the basic authenticator.
+    Once the authenticated call received, the method creates a session.
+
+     */
+    @GET
+    @Path("/cookie")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public void initialize ()
-            throws RestAPIException {
+    public Response getCookie(){
+        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        httpSession.setAttribute("userName",carbonContext.getUsername());
+        httpSession.setAttribute("tenantDomain",carbonContext.getTenantDomain());
+        httpSession.setAttribute("tenantId",carbonContext.getTenantId());
 
-        //login
+        String sessionId = httpSession.getId();
+        return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
+                entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
 
     @POST
