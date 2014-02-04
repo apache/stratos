@@ -44,6 +44,11 @@ public class LoadBalancerExtension implements Runnable {
     private LoadBalancerStatisticsNotifier statisticsNotifier;
     private boolean terminated;
 
+    /**
+     * Load balancer extension constructor.
+     * @param loadBalancer Load balancer instance: Mandatory.
+     * @param statsReader Statistics reader: If null statistics notifier thread will not be started.
+     */
     public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader) {
         this.loadBalancer = loadBalancer;
         this.statsReader = statsReader;
@@ -61,10 +66,17 @@ public class LoadBalancerExtension implements Runnable {
             Thread topologyReceiverThread = new Thread(topologyReceiver);
             topologyReceiverThread.start();
 
-            // Start stats notifier thread
-            statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
-            Thread statsNotifierThread = new Thread(statisticsNotifier);
-            statsNotifierThread.start();
+            if(statsReader != null) {
+                // Start stats notifier thread
+                statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
+                Thread statsNotifierThread = new Thread(statisticsNotifier);
+                statsNotifierThread.start();
+            }
+            else {
+                if(log.isWarnEnabled()) {
+                    log.warn("Load balancer statistics reader not found");
+                }
+            }
 
             // Keep the thread live until terminated
             while (!terminated);
@@ -147,8 +159,12 @@ public class LoadBalancerExtension implements Runnable {
     }
 
     public void terminate() {
-        topologyReceiver.terminate();
-        statisticsNotifier.terminate();
+        if(topologyReceiver != null) {
+            topologyReceiver.terminate();
+        }
+        if(statisticsNotifier != null) {
+            statisticsNotifier.terminate();
+        }
         terminated = true;
     }
 }

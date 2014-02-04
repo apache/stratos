@@ -36,22 +36,34 @@ public class HAProxyContext {
     private String scriptsPath;
     private String confFilePath;
     private String statsSocketFilePath;
+    private boolean cepStatsPublisherEnabled;
+    private String thriftReceiverIp;
+    private String thriftReceiverPort;
+    private String networkPartitionId;
 
     private HAProxyContext() {
-        this.executableFilePath = System.getProperty("executable.file.path");
-        this.templatePath = System.getProperty("templates.path");
-        this.templateName = System.getProperty("templates.name");
-        this.scriptsPath = System.getProperty("scripts.path");
-        this.confFilePath = System.getProperty("conf.file.path");
-        this.statsSocketFilePath = System.getProperty("stats.socket.file.path");
+        this.executableFilePath = System.getProperty(Constants.EXECUTABLE_FILE_PATH);
+        this.templatePath = System.getProperty(Constants.TEMPLATES_PATH);
+        this.templateName = System.getProperty(Constants.TEMPLATES_NAME);
+        this.scriptsPath = System.getProperty(Constants.SCRIPTS_PATH);
+        this.confFilePath = System.getProperty(Constants.CONF_FILE_PATH);
+        this.statsSocketFilePath = System.getProperty(Constants.STATS_SOCKET_FILE_PATH);
+        this.cepStatsPublisherEnabled = Boolean.getBoolean(Constants.CEP_STATS_PUBLISHER_ENABLED);
+        this.thriftReceiverIp = System.getProperty(Constants.THRIFT_RECEIVER_IP);
+        this.thriftReceiverPort = System.getProperty(Constants.THRIFT_RECEIVER_PORT);
+        this.networkPartitionId = System.getProperty(Constants.NETWORK_PARTITION_ID);
 
         if (log.isDebugEnabled()) {
-            log.debug("executable.file.path = " + executableFilePath);
-            log.debug("templates.path = " + templatePath);
-            log.debug("templates.name = " + templateName);
-            log.debug("scripts.path = " + scriptsPath);
-            log.debug("conf.file.path = " + confFilePath);
-            log.debug("stats.socket.file.path = " + statsSocketFilePath);
+            log.debug(Constants.EXECUTABLE_FILE_PATH + " = " + executableFilePath);
+            log.debug(Constants.TEMPLATES_PATH + " = " + templatePath);
+            log.debug(Constants.TEMPLATES_NAME + " = " + templateName);
+            log.debug(Constants.SCRIPTS_PATH + " = " + scriptsPath);
+            log.debug(Constants.CONF_FILE_PATH + " = " + confFilePath);
+            log.debug(Constants.STATS_SOCKET_FILE_PATH + " = " + statsSocketFilePath);
+            log.debug(Constants.CEP_STATS_PUBLISHER_ENABLED + " = " + cepStatsPublisherEnabled);
+            log.debug(Constants.THRIFT_RECEIVER_IP + " = " + thriftReceiverIp);
+            log.debug(Constants.THRIFT_RECEIVER_PORT + " = " + thriftReceiverPort);
+            log.debug(Constants.NETWORK_PARTITION_ID + " = " + networkPartitionId);
         }
     }
 
@@ -67,9 +79,25 @@ public class HAProxyContext {
     }
 
     public void validate() {
-        if ((StringUtils.isEmpty(executableFilePath)) || (StringUtils.isEmpty(templatePath)) || (StringUtils.isEmpty(templateName)) ||
-                (StringUtils.isEmpty(scriptsPath)) || (StringUtils.isEmpty(confFilePath)) || (StringUtils.isEmpty(statsSocketFilePath))) {
-            throw new RuntimeException("Required system properties were not found: executable.file.path, templates.path, templates.name, scripts.path, conf.file.path, stats.socket.file.path");
+        validateSystemProperty(Constants.EXECUTABLE_FILE_PATH);
+        validateSystemProperty(Constants.TEMPLATES_PATH);
+        validateSystemProperty(Constants.TEMPLATES_NAME);
+        validateSystemProperty(Constants.SCRIPTS_PATH);
+        validateSystemProperty(Constants.CONF_FILE_PATH);
+        validateSystemProperty(Constants.STATS_SOCKET_FILE_PATH);
+        validateSystemProperty(Constants.CEP_STATS_PUBLISHER_ENABLED);
+
+        if(cepStatsPublisherEnabled) {
+            validateSystemProperty(Constants.THRIFT_RECEIVER_IP);
+            validateSystemProperty(Constants.THRIFT_RECEIVER_PORT);
+            validateSystemProperty(Constants.NETWORK_PARTITION_ID);
+        }
+    }
+
+    private void validateSystemProperty(String propertyName) {
+        String value = System.getProperty(propertyName);
+        if(StringUtils.isEmpty(value)) {
+            throw new RuntimeException("System property was not found: " + propertyName);
         }
     }
 
@@ -95,5 +123,9 @@ public class HAProxyContext {
 
     public String getStatsSocketFilePath() {
         return statsSocketFilePath;
+    }
+
+    public boolean isCEPStatsPublisherEnabled() {
+        return cepStatsPublisherEnabled;
     }
 }

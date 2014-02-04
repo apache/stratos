@@ -43,7 +43,7 @@ public class Main {
 
             // Validate runtime parameters
             HAProxyContext.getInstance().validate();
-            extension = new LoadBalancerExtension(new HAProxy(), new HAProxyStatisticsReader());
+            extension = new LoadBalancerExtension(new HAProxy(), (HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ? new HAProxyStatisticsReader() : null));
             Thread thread = new Thread(extension);
             thread.start();
         } catch (Exception e) {
