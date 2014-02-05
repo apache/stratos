@@ -83,6 +83,12 @@ public class PartitionContext implements Serializable{
 
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
+        // check if a different value has been set for expiryTime
+        long memberExpiryInterval = getMemberExpiryInterval();
+        if (memberExpiryInterval != -1) {
+            setExpiryTime(memberExpiryInterval);
+            log.info("Member expiry interval set as " + memberExpiryInterval);
+        }
     }
     
     public PartitionContext(Partition partition) {
@@ -95,6 +101,14 @@ public class PartitionContext implements Serializable{
         this.obsoletedMembers = new CopyOnWriteArrayList<String>();
 //        this.faultyMembers = new CopyOnWriteArrayList<String>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
+
+        // check if a different value has been set for expiryTime
+        long memberExpiryInterval = getMemberExpiryInterval();
+        if (memberExpiryInterval != -1) {
+            setExpiryTime(memberExpiryInterval);
+            log.info("Member expiry interval set as " + memberExpiryInterval);
+        }
+
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
     }
@@ -356,6 +370,31 @@ public class PartitionContext implements Serializable{
             }
         }
         return false;
+    }
+
+    private long getMemberExpiryInterval () {
+
+        // if expiry time has been set in startup scrip with 'member.expiry.interval', use that
+        String memberExpiryInterval = System.getProperty(Constants.MEMBER_EXPIRY_INTERVAL);
+        long memberExpiryIntervalLongVal = -1;
+
+        if (memberExpiryInterval != null) {
+
+            try {
+                memberExpiryIntervalLongVal = Long.parseLong(memberExpiryInterval);
+
+            } catch (NumberFormatException e) {
+                log.warn("Invalid value specified for [member.expiry.interval] in the startup script, default value of 15 mins will be used");
+                return -1;
+            }
+
+            if (memberExpiryIntervalLongVal < 0) {
+                log.warn("Invalid value specified for [member.expiry.interval] in the startup script, default value of 15 mins will be used");
+                return -1;
+            }
+        }
+
+        return memberExpiryIntervalLongVal;
     }
 
 
