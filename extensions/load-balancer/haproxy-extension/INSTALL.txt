@@ -11,14 +11,25 @@ below steps to proceed with the installation:
 2. Extract apache-stratos-haproxy-extension-4.0.0-SNAPSHOT-bin.zip to a desired location: <haproxy-extension-home>.
 
 3. Open <haproxy-extension-home>/bin/haproxy-extension.sh file in a text editor and update following system properties:
-   -Dexecutable.file.path=<haproxy-home>/haproxy        # HAProxy executable file path
-   -Dthrift.receiver.ip=localhost                       # CEP IP Address
-   -Dthrift.receiver.port=7615                          # CEP Port
+
+   # Define haproxy host private ip address:
+   -Dhaproxy.private.ip=127.0.0.1
+
+   # Define the haproxy executable file path:
+   -Dexecutable.file.path=<haproxy-home>/haproxy
+
+   # Enable/disable cep statistics publisher:
+   -Dcep.stats.publisher.enabled=false
+
+   # If cep statistics publisher is enabled define the following properties:
+   -Dthrift.receiver.ip=127.0.0.1
+   -Dthrift.receiver.port=7615
+   -Dnetwork.partition.id=network-partition-1
 
 4. Open <haproxy-extension-home>/conf/jndi.properties file in a text editor and update message broker information:
    connectionfactory.topicConnectionfactory=amqp://admin:admin@carbon/carbon?brokerlist='tcp://<message-broker-ip>:<message-broker-port>'
 
-5. Run <haproxy-extension-home>/bin/haproxy-extension.sh
+5. Run <haproxy-extension-home>/bin/haproxy-extension.sh as the root user.
 
 
 Thank you for using Apache Stratos!
