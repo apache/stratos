@@ -35,6 +35,7 @@ import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolic
 import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
+import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.topology.Cluster;
 import org.apache.stratos.cli.beans.topology.Member;
 import org.apache.stratos.cli.exception.CommandException;
@@ -54,6 +55,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jline.internal.Log;
@@ -347,9 +349,19 @@ public class RestCommandLineService {
                 System.out.println("Subscribe cartridge list is null");
                 return;
             }
+            
+            CartridgeList applicationCartridgeList = new CartridgeList();
+            
+            // Filter out LB cartridges
+            List<Cartridge> allCartridges = cartridgeList.getCartridge();
+            for (Cartridge cartridge : allCartridges) {
+				if(!cartridge.getProvider().equals("lb")){
+					applicationCartridgeList.getCartridge().add(cartridge);
+				}
+			}
 
-            Cartridge[] cartridges = new Cartridge[cartridgeList.getCartridge().size()];
-            cartridges = cartridgeList.getCartridge().toArray(cartridges);
+            Cartridge[] cartridges = new Cartridge[applicationCartridgeList.getCartridge().size()];
+            cartridges = applicationCartridgeList.getCartridge().toArray(cartridges);
 
             if (cartridges.length == 0) {
                 if (logger.isDebugEnabled()) {
@@ -375,6 +387,7 @@ public class RestCommandLineService {
                         data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
                     }
                     return data;
+                	
                 }
             };
 
@@ -403,11 +416,11 @@ public class RestCommandLineService {
 
     
     // Lists subscribed cartridge info (from alias)
-    public void listSubscribedCartridgeInfo(final boolean full, String alias) throws CommandException {
+    public void listSubscribedCartridgeInfo(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listSubscribedCartridgeInfoRestEndpoint
-            		+"info/"+alias, restClientService.getUsername(), restClientService.getPassword());
+            		+alias, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
@@ -419,21 +432,24 @@ public class RestCommandLineService {
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
-            Cartridge cartridge = gson.fromJson(resultString, Cartridge.class);
-
+            CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
+            Cartridge cartridge = cartridgeList.getCartridge().get(0);
             if (cartridge == null) {
                 System.out.println("Cartridge is null");
                 return;
             }
             // Get LB IP s
-            final Set<String> lbIpList = getLbIpList(cartridge, httpClient);
+            Map<String, Set<String>> lbIpMap = getLbIpList(cartridge, httpClient);
+            final Set<String> lbPrivateIpSet = lbIpMap.get("private");
+            final Set<String> lbFloatingIpSet = lbIpMap.get("floating");
             Cartridge[] cartridges = new Cartridge[1];
             cartridges[0] = cartridge;
 
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
                 public String[] getData(Cartridge cartridge) {
-                    String[] data = full ? new String[10] : new String[7];
+                	
+                	String[] data = lbFloatingIpSet != null ? new String[13] : new String[12];
                     data[0] = cartridge.getCartridgeType();
                     data[1] = cartridge.getDisplayName();
                     data[2] = cartridge.getVersion();
@@ -441,11 +457,14 @@ public class RestCommandLineService {
                     data[4] = cartridge.getCartridgeAlias();
                     data[5] = cartridge.getStatus();
                     data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-                    if (full) {
-                        data[7] = getAccessURLs(cartridge);
-                        data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
-                    }
-                    data[9] = lbIpList.toString();
+                    data[7] = getAccessURLs(cartridge);
+                    data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
+                    data[9] = lbPrivateIpSet.toString();
+					if (lbFloatingIpSet != null) {
+						data[10] = lbFloatingIpSet.toString();
+					}
+					data[11] = cartridge.getDbUserName();
+					data[12] = cartridge.getPassword();
                     return data;
                 }
             };
@@ -458,15 +477,15 @@ public class RestCommandLineService {
             headers.add("Alias");
             headers.add("Status");
             headers.add("Running Instances");
-            if (full) {
-                headers.add("Access URL(s)");
-                headers.add("Repo URL");
-            }
-            headers.add("LoadBalancer Ip");
-            
-            
-            // Display Database info as well..
-            
+            headers.add("Access URL(s)");
+            headers.add("Repo URL");
+            headers.add("LB Private Ip");
+			if (lbFloatingIpSet != null) {
+				headers.add("LB Floating Ip");
+			}
+			headers.add("DB username");
+			headers.add("DB password");
+                        
             System.out.println("Subscribed Cartridges Info ************ : [TODO database info]");
             CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
             System.out.println();
@@ -478,9 +497,11 @@ public class RestCommandLineService {
     }
     
     
-    private Set<String> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) {
+    private Map<String, Set<String>> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) {
     	
-    	Set<String> lbIpSet = new HashSet<String>();
+    	Map<String, Set<String>> privateFloatingLBIPMap = new HashMap<String, Set<String>>();
+    	Set<String> lbFloatingIpSet = new HashSet<String>();
+    	Set<String> lbPrivateIpSet = new HashSet<String>();
     	Member[] members = getMembers(cartridge.getCartridgeType(), cartridge.getCartridgeAlias(), httpClient);
     	
     	Set<String> lbClusterIdSet = new HashSet<String>();
@@ -507,11 +528,15 @@ public class RestCommandLineService {
             lbMembers = cluster.getMember().toArray(lbMembers);
            
             for (Member lbMember : lbMembers) {
-            	lbIpSet.add(lbMember.getMemberPublicIp());
+            	lbPrivateIpSet.add(lbMember.getMemberIp());
+            	lbFloatingIpSet.add(lbMember.getMemberPublicIp());
 			}
+            
 		}
+        privateFloatingLBIPMap.put("private", lbPrivateIpSet);
+        privateFloatingLBIPMap.put("floating", lbFloatingIpSet);
 
-		return lbIpSet;
+		return privateFloatingLBIPMap;
 	}
 
 	public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
@@ -1412,19 +1437,12 @@ public class RestCommandLineService {
 
     // This will return access url from a given cartridge
     private String getAccessURLs(Cartridge cartridge) {
-        String[] accessURLs = cartridge.getAccessURLs();
-        StringBuilder urlBuilder = new StringBuilder();
-        if (accessURLs != null) {
-            for (int i = 0; i < accessURLs.length; i++) {
-                String url = accessURLs[i];
-                if (url != null) {
-                    if (i > 0) {
-                        urlBuilder.append(", ");
-                    }
-                    urlBuilder.append(url);
-                }
-            }
-        }
+    	PortMapping[] portMappings = cartridge.getPortMappings();
+    	StringBuilder urlBuilder = new StringBuilder();
+    	for (PortMapping portMapping : portMappings) {
+			String url = portMapping.getProtocol()+"://"+ cartridge.getHostName() + ":" + portMapping.getProxyPort() + "/";
+			urlBuilder.append(url).append(",");
+		} 
         return urlBuilder.toString();
     }
 

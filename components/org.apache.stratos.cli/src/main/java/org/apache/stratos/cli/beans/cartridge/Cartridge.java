@@ -21,6 +21,7 @@ package org.apache.stratos.cli.beans.cartridge;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+
 @XmlRootElement
 public class Cartridge implements Comparable<Cartridge> {
 
@@ -41,8 +42,10 @@ public class Cartridge implements Comparable<Cartridge> {
     private String repoURL;
     private String dbUserName;
     private String mappedDomain;
+    private String dbHost;
 
     private String[] accessURLs;
+    private PortMapping[] portMappings;
 
     public String getDisplayName() {
         return displayName;
@@ -187,8 +190,24 @@ public class Cartridge implements Comparable<Cartridge> {
     public void setMappedDomain(String mappedDomain) {
         this.mappedDomain = mappedDomain;
     }
+    
+    public PortMapping[] getPortMappings() {
+		return portMappings;
+	}
 
-    public int compareTo(Cartridge o) {
+	public void setPortMappings(PortMapping[] portMappings) {
+		this.portMappings = portMappings;
+	}
+	
+	public String getDbHost() {
+		return dbHost;
+	}
+
+	public void setDbHost(String dbHost) {
+		this.dbHost = dbHost;
+	}
+
+	public int compareTo(Cartridge o) {
         int compare = 0;
         if (cartridgeAlias != null && o.cartridgeAlias != null) {
             compare = cartridgeAlias.compareTo(o.cartridgeAlias);

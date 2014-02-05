@@ -58,6 +58,11 @@ public class CliConstants {
 	 * List the subscribed cartridges
 	 */
 	public static final String LIST_ACTION = "list-subscribe-cartridges";
+	
+	/**
+	 * List the subscribed cartridges
+	 */
+	public static final String LIST_INFO_ACTION = "subscribe-cartridges-info";
 
 	/**
 	 * List the available cartridges
