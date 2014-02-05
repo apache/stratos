@@ -29,8 +29,10 @@ public class CEPConfigurator {
     public static void configure(LoadBalancerConfiguration configuration) {
         // Set system properties
         System.setProperty("cep.stats.publisher.enabled", String.valueOf(configuration.isCepStatsPublisherEnabled()));
-        System.setProperty("thrift.receiver.ip", configuration.getCepIp());
-        System.setProperty("thrift.receiver.port", String.valueOf(configuration.getCepPort()));
-        System.setProperty("network.partition.id", configuration.getNetworkPartitionId());
+        if(configuration.isCepStatsPublisherEnabled()) {
+            System.setProperty("thrift.receiver.ip", configuration.getCepIp());
+            System.setProperty("thrift.receiver.port", String.valueOf(configuration.getCepPort()));
+            System.setProperty("network.partition.id", configuration.getNetworkPartitionId());
+        }
     }
 }

@@ -109,17 +109,6 @@ public class ServiceDeploymentManager {
 
             Service lbService;
 
-            CartridgeInfo lbCartridgeInfo;
-            String lbCartridgeType = lbConfig.getType();
-            try {
-                // retrieve lb Cartridge info
-                lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
-            } catch (Exception e) {
-                String msg = "Cannot get cartridge info: " + type;
-                log.error(msg, e);
-                throw new ADCException(msg, e);
-            }
-
             Properties lbReferenceProperties = lbConfig.getProperties();
 
             Property property = new Property();
@@ -167,7 +156,20 @@ public class ServiceDeploymentManager {
                     break;
 
                 } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
+
                     if ("true".equals(value)) {
+
+                        CartridgeInfo lbCartridgeInfo;
+                        String lbCartridgeType = lbConfig.getType();
+                        try {
+                            // retrieve lb Cartridge info
+                            lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
+                        } catch (Exception e) {
+                            String msg = "Cannot get cartridge info: " + type;
+                            log.error(msg, e);
+                            throw new ADCException(msg, e);
+                        }
+
                         property.setValue(name);
                         if (log.isDebugEnabled()) {
                             log.debug("This cartridge uses default load balancer. " + "[Type] " +
@@ -220,7 +222,20 @@ public class ServiceDeploymentManager {
                         break;
                     }
                 } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+
                     if ("true".equals(value)) {
+
+                        CartridgeInfo lbCartridgeInfo;
+                        String lbCartridgeType = lbConfig.getType();
+                        try {
+                            // retrieve lb Cartridge info
+                            lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
+                        } catch (Exception e) {
+                            String msg = "Cannot get cartridge info: " + type;
+                            log.error(msg, e);
+                            throw new ADCException(msg, e);
+                        }
+
                         property.setValue(name);
                         if (log.isDebugEnabled()) {
                             log.debug("This cartridge uses a service aware load balancer. " +

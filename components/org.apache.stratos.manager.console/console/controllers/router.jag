@@ -11,6 +11,15 @@
     var file = require('/modules/file.js');
 
     var sm=securityModule.cached();
+    //
+    var matcher=new URIMatcher(request.getRequestURI());
+
+    // we stream css and other theme related resources found under themes directory.
+    if (matcher.match('/{context}/themes/{+file}')) {
+        elements = matcher.elements();
+        file.send('/themes/' + elements.file);
+        return;
+    }
 
     //This will short circuit the handling of the requests
     var passed=sm.check(session);
@@ -45,14 +54,7 @@
     }
 
 
-    var matcher=new URIMatcher(request.getRequestURI());
 
-    // we stream css and other theme related resources found under themes directory.
-    if (matcher.match('/{context}/themes/{+file}')) {
-        elements = matcher.elements();
-        file.send('/themes/' + elements.file);
-        return;
-    }
 
     var patterns=['/{context}','/{context}/','/{context}/{+suffix}'];
     if(isMatchingPattern(patterns,matcher)){
