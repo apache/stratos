@@ -8,6 +8,8 @@
     var username = request.getParameter("username").trim();
     var password = request.getParameter("password"); // not trimming the password
     //authenticate with carbon usr-store
+    log.info("Username : " + username);
+    log.info("Password : "+ password);
     var auth = server.authenticate(username, password);
     var userObject = carbon.server.tenantUser(username);
     var um = new carbon.user.UserManager({}, userObject.tenantId);

@@ -63,6 +63,10 @@ public class CookieBasedAuthenticationHandler implements RequestHandler {
            carbonContext.setTenantId(tenantId);
 
            AuthenticationContext.setAuthenticated(true);
+           if (log.isDebugEnabled()) {
+               log.debug("authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
+                       userName + "tenantDomain : " + tenantDomain + " tenantId : " + tenantId);
+           }
            return null;
 
        }
