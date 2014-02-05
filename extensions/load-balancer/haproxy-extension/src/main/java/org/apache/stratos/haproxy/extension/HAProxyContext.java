@@ -30,6 +30,7 @@ public class HAProxyContext {
     private static final Log log = LogFactory.getLog(HAProxyContext.class);
     private static volatile HAProxyContext context;
 
+    private String haProxyPrivateIp;
     private String executableFilePath;
     private String templatePath;
     private String templateName;
@@ -42,6 +43,7 @@ public class HAProxyContext {
     private String networkPartitionId;
 
     private HAProxyContext() {
+        this.haProxyPrivateIp = System.getProperty(Constants.HAPROXY_PRIVATE_IP);
         this.executableFilePath = System.getProperty(Constants.EXECUTABLE_FILE_PATH);
         this.templatePath = System.getProperty(Constants.TEMPLATES_PATH);
         this.templateName = System.getProperty(Constants.TEMPLATES_NAME);
@@ -54,6 +56,7 @@ public class HAProxyContext {
         this.networkPartitionId = System.getProperty(Constants.NETWORK_PARTITION_ID);
 
         if (log.isDebugEnabled()) {
+            log.debug(Constants.HAPROXY_PRIVATE_IP + " = " + haProxyPrivateIp);
             log.debug(Constants.EXECUTABLE_FILE_PATH + " = " + executableFilePath);
             log.debug(Constants.TEMPLATES_PATH + " = " + templatePath);
             log.debug(Constants.TEMPLATES_NAME + " = " + templateName);
@@ -79,6 +82,7 @@ public class HAProxyContext {
     }
 
     public void validate() {
+        validateSystemProperty(Constants.HAPROXY_PRIVATE_IP);
         validateSystemProperty(Constants.EXECUTABLE_FILE_PATH);
         validateSystemProperty(Constants.TEMPLATES_PATH);
         validateSystemProperty(Constants.TEMPLATES_NAME);
@@ -99,6 +103,10 @@ public class HAProxyContext {
         if(StringUtils.isEmpty(value)) {
             throw new RuntimeException("System property was not found: " + propertyName);
         }
+    }
+
+    public String getHAProxyPrivateIp() {
+        return haProxyPrivateIp;
     }
 
     public String getExecutableFilePath() {
