@@ -142,18 +142,21 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * These values will be used to update the Location value in the response header.
      *
      * @param synCtx
+     * @param currentMember
      */
-    private void setupLoadBalancerContextProperties(MessageContext synCtx) {
+    private void setupLoadBalancerContextProperties(MessageContext synCtx, org.apache.axis2.clustering.Member currentMember) {
         String lbHostName = extractTargetHost(synCtx);
         org.apache.axis2.context.MessageContext axis2MsgCtx = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         TransportInDescription httpTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn("http");
         TransportInDescription httpsTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn("https");
         String lbHttpPort = (String) httpTransportIn.getParameter("port").getValue();
         String lbHttpsPort = (String) httpsTransportIn.getParameter("port").getValue();
+        String clusterId = currentMember.getProperties().getProperty(Constants.CLUSTER_ID);
 
         synCtx.setProperty(Constants.LB_HOST_NAME, lbHostName);
         synCtx.setProperty(Constants.LB_HTTP_PORT, lbHttpPort);
         synCtx.setProperty(Constants.LB_HTTPS_PORT, lbHttpsPort);
+        synCtx.setProperty(Constants.CLUSTER_ID, clusterId);
     }
 
 
@@ -241,7 +244,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             axis2Member.setHttpsPort(httpsPort.getValue());
         axis2Member.setActive(member.isActive());
         // Set cluster id and partition id in message context
-        synCtx.setProperty(Constants.CLUSTER_ID, member.getClusterId());
+        axis2Member.getProperties().setProperty(Constants.CLUSTER_ID, member.getClusterId());
         return axis2Member;
     }
 
@@ -530,7 +533,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
         memberHosts.put(extractTargetHost(synCtx), "true");
         setupTransportHeaders(synCtx);
-        setupLoadBalancerContextProperties(synCtx);
+        setupLoadBalancerContextProperties(synCtx, currentMember);
 
         try {
             if (log.isDebugEnabled()) {
