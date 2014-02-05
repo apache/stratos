@@ -101,6 +101,10 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
 
                 // set the authenticated flag and let the request to continue
                 AuthenticationContext.setAuthenticated(true);
+                if (log.isDebugEnabled()) {
+                    log.debug("authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
+                            username + "tenantDomain : " + tenantDomain + " tenantId : " + tenantId);
+                }
                 return null;
             } else {
                 log.warn("unable to authenticate the request");

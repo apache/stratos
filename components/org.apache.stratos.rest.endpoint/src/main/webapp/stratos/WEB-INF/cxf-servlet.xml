@@ -36,7 +36,6 @@
             <ref bean="basicAuthenticationFilter"/>
             <ref bean="sessionAuthenticationFilter"/>
             <ref bean="authorizationFilter"/>
-            <ref bean="OAuthFilter"/>
         </jaxrs:providers>
     </jaxrs:server>
 
