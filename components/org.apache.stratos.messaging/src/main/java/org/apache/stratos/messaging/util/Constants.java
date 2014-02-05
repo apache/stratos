@@ -51,4 +51,6 @@ public class Constants {
     public static final String NO_LOAD_BALANCER = "no.load.balancer";
     public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
     public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
+    
+    public static final String REQUEST_BASE_CONTEXT = "org.wso2.carbon.context.RequestBaseContext";
 }
