@@ -150,6 +150,45 @@ public class StratosManagerTopologyReceiver implements Runnable {
                 }
             }
         });
+        
+        
+      //Instance Spawned event listner
+        processorChain.addEventListener(new InstanceSpawnedEventListener() {
+        	
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("********** [InstanceSpawnedEventListener] Received: " + event.getClass() + " **********");
+
+                InstanceSpawnedEvent instanceSpawnedEvent = (InstanceSpawnedEvent) event;
+
+                String clusterDomain = instanceSpawnedEvent.getClusterId();
+                Set<CartridgeSubscription> cartridgeSubscriptions = getCartridgeSubscription(clusterDomain);
+
+                if(cartridgeSubscriptions != null) {
+
+                    Cluster cluster;
+                    //acquire read lock
+                    TopologyManager.acquireReadLock();
+
+                    try {
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+
+                            cluster = TopologyManager.getTopology().
+                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
+                        }
+
+                    } finally {
+                        //release read lock
+                        TopologyManager.releaseReadLock();
+                    }
+                }
+
+            }
+        });
 
         //Member Started event listner
         processorChain.addEventListener(new MemberStartedEventListener() {
