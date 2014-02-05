@@ -388,7 +388,7 @@ public class PartitionContext implements Serializable{
                 return -1;
             }
 
-            if (memberExpiryIntervalLongVal < 0) {
+            if (memberExpiryIntervalLongVal <= 0) {
                 log.warn("Invalid value specified for [member.expiry.interval] in the startup script, default value of 15 mins will be used");
                 return -1;
             }
