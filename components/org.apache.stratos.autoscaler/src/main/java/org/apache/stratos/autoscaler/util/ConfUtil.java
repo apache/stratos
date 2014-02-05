@@ -19,14 +19,14 @@
 
 package org.apache.stratos.autoscaler.util;
 
-import java.io.File;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
 
 /**
  * This class contains utility methods for read Autoscaler configuration file.
@@ -39,10 +39,18 @@ public class ConfUtil {
 
     private static ConfUtil instance = null;
 
-    private ConfUtil() {
+    private ConfUtil(String configFilePath) {
         log.info("Loading configuration.....");
         try {
-            File confFile = new File(CarbonUtils.getCarbonConfigDirPath(),Constants.AUTOSCALER_CONFIG_FILE_NAME);
+
+            File confFile;
+            if (configFilePath != null && !configFilePath.isEmpty()) {
+                confFile = new File(configFilePath);
+
+            } else {
+                confFile = new File(CarbonUtils.getCarbonConfigDirPath(),Constants.AUTOSCALER_CONFIG_FILE_NAME);
+            }
+
             config = new XMLConfiguration(confFile);
         } catch (ConfigurationException e) {
             log.error("Unable to load autoscaler configuration file",e);
@@ -50,9 +58,9 @@ public class ConfUtil {
         }
     }
 
-    public static ConfUtil getInstance() {
+    public static ConfUtil getInstance(String configFilePath) {
         if (instance == null) {
-            instance = new ConfUtil ();
+            instance = new ConfUtil (configFilePath);
         }
         return instance;
     }

@@ -299,7 +299,6 @@ do
     -Djava.security.egd=file:/dev/./urandom \
     -Dfile.encoding=UTF8 \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
-    -Dmember.expiry.interval=900000 \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done

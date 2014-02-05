@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.autoscaler;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
@@ -79,16 +81,11 @@ public class PartitionContext implements Serializable{
 //    private int totalMemberCount;
 
     // for the use of tests
-    public PartitionContext() {
+    public PartitionContext(long memberExpiryTime) {
 
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
-        // check if a different value has been set for expiryTime
-        long memberExpiryInterval = getMemberExpiryInterval();
-        if (memberExpiryInterval != -1) {
-            setExpiryTime(memberExpiryInterval);
-            log.info("Member expiry interval set as " + memberExpiryInterval);
-        }
+        expiryTime = memberExpiryTime;
     }
     
     public PartitionContext(Partition partition) {
@@ -103,11 +100,8 @@ public class PartitionContext implements Serializable{
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
 
         // check if a different value has been set for expiryTime
-        long memberExpiryInterval = getMemberExpiryInterval();
-        if (memberExpiryInterval != -1) {
-            setExpiryTime(memberExpiryInterval);
-            log.info("Member expiry interval set as " + memberExpiryInterval);
-        }
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 900000);
 
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
@@ -371,32 +365,6 @@ public class PartitionContext implements Serializable{
         }
         return false;
     }
-
-    private long getMemberExpiryInterval () {
-
-        // if expiry time has been set in startup scrip with 'member.expiry.interval', use that
-        String memberExpiryInterval = System.getProperty(Constants.MEMBER_EXPIRY_INTERVAL);
-        long memberExpiryIntervalLongVal = -1;
-
-        if (memberExpiryInterval != null) {
-
-            try {
-                memberExpiryIntervalLongVal = Long.parseLong(memberExpiryInterval);
-
-            } catch (NumberFormatException e) {
-                log.warn("Invalid value specified for [member.expiry.interval] in the startup script, default value of 15 mins will be used");
-                return -1;
-            }
-
-            if (memberExpiryIntervalLongVal <= 0) {
-                log.warn("Invalid value specified for [member.expiry.interval] in the startup script, default value of 15 mins will be used");
-                return -1;
-            }
-        }
-
-        return memberExpiryIntervalLongVal;
-    }
-
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
