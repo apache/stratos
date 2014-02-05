@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.autoscaler;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
@@ -50,7 +52,9 @@ public class PartitionContext implements Serializable{
     private Partition partition;
 //    private int currentActiveMemberCount = 0;
     private int minimumMemberCount = 0;
-    
+    private int pendingMembersFailureCount = 0;
+    private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
+
     // properties
     private Properties properties;
     
@@ -77,10 +81,11 @@ public class PartitionContext implements Serializable{
 //    private int totalMemberCount;
 
     // for the use of tests
-    public PartitionContext() {
+    public PartitionContext(long memberExpiryTime) {
 
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
+        expiryTime = memberExpiryTime;
     }
     
     public PartitionContext(Partition partition) {
@@ -93,6 +98,14 @@ public class PartitionContext implements Serializable{
         this.obsoletedMembers = new CopyOnWriteArrayList<String>();
 //        this.faultyMembers = new CopyOnWriteArrayList<String>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
+
+        // check if a different value has been set for expiryTime
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 900000);
+        if (log.isDebugEnabled()) {
+            log.debug("Member expiry time is set to: " + expiryTime);
+        }
+
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
     }
@@ -170,6 +183,7 @@ public class PartitionContext implements Serializable{
                 iterator.remove();
                 // add to the activated list
                 this.activeMembers.add(pendingMember);
+                pendingMembersFailureCount = 0;
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Pending member is removed and added to the " +
                             "activated member list. [Member Id] %s",memberId));
@@ -355,7 +369,6 @@ public class PartitionContext implements Serializable{
         return false;
     }
 
-
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
 
@@ -380,11 +393,18 @@ public class PartitionContext implements Serializable{
                         }
                         long pendingTime = System.currentTimeMillis() - pendingMember.getInitTime();
                         if (pendingTime >= expiryTime) {
+
+
                             iterator.remove();
                             log.info("Pending state of member: " + pendingMember.getMemberId() +
                                      " is expired. " + "Adding as an obsoleted member.");
                             // member should be terminated
                             ctxt.addObsoleteMember(pendingMember.getMemberId());
+                            pendingMembersFailureCount++;
+                            if( pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD){
+                                setExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold of failure exceeded
+                                //TODO Implement an alerting system: STRATOS-369
+                            }
                         }
                     }
                 }

@@ -60,7 +60,7 @@ public class ListCommand implements Command<StratosCommandContext> {
 	}
 
 	public String getDescription() {
-		return "List subscribed cartridges with details";
+		return "List subscribed cartridges with summarized details";
 	}
 
 	public String getArgumentSyntax() {

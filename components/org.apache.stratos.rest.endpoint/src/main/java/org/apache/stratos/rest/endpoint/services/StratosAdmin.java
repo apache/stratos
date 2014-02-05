@@ -20,15 +20,15 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.dto.Cartridge;
-import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.manager.dto.Cartridge;
+import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
+import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
@@ -38,7 +38,9 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
@@ -49,9 +51,13 @@ import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -59,16 +65,36 @@ import java.util.UUID;
 @Path("/admin/")
 public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
+    @Context
+    HttpServletRequest httpServletRequest;
 
     @POST
     @Path("/init")
+    public void initialize ()
+            throws RestAPIException {
+    	
+    }
+    /*
+    This method gets called by the client who are interested in using session mechanism to authenticate themselves in
+    subsequent calls. This method call get authenticated by the basic authenticator.
+    Once the authenticated call received, the method creates a session.
+
+     */
+    @GET
+    @Path("/cookie")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public void initialize ()
-            throws RestAPIException {
+    public Response getCookie(){
+        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        httpSession.setAttribute("userName",carbonContext.getUsername());
+        httpSession.setAttribute("tenantDomain",carbonContext.getTenantDomain());
+        httpSession.setAttribute("tenantId",carbonContext.getTenantId());
 
-        //login
+        String sessionId = httpSession.getId();
+        return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
+                entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
 
     @POST
@@ -104,7 +130,7 @@ public class StratosAdmin extends AbstractAdmin {
     public boolean deployPartition (Partition partition)
             throws RestAPIException {
 
-        return ServiceUtils.deployPartition(partition);
+            return ServiceUtils.deployPartition(partition);
     }
 
     @POST
@@ -267,6 +293,15 @@ public class StratosAdmin extends AbstractAdmin {
         // Following is very important when working with axis2
         return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
     }
+    
+    @GET
+    @Path("/cartridge/info/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+        return ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
+    }
 
     @POST
     @Path("/cartridge/subscribe")
@@ -295,7 +330,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
-    @Path("/cluster")
+    @Path("/cluster/")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -305,7 +340,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
-    @Path("/cluster/{cartridgeType}")
+    @Path("/cluster/{cartridgeType}/")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -323,6 +358,23 @@ public class StratosAdmin extends AbstractAdmin {
                               @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
 
         return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
+    }
+    
+    @GET
+    @Path("/cluster/clusterId/{clusterId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster getCluster(@PathParam("clusterId") String clusterId) throws ADCException {
+    	Cluster cluster = null;
+        Cluster[] clusters = ServiceUtils.getClustersForTenant(getConfigContext());
+        for (Cluster clusterObj : clusters) {
+			if (clusterObj.clusterId.equals(clusterId)){
+				cluster = clusterObj;
+				break;
+			}
+		}
+        return cluster;
     }
 
     @POST
@@ -684,9 +736,9 @@ public class StratosAdmin extends AbstractAdmin {
     	// super tenant Deploying service (MT) 
     	// here an alias is generated
        ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
-    		   serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
-    		   serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
-    		   serviceDefinitionBean.getTenantRange());
+               serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
+               serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
+               serviceDefinitionBean.getTenantRange());
     }
 
     @DELETE

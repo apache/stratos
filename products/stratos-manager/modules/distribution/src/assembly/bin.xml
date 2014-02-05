@@ -53,6 +53,7 @@
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
 		<exclude>**/repository/conf/axis2/axis2.xml</exclude>
+		<exclude>**/repository/conf/log4j.properties</exclude>
             </excludes>
         </fileSet>
 	<!-- Copying p2 profile and osgi bundles-->
@@ -136,6 +137,7 @@
                 <exclude>**/user-mgt.xml</exclude>
                 <exclude>**/datasources.properties</exclude>
                 <exclude>.svn</exclude>
+                <exclude>**/temp-artifacts/**</exclude>
                 <exclude>email-bill-generated.xml</exclude>
                 <exclude>email-billing-notifications.xml</exclude>
                 <exclude>email-new-tenant-activation.xml</exclude>
@@ -351,6 +353,9 @@
         <fileSet>
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/modules</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/modules</outputDirectory>
+	    <excludes>
+                <exclude>**/carbon/**</exclude>
+	    </excludes>
             <includes>
                 <include>*/**</include>
             </includes>
@@ -411,6 +416,10 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/modules/sso</outputDirectory>
         </fileSet>
 	<fileSet>
+            <directory>../../conf/temp-artifacts/carbon</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/modules/carbon</outputDirectory>
+        </fileSet>
+	<fileSet>
             <directory>../../conf/temp-artifacts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
             <includes>
@@ -447,28 +456,6 @@
                 <include>org.wso2.carbon:org.wso2.carbon.mediator.bridge:jar</include>
             </includes>
         </dependencySet>
-        <!--dependencySet>
-            <outputDirectory>wso2elb-${pom.version}/samples/axis2Client/client_repo/modules
-            </outputDirectory>
-            <includes>
-                <include>org.apache.axis2:addressing:mar</include>
-                <include>org.apache.rampart:rampart:mar</include>
-                <include>org.apache.sandesha2:sandesha2:mar</include>
-            </includes>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-            </outputFileNameMapping>
-        </dependencySet>
-        <dependencySet>
-            <outputDirectory>wso2elb-${pom.version}/samples/axis2Server/repository/modules
-            </outputDirectory>
-            <includes>
-                <include>org.apache.axis2:addressing:mar</include>
-                <include>org.apache.rampart:rampart:mar</include>
-                <include>org.apache.sandesha2:sandesha2:mar</include>
-            </includes>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-            </outputFileNameMapping>
-        </dependencySet-->
         <dependencySet>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/axis2/client/lib</outputDirectory>
             <includes>
@@ -484,12 +471,6 @@
                 <include>org.apache.rampart:rampart:mar</include>
             </includes>
         </dependencySet>
-	<!--<dependencySet>
-		<outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps</outputDirectory>
-		<includes>
-                    <include>org.wso2.carbon:features-dashboard:war</include>
-		</includes>
-	</dependencySet>-->
     </dependencySets>
 
     <files>
@@ -616,10 +597,6 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/</outputDirectory>
         </file>
 	<file>
-            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/log4j.properties</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
-        </file>
-	<file>
             <source>src/bin/stratos.sh</source>
             <outputDirectory>apache-stratos-manager-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
@@ -667,32 +644,12 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
-         <!-- Including log4j.properties file -->
-        <!--file>
-            <source>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/log4j.properties
-
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
-        </file-->      
 	<file>
             <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/claim-config.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
 	    <filtered>true</filtered>
 	    <fileMode>644</fileMode>	
         </file>
-
-        <!--file>
-            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/sso-idp-config.xml</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
-        </file-->
-
-	<!-- Including coordination-client-config.xml file -->
-    <!--<file>
-            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/coordination-client-config.xml</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
-        </file> -->
-	<!-- Ntask config file -->
 	<file>
             <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/tasks-config.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
@@ -727,22 +684,6 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
             <filtered>true</filtered>
         </file>
-
-        <!-- <file>
-            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/axis2_client.xml</source>
-            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/axis2.xml</source>
-            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/axis2/tenant-axis2.xml</source>
-            <outputDirectory>apache-stratos-autoscaler-${pom.version}/repository/conf/axis2/</outputDirectory>
-            <filtered>true</filtered>
-        </file>-->
         <file>
             <source>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0002/repository/conf/security/cipher-text.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>

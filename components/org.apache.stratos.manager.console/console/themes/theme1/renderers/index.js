@@ -17,6 +17,10 @@ var render = function (theme, data, meta, require) {
                 }
             }
             cartridgesToPush.push(cartridges_old[i]);
+            var log = new Log("index.js");
+            log.info("cartridges old : "+ stringify(cartridges_old) );
+            log.info("cartridges new : "+ stringify(cartridges_new) );
+            log.info("cartridges to push : "+ stringify(cartridgesToPush));
         } else {
             cartridgesToPush = null;
             for (var j = 0; j < cartridges_new.length; j++) {
@@ -32,7 +36,7 @@ var render = function (theme, data, meta, require) {
         }
     }
     var log = new Log();
-    log.info(meta.request.permissions);
+    log.info("permission object : "+meta.request.permissions);
 
     theme('index', {
         body: [

@@ -31,6 +31,7 @@ var render = function (theme, data, meta, require) {
                     },
                     has_help:false,
                     mt_service_deployments:true,
+                    configure_stratos:true,
                     config_status:data.config_status
                 }
             }

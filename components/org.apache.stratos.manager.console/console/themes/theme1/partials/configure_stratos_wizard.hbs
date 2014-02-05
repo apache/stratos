@@ -1,3 +1,58 @@
+{{#if config_status.first_use}}
+{{#if config_on}}
+<div class="container content-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>{{title}}</h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+<div class="row">
+    <div class="col-md-3">
+        <a href="{{url "/configure_stratos_wizard.jag"}}" class="btn btn-important"><i class=""></i> Take the configuration Wizard</a>
+</div>
+<div class="col-md-1">
+    <i class="icons-help"></i>
+</div>
+<div class="col-md-8">
+    <p>Stratos is not configured yet. Each step needs to be done in the correct order.</p>
+    <i class="fa fa-arrow-circle-down color-a-full-icons"></i>
+    <p>Partition deployment</p>
+    <i class="fa fa-arrow-circle-down color-a-full-icons"></i>
+
+    <p>Policy deployment</p>
+    <i class="fa fa-arrow-circle-down color-a-full-icons"></i>
+
+    <p>LB Creation</p>
+    <i class="fa fa-arrow-circle-down color-a-full-icons"></i>
+
+    <p>Cartridge Deployment</p>
+    <i class="fa fa-arrow-circle-down color-a-full-icons"></i>
+
+    <p>Multi-Tenant Service Deployments</p>
+
+</div>
+</div>
+</div>
+{{/if}}
+{{else}}
+{{#ifCond step "==" 6}}
+<div class="container content-starter">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>You have finished wizard successfully.</h1>
+        </div>
+    </div>
+</div>
+<div class="container" id="addItemSection">
+    <div class="row">
+        <div class="col-md-12">
+                <a href="{{url "/configure_stratos.jag"}}">Go to configuration page.</a>
+        </div>
+    </div>
+</div>
+{{else}}
 <div class="container content-starter">
     <div class="row">
         <div class="col-lg-12">
@@ -8,17 +63,27 @@
 <div class="container" id="addItemSection">
         <div class="row">
               <div class="col-md-12">
-                  <form role="form">
-                        <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
+                  <form method="post" id="jsonForm" action="{{url "/controllers/wizardSubmit.jag"}}">
+
+                  <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
                         <div style="clear: both"></div>
                         <label for="policy" class="required" style="margin-top:10px;">Policy Configuration</label>
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-6 padding-remover-left">
-                                    <textarea class="form-control" rows="11" id="policy"></textarea>
-                                    <button data-step="{{step}}" type="button" class="btn btn-default" {{#unless wizard_on_2}} disabled="disabled" {{/unless}} id="wizardBack" id="wizardBack"><< Back</button>
+                                    <input type="hidden" name="nextStep" id="nextStep" value="{{step}}"/>
+                                    <input type="hidden" name="thisStep" id="thisStep" value="{{step}}"/>
+                                    <input type="hidden" name="items" id="items" value="{{step_data.length}}"/>
+
+                                    <textarea rows="11" id="policy" name="policy" class="form-control" ></textarea>
+                                    <label class="error" id="policyError" style="display:none;">Required</label>
+                                    {{#if config_on}}
+                                    <button data-step="{{step}}" type="button" class="btn btn-primary" id="wizardNext">Deploy</button>
+                                    {{else}}
+                                    <button data-step="{{step}}" type="button" class="btn btn-default" {{#unless wizard_on_2}} disabled="disabled" {{/unless}} id="wizardBack"><< Back</button>
                                     <button data-step="{{step}}" type="button" class="btn {{#unless wizard_on_5}}btn-primary{{else}}btn-default{{/unless}}" id="wizardNext" {{#if wizard_on_5}} disabled="disabled" {{/if}}>Next >></button>
                                     <button data-step="{{step}}" type="button" class="btn {{#if wizard_on_5}}btn-primary{{else}}btn-default{{/if}}" id="wizardFinish" {{#unless wizard_on_5}} disabled="disabled" {{/unless}}>Finish</button>
+                                    {{/if}}
                                 </div>
                                 <div class="col-md-6">
                                     <i class="icons-help"></i>
@@ -40,17 +105,12 @@
                                     }
                                     </pre>
                                 </div>
-                            </div>
-
-                    </div>
-
-
-                  </form>
-
-              </div>
+                            </div> <!-- row -->
+                        </div> <!-- container -->
+                </form>
+            </div>
         </div>
     </div>
-
 <div class="container">
 
     <div class="row">
@@ -60,22 +120,119 @@
             <div class="panel-group" id="accordion">
 
 
+                {{#ifCond step "==" 1}}
+                    {{#each step_data}}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                        {{id}}
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse{{key}}" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div style="font-weight: bold">partitionMin</div>
+                                    {{partitionMin}}<br />
+                                    <div style="font-weight: bold">partitionMax</div>
+                                    {{partitionMax}}<br />
+                                    <div style="font-weight: bold">provider</div>
+                                    {{provider}}<br />
+                                    <div style="font-weight: bold">property.name</div>
+                                    {{property.name}}<br />
+                                    <div style="font-weight: bold">property.value</div>
+                                    {{property.value}}<br />
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                {{/ifCond}}
+
+                {{#ifCond step "==" 2}}
                 {{#each step_data}}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
-                                {{name}}
+                                {{id}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{key}}" class="panel-collapse collapse">
+                        <div class="panel-body">
+
+                            <div style="font-weight: bold">loadThresholds</div>
+                            {{loadThresholds}}<br />
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{/ifCond}}
+
+
+
+                {{#ifCond step "==" 3}}
+                {{#each step_data}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                {{id}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{key}}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div style="font-weight: bold">partitionGroup</div>
+                            {{partitionGroup}}<br />
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{/ifCond}}
+
+
+                {{#ifCond step "==" 4}}
+                {{#each step_data}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                {{displayName}}
                             </a>
                         </h4>
                     </div>
                     <div id="collapse{{key}}" class="panel-collapse collapse">
                         <div class="panel-body">
                             <pre>{{policy}}</pre>
+                            <textarea style="display:none" class="jsonEditor">{{policy}}</textarea>
+                            <button class="btn btn-primary js_jsonEdit">Edit</button>
+                            <button class="btn btn-primary js_jsonSave" style="display:none">Save</button>
+                            <a class="js_jsonCancel" style="display:none">Cancel</a>
                         </div>
                     </div>
                 </div>
                 {{/each}}
+                {{/ifCond}}
+
+
+                {{#ifCond step "==" 5}}
+                {{#each step_data}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                {{displayName}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{key}}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{/ifCond}}
 
 
 
@@ -83,5 +240,7 @@
         </div>
     </div>
 </div>
+{{/ifCond}}
+{{/if}}
 <script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
 <script src="{{url "/themes/theme1/ui/js/wizard.js"}}"></script>

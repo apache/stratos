@@ -30,6 +30,7 @@ public class RepositoryInformation {
 	private String repoPassword;
 	private String repoPath;
 	private String tenantId;
+	private boolean isMultitenant;
 	
 	public String getRepoUrl() {
 		return repoUrl;
@@ -60,6 +61,12 @@ public class RepositoryInformation {
 	}
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
+	}
+	public boolean isMultitenant() {
+		return isMultitenant;
+	}
+	public void setMultitenant(boolean isMultitenant) {
+		this.isMultitenant = isMultitenant;
 	}
 	
 }

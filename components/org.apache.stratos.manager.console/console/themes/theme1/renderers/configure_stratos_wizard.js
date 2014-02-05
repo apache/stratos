@@ -1,10 +1,8 @@
 var render = function (theme, data, meta, require) {
-    for(var i=0;i<data.step_data.length;i++){
-        data.step_data[i].key = data.step_data[i].name.replace(/ /g,'');
-    }
+    session.put("configuring","false");
     var title;
     var wizard_on_val = [];
-    for(var i=0; i<5 ;i++){
+    for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
             wizard_on_val.push(true);
         }else{
@@ -15,14 +13,17 @@ var render = function (theme, data, meta, require) {
     if( config_status.step == 1 ){
         title = 'Partition Deployment';
     }else if( config_status.step == 2 ){
-        title = 'Policy Deployment';
+        title = 'Auto scale Policy Deployment';
     }else if( config_status.step == 3 ){
-        title = 'Lb';
+        title = 'Deployment Policy Deployment';
     }else if( config_status.step == 4 ){
-        title = 'Cartridge Deployment';
+        title = 'Lb';
     }else if( config_status.step == 5 ){
+        title = 'Cartridge Deployment';
+    }else if( config_status.step == 6 ){
         title = 'Multi-Tenant Service Deployment';
     }
+
     theme('index', {
         body: [
             {
@@ -35,7 +36,8 @@ var render = function (theme, data, meta, require) {
                     wizard_on_2:wizard_on_val[1],
                     wizard_on_3:wizard_on_val[2],
                     wizard_on_4:wizard_on_val[3],
-                    wizard_on_5:wizard_on_val[4]
+                    wizard_on_5:wizard_on_val[4],
+                    wizard_on_6:wizard_on_val[5]
                 }
             }
         ],
@@ -58,6 +60,7 @@ var render = function (theme, data, meta, require) {
                     wizard_on_3:wizard_on_val[2],
                     wizard_on_4:wizard_on_val[3],
                     wizard_on_5:wizard_on_val[4],
+                    wizard_on_6:wizard_on_val[5],
                     step:step,
                     configure_stratos:true
                 }

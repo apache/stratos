@@ -71,7 +71,7 @@ public class InstanceStatusListener implements MessageListener {
                         ". Not sending the Depsync event");
                 }*/
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                Set<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscription(clusterId);
+                Set<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscriptionForCluster(clusterId);
                 if (cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
                     // No subscriptions, return
                     if (log.isDebugEnabled()) {

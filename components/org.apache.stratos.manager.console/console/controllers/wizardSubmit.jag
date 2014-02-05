@@ -1,0 +1,33 @@
+<%
+(function(){
+    var log = new Log("controller.partitionDefinitionSubmit");
+    var utils = require('/util/utility.jag');
+    var policy = request.getParameter("policy").trim();
+    var thisStep = request.getParameter("thisStep");
+    var nextStep = request.getParameter("nextStep");
+    if(parseInt(thisStep)<parseInt(nextStep)){
+        if(parseInt(thisStep) == 1 && policy != "" ){
+            utils.consoleAppUtil.deployPartitionDefinition(policy);
+        }
+        if(parseInt(thisStep) == 2 && policy != "" ){
+            utils.consoleAppUtil.deployAutoscalePolicyDefinition(policy);
+        }
+        if(parseInt(thisStep) == 3 && policy != "" ){
+            utils.consoleAppUtil.deployDeploymentPolicyDefinition(policy);
+        }
+        if(parseInt(thisStep) == 4 && policy != "" ){
+            utils.consoleAppUtil.deployLbDefinition(policy);
+        }
+        if(parseInt(thisStep) == 5 && policy != "" ){
+            utils.consoleAppUtil.deployCartridgeDefinition(policy);
+        }
+    }
+
+    var configuring = session.get("configuring");
+    var url = request.getContextPath() + '/configure_stratos_wizard.jag?step=' + nextStep;
+    if(configuring == "true"){
+        url =  request.getContextPath() + '/configure_stratos.jag?step=' + thisStep;
+    }
+    response.sendRedirect(url);
+}());
+%>

@@ -32,8 +32,6 @@ public class CartridgeInstanceData {
     
     private String domain;
     
-    private String subDomain;
-    
     private String iaas;
     
     private String status;
@@ -68,14 +66,6 @@ public class CartridgeInstanceData {
 
     public void setDomain(String domain) {
         this.domain = domain;
-    }
-
-    public String getSubDomain() {
-        return subDomain;
-    }
-
-    public void setSubDomain(String subDomain) {
-        this.subDomain = subDomain;
     }
 
     public String getIaas() {

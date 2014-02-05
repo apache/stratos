@@ -31,15 +31,17 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
-            <ref bean="authenticationFilter"/>
+            <ref bean="basicAuthenticationFilter"/>
+            <ref bean="sessionAuthenticationFilter"/>
             <ref bean="authorizationFilter"/>
-            <ref bean="OAuthFilter"/>
         </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="stratosRestEndpointBean" class="org.apache.stratos.rest.endpoint.services.StratosAdmin"/>
-    <bean id="authenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthenticationHandler"/>
+    <bean id="basicAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthenticationHandler"/>
+    <bean id="sessionAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.CookieBasedAuthenticationHandler"/>
     <bean id="authorizationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthorizingHandler">
         <property name="securedObject" ref="stratosRestEndpointBean"/>
     </bean>
@@ -49,6 +51,24 @@
         <property name="password" value="admin"/>
         <property name="username" value="admin"/>
         <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
+    </bean>
+    <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+        <property name="serializeAsArray" value="true"/>
+        <property name="arrayKeys">
+            <list>
+                <value>partitions</value>
+                <value>property</value>
+                <value>hostNames</value>
+                <value>memberMap</value>
+                <value>portMap</value>
+                <value>partitionGroup</value>
+                <value>partition</value>
+                <value>member</value>
+                <value>hostNames</value>
+                <value>portMappings</value>
+                <value>cartridge</value>
+            </list>
+        </property>
     </bean>
 
 </beans>

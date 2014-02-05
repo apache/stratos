@@ -1,7 +1,51 @@
 <%
 var caramel = require('caramel');
-var partition_deployment = require('/data/partition_deployment.json');
+var step = request.getParameter('step');
+if(step == null){
+    step = 1;
+}
+
+var step_data = {};
+
+var wizard = {
+    "step":step
+};
+
+var utils = require('/util/utility.jag');
+var config_status = utils.consoleAppUtil.getConfigStatus();
+
+
+if(wizard.step == 1){
+    var partition_deployments =  utils.consoleAppUtil.getPartitions();
+    step_data = partition_deployments.partition;
+}else if(wizard.step == 2){
+    step_data =  utils.consoleAppUtil.getPolicyAutoScale();
+    step_data = step_data.autoscalePolicy;
+}else if(wizard.step == 3){
+    step_data =  utils.consoleAppUtil.getPolicyDeployment();
+    step_data = step_data.deploymentPolicy;
+}else if(wizard.step == 4){
+    step_data =  utils.consoleAppUtil.getCartridges();
+    step_data = step_data.cartridge;
+    for(var i=0;i<step_data.length;i++){
+        if(step_data[i].cartridgeType != "lb"){
+            step_data.splice(i,1);
+        }
+    }
+}else if(wizard.step == 5){
+    step_data =  utils.consoleAppUtil.getCartridges();
+    step_data = step_data.cartridge;
+    for(var i=0;i<step_data.length;i++){
+        if(step_data[i].cartridgeType == "lb"){
+            step_data.splice(i,1);
+        }
+    }
+}else if(wizard.step == 6){
+    step_data = require('data/mt_service_deployments.json');
+}
 caramel.render({
-    partition_deployment:partition_deployment
+    step_data:step_data,
+    wizard:wizard,
+    config_status:config_status
 });
 %>

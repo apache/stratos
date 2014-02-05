@@ -159,12 +159,12 @@ var client = {};
     };
 
     client.getRoleList = function(samlObj) {
-        var roleObj = {};
+        var roleObj = [];
         var roleString = Util.getRoles(samlObj);
         log.info("role string : " + roleString);
         var roleSplit = roleString.split(",");
         for(var i=0; i < roleSplit.length;i++){
-            roleObj[i] = roleSplit[i].trim();
+            roleObj.push(roleSplit[i].trim());
         }
         return roleObj;
     };

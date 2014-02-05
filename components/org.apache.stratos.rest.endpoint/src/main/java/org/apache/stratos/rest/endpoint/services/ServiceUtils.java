@@ -31,14 +31,15 @@ import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
+import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -46,12 +47,14 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.cloud.controller.pojo.*;
+
 
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class ServiceUtils {
-    private static Log log = LogFactory.getLog(StratosAdmin.class);
+    private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
@@ -131,7 +134,7 @@ public class ServiceUtils {
                 return autoscalerServiceClient.deployPartition(partition);
 
             } catch (Exception e) {
-                throw new RestAPIException(e);
+                throw new RestAPIException(e.getMessage(), e);
             }
         }
 
@@ -502,12 +505,27 @@ public class ServiceUtils {
             if (subscriptions != null && !subscriptions.isEmpty()) {
 
                 for (CartridgeSubscription subscription : subscriptions) {
-
+                	
                     if (!cartridgeMatches(subscription.getCartridgeInfo(), subscription, searchPattern)) {
                         continue;
                     }
-
-                    cartridges.add(getCartridgeFromSubscription(subscription));
+                    Cartridge cartridge = getCartridgeFromSubscription(subscription);
+                    Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+                            ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+                    String cartridgeStatus = "Inactive";
+                    int activeMemberCount = 0;
+					if (cluster != null) {
+						Collection<Member> members = cluster.getMembers();
+						for (Member member : members) {
+							if (member.isActive()) {
+								cartridgeStatus = "Active";
+								activeMemberCount++;
+							}
+						}
+					}
+                    cartridge.setActiveInstances(activeMemberCount);
+					cartridge.setStatus(cartridgeStatus);
+                    cartridges.add(cartridge);
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -529,6 +547,29 @@ public class ServiceUtils {
         return cartridges;
     }
 
+    
+    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    	
+    	Cartridge cartridge =  getCartridgeFromSubscription(cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.
+                    getTenantId(configurationContext), cartridgeAlias));
+    	
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+                ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+        String cartridgeStatus = "Inactive";
+        int activeMemberCount = 0;
+        Collection<Member> members = cluster.getMembers();
+        for (Member member : members) {
+			if(member.isActive()) {
+				cartridgeStatus = "Active";
+				activeMemberCount++;
+			}
+		}        
+        cartridge.setActiveInstances(activeMemberCount);
+		cartridge.setStatus(cartridgeStatus);
+		return cartridge;
+    	
+    }
+    
     private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
 
         Cartridge cartridge = new Cartridge();
@@ -553,7 +594,7 @@ public class ServiceUtils {
         }
 
         cartridge.setStatus(subscription.getSubscriptionStatus());
-
+        cartridge.setPortMappings(subscription.getCartridgeInfo().getPortMappings());
         return cartridge;
     }
 
@@ -620,6 +661,10 @@ public class ServiceUtils {
 
         // LB cartridges won't go thru this method.
 
+        //TODO: this is a temp fix. proper fix is to move this logic to CartridgeSubscriptionManager
+        // validate cartridge alias
+        CartridgeSubscriptionUtils.validateCartridgeAlias(ApplicationManagementUtil.getTenantId(configurationContext), cartridgeType, alias);
+
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         CloudControllerServiceClient cloudControllerServiceClient =
                                                                     getCloudControllerServiceClient();
@@ -658,17 +703,6 @@ public class ServiceUtils {
                           cartridgeType);
             }
         } else {
-
-            CartridgeInfo lbCartridgeInfo;
-            String lbCartridgeType = lbConfig.getType();
-            try {
-                // retrieve lb Cartridge info
-                lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
-            } catch (Exception e) {
-                String msg = "Cannot get cartridge info: " + cartridgeType;
-                log.error(msg, e);
-                throw new ADCException(msg, e);
-            }
 
             Properties lbReferenceProperties = lbConfig.getProperties();
 
@@ -717,7 +751,22 @@ public class ServiceUtils {
                     break;
 
                 } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
+
                     if ("true".equals(value)) {
+
+                        CartridgeInfo lbCartridgeInfo = null;
+                        String lbCartridgeType = lbConfig.getType();
+                        try {
+                            // retrieve lb Cartridge info
+                            if(lbCartridgeType != null) {
+                                lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
+                            }
+                        } catch (Exception e) {
+                            String msg = "Cannot get cartridge info: " + cartridgeType;
+                            log.error(msg, e);
+                            throw new ADCException(msg, e);
+                        }
+
                         property.setValue(name);
                         if (log.isDebugEnabled()) {
                             log.debug("This cartridge uses default load balancer. " + "[Type] " +
@@ -737,13 +786,21 @@ public class ServiceUtils {
 
                                             // if lb cluster doesn't exist
                                             String lbAlias = "lb" + new Random().nextInt();
-                                            lbCartridgeInfo.addProperties(property);
+                                            if(lbCartridgeInfo != null) {
+                                               lbCartridgeInfo.addProperties(property);
                                             subscribeToLb(lbCartridgeType, cartridgeType,
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicy, configurationContext,
                                                           userName, tenantDomain,
                                                           lbCartridgeInfo.getProperties());
+                                            } else {
+                                                String msg = "Please specify a LB cartridge type for the cartridge: "
+                                                                + cartridgeType + " as category: " +
+                                                                Constants.DEFAULT_LOAD_BALANCER;
+                                                log.error(msg);
+                                                throw new ADCException(msg);
+                                            }
                                         }
                                     }
                                 }
@@ -759,7 +816,21 @@ public class ServiceUtils {
                     }
 
                 } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+
                     if ("true".equals(value)) {
+
+                        CartridgeInfo lbCartridgeInfo = null;
+                        String lbCartridgeType = lbConfig.getType();
+                        try {
+                            // retrieve lb Cartridge info
+                            if(lbCartridgeType != null) {
+                                lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
+                            }
+                        } catch (Exception e) {
+                            String msg = "Cannot get cartridge info: " + cartridgeType;
+                            log.error(msg, e);
+                            throw new ADCException(msg, e);
+                        }
 
                         // add a property for the service type
                         Property loadBalancedServiceTypeProperty = new Property();
@@ -791,17 +862,24 @@ public class ServiceUtils {
                                                     "lb" + cartridgeType +
                                                             new Random().nextInt();
 
+                                            if(lbCartridgeInfo != null) {
+                                                lbCartridgeInfo.addProperties(property);
+                                                lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
 
-                                            lbCartridgeInfo.addProperties(property);
-                                            lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
-
-                                            subscribeToLb(lbCartridgeType, cartridgeType,
+                                                subscribeToLb(lbCartridgeType, cartridgeType,
                                                     lbAlias,
                                                     lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                     deploymentPolicy,
                                                     configurationContext, userName,
                                                     tenantDomain,
                                                     lbCartridgeInfo.getProperties());
+                                            } else {
+                                                String msg = "Please specify a LB cartridge type for the cartridge: "
+                                                                + cartridgeType + " as category: " +
+                                                                Constants.SERVICE_AWARE_LOAD_BALANCER;
+                                                log.error(msg);
+                                                throw new ADCException(msg);
+                                            }
                                         }
                                     }
                                 }
@@ -872,30 +950,45 @@ public class ServiceUtils {
 
     }
 
-    public static Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
 
-        return TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , subscriptionAlias);
+        return PojoConverter.populateClusterPojos(cluster);
     }
 
-    public static Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), null);
-
-        return (clusterSet != null && clusterSet.size() > 0 ) ?
-                clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
+        ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        for(Cluster cluster : clusterSet) {
+            clusters.add(PojoConverter.populateClusterPojos(cluster));
+        }
+        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
+                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        arrCluster = clusters.toArray(arrCluster);
+        return arrCluster;
 
     }
 
-    public static Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
                                                                   String cartridgeType) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), cartridgeType);
+        List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        for(Cluster cluster : clusterSet) {
+            clusters.add(PojoConverter.populateClusterPojos(cluster));
+        }
+         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
+                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        arrCluster = clusters.toArray(arrCluster);
+        return arrCluster;
 
-        return (clusterSet != null && clusterSet.size() > 0 ) ?
-                clusterSet.toArray(new Cluster[clusterSet.size()]) : new Cluster[0];
+
 
     }
     

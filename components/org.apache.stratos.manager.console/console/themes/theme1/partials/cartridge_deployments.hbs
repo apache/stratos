@@ -5,21 +5,19 @@
         </div>
     </div>
 </div>
-<div class="container" style="display: none;" id="addItemSection">
+<div class="container" id="addItemSection">
         <div class="row">
               <div class="col-md-12">
-                  <h2>Deploy New Cartridge</h2>
 
-                  <form method="post" role="form" action="{{url "/controllers/cartridgeDefintionSubmit.jag"}}">
+                  <form id="jsonForm" method="post" role="form" action="{{url "/controllers/cartridgeDefintionSubmit.jag"}}">
                   <label for="policy" class="required">Policy Configuration</label>
 
                   <div class="container">
                       <div class="row">
                           <div class="col-md-6 padding-remover-left">
-                              <textarea name="cartridge-definition" class="form-control" rows="11"
+                              <textarea name="cartridge-definition" class="form-control required" rows="11"
                                         id="policy"></textarea>
                               <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Cartridge</button>
-                              <a>Cancel</a>
                           </div>
                                 <div class="col-md-6">
                                     <i class="icons-help"></i>
@@ -66,17 +64,12 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
-                                {{name}}
+                                {{displayName}}
                             </a>
                         </h4>
                     </div>
                     <div id="collapse{{key}}" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <pre>{{policy}}</pre>
-                            <textarea style="display:none" class="jsonEditor">{{policy}}</textarea>
-                            <button class="btn btn-primary js_jsonEdit">Edit</button>
-                            <button class="btn btn-primary js_jsonSave" style="display:none">Save</button>
-                            <a class="js_jsonCancel" style="display:none">Cancel</a>
                         </div>
                     </div>
                 </div>

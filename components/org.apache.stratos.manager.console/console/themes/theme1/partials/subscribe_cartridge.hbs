@@ -15,7 +15,7 @@
                 <div class="form-inline">
                     <input name="cartridgeType" type="hidden" value="{{cartridgeType}}"/>
                     <input name="alias"
-                           type="url"
+                           type="text"
                            class="form-control input-xlarge js-help"
                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
                                    nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
@@ -30,7 +30,7 @@
                 <label class="required">Repo URL:</label>
                 <div class="form-inline">
                     <input name="repoURL"
-                           type="url"
+                           type="text"
                            class="form-control input-xlarge js-help"
                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
                                        nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
@@ -72,7 +72,7 @@
                             data-help-x-offset="50"
                             data-help-y-offset="-10" >
                         {{#each autoScalePolicies}}
-                        <option>{{foo}}</option>
+                        <option>{{id}}</option>
                         {{/each}}
                     </select>
                 </div>
@@ -89,7 +89,7 @@
                             data-help-x-offset="50"
                             data-help-y-offset="-10" >
                         {{#each deploymentPolicies}}
-                            <option>{{foo}}</option>
+                            <option>{{id}}</option>
                         {{/each}}
                     </select>
                 </div>

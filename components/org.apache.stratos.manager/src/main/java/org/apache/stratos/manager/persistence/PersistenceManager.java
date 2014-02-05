@@ -33,7 +33,7 @@ public abstract class PersistenceManager {
     public abstract void removeCartridgeSubscription (int tenantId, String type, String alias)
             throws PersistenceManagerException;
 
-    //public abstract CartridgeSubscription getCartridgeSubscription(int tenantId, String alias)
+    //public abstract CartridgeSubscription getCartridgeSubscriptionForCluster(int tenantId, String alias)
     //        throws PersistenceManagerException;
 
     public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions()
@@ -51,7 +51,7 @@ public abstract class PersistenceManager {
     //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
     //        throws PersistenceManagerException;
 
-    //public abstract CartridgeSubscription getCartridgeSubscription (String clusterDomain)
+    //public abstract CartridgeSubscription getCartridgeSubscriptionForCluster (String clusterDomain)
     //        throws PersistenceManagerException;
 
     //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)

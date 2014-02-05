@@ -263,7 +263,7 @@ public class CartridgeSubscriptionManager {
 //
 //        //TODO: retrieve from the cache and connect. For now, new objects are created
 //
-//        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscription(tenantDomain,
+//        CartridgeSubscription connectingCartridgeSubscription = getCartridgeSubscriptionForCluster(tenantDomain,
 //                connectingSubscriptionAlias);
 //
 //        if(cartridgeSubscription == null) {
@@ -389,7 +389,7 @@ public class CartridgeSubscriptionManager {
             throws ADCException, NotSubscribedException {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /*CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantDomain, alias);
+        /*CartridgeSubscription cartridgeSubscription = getCartridgeSubscriptionForCluster(tenantDomain, alias);
 
         if(cartridgeSubscription != null) {
             cartridgeSubscription.removeSubscription();
@@ -457,7 +457,7 @@ public class CartridgeSubscriptionManager {
      * @throws ADCException
      * @throws NotSubscribedException
      */
-    /*public CartridgeSubscription getCartridgeSubscription(String tenantDomain, String alias)
+    /*public CartridgeSubscription getCartridgeSubscriptionForCluster(String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
         CartridgeSubscriptionInfo cartridgeSubscriptionInfo = getCartridgeSubscriptionInfo(tenantDomain, alias);

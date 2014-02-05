@@ -1,7 +1,5 @@
 var render = function (theme, data, meta, require) {
-    for(var i=0;i<data.lbs.length;i++){
-        data.lbs[i].key = data.lbs[i].name.replace(/ /g,'');
-    }
+
     var create_btn_class = 'btn-important js_handle_click';
     var title = 'Configure Stratos - LBs';
     if(data.config_status.first_use){
@@ -15,7 +13,8 @@ var render = function (theme, data, meta, require) {
                 context: {
                     title:title,
                     lbs:data.lbs,
-                    config_status:data.config_status
+                    config_status:data.config_status,
+                    cartridge_deployments:data.cartridge_deployments
                 }
             }
         ],
@@ -31,6 +30,7 @@ var render = function (theme, data, meta, require) {
                     },
                     has_help:false,
                     lbs:true,
+                    configure_stratos:true,
                     config_status:data.config_status
                 }
             }

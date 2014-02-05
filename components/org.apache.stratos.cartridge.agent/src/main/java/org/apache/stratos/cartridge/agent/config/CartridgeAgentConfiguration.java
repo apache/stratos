@@ -27,6 +27,7 @@ public class CartridgeAgentConfiguration {
     private final String appPath;
     private final String repoUrl;
     private final List<Integer> ports;
+    private boolean isMultitenant;
 
     private CartridgeAgentConfiguration() {
         serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
@@ -38,6 +39,7 @@ public class CartridgeAgentConfiguration {
         appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
         repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
         ports = readPorts();
+        isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
 
         if(log.isInfoEnabled()) {
             log.info("Cartridge agent configuration initialized");
@@ -56,7 +58,12 @@ public class CartridgeAgentConfiguration {
         }
     }
 
-    /**
+    private boolean readMultitenant(String multitenant) {
+    	String multitenantStringValue = readParameterValue(multitenant);
+    	return Boolean.parseBoolean(multitenantStringValue);
+	}
+
+	/**
      * Get cartridge agent configuration singleton instance.
      *
      * @return
@@ -142,4 +149,9 @@ public class CartridgeAgentConfiguration {
     public List<Integer> getPorts() {
         return ports;
     }
+
+	public boolean isMultitenant() {
+		return isMultitenant;
+	}  
+    
 }

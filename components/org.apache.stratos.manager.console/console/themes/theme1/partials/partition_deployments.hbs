@@ -6,39 +6,37 @@
         </div>
     </div>
 </div>
-<div class="container" style="display: none;" id="addItemSection">
+<div class="container" id="addItemSection">
     <div class="row">
         <div class="col-md-12">
-            <h2>Deploy New Partition</h2>
-            <form method="post" role="form" action="{{url "/controllers/partitionDefinitionSubmit.jag"}}">
+            <form method="post" id="jsonForm" role="form" action="{{url "/controllers/partitionDefinitionSubmit.jag"}}">
             <label for="policy" class="required">Partition Configuration</label>
 
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 padding-remover-left">
-                        <textarea name="partition-definition" class="form-control" rows="11" id="policy"></textarea>
+                        <textarea name="partition-definition" class="form-control required" rows="11" id="policy"></textarea>
                         <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
-                        <a>Cancel</a>
                     </div>
                     <div class="col-md-6">
                         <i class="icons-help"></i>
                         Example configuration:
-                                    <pre>
-                                    {
-                                    "partition":{
-                                          "id": "P1",
-                                          "provider": "ec2",
-                                          "property": [
-                                              {
-                                                "name": "region",
-                                                "value": "ap-southeast-1"
-                                              }
-                                          ],
-                                          "partitionMin": "1",
-                                          "partitionMax": "3"
-                                       }
-                                    }
-                                    </pre>
+                        <pre>
+                        {
+                            "partition":{
+                                  "id": "P1",
+                                  "provider": "ec2",
+                                  "property": [
+                                      {
+                                        "name": "region",
+                                        "value": "ap-southeast-1"
+                                      }
+                                  ],
+                                  "partitionMin": "1",
+                                  "partitionMax": "3"
+                               }
+                            }
+                        </pre>
                     </div>
                 </div>
 
@@ -65,17 +63,22 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
-                                {{name}}
+                                {{id}}
                             </a>
                         </h4>
                     </div>
                     <div id="collapse{{key}}" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <pre>{{policy}}</pre>
-                            <textarea style="display:none" class="jsonEditor">{{policy}}</textarea>
-                            <button class="btn btn-primary js_jsonEdit">Edit</button>
-                            <button class="btn btn-primary js_jsonSave" style="display:none">Save</button>
-                            <a class="js_jsonCancel" style="display:none">Cancel</a>
+                            <div style="font-weight: bold">partitionMin</div>
+                            {{partitionMin}}<br />
+                            <div style="font-weight: bold">partitionMax</div>
+                            {{partitionMax}}<br />
+                            <div style="font-weight: bold">provider</div>
+                            {{provider}}<br />
+                            <div style="font-weight: bold">property.name</div>
+                            {{property.name}}<br />
+                            <div style="font-weight: bold">property.value</div>
+                            {{property.value}}<br />
                         </div>
                     </div>
                 </div>
@@ -101,7 +104,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-3">
-            <a href="/console/cartridges.jag" class="btn btn-important"><i class=""></i> Take the configuration Wizard</a>
+            <a href="{{url "/configure_stratos_wizard.jag"}}" class="btn btn-important"><i class=""></i> Take the configuration Wizard</a>
         </div>
         <div class="col-md-1">
             <i class="icons-help"></i>

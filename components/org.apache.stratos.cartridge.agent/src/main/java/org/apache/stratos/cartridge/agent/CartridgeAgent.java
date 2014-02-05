@@ -148,6 +148,7 @@ public class CartridgeAgent implements Runnable {
         String repoPassword = CartridgeAgentUtils.decryptPassword(artifactUpdatedEvent.getRepoPassword());
         String repoUsername = artifactUpdatedEvent.getRepoUserName();
         String tenantId = artifactUpdatedEvent.getTenantId();
+        boolean isMultitenant = CartridgeAgentConfiguration.getInstance().isMultitenant();
 
         if(StringUtils.isNotEmpty(repoURL) && (clusterIdInPayload != null) && clusterIdInPayload.equals(clusterIdInMessage)) {
             if(log.isInfoEnabled()) {
@@ -159,6 +160,7 @@ public class CartridgeAgent implements Runnable {
             repoInformation.setRepoUrl(repoURL);
             repoInformation.setRepoPath(localRepoPath);
             repoInformation.setTenantId(tenantId);
+            repoInformation.setMultitenant(isMultitenant);
             boolean cloneExists = GitBasedArtifactRepository.getInstance().cloneExists(repoInformation);
             GitBasedArtifactRepository.getInstance().checkout(repoInformation);
 

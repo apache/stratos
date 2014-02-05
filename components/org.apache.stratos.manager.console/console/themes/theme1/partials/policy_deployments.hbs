@@ -5,38 +5,63 @@
         </div>
     </div>
 </div>
-<div class="container" style="display: none;" id="addItemSection">
+<div class="container" id="addItemSection">
     <div class="row">
         <div class="col-md-12">
-            <h2>Deploy New Policy</h2>
-            <form method="post" role="form" action="{{url "/controllers/partitionDefintionSubmit.jag"}}">
-            <label for="policy" class="required">Policy Configuration</label>
+            <form id="jsonForm" method="post" role="form" action="{{url "/controllers/policyDefinitionSubmit.jag"}}">
+
 
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 padding-remover-left">
-                        <textarea name="policy-definition" class="form-control" rows="11" id="policy"></textarea>
-                        <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
-                        <a>Cancel</a>
+                        <label class="required">Policy Type</label>
+
+                        <div class="form-inline" style="padding-bottom: 10px;">
+                            <div class="radio">
+                                <label style="padding-right: 20px;">
+                                    <input name="policyType" value="autoscale-policy" type="radio" checked="checked"> Auto scale
+                                </label>
+                                <label>
+                                    <input name="policyType" value="deployment-policy" type="radio"> Deployment
+                                </label>
+                            </div>
+                        </div>
+                        <label for="policy" class="required">Policy Configuration</label>
+                        <textarea name="policy-definition" class="form-control required" rows="11" id="policy"></textarea>
+                        <button type="submit" class="btn btn-primary" id="deployPolicy">Deploy Policy</button>
                     </div>
                     <div class="col-md-6">
                         <i class="icons-help"></i>
                         Example configuration:
                                     <pre>
                                     {
-                                    "partition":{
-                                          "id": "P1",
-                                          "provider": "ec2",
-                                          "property": [
-                                              {
-                                                "name": "region",
-                                                "value": "ap-southeast-1"
+                                          "autoscalePolicy": {
+                                            "id": "economyPolicy",
+                                            "loadThresholds": {
+                                              "requestsInFlight": {
+                                                "average": "6000",
+                                                "gradient": "0",
+                                                "secondDerivative": "0",
+                                                "scaleDownMarginOfGradient": "1.0",
+                                                "scaleDownMarginOfSecondDerivative": "0.2"
+                                              },
+                                              "memoryConsumption": {
+                                                "average": "6000",
+                                                "gradient": "0",
+                                                "secondDerivative": "0",
+                                                "scaleDownMarginOfGradient": "1.0",
+                                                "scaleDownMarginOfSecondDerivative": "0.2"
+                                              },
+                                              "loadAverage": {
+                                                "average": "6000",
+                                                "gradient": "0",
+                                                "secondDerivative": "0",
+                                                "scaleDownMarginOfGradient": "1.0",
+                                                "scaleDownMarginOfSecondDerivative": "0.2"
                                               }
-                                          ],
-                                          "partitionMin": "1",
-                                          "partitionMax": "3"
-                                       }
-                                    }
+                                            }
+                                          }
+                                        }
                                     </pre>
                     </div>
                 </div>
@@ -57,24 +82,40 @@
 
 
             <div class="panel-group" id="accordion">
-
-
-                {{#each policy_deployments}}
+                <h3>Auto scale</h3>
+                {{#each policy_autoscale}}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
-                                {{name}}
+                                {{id}}
                             </a>
                         </h4>
                     </div>
                     <div id="collapse{{key}}" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <pre>{{policy}}</pre>
-                            <textarea style="display:none" class="jsonEditor">{{policy}}</textarea>
-                            <button class="btn btn-primary js_jsonEdit">Edit</button>
-                            <button class="btn btn-primary js_jsonSave" style="display:none">Save</button>
-                            <a class="js_jsonCancel" style="display:none">Cancel</a>
+
+                            <div style="font-weight: bold">loadThresholds</div>
+                            {{loadThresholds}}<br />
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+                <h3>Deployment</h3>
+                {{#each policy_deployments}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{key}}">
+                                {{id}}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{key}}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div style="font-weight: bold">partitionGroup</div>
+                            {{partitionGroup}}<br />
                         </div>
                     </div>
                 </div>

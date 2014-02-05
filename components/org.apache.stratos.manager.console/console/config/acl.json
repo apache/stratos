@@ -1,10 +1,10 @@
 {
     "carbonsuper": {
-        "admin": ["view", "edit", "add", "tenant-edit"],
+        "admin": ["view", "edit", "subscribe","configure","tenant-mgt", "tenant-edit"],
         "Internal/Everyone": ["view", "tenant-edit"]
     },
     "tenants": {
-        "admin": ["view", "post"],
+        "admin": ["view","subscribe", "post"],
         "Internal/Everyone": ["test1","test2","view"]
     }
 }

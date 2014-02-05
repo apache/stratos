@@ -321,8 +321,8 @@ h4{
     height: 55px;
 }
 .sub-menu li.active a{
-    background: #ffae00;
-    color:#3d3d3d;
+    background: #f45b00;
+    color:#fff;
 }
 .sub-menu li span{
     display:block;
@@ -355,6 +355,14 @@ h4{
 .sub-menu-wizard li.active a{
     background: #ffae00;
     color:#fff;
+}
+.sub-menu-wizard li a{
+    background: #444444;
+    color:#fff;
+}
+.non-wizard li a{
+    border-left:solid 1px #444;
+    border-right:solid 1px #efefef;
 }
 .sub-menu-wizard li span{
     display:block;
@@ -474,4 +482,8 @@ li.dropdown ul.dropdown-menu li a i{
     .sub-menu{
             font-size: 11px;
         }
+}
+label.error{
+    color: #be0000;
+    padding-bottom: 10px;
 }

@@ -58,6 +58,12 @@ public class ClusterMonitor extends AbstractMonitor{
     @Override
     public void run() {
 
+        try {
+            // TODO make this configurable,
+            // this is the delay the min check of normal cluster monitor to wait until LB monitor is added
+            Thread.sleep(60000);
+        } catch (InterruptedException ignore) {
+        }
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("Cluster monitor is running.. "+this.toString());

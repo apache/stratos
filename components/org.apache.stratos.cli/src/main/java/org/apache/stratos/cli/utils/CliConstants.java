@@ -58,6 +58,11 @@ public class CliConstants {
 	 * List the subscribed cartridges
 	 */
 	public static final String LIST_ACTION = "list-subscribe-cartridges";
+	
+	/**
+	 * List the subscribed cartridges
+	 */
+	public static final String LIST_INFO_ACTION = "subscribe-cartridges-info";
 
 	/**
 	 * List the available cartridges
@@ -95,6 +100,16 @@ public class CliConstants {
     public static final String LIST_DEPLOYMENT_POLICIES = "list-deployment-policies";
 
     /**
+     * List members
+     */
+    public static final String LIST_MEMBERS = "list-members";
+
+     /**
+     * List members with LB
+     */
+    public static final String LIST_MEMBERS_WITH_LB = "list-lb-members";
+
+    /**
      * Autoscaling policy deployment
      */
     public static final String AUTOSCALING_POLICY_DEPLOYMENT = "deploy-autoscaling-policy";
@@ -113,6 +128,23 @@ public class CliConstants {
 	 * Synchronize repository
 	 */
 	public static final String SYNC_ACTION = "sync";
+
+     /**
+     * Describe the cartridge
+     */
+    public static final String DESCRIBE_CARTRIDGE = "describe-cartridge";
+     /**
+     * Describe the partition
+     */
+    public static final String DESCRIBE_PARTITION = "describe-partition";
+     /**
+     * describe the auto scaling policy
+     */
+    public static final String DESCRIBE_AUTO_SCALING_POLICY = "describe-autoscaling-policy";
+     /**
+     * describe the deployment policy
+     */
+    public static final String DESCRIBE_DEPLOYMENT_POLICY = "describe-deployment-policy";
 
 	/**
 	 * Domain mapping
@@ -162,6 +194,12 @@ public class CliConstants {
 	
 	public static final String DATA_ALIAS_OPTION = "d";
 	public static final String DATA_ALIAS_LONG_OPTION = "data-alias";
+
+    public static final String ALIAS_OPTION = "a";
+	public static final String ALIAS_LONG_OPTION = "alias";
+
+    public static final String CARTRIDGE_TYPE_OPTION = "t";
+	public static final String CARTRIDGE_TYPE_LONG_OPTION = "cartridge-type";
 	
 	public static final String FULL_OPTION = "f";
 	public static final String FULL_LONG_OPTION = "full";

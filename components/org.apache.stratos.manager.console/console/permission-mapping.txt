@@ -1,0 +1,19 @@
+View subscribed cartridges - view
+View cartridges - view
+
+Subscribe to cartridges - subscribe
+
+Partition Deploy - configure
+View Partitions - configure
+Policy Deployments - configure
+View Deployments - configure
+LBs Deployments - configure
+View Deployments - configure
+Cartridge Deployments - configure
+View Cartridges - configure
+Multi-Tenant Service Deployments - configure
+View MT Service Deployments - configure
+
+View Tenants - tenant-mgt
+
+Configure Stratos Wizard - configure

@@ -49,7 +49,9 @@ import java.util.concurrent.*;
  */
 public class GitBasedArtifactRepository {
 
-    private static final Log log = LogFactory.getLog(GitBasedArtifactRepository.class);
+    private static final int SUPER_TENANT_ID = -1234;
+
+	private static final Log log = LogFactory.getLog(GitBasedArtifactRepository.class);
 
     //Map to keep track of git context per tenant (remote urls, jgit git objects, etc.)
     private static ConcurrentHashMap<Integer, RepositoryContext>
@@ -82,8 +84,6 @@ public class GitBasedArtifactRepository {
      */
     private void initGitContext (RepositoryInformation repositoryInformation)  {
 
-     /*   if (tenantId == GitDeploymentSynchronizerConstants.SUPER_TENANT_ID)
-            return;*/
     	
     	log.info("Initializing git context.");
     	
@@ -91,13 +91,14 @@ public class GitBasedArtifactRepository {
     	String gitLocalRepoPath = repositoryInformation.getRepoPath();
         RepositoryContext gitRepoCtx = new RepositoryContext();
         String gitRemoteRepoUrl = repositoryInformation.getRepoUrl();
+        boolean isMultitenant = repositoryInformation.isMultitenant();
         
         log.info("local path " + gitLocalRepoPath);
         log.info("remote url " + gitRemoteRepoUrl);
         log.info("tenant " + tenantId);
         
         gitRepoCtx.setTenantId(tenantId);
-        gitRepoCtx.setGitLocalRepoPath(getRepoPathForTenantId(tenantId,gitLocalRepoPath));        
+        gitRepoCtx.setGitLocalRepoPath(getRepoPathForTenantId(tenantId,gitLocalRepoPath,isMultitenant));        
         gitRepoCtx.setGitRemoteRepoUrl(gitRemoteRepoUrl);
 		
 		gitRepoCtx.setRepoUsername(repositoryInformation.getRepoUsername());
@@ -116,7 +117,9 @@ public class GitBasedArtifactRepository {
 
         FileRepository localRepo = null;
         try {
-            localRepo = new FileRepository(new File(gitLocalRepoPath + "/.git"));
+            // localRepo = new FileRepository(new File(gitLocalRepoPath + "/.git"));
+            // Fixing STRATOS-380
+            localRepo = new FileRepository(new File(gitRepoCtx.getGitLocalRepoPath() + "/.git"));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -133,21 +136,29 @@ public class GitBasedArtifactRepository {
 
     // If tenant id is "-1234", then its super tenant, else tenant
     private static String getRepoPathForTenantId(int tenantId,
-                       String gitLocalRepoPath) {
+                       String gitLocalRepoPath, boolean isMultitenant) {
                
-       StringBuilder repoPathBuilder = new StringBuilder();
-       
-       if(tenantId == -1234) {
-               repoPathBuilder.append(gitLocalRepoPath).append(SUPER_TENANT_APP_PATH);
-       } else {
-               // create folder with tenant id
-               createTenantDir(tenantId, gitLocalRepoPath);                    
-               repoPathBuilder.append(gitLocalRepoPath).append(TENANT_PATH).append(tenantId);
-       }
-       
-               String repoPath = repoPathBuilder.toString();
-               log.info("Repo path returned : " + repoPath);
-               return repoPath;
+    	
+		StringBuilder repoPathBuilder = new StringBuilder();
+		String repoPath = null;
+
+		if (isMultitenant) {
+			if (tenantId == SUPER_TENANT_ID) {
+				repoPathBuilder.append(gitLocalRepoPath).append(
+						SUPER_TENANT_APP_PATH);
+			} else {
+				// create folder with tenant id
+				createTenantDir(tenantId, gitLocalRepoPath);
+				repoPathBuilder.append(gitLocalRepoPath).append(TENANT_PATH)
+						.append(tenantId);
+			}
+
+			repoPath = repoPathBuilder.toString();
+		} else {
+			repoPath = gitLocalRepoPath;
+		}
+		log.info("Repo path returned : " + repoPath);
+		return repoPath;
        }
 
        private static void createTenantDir(int tenantId, String path) {
@@ -464,7 +475,7 @@ public class GitBasedArtifactRepository {
                if (repoCtxt.getArtifactSyncSchedular() == null) {
                    // create a new ScheduledExecutorService instance
                    final ScheduledExecutorService artifactSyncScheduler = Executors.newScheduledThreadPool(1,
-                           new ArtifactSyncTaskThreadFactory(repoInformation));
+                           new ArtifactSyncTaskThreadFactory(repoCtxt.getGitLocalRepoPath()));
 
                    // schedule at the given interval
                    artifactSyncScheduler.scheduleAtFixedRate(new ArtifactSyncTask(repoInformation), delay, delay, TimeUnit.SECONDS);
@@ -790,14 +801,14 @@ public class GitBasedArtifactRepository {
 
     class ArtifactSyncTaskThreadFactory implements ThreadFactory {
 
-        private RepositoryInformation repositoryInformation;
+        private String localRepoPath;
 
-        public ArtifactSyncTaskThreadFactory (RepositoryInformation repositoryInformation) {
-            this.repositoryInformation = repositoryInformation;
+        public ArtifactSyncTaskThreadFactory (String localRepoPath) {
+            this.localRepoPath = localRepoPath;
         }
 
         public Thread newThread(Runnable r) {
-            return new Thread(r, "Artifact Update Thread - " + repositoryInformation.getRepoPath());
+            return new Thread(r, "Artifact Update Thread - " + localRepoPath);
         }
     }
 

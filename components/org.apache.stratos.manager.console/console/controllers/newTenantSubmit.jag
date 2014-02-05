@@ -1,0 +1,28 @@
+<%
+(function(){
+    var log = new Log("controller.newTenantSubmit");
+    var utils = require('/util/utility.jag');
+    var jsonRequest = {};
+    jsonRequest.tenantInfoBean = {};
+
+    //get user input
+    var adminName = request.getParameter("adminName");
+    var firstName = request.getParameter("firstName");
+    var lastName = request.getParameter("lastName");
+    var adminPassword = request.getParameter("adminPassword");
+    var email = request.getParameter("email");
+    var tenantDomain= request.getParameter("tenantDomain");
+
+    //create json request
+    jsonRequest.tenantInfoBean.admin = adminName;
+    jsonRequest.tenantInfoBean.firstname = firstName;
+    jsonRequest.tenantInfoBean.lastname = lastName;
+    jsonRequest.tenantInfoBean.adminPassword = adminPassword;
+    jsonRequest.tenantInfoBean.email = email;
+    jsonRequest.tenantInfoBean.tenantDomain = tenantDomain;
+
+
+    utils.consoleAppUtil.addTenant(jsonRequest);
+    response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+}());
+%>

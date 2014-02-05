@@ -56,15 +56,12 @@
                         <provider>aws-ec2</provider>
                         <identity svns:secretAlias="elastic.scaler.openstack.identity">EC2_IDENTITY</identity>
                         <credential svns:secretAlias="elastic.scaler.openstack.credential">EC2_CREDENTIAL</credential>
-                        <scaleUpOrder>EC2_SCALEUP_ORDER</scaleUpOrder>
-                        <scaleDownOrder>EC2_SCALEDOWN_ORDER</scaleDownOrder>
                         <property name="jclouds.ec2.ami-query" value="owner-id=EC2_OWNER_ID;state=available;image-type=machine"/>
                         <property name="availabilityZone" value="EC2_AVAILABILITY_ZONE"/>
                         <property name="securityGroups" value="EC2_SECURITY_GROUPS"/>
                         <property name="instanceType" value="EC2_INSTANCE_TYPE"/>
                         <property name="autoAssignIp" value="true" />
                         <property name="keyPair" value="EC2_KEYPAIR"/>
-                        <maxInstanceLimit>30</maxInstanceLimit>
                 </iaasProviderEC2_PROVIDER_END>
                 <OPENSTACK_PROVIDER_STARTiaasProvider type="openstack" name="openstack specific details">
             		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
@@ -74,11 +71,8 @@
                         <property name="jclouds.endpoint" value="OPENSTACK_ENDPOINT" />
             		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
                         <property name="jclouds.api-version" value="2.0/" />
-                        <scaleUpOrder>OPENSTACK_SCALEUP_ORDER</scaleUpOrder>
-                        <scaleDownOrder>OPENSTACK_SCALEDOWN_ORDER</scaleDownOrder>
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
-			<maxInstanceLimit>30</maxInstanceLimit>
         	</iaasProviderOPENSTACK_PROVIDER_END>
         </iaasProviders>
 </cloudController>

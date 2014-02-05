@@ -60,6 +60,9 @@ public class ClusterIdToSubscription implements Serializable {
             Set<CartridgeSubscription> subscriptions = new HashSet<CartridgeSubscription>();
             subscriptions.add(cartridgeSubscription);
             clusterIdToCartridgeSubscription.put(clusterDomain, subscriptions);
+            if(log.isDebugEnabled()) {
+                log.debug("Added Cartridge Subscription for cluster id " + clusterDomain + " in [Cluster Id -> Set<CartridgeSubscription>] map");
+            }
         }
     }
 
@@ -94,7 +97,7 @@ public class ClusterIdToSubscription implements Serializable {
         }
 
         // if the Subscriptions set is empty now, remove it from cartridgeTypeToSubscriptions map
-        if (existingSubscriptions != null && existingSubscriptions.isEmpty()) {
+        if (existingSubscriptions == null || existingSubscriptions.isEmpty()) {
             clusterIdToCartridgeSubscription.remove(clusterId);
             if (log.isDebugEnabled()) {
                 log.debug("Deleted the subscriptions set for cluster id " + clusterId + " from [Cluster Id -> Set<CartridgeSubscription>] map");

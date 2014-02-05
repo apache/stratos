@@ -7,7 +7,6 @@
 
 var securityModule = function () {
 
-    var LOGGED_IN_USER = 'LOGGED_IN_USER';
     var log=new Log('security.provider');
 
     /*

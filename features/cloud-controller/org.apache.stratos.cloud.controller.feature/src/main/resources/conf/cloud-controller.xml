@@ -63,7 +63,6 @@
 			<property name="securityGroups" value="manager,cep,mb,default"/>
             		<property name="instanceType" value="m1.large"/>
             		<property name="keyPair" value="nirmal-key"/>
-			<imageId>us-east-1/ami-52409a3b</imageId>
 		</iaasProvider-->
 		<iaasProvider type="openstack" name="openstack specific details">
             		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
@@ -75,7 +74,6 @@
 			<property name="jclouds.api-version" value="2.0/" />
 			<property name="X" value="x" />
 			<property name="Y" value="y" />
-			<imageId>nova/dab37f0e-cf6f-4812-86fc-733acf22d5e6</imageId>
 		</iaasProvider>
 	</iaasProviders>
 </cloudController>

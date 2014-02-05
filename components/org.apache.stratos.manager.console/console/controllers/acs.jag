@@ -36,10 +36,12 @@
                 if (sso.client.validateSignature(samlRespObj, keyStoreProps)) {
                     var sessionObj = sso.client.decodeSAMLLoginResponse(samlRespObj, samlResponse, sessionId);
                     var samlToken = sso.client.getB64EncodedtSAMLAssertion(samlRespObj);
+                    var tenantDomain = sso.client.getTenantDomain(samlRespObj);
+                    var roleArray =  sso.client.getRoleList(samlRespObj);
                     log.info("B64 encoded SAML2Token : " + samlToken.b64Encoded);
                     log.info("Logged in user : " + sessionObj.loggedInUser);
-                    log.info("Tenant domain : " + sso.client.getTenantDomain(samlRespObj));
-                    log.info("Role List of current tenant : "+ sso.client.getRoleList(samlRespObj)[1]);
+                    log.info("Tenant domain : " + tenantDomain);
+                    log.info("Role List of current tenant : "+ roleArray);
                     log.info("B64 encoded SAML2Token : " + samlToken.b64Encoded);
                     var encodedString = sso.client.b64encode("LATjzZ4FvQc2gFEfwcitay78lQQa:LeZD0oN0ZLTLjLmRqphX4Ulrr5wa");
                     log.info("encoded string : " + encodedString);
@@ -47,35 +49,19 @@
                     log.info(accessToken.data.access_token);
                     session.put("access_token",accessToken.data.access_token);
                     if (sessionObj.sessionIndex != null || sessionObj.sessionIndex != 'undefined') {
-                        session.put("LOGGED_IN_USER", sessionObj.loggedInUser);
-                        //session.put("Logged", "true");
-
-                        //sso_sessions[sessionObj.sessionIndex] = sessionObj.sessionId;
-
-                        log.debug("session index :: " + sessionObj.sessionIndex);
-                        log.debug("session :: " + sessionObj.sessionId);
-
-                        log.debug("real session :: " + session.getId());
-
-
-                        //sso_sessions[sso_sessions[sessionObj.sessionIndex] = sessionObj.sessionId] = sessionObj.sessionIndex;
-
+                        require('console').server.current(session, sessionObj.loggedInUser);
+                        session.put("IS_LOGGED_IN", true);
+                        session.put("TENANT_DOMAIN",tenantDomain);
+                        session.put("ROLE_ARRAY",roleArray);
                         sso_sessions[sessionObj.sessionId] = sessionObj.sessionIndex;
                         response.sendRedirect('/console');
-                        //var user = require('store').user;
-
-                        //if (user.loginWithSAML(sessionObj.loggedInUser)) {
-                        //    log.debug('user is set :::' + sessionObj.loggedInUser);
-                        //    response.sendRedirect('/publisher');
-                        //}
-
                     }
                 }
             }
 
         } else {
             session.invalidate();
-            response.sendRedirect('/publisher');
+            response.sendRedirect('/console');
         }
     }
 

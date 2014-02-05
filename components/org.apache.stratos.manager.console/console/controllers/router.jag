@@ -2,23 +2,36 @@
 
 (function(){
     var config=require('/config/console.json');
-
-    var DEFAULT_ROUTER_NAME='/asset.jag';
-    var EXT_ROUTER_NAME='/pages/asset.jag';
-    var EXT_PATH=config.paths.ASSET_EXT_PATH;
-    var DEFAULT_PATH=config.paths.ASSET_DEFAULT_PATH;
-    var URL=config.urls.MGT;
+    var log = new Log("controller.router");
     var acl = require('/util/acl.jag');
 
     var MSG_404='Asset not found';	//Eror 404 message
 
     var securityModule=require('/modules/security/security.manager.js').securityManagementModule();
+    var file = require('/modules/file.js');
 
     var sm=securityModule.cached();
+    //
+    var matcher=new URIMatcher(request.getRequestURI());
+
+    // we stream css and other theme related resources found under themes directory.
+    if (matcher.match('/{context}/themes/{+file}')) {
+        elements = matcher.elements();
+        file.send('/themes/' + elements.file);
+        return;
+    }
 
     //This will short circuit the handling of the requests
-    //var passed=sm.check(session);
-    var passed=true;
+    var passed=sm.check(session);
+    //var tenantDomain = session.get("TENANT_DOMAIN");
+    //var roleArray = session.get("ROLE_ARRAY");
+
+    // comment out the above and uncomment below code bits for testing. It removes authentication/authorization
+    // of the app.
+
+    //var passed=true;
+    var tenantDomain = "carbon.super";
+    var roleArray = ["admin","Internal/Everyone"];
 
     //Stop servicing the request if the check failed
     if(!passed){
@@ -32,60 +45,50 @@
      @return: true if the pattern matches,else false
      */
     function isMatchingPattern(patterns,uriMatcher){
-
         for each(var pattern in patterns){
-
             if(uriMatcher.match(pattern)){
-
                 return true;
             }
         }
-
         return false;
     }
 
 
-    var matcher=new URIMatcher(request.getRequestURI());
 
 
-    var patterns=[ '/{context}'+URL+'/{type}/{+suffix}',
-        '/{context}'+URL+'/{type}'];
-
-
-
+    var patterns=['/{context}','/{context}/','/{context}/{+suffix}'];
     if(isMatchingPattern(patterns,matcher)){
 
         var params=matcher.elements();
 
-        var theme=params.theme;
-        var type=params.type;
-        var log = new Log("stratos.router");
-        log.info("type : "+ params.type);
-        log.info("context :"+ params.cotext);
-        var extLocation ='/'+type;
-        var path = extLocation; //Assume there is an extension
-        log.info(path);
-
-
-        //Check if an extension asset router exists
-        var fileTester=new File(path);
+        var context=params.context;
+        var suffix=params.suffix;
+        var includePath ='/';
+        if(!suffix){
+          includePath += 'index.jag'; // index page rendering for /console
+        }else{
+          includePath += suffix;
+        }
+        //check if the file path exists
+        var fileTester=new File(includePath);
 
         if(fileTester.isExists()){
             request.getMappedPath = function() {
-                return path;
+                return includePath; // setting path for caramel framework
             };
-            var permissionObject = acl.authorizationUtil.getPermissionObj("carbon.super",["admin","Internal/Everyone"]);
-            log.info(permissionObject);
+            var permissionObject = acl.authorizationUtil.getPermissionObj(tenantDomain,roleArray);
             request.permissions = permissionObject;
-            include(path);
+            include(includePath);
             return;
         }
 
-        //Set the default path
-        path=DEFAULT_PATH+DEFAULT_ROUTER_NAME;
 
-        //Default
-        include(path);
+        var defaultPath='/default_page.jag';
+        //Set the default path
+        request.getMappedPath = function() {
+            return defaultPath; // setting path for caramel framework
+        };
+        include(defaultPath);
         return;
     }
 

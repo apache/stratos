@@ -195,6 +195,7 @@
 							org.osgi.framework.*;resolution:=optional,
 							*;resolution:=optional
                         </Import-Package>
+						<Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>
 						<DynamicImport-Package>*</DynamicImport-Package>
 						<!--<Axis2Deployer>AutoscalerPolicyDeployer</Axis2Deployer>
 						<Axis2Deployer>DeploymentPolicyDeployer</Axis2Deployer>-->

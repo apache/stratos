@@ -113,7 +113,7 @@ public class SubscriptionContext implements Serializable {
         }
 
         // if the Subscriptions set is empty now, remove it from cartridgeTypeToSubscriptions map
-        if (existingSubscriptions != null && existingSubscriptions.isEmpty()) {
+        if (existingSubscriptions == null || existingSubscriptions.isEmpty()) {
             cartridgeTypeToSubscriptions.remove(type);
             if (log.isDebugEnabled()) {
                 log.debug("Deleted the subscriptions set for type " + type + " from [Type -> Set<CartridgeSubscription>] map");
@@ -126,6 +126,11 @@ public class SubscriptionContext implements Serializable {
                 log.debug("Deleted the subscription for alias " + subscriptionAlias + " from [Alias -> CartridgeSubscription] map");
             }
         }
+    }
+
+    public boolean isEmpty () {
+
+        return cartridgeTypeToSubscriptions.isEmpty() && aliasToSubscription.isEmpty();
     }
 
 }

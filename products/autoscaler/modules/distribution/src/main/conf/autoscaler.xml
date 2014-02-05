@@ -19,21 +19,24 @@
 -->
 <configuration>
 	<autoscaler>
-		<rulesEvaluator>
-			<schedule>
-				<initialDelay>30</initialDelay>
-				<period>15</period>
-			</schedule>
-		</rulesEvaluator>
-		<cloudController>
-			<hostname>localhost</hostname>
-			<port>9444</port>
-            <clientTimeout>300000</clientTimeout>
-		</cloudController>
-        <stratosManager>
-			<hostname>localhost</hostname>
-			<port>9445</port>
-            <clientTimeout>300000</clientTimeout>
-		</stratosManager>
+	    <rulesEvaluator>
+	        <schedule>
+		    <initialDelay>30</initialDelay>
+	            <period>15</period>
+	        </schedule>
+	    </rulesEvaluator>
+	    <cloudController>
+	        <hostname>localhost</hostname>
+		<port>9444</port>
+                <clientTimeout>300000</clientTimeout>
+	    </cloudController>
+            <stratosManager>
+	        <hostname>localhost</hostname>
+		<port>9445</port>
+                <clientTimeout>300000</clientTimeout>
+	    </stratosManager>
+	    <member>
+		<expiryTimeout>900000</expiryTimeout>
+	    </member>
 	</autoscaler>
 </configuration>
