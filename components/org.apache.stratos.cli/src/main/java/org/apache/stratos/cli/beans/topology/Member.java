@@ -10,6 +10,7 @@ public class Member {
     private String status;
     private String memberIp;
     private String lbClusterId;
+    private String memberPublicIp;
 
     public String getServiceName() {
         return serviceName;
@@ -74,4 +75,13 @@ public class Member {
     public void setLbClusterId(String lbClusterId) {
         this.lbClusterId = lbClusterId;
     }
+
+	public String getMemberPublicIp() {
+		return memberPublicIp;
+	}
+
+	public void setMemberPublicIp(String memberPublicIp) {
+		this.memberPublicIp = memberPublicIp;
+	}   
+    
 }

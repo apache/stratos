@@ -310,6 +310,11 @@ public class PojoConverter {
             } else {
                 member.memberIp = tmp.getMemberIp();
             }
+            if(tmp.getMemberPublicIp() == null) {
+            	member.memberPublicIp = "NULL";
+            } else {
+            	member.memberPublicIp = tmp.getMemberPublicIp();
+            }
             member.serviceName = tmp.getServiceName();
             member.status = tmp.getStatus().toString();
             cluster1.member.add(member);
