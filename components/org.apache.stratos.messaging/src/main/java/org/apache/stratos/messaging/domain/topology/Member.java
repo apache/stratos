@@ -42,7 +42,8 @@ public class Member implements Serializable {
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
-
+    
+    private String memberPublicIp;
     private MemberStatus status;
     private String memberIp;
     @XmlJavaTypeAdapter(MapAdapter.class)
@@ -145,5 +146,14 @@ public class Member implements Serializable {
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+
+	public String getMemberPublicIp() {
+		return memberPublicIp;
+	}
+
+	public void setMemberPublicIp(String memberPublicIp) {
+		this.memberPublicIp = memberPublicIp;
+	}
+    
 }
 

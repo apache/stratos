@@ -13,5 +13,6 @@ public class Member {
     public String status;
     public String memberIp;
     public String lbClusterId;
+    public String memberPublicIp;
 
 }

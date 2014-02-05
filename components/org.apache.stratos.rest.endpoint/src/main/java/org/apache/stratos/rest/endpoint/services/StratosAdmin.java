@@ -68,7 +68,12 @@ public class StratosAdmin extends AbstractAdmin {
     @Context
     HttpServletRequest httpServletRequest;
 
-
+    @POST
+    @Path("/init")
+    public void initialize ()
+            throws RestAPIException {
+    	
+    }
     /*
     This method gets called by the client who are interested in using session mechanism to authenticate themselves in
     subsequent calls. This method call get authenticated by the basic authenticator.
@@ -288,6 +293,15 @@ public class StratosAdmin extends AbstractAdmin {
         // Following is very important when working with axis2
         return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
     }
+    
+    @GET
+    @Path("/cartridge/info/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+        return ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
+    }
 
     @POST
     @Path("/cartridge/subscribe")
@@ -344,6 +358,23 @@ public class StratosAdmin extends AbstractAdmin {
                               @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
 
         return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
+    }
+    
+    @GET
+    @Path("/cluster/clusterId/{clusterId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster getCluster(@PathParam("clusterId") String clusterId) throws ADCException {
+    	Cluster cluster = null;
+        Cluster[] clusters = ServiceUtils.getClustersForTenant(getConfigContext());
+        for (Cluster clusterObj : clusters) {
+			if (clusterObj.clusterId.equals(clusterId)){
+				cluster = clusterObj;
+				break;
+			}
+		}
+        return cluster;
     }
 
     @POST

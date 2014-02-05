@@ -65,6 +65,8 @@
                 <value>partition</value>
                 <value>member</value>
                 <value>hostNames</value>
+                <value>portMappings</value>
+                <value>cartridge</value>
             </list>
         </property>
     </bean>
