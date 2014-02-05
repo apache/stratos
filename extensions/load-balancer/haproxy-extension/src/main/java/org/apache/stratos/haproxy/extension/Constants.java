@@ -23,6 +23,7 @@ package org.apache.stratos.haproxy.extension;
  * HA proxy extension constants.
  */
 public class Constants {
+    public static final String HAPROXY_PRIVATE_IP = "haproxy.private.ip";
     public static final String EXECUTABLE_FILE_PATH = "executable.file.path";
     public static final String TEMPLATES_PATH = "templates.path";
     public static final String TEMPLATES_NAME = "templates.name";

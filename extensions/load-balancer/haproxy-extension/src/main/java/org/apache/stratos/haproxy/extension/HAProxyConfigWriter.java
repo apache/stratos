@@ -66,26 +66,24 @@ public class HAProxyConfigWriter {
                 }
 
                 for (Port port : service.getPorts()) {
-                    for(String hostName : cluster.getHostNames()) {
-                        String frontendId = cluster.getClusterId() + "-host-" + hostName + "-proxy-" + port.getProxy();
-                        String backendId = frontendId + "-members";
+                    String frontendId = cluster.getClusterId() + "-host-" + HAProxyContext.getInstance().getHAProxyPrivateIp() + "-proxy-" + port.getProxy();
+                    String backendId = frontendId + "-members";
 
-                        // Frontend block
-                        frontendBackendCollection.append("frontend ").append(frontendId).append(NEW_LINE);
-                        frontendBackendCollection.append("\tbind ").append(hostName).append(":").append(port.getProxy()).append(NEW_LINE);
-                        frontendBackendCollection.append("\tmode ").append(port.getProtocol()).append(NEW_LINE);
-                        frontendBackendCollection.append("\tdefault_backend ").append(backendId).append(NEW_LINE);
-                        frontendBackendCollection.append(NEW_LINE);
+                    // Frontend block
+                    frontendBackendCollection.append("frontend ").append(frontendId).append(NEW_LINE);
+                    frontendBackendCollection.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp()).append(":").append(port.getProxy()).append(NEW_LINE);
+                    frontendBackendCollection.append("\tmode ").append(port.getProtocol()).append(NEW_LINE);
+                    frontendBackendCollection.append("\tdefault_backend ").append(backendId).append(NEW_LINE);
+                    frontendBackendCollection.append(NEW_LINE);
 
-                        // Backend block
-                        frontendBackendCollection.append("backend ").append(backendId).append(NEW_LINE);
-                        frontendBackendCollection.append("\tmode ").append(port.getProtocol()).append(NEW_LINE);
-                        for (Member member : cluster.getMembers()) {
-                            frontendBackendCollection.append("\tserver ").append(member.getMemberId()).append(" ")
-                                    .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
-                        }
-                        frontendBackendCollection.append(NEW_LINE);
+                    // Backend block
+                    frontendBackendCollection.append("backend ").append(backendId).append(NEW_LINE);
+                    frontendBackendCollection.append("\tmode ").append(port.getProtocol()).append(NEW_LINE);
+                    for (Member member : cluster.getMembers()) {
+                        frontendBackendCollection.append("\tserver ").append(member.getMemberId()).append(" ")
+                                .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
                     }
+                    frontendBackendCollection.append(NEW_LINE);
                 }
             }
         }
