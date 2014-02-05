@@ -26,6 +26,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.stratos.load.balancer.RequestDelegator;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
+import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.load.balancer.util.Constants;
@@ -230,7 +231,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
 
         int memberPort = transportPort.getValue();
-        org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(member.getMemberIp(), memberPort);
+        org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(getMemberIp(synCtx, member), memberPort);
         axis2Member.setDomain(member.getClusterId());
         Port httpPort = member.getPort("http");
         if (httpPort != null)
@@ -242,6 +243,35 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         // Set cluster id and partition id in message context
         synCtx.setProperty(Constants.CLUSTER_ID, member.getClusterId());
         return axis2Member;
+    }
+
+    private String getMemberIp(MessageContext synCtx, Member member) {
+        if(LoadBalancerConfiguration.getInstance().isTopologyEventListenerEnabled()) {
+            if(LoadBalancerConfiguration.getInstance().getTopologyMemberIpType() == MemberIpType.Public) {
+                // Return member's public IP address
+                if(StringUtils.isBlank(member.getMemberPublicIp())) {
+                    if (log.isErrorEnabled()) {
+                        log.error(String.format("Member public IP address not found: [member] %s", member.getMemberId()));
+                    }
+                    throwSynapseException(synCtx, 500, "Internal server error");
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Using member public IP address: [member] %s [ip] %s", member.getMemberId(), member.getMemberPublicIp()));
+                }
+                return member.getMemberPublicIp();
+            }
+        }
+        // Return member's private IP address
+        if(StringUtils.isBlank(member.getMemberIp())) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Member IP address not found: [member] %s", member.getMemberId()));
+            }
+            throwSynapseException(synCtx, 500, "Internal server error");
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Using member IP address: [member] %s [ip] %s", member.getMemberId(), member.getMemberIp()));
+        }
+        return member.getMemberIp();
     }
 
     private String extractUrl(MessageContext synCtx) {
