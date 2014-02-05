@@ -151,6 +151,18 @@ function helpsetup {
 }
 
 function general_conf_validate {
+    if [[ ! -d $setup_path ]]; then
+        echo "Please specify the setup_path folder which contains stratos setup"
+        exit 1
+    fi
+    if [[ ! -d $stratos_pack_path ]]; then
+        echo "Please specify the stratos_pack_path folder which contains stratos packages"
+        exit 1
+    fi
+    if [[ ! -d $stratos_path ]]; then
+        echo "Please specify the stratos_path folder which stratos will be installed"
+        exit 1
+    fi
     if [[ ! -d $JAVA_HOME ]]; then
         echo "Please set the JAVA_HOME environment variable for the running user"
         exit 1
@@ -231,7 +243,7 @@ function as_conf_validate {
         echo "Please provide valid ips for SM and/or CC"
         exit 1
     fi
-    if [[-z $cc_hostname || -z $sm_hostname ]]; then
+    if [[ -z $cc_hostname || -z $sm_hostname ]]; then
 	echo "Please specify valid hostname for SM and/or CC"
 	exit 1
     fi
@@ -264,7 +276,7 @@ function sm_conf_validate {
         echo "Please provide valid ip for puppet master"
         exit 1
     fi
-    if [[-z $cc_hostname || -z $as_hostname ]]; then
+    if [[ -z $cc_hostname || -z $as_hostname ]]; then
 	echo "Please specify valid hostname for AS and/or CC"
 	exit 1
     fi
@@ -578,15 +590,18 @@ function sm_setup {
 
     # Database Configuration
     # -----------------------------------------------
-    echo "Create and configure MySql Databases" >> $LOG
+    echo "Create and configure MySql Databases" >> $LOG 
 
     echo "Creating userstore database"
-    mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/userstore.sql
+
+    pushd $resource_path
+    cp -f mysql.sql mysql.sql.orig
+    cat mysql.sql.orig | sed -e "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" > mysql.sql
+
+    popd # resource_path
+
+    mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/mysql.sql
     
-    echo "Creating stratos_foundation database"
-    mysql -u$stratos_foundation_db_user -p$stratos_foundation_db_pass < $resource_path/stratos_foundation.sql
-
-
     #Copy https://svn.wso2.org/repos/wso2/scratch/hosting/build/tropos/resources/append_zone_file.sh into /opt/scripts folder
     if [[ ! -d $stratos_path/scripts ]]; then
         mkdir -p $stratos_path/scripts
@@ -615,7 +630,7 @@ echo "$mb_ip $mb_hostname	# message broker hostname"	>> hosts.tmp
 if [[ $sm = "true" || $as = "true" ]]; then
     echo "$sm_ip $sm_hostname	# stratos domain"	>> hosts.tmp
     echo "$cc_ip $cc_hostname	# cloud controller hostname"	>> hosts.tmp
-if
+fi
 
 if [[ $sm = "true" ]]; then
     echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
@@ -653,4 +668,6 @@ if [[ $sm == "true" ]]; then
     echo "Management Console : https://$stratos_domain:$sm_https_port/"
     echo "**************************************************************"
 fi
+
+
 
