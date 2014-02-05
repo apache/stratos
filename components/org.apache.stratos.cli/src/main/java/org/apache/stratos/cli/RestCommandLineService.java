@@ -444,50 +444,36 @@ public class RestCommandLineService {
             final Set<String> lbFloatingIpSet = lbIpMap.get("floating");
             Cartridge[] cartridges = new Cartridge[1];
             cartridges[0] = cartridge;
-
-            RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
-
-                public String[] getData(Cartridge cartridge) {
-                	
-                	String[] data = lbFloatingIpSet != null ? new String[13] : new String[12];
-                    data[0] = cartridge.getCartridgeType();
-                    data[1] = cartridge.getDisplayName();
-                    data[2] = cartridge.getVersion();
-                    data[3] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
-                    data[4] = cartridge.getCartridgeAlias();
-                    data[5] = cartridge.getStatus();
-                    data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-                    data[7] = getAccessURLs(cartridge);
-                    data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
-                    data[9] = lbPrivateIpSet.toString();
-					if (lbFloatingIpSet != null) {
-						data[10] = lbFloatingIpSet.toString();
-					}
-					data[11] = cartridge.getDbUserName();
-					data[12] = cartridge.getPassword();
-                    return data;
-                }
-            };
-
-            List<String> headers = new ArrayList<String>();
-            headers.add("Type");
-            headers.add("Name");
-            headers.add("Version");
-            headers.add("Tenancy Model");
-            headers.add("Alias");
-            headers.add("Status");
-            headers.add("Running Instances");
-            headers.add("Access URL(s)");
-            headers.add("Repo URL");
-            headers.add("LB Private Ip");
-			if (lbFloatingIpSet != null) {
-				headers.add("LB Floating Ip");
-			}
-			headers.add("DB username");
-			headers.add("DB password");
+          
                         
-            System.out.println("Subscribed Cartridges Info ************ : [TODO database info]");
-            CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+            System.out.println("\nSubscribed Cartridges Info :");
+            System.out.println("\tType : " + cartridge.getCartridgeType());
+            System.out.println("\tName : "	+ cartridge.getDisplayName());
+            System.out.println("\tVersion : "	+ cartridge.getVersion());
+            String tenancy  = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
+            System.out.println("\tTenancy Model	: "	+ tenancy);
+            System.out.println("\tAlias : "	+ cartridge.getCartridgeAlias());
+            System.out.println("\tStatus : "	+ cartridge.getStatus());
+            String instanceCount  = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
+            System.out.println("\tRunning Instances	: " + instanceCount);
+            System.out.println("\tAccess URL(s) : " + getAccessURLs(cartridge));
+			if (cartridge.getRepoURL() != null) {
+				System.out.println("\tRepo URL : " + cartridge.getRepoURL());
+			}
+			System.out.println("\tLB Private ip	: "	+ lbPrivateIpSet.toString());
+			if (lbFloatingIpSet != null) {
+				System.out.println("\tLB Floating Ip : " +  lbFloatingIpSet.toString());
+			}
+			if (cartridge.getProvider().equals("data")) {
+				System.out.println("\tDB-username : " +cartridge.getDbUserName());
+				System.out.println("\tDB-password : "	+cartridge.getPassword());
+				System.out.println("\tDB-HostIP (private)  : "	+cartridge.getIp());
+				if (cartridge.getPublicIp() != null) {
+					System.out.println("\tDB-HostIP (floating) : "
+							+ cartridge.getPublicIp());
+				}
+			}
+            //CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
             System.out.println();
         } catch (Exception e) {
             handleException("Exception in listing subscribe cartridges", e);
@@ -508,6 +494,8 @@ public class RestCommandLineService {
     	
     	for (Member member : members) {
 			lbClusterIdSet.add(member.getLbClusterId());
+			cartridge.setIp(member.getMemberIp());
+			cartridge.setPublicIp(member.getMemberPublicIp());
 		}
     	
         // Invoke  cluster/{clusterId}
@@ -553,36 +541,24 @@ public class RestCommandLineService {
                 return;
             }
 
-            RowMapper<Member> memberMapper = new RowMapper<Member>() {
 
-                public String[] getData(Member member) {
-                    String[] data = new String[8];
-                    data[0] = member.getServiceName();
-                    data[1] = member.getClusterId();
-                    data[2] = member.getNetworkPartitionId();
-                    data[3] = member.getPartitionId();
-                    data[4] = member.getMemberIp();
-                    data[5] = member.getStatus().toString();
-                    data[6] = member.getLbClusterId() != null ? member.getLbClusterId() : "";
-                    data[7] = member.getMemberPublicIp().toString();
-                    return data;
-                }
-            };
-
-            List<String> headers = new ArrayList<String>();
-            headers.add("ServiceName");
-            headers.add("ClusterId");
-            headers.add("NewtworkPartitionId");
-            headers.add("PartitionId");
-            headers.add("MemberIp");
-            headers.add("Status");
-            headers.add("LBCluster");
-            headers.add("MemberPublicIp");
-
-            System.out.println("List of members in the [cluster]: " + alias);
-            CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
-
-            System.out.println("List of LB members for the [cluster]: " + "TODO" );
+            System.out.println("\nList of members in the [cluster]: " + alias);
+            for (Member member : members) {
+            	System.out.println("\n\tServiceName : "+member.getServiceName());
+            	System.out.println("\tClusterId : "+member.getClusterId());
+            	System.out.println("\tNewtworkPartitionId : "+member.getNetworkPartitionId());
+            	System.out.println("\tPartitionId : "+member.getPartitionId());
+            	System.out.println("\tStatus : "+member.getStatus());
+            	if(member.getLbClusterId() != null) {
+            	System.out.println("\tLBCluster : "+member.getLbClusterId());
+            	}
+            	System.out.println("\tMemberPrivateIp : "+member.getMemberIp());
+            	System.out.println("\tMemberFloatingIp : "+member.getMemberPublicIp());
+            	System.out.println("\t-----------------------");
+			}
+            //CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
+            System.out.println("==================================================");
+            System.out.println("List of LB members for the [cluster]: " + alias );
             
             // Invoke  cluster/{clusterId}
             for (Member m : members) {
@@ -657,34 +633,22 @@ public class RestCommandLineService {
             System.out.println("There are no subscribed cartridges");
             return;
         }
-
-        RowMapper<Member> memberMapper = new RowMapper<Member>() {
-
-            public String[] getData(Member member) {
-                String[] data = new String[8];
-                data[0] = member.getServiceName();
-                data[1] = member.getClusterId();
-                data[2] = member.getNetworkPartitionId();
-                data[3] = member.getPartitionId();
-                data[4] = member.getMemberIp();
-                data[5] = member.getStatus().toString();
-                data[6] = member.getLbClusterId() != null ? member.getLbClusterId() : "";
-                data[7] = member.getMemberPublicIp().toString();
-                return data;
-            }
-        };
-
-        List<String> headers = new ArrayList<String>();
-        headers.add("ServiceName");
-        headers.add("ClusterId");
-        headers.add("NewtworkPartitionId");
-        headers.add("PartitionId");
-        headers.add("MemberIp");
-        headers.add("Status");
-        headers.add("LBCluster");
-        headers.add("MemberPublicIp");
         
-        CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
+        for (Member member : members) {
+        	System.out.println("\n\tServiceName : "+member.getServiceName());
+        	System.out.println("\tClusterId : "+member.getClusterId());
+        	System.out.println("\tNewtworkPartitionId : "+member.getNetworkPartitionId());
+        	System.out.println("\tPartitionId : "+member.getPartitionId());
+        	System.out.println("\tStatus : "+member.getStatus());
+        	if(member.getLbClusterId() != null) {
+        	System.out.println("\tLBCluster : "+member.getLbClusterId());
+        	}
+        	System.out.println("\tMemberPrivateIp : "+member.getMemberIp());
+        	System.out.println("\tMemberFloatingIp : "+member.getMemberPublicIp());
+        	System.out.println("\t-----------------------");
+		}
+        
+        //CommandLineUtils.printTable(members, memberMapper, headers.toArray(new String[headers.size()]));
 		
 	}
 

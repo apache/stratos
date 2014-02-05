@@ -70,6 +70,7 @@ public class StratosAdmin extends AbstractAdmin {
 
     @POST
     @Path("/init")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public void initialize ()
             throws RestAPIException {
     	
