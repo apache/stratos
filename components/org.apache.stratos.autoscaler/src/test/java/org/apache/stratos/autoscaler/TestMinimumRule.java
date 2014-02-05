@@ -64,7 +64,7 @@ public class TestMinimumRule {
         kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
 
-        conf = ConfUtil.getInstance("autoscaler.xml").getConfiguration();
+        conf = ConfUtil.getInstance("src/test/resources/autoscaler.xml").getConfiguration();
     }
 
     @Test

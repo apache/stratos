@@ -67,7 +67,7 @@ public class TestObsoletedMemberRule {
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
         log.info("Knowledge base has been set up.");
 
-        conf = ConfUtil.getInstance("autoscaler.xml").getConfiguration();
+        conf = ConfUtil.getInstance("src/test/resources/autoscaler.xml").getConfiguration();
     }
     
     @Test
