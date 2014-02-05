@@ -34,11 +34,11 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=wso2carbon
+            -Dcep.stats.publisher.enabled=false
             -Dthrift.receiver.ip=localhost
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=
-            -Dstratos.messaging.topology.service.filter=
-            -Dcep.stats.publisher.enabled=true"
+            -Dstratos.messaging.topology.member.filter="
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
