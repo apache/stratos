@@ -86,9 +86,6 @@ public class PartitionContext implements Serializable{
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
         expiryTime = memberExpiryTime;
-        //if (log.isDebugEnabled()) {
-        log.info("Member expiry time is set to: " + expiryTime);
-        //}
     }
     
     public PartitionContext(Partition partition) {
@@ -105,9 +102,9 @@ public class PartitionContext implements Serializable{
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 900000);
-        //if (log.isDebugEnabled()) {
-            log.info("Member expiry time is set to: " + expiryTime);
-        //}
+        if (log.isDebugEnabled()) {
+            log.debug("Member expiry time is set to: " + expiryTime);
+        }
 
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
