@@ -128,28 +128,28 @@ public class StratosManagerTopologyReceiver implements Runnable {
         });
 
         //Cluster Removed event listner
-//        processorChain.addEventListener(new ClusterRemovedEventListener() {
-//            @Override
-//            protected void onEvent(Event event) {
-//
-//                log.info("********** [ClusterRemovedEventListener] Received: " + event.getClass() + " **********");
-//
-//                ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
-//
-//                Set<CartridgeSubscription> cartridgeSubscriptions =
-//                        getCartridgeSubscription(clusterRemovedEvent.getClusterId());
-//
-//                if(cartridgeSubscriptions != null) {
-//
-//                    // iterate
-//                    for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-//                        //add the information to Topology Cluster Info. model
-//                        TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-//                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
-//                    }
-//                }
-//            }
-//        });
+        processorChain.addEventListener(new ClusterRemovedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("********** [ClusterRemovedEventListener] Received: " + event.getClass() + " **********");
+
+                ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
+
+                Set<CartridgeSubscription> cartridgeSubscriptions =
+                        getCartridgeSubscription(clusterRemovedEvent.getClusterId());
+
+                if(cartridgeSubscriptions != null) {
+
+                    // iterate
+                    for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                        //add the information to Topology Cluster Info. model
+                        TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                                cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
+                    }
+                }
+            }
+        });
         
         
       //Instance Spawned event listner
