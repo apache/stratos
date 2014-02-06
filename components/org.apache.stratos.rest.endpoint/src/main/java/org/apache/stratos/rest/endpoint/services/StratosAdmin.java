@@ -356,7 +356,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cluster getCluster(@PathParam("cartridgeType") String cartridgeType,
-                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException, RestAPIException {
 
         return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
     }
