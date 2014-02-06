@@ -24,8 +24,9 @@ echo "Starting haproxy extension..."
 script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
 lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
-properties="-Djndi.properties.dir=${script_path}/../conf
+properties="-Dhaproxy.private.ip=127.0.0.1
             -Dexecutable.file.path=haproxy
+            -Djndi.properties.dir=${script_path}/../conf
             -Dtemplates.path=${script_path}/../templates
             -Dtemplates.name=haproxy.cfg.template
             -Dscripts.path=${script_path}/../scripts
@@ -35,9 +36,9 @@ properties="-Djndi.properties.dir=${script_path}/../conf
             -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=wso2carbon
             -Dcep.stats.publisher.enabled=false
-            -Dthrift.receiver.ip=localhost
+            -Dthrift.receiver.ip=127.0.0.1
             -Dthrift.receiver.port=7615
-            -Dnetwork.partition.id=
+            -Dnetwork.partition.id=network-partition-1
             -Dstratos.messaging.topology.member.filter="
 
 # Uncomment below line to enable remote debugging

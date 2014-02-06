@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.Constants;
 
 /**
  * This class is responsible for loading the jndi.properties file from the
@@ -54,6 +55,7 @@ public class TopicConnector {
     public void init(String topicName) throws Exception {
         InitialContext ctx;
         Properties environment = Util.getProperties(jndiPropFileDir + File.separator + "jndi.properties");
+        environment.put(Constants.REQUEST_BASE_CONTEXT, "true"); // always returns the base context.
         ctx = new InitialContext(environment);
         // Lookup connection factory
         String connectionFactoryName = environment.get("connectionfactoryName").toString();

@@ -20,8 +20,12 @@
 package org.apache.stratos.load.balancer.conf.domain;
 
 /**
- * Tenant identifier type.
+ * Created with IntelliJ IDEA.
+ * User: imesh
+ * Date: 2/5/14
+ * Time: 11:18 AM
+ * To change this template use File | Settings | File Templates.
  */
-public enum TenantIdentifier {
-    TenantId, TenantDomain;
+public enum  MemberIpType {
+    Private, Public
 }

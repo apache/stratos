@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.conf.domain.Algorithm;
+import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.load.balancer.conf.structure.Node;
 import org.apache.stratos.load.balancer.conf.structure.NodeBuilder;
@@ -57,6 +58,7 @@ public class LoadBalancerConfiguration {
     private String cepIp;
     private int cepPort;
     private boolean topologyEventListenerEnabled;
+    private MemberIpType topologyMemberIpType = MemberIpType.Private;
     private Map<String, Algorithm> algorithmMap;
     private String topologyServiceFilter;
     private String topologyClusterFilter;
@@ -182,6 +184,14 @@ public class LoadBalancerConfiguration {
 
     public void setTopologyEventListenerEnabled(boolean topologyEventListenerEnabled) {
         this.topologyEventListenerEnabled = topologyEventListenerEnabled;
+    }
+
+    public MemberIpType getTopologyMemberIpType() {
+        return topologyMemberIpType;
+    }
+
+    public void setTopologyMemberIpType(MemberIpType type) {
+        topologyMemberIpType = type;
     }
 
     public Collection<Algorithm> getAlgorithms() {
@@ -310,9 +320,15 @@ public class LoadBalancerConfiguration {
             }
 
             String topologyEventListenerEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER);
-            if (StringUtils.isNotBlank(topologyEventListenerEnabled)) {
-                configuration.setTopologyEventListenerEnabled(Boolean.parseBoolean(topologyEventListenerEnabled));
+            validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER, topologyEventListenerEnabled, Constants.CONF_ELEMENT_LOADBALANCER);
+            configuration.setTopologyEventListenerEnabled(Boolean.parseBoolean(topologyEventListenerEnabled));
+
+            if(configuration.isTopologyEventListenerEnabled()) {
+                String topologyMemberIpType =  loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE);
+                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE, topologyMemberIpType, Constants.CONF_ELEMENT_LOADBALANCER);
+                configuration.setTopologyMemberIpType(transformMemberIpType(topologyMemberIpType));
             }
+
             String statsPublisherEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_CEP_STATS_PUBLISHER);
             if (StringUtils.isNotBlank(statsPublisherEnabled)) {
                 configuration.setCepStatsPublisherEnabled(Boolean.parseBoolean(statsPublisherEnabled));
@@ -479,6 +495,18 @@ public class LoadBalancerConfiguration {
                 }
             }
             return configuration;
+        }
+
+        private MemberIpType transformMemberIpType(String topologyMemberIpType) {
+            if("private".equals(topologyMemberIpType)) {
+                return MemberIpType.Private;
+            }
+            else if("public".equals(topologyMemberIpType)) {
+                return MemberIpType.Public;
+            }
+            else {
+                throw new InvalidConfigurationException(String.format("Topology member ip address type is not valid: %s", topologyMemberIpType));
+            }
         }
 
         private void validateRequiredNode(Node node, String nodeName) {
