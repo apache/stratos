@@ -23,8 +23,14 @@ function manage_selected(action){
 }
 function manage_one(action,obj){
     if(action == "activate"){
-        alert('activate-' + $(obj).attr('data-domain'));
+        $('#foo').val($(obj).attr('data-domain'));
+        $('#state').val(action);
+        $('#manageTenantsForm').submit();
+        //alert('activate-' + $(obj).attr('data-domain'));
     }else if(action == "deactivate"){
-        alert('deactivate-' + $(obj).attr('data-domain'));
+        //alert('deactivate-' + $(obj).attr('data-domain'));
+         $('#foo').val($(obj).attr('data-domain'));
+         $('#state').val(action);
+        $('#manageTenantsForm').submit();
     }
 }
