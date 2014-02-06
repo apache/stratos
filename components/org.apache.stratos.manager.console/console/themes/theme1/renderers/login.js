@@ -1,9 +1,18 @@
 var render = function (theme, data, meta, require) {
+    var log = new Log();
+    log.info(data.error);
+    var hasError = true;
+    if(data.error == ""){
+        hasError = false;
+    }
     theme('index', {
         body: [
             {
                 partial: 'login',
-                context: {}
+                context: {
+                    error:data.error,
+                    hasError:hasError
+                }
             }
         ],
         header: [
