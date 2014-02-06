@@ -87,7 +87,7 @@ h2.login-sub-title{
     padding-left:40px;
 }
 .login-button-wrapper{
-    margin:20px 10px;
+    margin:34px 10px 20px;
 }
 div.username-wrapper input.input-username{
     height:60px;
@@ -486,4 +486,11 @@ li.dropdown ul.dropdown-menu li a i{
 label.error{
     color: #be0000;
     padding-bottom: 10px;
+}
+.loginError{
+    color: #BE0000;
+    margin-top: -27px;
+    position: absolute;
+    text-align: center;
+    width: 395px;
 }
