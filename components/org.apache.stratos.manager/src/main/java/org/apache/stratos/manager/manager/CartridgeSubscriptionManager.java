@@ -37,6 +37,7 @@ import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBe
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionSingleTenantBehaviour;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
+import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
@@ -388,31 +389,15 @@ public class CartridgeSubscriptionManager {
     public void unsubscribeFromCartridge (String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /*CartridgeSubscription cartridgeSubscription = getCartridgeSubscriptionForCluster(tenantDomain, alias);
-
-        if(cartridgeSubscription != null) {
-            cartridgeSubscription.removeSubscription();
-
-            // Publish tenant un-subscribed event to message broker
-            CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
-                    cartridgeSubscription.getCartridgeInfo().getType());
-        }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug("No cartridge subscription found with alias " + alias + " for tenant " + tenantDomain);
-            }
-        }*/
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //fix properly
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
 
         CartridgeSubscription cartridgeSubscription = dataInsertionAndRetrievalManager.getCartridgeSubscription(CarbonContext.getThreadLocalCarbonContext().getTenantId(), alias);
         if(cartridgeSubscription != null) {
             cartridgeSubscription.removeSubscription();
 
-            //set status as 'UNSUBSCRIBED'
-            //cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
+            // Remove the information from Topology Model
+            TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
 
             // remove subscription
             try {
@@ -423,16 +408,6 @@ public class CartridgeSubscriptionManager {
                 log.error(errorMsg);
                 throw new ADCException(errorMsg, e);
             }
-
-            // update with new state
-            /*try {
-                dataInsertionAndRetrievalManager.cacheAndPersistSubcription(cartridgeSubscription);
-
-            } catch (PersistenceManagerException e) {
-                String errorMsg = "Error updating subscription for tenant " + tenantDomain + ", alias " + cartridgeSubscription.getAlias();
-                log.error(errorMsg);
-                throw new ADCException(errorMsg, e);
-            }*/
 
             // Publish tenant un-subscribed event to message broker
             CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
