@@ -194,7 +194,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventPublisher.sendInstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, lbClusterId);
+        TopologyEventPublisher.sendInstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, lbClusterId, publicIp, privateIp);
     }
 
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {

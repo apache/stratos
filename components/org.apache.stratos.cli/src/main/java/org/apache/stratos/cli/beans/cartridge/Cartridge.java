@@ -43,6 +43,7 @@ public class Cartridge implements Comparable<Cartridge> {
     private String dbUserName;
     private String mappedDomain;
     private String dbHost;
+    private String publicIp;
 
     private String[] accessURLs;
     private PortMapping[] portMappings;
@@ -205,6 +206,14 @@ public class Cartridge implements Comparable<Cartridge> {
 
 	public void setDbHost(String dbHost) {
 		this.dbHost = dbHost;
+	}
+	
+	public String getPublicIp() {
+		return publicIp;
+	}
+
+	public void setPublicIp(String publicIp) {
+		this.publicIp = publicIp;
 	}
 
 	public int compareTo(Cartridge o) {

@@ -169,7 +169,8 @@ public class TopologyClusterInformationModel {
                 //Create CartridgeTypeContext instance
                 cartridgeTypeContextSet = new HashSet<CartridgeTypeContext>();
                 //link the SubscriptionAliasContext set to CartridgeTypeContext instance
-                cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+                //////////////cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+                cartridgeTypeContextSet.add(cartridgeTypeContext);
 
                 //link the CartridgeTypeContext set to the [tenant Id -> CartridgeTypeContext] map
                 tenantIdToCartridgeTypeContextMap.put(tenantId, cartridgeTypeContextSet);

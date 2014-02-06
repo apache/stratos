@@ -25,6 +25,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
@@ -35,11 +36,31 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.Deploy
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/admin/")
 public class StratosTestAdmin {
     private static Log log = LogFactory.getLog(StratosTestAdmin.class);
+    @Context
+    HttpServletRequest httpServletRequest;
+
+    
+    @GET
+    @Path("/cookie")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getCookie(){
+        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
+        String sessionId = httpSession.getId();
+        return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
+                entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
+    }
 
     @GET
     @Path("/cartridge/tenanted/list")
