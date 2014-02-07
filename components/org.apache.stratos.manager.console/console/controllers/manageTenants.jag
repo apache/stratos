@@ -4,14 +4,40 @@
     var utils = require('/util/utility.jag');
     var tenantDomain = request.getParameter("foo").trim();
     var state = request.getParameter("state").trim();
-    //log.info("tenant domain: " + tenantDomain + " state is: " + state);
-    if(state == "activate") {
+    log.info("tenant domain: " + tenantDomain + " state is: " + state);
+
+    if(tenantDomain.indexOf("-") != -1) {
+        var array = new Array();
+        array = tenantDomain.split("-");
+        log.info(tenantDomain);
+
+        for(domain in array) {
+            if(state == "activate") {
+                utils.consoleAppUtil.activateTenant(array[domain].trim());
+            } else if(state == "deactivate") {
+                utils.consoleAppUtil.deactivateTenant(array[domain].trim());
+            } else if(state == "delete") {
+               utils.consoleAppUtil.deleteTenant(array[domain].trim());
+            }
+        }
+        response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+
+    } else {
+        log.info("not array: " + tenantDomain);
+
+        if(state == "activate") {
         utils.consoleAppUtil.activateTenant(tenantDomain);
         response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
-    } else if(state == "deactivate") {
-        utils.consoleAppUtil.deactivateTenant(tenantDomain);
-        response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+        } else if(state == "deactivate") {
+            utils.consoleAppUtil.deactivateTenant(tenantDomain);
+            response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+        } else if(state == "delete") {
+           utils.consoleAppUtil.deleteTenant(tenantDomain);
+           response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+        }
     }
+
+
 
 }());
 %>
