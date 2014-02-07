@@ -14,20 +14,30 @@ function manage_selected(action){
         checked += " - ";
     });
     if(action == "activate"){
-        alert('activate-' + checked);
-    }else if(action == "deactivate"){
-        alert('deactivate-' + checked);
-    }else if(action == "delete"){
-        alert('delete-' + checked);
+        $('#foo').val(checked);
+        $('#state').val(action);
+        $('#manageTenantsForm').submit();
+        //alert('activate-' + checked);
+    } else if(action == "deactivate"){
+        $('#foo').val(checked);
+        $('#state').val(action);
+        $('#manageTenantsForm').submit();
+        //alert('deactivate-' + checked);
+    } else if(action == "delete"){
+        $('#foo').val(checked);
+        $('#state').val(action);
+        $('#manageTenantsForm').submit();
+        //alert('delete-' + checked);
     }
 }
 function manage_one(action,obj){
+
     if(action == "activate"){
+        //alert('activate-' + $(obj).attr('data-domain'));
         $('#foo').val($(obj).attr('data-domain'));
         $('#state').val(action);
         $('#manageTenantsForm').submit();
-        //alert('activate-' + $(obj).attr('data-domain'));
-    }else if(action == "deactivate"){
+    } else if(action == "deactivate"){
         //alert('deactivate-' + $(obj).attr('data-domain'));
          $('#foo').val($(obj).attr('data-domain'));
          $('#state').val(action);
