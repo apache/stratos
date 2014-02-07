@@ -526,8 +526,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         Iaas iaas = iaasProvider.getIaas();
                         // allocate an IP address - manual IP assigning mode
                         ip = iaas.associateAddress(node);
-                        memberContext.setAllocatedIpAddress(ip);
-                        log.info("Allocated an ip address: " + memberContext.toString());
+                        
+						if (ip != null) {
+							memberContext.setAllocatedIpAddress(ip);
+							log.info("Allocated an ip address: "
+									+ memberContext.toString());
+						}
                     }
 
                     // public ip

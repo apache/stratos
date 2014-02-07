@@ -240,6 +240,15 @@ public class OpenstackNovaIaas extends Iaas {
 		while (node.getPrivateAddresses() == null) {
 			CloudControllerUtil.sleep(1000);
 		}
+		
+		if (node.getPublicAddresses() != null
+				&& node.getPublicAddresses().iterator().hasNext()) {
+			log.info("A public IP ("
+					+ node.getPublicAddresses().iterator().next()
+					+ ") is already allocated to the instance [id] : "
+					+ node.getId());
+			return null;
+		}
 
 		int retries = 0;
 		while (retries < 5
