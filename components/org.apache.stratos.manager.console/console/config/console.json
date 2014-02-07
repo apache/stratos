@@ -1,6 +1,6 @@
 {
     "backendServerConfiguration":{
-        "url":"https://localhost:9443/stratos/admin"
+        "url":"https://localhost:9445/stratos/admin"
     },
 
     "oauthConfiguration":{

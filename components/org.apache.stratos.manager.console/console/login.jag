@@ -1,5 +1,10 @@
 <%
 var caramel = require('caramel');
+var error = session.get("error");
+if(error == null) {
+    error = "";
+}
+session.remove("error"); // remove previous errors if any
 
-caramel.render({});
+caramel.render({error:error});
 %>

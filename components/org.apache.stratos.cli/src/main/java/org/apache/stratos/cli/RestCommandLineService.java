@@ -29,10 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.stratos.cli.beans.*;
+import org.apache.stratos.cli.beans.SubscriptionInfo;
+import org.apache.stratos.cli.beans.TenantInfoBean;
 import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
-import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
@@ -51,14 +52,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import jline.internal.Log;
+import java.util.*;
 
 public class RestCommandLineService {
 
@@ -533,11 +527,17 @@ public class RestCommandLineService {
 
         	Member[] members = getMembers(cartridgeType, alias, httpClient);
 
+            if (members == null) {
+                 // these conditions are handled in the getMembers method
+                return;
+            }
+
             if (members.length == 0) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No subscribed cartridges found");
+                    logger.debug("No Members found");
                 }
-                System.out.println("There are no subscribed cartridges");
+                System.out.println("No members found for the corresponding cluster for type " + cartridgeType
+                        + ", alias " + alias);
                 return;
             }
 
@@ -591,7 +591,7 @@ public class RestCommandLineService {
 		Cluster cluster = getClusterObjectFromString(getHttpResponseString(response));
 		
 		 if (cluster == null) {
-             System.out.println("Subscribe cartridge list is null");
+             System.out.println("No existing subscriptions found for alias " + alias);
              return null;
          }
 
@@ -945,7 +945,7 @@ public class RestCommandLineService {
         try {
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
                     deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
-            System.out.println(deploymentPolicy);
+            //System.out.println(deploymentPolicy);
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");

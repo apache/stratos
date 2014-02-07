@@ -950,11 +950,15 @@ public class ServiceUtils {
 
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
 
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , subscriptionAlias);
-        return PojoConverter.populateClusterPojos(cluster);
+        if(cluster == null) {
+            throw new RestAPIException();
+        } else{
+            return PojoConverter.populateClusterPojos(cluster);
+        }
     }
 
     public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {

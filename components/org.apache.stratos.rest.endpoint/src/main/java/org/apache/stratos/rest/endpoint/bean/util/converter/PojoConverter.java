@@ -29,6 +29,7 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PojoConverter {
@@ -516,10 +517,14 @@ public class PojoConverter {
         }
 
         deploymentPolicyBean.id = deploymentPolicy.getId();
-        //if(deploymentPolicy.getPartitionGroups() != null &&
-        //        deploymentPolicy.getPartitionGroups().length > 0) {
-        //    deploymentPolicy.partitionGroup = getPartitionGroups(deploymentPolicy.getPartitionGroups());
-        //}
+
+        if (deploymentPolicy.getPartitionGroups() != null &&  deploymentPolicy.getPartitionGroups().length > 0) {
+            deploymentPolicyBean.partitionGroup = Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups()));
+        }
+
+        /*if (deploymentPolicy.getAllPartitions() != null && deploymentPolicy.getAllPartitions().length > 0) {
+            deploymentPolicyBean.partition = Arrays.asList(populatePartitionPojos(deploymentPolicy.getAllPartitions()));
+        }*/
 
         return deploymentPolicyBean;
     }
