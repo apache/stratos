@@ -694,6 +694,16 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @POST
+    @Path("tenant/availability/{tenantDomain}")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean isDomainAvailable(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+        return CommonUtil.isDomainNameAvailable(tenantDomain);
+
+    }
+
+    @POST
     @Path("tenant/deactivate/{tenantDomain}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
