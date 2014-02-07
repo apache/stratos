@@ -55,7 +55,46 @@ How to Install
    for more information on creating cartridge images. For Amazon EC2, you could find pre-built PHP, MySQL and Tomcat cartridges published in Amazon EC2
    AMI image repository.
 
-11. Update ./conf/setup.conf and configure settings.
+11. Update ./conf/setup.conf and configure settings. If you run the stratos in a single node and for openstack, please update the following entries in the setup.conf
+
+	- setup_path 		==> Folder path containing stratos_setup(stratos_installer)
+	- stratos_pack_path 	==> Folder path containing stratos packages(all stratos packs + cep + mb) 
+	- stratos_path 		==> Folder which stratos will be installed (Eg: /opt )
+	- JAVA_HOME 		==> java home
+	- host_user 		==> A host user account for stratos. If not provided deafult is assumed stratos. If no account #named stratos exist it will be created.
+	- mb_ip 		==> Machine ip on which mb run
+ 	- cep_ip		==> Machine ip on which cep run
+ 	- cc_ip 		==> Machine ip on which cc run
+ 	- as_ip 		==> Machine ip on which auto scalar run
+ 	- sm_ip 		==> Machine ip on which sc run
+ 	- puppet_ip 		==> Machine ip on which puppet master run
+	- cep_extension_path 	==> Folder path containing cep extensions(STRATOS_SOURCE_ROOT/extensions/cep)
+	- mysql_connector_jar 	==> mysql connector jar file name
+	- userstore_db_hostname ==> hostname or ip where mysql is running
+	- userstore_db_schema 	==> "userstore": the name of the userstore database
+	- userstore_db_port 	==> "3306": the port that mysql is running
+	- userstore_db_user 	==> "root": the username of the mysql
+	- userstore_db_pass 	==>"mysql": the password of the mysql user
+
+	For ec2 as IaaS
+	===============
+	- openstack_provider_enabled 	==> flase
+	- ec2_provider_enabled 		==> true
+	- ec2_identity 			==> "<ec2_identity>"
+	- ec2_credential 		==> "<ec2_credential>"
+	- ec2_keypair_name 		==> "<ec2_keypair_name>"
+	- ec2_owner_id 			==> "<ec2_owner_id>"
+	- ec2_availability_zone 	==> "<ec2_availability_zone>"
+ 	- ec2_security_groups 		==> "<ec2_security_groups>"
+
+	For openstack as IaaS
+	=====================
+	- ec2_provider_enabled 		==> false
+	- openstack_provider_enabled 	==> true
+	- openstack_identity 		==> "xxx:xxx" # Openstack project name:Openstack login user
+	- openstack_credential 		==> "xxxxx" # Openstack login password
+	- openstack_jclouds_endpoint 	==> "http://xxxxxxxxx:5000/v2.0"
+
 
 12. Run setup.sh as root to install.
 
