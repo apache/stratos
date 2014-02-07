@@ -494,3 +494,9 @@ label.error{
     text-align: center;
     width: 395px;
 }
+.hasDomain{
+    color:green;
+}
+.noDomain{
+    color:red;
+}

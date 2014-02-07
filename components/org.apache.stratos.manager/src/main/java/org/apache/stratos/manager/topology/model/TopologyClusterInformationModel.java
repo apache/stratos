@@ -116,17 +116,28 @@ public class TopologyClusterInformationModel {
                         }
                     }*/
                     // remove the existing one
-                    subscriptionAliasContextSet.remove(new SubscriptionAliasContext(subscriptionAlias, null));
+                    boolean existingClusterRemoved = subscriptionAliasContextSet.remove(new SubscriptionAliasContext(subscriptionAlias, null));
 
                     //now, add the new cluster object
                     subscriptionAliasContextSet.add(new SubscriptionAliasContext(subscriptionAlias, cluster));
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Existing cluster found, updated : " + cluster.toString());
-                        Collection<Member> members = cluster.getMembers();
-                        if (members != null && !members.isEmpty()) {
-                            for (Member member : members) {
-                                log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                        // check if cluster was overwritten
+                        if (existingClusterRemoved) {
+                            log.debug("Existing cluster found, updated : " + cluster.toString());
+                            Collection<Member> members = cluster.getMembers();
+                            if (members != null && !members.isEmpty()) {
+                                for (Member member : members) {
+                                    log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                }
+                            }
+                        } else {
+                            log.debug("New cluster added : " + cluster.toString());
+                            Collection<Member> members = cluster.getMembers();
+                            if (members != null && !members.isEmpty()) {
+                                for (Member member : members) {
+                                    log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                }
                             }
                         }
                     }

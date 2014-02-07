@@ -67,7 +67,26 @@
 
                   <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
                         <div style="clear: both"></div>
-                        <label for="policy" class="required" style="margin-top:10px;">Policy Configuration</label>
+                        {{#ifCond step "==" 1}}
+                        <label for="policy" class="required" style="margin-top:10px;">Partition Configuration</label>
+                        {{/ifCond}}
+
+                         {{#ifCond step "==" 2}}
+                        <label for="policy" class="required" style="margin-top:10px;">Auto Scale Policy Configuration</label>
+                        {{/ifCond}}
+
+                         {{#ifCond step "==" 3}}
+                        <label for="policy" class="required" style="margin-top:10px;">Deployment Policy Configuration</label>
+                        {{/ifCond}}
+
+                         {{#ifCond step "==" 4}}
+                        <label for="policy" class="required" style="margin-top:10px;">LB cartridge Configuration</label>
+                        {{/ifCond}}
+
+                         {{#ifCond step "==" 5}}
+                        <label for="policy" class="required" style="margin-top:10px;">Cartridge Configuration</label>
+                        {{/ifCond}}
+
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-6 padding-remover-left">
@@ -85,26 +104,172 @@
                                     <button data-step="{{step}}" type="button" class="btn {{#if wizard_on_5}}btn-primary{{else}}btn-default{{/if}}" id="wizardFinish" {{#unless wizard_on_5}} disabled="disabled" {{/unless}}>Finish</button>
                                     {{/if}}
                                 </div>
-                                <div class="col-md-6">
-                                    <i class="icons-help"></i>
-                                    Example configuration:
-                                    <pre>
-                                    {
-                                    "partition":{
-                                          "id": "P1",
-                                          "provider": "ec2",
-                                          "property": [
-                                              {
-                                                "name": "region",
-                                                "value": "ap-southeast-1"
+                                {{#ifCond step "==" 1}}
+                                    <div class="col-md-6">
+                                        <i class="icons-help"></i>
+                                        Example configuration:
+                                        <pre>
+                                        {
+                                        "partition":{
+                                              "id": "P1",
+                                              "provider": "ec2",
+                                              "property": [
+                                                  {
+                                                    "name": "region",
+                                                    "value": "ap-southeast-1"
+                                                  }
+                                              ],
+                                              "partitionMin": "1",
+                                              "partitionMax": "3"
+                                           }
+                                        }
+                                        </pre>
+                                    </div>
+                                {{/ifCond}}
+
+                                {{#ifCond step "==" 2}}
+                                    <div class="col-md-6">
+                                        <i class="icons-help"></i>
+                                        Example configuration:
+                                        <pre>
+                                        {"autoscalePolicy": {
+                                            "id": "economyPolicy",
+                                            "loadThresholds": {
+                                              "requestsInFlight": {
+                                                "average": "40",
+                                                "gradient": "0",
+                                                "secondDerivative": "0",
+                                                "scaleDownMarginOfGradient": "1.0",
+                                                "scaleDownMarginOfSecondDerivative": "0.2"
+                                              },
+                                              "memoryConsumption": {
+                                                "average": "100",
+                                                "gradient": "0",
+                                                "secondDerivative": "0",
+                                                "scaleDownMarginOfGradient": "1.0",
+                                                "scaleDownMarginOfSecondDerivative": "0.2"
+                                              },
+                                              "loadAverage": {
+                                                "average": "100",
+                                                "gradient": "0",
+                                                "secondDerivative": "0",
+                                                "scaleDownMarginOfGradient": "1.0",
+                                                "scaleDownMarginOfSecondDerivative": "0.2"
                                               }
-                                          ],
-                                          "partitionMin": "1",
-                                          "partitionMax": "3"
-                                       }
-                                    }
-                                    </pre>
-                                </div>
+                                            }
+                                          }
+                                        }
+                                        </pre>
+                                    </div>
+                                {{/ifCond}}
+
+                                {{#ifCond step "==" 3}}
+                                    <div class="col-md-6">
+                                        <i class="icons-help"></i>
+                                        Example configuration:
+                                        <pre>
+                                           {"deploymentPolicy": {
+                                            "id": "economyDep",
+                                            "partitionGroup": {
+                                              "id": "ec2",
+                                              "partitionAlgo": "one-after-another",
+                                              "partition": [
+                                                {
+                                                  "id": "P2",
+                                                  "partitionMax": "3",
+                                                  "partitionMin": "1"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                        </pre>
+                                    </div>
+                                {{/ifCond}}
+
+                                {{#ifCond step "==" 4}}
+                                    <div class="col-md-6">
+                                        <i class="icons-help"></i>
+                                        Example configuration:
+                                        <pre>
+                                            {"cartridgeDefinitionBean":{
+                                                "type": "lb",
+                                                "provider": "apache",
+                                                "displayName": "Lb",
+                                                "description": "Lb Cartridge",
+                                                "version": "1.0",
+                                                "host": "stratos.apache.org",
+                                                "defaultAutoscalingPolicy": "economyPolicy",
+                                                "defaultDeploymentPolicy": "depexp",
+                                                "multiTenant": "false",
+                                                "portMapping": [
+                                                {
+                                                    "protocol": "http",
+                                                    "port": "22",
+                                                    "proxyPort": "8280"
+                                                }
+                                                ],
+                                                "deployment": {
+                                                },
+                                                "iaasProvider": [
+                                                {
+                                                    "type": "openstack",
+                                                    "imageId": "RegionOne/9865ed3f-724b-44e1-874f-f759aeceb9ef",
+                                                    "property": [
+                                                    {
+                                                    "name": "instanceType",
+                                                    "value": "RegionOne/2"
+                                                    }
+                                                    ]
+                                                }
+                                                ]
+                                                }
+                                            }
+                                        </pre>
+                                    </div>
+                                {{/ifCond}}
+
+                                {{#ifCond step "==" 5}}
+                                    <div class="col-md-6">
+                                        <i class="icons-help"></i>
+                                        Example configuration:
+                                        <pre>
+                                            { "cartridgeDefinitionBean":
+                                                {
+                                                "type": "php",
+                                                "provider": "apache",
+                                                "host": "stratos.com",
+                                                "displayName": "PHP",
+                                                "description": "PHP Cartridge",
+                                                "version": "7",
+                                                "multiTenant": "false",
+                                                "portMapping": [
+                                                    {
+                                                    "protocol": "http",
+                                                    "port": "80",
+                                                    "proxyPort": "8280"
+                                                    }
+                                                ],
+                                                "deployment": {
+                                                },
+                                                "iaasProvider":
+                                                    [
+                                                        {
+                                                        "type": "openstack",
+                                                        "imageId": "RegionOne/9865ed3f-724b-44e1-874f-f759aeceb9ef",
+                                                        "property": [
+                                                            {
+                                                            "name": "instanceType",
+                                                            "value": "RegionOne/2"
+                                                            }
+                                                        ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        </pre>
+                                    </div>
+                                {{/ifCond}}
                             </div> <!-- row -->
                         </div> <!-- container -->
                 </form>
