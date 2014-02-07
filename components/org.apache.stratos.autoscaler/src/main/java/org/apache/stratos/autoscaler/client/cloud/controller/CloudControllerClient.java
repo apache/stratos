@@ -58,7 +58,7 @@ public class CloudControllerClient {
     
     private CloudControllerClient(){
     	try {
-            XMLConfiguration conf = ConfUtil.getInstance().getConfiguration();
+            XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
             int port = conf.getInt("autoscaler.cloudController.port", Constants.CLOUD_CONTROLLER_DEFAULT_PORT);
             String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
             String epr = "https://" + hostname + ":" + port + "/" + Constants.CLOUD_CONTROLLER_SERVICE_SFX  ;

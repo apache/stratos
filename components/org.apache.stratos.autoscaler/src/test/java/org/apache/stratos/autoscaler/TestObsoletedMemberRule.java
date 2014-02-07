@@ -19,13 +19,10 @@
 
 package org.apache.stratos.autoscaler;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
@@ -36,11 +33,18 @@ import org.drools.runtime.rule.FactHandle;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 public class TestObsoletedMemberRule {
     private static final Log log = LogFactory.getLog(TestObsoletedMemberRule.class);
     private String droolsFilePath = "src/test/resources/test-terminating-obsoleted-members-rule.drl";
     private KnowledgeBase kbase;
     private StatefulKnowledgeSession ksession;
+    private XMLConfiguration conf;
 
     @Before
     public void setUp() {
@@ -62,6 +66,8 @@ public class TestObsoletedMemberRule {
         kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
         log.info("Knowledge base has been set up.");
+
+        conf = ConfUtil.getInstance("src/test/resources/autoscaler.xml").getConfiguration();
     }
     
     @Test
@@ -74,7 +80,7 @@ public class TestObsoletedMemberRule {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
         ksession = kbase.newStatefulKnowledgeSession();
-        PartitionContext p = new PartitionContext();
+        PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
         p.setObsoletedMembers(new CopyOnWriteArrayList<String>());
         String memberId = "member1";
         p.addObsoleteMember(memberId);
@@ -104,7 +110,7 @@ public class TestObsoletedMemberRule {
         }
 
         ksession = kbase.newStatefulKnowledgeSession();
-        PartitionContext p = new PartitionContext();
+        PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
         p.setObsoletedMembers(new CopyOnWriteArrayList<String>());
         String memberId1 = "member1";
         String memberId2 = "member2";

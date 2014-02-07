@@ -31,9 +31,6 @@ public class TopologyClusterInformationModel {
     private static final Log log = LogFactory.getLog(TopologyClusterInformationModel.class);
 
     private Map<Integer, Set<CartridgeTypeContext>> tenantIdToCartridgeTypeContextMap;
-    //private Map<TenantIdAndAliasTopologyKey, Cluster> tenantIdAndAliasTopologyKeyToClusterMap;
-    //private Map<Integer, List<Cluster>> tenantIdToClusterMap;
-    //private Map<TenantIdAndTypeTopologyKey , List<Cluster>> tenantIdAndTypeTopologyKeyToClusterMap;
     private static TopologyClusterInformationModel topologyClusterInformationModel;
 
     //locks
@@ -42,9 +39,6 @@ public class TopologyClusterInformationModel {
     private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
     private TopologyClusterInformationModel() {
-        //tenantIdAndAliasTopologyKeyToClusterMap = new HashMap<TenantIdAndAliasTopologyKey, Cluster>();
-        //tenantIdAndTypeTopologyKeyToClusterMap = new HashMap<TenantIdAndTypeTopologyKey, List<Cluster>>();
-        //tenantIdToClusterMap = new HashMap<Integer, List<Cluster>>();
         tenantIdToCartridgeTypeContextMap = new HashMap<Integer, Set<CartridgeTypeContext>>();
     }
 
@@ -59,40 +53,6 @@ public class TopologyClusterInformationModel {
 
         return topologyClusterInformationModel;
     }
-
-    /*public void addCluster (int tenantId, String cartridgeType, String subscriptionAlias, Cluster cluster) {
-
-        List<Cluster> clusters;
-        writeLock.lock();
-
-        try {
-            //[Tenant Id + Subscription Alias] -> Cluster map
-            tenantIdAndAliasTopologyKeyToClusterMap.putSubscription(new TenantIdAndAliasTopologyKey(tenantId, subscriptionAlias), cluster);
-
-            //Tenant Id -> Cluster map
-            clusters = tenantIdToClusterMap.get(tenantId);
-            if(clusters == null) {
-                clusters = new ArrayList<Cluster>();
-                clusters.add(cluster);
-                tenantIdToClusterMap.putSubscription(tenantId, clusters);
-            } else {
-                clusters.add(cluster);
-            }
-
-            //[Tenant Id + Cartridge Type] -> Cluster map
-            clusters = tenantIdAndTypeTopologyKeyToClusterMap.get(new TenantIdAndTypeTopologyKey(tenantId, cartridgeType));
-            if(clusters == null) {
-                clusters = new ArrayList<Cluster>();
-                clusters.add(cluster);
-                tenantIdAndTypeTopologyKeyToClusterMap.putSubscription(new TenantIdAndTypeTopologyKey(tenantId, cartridgeType), clusters);
-            } else {
-                clusters.add(cluster);
-            }
-
-        } finally {
-            writeLock.unlock();
-        }
-    } */
 
     public void addCluster (int tenantId, String cartridgeType, String subscriptionAlias, Cluster cluster) {
 
@@ -132,6 +92,10 @@ public class TopologyClusterInformationModel {
                     //add to the cartridgeTypeContextSet
                     cartridgeTypeContextSet.add(cartridgeTypeContext);
 
+                    if (log.isDebugEnabled()) {
+                        log.debug("New cluster added " + cluster.toString());
+                    }
+
                 } else {
                     //iterate through the set
                     /*Iterator<SubscriptionAliasContext> aliasIterator = subscriptionAliasContextSet.iterator();
@@ -149,6 +113,10 @@ public class TopologyClusterInformationModel {
 
                     //now, add the new cluster object
                     subscriptionAliasContextSet.add(new SubscriptionAliasContext(subscriptionAlias, cluster));
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Exiting cluster updated " + cluster.toString());
+                    }
                 }
 
             } else {
@@ -169,10 +137,15 @@ public class TopologyClusterInformationModel {
                 //Create CartridgeTypeContext instance
                 cartridgeTypeContextSet = new HashSet<CartridgeTypeContext>();
                 //link the SubscriptionAliasContext set to CartridgeTypeContext instance
-                cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+                //////////////cartridgeTypeContext.setSubscriptionAliasContextSet(subscriptionAliasContextSet);
+                cartridgeTypeContextSet.add(cartridgeTypeContext);
 
                 //link the CartridgeTypeContext set to the [tenant Id -> CartridgeTypeContext] map
                 tenantIdToCartridgeTypeContextMap.put(tenantId, cartridgeTypeContextSet);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("New cluster added " + cluster.toString());
+                }
             }
 
         } finally {
@@ -209,6 +182,12 @@ public class TopologyClusterInformationModel {
                         //see if the set contains a SubscriptionAliasContext instance with the given alias
                         SubscriptionAliasContext subscriptionAliasContext = aliasIterator.next();
                         if (subscriptionAliasContext.equals(new SubscriptionAliasContext(subscriptionAlias, null))) {
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("Matching cluster found for tenant " + tenantId + ", type " + cartridgeType +
+                                        ", subscription alias " + subscriptionAlias + ": " + subscriptionAliasContext.getCluster().toString());
+                            }
+
                             return subscriptionAliasContext.getCluster();
                         }
                     }
@@ -250,7 +229,13 @@ public class TopologyClusterInformationModel {
 
                                 clusterSet = new HashSet<Cluster>();
                                 while (aliasCtxIterator.hasNext()) {
-                                    clusterSet.add(aliasCtxIterator.next().getCluster());
+                                    Cluster cluster = aliasCtxIterator.next().getCluster();
+                                    // add the cluster to the set
+                                    clusterSet.add(cluster);
+
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Matching cluster found for tenant " + tenantId + " : " + cluster.toString());
+                                    }
                                 }
                             }
                         }
@@ -265,7 +250,13 @@ public class TopologyClusterInformationModel {
 
                             clusterSet = new HashSet<Cluster>();
                             while (aliasCtxIterator.hasNext()) {
-                                clusterSet.add(aliasCtxIterator.next().getCluster());
+                                Cluster cluster = aliasCtxIterator.next().getCluster();
+                                // add the cluster to the set
+                                clusterSet.add(cluster);
+
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Matching cluster found for tenant " + tenantId + ", type " + cartridgeType + " : " + cluster.toString());
+                                }
                             }
                         }
                     }
@@ -278,40 +269,6 @@ public class TopologyClusterInformationModel {
 
         return clusterSet;
     }
-
-    /*public Set<Cluster> getClusters (int tenantId) {
-
-        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
-        Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
-        Set<Cluster> clusterSet = null;
-
-        readLock.lock();
-        try {
-            cartridgeTypeContextSet = tenantIdToCartridgeTypeContextMap.get(tenantId);
-            if(cartridgeTypeContextSet != null) {
-                CartridgeTypeContext cartridgeTypeContext = null;
-                //iterate through the set
-                Iterator<CartridgeTypeContext> typeCtxIterator = cartridgeTypeContextSet.iterator();
-                while (typeCtxIterator.hasNext()) {
-                    //see if the set contains a CartridgeTypeContext instance with the given cartridge type
-                }
-
-                if (subscriptionAliasContextSet != null) {
-                    //iterate and convert to Cluster set
-                    Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
-                    clusterSet = new HashSet<Cluster>();
-                    while (aliasCtxIterator.hasNext()) {
-                        clusterSet.add(aliasCtxIterator.next().getCluster());
-                    }
-                }
-            }
-
-        } finally {
-            readLock.unlock();
-        }
-
-        return clusterSet;
-    }*/
 
     public void removeCluster (int tenantId, String cartridgeType, String subscriptionAlias) {
 
@@ -344,6 +301,12 @@ public class TopologyClusterInformationModel {
                         if (subscriptionAliasContext.getSubscriptionAlias().equals(subscriptionAlias)) {
                             //remove the existing one
                             aliasIterator.remove();
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("Removed cluster for tenant " + tenantId + ", type " + cartridgeType +
+                                        ", subscription alias " + subscriptionAlias);
+                            }
+
                             break;
                         }
                     }
@@ -427,76 +390,6 @@ public class TopologyClusterInformationModel {
 
         public int hashCode () {
             return subscriptionAlias.hashCode();
-        }
-    }
-
-    private class TenantIdAndAliasTopologyKey {
-
-        private int tenantId;
-        private String subscriptionAlias;
-
-        public TenantIdAndAliasTopologyKey (int tenantId, String subscriptionAlias) {
-
-            this.tenantId = tenantId;
-            this.subscriptionAlias = subscriptionAlias;
-        }
-
-        public boolean equals(Object other) {
-
-            if(this == other) {
-                return true;
-            }
-            if(!(other instanceof TenantIdAndAliasTopologyKey)) {
-                return false;
-            }
-
-            TenantIdAndAliasTopologyKey that = (TenantIdAndAliasTopologyKey)other;
-            return ((this.tenantId == that.tenantId) && (this.subscriptionAlias == that.subscriptionAlias));
-        }
-
-        public int hashCode () {
-
-            int subscriptionAliasHashCode = 0;
-            if(subscriptionAlias != null) {
-                subscriptionAliasHashCode = subscriptionAlias.hashCode();
-            }
-
-            return (tenantId * 3 + subscriptionAliasHashCode * 5);
-        }
-    }
-
-    public class TenantIdAndTypeTopologyKey {
-
-        private int tenantId;
-        private String subscriptionAlias;
-
-        public TenantIdAndTypeTopologyKey (int tenantId, String subscriptionAlias) {
-
-            this.tenantId = tenantId;
-            this.subscriptionAlias = subscriptionAlias;
-        }
-
-        public boolean equals(Object other) {
-
-            if(this == other) {
-                return true;
-            }
-            if(!(other instanceof TenantIdAndTypeTopologyKey)) {
-                return false;
-            }
-
-            TenantIdAndTypeTopologyKey that = (TenantIdAndTypeTopologyKey)other;
-            return ((this.tenantId == that.tenantId) && (this.subscriptionAlias == that.subscriptionAlias));
-        }
-
-        public int hashCode () {
-
-            int subscriptionAliasHashCode = 0;
-            if(subscriptionAlias != null) {
-                subscriptionAliasHashCode = subscriptionAlias.hashCode();
-            }
-
-            return (tenantId * 3 + subscriptionAliasHashCode * 5);
         }
     }
 }

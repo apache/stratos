@@ -32,7 +32,7 @@ instance_path=/opt/apache-stratos-cartridge-agent # Cartridge agent home
 ca_exec_path=${instance_path}/cartridge-agent # Cartridge agent executable home
 temp_payload_path=/tmp/payload/launch-params
 puppet_payload_path=/tmp/puppet-payload
-cartridge_agent_script=cartridge-agent.sh
+cartridge_agent_script=stratos.sh
 truststore_path=/opt/apache-stratos-cartridge-agent/cartridge-agent/security
 
 #---------------------------------------------

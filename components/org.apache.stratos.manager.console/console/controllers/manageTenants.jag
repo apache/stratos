@@ -1,0 +1,17 @@
+<%
+(function(){
+    var log = new Log("controller.manage.tenants");
+    var utils = require('/util/utility.jag');
+    var tenantDomain = request.getParameter("foo").trim();
+    var state = request.getParameter("state").trim();
+    //log.info("tenant domain: " + tenantDomain + " state is: " + state);
+    if(state == "activate") {
+        utils.consoleAppUtil.activateTenant(tenantDomain);
+        response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+    } else if(state == "deactivate") {
+        utils.consoleAppUtil.deactivateTenant(tenantDomain);
+        response.sendRedirect(request.getContextPath() + '/tenant_management.jag');
+    }
+
+}());
+%>

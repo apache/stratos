@@ -497,6 +497,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String clusterId = memberContext.getClusterId();
             Partition partition = memberContext.getPartition();
+            String publicIp = null;
 
             try{
 
@@ -520,6 +521,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     if (node.getPublicAddresses() != null &&
                         node.getPublicAddresses().iterator().hasNext()) {
                         ip = node.getPublicAddresses().iterator().next();
+                        publicIp = ip;
                         memberContext.setPublicIpAddress(ip);
                         log.info("Public IP Address has been set. " + memberContext.toString());
                     }
@@ -541,7 +543,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                     // trigger topology
                     TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(),
-                            partition.getId(), ip, memberContext.getLbClusterId());
+                            partition.getId(), ip, memberContext.getLbClusterId(),publicIp);
 
                     // update the topology with the newly spawned member
                     // publish data

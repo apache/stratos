@@ -29,6 +29,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.service.Service;
 import org.apache.cxf.service.model.BindingOperationInfo;
 import org.apache.stratos.rest.endpoint.Utils;
+import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.api.AuthorizationManager;
@@ -69,10 +70,16 @@ public class StratosAuthorizingHandler implements RequestHandler {
 
     public Response handleRequest(Message message, ClassResourceInfo resourceClass) {
         try {
-
+            AuthenticationContext.setAuthenticated(false); // TODO : fix this properly
             String userName = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            if(log.isDebugEnabled()){
+                log.debug("authorizing the action using" + StratosAuthorizingHandler.class.getName());
+                log.debug("username :"+ userName);
+                log.debug("tenantDomain" + tenantDomain);
+                log.debug("tenantId :"+ tenantId);
+            }
             Method targetMethod = getTargetMethod(message);
             if (!authorize(userName,tenantDomain,tenantId,targetMethod)) {
                log.warn("User :"+ userName + "trying to perform unauthrorized action" +

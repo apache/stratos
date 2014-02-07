@@ -19,11 +19,10 @@
 
 package org.apache.stratos.autoscaler;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
@@ -34,11 +33,16 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+
 public class TestMinimumRule {
     private static final Log log = LogFactory.getLog(TestMinimumRule.class);
     private String droolsFilePath = "src/test/resources/test-minimum-autoscaler-rule.drl";
     private KnowledgeBase kbase;
     private StatefulKnowledgeSession ksession;
+    private XMLConfiguration conf;
 
     @Before
     public void setUp() {
@@ -59,6 +63,8 @@ public class TestMinimumRule {
         
         kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
+
+        conf = ConfUtil.getInstance("src/test/resources/autoscaler.xml").getConfiguration();
     }
 
     @Test
@@ -72,7 +78,7 @@ public class TestMinimumRule {
         ksession = kbase.newStatefulKnowledgeSession();
         ksession.setGlobal("clusterId", "lb.cluster.1");
         ksession.setGlobal("lbRef", null);
-        PartitionContext p = new PartitionContext();
+        PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
         p.setPendingMembers(new ArrayList<MemberContext>());
         p.setMinimumMemberCount(1);
         ksession.insert(p);

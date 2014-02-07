@@ -7,23 +7,33 @@
     //TODO: handle the angry path...
     var username = request.getParameter("username").trim();
     var password = request.getParameter("password"); // not trimming the password
+    if(username || password){
+        session.put("error","Enter your username and password.");
+    }
     //authenticate with carbon usr-store
+    log.info("Username : " + username);
+    log.info("Password : "+ password);
     var auth = server.authenticate(username, password);
-    var userObject = carbon.server.tenantUser(username);
-    var um = new carbon.user.UserManager({}, userObject.tenantId);
-    var user = um.getUser('admin');
-    var roles = user.getRoles();
-    //storing in session
-    session.put("TENANT_DOMAIN",userObject.domain);
-    session.put("ROLE_ARRAY",roles);
-    //call the authentication rest-endpoint and get the JSESSION_ID
-    var result =  utils.consoleAppUtil.getSessionCookie(username,password);
-    log.info(result.data.Success.sessionId);
-    //TODO: handle the error scenario
-    //save the JSESSION_ID in current console.session.
-    var jSessionId = result.data.Success.sessionId;
-    session.put("JSESSIONID",jSessionId);
-    require('console').server.current(session,username);
+    if(!auth){
+        session.put("error","The username or password you entered is incorrect.")
+    }else{
+        var userObject = carbon.server.tenantUser(username);
+        var um = new carbon.user.UserManager({}, userObject.tenantId);
+        var user = um.getUser('admin');
+        var roles = user.getRoles();
+        //storing in session
+        session.put("TENANT_DOMAIN",userObject.domain);
+        session.put("ROLE_ARRAY",roles);
+        //call the authentication rest-endpoint and get the JSESSION_ID
+        var result =  utils.consoleAppUtil.getSessionCookie(username,password);
+        log.info(result.data.Success.sessionId);
+        //TODO: handle the error scenario
+        //save the JSESSION_ID in current console.session.
+        var jSessionId = result.data.Success.sessionId;
+        session.put("JSESSIONID",jSessionId);
+        require('console').server.current(session,username);
+    }
+
     //redirect
     response.sendRedirect(request.getContextPath()+'/index.jag');
 

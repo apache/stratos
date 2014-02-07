@@ -39,6 +39,7 @@ import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -504,12 +505,27 @@ public class ServiceUtils {
             if (subscriptions != null && !subscriptions.isEmpty()) {
 
                 for (CartridgeSubscription subscription : subscriptions) {
-
+                	
                     if (!cartridgeMatches(subscription.getCartridgeInfo(), subscription, searchPattern)) {
                         continue;
                     }
-
-                    cartridges.add(getCartridgeFromSubscription(subscription));
+                    Cartridge cartridge = getCartridgeFromSubscription(subscription);
+                    Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+                            ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+                    String cartridgeStatus = "Inactive";
+                    int activeMemberCount = 0;
+					if (cluster != null) {
+						Collection<Member> members = cluster.getMembers();
+						for (Member member : members) {
+							if (member.isActive()) {
+								cartridgeStatus = "Active";
+								activeMemberCount++;
+							}
+						}
+					}
+                    cartridge.setActiveInstances(activeMemberCount);
+					cartridge.setStatus(cartridgeStatus);
+                    cartridges.add(cartridge);
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -531,6 +547,29 @@ public class ServiceUtils {
         return cartridges;
     }
 
+    
+    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    	
+    	Cartridge cartridge =  getCartridgeFromSubscription(cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.
+                    getTenantId(configurationContext), cartridgeAlias));
+    	
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+                ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+        String cartridgeStatus = "Inactive";
+        int activeMemberCount = 0;
+        Collection<Member> members = cluster.getMembers();
+        for (Member member : members) {
+			if(member.isActive()) {
+				cartridgeStatus = "Active";
+				activeMemberCount++;
+			}
+		}        
+        cartridge.setActiveInstances(activeMemberCount);
+		cartridge.setStatus(cartridgeStatus);
+		return cartridge;
+    	
+    }
+    
     private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
 
         Cartridge cartridge = new Cartridge();
@@ -555,7 +594,7 @@ public class ServiceUtils {
         }
 
         cartridge.setStatus(subscription.getSubscriptionStatus());
-
+        cartridge.setPortMappings(subscription.getCartridgeInfo().getPortMappings());
         return cartridge;
     }
 
@@ -911,11 +950,15 @@ public class ServiceUtils {
 
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
 
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , subscriptionAlias);
-        return PojoConverter.populateClusterPojos(cluster);
+        if(cluster == null) {
+            throw new RestAPIException();
+        } else{
+            return PojoConverter.populateClusterPojos(cluster);
+        }
     }
 
     public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {

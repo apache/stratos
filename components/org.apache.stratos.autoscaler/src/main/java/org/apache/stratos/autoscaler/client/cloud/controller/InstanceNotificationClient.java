@@ -46,7 +46,7 @@ public class InstanceNotificationClient {
 
     private InstanceNotificationClient(){
     	try {
-            XMLConfiguration conf = ConfUtil.getInstance().getConfiguration();
+            XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
             int port = conf.getInt(Constants.STRATOS_MANAGER_DEFAULT_PORT_ELEMENT,
                     Constants.STRATOS_MANAGER_DEFAULT_PORT);
             String hostname = conf.getString(Constants.STRATOS_MANAGER_HOSTNAME_ELEMENT, "localhost");

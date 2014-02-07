@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.autoscaler;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 
@@ -79,10 +81,11 @@ public class PartitionContext implements Serializable{
 //    private int totalMemberCount;
 
     // for the use of tests
-    public PartitionContext() {
+    public PartitionContext(long memberExpiryTime) {
 
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
+        expiryTime = memberExpiryTime;
     }
     
     public PartitionContext(Partition partition) {
@@ -95,6 +98,14 @@ public class PartitionContext implements Serializable{
         this.obsoletedMembers = new CopyOnWriteArrayList<String>();
 //        this.faultyMembers = new CopyOnWriteArrayList<String>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
+
+        // check if a different value has been set for expiryTime
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 900000);
+        if (log.isDebugEnabled()) {
+            log.debug("Member expiry time is set to: " + expiryTime);
+        }
+
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
     }
@@ -357,7 +368,6 @@ public class PartitionContext implements Serializable{
         }
         return false;
     }
-
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;

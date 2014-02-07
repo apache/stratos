@@ -47,4 +47,7 @@ public class Constants {
 
     public static final String SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION = "second_derivative_memory_consumption";
     public static final String SECOND_DERIVATIVE_OF_LOAD_AVERAGE = "second_derivative_load_average";
+
+    //member expiry interval
+    public static final String MEMBER_EXPIRY_INTERVAL = "member.expiry.interval";
 }

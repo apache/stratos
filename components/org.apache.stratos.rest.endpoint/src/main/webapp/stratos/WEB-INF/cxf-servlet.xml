@@ -36,7 +36,6 @@
             <ref bean="basicAuthenticationFilter"/>
             <ref bean="sessionAuthenticationFilter"/>
             <ref bean="authorizationFilter"/>
-            <ref bean="OAuthFilter"/>
         </jaxrs:providers>
     </jaxrs:server>
 
@@ -66,6 +65,8 @@
                 <value>partition</value>
                 <value>member</value>
                 <value>hostNames</value>
+                <value>portMappings</value>
+                <value>cartridge</value>
             </list>
         </property>
     </bean>

@@ -21,6 +21,8 @@ package org.apache.stratos.manager.dto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
+
 @XmlRootElement
 public class Cartridge implements Comparable<Cartridge> {
 
@@ -28,7 +30,7 @@ public class Cartridge implements Comparable<Cartridge> {
     private String description;
 	private String cartridgeAlias;
 	private String cartridgeType;
-	//private int activeInstances;
+	private int activeInstances;
 	private String status;
 	//private String ip;
 	private String provider;
@@ -46,6 +48,7 @@ public class Cartridge implements Comparable<Cartridge> {
     private String password;
 
 	private String[] accessURLs;
+	private PortMapping[] portMappings;
 
 	public String getDisplayName() {
 		return displayName;
@@ -79,13 +82,13 @@ public class Cartridge implements Comparable<Cartridge> {
 		this.cartridgeType = cartridgeType;
 	}
 
-	/*public int getActiveInstances() {
+	public int getActiveInstances() {
 		return activeInstances;
 	}
 
 	public void setActiveInstances(int activeInstances) {
 		this.activeInstances = activeInstances;
-	}*/
+	}
 
 	public String getStatus() {
 		return status;
@@ -210,4 +213,13 @@ public class Cartridge implements Comparable<Cartridge> {
     public void setDbHost(String dbHost) {
         this.dbHost = dbHost;
     }
+
+	public PortMapping[] getPortMappings() {
+		return portMappings;
+	}
+
+	public void setPortMappings(PortMapping[] portMappings) {
+		this.portMappings = portMappings;
+	}
+    
 }
