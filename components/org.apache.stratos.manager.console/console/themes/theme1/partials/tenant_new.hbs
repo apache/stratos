@@ -11,13 +11,15 @@
             <form method="post" action="{{url "/controllers/newTenantSubmit.jag" }}">
             <div class="h2-wrapper"><h2>Domain Information</h2></div>
             <label class="required">Domain:</label>
-            <div class="form-inline"><input name="tenantDomain" type="text" placeholder="example.com"/> <button class="btn btn-default">Check Availability</button></div>
+            <div class="form-inline"><input name="tenantDomain" id="tenantDomain" type="text" placeholder="example.com"/> <button class="btn btn-default" onclick="checkAvailability()" type="button">Check Availability</button></div>
+            <div id="domainMessage"></div>
             <label><input type="checkbox"/> Validate the domain now (Optional)</label>
 
             <div class="h2-wrapper"><h2>Usage Plan Information</h2></div>
             <label class="required">Select usage plan:</label>
             <select>
                 <option>Enterprise</option>
+                <option>Demo</option>
             </select>
             <a>More Info</a>
 
@@ -38,11 +40,11 @@
 
             <div class="col-md-3 padding-remover-left">
                 <label  class="required">Admin Password:</label>
-                <input name="adminPassword" type="password"/>
+                <input name="adminPassword" type="text"/>
             </div>
             <div class="col-md-3">
                 <label class="required">Admin Password (Repeat):</label>
-                <input type="password"/>
+                <input type="text"/>
             </div>
 
             <div class="clearfix"></div>

@@ -1,0 +1,11 @@
+<%
+var log = new Log("controller.manage.tenants");
+var utils = require('/util/utility.jag');
+var domain = request.getParameter("domain").trim();
+var available = utils.consoleAppUtil.checkAvailability(domain);
+if(!available) {
+    print(available);
+} else {
+    print(available);
+}
+%>

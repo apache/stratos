@@ -44,3 +44,19 @@ function manage_one(action,obj){
         $('#manageTenantsForm').submit();
     }
 }
+
+function checkAvailability() {
+    var domain = $('#tenantDomain').val();
+    console.info(domain);
+    $.ajax({
+        data:{domain:domain},
+        url:"/console/controllers/checkAvailability.jag",
+        success:function(data){
+            if(data=="false"){
+                $('#domainMessage').show().html('Domain is not available').addClass('noDomain').removeClass('hasDomain');
+            }else{
+                $('#domainMessage').show().html('Domain is available').addClass('hasDomain').removeClass('noDomain');
+            }
+        }
+    })
+}
