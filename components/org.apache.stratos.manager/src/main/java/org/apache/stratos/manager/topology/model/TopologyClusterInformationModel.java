@@ -115,7 +115,7 @@ public class TopologyClusterInformationModel {
                     subscriptionAliasContextSet.add(new SubscriptionAliasContext(subscriptionAlias, cluster));
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Exiting cluster updated " + cluster.toString());
+                        log.debug("Existing cluster found, updated : " + cluster.toString());
                     }
                 }
 
