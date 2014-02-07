@@ -54,6 +54,7 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
 public class OpenstackNovaIaas extends Iaas {
 
@@ -169,10 +170,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("deprecation")
-        NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
-
-		KeyPairApi api = novaApi.getKeyPairExtensionForZone(region).get();
+		
+		KeyPairApi api = context.unwrapApi(NovaApi.class).getKeyPairExtensionForZone(region).get();
 
 		KeyPair keyPair = api.createWithPublicKey(keyPairName, publicKey);
 
@@ -198,11 +197,9 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		@SuppressWarnings("deprecation")
-        NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
+		FloatingIPApi floatingIp = context.unwrapApi(NovaApi.class).getFloatingIPExtensionForZone(
 				region).get();
 
 		String ip = null;
@@ -270,11 +267,9 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		@SuppressWarnings("deprecation")
-        NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIPApi = novaApi
+		FloatingIPApi floatingIPApi = context.unwrapApi(NovaApi.class)
 				.getFloatingIPExtensionForZone(region).get();
 
 		for (FloatingIP floatingIP : floatingIPApi.list()) {
@@ -309,9 +304,9 @@ public class OpenstackNovaIaas extends Iaas {
         }
         
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        @SuppressWarnings("deprecation")
-        NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
-        for (String configuredZone : api.getConfiguredZones()) {
+        
+        Set<String> zones = context.unwrapApi(NovaApi.class).getConfiguredZones();
+        for (String configuredZone : zones) {
             if (region.equalsIgnoreCase(configuredZone)) {
                 if (log.isDebugEnabled()) {
                     log.debug("Found a matching region: " + region);
@@ -347,9 +342,7 @@ public class OpenstackNovaIaas extends Iaas {
             throw new InvalidHostException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        @SuppressWarnings("deprecation")
-        NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
-        HostAggregateApi hostApi = api.getHostAggregateExtensionForZone(zone).get();
+        HostAggregateApi hostApi = context.unwrapApi(NovaApi.class).getHostAggregateExtensionForZone(zone).get();
         for (HostAggregate hostAggregate : hostApi.list()) {
             for (String configuredHost : hostAggregate.getHosts()) {
                 if (host.equalsIgnoreCase(configuredHost)) {
