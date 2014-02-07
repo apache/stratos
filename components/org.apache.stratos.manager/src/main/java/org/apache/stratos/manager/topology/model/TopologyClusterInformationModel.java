@@ -229,7 +229,13 @@ public class TopologyClusterInformationModel {
 
                                 clusterSet = new HashSet<Cluster>();
                                 while (aliasCtxIterator.hasNext()) {
-                                    clusterSet.add(aliasCtxIterator.next().getCluster());
+                                    Cluster cluster = aliasCtxIterator.next().getCluster();
+                                    // add the cluster to the set
+                                    clusterSet.add(cluster);
+
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Matching cluster found for tenant " + tenantId + " : " + cluster.toString());
+                                    }
                                 }
                             }
                         }
