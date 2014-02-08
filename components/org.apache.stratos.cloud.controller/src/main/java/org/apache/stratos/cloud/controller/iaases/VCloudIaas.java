@@ -25,7 +25,6 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -37,38 +36,46 @@ import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class VCloudIaas extends Iaas {
 
+
 	private static final Log log = LogFactory.getLog(VCloudIaas.class);
+	
+	public VCloudIaas(IaasProvider iaasProvider) {
+		super(iaasProvider);
+	}
 
 	@Override
-	public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
+	public void buildComputeServiceAndTemplate() {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		// builds and sets Compute Service
 		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
 
 		// builds and sets Template
-		buildTemplate(iaasInfo);
+		buildTemplate();
 
 	}
 
-	public void buildTemplate(IaasProvider iaas) {
-		if (iaas.getComputeService() == null) {
+	public void buildTemplate() {
+		IaasProvider iaasInfo = getIaasProvider();
+		
+		if (iaasInfo.getComputeService() == null) {
 			String msg = "Compute service is null for IaaS provider: "
-					+ iaas.getName();
+					+ iaasInfo.getName();
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
 
-		TemplateBuilder templateBuilder = iaas.getComputeService()
+		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
 
 		// set image id specified
-		templateBuilder.imageId(iaas.getImage());
+		templateBuilder.imageId(iaasInfo.getImage());
 
 		// build the Template
 		Template template = templateBuilder.build();
@@ -78,7 +85,7 @@ public class VCloudIaas extends Iaas {
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode? - default mode is
 		// non-blocking
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+		boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
 				.getProperty("autoAssignIp"));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
@@ -92,12 +99,14 @@ public class VCloudIaas extends Iaas {
 				.ipAddressAllocationMode(IpAddressAllocationMode.POOL);
 
 		// set Template
-		iaas.setTemplate(template);
+		iaasInfo.setTemplate(template);
 	}
 
 	@Override
-	public void setDynamicPayload(IaasProvider iaasInfo) {
+	public void setDynamicPayload() {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		// in VCloud case we need to run a script
 		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
 
@@ -159,15 +168,14 @@ public class VCloudIaas extends Iaas {
 	}
 
 	@Override
-	public boolean createKeyPairFromPublicKey(IaasProvider iaasInfo,
-			String region, String keyPairName, String publicKey) {
+	public boolean createKeyPairFromPublicKey(String region, String keyPairName, String publicKey) {
 
 		// TODO
 		return false;
 	}
 
 	@Override
-	public String associateAddress(IaasProvider iaasInfo, NodeMetadata node) {
+	public String associateAddress(NodeMetadata node) {
 
 		// TODO
 		return "";
@@ -175,24 +183,24 @@ public class VCloudIaas extends Iaas {
 	}
 
 	@Override
-	public void releaseAddress(IaasProvider iaasInfo, String ip) {
+	public void releaseAddress(String ip) {
 		// TODO
 	}
 
     @Override
-    public boolean isValidRegion(IaasProvider iaasInfo, String region) {
+    public boolean isValidRegion(String region) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) {
+    public boolean isValidZone(String region, String zone) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) {
+    public boolean isValidHost(String zone, String host) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -202,12 +210,5 @@ public class VCloudIaas extends Iaas {
         // TODO Auto-generated method stub
         return null;
     }
-
-	@Override
-	public void mapPersistanceVolumes(Template template,
-			List<PersistanceMapping> persistancemapings) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

@@ -105,7 +105,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated(Registrant registrant) {
+    public static void handleClusterCreated(Registrant registrant, boolean isLb) {
         Topology topology = TopologyManager.getTopology();
         Service service;
         try {
@@ -113,9 +113,6 @@ public class TopologyBuilder {
             String cartridgeType = registrant.getCartridgeType();
             service = topology.getService(cartridgeType);
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-            
-            String property = props.getProperty(Constants.IS_LOAD_BALANCER);
-            boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
             
             Cluster cluster;
             String clusterId = registrant.getClusterId();

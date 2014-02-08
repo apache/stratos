@@ -6,7 +6,15 @@ import java.util.List;
 @XmlRootElement
 public class Cluster {
 
-    public String serviceName;
+    @Override
+	public String toString() {
+		return "Cluster [serviceName=" + serviceName + ", clusterId="
+				+ clusterId + ", member=" + member + ", tenantRange="
+				+ tenantRange + ", hostNames=" + hostNames + ", isLbCluster="
+				+ isLbCluster + "]";
+	}
+
+	public String serviceName;
 
     public String clusterId;
 

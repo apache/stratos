@@ -38,12 +38,16 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -137,7 +141,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
         
         for (IaasProvider iaasProvider : iaases) {
-            setIaas(iaasProvider);
+            CloudControllerUtil.setIaas(iaasProvider);
         }
         
         // TODO transaction begins
@@ -160,21 +164,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // transaction ends
         
         log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
-    }
-
-    private Iaas setIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-        try {
-            Iaas iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
-            iaas.buildComputeServiceAndTemplate(iaasProvider);
-            iaasProvider.setIaas(iaas);
-            return iaas;
-        } catch (Exception e) {
-            String msg =
-                         "Unable to build the jclouds object for iaas " + "of type: " +
-                                 iaasProvider.getType();
-            log.error(msg, e);
-            throw new InvalidIaasProviderException(msg, e);
-        }
     }
 
     public void undeployCartridgeDefinition(String cartridgeType) {
@@ -275,7 +264,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
                 }
                 try {
-                    iaas = setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.setIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg ="Instance start up failed. "+memberContext.toString()+
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type;
@@ -285,7 +274,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 
             }
             
-            iaas.setDynamicPayload(iaasProvider);
+            iaas.setDynamicPayload();
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
@@ -301,7 +290,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new CloudControllerException(msg);
             }
 
-            iaas.mapPersistanceVolumes(template, cartridge.getPeristanceMappings());
             // generate the group id from domain name and sub domain
             // name.
             // Should have lower-case ASCII letters, numbers, or dashes.
@@ -512,9 +500,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         Iaas iaas = iaasProvider.getIaas();
                         // allocate an IP address - manual IP assigning mode
-                        ip = iaas.associateAddress(iaasProvider, node);
-                        memberContext.setAllocatedIpAddress(ip);
-                        log.info("Allocated an ip address: " + memberContext.toString());
+                        ip = iaas.associateAddress(node);
+                        
+						if (ip != null) {
+							memberContext.setAllocatedIpAddress(ip);
+							log.info("Allocated an ip address: "
+									+ memberContext.toString());
+						}
                     }
 
                     // public ip
@@ -523,7 +515,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         ip = node.getPublicAddresses().iterator().next();
                         publicIp = ip;
                         memberContext.setPublicIpAddress(ip);
-                        log.info("Public IP Address has been set. " + memberContext.toString());
+                        log.info("Retrieving Public IP Address : " + memberContext.toString());
                     }
 
                     // private IP
@@ -531,7 +523,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPrivateAddresses().iterator().hasNext()) {
                         ip = node.getPrivateAddresses().iterator().next();
                         memberContext.setPrivateIpAddress(ip);
-                        log.info("Private IP Address has been set. " + memberContext.toString());
+                        log.info("Retrieving Private IP Address. " + memberContext.toString());
                     }
 
                     dataHolder.addMemberContext(memberContext);
@@ -772,7 +764,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    if (iaas == null) {
 	        
 	        try {
-	            iaas = setIaas(iaasProvider);
+	            iaas = CloudControllerUtil.setIaas(iaasProvider);
 	        } catch (InvalidIaasProviderException e) {
 	            String msg =
 	                    "Instance termination failed. " +ctxt.toString()  +
@@ -787,8 +779,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		// release allocated IP address
 		if (ctxt.getAllocatedIpAddress() != null) {
-            iaas.releaseAddress(iaasProvider,
-					ctxt.getAllocatedIpAddress());
+            iaas.releaseAddress(ctxt.getAllocatedIpAddress());
 		}
 		
 		// publish data to BAM
@@ -841,8 +832,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredCartridgeException(msg);
         }
         
-	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName));
-	    TopologyBuilder.handleClusterCreated(registrant);
+        Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+        String property = props.getProperty(Constants.IS_LOAD_BALANCER);
+        boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
+        
+	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName, isLb));
+	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
 	    persist();
 	    
@@ -949,7 +944,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (iaas == null) {
                 
                 try {
-                    iaas = setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.setIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg =
                             "Invalid Partition - " + partition.toString() +
@@ -989,6 +984,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     @Override
     public boolean validatePartition(Partition partition) throws InvalidPartitionException {
+    	//FIXME add logs
         String provider = partition.getProvider();
         IaasProvider iaasProvider = dataHolder.getIaasProvider(provider);
 
@@ -1004,14 +1000,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         if (iaas == null) {
             
-            try {
-                iaas = (Iaas) Class.forName(iaasProvider.getClassName()).newInstance();
-                ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
-                iaasProvider.setIaas(iaas);
-            } catch (Exception e) {
+        	try {
+                iaas = CloudControllerUtil.setIaas(iaasProvider);
+            } catch (InvalidIaasProviderException e) {
                 String msg =
-                             "Unable to build the jclouds object for iaas " + "of type: " +
-                                     iaasProvider.getType();
+                        "Invalid Partition - " + partition.toString() +
+                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider;
                 log.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }

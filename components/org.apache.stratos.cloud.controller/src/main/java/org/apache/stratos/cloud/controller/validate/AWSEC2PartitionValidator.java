@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Scope;
 
@@ -57,16 +58,18 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                     throw new InvalidPartitionException(msg);
                 } 
                 
-                iaas.isValidRegion(iaasProvider, region);
+                iaas.isValidRegion(region);
                 
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
-                Iaas updatedIaas = updatedIaasProvider.getIaas();
+                
+                Iaas updatedIaas = CloudControllerUtil.setIaas(updatedIaasProvider);
+                updatedIaas.setIaasProvider(updatedIaasProvider);
                 
                 if (properties.containsKey(Scope.zone.toString())) {
                     String zone = properties.getProperty(Scope.zone.toString());
-                    iaas.isValidZone(iaasProvider, region, zone);
+                    iaas.isValidZone(region, zone);
                     updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
-                    updatedIaas.buildTemplate(updatedIaasProvider);
+                    updatedIaas.buildTemplate();
                 } 
                 
                 return updatedIaasProvider;

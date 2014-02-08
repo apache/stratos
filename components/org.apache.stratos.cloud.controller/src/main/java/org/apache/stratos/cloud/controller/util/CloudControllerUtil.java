@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
+import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.AppType;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
@@ -36,6 +38,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -196,6 +199,33 @@ public class CloudControllerUtil {
 		carInfo.setProperties(propList.toArray(props));
 
 		return carInfo;
+	}
+    
+    public static Iaas setIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
+
+		Iaas iaas;
+		try {
+			Constructor<?> c = Class.forName(iaasProvider.getClassName())
+					.getConstructor(IaasProvider.class);
+			iaas = (Iaas) c.newInstance(iaasProvider);
+		} catch (Exception e) {
+			String msg = "Class [" + iaasProvider.getClassName()
+					+ "] which represents the iaas of type: ["
+					+ iaasProvider.getType() + "] has failed to instantiate.";
+			log.error(msg, e);
+			throw new InvalidIaasProviderException(msg, e);
+		}
+
+		try {
+			iaas.buildComputeServiceAndTemplate();
+			iaasProvider.setIaas(iaas);
+			return iaas;
+		} catch (Exception e) {
+			String msg = "Unable to build the jclouds object for iaas "
+					+ "of type: " + iaasProvider.getType();
+			log.error(msg, e);
+			throw new InvalidIaasProviderException(msg, e);
+		}
 	}
 	
 	public static List<Object> getKeysFromValue(Map<?, ?> hm, Object value) {

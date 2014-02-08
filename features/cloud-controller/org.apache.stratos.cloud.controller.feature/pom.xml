@@ -111,7 +111,7 @@
          <dependency>
            <groupId>com.google.guava</groupId>
            <artifactId>guava</artifactId>
-           <version>14.0.1</version>
+           <version>15.0</version>
          </dependency>
          <dependency>
       	     <groupId>com.jamesmurty.utils.wso2</groupId>
@@ -238,7 +238,7 @@
                                 <bundleDef>org.apache.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.provider:aws-ec2:${jclouds.version}</bundleDef>
-                                <bundleDef>com.google.guava:guava:14.0.1</bundleDef>
+                                <bundleDef>com.google.guava:guava:15.0</bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
                                 <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
                                 <bundleDef>com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}</bundleDef>

@@ -141,35 +141,37 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
         
-        processorChain.addEventListener(new ClusterRemovedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-            try {
-                ClusterRemovedEvent e = (ClusterRemovedEvent) event;
-                TopologyManager.acquireReadLock();
-                String serviceName = e.getServiceName();
-                String clusterId = e.getClusterId();
-                AbstractMonitor monitor;
+		processorChain.addEventListener(new ClusterRemovedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				try {
+					ClusterRemovedEvent e = (ClusterRemovedEvent) event;
+					TopologyManager.acquireReadLock();
+					String serviceName = e.getServiceName();
+					String clusterId = e.getClusterId();
+					AbstractMonitor monitor;
 
-                if(e.isLbCluster()){
-                    monitor = AutoscalerContext.getInstance().removeLbMonitor(clusterId);
+					if (e.isLbCluster()) {
+						monitor = AutoscalerContext.getInstance()
+								.removeLbMonitor(clusterId);
 
-                } else {
-                    monitor = AutoscalerContext.getInstance().removeMonitor(clusterId);
-                }
+					} else {
+						monitor = AutoscalerContext.getInstance()
+								.removeMonitor(clusterId);
+					}
 
-//                runTerminateAllRule(monitor);
-                monitor.destroy();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster monitor has been removed successfully: [cluster] %s ", clusterId));
-                }
-            }
-            finally {
-                TopologyManager.releaseReadLock();
-            }
-            }
+					// runTerminateAllRule(monitor);
+					if (monitor != null) {
+						monitor.destroy();
+						log.info(String.format("Cluster monitor has been removed successfully: [cluster] %s ",
+										clusterId));
+					} 
+				} finally {
+					TopologyManager.releaseReadLock();
+				}
+			}
 
-        });
+		});
         
         processorChain.addEventListener(new MemberStartedEventListener() {
             @Override

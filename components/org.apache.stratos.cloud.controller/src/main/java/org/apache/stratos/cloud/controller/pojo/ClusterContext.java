@@ -35,12 +35,14 @@ public class ClusterContext implements Serializable{
     // payload as a String
     private String payload;
     private String hostName;
+    private boolean isLbCluster;
 
-    public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName) {
+    public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, boolean isLbCluster) {
         this.clusterId = clusterId;
         this.cartridgeType = cartridgeType;
         this.payload = payload;
         this.setHostName(hostName);
+        this.isLbCluster = isLbCluster;
     }
     
     public String getClusterId() {
@@ -69,5 +71,13 @@ public class ClusterContext implements Serializable{
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
+
+	public boolean isLbCluster() {
+		return isLbCluster;
+	}
+
+	public void setLbCluster(boolean isLbCluster) {
+		this.isLbCluster = isLbCluster;
+	}
 
 }
