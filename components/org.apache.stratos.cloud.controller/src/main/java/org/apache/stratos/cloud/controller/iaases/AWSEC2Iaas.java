@@ -31,55 +31,53 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.AWSEC2PartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.jclouds.aws.ec2.AWSEC2ApiMetadata;
-import org.jclouds.aws.ec2.AWSEC2Client;
+import org.jclouds.aws.ec2.AWSEC2Api;
 import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
-import org.jclouds.aws.ec2.domain.RegionNameAndPublicKeyMaterial;
-import org.jclouds.aws.ec2.functions.ImportOrReturnExistingKeypair;
+import org.jclouds.aws.ec2.features.AWSKeyPairApi;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
-import org.jclouds.ec2.EC2ApiMetadata;
-import org.jclouds.ec2.EC2Client;
-import org.jclouds.ec2.compute.options.EC2TemplateOptions;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
 import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
+import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("deprecation")
 public class AWSEC2Iaas extends Iaas {
+
+	public AWSEC2Iaas(IaasProvider iaasProvider) {
+		super(iaasProvider);
+	}
 
 	private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
 	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
 	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
 
 	@Override
-	public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
+	public void buildComputeServiceAndTemplate() {
 
 		// builds and sets Compute Service
-		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
+		ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
 
 		// builds and sets Template
-		buildTemplate(iaasInfo);
+		buildTemplate();
 
 	}
 
-	public void buildTemplate(IaasProvider iaas) {
+	public void buildTemplate() {
+		IaasProvider iaas = getIaasProvider();
 		if (iaas.getComputeService() == null) {
 			String msg = "Compute service is null for IaaS provider: "
 					+ iaas.getName();
@@ -160,8 +158,8 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	@Override
-	public void setDynamicPayload(IaasProvider iaasInfo) {
-
+	public void setDynamicPayload() {
+		IaasProvider iaasInfo = getIaasProvider();
 		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
 
 			iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
@@ -171,23 +169,20 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	@Override
-	public synchronized boolean createKeyPairFromPublicKey(
-			IaasProvider iaasInfo, String region, String keyPairName,
+	public synchronized boolean createKeyPairFromPublicKey(String region, String keyPairName,
 			String publicKey) {
+		
+		IaasProvider iaasInfo = getIaasProvider();
 
 		String ec2Msg = " ec2. Region: " + region + " - Key Pair Name: ";
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		AWSEC2Client ec2Client = context.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
+		
+		AWSKeyPairApi keyPairApi = context.unwrapApi(AWSEC2Api.class).getKeyPairApiForRegion(region).get();
 
-		ImportOrReturnExistingKeypair importer = new ImportOrReturnExistingKeypair(
-				ec2Client);
-
-		RegionNameAndPublicKeyMaterial regionNameAndKey = new RegionNameAndPublicKeyMaterial(
-				region, keyPairName, publicKey);
-		KeyPair keyPair = importer.apply(regionNameAndKey);
-
+		KeyPair keyPair = keyPairApi.importKeyPairInRegion(region, keyPairName, publicKey);
+		
 		if (keyPair != null) {
 
 			iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
@@ -203,21 +198,21 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	@Override
-	public synchronized String associateAddress(IaasProvider iaasInfo,
-			NodeMetadata node) {
+	public synchronized String associateAddress(NodeMetadata node) {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		AWSEC2Client ec2Client = context.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
+		
+		ElasticIPAddressApi elasticIPAddressApi = context.unwrapApi(AWSEC2Api.class).getElasticIPAddressApi().get();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		
 		String ip = null;
 
 		// first try to find an unassigned IP.
 		ArrayList<PublicIpInstanceIdPair> unassignedIps = Lists
-				.newArrayList(Iterables.filter(ec2Client
-						.getElasticIPAddressServices()
-						.describeAddressesInRegion(region, new String[0]),
+				.newArrayList(Iterables.filter(elasticIPAddressApi.describeAddressesInRegion(region, new String[0]),
 						new Predicate<PublicIpInstanceIdPair>() {
 
 							@Override
@@ -237,9 +232,9 @@ public class AWSEC2Iaas extends Iaas {
 		// if no unassigned IP is available, we'll try to allocate an IP.
 		if (ip == null || ip.isEmpty()) {
 			try {
-				ip = ec2Client.getElasticIPAddressServices()
+				ip = elasticIPAddressApi
 						.allocateAddressInRegion(region);
-				log.info("Assigned ip [" + ip + "]");
+				log.info("Allocated ip [" + ip + "]");
 
 			} catch (Exception e) {
 				String msg = "Failed to allocate an IP address. All IP addresses are in use.";
@@ -259,7 +254,7 @@ public class AWSEC2Iaas extends Iaas {
 		}
 
 		int retries = 0;
-		while (retries < 12 && !associatePublicIp(ec2Client, region, ip, id)) {
+		while (retries < 12 && !associatePublicIp(elasticIPAddressApi, region, ip, id)) {
 
 			// wait for 5s
 			CloudControllerUtil.sleep(5000);
@@ -272,30 +267,17 @@ public class AWSEC2Iaas extends Iaas {
 		return ip;
 
 	}
-	
-	@Override
-	public void mapPersistanceVolumes(Template template, List<PersistanceMapping> persistancemapings){
-		if(persistancemapings ==null || persistancemapings.isEmpty())
-			return;
-		
-        Iterator< PersistanceMapping> it = persistancemapings.iterator();
-        while(it.hasNext()){  
-        	PersistanceMapping maping = it.next();
-        	template.getOptions().as(EC2TemplateOptions.class)
-            	.mapEBSSnapshotToDeviceName(maping.getDevice(), maping.getSnapshotId(), maping.getSize(), maping.isRemoveOntermination());
-        }
-    }
 
 	/**
-	 * @param ec2Client
+	 * @param addressApi
 	 * @param region
 	 * @param ip
 	 * @param id
 	 */
-	private boolean associatePublicIp(AWSEC2Client ec2Client, String region,
+	private boolean associatePublicIp(ElasticIPAddressApi addressApi, String region,
 			String ip, String id) {
 		try {
-			ec2Client.getElasticIPAddressServices().associateAddressInRegion(
+			addressApi.associateAddressInRegion(
 					region, ip, id);
 			log.info("Successfully associated public IP ");
 			return true;
@@ -306,22 +288,26 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	@Override
-	public synchronized void releaseAddress(IaasProvider iaasInfo, String ip) {
+	public synchronized void releaseAddress(String ip) {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		AWSEC2Client ec2Client = context.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
+		ElasticIPAddressApi elasticIPAddressApi = context.unwrapApi(AWSEC2Api.class).getElasticIPAddressApi().get();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		ec2Client.getElasticIPAddressServices().disassociateAddressInRegion(
+		elasticIPAddressApi.disassociateAddressInRegion(
 				region, ip);
-		ec2Client.getElasticIPAddressServices().releaseAddressInRegion(region,
+		elasticIPAddressApi.releaseAddressInRegion(region,
 				ip);
 	}
 
     @Override
-    public boolean isValidRegion(IaasProvider iaasInfo, String region) throws InvalidRegionException {
-        
+    public boolean isValidRegion(String region) throws InvalidRegionException {
+    	
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         if (region == null || iaasInfo == null) {
             String msg =
                          "Region or IaaSProvider is null: region: " + region + " - IaaSProvider: " +
@@ -331,8 +317,8 @@ public class AWSEC2Iaas extends Iaas {
         }
         
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        EC2Client api = EC2Client.class.cast(context.unwrap(EC2ApiMetadata.CONTEXT_TOKEN).getApi());
-        for (String configuredRegion : api.getConfiguredRegions()) {
+        Set<String> regions = context.unwrapApi(AWSEC2Api.class).getConfiguredRegions();
+        for (String configuredRegion : regions) {
             if (region.equalsIgnoreCase(configuredRegion)) {
                 if (log.isDebugEnabled()) {
                     log.debug("Found a matching region: " + region);
@@ -346,7 +332,10 @@ public class AWSEC2Iaas extends Iaas {
     }
 
     @Override
-    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) throws InvalidZoneException {
+    public boolean isValidZone(String region, String zone) throws InvalidZoneException {
+    	
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         if (zone == null || iaasInfo == null) {
             String msg =
                          "Zone or IaaSProvider is null: zone: " + zone + " - IaaSProvider: " +
@@ -355,10 +344,9 @@ public class AWSEC2Iaas extends Iaas {
             throw new InvalidZoneException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        EC2Client api = EC2Client.class.cast(context.unwrap(EC2ApiMetadata.CONTEXT_TOKEN).getApi());
-        AvailabilityZoneAndRegionApi zoneRegionApi =
-                                                     api.getAvailabilityZoneAndRegionApiForRegion(region)
-                                                        .get();
+        AvailabilityZoneAndRegionApi zoneRegionApi = context.unwrapApi(AWSEC2Api.class).
+        		getAvailabilityZoneAndRegionApiForRegion(region).get();
+        
         Set<AvailabilityZoneInfo> availabilityZones =
                                                       zoneRegionApi.describeAvailabilityZonesInRegion(region,
                                                                                                       new DescribeAvailabilityZonesOptions[0]);
@@ -379,7 +367,10 @@ public class AWSEC2Iaas extends Iaas {
     }
 
     @Override
-    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) throws InvalidHostException {
+    public boolean isValidHost(String zone, String host) throws InvalidHostException {
+    	
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         // there's no such concept in EC2
         String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
         log.error(msg);

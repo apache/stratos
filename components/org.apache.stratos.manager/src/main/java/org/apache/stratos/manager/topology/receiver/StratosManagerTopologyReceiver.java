@@ -127,8 +127,10 @@ public class StratosManagerTopologyReceiver implements Runnable {
             }
         });
 
+
+        // Removal of cluster is done in the unsubscription, therefore commenting this listener.
         //Cluster Removed event listner
-        processorChain.addEventListener(new ClusterRemovedEventListener() {
+        /*processorChain.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -149,7 +151,7 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     }
                 }
             }
-        });
+        });*/
         
         
       //Instance Spawned event listner

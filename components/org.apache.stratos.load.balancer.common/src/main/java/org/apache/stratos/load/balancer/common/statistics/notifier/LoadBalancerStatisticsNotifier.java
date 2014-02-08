@@ -86,9 +86,7 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
                                     }
                                 }
                                 else {
-                                    if(log.isWarnEnabled()) {
-                                        log.warn(String.format("Load balancer cluster found in topology: %s", cluster.getClusterId()));
-                                    }
+                                    // Load balancer cluster found in topology; we do not need to publish request counts for them.
                                 }
                             }
 

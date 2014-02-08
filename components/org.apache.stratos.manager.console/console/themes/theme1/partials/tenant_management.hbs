@@ -71,7 +71,7 @@
                     <tbody>
                         {{#each tenants}}
                         <tr>
-                            <td><input value="{{tenantDomain}}" type="checkbox" {{#if active}}checked="checked"{{/if}} class="js_domainCheck" /></td>
+                            <td><input value="{{tenantDomain}}" type="checkbox"  class="js_domainCheck" /></td>
                             <td><a title="Click to {{#if active}}}deactivate{{else}}activate{{/if}}" onclick="manage_one('{{#if active}}}deactivate{{else}}activate{{/if}}',this)" data-domain="{{tenantDomain}}"><i class="fa {{#if active}}}fa-check-circle-o green-check{{else}}fa-exclamation-circle orange-check{{/if}}"></i></a></td>
                             <td><a>{{tenantDomain}}</a></td>
                             <td>{{email}}</td>

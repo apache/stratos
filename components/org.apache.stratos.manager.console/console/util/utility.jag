@@ -109,6 +109,13 @@ consoleAppUtil = new function(){
         return this.send("POST","/tenant/deactivate/" + tenantDomain,{}).data;
     };
 
+    this.deleteTenant = function(tenantDomain){
+        return this.send("DELETE","/tenant/" + tenantDomain,{}).data;
+    };
+
+    this.checkAvailability = function(tenantDomain){
+        return this.send("POST","/tenant/availability/" + tenantDomain,{}).data;
+    };
 
     this.deployPartitionDefinition = function(partitionDefinition){
         return this.send("POST","/policy/deployment/partition",partitionDefinition).data;

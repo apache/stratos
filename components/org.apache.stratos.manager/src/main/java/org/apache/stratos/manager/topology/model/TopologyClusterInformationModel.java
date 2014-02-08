@@ -22,6 +22,7 @@ package org.apache.stratos.manager.topology.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -93,7 +94,13 @@ public class TopologyClusterInformationModel {
                     cartridgeTypeContextSet.add(cartridgeTypeContext);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("New cluster added " + cluster.toString());
+                        log.debug("New cluster added : " + cluster.toString());
+                        Collection<Member> members = cluster.getMembers();
+                        if (members != null && !members.isEmpty()) {
+                            for (Member member : members) {
+                                log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                            }
+                        }
                     }
 
                 } else {
@@ -109,13 +116,30 @@ public class TopologyClusterInformationModel {
                         }
                     }*/
                     // remove the existing one
-                    subscriptionAliasContextSet.remove(new SubscriptionAliasContext(subscriptionAlias, null));
+                    boolean existingClusterRemoved = subscriptionAliasContextSet.remove(new SubscriptionAliasContext(subscriptionAlias, null));
 
                     //now, add the new cluster object
                     subscriptionAliasContextSet.add(new SubscriptionAliasContext(subscriptionAlias, cluster));
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Exiting cluster updated " + cluster.toString());
+                        // check if cluster was overwritten
+                        if (existingClusterRemoved) {
+                            log.debug("Existing cluster found, updated : " + cluster.toString());
+                            Collection<Member> members = cluster.getMembers();
+                            if (members != null && !members.isEmpty()) {
+                                for (Member member : members) {
+                                    log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                }
+                            }
+                        } else {
+                            log.debug("New cluster added : " + cluster.toString());
+                            Collection<Member> members = cluster.getMembers();
+                            if (members != null && !members.isEmpty()) {
+                                for (Member member : members) {
+                                    log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -144,7 +168,13 @@ public class TopologyClusterInformationModel {
                 tenantIdToCartridgeTypeContextMap.put(tenantId, cartridgeTypeContextSet);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("New cluster added " + cluster.toString());
+                    log.debug("New cluster added : " + cluster.toString());
+                    Collection<Member> members = cluster.getMembers();
+                    if (members != null && !members.isEmpty()) {
+                        for (Member member : members) {
+                            log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                        }
+                    }
                 }
             }
 
@@ -186,6 +216,12 @@ public class TopologyClusterInformationModel {
                             if (log.isDebugEnabled()) {
                                 log.debug("Matching cluster found for tenant " + tenantId + ", type " + cartridgeType +
                                         ", subscription alias " + subscriptionAlias + ": " + subscriptionAliasContext.getCluster().toString());
+                                Collection<Member> members = subscriptionAliasContext.getCluster().getMembers();
+                                if (members != null && !members.isEmpty()) {
+                                    for (Member member : members) {
+                                        log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                    }
+                                }
                             }
 
                             return subscriptionAliasContext.getCluster();
@@ -235,6 +271,12 @@ public class TopologyClusterInformationModel {
 
                                     if (log.isDebugEnabled()) {
                                         log.debug("Matching cluster found for tenant " + tenantId + " : " + cluster.toString());
+                                        Collection<Member> members = cluster.getMembers();
+                                        if (members != null && !members.isEmpty()) {
+                                            for (Member member : members) {
+                                                log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -256,6 +298,12 @@ public class TopologyClusterInformationModel {
 
                                 if (log.isDebugEnabled()) {
                                     log.debug("Matching cluster found for tenant " + tenantId + ", type " + cartridgeType + " : " + cluster.toString());
+                                    Collection<Member> members = cluster.getMembers();
+                                    if (members != null && !members.isEmpty()) {
+                                        for (Member member : members) {
+                                            log.debug("[ " + member.getServiceName() + ", " + member.getClusterId() + ", "+ member.getMemberId()  + " ]");
+                                        }
+                                    }
                                 }
                             }
                         }
