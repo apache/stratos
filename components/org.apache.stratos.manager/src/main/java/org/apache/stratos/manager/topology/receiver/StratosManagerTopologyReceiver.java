@@ -103,17 +103,15 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 if(cartridgeSubscriptions != null) {
 
-                    Cluster cluster;
+                    String serviceType = clustercreatedEvent.getServiceName();
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
+                        Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clustercreatedEvent.getClusterId());
 
                         // iterate and do the relevant changes
                         for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-                            //add the information to Topology Cluster Info. model
-                            cluster = TopologyManager.getTopology().
-                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
                             //add the information to Topology Cluster Info. model
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
@@ -170,15 +168,14 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 if(cartridgeSubscriptions != null) {
 
-                    Cluster cluster;
+                    String serviceType = instanceSpawnedEvent.getServiceName();
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
-                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                        Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
 
-                            cluster = TopologyManager.getTopology().
-                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
 
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
                                     cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
@@ -207,15 +204,14 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 if(cartridgeSubscriptions != null) {
 
-                    Cluster cluster;
+                    String serviceType = memberStartedEvent.getServiceName();
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
-                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                        Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
 
-                            cluster = TopologyManager.getTopology().
-                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+                        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
 
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
                                     cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
@@ -244,20 +240,17 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 if(cartridgeSubscriptions != null) {
 
-                    Cluster cluster;
+                    String serviceType = memberActivatedEvent.getServiceName();
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
+                        Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
 
                         for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
 
-                            cluster = TopologyManager.getTopology().
-                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
-
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                                    cartridgeSubscription.getType(),
-                                    cartridgeSubscription.getAlias(), cluster);
+                                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
                         }
 
                     } finally {
@@ -283,16 +276,14 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 if(cartridgeSubscriptions != null) {
 
-                    Cluster cluster;
+                    String serviceType = memberSuspendedEvent.getServiceName();
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
+                        Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
 
                         for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-
-                            cluster = TopologyManager.getTopology().
-                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
                                     cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
@@ -321,25 +312,23 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                 if(cartridgeSubscriptions != null) {
 
-                    Cluster cluster;
+                    String serviceType = memberTerminatedEvent.getServiceName();
                     //acquire read lock
                     TopologyManager.acquireReadLock();
 
                     try {
+                        Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
+
+                        // remove the terminated member from the cluster
+                        if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
+                            Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
+                            cluster.removeMember(terminatedMember);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
+                            }
+                        }
 
                         for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-
-                            cluster = TopologyManager.getTopology().
-                                    getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
-
-                            // remove the terminated member from the cluster
-                            if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
-                                Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
-                                cluster.removeMember(terminatedMember);
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
-                                }
-                            }
 
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
                                     cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
