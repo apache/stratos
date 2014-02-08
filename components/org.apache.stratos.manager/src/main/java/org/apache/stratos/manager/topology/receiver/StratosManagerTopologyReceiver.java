@@ -25,6 +25,7 @@ import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
@@ -330,6 +331,13 @@ public class StratosManagerTopologyReceiver implements Runnable {
 
                             cluster = TopologyManager.getTopology().
                                     getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
+
+                            // remove the terminated member from the cluster
+                            Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
+                            cluster.removeMember(terminatedMember);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
+                            }
 
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
                                     cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), cluster);
