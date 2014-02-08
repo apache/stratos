@@ -333,10 +333,12 @@ public class StratosManagerTopologyReceiver implements Runnable {
                                     getService(cartridgeSubscription.getType()).getCluster(cartridgeSubscription.getClusterDomain());
 
                             // remove the terminated member from the cluster
-                            Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
-                            cluster.removeMember(terminatedMember);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
+                            if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
+                                Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
+                                cluster.removeMember(terminatedMember);
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
+                                }
                             }
 
                             TopologyClusterInformationModel.getInstance().addCluster(cartridgeSubscription.getSubscriber().getTenantId(),
