@@ -139,7 +139,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
         
         for (IaasProvider iaasProvider : iaases) {
-            setIaas(iaasProvider);
+            CloudControllerUtil.setIaas(iaasProvider);
         }
         
         // TODO transaction begins
@@ -163,33 +163,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
-
-	private Iaas setIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-
-		Iaas iaas;
-		try {
-			Constructor<?> c = Class.forName(iaasProvider.getClassName())
-					.getConstructor(IaasProvider.class);
-			iaas = (Iaas) c.newInstance(iaasProvider);
-		} catch (Exception e) {
-			String msg = "Class [" + iaasProvider.getClassName()
-					+ "] which represents the iaas of type: ["
-					+ iaasProvider.getType() + "] has failed to instantiate.";
-			log.error(msg, e);
-			throw new InvalidIaasProviderException(msg, e);
-		}
-
-		try {
-			iaas.buildComputeServiceAndTemplate();
-			iaasProvider.setIaas(iaas);
-			return iaas;
-		} catch (Exception e) {
-			String msg = "Unable to build the jclouds object for iaas "
-					+ "of type: " + iaasProvider.getType();
-			log.error(msg, e);
-			throw new InvalidIaasProviderException(msg, e);
-		}
-	}
 
     public void undeployCartridgeDefinition(String cartridgeType) {
 
@@ -289,7 +262,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
                 }
                 try {
-                    iaas = setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.setIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg ="Instance start up failed. "+memberContext.toString()+
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type;
@@ -789,7 +762,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    if (iaas == null) {
 	        
 	        try {
-	            iaas = setIaas(iaasProvider);
+	            iaas = CloudControllerUtil.setIaas(iaasProvider);
 	        } catch (InvalidIaasProviderException e) {
 	            String msg =
 	                    "Instance termination failed. " +ctxt.toString()  +
@@ -965,7 +938,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (iaas == null) {
                 
                 try {
-                    iaas = setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.setIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg =
                             "Invalid Partition - " + partition.toString() +
@@ -1022,7 +995,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (iaas == null) {
             
         	try {
-                iaas = setIaas(iaasProvider);
+                iaas = CloudControllerUtil.setIaas(iaasProvider);
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Invalid Partition - " + partition.toString() +
