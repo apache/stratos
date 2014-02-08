@@ -423,6 +423,9 @@ public class FasterLookUpDataHolder implements Serializable{
         if((ctxts = clusterIdToMemberContext.get(ctxt.getClusterId())) == null) {
             ctxts = new ArrayList<MemberContext>();
         } 
+        if(ctxts.contains(ctxt)) {
+        	ctxts.remove(ctxt);
+        }
         ctxts.add(ctxt);
         clusterIdToMemberContext.put(ctxt.getClusterId(), ctxts);
     }
