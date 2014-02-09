@@ -56,11 +56,6 @@ public class RegistryManager {
     private UserRegistry initRegistry (int tenantId) throws RegistryException {
 
         UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry(tenantId);
-        /*if (tenantGovRegistry == null) {
-            String errorMsg = "Tenant " + tenantId + "'s governance registry is not initialized";
-            log.error(errorMsg);
-            throw new ADCException(errorMsg);
-        }*/
 
         // check if the resource is available, else create it
         if (!tenantGovRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
@@ -83,11 +78,6 @@ public class RegistryManager {
     private UserRegistry initRegistry () throws RegistryException {
 
         UserRegistry govRegistry = registryService.getGovernanceSystemRegistry();
-        /*if (govRegistry == null) {
-            String errorMsg = "Governance registry is not initialized";
-            log.error(errorMsg);
-            throw new ADCException(errorMsg);
-        }*/
 
         // check if the resource is available, else create it
         if (!govRegistry.resourceExists(STRATOS_MANAGER_REOSURCE)) {
@@ -106,126 +96,6 @@ public class RegistryManager {
 
         return govRegistry;
     }
-
-    /*public void persistSubscriptionContext (int tenantId, SubscriptionContext subscriptionContext)
-            throws RegistryException, ADCException {
-
-        //TODO: uncomment
-        //UserRegistry tenantGovRegistry = initRegistry(tenantId);
-        //temporary
-        UserRegistry tenantGovRegistry = initRegistry();
-
-        try {
-            tenantGovRegistry.beginTransaction();
-            Resource nodeResource = tenantGovRegistry.newResource();
-            nodeResource.setContent(Serializer.serializeSubscriptionSontextToByteArray(subscriptionContext));
-            tenantGovRegistry.putSubscription(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT, nodeResource);
-            tenantGovRegistry.commitTransaction();
-
-        } catch (Exception e) {
-            String errorMsg = "Failed to persist SubscriptionContext in registry.";
-            tenantGovRegistry.rollbackTransaction();
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-    }
-
-    //TODO: retun the de-serialized object
-    public Object getSubscriptionContext(int tenantId) throws ADCException, RegistryException {
-
-        //TODO: uncomment
-        //UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry(tenantId);
-        //temporary
-        UserRegistry tenantGovRegistry = registryService.getGovernanceSystemRegistry();
-
-        if (tenantGovRegistry == null) {
-            String errorMsg = "Tenant " + tenantId + "'s governance registry is not initialized";
-            log.error(errorMsg);
-            throw new ADCException(errorMsg);
-        }
-
-        try {
-            Resource resource = tenantGovRegistry.get(STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
-            return resource.getContent();
-
-        } catch (ResourceNotFoundException ignore) {
-            log.error("Sepcified resource not found at " + STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
-            return null;
-
-        } catch (RegistryException e) {
-            String errorMsg = "Failed to retrieve SubscriptionContext from registry.";
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-    }*/
-
-    /*public Object getSubscriptionContexts() throws RegistryException {
-
-        UserRegistry registry = registryService.getGovernanceSystemRegistry();
-        return retrieve(registry, STRATOS_MANAGER_REOSURCE + TENANT_ID_TO_SUBSCRIPTION_CONTEXT);
-
-
-        if ((resourceObj == null) || !(resourceObj instanceof String[])) {
-            return null;
-        }
-
-        // get the paths for all SubscriptionContext instnaces
-        String[] subscriptionCtxtResourcePaths = (String[]) resourceObj;
-
-        Collection<SubscriptionContext> cartridgeSubscriptionCtxts;
-        //for each path, get the SubscriptionContext instance
-        for (String subscriptionCtxResourcePath : subscriptionCtxtResourcePaths) {
-            Object subscriptionCtxObj = retrieve(registry, subscriptionCtxResourcePath);
-            if (subscriptionCtxObj != null && subscriptionCtxObj instanceof SubscriptionContext) {
-
-            }
-        }
-
-    }*/
-
-    /*public void persistClusterIdToSubscription (ClusterIdToSubscription clusterIdToSubscription)
-            throws RegistryException, ADCException {
-
-        UserRegistry govRegistry = initRegistry();
-
-        try {
-            govRegistry.beginTransaction();
-            Resource nodeResource = govRegistry.newResource();
-            nodeResource.setContent(Serializer.serializeClusterIdToSubscriptionToByteArray(clusterIdToSubscription));
-            govRegistry.putSubscription(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION, nodeResource);
-            govRegistry.commitTransaction();
-
-        } catch (Exception e) {
-            String errorMsg = "Failed to persist ClusterIdToSubscription in registry.";
-            govRegistry.rollbackTransaction();
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-    }
-
-    //TODO: retun the de-serialized object
-    public Object getClusterIdToSubscription () throws ADCException, RegistryException {
-
-        UserRegistry govRegistry = registryService.getGovernanceSystemRegistry();
-        if (govRegistry == null) {
-            String errorMsg = "Governance registry is not initialized";
-            log.error(errorMsg);
-            throw new ADCException(errorMsg);
-        }
-
-        try {
-            Resource resource = govRegistry.get(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION);
-            return resource.getContent();
-
-        } catch (ResourceNotFoundException ignore) {
-            return null;
-
-        } catch (RegistryException e) {
-            String errorMsg = "Failed to retrieve ClusterIdToSubscription from registry.";
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-    }*/
 
     public void persist (String path, byte [] resourceBytes, String tag) throws RegistryException {
 

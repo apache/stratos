@@ -115,18 +115,6 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
     private void removeSubscription (int tenantId, String type, String alias) throws PersistenceManagerException {
 
-        /*String resourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
-
-        try {
-            RegistryManager.getInstance().delete(resourcePath);
-            if (log.isDebugEnabled()) {
-                log.debug("Deleted CartridgeSubscription on path " + resourcePath + " successfully");
-            }
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }*/
-
         // move the subscription from active set to inactive set
         String sourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
         String targetPath = STRATOS_MANAGER_REOSURCE + INACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
@@ -141,94 +129,6 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
     }
-
-    /*@Override
-    public CartridgeSubscription getCartridgeSubscriptionForCluster (int tenantId, String alias) throws PersistenceManagerException {
-
-        Object byteObj;
-
-        try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" +
-                Integer.toString(tenantId));
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        if (byteObj == null) {
-            return null;
-        }
-
-        Object subscriptionContextObj;
-
-        try {
-            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
-
-        } catch (Exception e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        SubscriptionContext subscriptionContext;
-        if (subscriptionContextObj instanceof SubscriptionContext) {
-            subscriptionContext = (SubscriptionContext) subscriptionContextObj;
-            return subscriptionContext.getSubscriptionForAlias(alias);
-        }
-
-        return null;
-    }*/
-
-    /*@Override
-    public Collection<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
-
-        Object resourceObj;
-
-        try {
-            resourceObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT);
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        if ((resourceObj == null) || !(resourceObj instanceof String[])) {
-            return null;
-        }
-
-        // get the paths for all SubscriptionContext instances
-        String[] subscriptionCtxtResourcePaths = (String[]) resourceObj;
-
-        Collection<CartridgeSubscription> cartridgeSubscriptions = new ArrayList<CartridgeSubscription>();
-        //for each path, get the SubscriptionContext instance
-        for (String subscriptionCtxResourcePath : subscriptionCtxtResourcePaths) {
-
-            Object serializedSubscriptionCtxObj = null;
-            try {
-                serializedSubscriptionCtxObj = RegistryManager.getInstance().retrieve(subscriptionCtxResourcePath);
-
-            } catch (RegistryException e) {
-                // issue might be at only this path, therefore log and continue
-                log.error("Error while retrieving Resource at " + subscriptionCtxResourcePath, e);
-                continue;
-            }
-
-            //De-serialize
-            Object subscriptionCtxObj = null;
-            try {
-                subscriptionCtxObj = Deserializer.deserializeFromByteArray((byte[]) serializedSubscriptionCtxObj);
-
-            } catch (Exception e) {
-                // issue might be de-serializing only this object, therefore log and continue
-                log.error("Error while de-serializing the object retrieved from "  + subscriptionCtxResourcePath, e);
-                continue;
-            }
-
-            if (subscriptionCtxObj != null && subscriptionCtxObj instanceof SubscriptionContext) {
-                SubscriptionContext subscriptionContext = (SubscriptionContext) subscriptionCtxObj;
-                cartridgeSubscriptions.addAll(subscriptionContext.getSubscriptions());
-            }
-        }
-
-        return cartridgeSubscriptions;
-    }*/
 
     @Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
@@ -307,35 +207,6 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         cartridgeSubscriptions.removeAll(Collections.singleton(null));
         return cartridgeSubscriptions;
     }
-
-    /*@Override
-    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
-
-        Object byteObj;
-
-        try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        Object subscriptionContextObj;
-
-        try {
-            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
-
-        } catch (Exception e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        if (subscriptionContextObj instanceof SubscriptionContext) {
-            //get all Subscriptions for this tenant
-            return ((SubscriptionContext) subscriptionContextObj).getSubscriptions();
-        }
-
-        return null;
-    }*/
 
     @Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
@@ -476,92 +347,5 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
     }
-
-    /*@Override
-    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
-
-        Object byteObj;
-
-        try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        Object subscriptionContextObj;
-
-        try {
-            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
-
-        } catch (Exception e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        if (subscriptionContextObj instanceof SubscriptionContext) {
-            //get all Subscriptions for this tenant
-            return ((SubscriptionContext) subscriptionContextObj).getSubscriptions();
-        }
-
-        return null;
-    }*/
-
-    /*@Override
-    public CartridgeSubscription getCartridgeSubscriptionForCluster (String clusterDomain) throws PersistenceManagerException {
-
-        Object byteObj;
-
-        try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + CLUSTER_ID_TO_SUBSCRIPTION + "/" + clusterDomain);
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        Object clusterIdToSubscriptionObj;
-
-        try {
-            clusterIdToSubscriptionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
-
-        } catch (Exception e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        if (clusterIdToSubscriptionObj instanceof ClusterIdToSubscription) {
-            ((ClusterIdToSubscription) clusterIdToSubscriptionObj).getSubscription(clusterDomain);
-        }
-
-        return null;
-    }*/
-
-    /*@Override
-    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String cartridgeType) throws PersistenceManagerException {
-
-        Object byteObj;
-
-        try {
-            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SUBSCRIPTION_CONTEXT + "/" + Integer.toString(tenantId));
-
-        } catch (RegistryException e) {
-            throw new PersistenceManagerException(e);
-        }
-
-        Object subscriptionContextObj;
-
-        try {
-            subscriptionContextObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
-
-        } catch (Exception e) {
-            throw new PersistenceManagerException(e);
-        }
-
-
-        if (subscriptionContextObj instanceof SubscriptionContext) {
-            //get all Subscriptions for this tenant and the type
-            return ((SubscriptionContext) subscriptionContextObj).getSubscriptionsOfType(cartridgeType);
-        }
-
-        return null;
-    }*/
 
 }

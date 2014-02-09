@@ -43,11 +43,8 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
         if (!allowMultipleSubscription) {
             // If the cartridge is multi-tenant. We should not let users createSubscription twice.
             boolean subscribed;
+
             try {
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //subscribed = PersistenceManager.isAlreadySubscribed(cartridgeSubscription.getType(),
-                //        cartridgeSubscription.getSubscriber().getTenantId());
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////
                 subscribed = hasAlreadySubscribed(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getType());
 
             } catch (Exception e) {
