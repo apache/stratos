@@ -319,13 +319,31 @@ public class StratosManagerTopologyReceiver implements Runnable {
                     try {
                         Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
 
-                        // remove the terminated member from the cluster
+                        // check and remove terminated member
                         if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
-                            Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
-                            cluster.removeMember(terminatedMember);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
-                            }
+                            // release the read lock and acquire the write lock
+                            TopologyManager.releaseReadLock();
+                            TopologyManager.acquireWriteLock();
+
+                                try {
+                                    // re-check the state; another thread might have acquired the write lock and modified
+                                    if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
+                                        // remove the member from the cluster
+                                        Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
+                                        cluster.removeMember(terminatedMember);
+                                        if (log.isDebugEnabled()) {
+                                            log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
+                                        }
+                                    }
+
+                                    // downgrade to read lock - 1. acquire read lock, 2. release write lock
+                                    // acquire read lock
+                                    TopologyManager.acquireReadLock();
+
+                                } finally {
+                                    // release the write lock
+                                    TopologyManager.releaseWriteLock();
+                                }
                         }
 
                         for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
