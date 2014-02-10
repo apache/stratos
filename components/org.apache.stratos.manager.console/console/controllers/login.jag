@@ -1,7 +1,7 @@
 <%
 (function(){
     var log = new Log("controllers.login.jag");
-    var dataConfig = require('/config/console.json');
+    var dataConfig = require('/config/console.js').config();
     if(!dataConfig.ssoConfiguration.enabled){
         request.getMappedPath = function() {
             return '/login.jag'; // setting path for caramel framework
