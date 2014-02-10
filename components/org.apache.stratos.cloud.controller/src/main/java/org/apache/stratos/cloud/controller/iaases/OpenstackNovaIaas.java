@@ -44,6 +44,7 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
+import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
@@ -51,6 +52,7 @@ import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
+import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,8 +172,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		
-		KeyPairApi api = context.unwrapApi(NovaApi.class).getKeyPairExtensionForZone(region).get();
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		KeyPairApi api = nova.getApi().getKeyPairExtensionForZone(region).get();
 
 		KeyPair keyPair = api.createWithPublicKey(keyPairName, publicKey);
 
@@ -199,7 +201,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIp = context.unwrapApi(NovaApi.class).getFloatingIPExtensionForZone(
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		FloatingIPApi floatingIp = nova.getApi().getFloatingIPExtensionForZone(
 				region).get();
 
 		String ip = null;
@@ -278,7 +281,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIPApi = context.unwrapApi(NovaApi.class)
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		FloatingIPApi floatingIPApi = nova.getApi()
 				.getFloatingIPExtensionForZone(region).get();
 
 		for (FloatingIP floatingIP : floatingIPApi.list()) {
@@ -313,8 +317,8 @@ public class OpenstackNovaIaas extends Iaas {
         }
         
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        
-        Set<String> zones = context.unwrapApi(NovaApi.class).getConfiguredZones();
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        Set<String> zones = nova.getApi().getConfiguredZones();
         for (String configuredZone : zones) {
             if (region.equalsIgnoreCase(configuredZone)) {
                 if (log.isDebugEnabled()) {
@@ -351,7 +355,8 @@ public class OpenstackNovaIaas extends Iaas {
             throw new InvalidHostException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        HostAggregateApi hostApi = context.unwrapApi(NovaApi.class).getHostAggregateExtensionForZone(zone).get();
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        HostAggregateApi hostApi = nova.getApi().getHostAggregateExtensionForZone(zone).get();
         for (HostAggregate hostAggregate : hostApi.list()) {
             for (String configuredHost : hostAggregate.getHosts()) {
                 if (host.equalsIgnoreCase(configuredHost)) {
