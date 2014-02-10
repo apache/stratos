@@ -219,7 +219,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug(response.data);
+        log.info("recieved data is: " + stringify(response.data));
         return response;
     };
 
@@ -247,7 +247,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug(response.data);
+        log.info("sent response is: " + stringify(response.data));
         return response;
     };
 

@@ -24,6 +24,11 @@ var render = function (theme, data, meta, require) {
         title = 'Multi-Tenant Service Deployment';
     }
 
+
+    for(var i=0;i<step_data.length;i++){
+        step_data[i].json_string = stringify(step_data[i]);
+    }
+
     theme('index', {
         body: [
             {
@@ -40,7 +45,9 @@ var render = function (theme, data, meta, require) {
                     wizard_on_4:wizard_on_val[3],
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
-                    config_status:data.config_status
+                    config_status:data.config_status,
+                    data_string:stringify(data.step_data)
+
                 }
             }
         ],

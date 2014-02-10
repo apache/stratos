@@ -37,7 +37,8 @@ var render = function (theme, data, meta, require) {
                     wizard_on_3:wizard_on_val[2],
                     wizard_on_4:wizard_on_val[3],
                     wizard_on_5:wizard_on_val[4],
-                    wizard_on_6:wizard_on_val[5]
+                    wizard_on_6:wizard_on_val[5],
+                    data_string:stringify(data.step_data)
                 }
             }
         ],
