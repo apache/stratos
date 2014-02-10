@@ -61,12 +61,6 @@ public class LookupDataHolder implements Serializable {
 
     public void putSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        /*if (clusterIdToSubscription.getSubscription(cartridgeSubscription.getClusterDomain()) != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Overwriting the existing CartridgeSubscription for cluster " + cartridgeSubscription.getClusterDomain() +
-                " in [Cluster Id -> CartridgeSubscription] map");
-            }
-        }*/
         // add or update
         clusterIdToSubscription.addSubscription(cartridgeSubscription);
 

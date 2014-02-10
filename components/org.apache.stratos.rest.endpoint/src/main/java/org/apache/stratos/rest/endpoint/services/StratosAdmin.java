@@ -368,7 +368,16 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cluster getCluster(@PathParam("clusterId") String clusterId) throws ADCException {
     	Cluster cluster = null;
+    	if(log.isDebugEnabled()) {
+    		log.debug("Finding the Cluster for [id]: "+clusterId);
+    	}
         Cluster[] clusters = ServiceUtils.getClustersForTenant(getConfigContext());
+        if(log.isDebugEnabled()) {
+        	log.debug("Clusters retrieved from backend for cluster [id]: "+clusterId);
+    		for (Cluster c : clusters) {
+				log.debug(c+"\n");
+			}
+    	}
         for (Cluster clusterObj : clusters) {
 			if (clusterObj.clusterId.equals(clusterId)){
 				cluster = clusterObj;

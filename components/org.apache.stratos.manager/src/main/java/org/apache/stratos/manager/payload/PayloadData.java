@@ -23,16 +23,13 @@ import java.io.Serializable;
 
 public abstract class PayloadData implements Serializable {
 
-    //protected StringBuilder additionalPayloadDataBuilder;
-    //private Map<String, String> payloadDataMap;
     private BasicPayloadData basicPayloadData;
     private StringBuilder completePayloadDataBuilder;
 
     public PayloadData(BasicPayloadData basicPayloadData) {
+
         this.setBasicPayloadData(basicPayloadData);
-        //additionalPayloadDataBuilder = new StringBuilder();
         completePayloadDataBuilder = new StringBuilder(basicPayloadData.getPayloadData());
-        //payloadDataMap = new HashMap<String, String>();
     }
 
     public void add (String payloadDataName, String payloadDataValue) {
@@ -41,21 +38,10 @@ public abstract class PayloadData implements Serializable {
             completePayloadDataBuilder.append(",");
         }
 
-        //payloadDataMap.putSubscription(payloadDataName, payloadDataValue);
         completePayloadDataBuilder.append(payloadDataName + "=" + payloadDataValue);
     }
 
-    /*public String getPayloadDataValue (String payloadDataName) {
-        return payloadDataMap.get(payloadDataName);
-    }*/
-
     public StringBuilder getCompletePayloadData () {
-
-        /*if(additionalPayloadDataBuilder.length() > 0) {
-            return getBasicPayloadData().getPayloadData().append(",").append(additionalPayloadDataBuilder);
-        } else {
-            return getBasicPayloadData().getPayloadData();
-        }*/
 
         return completePayloadDataBuilder;
     }

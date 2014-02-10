@@ -955,7 +955,7 @@ public class ServiceUtils {
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , subscriptionAlias);
         if(cluster == null) {
-            throw new RestAPIException();
+            throw new RestAPIException("No matching cluster found for [cartridge type]: "+cartridgeType+ " [alias] "+subscriptionAlias);
         } else{
             return PojoConverter.populateClusterPojos(cluster);
         }
