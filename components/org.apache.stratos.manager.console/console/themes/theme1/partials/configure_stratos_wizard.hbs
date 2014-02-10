@@ -65,7 +65,15 @@
               <div class="col-md-12">
                   <form method="post" id="jsonForm" action="{{url "/controllers/wizardSubmit.jag"}}">
 
-                  <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
+
+                  {{#ifCond step "==" 4}}
+                     {{#unless config_on}}
+                        <i class="icons-help icons-small-size"></i> Add at least one or choose no.load.balancer {{title}}.
+                       {{/unless}}
+                    {{else}}
+                        <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
+                    {{/ifCond}}
+
                         <div style="clear: both"></div>
                         {{#ifCond step "==" 1}}
                         <label for="policy" class="required" style="margin-top:10px;">Partition Configuration</label>
@@ -93,14 +101,15 @@
                                     <input type="hidden" name="nextStep" id="nextStep" value="{{step}}"/>
                                     <input type="hidden" name="thisStep" id="thisStep" value="{{step}}"/>
                                     <input type="hidden" name="items" id="items" value="{{step_data.length}}"/>
-
+                                    <input type="hidden" name="skip" id="skip" value="false"/>
                                     <textarea rows="11" id="policy" name="policy" class="form-control" ></textarea>
                                     <label class="error" id="policyError" style="display:none;">Required</label>
                                     {{#if config_on}}
                                     <button data-step="{{step}}" type="button" class="btn btn-primary" id="wizardNext">Deploy</button>
                                     {{else}}
                                     <button data-step="{{step}}" type="button" class="btn btn-default" {{#unless wizard_on_2}} disabled="disabled" {{/unless}} id="wizardBack"><< Back</button>
-                                    <button data-step="{{step}}" type="button" class="btn {{#unless wizard_on_5}}btn-primary{{else}}btn-default{{/unless}}" id="wizardNext" {{#if wizard_on_5}} disabled="disabled" {{/if}}>Next >></button>
+                                    <button data-step="{{step}}" type="button" class="btn {{#unless wizard_on_5}}{{#unless wizard_on_4}}btn-primary{{else}}btn-default{{/unless}}{{else}}btn-default{{/unless}}" id="wizardNext" {{#if wizard_on_5}} disabled="disabled" {{/if}}>Next >></button>
+                                    {{#ifCond step "==" 4}}<button data-step="{{step}}" type="button" class="btn btn-primary" id="wizardSkip">Skip >></button>{{/ifCond}}
                                     <button data-step="{{step}}" type="button" class="btn {{#if wizard_on_5}}btn-primary{{else}}btn-default{{/if}}" id="wizardFinish" {{#unless wizard_on_5}} disabled="disabled" {{/unless}}>Finish</button>
                                     {{/if}}
                                 </div>
