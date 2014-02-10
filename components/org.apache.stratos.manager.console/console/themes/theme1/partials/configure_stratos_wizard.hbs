@@ -64,16 +64,13 @@
         <div class="row">
               <div class="col-md-12">
                   <form method="post" id="jsonForm" action="{{url "/controllers/wizardSubmit.jag"}}">
-
-
-                  {{#ifCond step "==" 4}}
-                     {{#unless config_on}}
-                        <i class="icons-help icons-small-size"></i> Add at least one or choose no.load.balancer {{title}}.
-                       {{/unless}}
-                    {{else}}
-                        <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
-                    {{/ifCond}}
-
+                        {{#ifCond step "==" 4}}
+                        {{#if config_on}}
+                            <i class="icons-help icons-small-size"></i> Add at least one {{title}}.
+                        {{else}}
+                            <i class="icons-help icons-small-size"></i> Add at least one {{title}} or skip the configuration.
+                        {{/if}}
+                       {{/ifCond}}
                         <div style="clear: both"></div>
                         {{#ifCond step "==" 1}}
                         <label for="policy" class="required" style="margin-top:10px;">Partition Configuration</label>
