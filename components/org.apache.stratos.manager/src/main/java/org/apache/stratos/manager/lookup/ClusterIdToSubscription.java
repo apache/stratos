@@ -73,11 +73,6 @@ public class ClusterIdToSubscription implements Serializable {
 
     public void removeSubscription (String clusterId, String subscriptionAlias) {
 
-        /*if (clusterIdToCartridgeSubscription.remove(clusterId) != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Deleted the subscription for cluster " + clusterId + " from [Cluster Id -> CartridgeSubscription] map");
-            }
-        }*/
         // remove Subscription from clusterIdToCartridgeSubscription map
         Set<CartridgeSubscription> existingSubscriptions = clusterIdToCartridgeSubscription.get(clusterId);
         if (existingSubscriptions != null && !existingSubscriptions.isEmpty()) {

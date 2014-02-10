@@ -241,7 +241,7 @@ public class TopologyClusterInformationModel {
 
         Set<CartridgeTypeContext> cartridgeTypeContextSet = null;
         Set<SubscriptionAliasContext> subscriptionAliasContextSet = null;
-        Set<Cluster> clusterSet = null;
+        Set<Cluster> clusterSet = new HashSet<Cluster>();
 
         readLock.lock();
         try {
@@ -263,7 +263,6 @@ public class TopologyClusterInformationModel {
                                 //iterate and convert to Cluster set
                                 Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
 
-                                clusterSet = new HashSet<Cluster>();
                                 while (aliasCtxIterator.hasNext()) {
                                     Cluster cluster = aliasCtxIterator.next().getCluster();
                                     // add the cluster to the set

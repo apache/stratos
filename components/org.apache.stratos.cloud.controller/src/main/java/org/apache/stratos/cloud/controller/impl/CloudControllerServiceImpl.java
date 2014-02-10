@@ -38,6 +38,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -46,6 +47,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -513,7 +515,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         ip = node.getPublicAddresses().iterator().next();
                         publicIp = ip;
                         memberContext.setPublicIpAddress(ip);
-                        log.info("Public IP Address has been set. " + memberContext.toString());
+                        log.info("Retrieving Public IP Address : " + memberContext.toString());
                     }
 
                     // private IP
@@ -521,7 +523,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPrivateAddresses().iterator().hasNext()) {
                         ip = node.getPrivateAddresses().iterator().next();
                         memberContext.setPrivateIpAddress(ip);
-                        log.info("Private IP Address has been set. " + memberContext.toString());
+                        log.info("Retrieving Private IP Address. " + memberContext.toString());
                     }
 
                     dataHolder.addMemberContext(memberContext);
@@ -830,8 +832,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredCartridgeException(msg);
         }
         
-	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName));
-	    TopologyBuilder.handleClusterCreated(registrant);
+        Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+        String property = props.getProperty(Constants.IS_LOAD_BALANCER);
+        boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
+        
+	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName, isLb));
+	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
 	    persist();
 	    
