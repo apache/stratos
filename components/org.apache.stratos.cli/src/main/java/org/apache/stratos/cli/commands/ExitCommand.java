@@ -19,12 +19,17 @@
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
-import org.slf4j.Logger;
+    import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+
+import java.io.File;
+
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
 
 public class ExitCommand implements Command<StratosCommandContext> {
 
@@ -55,6 +60,18 @@ public class ExitCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
+            // Delete the command history file on exit
+            File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
+            File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR);
+
+            historyFile.deleteOnExit();
+
+            if(historyFile.delete()){
+                logger.debug(historyFile.getName() + " is deleted!");
+            }else{
+                logger.debug("Delete operation is failed.");
+            }
+
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());
