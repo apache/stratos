@@ -40,6 +40,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -450,6 +451,7 @@ public class ServiceUtils {
                     cartridge.setDescription(cartridgeInfo.getDescription());
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+                    //cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
                     //cartridge.setActiveInstances(0);
@@ -568,6 +570,18 @@ public class ServiceUtils {
 		cartridge.setStatus(cartridgeStatus);
 		return cartridge;
     	
+    }
+
+    static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    	int noOfActiveInstances = 0;
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
+                ,cartridgeType , cartridgeAlias);
+        for(Member member : cluster.getMembers()) {
+            if(member.getStatus().toString().equals(MemberStatus.Activated)) {
+                noOfActiveInstances ++;
+            }
+        }
+		return noOfActiveInstances;
     }
     
     private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
