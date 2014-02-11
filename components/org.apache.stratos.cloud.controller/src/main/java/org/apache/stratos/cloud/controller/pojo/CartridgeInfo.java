@@ -51,6 +51,8 @@ public class CartridgeInfo {
     private Property[] properties;
     
     private String defaultAutoscalingPolicy;
+
+    private String defaultDeploymentPolicy;
     
     private LoadbalancerConfig lbConfig;
     
@@ -179,5 +181,13 @@ public class CartridgeInfo {
 
     public void setLbConfig(LoadbalancerConfig lbConfig) {
         this.lbConfig = lbConfig;
+    }
+
+    public String getDefaultDeploymentPolicy() {
+        return defaultDeploymentPolicy;
+    }
+
+    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
     }
 }

@@ -19,9 +19,9 @@
 
 package org.apache.stratos.manager.dto;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Cartridge implements Comparable<Cartridge> {
@@ -46,6 +46,9 @@ public class Cartridge implements Comparable<Cartridge> {
     private String dbHost;
     private String dbUserName;
     private String password;
+
+    //LB cluster id
+    private String lbClusterId;
 
 	private String[] accessURLs;
 	private PortMapping[] portMappings;
@@ -221,5 +224,12 @@ public class Cartridge implements Comparable<Cartridge> {
 	public void setPortMappings(PortMapping[] portMappings) {
 		this.portMappings = portMappings;
 	}
-    
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
+    }
 }

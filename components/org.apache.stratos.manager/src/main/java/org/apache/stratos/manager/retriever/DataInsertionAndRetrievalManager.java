@@ -297,4 +297,19 @@ public class DataInsertionAndRetrievalManager {
             LookupDataHolder.getInstance().releaseReadLock();
         }
     }
+
+    //Don't use this method unless absolutely necessary, use getCartridgeSubscription (int tenantId, String subscriptionAlias)
+    public CartridgeSubscription getCartridgeSubscriptionForAlias (String subscriptionAlias) {
+
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
+
+        try {
+            return LookupDataHolder.getInstance().getSubscriptionForAlias(subscriptionAlias);
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
+        }
+    }
 }
