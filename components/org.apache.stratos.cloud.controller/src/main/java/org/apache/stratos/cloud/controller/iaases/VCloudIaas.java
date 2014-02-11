@@ -218,7 +218,7 @@ public class VCloudIaas extends Iaas {
 	}
 
 	@Override
-	public String attachVolume(String instanceId, String volumeId) {
+	public String attachVolume(String instanceId, String volumeId, String deviceName) {
 		// TODO Auto-generated method stub
 		return null;
 	}

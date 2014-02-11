@@ -138,9 +138,10 @@ public abstract class Iaas {
      * Attach a given volume to an instance at the specified device path.
      * @param instanceId of the instance.
      * @param volumeId volume id of the volume to be attached.
+     * @param deviceName name of the device that the volume would bind to.
      * @return the status of the attachment.
      */
-    public abstract String attachVolume(String instanceId, String volumeId);
+    public abstract String attachVolume(String instanceId, String volumeId, String deviceName);
     
     /**
      * Detach a given volume from the given instance.

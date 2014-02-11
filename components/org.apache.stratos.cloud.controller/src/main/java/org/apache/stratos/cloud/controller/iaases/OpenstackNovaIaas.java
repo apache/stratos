@@ -408,14 +408,14 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public String attachVolume(String instanceId, String volumeId) {
+	public String attachVolume(String instanceId, String volumeId, String deviceName) {
 		IaasProvider iaasInfo = getIaasProvider();
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 		
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-		String device = ComputeServiceBuilderUtil.extractDevice(iaasInfo, "/dev/vdc");
+		String device = deviceName == null ? "/dev/vdc" : deviceName;
 		
 		if(region == null) {
 			log.fatal("Cannot attach the volume [id]: "+volumeId+" in the [region] : "+region

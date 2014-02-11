@@ -418,7 +418,7 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	@Override
-	public String attachVolume(String instanceId, String volumeId) {
+	public String attachVolume(String instanceId, String volumeId, String deviceName) {
 		IaasProvider iaasInfo = getIaasProvider();
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
@@ -426,7 +426,7 @@ public class AWSEC2Iaas extends Iaas {
 		
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
-		String device = ComputeServiceBuilderUtil.extractDevice(iaasInfo, "/dev/sdh");
+		String device = deviceName == null ? "/dev/sdh" : deviceName;
 		
 		if(region == null || zone == null) {
 			log.fatal("Cannot attach the volume [id]: "+volumeId+" in the [region] : "+region
