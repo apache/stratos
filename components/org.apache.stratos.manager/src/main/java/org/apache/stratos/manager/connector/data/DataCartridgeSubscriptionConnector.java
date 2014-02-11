@@ -49,16 +49,16 @@ public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionCon
         int attempts = 0;
         while (attempts < maxAttempts) {
             attempts++;
-            Cartridge cartridge = null;
-            try {
+            /*Cartridge cartridge = null;
+             try {
                 cartridge = ApplicationManagementUtil.getCartridgeInfo(
                         connectingCartridgeSubscription.getAlias(),
                         connectingCartridgeSubscription.getSubscriber().getTenantDomain());
 
             } catch (NotSubscribedException e) {
-                // This cannot happen here.
-            }
-            if (cartridge != null) {
+                
+            }*/
+            //if (cartridge != null) {
                 /*if (!cartridge.getStatus().equals("ACTIVE")) {
                     try {
                         Thread.sleep(3000);
@@ -72,7 +72,7 @@ public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionCon
                             connectingCartridgeSubscription);
                     break;
                 }*/
-            }
+            //}
 
             if(attempts == maxAttempts) {
                 String errorMsg = "Failed to connect " + cartridgeSubscription + " and " + connectingCartridgeSubscription;
