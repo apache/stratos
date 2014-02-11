@@ -409,14 +409,15 @@ public class ServiceUtils {
          throw new RestAPIException("cannot find the required cartridge Type") ;
     }
 
-    static Cartridge getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
+    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
        List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        List<Cartridge> lbCartridges = new ArrayList<Cartridge>();
         for(Cartridge cartridge : cartridges) {
-            /*if(cartridge.getCartridgeType().equals()) {
-                return cartridge;
-            }*/
+            if(cartridge.isLoadBalancer()) {
+               lbCartridges.add(cartridge);
+            }
         }
-         throw new RestAPIException("cannot find the required cartridge Type") ;
+        return lbCartridges;
     }
 
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {

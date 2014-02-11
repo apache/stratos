@@ -319,8 +319,8 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge getAvailableLbCartridges()
-                                            throws ADCException, RestAPIException {
+    public List<Cartridge> getAvailableLbCartridges()
+                                            throws ADCException {
         return ServiceUtils.getAvailableLbCartridges(false, getConfigContext());
     }
 
