@@ -30,7 +30,9 @@ import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,6 +118,18 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
             log.debug(String.format("Validating partition via cloud controller: [id] %s", partition.getId()));
         }
 		return CloudControllerClient.getInstance().validatePartition(partition);
+	}
+	
+	public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
+		List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
+		for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
+            String id = partitionGroup.getId();
+            NetworkPartitionLbHolder entry = networkPartitionLbHolders.get(id);
+            if(entry != null) {
+            	lbHolders.add(entry);
+            }
+		}
+		return lbHolders;
 	}
 
     public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {

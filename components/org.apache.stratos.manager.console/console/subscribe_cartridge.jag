@@ -2,12 +2,12 @@
 var log = new Log("subscribe_cartridge");
 var caramel = require('caramel');
 var utils = require('/util/utility.jag');
+var type = request.getParameter('cartridgeType');
 var autoScalePolicies = utils.consoleAppUtil.getAutoScalePolicies();
-log.info(autoScalePolicies);
 var deploymentPolicies = utils.consoleAppUtil.getDeploymentPolicies();
-log.info(deploymentPolicies);
+var cartridge = utils.consoleAppUtil.getSingleTenantCartridgeInfo(type);
 caramel.render({
-        name:"PHP 5.4 Cartridge",
+        cartridge:cartridge,
         autoScalePolicies:autoScalePolicies,
         deploymentPolicies:deploymentPolicies
 });

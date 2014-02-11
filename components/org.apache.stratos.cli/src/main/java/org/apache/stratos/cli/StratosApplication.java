@@ -50,14 +50,14 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
 	private final Options options;
 
-	public StratosApplication() {
+	public StratosApplication(String[] args) {
+        super(args);
 		commands = new TreeMap<String, Command<StratosCommandContext>>();
 		context = new StratosCommandContext(this);
 
 		options = constructOptions();
 
 		createCommands();
-		createAutocomplete();
 	}
 
 	/**
@@ -110,6 +110,13 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         command = new AutoscalingPolicyDeploymentCommand();
         commands.put(command.getName(), command);
+
+        command = new DeployServiceDeploymentCommand();
+        commands.put(command.getName(), command);
+
+        // Need to implement delete request
+        //command = new UndeployServiceDefinitionCommand();
+        //commands.put(command.getName(), command);
 
         command = new DeploymentPolicyDeploymentCommand();
         commands.put(command.getName(), command);
@@ -171,9 +178,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 	}
 
 	@Override
-	protected File getHistoryFile() {
+	protected File getHistoryFile(String userName) {
 		File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
-		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR);
+		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR + "_" + userName);
 		return historyFile;
 	}
 
@@ -342,6 +349,15 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		boolean success = false;
 		String stratosURL = null;
 		stratosURL = context.getString(CliConstants.STRATOS_URL_ENV_PROPERTY);
+
+        // This is to create the history file.
+        // This section execute only when user didn't enter the username as command line arguments
+        if (userName == null) {
+            reader = null;
+            reader = createConsoleReaderWhithoutArgs(usernameInput);
+        }
+
+        createAutocomplete();
 
 		try {
             success = RestCommandLineService.getInstance().login(stratosURL, usernameInput, passwordInput, validateLogin);

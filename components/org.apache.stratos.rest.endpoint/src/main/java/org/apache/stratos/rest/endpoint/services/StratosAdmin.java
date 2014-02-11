@@ -315,6 +315,16 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
+    @Path("/cartridge/lb")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public List<Cartridge> getAvailableLbCartridges()
+                                            throws ADCException {
+        return ServiceUtils.getAvailableLbCartridges(false, getConfigContext());
+    }
+
+    @GET
     @Path("/cartridge/active/{cartridgeType}/{subscriptionAlias}")
     @Produces("application/json")
     @Consumes("application/json")

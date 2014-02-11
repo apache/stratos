@@ -76,7 +76,7 @@ public class CloudControllerConfigParser {
         }
         
         for (OMNode node : nodeList) {
-            iaasProviders.add(IaasProviderConfigParser.getIaasProvider(FILE_NAME, elt, node, iaasProviders));
+            iaasProviders.add(IaasProviderConfigParser.getIaasProvider(FILE_NAME, elt, node, null));
         }
     }
     

@@ -424,6 +424,17 @@ public class ServiceUtils {
          throw new RestAPIException("cannot find the required cartridge Type") ;
     }
 
+    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
+       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        List<Cartridge> lbCartridges = new ArrayList<Cartridge>();
+        for(Cartridge cartridge : cartridges) {
+            if(cartridge.isLoadBalancer()) {
+               lbCartridges.add(cartridge);
+            }
+        }
+        return lbCartridges;
+    }
+
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -478,11 +489,19 @@ public class ServiceUtils {
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
                     cartridge.setHostName(cartridgeInfo.getHostName());
-                    //cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
+                    for(Property property: cartridgeInfo.getLbConfig().getProperties().getProperties()) {
+                        if(property.getName().equals("load.balancer")) {
+                            cartridge.setLoadBalancer(true);
+                        }
+
+                    }
                     //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
+
 
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
                         // If the cartridge is multi-tenant. We should not let users

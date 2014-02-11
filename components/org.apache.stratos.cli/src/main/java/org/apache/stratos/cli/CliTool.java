@@ -52,7 +52,7 @@ public class CliTool {
 		if (logger.isInfoEnabled()) {
 			logger.info("Stratos CLI Started...");
 		}
-		StratosApplication application = new StratosApplication();
+		StratosApplication application = new StratosApplication(arguments);
 		application.start(arguments);
 	}
 

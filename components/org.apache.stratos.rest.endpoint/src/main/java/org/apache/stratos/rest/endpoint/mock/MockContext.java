@@ -130,6 +130,10 @@ public class MockContext {
           return tenantMap.get(tenantDomain);
     }
 
+    public Cartridge getCartridgeInfo(String alias){
+          return subscribedCartridges.get(alias);
+    }
+
     public void deleteTenant(String tenantDomain) {
           tenantMap.remove(tenantDomain);
     }
