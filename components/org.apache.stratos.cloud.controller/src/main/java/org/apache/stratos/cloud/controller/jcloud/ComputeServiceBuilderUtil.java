@@ -107,12 +107,6 @@ public class ComputeServiceBuilderUtil {
 		return iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE);
 	}
 	
-	public static String extractDevice(IaasProvider iaas, String defaultDevice) {
-
-		return iaas.getProperty(CloudControllerConstants.DEVICE) == null ? defaultDevice : 
-			iaas.getProperty(CloudControllerConstants.DEVICE);
-	}
-    
     /** Returns the contents of the file in a byte array
      *
      * @param file
