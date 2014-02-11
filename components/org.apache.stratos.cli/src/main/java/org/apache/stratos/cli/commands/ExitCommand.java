@@ -60,18 +60,6 @@ public class ExitCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
-            // Delete the command history file on exit
-            File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
-            File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR);
-
-            historyFile.deleteOnExit();
-
-            if(historyFile.delete()){
-                logger.debug(historyFile.getName() + " is deleted!");
-            }else{
-                logger.debug("Delete operation is failed.");
-            }
-
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());
