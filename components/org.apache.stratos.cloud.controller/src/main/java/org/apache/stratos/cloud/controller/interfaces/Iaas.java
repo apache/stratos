@@ -127,4 +127,32 @@ public abstract class Iaas {
      */
     public abstract void buildTemplate();
     
+    /**
+     * Create a new volume in the respective Iaas.
+     * @param sizeGB size of the volume in Giga Bytes.
+     * @return Id of the created volume.
+     */
+    public abstract String createVolume(int sizeGB);
+   
+    /**
+     * Attach a given volume to an instance at the specified device path.
+     * @param instanceId of the instance.
+     * @param volumeId volume id of the volume to be attached.
+     * @return the status of the attachment.
+     */
+    public abstract String attachVolume(String instanceId, String volumeId);
+    
+    /**
+     * Detach a given volume from the given instance.
+     * @param instanceId of the instance.
+     * @param volumeId volume id of the volume to be detached.
+     */
+    public abstract void detachVolume(String instanceId, String volumeId);
+    
+    /**
+     * Delete a given volume.
+     * @param volumeId volume id of the volume to be detached.
+     */
+    public abstract void deleteVolume(String volumeId);
+    
 }

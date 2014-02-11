@@ -211,4 +211,28 @@ public class VCloudIaas extends Iaas {
         return null;
     }
 
+	@Override
+	public String createVolume(int sizeGB) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String attachVolume(String instanceId, String volumeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void detachVolume(String instanceId, String volumeId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteVolume(String volumeId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -43,12 +43,16 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.ec2.domain.Attachment;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.PublicIpInstanceIdPair;
+import org.jclouds.ec2.domain.Volume;
 import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
+import org.jclouds.ec2.features.ElasticBlockStoreApi;
 import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
+import org.jclouds.ec2.options.DetachVolumeOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -381,6 +385,116 @@ public class AWSEC2Iaas extends Iaas {
     public PartitionValidator getPartitionValidator() {
         return new AWSEC2PartitionValidator();
     }
+
+	@Override
+	public String createVolume(int sizeGB) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
+		
+		if(region == null || zone == null) {
+			log.fatal("Cannot create a new volume in the [region] : "+region
+					+", [zone] : "+zone+" of Iaas : "+iaasInfo);
+			return null;
+		}
+		
+		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+		
+		Volume volume = blockStoreApi.createVolumeInAvailabilityZone(zone, sizeGB);
+		
+		if (volume == null) {
+			log.fatal("Volume creation was unsuccessful. [region] : " + region
+					+ ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+			return null;
+		}
+		
+		log.info("Successfully created a new volume [id]: "+volume.getId()
+				+" in [region] : "+region+", [zone] : "+zone+" of Iaas : "+iaasInfo);
+		return volume.getId();
+	}
+
+	@Override
+	public String attachVolume(String instanceId, String volumeId) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
+		String device = ComputeServiceBuilderUtil.extractDevice(iaasInfo, "/dev/sdh");
+		
+		if(region == null || zone == null) {
+			log.fatal("Cannot attach the volume [id]: "+volumeId+" in the [region] : "+region
+					+", [zone] : "+zone+" of Iaas : "+iaasInfo);
+			return null;
+		}
+		
+		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+		Attachment attachment = blockStoreApi.attachVolumeInRegion(region, volumeId, instanceId, device);
+
+		if (attachment == null) {
+			log.fatal("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
+					+" was unsuccessful. [region] : " + region
+					+ ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+			return null;
+		}
+		
+		log.info("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
+				+" was successful [status]: "+attachment.getStatus().value()+". [region] : " + region
+				+ ", [zone] : " + zone + " of Iaas : " + iaasInfo);
+		return attachment.getStatus().value();
+	}
+
+	@Override
+	public void detachVolume(String instanceId, String volumeId) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		
+		if(region == null) {
+			log.fatal("Cannot detach the volume [id]: "+volumeId+" from the instance [id]: "+instanceId
+					+" of the [region] : "+region
+					+" of Iaas : "+iaasInfo);
+			return;
+		}
+		
+		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+		blockStoreApi.detachVolumeInRegion(region, volumeId, true, DetachVolumeOptions.Builder.fromInstance(instanceId));
+
+		log.info("Detachment of Volume [id]: "+volumeId+" from instance [id]: "+instanceId
+				+" was successful. [region] : " + region
+				+ " of Iaas : " + iaasInfo);
+	}
+
+	@Override
+	public void deleteVolume(String volumeId) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		
+		if(region == null) {
+			log.fatal("Cannot delete the volume [id]: "+volumeId+" of the [region] : "+region
+					+" of Iaas : "+iaasInfo);
+			return;
+		}
+		
+		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+		blockStoreApi.deleteVolumeInRegion(region, volumeId);
+		
+		log.info("Deletion of Volume [id]: "+volumeId+" was successful. [region] : " + region
+				+ " of Iaas : " + iaasInfo);
+	}
 
 
 }
