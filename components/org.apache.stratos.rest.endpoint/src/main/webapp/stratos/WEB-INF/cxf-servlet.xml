@@ -66,7 +66,7 @@
                 <value>member</value>
                 <value>hostNames</value>
                 <value>portMappings</value>
-                <value>cartridge</value>
+                <!--value>cartridge</value-->
             </list>
         </property>
     </bean>

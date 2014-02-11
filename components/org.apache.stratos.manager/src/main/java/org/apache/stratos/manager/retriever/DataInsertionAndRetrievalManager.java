@@ -228,27 +228,6 @@ public class DataInsertionAndRetrievalManager {
         persistenceManager.removeService(cartridgeType);
     }
 
-    /*public void persistAll (int tenantId) {
-
-        Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptions(tenantId);
-
-        writeLock.lock();
-
-        try {
-            for(CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-                try {
-                    // store in Persistence Manager
-                    persistenceManager.persistCartridgeSubscription(cartridgeSubscription);
-
-                } catch (PersistenceManagerException e) {
-                    log.error("Error in persisting CartridgeSubscription in Persistence Manager", e);
-                }
-            }
-        } finally {
-            writeLock.unlock();
-        }
-    }*/
-
     public Collection<CartridgeSubscription> getCartridgeSubscriptions(String cartridgeType) {
 
         // acquire read lock
@@ -269,28 +248,7 @@ public class DataInsertionAndRetrievalManager {
         LookupDataHolder.getInstance().acquireReadLock();
 
         try {
-            CartridgeSubscription cartridgeSubscription = LookupDataHolder.getInstance().getSubscriptionForAlias(tenantId, subscriptionAlias);
-
-            /*if (cartridgeSubscription == null) {
-                // not available in the cache, look in the registry
-                if (log.isDebugEnabled()) {
-                    log.debug("CartridgeSubscription for tenant " + tenantId + ", alias " + subscriptionAlias + " not available in memory");
-                }
-
-                try {
-                    cartridgeSubscription = persistenceManager.getCartridgeSubscriptionForCluster(tenantId, subscriptionAlias);
-
-                } catch (PersistenceManagerException e) {
-                    String errorMsg = "Error in accessing Persistence Manager";
-                    log.error(errorMsg, e);
-                    return null;
-                }
-
-                // add to the LookupDataHolder
-                // LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
-            }*/
-
-            return cartridgeSubscription;
+            return LookupDataHolder.getInstance().getSubscriptionForAlias(tenantId, subscriptionAlias);
 
         } finally {
             // release read lock
@@ -304,27 +262,7 @@ public class DataInsertionAndRetrievalManager {
         LookupDataHolder.getInstance().acquireReadLock();
 
         try {
-            Set<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscription(clusterId);
-            /*if (cartridgeSubscription == null) {
-                // not available in the cache, look in the registry
-                if (log.isDebugEnabled()) {
-                    log.debug("CartridgeSubscription for cluster " + clusterId + " not available in memory");
-                }
-
-                try {
-                    cartridgeSubscription = persistenceManager.getCartridgeSubscriptionForCluster(clusterId);
-
-                } catch (PersistenceManagerException e) {
-                    String errorMsg = "Error in accessing Persistence Manager";
-                    log.error(errorMsg, e);
-                    return null;
-                }
-
-                // add to the LookupDataHolder
-                // LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
-            }*/
-
-            return cartridgeSubscriptions;
+            return LookupDataHolder.getInstance().getSubscription(clusterId);
 
         } finally {
             // release read lock
@@ -338,30 +276,7 @@ public class DataInsertionAndRetrievalManager {
         LookupDataHolder.getInstance().acquireReadLock();
 
         try {
-            Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptions(tenantId);
-            /*if (cartridgeSubscriptions == null) {
-                // not available in the cache, look in the registry
-                if (log.isDebugEnabled()) {
-                    log.debug("CartridgeSubscriptions for tenant " + tenantId + " not available in memory");
-                }
-
-                try {
-                    cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId);
-
-                } catch (PersistenceManagerException e) {
-                    String errorMsg = "Error in accessing Persistence Manager";
-                    log.error(errorMsg, e);
-                    return null;
-                }
-
-                // add to the LookupDataHolder
-                //Iterator<CartridgeSubscription> iterator = cartridgeSubscriptions.iterator();
-                //while (iterator.hasNext()) {
-                //    LookupDataHolder.getInstance().putSubscription(iterator.next());
-                //}
-            }*/
-
-            return cartridgeSubscriptions;
+            return LookupDataHolder.getInstance().getSubscriptions(tenantId);
 
         } finally {
             // release read lock
@@ -375,31 +290,22 @@ public class DataInsertionAndRetrievalManager {
         LookupDataHolder.getInstance().acquireReadLock();
 
         try {
+            return LookupDataHolder.getInstance().getSubscriptionForType(tenantId, cartridgeType);
 
-            Collection<CartridgeSubscription> cartridgeSubscriptions = LookupDataHolder.getInstance().getSubscriptionForType(tenantId, cartridgeType);
-            /*if (cartridgeSubscriptions == null) {
-                // not available in the cache, look in the registry
-                if (log.isDebugEnabled()) {
-                    log.debug("CartridgeSubscriptions for tenant " + tenantId + ", type " + cartridgeType + " not available in memory");
-                }
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
+        }
+    }
 
-                try {
-                    cartridgeSubscriptions = persistenceManager.getCartridgeSubscriptions(tenantId, cartridgeType);
+    //Don't use this method unless absolutely necessary, use getCartridgeSubscription (int tenantId, String subscriptionAlias)
+    public CartridgeSubscription getCartridgeSubscriptionForAlias (String subscriptionAlias) {
 
-                } catch (PersistenceManagerException e) {
-                    String errorMsg = "Error in accessing Persistence Manager";
-                    log.error(errorMsg, e);
-                    return null;
-                }
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
 
-                // add to the LookupDataHolder
-                // Iterator<CartridgeSubscription> iterator = cartridgeSubscriptions.iterator();
-                // while (iterator.hasNext()) {
-                //    LookupDataHolder.getInstance().putSubscription(iterator.next());
-                //}
-            }*/
-
-            return cartridgeSubscriptions;
+        try {
+            return LookupDataHolder.getInstance().getSubscriptionForAlias(subscriptionAlias);
 
         } finally {
             // release read lock

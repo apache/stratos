@@ -167,6 +167,8 @@ public class CartridgeSubscriptionUtils {
     public static boolean isAliasTaken (int tenantId, String alias) {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
-        return (dataInsertionAndRetrievalManager.getCartridgeSubscription(tenantId, alias) == null) ? false : true;
+        // return (dataInsertionAndRetrievalManager.getCartridgeSubscription(tenantId, alias) == null) ? false : true;
+        // fixing STRATOS-427, making the alias globally unique
+        return (dataInsertionAndRetrievalManager.getCartridgeSubscriptionForAlias(alias) == null) ? false : true;
     }
 }

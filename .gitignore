@@ -25,3 +25,6 @@ target/
 # IntelliJ IDEA Project Files
 .idea/
 *.iml
+*.ipr
+*.iws
+*.swp

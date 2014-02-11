@@ -61,12 +61,6 @@ public class LookupDataHolder implements Serializable {
 
     public void putSubscription (CartridgeSubscription cartridgeSubscription) {
 
-        /*if (clusterIdToSubscription.getSubscription(cartridgeSubscription.getClusterDomain()) != null) {
-            if(log.isDebugEnabled()) {
-                log.debug("Overwriting the existing CartridgeSubscription for cluster " + cartridgeSubscription.getClusterDomain() +
-                " in [Cluster Id -> CartridgeSubscription] map");
-            }
-        }*/
         // add or update
         clusterIdToSubscription.addSubscription(cartridgeSubscription);
 
@@ -128,6 +122,27 @@ public class LookupDataHolder implements Serializable {
 
         return subscriptionContext.getSubscriptions();
 
+    }
+
+    public CartridgeSubscription getSubscriptionForAlias (String subscriptionAlias) {
+
+        Collection<SubscriptionContext> subscriptionContexts = tenantIdToSubscriptionContext.getSubscriptionContexts();
+        if (subscriptionContexts == null) {
+            // no subscriptions
+            return null;
+        }
+
+        CartridgeSubscription cartridgeSubscription;
+
+        for (SubscriptionContext subscriptionContext : subscriptionContexts) {
+            cartridgeSubscription = subscriptionContext.getSubscriptionForAlias(subscriptionAlias);
+            // check if the retrieved subscription is not null and return
+            if (cartridgeSubscription != null) {
+                return cartridgeSubscription;
+            }
+        }
+
+        return null;
     }
 
     public Collection<CartridgeSubscription> getSubscriptionForType (int tenantId, String cartridgeType) {

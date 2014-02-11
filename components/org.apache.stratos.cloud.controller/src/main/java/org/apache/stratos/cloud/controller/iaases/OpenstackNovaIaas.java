@@ -285,7 +285,9 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
+		@SuppressWarnings("deprecation")
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		@SuppressWarnings("deprecation")
 		FloatingIPApi floatingIPApi = nova.getApi()
 				.getFloatingIPExtensionForZone(region).get();
 

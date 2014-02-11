@@ -150,6 +150,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/partition",{}).data;
     };
 
+    this.getSingleTenantCartridgeInfo = function(cartridgeType){
+        return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{}).data;
+    };
+
     this.getPolicyAutoScale = function(){
         return this.sendReceive("GET","/policy/autoscale",{}).data;
     };
@@ -160,6 +164,9 @@ consoleAppUtil = new function(){
 
     this.getCartridges = function(){
         return this.sendReceive("GET","/cartridge/list",{}).data;
+    };
+    this.getCartridgeInfo = function(alias){
+        return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };
     this.getConfigStatus = function(){
         var configStatus = {};
@@ -219,7 +226,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug(response.data);
+        log.info("recieved data is: " + stringify(response.data));
         return response;
     };
 
@@ -247,7 +254,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug(response.data);
+        log.info("sent response is: " + stringify(response.data));
         return response;
     };
 

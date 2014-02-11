@@ -33,9 +33,6 @@ public abstract class PersistenceManager {
     public abstract void removeCartridgeSubscription (int tenantId, String type, String alias)
             throws PersistenceManagerException;
 
-    //public abstract CartridgeSubscription getCartridgeSubscriptionForCluster(int tenantId, String alias)
-    //        throws PersistenceManagerException;
-
     public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions()
             throws PersistenceManagerException;
 
@@ -48,45 +45,4 @@ public abstract class PersistenceManager {
 
     public abstract void removeService (String cartridgeType) throws PersistenceManagerException;
 
-    //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
-    //        throws PersistenceManagerException;
-
-    //public abstract CartridgeSubscription getCartridgeSubscriptionForCluster (String clusterDomain)
-    //        throws PersistenceManagerException;
-
-    //public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId, String cartridgeType)
-    //        throws PersistenceManagerException;
-
-    /*public abstract Repository getRepository (int tenantId, String alias)
-            throws PersistenceManagerException;
-
-    public abstract Repository getRepository (String clusterDomain)
-            throws PersistenceManagerException;
-
-    public abstract DataCartridge getDataCartridgeSubscriptionInfo (int tenantId, String alias)
-            throws PersistenceManagerException;
-
-    public abstract boolean isAliasTaken (int tenantId, String alias)
-            throws PersistenceManagerException;
-
-    public abstract boolean hasSubscribed (int tenantId, String cartridgeType)
-            throws PersistenceManagerException;
-
-    public abstract void removeDomainMapping (int tenantId, String cartridgeAlias)
-            throws PersistenceManagerException;
-
-    public abstract void updateDomianMapping (int tenantId, String cartridgeAlias, String newDomain)
-            throws PersistenceManagerException;
-
-    public abstract String getMappedDomain (int tenantId, String cartridgeAlias)
-            throws PersistenceManagerException;
-
-    public abstract Cluster getCluster (int tenantId, String cartridgeAlias)
-            throws PersistenceManagerException;
-
-    public abstract void updateSubscriptionStatus (int tenantId, String cartridgeAlias, String newStatus)
-            throws PersistenceManagerException;
-
-    public abstract void updateServiceStatus (int tenantId, String cartridgeAlias, String newStatus)
-            throws PersistenceManagerException;   */
 }

@@ -71,14 +71,6 @@ public class DataHolder {
 		DataHolder.registryService = registryService;
 	}
 
-	/*public static TopologyManagementService getTopologyMgtService() {
-		return topologyMgtService;
-	}
-
-	public static void setTopologyMgtService(TopologyManagementService topologyMgtService) {
-		DataHolder.topologyMgtService = topologyMgtService;
-	}*/
-
 	public static EventPublisher getEventPublisher() {
 		return eventPublisher;
 	}

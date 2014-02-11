@@ -2,10 +2,12 @@
 (function(){
     var log = new Log("controller.partitionDefinitionSubmit");
     var utils = require('/util/utility.jag');
-    var policy = request.getParameter("policy").trim();
     var thisStep = request.getParameter("thisStep");
     var nextStep = request.getParameter("nextStep");
-    if(parseInt(thisStep)<parseInt(nextStep)){
+    var skip = request.getParameter("skip");
+    if(parseInt(thisStep)<parseInt(nextStep) && skip != "true"){
+        var policy = request.getParameter("policy")
+
         if(parseInt(thisStep) == 1 && policy != "" ){
             utils.consoleAppUtil.deployPartitionDefinition(policy);
         }
