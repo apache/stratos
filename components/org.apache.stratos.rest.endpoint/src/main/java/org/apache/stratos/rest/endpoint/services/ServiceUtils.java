@@ -38,6 +38,7 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.PersistenceManager;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
@@ -408,6 +409,16 @@ public class ServiceUtils {
          throw new RestAPIException("cannot find the required cartridge Type") ;
     }
 
+    static Cartridge getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
+       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        for(Cartridge cartridge : cartridges) {
+            /*if(cartridge.getCartridgeType().equals()) {
+                return cartridge;
+            }*/
+        }
+         throw new RestAPIException("cannot find the required cartridge Type") ;
+    }
+
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -462,11 +473,17 @@ public class ServiceUtils {
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
                     cartridge.setHostName(cartridgeInfo.getHostName());
-                    //cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
+                    for(Property property: cartridgeInfo.getLbConfig().getProperties().getProperties()) {
+                        if(property.getName().equals("load.balancer")) {
+                            cartridge.setLoadBalancer(true);
+                        }
+
+                    }
                     //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
+
 
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
                         // If the cartridge is multi-tenant. We should not let users
