@@ -37,7 +37,6 @@ public class CartridgeConstants {
 	public static final String APPEND_SCRIPT = "append.script";
 	public static final String REMOVE_SCRIPT = "remove.script";
 	public static final String BIND_FILE_PATH = "bind.file.path";
-	public static final String MAX_ATTEMPTS = "max.attempts";
 	
 	public static final String FEATURE_EXTERNAL_REPO_VAIDATION_ENABLED = "feature.externalrepo.validation.enabled";
 	public static final String FEATURE_INTERNAL_REPO_ENABLED = "feature.internalrepo.enabled";

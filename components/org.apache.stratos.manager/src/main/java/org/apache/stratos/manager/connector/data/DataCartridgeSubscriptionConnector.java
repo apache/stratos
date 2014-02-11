@@ -19,17 +19,13 @@
 
 package org.apache.stratos.manager.connector.data;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.connector.CartridgeSubscriptionConnector;
-import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.utils.ApplicationManagementUtil;
-import org.apache.stratos.manager.utils.CartridgeConstants;
-
-import java.util.Properties;
 
 public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionConnector {
 
@@ -45,10 +41,10 @@ public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionCon
 
         Properties connectionProperties = new Properties();
 
-        int maxAttempts = Integer.parseInt(System.getProperty(CartridgeConstants.MAX_ATTEMPTS, "50"));
-        int attempts = 0;
-        while (attempts < maxAttempts) {
-            attempts++;
+       // int maxAttempts = Integer.parseInt(System.getProperty(CartridgeConstants.MAX_ATTEMPTS, "50"));
+        //int attempts = 0;
+       // while (attempts < maxAttempts) {
+            //attempts++;
             /*Cartridge cartridge = null;
              try {
                 cartridge = ApplicationManagementUtil.getCartridgeInfo(
@@ -74,12 +70,12 @@ public class DataCartridgeSubscriptionConnector extends CartridgeSubscriptionCon
                 }*/
             //}
 
-            if(attempts == maxAttempts) {
+            /*if(attempts == maxAttempts) {
                 String errorMsg = "Failed to connect " + cartridgeSubscription + " and " + connectingCartridgeSubscription;
                 log.error(errorMsg);
                 throw  new ADCException(errorMsg);
-            }
-        }
+            }*/
+        //}
 
         return connectionProperties;
     }
