@@ -56,6 +56,8 @@ public class Constants {
 
     // volume 
     public static final String IS_VOLUME_REQUIRED = "volume.required";
+    public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
     public static final String VOLUME_SIZE = "volume.size.gb";
+    public static final String DEVICE_NAME = "volume.device.name";
 
 }
