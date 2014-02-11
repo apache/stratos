@@ -19,7 +19,7 @@
     }else{
         var userObject = carbon.server.tenantUser(username);
         var um = new carbon.user.UserManager({}, userObject.tenantId);
-        var user = um.getUser('admin');
+        var user = um.getUser(userObject.username);
         var roles = user.getRoles();
         //storing in session
         session.put("USER_NAME",username);
