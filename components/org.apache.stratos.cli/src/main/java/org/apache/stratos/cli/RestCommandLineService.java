@@ -80,6 +80,7 @@ public class RestCommandLineService {
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
     private final String describeDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment/";
     private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
+    private final String deployServiceEndPoint = "/stratos/admin/service/definition";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -410,7 +411,6 @@ public class RestCommandLineService {
         }
     }
 
-    
     // Lists subscribed cartridge info (from alias)
     public void listSubscribedCartridgeInfo(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -477,7 +477,6 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
-    
     
     private Map<String, Set<String>> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) {
     	
@@ -941,6 +940,58 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to deploy service
+    public void deployService (String deployService) throws CommandException{
+        DefaultHttpClient httpClient= new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deployServiceEndPoint,
+                    deployService, restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while deploying service");
+                return;
+            } else {
+                System.out.println("You have successfully deployed the service");
+                return;
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in deploying autoscale police", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    // This method helps to undeploy multitenant service cluster
+    public void undeployService(String id) throws  CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
+                    + deployServiceEndPoint + "/" + id,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while undeploying multitenant service cluster");
+                return;
+            } else {
+                System.out.println("You have successfully undeploy multitenant service cluster");
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in listing deployment polices", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to deploy deployment polices
     public void deployDeploymentPolicy (String deploymentPolicy) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1221,8 +1272,6 @@ public class RestCommandLineService {
         }
     }
 
-
-
  // This method list deployment policies
     public void describePartition(String id) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1321,12 +1370,12 @@ public class RestCommandLineService {
             AutoscalePolicyList policyList = gson.fromJson(resultString, AutoscalePolicyList.class);
 
             if (policyList == null) {
-                System.out.println("Deployment policy list is empty");
+                System.out.println("Autoscale policy list is empty");
                 return;
             }
             for(AutoscalePolicy policy : policyList.getAutoscalePolicy()) {
                if(policy.getId().equalsIgnoreCase(id)) {
-                   System.out.println("Autoscaling policy is:");
+                   System.out.println("Autoscale policy is:");
                    System.out.println(gson.toJson(policy));
                    return;
                }
@@ -1353,8 +1402,6 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
-
-
 
     // This class convert JSON string to deploymentpolicylist object
     private class DeploymentPolicyList {

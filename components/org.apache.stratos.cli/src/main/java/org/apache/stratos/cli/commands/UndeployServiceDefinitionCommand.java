@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.Options;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -27,17 +27,17 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DescribeAutoScalingPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DescribeAutoScalingPolicyCommand.class);
+public class UndeployServiceDefinitionCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(UndeployServiceDefinitionCommand.class);
 
     @Override
     public String getName() {
-        return CliConstants.DESCRIBE_AUTO_SCALING_POLICY;
+        return CliConstants.UNDEPLOY_SERVICE;
     }
 
     @Override
     public String getDescription() {
-        return "Describing the Autoscaling policy";
+        return "Undeploy Multitenant Service";
     }
 
     @Override
@@ -58,9 +58,9 @@ public class DescribeAutoScalingPolicyCommand implements Command<StratosCommandC
 		if (args != null && args.length == 1) {
 			String id = args[0];
 			if (logger.isDebugEnabled()) {
-				logger.debug("Getting Autoscale policy info {}", id);
+				logger.debug("Getting undeploy miltitenant service info {}", id);
 			}
-			RestCommandLineService.getInstance().describeAutoScalingPolicy(id);
+			RestCommandLineService.getInstance().undeployService(id);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());
