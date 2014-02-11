@@ -1016,6 +1016,14 @@ public class RestCommandLineService {
             Partition[] partitions = new Partition[partitionList.getPartition().size()];
             partitions = partitionList.getPartition().toArray(partitions);
 
+            if (partitions.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No partitions found");
+                }
+                System.out.println("There are no available partitions");
+                return;
+            }
+
             System.out.println("Available Partitions:" );
             CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider");
             System.out.println();
@@ -1070,6 +1078,14 @@ public class RestCommandLineService {
             AutoscalePolicy[] policyArry = new AutoscalePolicy[policyList.getAutoscalePolicy().size()];
             policyArry = policyList.getAutoscalePolicy().toArray(policyArry);
 
+            if (policyArry.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No autoscale policies found");
+                }
+                System.out.println("There are no autoscale policies");
+                return;
+            }
+
             System.out.println("Available Autoscale Policies:");
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
 
@@ -1121,6 +1137,14 @@ public class RestCommandLineService {
 
             DeploymentPolicy[] policyArry = new DeploymentPolicy[policyList.getDeploymentPolicy().size()];
             policyArry = policyList.getDeploymentPolicy().toArray(policyArry);
+
+            if (policyArry.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No deployment policies found");
+                }
+                System.out.println("There are no deployment policies");
+                return;
+            }
 
             System.out.println("Available Deployment Policies:");
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
