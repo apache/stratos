@@ -449,6 +449,7 @@ li.dropdown ul.dropdown-menu li a{
 }
 li.dropdown ul.dropdown-menu li a:hover{
     background: #3e3f3f;
+    color:#fff;
 }
 li.dropdown ul.dropdown-menu li a i{
     font-size: 20px;

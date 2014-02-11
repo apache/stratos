@@ -22,6 +22,7 @@
         var user = um.getUser('admin');
         var roles = user.getRoles();
         //storing in session
+        session.put("USER_NAME",username);
         session.put("TENANT_DOMAIN",userObject.domain);
         session.put("ROLE_ARRAY",roles);
         //call the authentication rest-endpoint and get the JSESSION_ID
