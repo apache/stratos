@@ -80,9 +80,6 @@
                         
                         <Axis2Deployer>CloudControllerDeployer</Axis2Deployer>
                         
-                        <Axis2Deployer>CartridgeDeployer</Axis2Deployer>
-                        
-                        <Axis2Deployer>ServiceDeployer</Axis2Deployer>
                     </instructions>
                 </configuration>
             </plugin>
