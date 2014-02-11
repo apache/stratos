@@ -398,6 +398,16 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionGroupPojos(partitionGroups);
     }
 
+    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
+       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        for(Cartridge cartridge : cartridges) {
+            if(cartridge.getCartridgeType().equals(cartridgeType)) {
+                return cartridge;
+            }
+        }
+         throw new RestAPIException("cannot find the required cartridge Type") ;
+    }
+
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -451,6 +461,7 @@ public class ServiceUtils {
                     cartridge.setDescription(cartridgeInfo.getDescription());
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+                    cartridge.setHostName(cartridgeInfo.getHostName());
                     //cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
