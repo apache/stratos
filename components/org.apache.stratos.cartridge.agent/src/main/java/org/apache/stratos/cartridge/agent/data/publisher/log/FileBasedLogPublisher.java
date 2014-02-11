@@ -32,59 +32,65 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-public class FileBasedLogPublisher extends LogPublisher {
+public class FileBasedLogPublisher extends LogPublisher implements Runnable {
 
     private static final Log log = LogFactory.getLog(FileBasedLogPublisher.class);
-    private String memberIp;
-    private String memberId;
+    private ExecutorService executorService;
+    private Process process;
+    private Scanner scanner;
 
-    public FileBasedLogPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String memberIp, String memberId) {
-        super(dataPublisherConfig, streamDefinition);
-        this.memberIp = memberIp;
-        this.memberId = memberId;
+    public FileBasedLogPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId) {
+
+        super(dataPublisherConfig, streamDefinition, filePath, memberId);
+        this.executorService = Executors.newSingleThreadExecutor(new FileBasedLogPublisherTaskThreadFactory(filePath));
     }
 
-    public void tailFileAndPublishLogs (String filePath) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor(new FileBasedLogPublisherTaskThreadFactory(filePath));
-        executorService.submit(new FileBasedLogPublisherTask(filePath, this, memberId, memberIp));
+    public void start () {
+        executorService.submit(this);
     }
 
-    private class FileBasedLogPublisherTask implements Runnable {
+    public void stop () {
 
-        private String memberIp;
-        private String memberId;
-        private String filePath;
-        private FileBasedLogPublisher fileBasedLogPublisher;
+        // close the resources
+        try {
+            process.getInputStream().close();
 
-        public FileBasedLogPublisherTask (String filePath, FileBasedLogPublisher fileBasedLogPublisher, String memberId, String memberIp) {
+        } catch (IOException e) {
+            log.error("Error in closing [tail -F] input stream", e);
+        }
+        scanner.close();
+        process.destroy();
 
-            this.filePath = filePath;
-            this.memberId = memberId;
-            this.memberIp = memberIp;
-            this.fileBasedLogPublisher = fileBasedLogPublisher;
+        executorService.shutdownNow();
+        terminate();
+
+        log.info("Terminated log publisher for file: " + filePath);
+    }
+
+    @Override
+    public void run() {
+
+        Runtime r = Runtime.getRuntime();
+        try {
+            process = r.exec(Constants.TAIL_COMMAND + filePath);
+
+        } catch (IOException e) {
+            log.error("Error tailing file ", e);
+            throw new RuntimeException(e);
         }
 
-        @Override
-        public void run() {
+        log.info("Starting log publisher for file: " + filePath + ", thread: " + Thread.currentThread().getName());
 
-            Runtime r = Runtime.getRuntime();
-            Process p;
-            try {
-                p = r.exec("tail -F " + filePath);
+        scanner = new Scanner(process.getInputStream());
+        while (scanner.hasNextLine()) {
 
-            } catch (IOException e) {
-                log.error("Error tailing file ", e);
-                throw new RuntimeException(e);
-            }
-
-            Scanner s = new Scanner(p.getInputStream());
-            while (s.hasNextLine()) {
-                DataContext dataContext = new DataContext();
-                dataContext.setCorrelationData(null);
-                dataContext.setMetaData(new Object[] {memberIp, memberId});
-                dataContext.setPayloadData(new Object[] {s.nextLine()});
-                fileBasedLogPublisher.publish(dataContext);
-            }
+            DataContext dataContext = new DataContext();
+            // set the relevant data
+            dataContext.setCorrelationData(null);
+            dataContext.setMetaData(new Object[] {memberId});
+            dataContext.setPayloadData(new Object[] {scanner.nextLine()});
+            // publish data
+            publish(dataContext);
         }
     }
 

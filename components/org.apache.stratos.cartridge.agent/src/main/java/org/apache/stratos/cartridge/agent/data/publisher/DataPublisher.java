@@ -29,7 +29,6 @@ import org.wso2.carbon.databridge.commons.Event;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 import java.util.Date;
-import java.util.HashMap;
 
 public abstract class DataPublisher {
 
@@ -50,26 +49,28 @@ public abstract class DataPublisher {
     public void initialize () {
 
         AgentConfiguration agentConfiguration = new AgentConfiguration();
-        System.setProperty("javax.net.ssl.trustStore", "/home/isuru/wso2/S2/apache/stratos/alpha/wso2bam-2.4.0/repository/resources/security/client-truststore.jks");
-        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+        //System.setProperty("javax.net.ssl.trustStore", "/home/isuru/wso2/S2/apache/stratos/alpha/wso2bam-2.4.0/repository/resources/security/client-truststore.jks");
+        //System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
         Agent agent = new Agent(agentConfiguration);
 
-        dataPublisher = new AsyncDataPublisher("tcp://10.217.105.68:7611", "admin", "admin", agent);
+        dataPublisher = new AsyncDataPublisher(dataPublisherConfig.getMonitoringServerUrl(), dataPublisherConfig.getAdminUsername(),
+                dataPublisherConfig.getAdminPassword(), agent);
 
         if (!dataPublisher.isStreamDefinitionAdded(streamDefinition.getName(), streamDefinition.getVersion())) {
             dataPublisher.addStreamDefinition(streamDefinition);
         }
 
         setDataPublisherInitialized(true);
+
+        log.info("DataPublisher initialized");
     }
 
-    public void publish (DataContext dataContext) {
+    protected void publish (DataContext dataContext) {
 
         Event event = new Event();
         event.setTimeStamp(new Date().getTime());
-        event.setMetaData(new Object[]{"10.217.105.68", "php.isuruh.domain-1dadfdas"});
-        event.setPayloadData(new Object[]{"test log event"});
-        event.setArbitraryDataMap(new HashMap<String, String>());
+        event.setMetaData(dataContext.getMetaData());
+        event.setPayloadData(dataContext.getPayloadData());
 
         try {
             dataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
@@ -81,7 +82,7 @@ public abstract class DataPublisher {
         }
     }
 
-    public void terminate () {
+    protected void terminate () {
 
         dataPublisher.stop();
     }

@@ -19,31 +19,11 @@
 
 package org.apache.stratos.cartridge.agent.data.publisher.log;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cartridge.agent.data.publisher.DataPublisher;
-import org.apache.stratos.cartridge.agent.data.publisher.DataPublisherConfiguration;
-import org.wso2.carbon.databridge.commons.StreamDefinition;
+public class Constants {
 
-public abstract class LogPublisher extends DataPublisher {
-
-    private static final Log log = LogFactory.getLog(LogPublisher.class);
-
-    protected String memberId;
-    protected String filePath;
-
-    public LogPublisher (DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId) {
-
-        super(dataPublisherConfig, streamDefinition);
-        this.filePath = filePath;
-        this.memberId = memberId;
-    }
-
-    public void start () {
-
-    }
-
-    public void stop () {
-
-    }
+    public static String LOG_PUBLISHER_STREAM_PREFIX = "logs.";
+    public static String LOG_PUBLISHER_STREAM_VERSION = "1.0.0";
+    public static String TAIL_COMMAND = "tail -n 100 -F ";
+    public static String MEMBER_ID = "memberId";
+    public static String LOG_EVENT = "logEvent";
 }
