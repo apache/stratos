@@ -124,6 +124,27 @@ public class LookupDataHolder implements Serializable {
 
     }
 
+    public CartridgeSubscription getSubscriptionForAlias (String subscriptionAlias) {
+
+        Collection<SubscriptionContext> subscriptionContexts = tenantIdToSubscriptionContext.getSubscriptionContexts();
+        if (subscriptionContexts == null) {
+            // no subscriptions
+            return null;
+        }
+
+        CartridgeSubscription cartridgeSubscription;
+
+        for (SubscriptionContext subscriptionContext : subscriptionContexts) {
+            cartridgeSubscription = subscriptionContext.getSubscriptionForAlias(subscriptionAlias);
+            // check if the retrieved subscription is not null and return
+            if (cartridgeSubscription != null) {
+                return cartridgeSubscription;
+            }
+        }
+
+        return null;
+    }
+
     public Collection<CartridgeSubscription> getSubscriptionForType (int tenantId, String cartridgeType) {
 
          SubscriptionContext subscriptionContext = tenantIdToSubscriptionContext.getSubscriptionContext(tenantId);
