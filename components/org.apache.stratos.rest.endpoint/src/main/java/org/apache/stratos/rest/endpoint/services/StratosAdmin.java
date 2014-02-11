@@ -305,6 +305,16 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
+    @Path("/cartridge/available/info/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
+                                            throws ADCException, RestAPIException {
+        return ServiceUtils.getAvailableSingleTenantCartridgeInfo(cartridgeType, false, getConfigContext());
+    }
+
+    @GET
     @Path("/cartridge/active/{cartridgeType}/{subscriptionAlias}")
     @Produces("application/json")
     @Consumes("application/json")
