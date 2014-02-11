@@ -46,6 +46,9 @@ public class PojoConverter {
         cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
         cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
+        cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
+
+
         
         //deployment information
         if(cartridgeDefinitionBean.deployment != null) {
