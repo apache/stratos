@@ -80,6 +80,7 @@ public class RestCommandLineService {
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
     private final String describeDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment/";
     private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
+    private final String deployServiceEndPoint = "/stratos/admin/service/definition";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -931,6 +932,32 @@ public class RestCommandLineService {
 
             if (result.equals("true")) {
                 System.out.println("You have successfully deployed the autoscaling policy");
+                return;
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in deploying autoscale police", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    // This method helps to deploy service
+    public void deployService (String deployService) throws CommandException{
+        DefaultHttpClient httpClient= new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deployServiceEndPoint,
+                    deployService, restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while deploying service");
+                return;
+            } else {
+                System.out.println("You have successfully deployed the service");
                 return;
             }
 

@@ -115,6 +115,11 @@ public class CliConstants {
     public static final String AUTOSCALING_POLICY_DEPLOYMENT = "deploy-autoscaling-policy";
 
     /**
+     * Deploy, deployment service
+     */
+    public static final String DEPLOY_SERVICE_DEPLOYMENT = "deploy-service";
+
+    /**
      * Deployment policy deployment
      */
     public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deploy-deployment-policy";
