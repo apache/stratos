@@ -142,10 +142,14 @@ public class CliConstants {
      * Describe the partition
      */
     public static final String DESCRIBE_PARTITION = "describe-partition";
-     /**
+    /**
      * describe the auto scaling policy
      */
     public static final String DESCRIBE_AUTO_SCALING_POLICY = "describe-autoscaling-policy";
+    /**
+     * undeploy deploy service
+     */
+    public static final String UNDEPLOY_SERVICE = "undeploy-service";
      /**
      * describe the deployment policy
      */
