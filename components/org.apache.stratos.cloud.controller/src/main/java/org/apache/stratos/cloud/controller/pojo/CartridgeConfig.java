@@ -53,6 +53,8 @@ public class CartridgeConfig implements Serializable {
     
     private String defaultAutoscalingPolicy;
 
+    private String defaultDeploymentPolicy;
+
     private Properties properties;
 
     private IaasConfig[] iaasConfigs;    
@@ -249,4 +251,12 @@ public class CartridgeConfig implements Serializable {
 	public void setPersistanceMappings(PersistanceMapping [] persistanceMappings) {
 		this.persistanceMappings = persistanceMappings;
 	}
+
+    public String getDefaultDeploymentPolicy() {
+        return defaultDeploymentPolicy;
+    }
+
+    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
+    }
 }

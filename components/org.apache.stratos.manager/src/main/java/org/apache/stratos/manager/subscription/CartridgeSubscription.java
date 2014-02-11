@@ -61,6 +61,7 @@ public abstract class CartridgeSubscription implements Serializable {
     private CartridgeInfo cartridgeInfo;
     private PayloadData payloadData;
     private Cluster cluster;
+    private String lbClusterId;
     private String subscriptionStatus;
     //private String serviceStatus;
     private String mappedDomain;
@@ -426,5 +427,13 @@ public abstract class CartridgeSubscription implements Serializable {
                ", deploymentPolicyName=" + deploymentPolicyName + ", subscriber=" + subscriber +
                ", repository=" + repository + ", cartridgeInfo=" + cartridgeInfo + ", payload=" +
                payloadData + ", cluster=" + cluster + "]";
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
 }

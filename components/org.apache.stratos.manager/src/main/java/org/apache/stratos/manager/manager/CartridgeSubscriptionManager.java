@@ -85,7 +85,7 @@ public class CartridgeSubscriptionManager {
                                                   String tenantDomain, int tenantId,
                                                   String tenantAdminUsername, String repositoryType,
                                                   String repositoryURL, boolean isPrivateRepository,
-                                                  String repositoryUsername, String repositoryPassword)
+                                                  String repositoryUsername, String repositoryPassword, String lbClusterId)
 
             throws ADCException, InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException,
             UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
@@ -94,13 +94,13 @@ public class CartridgeSubscriptionManager {
         return subscribeToCartridgeWithProperties(cartridgeType, subscriptionAlias, autoscalingPolicyName,
                                                   deploymentPolicyName, tenantDomain, tenantId, tenantAdminUsername, 
                                                   repositoryType, repositoryURL, isPrivateRepository, repositoryUsername, 
-                                                  repositoryPassword, null);
+                                                  repositoryPassword, lbClusterId, null);
     }
     
     public CartridgeSubscription subscribeToCartridgeWithProperties(String cartridgeType, String cartridgeAlias,
         String autoscalingPolicyName, String deploymentPolicyName, String tenantDomain,
         int tenantId, String tenantAdminUsername, String repositoryType, String repositoryURL,
-        boolean isPrivateRepository, String repositoryUsername, String repositoryPassword, Property[] props)
+        boolean isPrivateRepository, String repositoryUsername, String repositoryPassword, String lbClusterId, Property[] props)
 
     throws ADCException,
         InvalidCartridgeAliasException,
@@ -182,6 +182,10 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                  deploymentPolicyName, repository);
 
+        // set the lb cluster id if its available
+        if (lbClusterId != null && !lbClusterId.isEmpty()) {
+            cartridgeSubscription.setLbClusterId(lbClusterId);
+        }
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
                  " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " +
