@@ -44,6 +44,7 @@ public class Cartridge implements Comparable<Cartridge> {
     private String mappedDomain;
     private String dbHost;
     private String publicIp;
+    private String lbClusterId;
 
     private String[] accessURLs;
     private PortMapping[] portMappings;
@@ -225,5 +226,13 @@ public class Cartridge implements Comparable<Cartridge> {
             compare = cartridgeType.compareTo(o.cartridgeType);
         }
         return compare;
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
 }
