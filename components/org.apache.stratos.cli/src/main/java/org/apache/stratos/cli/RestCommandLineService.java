@@ -368,7 +368,7 @@ public class RestCommandLineService {
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
                 public String[] getData(Cartridge cartridge) {
-                    String[] data = full ? new String[9] : new String[7];
+                    String[] data = full ? new String[10] : new String[8];
                     data[0] = cartridge.getCartridgeType();
                     data[1] = cartridge.getDisplayName();
                     data[2] = cartridge.getVersion();
@@ -376,9 +376,10 @@ public class RestCommandLineService {
                     data[4] = cartridge.getCartridgeAlias();
                     data[5] = cartridge.getStatus();
                     data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
+                    data[7] = cartridge.getLbClusterId();
                     if (full) {
-                        data[7] = getAccessURLs(cartridge);
-                        data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
+                        data[8] = getAccessURLs(cartridge);
+                        data[9] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
                     }
                     return data;
                 	
@@ -393,6 +394,7 @@ public class RestCommandLineService {
             headers.add("Alias");
             headers.add("Status");
             headers.add("Running Instances");
+            headers.add("LB Cluster ID");
             if (full) {
                 headers.add("Access URL(s)");
                 headers.add("Repo URL");
@@ -1014,6 +1016,14 @@ public class RestCommandLineService {
             Partition[] partitions = new Partition[partitionList.getPartition().size()];
             partitions = partitionList.getPartition().toArray(partitions);
 
+            if (partitions.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No partitions found");
+                }
+                System.out.println("There are no available partitions");
+                return;
+            }
+
             System.out.println("Available Partitions:" );
             CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider");
             System.out.println();
@@ -1068,6 +1078,14 @@ public class RestCommandLineService {
             AutoscalePolicy[] policyArry = new AutoscalePolicy[policyList.getAutoscalePolicy().size()];
             policyArry = policyList.getAutoscalePolicy().toArray(policyArry);
 
+            if (policyArry.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No autoscale policies found");
+                }
+                System.out.println("There are no autoscale policies");
+                return;
+            }
+
             System.out.println("Available Autoscale Policies:");
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
 
@@ -1119,6 +1137,14 @@ public class RestCommandLineService {
 
             DeploymentPolicy[] policyArry = new DeploymentPolicy[policyList.getDeploymentPolicy().size()];
             policyArry = policyList.getDeploymentPolicy().toArray(policyArry);
+
+            if (policyArry.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No deployment policies found");
+                }
+                System.out.println("There are no deployment policies");
+                return;
+            }
 
             System.out.println("Available Deployment Policies:");
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
