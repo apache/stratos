@@ -230,24 +230,11 @@
             </xs:complexType>
             <xs:complexType name="MemberContext">
                 <xs:sequence>
-<<<<<<< HEAD
-                    <xs:element minOccurs="0" name="allocatedIpAddress" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="initTime" type="xs:long"></xs:element>
-                    <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="nodeId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax29:Partition"></xs:element>
-                    <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"></xs:element>
-=======
                     <xs:element minOccurs="0" name="allocatedIpAddress" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="initTime" type="xs:long"/>
+		    <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
@@ -255,7 +242,6 @@
                     <xs:element minOccurs="0" name="partition" nillable="true" type="ax29:Partition"/>
                     <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"/>
->>>>>>> f7daf5633cd2eb9a1774b6c7f47eb48924f35e64
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Registrant">
@@ -858,24 +844,6 @@
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-<<<<<<< HEAD
-            <soap:address location="http://10.138.175.31:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"></soap:address>
-        </wsdl:port>
-        <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.138.175.31:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"></soap:address>
-        </wsdl:port>
-        <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.138.175.31:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"></soap12:address>
-        </wsdl:port>
-        <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.138.175.31:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"></soap12:address>
-        </wsdl:port>
-        <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.138.175.31:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"></http:address>
-        </wsdl:port>
-        <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.138.175.31:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"></http:address>
-=======
             <soap:address location="http://10.100.0.38:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
@@ -892,7 +860,6 @@
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
             <http:address location="https://10.100.0.38:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
->>>>>>> f7daf5633cd2eb9a1774b6c7f47eb48924f35e64
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
