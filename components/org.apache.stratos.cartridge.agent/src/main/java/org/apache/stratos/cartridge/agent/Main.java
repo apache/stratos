@@ -24,6 +24,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.config.configurator.JndiConfigurator;
+import org.apache.stratos.cartridge.agent.data.publisher.log.FileBasedLogPublisher;
+import org.wso2.carbon.databridge.commons.Attribute;
+import org.wso2.carbon.databridge.commons.AttributeType;
+import org.wso2.carbon.databridge.commons.StreamDefinition;
+import org.wso2.carbon.databridge.commons.exception.MalformedStreamDefinitionException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Cartridge agent main class.
@@ -58,6 +66,32 @@ public class Main {
                 cartridgeAgent.terminate();
             }
         }
+
+        StreamDefinition streamDefinition = null;
+
+        try {
+            streamDefinition = new StreamDefinition("log.publisher." + "php.isuruh.domain", "1.0.0");
+
+        } catch (MalformedStreamDefinitionException e) {
+            throw new RuntimeException(e);
+        }
+
+        streamDefinition.setDescription("Apache Stratos Instance Log Publisher");
+
+        List<Attribute> metaDataDefinition = new ArrayList<Attribute>();
+        metaDataDefinition.add(new Attribute("ipAddress", AttributeType.STRING));
+        metaDataDefinition.add(new Attribute("nodeId", AttributeType.STRING));
+
+        List<Attribute> payloadDataDefinition = new ArrayList<Attribute>();
+        payloadDataDefinition.add(new Attribute("logEvent", AttributeType.STRING));
+
+        streamDefinition.setMetaData(metaDataDefinition);
+        streamDefinition.setPayloadData(payloadDataDefinition);
+
+        FileBasedLogPublisher fileBasedLogPublisher = new FileBasedLogPublisher(null, streamDefinition, "", "");
+        fileBasedLogPublisher.initialize();
+        fileBasedLogPublisher.publish(null);
+
     }
 
 }
