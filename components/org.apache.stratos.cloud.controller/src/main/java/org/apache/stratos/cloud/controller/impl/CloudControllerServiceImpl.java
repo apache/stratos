@@ -139,7 +139,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
         
         for (IaasProvider iaasProvider : iaases) {
-            CloudControllerUtil.setIaas(iaasProvider);
+            CloudControllerUtil.getIaas(iaasProvider);
         }
         
         // TODO transaction begins
@@ -262,7 +262,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
                 }
                 try {
-                    iaas = CloudControllerUtil.setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.getIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg ="Instance start up failed. "+memberContext.toString()+
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type;
@@ -357,7 +357,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		
 		if(iaas == null) {
 			try {
-				iaas = CloudControllerUtil.setIaas(iaasProvider);
+				iaas = CloudControllerUtil.getIaas(iaasProvider);
 			} catch (InvalidIaasProviderException e) {
 				String msg = "Iaas could not be loaded from : "+iaasProvider;
 				log.fatal(msg, e);
@@ -799,7 +799,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    if (iaas == null) {
 	        
 	        try {
-	            iaas = CloudControllerUtil.setIaas(iaasProvider);
+	            iaas = CloudControllerUtil.getIaas(iaasProvider);
 	        } catch (InvalidIaasProviderException e) {
 	            String msg =
 	                    "Instance termination failed. " +ctxt.toString()  +
@@ -1028,7 +1028,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (iaas == null) {
                 
                 try {
-                    iaas = CloudControllerUtil.setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.getIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg =
                             "Invalid Partition - " + partition.toString() +
@@ -1085,7 +1085,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (iaas == null) {
             
         	try {
-                iaas = CloudControllerUtil.setIaas(iaasProvider);
+                iaas = CloudControllerUtil.getIaas(iaasProvider);
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Invalid Partition - " + partition.toString() +

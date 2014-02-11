@@ -210,7 +210,7 @@ public class IaasProvider implements Serializable{
     public Iaas getIaas() {
     	if (iaas == null) {
     		try {
-				iaas = CloudControllerUtil.setIaas(this);
+				iaas = CloudControllerUtil.getIaas(this);
 			} catch (InvalidIaasProviderException e) {
 				return null;
 			}
