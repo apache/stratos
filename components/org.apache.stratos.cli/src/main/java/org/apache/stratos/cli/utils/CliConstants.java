@@ -150,6 +150,10 @@ public class CliConstants {
      * undeploy deploy service
      */
     public static final String UNDEPLOY_SERVICE = "undeploy-service";
+    /**
+     * undeploy cartridge definition
+     */
+    public static final String UNDEPLOY_CARTRIDGE_DEFINITION = "undeploy-cartridge";
      /**
      * describe the deployment policy
      */

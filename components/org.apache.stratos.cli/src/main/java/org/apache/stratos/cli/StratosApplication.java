@@ -117,6 +117,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new UndeployServiceDefinitionCommand();
         commands.put(command.getName(), command);
 
+        command = new UndeployCartridgeDefinitionCommand();
+        commands.put(command.getName(), command);
+
         command = new DeploymentPolicyDeploymentCommand();
         commands.put(command.getName(), command);
 		

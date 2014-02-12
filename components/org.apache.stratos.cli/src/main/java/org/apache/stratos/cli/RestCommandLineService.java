@@ -879,6 +879,31 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to undeploy cartridge definitions
+    public void undeployCartrigdeDefinition (String id) throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doDelete(httpClient, restClientService.getUrl()
+                    + cartridgeDeploymentEndPoint + "/" + id, restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully undeploy " + id + " cartridge");
+                return;
+            } else {
+                System.out.println("Error occured while undeploy " + id + " cartridge");
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in undeploying " + id + "cartridge", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to deploy partitions
     public void deployPartition (String partitionDefinition) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1271,7 +1296,7 @@ public class RestCommandLineService {
         }
     }
 
- // This method list deployment policies
+    // This method list deployment policies
     public void describePartition(String id) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -1342,6 +1367,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This method describe about auto scaling policies
     public void describeAutoScalingPolicy(String id) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
