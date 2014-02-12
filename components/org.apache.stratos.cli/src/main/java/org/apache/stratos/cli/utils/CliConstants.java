@@ -167,6 +167,10 @@ public class CliConstants {
      * Deactivate tenant
      */
     public static final String DEACTIVATE_TENANT = "deactivate-tenant";
+    /**
+     * Activate tenant
+     */
+    public static final String ACTIVATE_TENANT = "activate-tenant";
      /**
      * Describe the deployment policy
      */

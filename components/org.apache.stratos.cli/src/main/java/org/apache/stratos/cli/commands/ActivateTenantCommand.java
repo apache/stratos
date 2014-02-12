@@ -27,17 +27,17 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeactivateTenantCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DeactivateTenantCommand.class);
+public class ActivateTenantCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(ActivateTenantCommand.class);
 
     @Override
     public String getName() {
-        return CliConstants.DEACTIVATE_TENANT;
+        return CliConstants.ACTIVATE_TENANT;
     }
 
     @Override
     public String getDescription() {
-        return "Deactivate tenant";
+        return "Activate tenant";
     }
 
     @Override
@@ -60,7 +60,7 @@ public class DeactivateTenantCommand implements Command<StratosCommandContext> {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Getting deactivate tenant info {}", id);
 			}
-			RestCommandLineService.getInstance().deactivateTenant(id);
+			RestCommandLineService.getInstance().activateTenant(id);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());
