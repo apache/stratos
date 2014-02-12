@@ -62,7 +62,7 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                 
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
                 
-                Iaas updatedIaas = CloudControllerUtil.setIaas(updatedIaasProvider);
+                Iaas updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
                 updatedIaas.setIaasProvider(updatedIaasProvider);
                 
                 if (properties.containsKey(Scope.zone.toString())) {
