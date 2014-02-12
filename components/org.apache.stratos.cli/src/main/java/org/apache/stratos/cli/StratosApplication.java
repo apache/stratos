@@ -114,9 +114,8 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeployServiceDeploymentCommand();
         commands.put(command.getName(), command);
 
-        // Need to implement delete request
-        //command = new UndeployServiceDefinitionCommand();
-        //commands.put(command.getName(), command);
+        command = new UndeployServiceDefinitionCommand();
+        commands.put(command.getName(), command);
 
         command = new DeploymentPolicyDeploymentCommand();
         commands.put(command.getName(), command);

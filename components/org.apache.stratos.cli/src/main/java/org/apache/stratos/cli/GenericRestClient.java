@@ -56,7 +56,7 @@ public interface GenericRestClient {
      */
     public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord);
 
-    public void doDelete();
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord);
 
     public void doPut();
 }

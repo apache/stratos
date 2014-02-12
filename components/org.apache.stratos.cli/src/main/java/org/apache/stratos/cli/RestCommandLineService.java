@@ -940,7 +940,7 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to deploy service
+    // This method helps to deploy multi-tenant service cluster
     public void deployService (String deployService) throws CommandException{
         DefaultHttpClient httpClient= new DefaultHttpClient();
         try {
@@ -951,42 +951,41 @@ public class RestCommandLineService {
             if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
-            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while deploying service");
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully deploy the multi-tenant service cluster");
                 return;
-            } else {
-                System.out.println("You have successfully deployed the service");
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while deploying the multi-tenant service cluster");
                 return;
             }
 
         } catch (Exception e) {
-            handleException("Exception in deploying autoscale police", e);
+            handleException("Exception in deploying multi-tenant service cluster", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
-    // This method helps to undeploy multitenant service cluster
+    // This method helps to undeploy multi-tenant service cluster
     public void undeployService(String id) throws  CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
-                    + deployServiceEndPoint + "/" + id,
-                    restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClientService.doDelete(httpClient, restClientService.getUrl()
+                    + deployServiceEndPoint + "/" + id, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
                 System.out.println("Invalid operations. Authorization failed");
                 return;
-            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while undeploying multitenant service cluster");
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully undeploy multi-tenant service cluster");
                 return;
             } else {
-                System.out.println("You have successfully undeploy multitenant service cluster");
+                System.out.println("Error occured while undeploy multi-tenant service cluster");
             }
 
         } catch (Exception e) {
-            handleException("Exception in listing deployment polices", e);
+            handleException("Exception in undeploying multi-tenant service cluster", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
