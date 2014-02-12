@@ -47,4 +47,6 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String LOAD_AVERAGE = "load_average";
     public static final String PORTS_NOT_OPEN = "ports_not_open";
     public static final String MULTITENANT = "MULTITENANT";
+    public static final String ENABLE_ARTIFACT_UPDATE = "enable.artifact.update";
+    public static final String ARTIFACT_UPDATE_INTERVAL = "artifact.update.interval";
 }

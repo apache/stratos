@@ -218,7 +218,29 @@ public class CartridgeAgent implements Runnable {
             }
 
             // Start the artifact update task
-            GitBasedArtifactRepository.getInstance().scheduleSyncTask(repoInformation, 10);
+            boolean artifactUpdateEnabled = Boolean.parseBoolean(System.getProperty(CartridgeAgentConstants.ENABLE_ARTIFACT_UPDATE));
+            if (artifactUpdateEnabled) {
+
+                long artifactUpdateInterval = 10;
+                // get update interval
+                String artifactUpdateIntervalStr = System.getProperty(CartridgeAgentConstants.ARTIFACT_UPDATE_INTERVAL);
+
+                if (artifactUpdateIntervalStr != null && !artifactUpdateIntervalStr.isEmpty()) {
+                    try {
+                        artifactUpdateInterval = Long.parseLong(artifactUpdateIntervalStr);
+
+                    } catch (NumberFormatException e) {
+                        log.error("Invalid artifact sync interval specified ", e);
+                        artifactUpdateInterval = 10;
+                    }
+                }
+
+                log.info("Artifact updating task enabled, update interval: " + artifactUpdateInterval + "s");
+                GitBasedArtifactRepository.getInstance().scheduleSyncTask(repoInformation, artifactUpdateInterval);
+
+            } else {
+                log.info("Artifact updating task disabled");
+            }
 
         }
     }
