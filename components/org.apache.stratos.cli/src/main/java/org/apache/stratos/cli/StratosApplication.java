@@ -503,7 +503,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		for (String action : commands.keySet()) {
 			Command<StratosCommandContext> command = commands.get(action);
 			if (command != null) {
-				System.out.format("%-25s %s%n", command.getName(), command.getDescription());
+				System.out.format("%-35s %s%n", command.getName(), command.getDescription());
 			}
 		}
 
