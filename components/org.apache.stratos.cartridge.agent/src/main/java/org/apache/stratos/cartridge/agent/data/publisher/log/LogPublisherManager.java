@@ -42,7 +42,7 @@ public class LogPublisherManager {
     private static StreamDefinition streamDefinition = null;
     private static List<LogPublisher> fileBasedLogPublishers = new ArrayList<LogPublisher>();
 
-    public void init (DataPublisherConfiguration dataPublisherConfig) {
+    public void init (DataPublisherConfiguration dataPublisherConfig) throws DataPublisherException {
 
         this.dataPublisherConfig = dataPublisherConfig;
 
@@ -52,6 +52,9 @@ public class LogPublisherManager {
 
         // wait till monitoring server ports are active
         CartridgeAgentUtils.waitUntilPortsActive(dataPublisherConfig.getMonitoringServerIp(), ports);
+        if(!CartridgeAgentUtils.checkPortsActive(dataPublisherConfig.getMonitoringServerIp(), ports)) {
+            throw new DataPublisherException("Monitoring server not not active, data publishing is aborted");
+        }
 
         // stream definition identifier = {log.publisher.<cluster id>}
         try {

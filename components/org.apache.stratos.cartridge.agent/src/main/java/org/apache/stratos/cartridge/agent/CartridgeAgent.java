@@ -141,16 +141,32 @@ public class CartridgeAgent implements Runnable {
 
         // start log publishing
         LogPublisherManager logPublisherManager = new LogPublisherManager();
+        publishLogs(logPublisherManager);
+
+        while (!terminated);
+
+        logPublisherManager.stop();
+    }
+
+    private static void publishLogs (LogPublisherManager logPublisherManager) {
+
         // check if enabled
         if (DataPublisherConfiguration.getInstance().isEnabled()) {
 
             List<String> logFilePaths = CartridgeAgentConfiguration.getInstance().getLogFilePaths();
             if (logFilePaths == null) {
                 log.error("No valid log file paths found, no logs will be published");
+                return;
 
             } else {
                 // initialize the log publishing
-                logPublisherManager.init(DataPublisherConfiguration.getInstance());
+                try {
+                    logPublisherManager.init(DataPublisherConfiguration.getInstance());
+
+                } catch (DataPublisherException e) {
+                    log.error("Error occurred in log publisher initialization", e);
+                    return;
+                }
 
                 // start a log publisher for each file path
                 for (String logFilePath : logFilePaths) {
@@ -163,10 +179,6 @@ public class CartridgeAgent implements Runnable {
                 }
             }
         }
-
-        while (!terminated);
-
-        logPublisherManager.stop();
     }
 
     private void onArtifactUpdateEvent(ArtifactUpdatedEvent event) {
