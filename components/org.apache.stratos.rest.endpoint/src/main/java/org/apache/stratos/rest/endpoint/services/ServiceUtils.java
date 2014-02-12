@@ -18,16 +18,40 @@
 
 package org.apache.stratos.rest.endpoint.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.AlreadySubscribedException;
+import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
+import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
+import org.apache.stratos.manager.exception.InvalidRepositoryException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
+import org.apache.stratos.manager.exception.PolicyException;
+import org.apache.stratos.manager.exception.RepositoryCredentialsRequiredException;
+import org.apache.stratos.manager.exception.RepositoryRequiredException;
+import org.apache.stratos.manager.exception.RepositoryTransportException;
+import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
@@ -35,9 +59,6 @@ import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.manager.utils.PersistenceManager;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
@@ -48,11 +69,6 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.cloud.controller.pojo.*;
-
-
-import java.util.*;
-import java.util.regex.Pattern;
 
 public class ServiceUtils {
     private static Log log = LogFactory.getLog(ServiceUtils.class);
@@ -408,6 +424,17 @@ public class ServiceUtils {
          throw new RestAPIException("cannot find the required cartridge Type") ;
     }
 
+    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
+       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        List<Cartridge> lbCartridges = new ArrayList<Cartridge>();
+        for(Cartridge cartridge : cartridges) {
+            if(cartridge.isLoadBalancer()) {
+               lbCartridges.add(cartridge);
+            }
+        }
+        return lbCartridges;
+    }
+
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -462,16 +489,24 @@ public class ServiceUtils {
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
                     cartridge.setHostName(cartridgeInfo.getHostName());
-                    //cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
+                    for(Property property: cartridgeInfo.getLbConfig().getProperties().getProperties()) {
+                        if(property.getName().equals("load.balancer")) {
+                            cartridge.setLoadBalancer(true);
+                        }
+
+                    }
                     //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
+
 
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
                         // If the cartridge is multi-tenant. We should not let users
                         // createSubscription twice.
-                        if (PersistenceManager.isAlreadySubscribed(cartridgeType,
+                        if (isAlreadySubscribed(cartridgeType,
                                 ApplicationManagementUtil.getTenantId(configurationContext))) {
                             if (log.isDebugEnabled()) {
                                 log.debug("Already subscribed to " + cartridgeType
@@ -501,7 +536,18 @@ public class ServiceUtils {
         return cartridges;
     }
 
-    static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
+    private static boolean isAlreadySubscribed(String cartridgeType,
+			int tenantId) {
+		
+    	Collection<CartridgeSubscription> subscriptionList = cartridgeSubsciptionManager.isCartridgeSubscribed(tenantId, cartridgeType);
+    	if(subscriptionList == null || subscriptionList.isEmpty()){
+    		return false;	
+    	}else {
+    		return true;
+    	}		
+	}
+
+	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
 
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 

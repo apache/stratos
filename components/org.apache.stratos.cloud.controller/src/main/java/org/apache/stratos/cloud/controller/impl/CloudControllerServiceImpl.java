@@ -25,7 +25,6 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
-import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
@@ -42,10 +41,9 @@ import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
+import org.jclouds.rest.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,7 +139,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
         
         for (IaasProvider iaasProvider : iaases) {
-            CloudControllerUtil.setIaas(iaasProvider);
+            CloudControllerUtil.getIaas(iaasProvider);
         }
         
         // TODO transaction begins
@@ -264,7 +262,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
                 }
                 try {
-                    iaas = CloudControllerUtil.setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.getIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg ="Instance start up failed. "+memberContext.toString()+
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type;
@@ -296,6 +294,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Should have a length between 3-15
             String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
             String group = str.replaceAll("[^a-z0-9-]", "");
+            
+            if(ctxt.isVolumeRequired()) {
+            	if (ctxt.getVolumeId() == null) {
+            		// create a new volume
+            		createVolumeAndSetInClusterContext(ctxt, iaasProvider);
+            	} 
+            }
+            
             NodeMetadata node;
 
 //            create and start a node
@@ -321,6 +327,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(log.isDebugEnabled()) {
                     log.debug("Node id was set. "+memberContext.toString());
                 }
+                
+                // attach volume
+			if (ctxt.isVolumeRequired()) {
+				// remove region prefix
+				String instanceId = nodeId.indexOf('/') != -1 ? nodeId
+						.substring(nodeId.indexOf('/') + 1, nodeId.length())
+						: nodeId;
+				memberContext.setInstanceId(instanceId);
+				iaas.attachVolume(instanceId, ctxt.getVolumeId(), ctxt.getDeviceName());
+			}
 
             log.info("Instance is successfully starting up. "+memberContext.toString());
 
@@ -333,6 +349,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
     }
+
+	private void createVolumeAndSetInClusterContext(ClusterContext ctxt,
+			IaasProvider iaasProvider) {
+
+		Iaas iaas = iaasProvider.getIaas();
+		
+		if(iaas == null) {
+			try {
+				iaas = CloudControllerUtil.getIaas(iaasProvider);
+			} catch (InvalidIaasProviderException e) {
+				String msg = "Iaas could not be loaded from : "+iaasProvider;
+				log.fatal(msg, e);
+				throw new CloudControllerException(msg, e);
+			}
+		}
+		int sizeGB = ctxt.getVolumeSize();
+		String volumeId = iaas.createVolume(sizeGB);
+		ctxt.setVolumeId(volumeId);
+	}
 
 	private StringBuilder getPersistancePayload(Cartridge cartridge) {
 		StringBuilder persistancePayload = new StringBuilder();
@@ -764,7 +799,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    if (iaas == null) {
 	        
 	        try {
-	            iaas = CloudControllerUtil.setIaas(iaasProvider);
+	            iaas = CloudControllerUtil.getIaas(iaasProvider);
 	        } catch (InvalidIaasProviderException e) {
 	            String msg =
 	                    "Instance termination failed. " +ctxt.toString()  +
@@ -774,6 +809,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	        }
 	        
 	    }
+	    
+	    //detach volumes if any
+	    detachVolume(iaasProvider, ctxt);
+	    
 		// destroy the node
 		iaasProvider.getComputeService().destroyNode(nodeId);
 
@@ -789,11 +828,31 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		return iaasProvider;
 	}
 
+	private void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
+		try {
+		String clusterId = ctxt.getClusterId();
+		ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
+		String volumeId = clusterCtxt.getVolumeId();
+		if(volumeId == null) {
+			return;
+		}
+		Iaas iaas = iaasProvider.getIaas();
+		iaas.detachVolume(ctxt.getInstanceId(), volumeId);
+		} catch (ResourceNotFoundException ignore) {
+			if(log.isDebugEnabled()) {
+				log.debug(ignore);
+			}
+		}
+	}
+
 	private void logTermination(MemberContext memberContext) {
 
         //updating the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getMemberId());
 
+        // update data holders
+        dataHolder.removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
+        
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
                                                         memberContext.getPartition().getId(),
@@ -836,7 +895,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
         
-	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, hostName, isLb));
+        property = props.getProperty(Constants.IS_VOLUME_REQUIRED);
+        boolean isVolumeRequired = property != null ? Boolean.parseBoolean(property) : false;
+        
+        property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
+        boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : false;
+        
+        property = props.getProperty(Constants.VOLUME_SIZE);
+        int volumeSize = property != null ? Integer.parseInt(property) : 8;
+        
+        property = props.getProperty(Constants.DEVICE_NAME);
+        String deviceName = property != null ? property : null;
+        
+	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, 
+	    		hostName, isLb, isVolumeRequired, shouldDeleteVolume, volumeSize, deviceName));
 	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
 	    persist();
@@ -900,9 +972,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         log.error(msg);
                     }
                      log.info("Unregistration of service cluster: " + clusterId_);
+                     if(ctxt.shouldDeleteVolume()) {
+                    	 Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
+                    	 if(cartridge != null && cartridge.getIaases() != null) {
+                    		 for (IaasProvider prov : cartridge.getIaases()) {
+								if (prov != null) {
+									Iaas iaas = prov.getIaas();
+									iaas.deleteVolume(ctxt.getVolumeId());
+								}
+							}
+                    		 
+                    	 }
+                     }
                      TopologyBuilder.handleClusterRemoved(ctxt);
                      dataHolder.removeClusterContext(clusterId_);
-                     dataHolder.removeMemberContext(clusterId_);
+                     dataHolder.removeMemberContextsOfCluster(clusterId_);
                      persist();
                  }
             };
@@ -944,7 +1028,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (iaas == null) {
                 
                 try {
-                    iaas = CloudControllerUtil.setIaas(iaasProvider);
+                    iaas = CloudControllerUtil.getIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg =
                             "Invalid Partition - " + partition.toString() +
@@ -1001,7 +1085,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (iaas == null) {
             
         	try {
-                iaas = CloudControllerUtil.setIaas(iaasProvider);
+                iaas = CloudControllerUtil.getIaas(iaasProvider);
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Invalid Partition - " + partition.toString() +

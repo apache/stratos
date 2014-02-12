@@ -147,6 +147,7 @@ public class TopologyBuilder {
     public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(ctxt.getCartridgeType());
+        String deploymentPolicy;
         if (service == null) {
             throw new RuntimeException(String.format("Service %s does not exist",
                     ctxt.getCartridgeType()));
@@ -160,12 +161,13 @@ public class TopologyBuilder {
 
         try {
             TopologyManager.acquireWriteLock();
-            service.removeCluster(ctxt.getClusterId());
+            Cluster cluster = service.removeCluster(ctxt.getClusterId());
+            deploymentPolicy = cluster.getDeploymentPolicyName();
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventPublisher.sendClusterRemovedEvent(ctxt);
+        TopologyEventPublisher.sendClusterRemovedEvent(ctxt, deploymentPolicy);
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,

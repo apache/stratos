@@ -99,7 +99,14 @@ public class StratosTestAdmin {
     }
 
 
-
+    @GET
+    @Path("/cartridge/info/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+        return MockContext.getInstance().getCartridgeInfo(subscriptionAlias);
+    }
 
 
     @POST

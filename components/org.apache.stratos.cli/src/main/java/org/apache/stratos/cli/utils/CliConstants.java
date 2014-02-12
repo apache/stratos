@@ -115,6 +115,11 @@ public class CliConstants {
     public static final String AUTOSCALING_POLICY_DEPLOYMENT = "deploy-autoscaling-policy";
 
     /**
+     * Deploy, deployment service
+     */
+    public static final String DEPLOY_SERVICE_DEPLOYMENT = "deploy-service";
+
+    /**
      * Deployment policy deployment
      */
     public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deploy-deployment-policy";
@@ -137,10 +142,14 @@ public class CliConstants {
      * Describe the partition
      */
     public static final String DESCRIBE_PARTITION = "describe-partition";
-     /**
+    /**
      * describe the auto scaling policy
      */
     public static final String DESCRIBE_AUTO_SCALING_POLICY = "describe-autoscaling-policy";
+    /**
+     * undeploy deploy service
+     */
+    public static final String UNDEPLOY_SERVICE = "undeploy-service";
      /**
      * describe the deployment policy
      */

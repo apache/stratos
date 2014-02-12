@@ -34,6 +34,8 @@ public class MemberContext implements Serializable{
     private String memberId;
     // corresponding jclouds node id
     private String nodeId;
+    // instance id - derived from nodeId
+    private String instanceId;
     // cluster id of this member
     private String clusterId;
     // partition this member is in.
@@ -189,5 +191,13 @@ public class MemberContext implements Serializable{
 		} else if (!nodeId.equals(other.nodeId))
 			return false;
 		return true;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
 	}
 }

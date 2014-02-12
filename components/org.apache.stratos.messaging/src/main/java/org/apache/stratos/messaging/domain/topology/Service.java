@@ -64,8 +64,8 @@ public class Service implements Serializable{
         this.clusterIdClusterMap.remove(cluster.getClusterId());
     }
 
-    public void removeCluster(String clusterId) {
-        this.clusterIdClusterMap.remove(clusterId);
+    public Cluster removeCluster(String clusterId) {
+        return this.clusterIdClusterMap.remove(clusterId);
     }
 
     public boolean clusterExists(String clusterId) {

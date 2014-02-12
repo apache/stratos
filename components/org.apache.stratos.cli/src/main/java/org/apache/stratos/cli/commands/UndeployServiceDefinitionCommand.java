@@ -19,57 +19,52 @@
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
-    import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
+public class UndeployServiceDefinitionCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(UndeployServiceDefinitionCommand.class);
 
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
+    @Override
+    public String getName() {
+        return CliConstants.UNDEPLOY_SERVICE;
+    }
 
-public class ExitCommand implements Command<StratosCommandContext> {
+    @Override
+    public String getDescription() {
+        return "Undeploy Multitenant Service";
+    }
 
-	private static final Logger logger = LoggerFactory.getLogger(ExitCommand.class);
+    @Override
+    public String getArgumentSyntax() {
+        return "[ID]";
+    }
 
-	public ExitCommand() {
-	}
+    @Override
+    public Options getOptions() {
+        return null;
+    }
 
-	@Override
-	public String getName() {
-		return CliConstants.EXIT_ACTION;
-	}
-
-	@Override
-	public String getDescription() {
-		return "Exit from Stratos Client Tool";
-	}
-
-	@Override
-	public String getArgumentSyntax() {
-		return null;
-	}
-
-	@Override
-	public int execute(StratosCommandContext context, String[] args) throws CommandException {
-		// Nothing to execute here. This is a special command.
-		if (logger.isDebugEnabled()) {
+    @Override
+    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+        if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
-		if (args == null || args.length == 0) {
+		if (args != null && args.length == 1) {
+			String id = args[0];
+			if (logger.isDebugEnabled()) {
+				logger.debug("Getting undeploy miltitenant service info {}", id);
+			}
+			RestCommandLineService.getInstance().undeployService(id);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());
 			return CliConstants.BAD_ARGS_CODE;
 		}
-	}
-
-	@Override
-	public Options getOptions() {
-		return null;
-	}
-
+    }
 }

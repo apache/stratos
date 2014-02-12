@@ -1,0 +1,9 @@
+<%
+var caramel = require('caramel');
+var utils = require('/util/utility.jag');
+var alias = request.getParameter("alias");
+var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias).cartridge;
+caramel.render({
+    cartridgeInfo:cartridgeInfo
+});
+%>

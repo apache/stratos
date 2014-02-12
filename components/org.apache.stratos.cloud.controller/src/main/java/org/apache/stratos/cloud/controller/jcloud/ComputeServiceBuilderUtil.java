@@ -102,6 +102,11 @@ public class ComputeServiceBuilderUtil {
         return region;
     }
     
+	public static String extractZone(IaasProvider iaas) {
+
+		return iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE);
+	}
+	
     /** Returns the contents of the file in a byte array
      *
      * @param file

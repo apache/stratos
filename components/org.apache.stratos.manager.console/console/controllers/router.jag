@@ -40,15 +40,15 @@
 
     //This will short circuit the handling of the requests
     var passed=sm.check(session);
-    //var tenantDomain = session.get("TENANT_DOMAIN");
-    //var roleArray = session.get("ROLE_ARRAY");
+    var tenantDomain = session.get("TENANT_DOMAIN");
+    var roleArray = session.get("ROLE_ARRAY");
 
     // comment out the above and uncomment below code bits for testing. It removes authentication/authorization
     // of the app.
 
     //var passed=true;
-    var tenantDomain = "carbon.super";
-    var roleArray = ["admin","Internal/Everyone"];
+    //var tenantDomain = "carbon.super";
+    //var roleArray = ["admin","Internal/Everyone"];
 
     //Stop servicing the request if the check failed
     if(!passed){

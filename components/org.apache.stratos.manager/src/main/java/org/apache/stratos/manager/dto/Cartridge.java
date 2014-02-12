@@ -36,6 +36,7 @@ public class Cartridge implements Comparable<Cartridge> {
 	private String provider;
 	private String version;
 	private boolean multiTenant;
+    private boolean isLoadBalancer;
 	private String hostName;
 	//private String policy;
 	//private String policyDescription;
@@ -52,6 +53,11 @@ public class Cartridge implements Comparable<Cartridge> {
 
 	private String[] accessURLs;
 	private PortMapping[] portMappings;
+
+    private String defaultAutoscalingPolicy;
+
+    private String defaultDeploymentPolicy;
+
 
 	public String getDisplayName() {
 		return displayName;
@@ -231,5 +237,29 @@ public class Cartridge implements Comparable<Cartridge> {
 
     public void setLbClusterId(String lbClusterId) {
         this.lbClusterId = lbClusterId;
+    }
+
+    public boolean isLoadBalancer() {
+        return isLoadBalancer;
+    }
+
+    public void setLoadBalancer(boolean loadBalancer) {
+        this.isLoadBalancer = loadBalancer ;
+    }
+
+    public String getDefaultAutoscalingPolicy() {
+        return defaultAutoscalingPolicy;
+    }
+
+    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
+    }
+
+    public String getDefaultDeploymentPolicy() {
+        return defaultDeploymentPolicy;
+    }
+
+    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
     }
 }
