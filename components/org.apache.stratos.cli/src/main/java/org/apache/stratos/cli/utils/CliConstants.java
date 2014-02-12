@@ -75,6 +75,11 @@ public class CliConstants {
     public static final String LIST_AUTOSCALE_POLICY = "list-autoscale-policies";
 
     /**
+     * List the available deploy services
+     */
+    public static final String LIST_DEPLOY_SERVICE= "list-deploy-services";
+
+    /**
      * Add tenant
      */
     public static final String ADD_TENANT = "create-tenant";

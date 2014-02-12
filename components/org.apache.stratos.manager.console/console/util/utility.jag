@@ -173,6 +173,11 @@ consoleAppUtil = new function(){
     this.getCartridges = function(){
         return this.sendReceive("GET","/cartridge/list",{}).data;
     };
+
+    this.getLbCartridges = function(){
+        return this.sendReceive("GET","/cartridge/lb",{}).data;
+    };
+
     this.getCartridgeInfo = function(alias){
         return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };
