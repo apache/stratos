@@ -1,5 +1,6 @@
 package org.apache.stratos.manager.subscription;
 
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
 
 /**
@@ -25,6 +26,7 @@ public class SubscriptionData {
     private Property[] properties;
     private String dataCartridgeAlias;
     private String lbAlias;
+    private PersistanceMapping persistanceMapping;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -150,4 +152,11 @@ public class SubscriptionData {
         this.lbAlias = lbAlias;
     }
 
+    public PersistanceMapping getPersistanceMapping() {
+        return persistanceMapping;
+    }
+
+    public void setPersistanceMapping(PersistanceMapping persistanceMapping) {
+        this.persistanceMapping = persistanceMapping;
+    }
 }

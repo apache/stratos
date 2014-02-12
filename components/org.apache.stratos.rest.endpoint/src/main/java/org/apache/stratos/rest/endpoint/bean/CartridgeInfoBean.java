@@ -17,6 +17,8 @@
 */
 package org.apache.stratos.rest.endpoint.bean;
 
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -31,11 +33,8 @@ public class CartridgeInfoBean {
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
+    PersistanceMappingBean persistanceMappingBean;
 
-    boolean persistanceRequired;
-    int persistaneVolumeSize;
-    boolean deleteOnTermination;
-    String devicetoMap;
 
 
     public String getCartridgeType() {
@@ -118,35 +117,11 @@ public class CartridgeInfoBean {
         this.deploymentPolicy = deploymentPolicy;
     }
 
-    public boolean isPersistanceRequired() {
-        return persistanceRequired;
+    public PersistanceMappingBean getPersistanceMappingBean() {
+        return persistanceMappingBean;
     }
 
-    public void setPersistanceRequired(boolean persistanceRequired) {
-        this.persistanceRequired = persistanceRequired;
-    }
-
-    public int getPersistaneVolumeSize() {
-        return persistaneVolumeSize;
-    }
-
-    public void setPersistaneVolumeSize(int persistaneVolumeSize) {
-        this.persistaneVolumeSize = persistaneVolumeSize;
-    }
-
-    public boolean isDeleteOnTermination() {
-        return deleteOnTermination;
-    }
-
-    public void setDeleteOnTermination(boolean deleteOnTermination) {
-        this.deleteOnTermination = deleteOnTermination;
-    }
-
-    public String getDevicetoMap() {
-        return devicetoMap;
-    }
-
-    public void setDevicetoMap(String devicetoMap) {
-        this.devicetoMap = devicetoMap;
+    public void setPersistanceMappingBean(PersistanceMappingBean persistanceMappingBean) {
+        this.persistanceMappingBean = persistanceMappingBean;
     }
 }

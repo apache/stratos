@@ -49,6 +49,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -792,6 +793,40 @@ public class ServiceUtils {
         subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoURL());
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
 
+        Properties properties = new Properties();
+        if(cartridgeInfoBean.getPersistanceMappingBean() != null){
+            PersistanceMappingBean  persistanceMappingBean = cartridgeInfoBean.getPersistanceMappingBean();
+            /*
+            PersistanceMapping persistanceMapping = new PersistanceMapping();
+            persistanceMapping.setPersistanceRequired(persistanceMappingBean.persistanceRequired);
+            persistanceMapping.setSize(persistanceMappingBean.size);
+            persistanceMapping.setDevice(persistanceMappingBean.device);
+            persistanceMapping.setRemoveOntermination(persistanceMappingBean.removeOnTermination);
+            subscriptionData.setPersistanceMapping(persistanceMapping);
+            */
+            Property persistanceRequiredProperty = new Property();
+            persistanceRequiredProperty.setName("is-required");
+            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.persistanceRequired));
+
+            Property sizeProperty = new Property();
+            persistanceRequiredProperty.setName("is-required");
+            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.size));
+
+            Property deviceProperty = new Property();
+            persistanceRequiredProperty.setName("is-required");
+            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.device));
+
+            Property deleteOnTerminationProperty = new Property();
+            persistanceRequiredProperty.setName("is-required");
+            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.removeOnTermination));
+
+            Properties props = new Properties();
+            props.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
+        }
+
+
+
+
         // If multitenant, return for now. TODO -- fix properly
         if(cartridgeInfo != null && cartridgeInfo.getMultiTenant()) {
                log.info(" ******* MT cartridge ******* ");
@@ -803,7 +838,7 @@ public class ServiceUtils {
             CartridgeSubscription cartridgeSubscription =
                                         cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
                log.info(" --- ** -- ");
-              return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+              return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, properties);
                        
         }
         
@@ -1052,8 +1087,12 @@ public class ServiceUtils {
                           " with alias " + alias);
             }*/
         }
-        
-        SubscriptionInfo registerCartridgeSubscription = cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+
+        for (Property lbRefProperty : lbRefProp) {
+            properties.addProperties(lbRefProperty);
+        }
+
+        SubscriptionInfo registerCartridgeSubscription = cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, properties);
         
         return registerCartridgeSubscription;
 
@@ -1126,7 +1165,7 @@ public class ServiceUtils {
             subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
             subscriptionData.setTenantAdminUsername(userName);
             subscriptionData.setRepositoryType("git");
-            subscriptionData.setProperties(props);
+            //subscriptionData.setProperties(props);
             subscriptionData.setPrivateRepository(false);
 
             cartridgeSubscription =
@@ -1134,8 +1173,10 @@ public class ServiceUtils {
 
             //set a payload parameter to indicate the load balanced cartridge type
             cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);
-            
-            cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
+
+            Properties lbProperties = new Properties();
+            lbProperties.setProperties(props);
+            cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, lbProperties);
             
             if(log.isDebugEnabled()) {
                 log.debug("Successfully subscribed to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);

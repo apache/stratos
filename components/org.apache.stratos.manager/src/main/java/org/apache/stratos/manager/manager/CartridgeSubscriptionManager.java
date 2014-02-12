@@ -22,6 +22,7 @@ package org.apache.stratos.manager.manager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
@@ -85,6 +86,7 @@ public class CartridgeSubscriptionManager {
         try {
             cartridgeInfo =
                             CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+            /*
             if (props != null) {
                 // TODO: temp fix, need to do a proper fix
                 Property[] cartridgeInfoProperties = cartridgeInfo.getProperties();
@@ -99,7 +101,7 @@ public class CartridgeSubscriptionManager {
                 }
 
             }
-
+            */
         } catch (UnregisteredCartridgeException e) {
             String message =
                              cartridgeType +
@@ -145,6 +147,9 @@ public class CartridgeSubscriptionManager {
         //Set the key
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
+        // Set persistance mappings
+        cartridgeSubscription.setPersistanceMapping(subscriptionData.getPersistanceMapping());
+
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                 deploymentPolicyName, repository);
@@ -176,10 +181,10 @@ public class CartridgeSubscriptionManager {
      * @throws ADCException
      * @throws UnregisteredCartridgeException
      */
-    public SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription)
+    public SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)
             throws ADCException, UnregisteredCartridgeException {
 
-        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(null);
+        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(properties);
 
         //set status as 'SUBSCRIBED'
         cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
