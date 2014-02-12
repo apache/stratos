@@ -78,7 +78,9 @@ public class RestCommandLineService {
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
     private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
     private final String deployServiceEndPoint = "/stratos/admin/service/definition";
-    private final String listDeployServices = "/stratos/admin/service";
+    private final String listDeployServicesRestEndPoint = "/stratos/admin/service";
+    private final String deactivateTenantRestEndPoint = "/stratos/admin/tenant/deactivate";
+    private final String activateTenantRestEndPoint = "/stratos/admin/tenant/activate";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -862,6 +864,56 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to deactivate the created tenant
+    public void deactivateTenant(String tenantDomain) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl()
+                    + deactivateTenantRestEndPoint + "/" + tenantDomain, "", restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully deactivate " + tenantDomain + " tenant");
+                return;
+            } else {
+                System.out.println("Error occured while deactivating " + tenantDomain + " tenant");
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in deactivating " + tenantDomain + " tenant", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    // This method helps to activate, deactivated tenant
+    public void activateTenant(String tenantDomain) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl()
+                    + activateTenantRestEndPoint + "/" + tenantDomain, "", restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully activate " + tenantDomain + " tenant");
+                return;
+            } else {
+                System.out.println("Error occured while activating " + tenantDomain + " tenant");
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in activating " + tenantDomain + " tenant", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1043,7 +1095,7 @@ public class RestCommandLineService {
     public void listDeployServices() throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listDeployServices,
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listDeployServicesRestEndPoint,
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();

@@ -51,8 +51,16 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
     public void createSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, AlreadySubscribedException {
 
         //set the cluster and hostname
-        cartridgeSubscription.getCluster().setClusterDomain(cartridgeSubscription.getAlias() + "." +
-                cartridgeSubscription.getCluster().getHostName() + "." + cartridgeSubscription.getType() + ".domain");
+        //cartridgeSubscription.getCluster().setClusterDomain(cartridgeSubscription.getAlias() + "." +
+        //        cartridgeSubscription.getCluster().getHostName() + "." + cartridgeSubscription.getType() + ".domain");
+        String clusterId = cartridgeSubscription.getAlias() + "." + cartridgeSubscription.getType() + ".domain";
+
+        // limit the cartridge alias to 30 characters in length
+        if (clusterId.length() > 30) {
+            clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
+        }
+        cartridgeSubscription.getCluster().setClusterDomain(clusterId);
+        // set hostname
         cartridgeSubscription.getCluster().setHostName(cartridgeSubscription.getAlias() + "." +
                 cartridgeSubscription.getCluster().getHostName());
 

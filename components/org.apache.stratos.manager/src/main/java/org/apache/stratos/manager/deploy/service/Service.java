@@ -65,7 +65,12 @@ public abstract class Service implements Serializable {
     public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {
 
         //generate the cluster ID (domain)for the service
-        setClusterId(type + "." + cartridgeInfo.getHostName() + ".domain");
+        String clusterId = type + "." + cartridgeInfo.getHostName() + ".domain";
+        // limit the cartridge alias to 30 characters in length
+        if (clusterId.length() > 30) {
+            clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
+        }
+        setClusterId(clusterId);
         //host name is the hostname defined in cartridge definition
         setHostName(cartridgeInfo.getHostName());
 

@@ -171,4 +171,9 @@ public class CartridgeSubscriptionUtils {
         // fixing STRATOS-427, making the alias globally unique
         return (dataInsertionAndRetrievalManager.getCartridgeSubscriptionForAlias(alias) == null) ? false : true;
     }
+
+    public static String limitLengthOfString (String source, int length) {
+
+        return source.substring(0, length);
+    }
 }
