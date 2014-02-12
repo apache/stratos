@@ -23,6 +23,9 @@
         if(parseInt(thisStep) == 5 && policy != "" ){
             utils.consoleAppUtil.deployCartridgeDefinition(policy);
         }
+        if(parseInt(thisStep) == 6 && policy != "" ){
+            utils.consoleAppUtil.deployServiceDefinition(policy);
+        }
     }
 
     var configuring = session.get("configuring");

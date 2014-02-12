@@ -41,6 +41,8 @@ public abstract class PersistenceManager {
 
     public abstract void persistService (Service service) throws PersistenceManagerException;
 
+    public abstract Collection<Service> getServices () throws PersistenceManagerException;
+
     public abstract Service getService (String cartridgeType) throws PersistenceManagerException;
 
     public abstract void removeService (String cartridgeType) throws PersistenceManagerException;

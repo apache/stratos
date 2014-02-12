@@ -21,10 +21,11 @@ package org.apache.stratos.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ConnectException;
+import java.net.*;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
@@ -139,8 +140,32 @@ public class RestClient implements GenericRestClient{
         }
     }
 
-    public void doDelete() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) {
+        try {
+            HttpDelete httpDelete = new HttpDelete(resourcePath);
+            httpDelete.addHeader("Content-Type", "application/json");
+
+            String userPass = userName + ":" + passWord;
+            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+            httpDelete.addHeader("Authorization", basicAuth);
+
+            httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+
+            HttpParams params = httpClient.getParams();
+            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
+
+            HttpResponse response = httpClient.execute(httpDelete);
+
+            return  response;
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void doPut() {

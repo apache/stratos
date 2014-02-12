@@ -22,8 +22,12 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
@@ -35,10 +39,6 @@ import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.manager.utils.PersistenceManager;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
@@ -47,10 +47,9 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.cloud.controller.pojo.*;
-
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -478,11 +477,12 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
-                    for(Property property: cartridgeInfo.getLbConfig().getProperties().getProperties()) {
+                    if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
+                        for(Property property: cartridgeInfo.getProperties()) {
                         if(property.getName().equals("load.balancer")) {
                             cartridge.setLoadBalancer(true);
                         }
-
+                        }
                     }
                     //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
@@ -491,7 +491,7 @@ public class ServiceUtils {
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
                         // If the cartridge is multi-tenant. We should not let users
                         // createSubscription twice.
-                        if (PersistenceManager.isAlreadySubscribed(cartridgeType,
+                        if (isAlreadySubscribed(cartridgeType,
                                 ApplicationManagementUtil.getTenantId(configurationContext))) {
                             if (log.isDebugEnabled()) {
                                 log.debug("Already subscribed to " + cartridgeType
@@ -521,7 +521,54 @@ public class ServiceUtils {
         return cartridges;
     }
 
-    static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
+    private static boolean isAlreadySubscribed(String cartridgeType,
+			int tenantId) {
+		
+    	Collection<CartridgeSubscription> subscriptionList = cartridgeSubsciptionManager.isCartridgeSubscribed(tenantId, cartridgeType);
+    	if(subscriptionList == null || subscriptionList.isEmpty()){
+    		return false;	
+    	}else {
+    		return true;
+    	}		
+	}
+
+    public static List<ServiceDefinitionBean> getdeployedServiceInformation () throws RestAPIException {
+
+        Collection<Service> services = null;
+
+        try {
+            services = serviceDeploymentManager.getServices();
+
+        } catch (ADCException e) {
+            throw new RestAPIException("Error in getting Service Cluster details", e);
+        }
+
+        if (services != null && !services.isEmpty()) {
+            return PojoConverter.convertToServiceDefinitionBeans(services);
+        }
+
+        return null;
+    }
+
+    public static ServiceDefinitionBean getDeployedServiceInformation (String type) throws RestAPIException {
+
+        Service service = null;
+
+        try {
+            service = serviceDeploymentManager.getService(type);
+
+        } catch (ADCException e) {
+            throw new RestAPIException("Error in getting Service Cluster information for type " + type, e);
+        }
+
+        if (service != null) {
+            return PojoConverter.convertToServiceDefinitionBean(service);
+        }
+
+        return null;
+    }
+
+	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
 
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 

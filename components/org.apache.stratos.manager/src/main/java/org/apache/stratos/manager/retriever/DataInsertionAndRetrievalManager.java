@@ -218,6 +218,11 @@ public class DataInsertionAndRetrievalManager {
         persistenceManager.persistService(service);
     }
 
+    public Collection<Service> getServices() throws PersistenceManagerException {
+
+        return persistenceManager.getServices();
+    }
+
     public Service getService (String cartridgeType) throws PersistenceManagerException {
 
         return persistenceManager.getService(cartridgeType);

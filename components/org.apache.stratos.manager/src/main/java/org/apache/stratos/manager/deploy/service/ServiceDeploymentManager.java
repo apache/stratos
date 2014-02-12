@@ -328,6 +328,30 @@ public class ServiceDeploymentManager {
         }
     }
 
+    public Service getService (String type) throws ADCException {
+
+        try {
+            return new DataInsertionAndRetrievalManager().getService(type);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in getting Service for type " + type;
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+
+    public Collection<Service> getServices () throws ADCException {
+
+        try {
+            return new DataInsertionAndRetrievalManager().getServices();
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error in getting deployed Services";
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+
     public void undeployService (String type) throws ADCException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();

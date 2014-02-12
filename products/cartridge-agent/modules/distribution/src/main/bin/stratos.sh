@@ -35,7 +35,15 @@ properties="-Dmb.ip=MB-IP
             -Dextensions.dir=${script_path}/../extensions
             -Dcep.stats.publisher.enabled=true
             -Djavax.net.ssl.trustStore=CERT-TRUSTSTORE
-            -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD"
+            -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD
+	    -Denable.artifact.update=true
+	    -Dartifact.update.interval=10
+	    -Denable.data.publisher=false
+            -Dmonitoring.server.ip=MONITORING-SERVER-IP
+	    -Dmonitoring.server.port=MONITORING-SERVER-PORT
+	    -Dmonitoring.server.secure.port=MONITORING-SERVER-SECURE-PORT
+	    -Dmonitoring.server.admin.username=MONITORING-SERVER-ADMIN-USERNAME
+	    -Dmonitoring.server.admin.password=MONITORING-SERVER-ADMIN-PASSWORD"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

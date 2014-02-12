@@ -25,6 +25,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import java.util.*;
@@ -39,6 +40,7 @@ public class MockContext {
     private Map<String,Partition> partitionMap = new HashMap<String, Partition>();
     private Map<String,AutoscalePolicy> autoscalePolicyMap = new HashMap<String, AutoscalePolicy>();
     private Map<String,DeploymentPolicy> deploymentPolicyMap = new HashMap<String, DeploymentPolicy>();
+    private Map<String,ServiceDefinitionBean> serviceDefinitionMap = new HashMap<String, ServiceDefinitionBean>();
 
     private Set<Cartridge> temp = new HashSet<Cartridge>();
 
@@ -225,6 +227,14 @@ public class MockContext {
 
     public DeploymentPolicy getDeploymentPolicies(String deploymentPolicyId) {
         return deploymentPolicyMap.get(deploymentPolicyId);
+    }
+    public boolean deployService(ServiceDefinitionBean serviceDefinitionBean) {
+        serviceDefinitionMap.put(serviceDefinitionBean.getCartridgeType(),serviceDefinitionBean);
+        return true;
+
+    }
+    public ServiceDefinitionBean[] getServices() {
+        return serviceDefinitionMap.values().toArray(new ServiceDefinitionBean[0]);
     }
 
     public Partition[] getPartitions(String deploymentPolicyId, String partitionGroupId) {

@@ -288,4 +288,19 @@ public class CartridgeSubscriptionManager {
             throw new NotSubscribedException(errorMsg, alias);
         }
     }
+    
+    
+    /**
+     * 
+     * Returns a collection of Cartridge subscriptions for a particular tenant and a cartridge type
+     * 
+     * @param tenantId
+     * @param cartridgeType
+     * @return
+     */
+    public Collection<CartridgeSubscription> isCartridgeSubscribed(int tenantId, String cartridgeType) {
+    	
+    	DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+        return dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType);
+    }
 }

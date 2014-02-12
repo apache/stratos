@@ -27,44 +27,39 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UndeployServiceDefinitionCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(UndeployServiceDefinitionCommand.class);
+public class ListDeployServiceCommand implements Command<StratosCommandContext> {
 
-    @Override
+    private static final Logger logger = LoggerFactory.getLogger(ListDeployServiceCommand.class);
+
+    public ListDeployServiceCommand() {
+    }
+
     public String getName() {
-        return CliConstants.UNDEPLOY_SERVICE;
+        return CliConstants.LIST_DEPLOY_SERVICE;
     }
 
-    @Override
     public String getDescription() {
-        return "Undeploy Multitenant Service";
+        return "List available deploy services";
     }
 
-    @Override
     public String getArgumentSyntax() {
-        return "[Service Type]";
-    }
-
-    @Override
-    public Options getOptions() {
         return null;
     }
 
-    @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
-		}
-		if (args != null && args.length == 1) {
-			String id = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting undeploy miltitenant service info {}", id);
-			}
-			RestCommandLineService.getInstance().undeployService(id);
-			return CliConstants.SUCCESSFUL_CODE;
-		} else {
-			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
-		}
+            logger.debug("Executing {} command...", getName());
+        }
+        if (args == null || args.length == 0) {
+            RestCommandLineService.getInstance().listDeployServices();
+            return CliConstants.SUCCESSFUL_CODE;
+        } else {
+            context.getStratosApplication().printUsage(getName());
+            return CliConstants.BAD_ARGS_CODE;
+        }
+    }
+
+    public Options getOptions() {
+        return null;
     }
 }

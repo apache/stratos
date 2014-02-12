@@ -93,8 +93,16 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/tenant/list",{}).data;
     };
 
+    this.getServices = function(){
+        return this.sendReceive("GET","/service",{}).data;
+    };
+
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
+    };
+
+    this.deployServiceDefinition = function(serviceDefinition){
+        return this.send("POST","/service/definition",serviceDefinition).data;
     };
 
     this.deployLbDefinition = function(lbDefinition){
@@ -165,6 +173,11 @@ consoleAppUtil = new function(){
     this.getCartridges = function(){
         return this.sendReceive("GET","/cartridge/list",{}).data;
     };
+
+    this.getLbCartridges = function(){
+        return this.sendReceive("GET","/cartridge/lb",{}).data;
+    };
+
     this.getCartridgeInfo = function(alias){
         return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };

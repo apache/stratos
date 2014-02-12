@@ -102,6 +102,15 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddTenantCommand();
         commands.put(command.getName(), command);
 
+        command = new DeleteTenantCommand();
+        commands.put(command.getName(), command);
+
+        command = new DeactivateTenantCommand();
+        commands.put(command.getName(), command);
+
+        command = new ActivateTenantCommand();
+        commands.put(command.getName(), command);
+
         command = new CartridgeDeploymentCommand();
         commands.put(command.getName(), command);
 
@@ -114,9 +123,14 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeployServiceDeploymentCommand();
         commands.put(command.getName(), command);
 
-        // Need to implement delete request
-        //command = new UndeployServiceDefinitionCommand();
-        //commands.put(command.getName(), command);
+        command = new UndeployServiceDefinitionCommand();
+        commands.put(command.getName(), command);
+
+        command = new ListDeployServiceCommand();
+        commands.put(command.getName(), command);
+
+        command = new UndeployCartridgeDefinitionCommand();
+        commands.put(command.getName(), command);
 
         command = new DeploymentPolicyDeploymentCommand();
         commands.put(command.getName(), command);
@@ -501,7 +515,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		for (String action : commands.keySet()) {
 			Command<StratosCommandContext> command = commands.get(action);
 			if (command != null) {
-				System.out.format("%-25s %s%n", command.getName(), command.getDescription());
+				System.out.format("%-35s %s%n", command.getName(), command.getDescription());
 			}
 		}
 

@@ -27,22 +27,22 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UndeployServiceDefinitionCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(UndeployServiceDefinitionCommand.class);
+public class DeleteTenantCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(DeleteTenantCommand.class);
 
     @Override
     public String getName() {
-        return CliConstants.UNDEPLOY_SERVICE;
+        return CliConstants.DELETE_TENANT;
     }
 
     @Override
     public String getDescription() {
-        return "Undeploy Multitenant Service";
+        return "Delete Tenant";
     }
 
     @Override
     public String getArgumentSyntax() {
-        return "[Service Type]";
+        return "[Tenant Domain]";
     }
 
     @Override
@@ -58,9 +58,9 @@ public class UndeployServiceDefinitionCommand implements Command<StratosCommandC
 		if (args != null && args.length == 1) {
 			String id = args[0];
 			if (logger.isDebugEnabled()) {
-				logger.debug("Getting undeploy miltitenant service info {}", id);
+				logger.debug("Getting delete tenant info {}", id);
 			}
-			RestCommandLineService.getInstance().undeployService(id);
+			RestCommandLineService.getInstance().deleteTenant(id);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());

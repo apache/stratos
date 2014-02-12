@@ -792,6 +792,27 @@ public class StratosAdmin extends AbstractAdmin {
                serviceDefinitionBean.getTenantRange());
     }
 
+    @GET
+    @Path("/service")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean[] getServices() throws RestAPIException {
+        List<ServiceDefinitionBean> serviceDefinitionBeans = ServiceUtils.getdeployedServiceInformation();
+        return serviceDefinitionBeans == null || serviceDefinitionBeans.isEmpty() ? new ServiceDefinitionBean[0] :
+            serviceDefinitionBeans.toArray(new ServiceDefinitionBean[serviceDefinitionBeans.size()]);
+    }
+
+    @GET
+    @Path("/service/{serviceType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean getService(@PathParam("serviceType") String serviceType)throws RestAPIException {
+
+        return ServiceUtils.getDeployedServiceInformation(serviceType);
+    }
+
     @DELETE
     @Path("/service/definition/{serviceType}")
     @Produces("application/json")
