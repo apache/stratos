@@ -33,6 +33,7 @@ public class Registrant {
     private Properties properties;
     private String autoScalerPolicyName;
     private String deploymentPolicyName;
+    private boolean isPersistant;
     
     public String getTenantRange() {
         return tenantRange;
@@ -90,5 +91,13 @@ public class Registrant {
                ", hostName=" + hostName + ", cartridgeType=" + cartridgeType + ", properties=" +
                properties + ", autoScalerPolicyName=" + autoScalerPolicyName +
                ", deploymentPolicyName=" + deploymentPolicyName + "]";
+    }
+
+    public boolean isPersistant() {
+        return isPersistant;
+    }
+
+    public void setPersistant(boolean isPersistant) {
+        this.isPersistant = isPersistant;
     }
 }

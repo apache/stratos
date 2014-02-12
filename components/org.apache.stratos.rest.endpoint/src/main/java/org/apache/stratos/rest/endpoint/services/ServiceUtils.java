@@ -35,6 +35,7 @@ import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
@@ -43,6 +44,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -746,19 +748,16 @@ public class ServiceUtils {
     }
 
 
-    static SubscriptionInfo subscribe(String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, String repoURL,
-                               boolean privateRepo, String repoUsername, String repoPassword, String dataCartridgeType,
-                               String dataCartridgeAlias, ConfigurationContext configurationContext, String userName, String tenantDomain) 
+    static SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain)
                                        throws ADCException, PolicyException, UnregisteredCartridgeException,
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, RepositoryRequiredException,
             AlreadySubscribedException, RepositoryCredentialsRequiredException, InvalidRepositoryException,
             RepositoryTransportException {
-
         // LB cartridges won't go thru this method.
 
         //TODO: this is a temp fix. proper fix is to move this logic to CartridgeSubscriptionManager
         // validate cartridge alias
-        CartridgeSubscriptionUtils.validateCartridgeAlias(ApplicationManagementUtil.getTenantId(configurationContext), cartridgeType, alias);
+        CartridgeSubscriptionUtils.validateCartridgeAlias(ApplicationManagementUtil.getTenantId(configurationContext), cartridgeInfoBean.getCartridgeType(), cartridgeInfoBean.getAlias());
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         CloudControllerServiceClient cloudControllerServiceClient =
@@ -766,22 +765,42 @@ public class ServiceUtils {
         CartridgeInfo cartridgeInfo;
 
         try {
-            cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
+            cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeInfoBean.getCartridgeType());
         } catch (Exception e) {
-            String msg = "Cannot get cartridge info: " + cartridgeType;
+            String msg = "Cannot get cartridge info: " + cartridgeInfoBean.getCartridgeType();
             log.error(msg, e);
             throw new ADCException(msg, e);
         }
 
+        String cartridgeType = cartridgeInfoBean.getCartridgeType();
+        String deploymentPolicy = cartridgeInfoBean.getDeploymentPolicy();
+        String autoscalingPolicy = cartridgeInfoBean.getAutoscalePolicy();
+        String dataCartridgeAlias = cartridgeInfoBean.getDataCartridgeAlias();
+
+        SubscriptionData subscriptionData = new SubscriptionData();
+        subscriptionData.setCartridgeType(cartridgeType);
+        subscriptionData.setCartridgeAlias(cartridgeInfoBean.getAlias().trim());
+        subscriptionData.setDataCartridgeAlias(dataCartridgeAlias);
+        subscriptionData.setAutoscalingPolicyName(autoscalingPolicy);
+        subscriptionData.setDeploymentPolicyName(deploymentPolicy);
+        subscriptionData.setTenantDomain(tenantDomain);
+        subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
+        subscriptionData.setTenantAdminUsername(tenantUsername);
+        subscriptionData.setRepositoryType("git");
+        subscriptionData.setRepositoryURL(cartridgeInfoBean.getRepoURL());
+        subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoURL());
+        subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
+
         // If multitenant, return for now. TODO -- fix properly
         if(cartridgeInfo != null && cartridgeInfo.getMultiTenant()) {
                log.info(" ******* MT cartridge ******* ");
+
+            subscriptionData.setPrivateRepository(false);
+            subscriptionData.setLbClusterId(null);
+            subscriptionData.setProperties(null);
                        
-               CartridgeSubscription cartridgeSubscription = 
-               cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType, alias, autoscalingPolicy, 
-                                                                         deploymentPolicy ,tenantDomain, 
-                                                                         ApplicationManagementUtil.getTenantId(configurationContext),
-                                                                         userName, "git", repoURL, false, repoUsername, repoPassword, null, null);
+            CartridgeSubscription cartridgeSubscription =
+                                        cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
                log.info(" --- ** -- ");
               return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription);
                        
@@ -889,7 +908,7 @@ public class ServiceUtils {
                                                           lbAlias,
                                                           lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                           deploymentPolicy, configurationContext,
-                                                          userName, tenantDomain,
+                                                    tenantUsername, tenantDomain,
                                                           lbCartridgeInfo.getProperties());
                                             } else {
                                                 String msg = "Please specify a LB cartridge type for the cartridge: "
@@ -967,7 +986,7 @@ public class ServiceUtils {
                                                     lbAlias,
                                                     lbCartridgeInfo.getDefaultAutoscalingPolicy(),
                                                     deploymentPolicy,
-                                                    configurationContext, userName,
+                                                    configurationContext, tenantUsername,
                                                     tenantDomain,
                                                     lbCartridgeInfo.getProperties());
                                             } else {
@@ -994,21 +1013,12 @@ public class ServiceUtils {
             }
         }
 
+        subscriptionData.setPrivateRepository(cartridgeInfoBean.isPrivateRepo());
+        subscriptionData.setLbClusterId(lbClusterId);
+        subscriptionData.setProperties(lbRefProp.toArray(new Property[0]));
         CartridgeSubscription cartridgeSubscription =
-                                                      cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType,
-                                                                                                                     alias.trim(),
-                                                                                                                     autoscalingPolicy,
-                                                                                                                     deploymentPolicy,
-                                                                                                                     tenantDomain,
-                                                                                                                     ApplicationManagementUtil.getTenantId(configurationContext),
-                                                                                                                     userName,
-                                                                                                                     "git",
-                                                                                                                     repoURL,
-                                                                                                                     privateRepo,
-                                                                                                                     repoUsername,
-                                                                                                                     repoPassword,
-                                                                                                                     lbClusterId,
-                                                                                                                     lbRefProp.toArray(new Property[0]));
+                                                      cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
+
 
         if (dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
 
@@ -1105,11 +1115,21 @@ public class ServiceUtils {
             if(log.isDebugEnabled()) {
                 log.debug("Subscribing to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
             }
+
+            SubscriptionData subscriptionData = new SubscriptionData();
+            subscriptionData.setCartridgeType(cartridgeType);
+            subscriptionData.setLbAlias(lbAlias.trim());
+            subscriptionData.setAutoscalingPolicyName(defaultAutoscalingPolicy);
+            subscriptionData.setDeploymentPolicyName(deploymentPolicy);
+            subscriptionData.setTenantDomain(tenantDomain);
+            subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
+            subscriptionData.setTenantAdminUsername(userName);
+            subscriptionData.setRepositoryType("git");
+            subscriptionData.setProperties(props);
+            subscriptionData.setPrivateRepository(false);
+
             cartridgeSubscription =
-                    cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(cartridgeType, lbAlias.trim(), defaultAutoscalingPolicy, 
-                                                                     deploymentPolicy ,tenantDomain, 
-                                                                     ApplicationManagementUtil.getTenantId(configurationContext),
-                                                                     userName, "git", null, false, null, null, null, props);
+                    cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
 
             //set a payload parameter to indicate the load balanced cartridge type
             cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);

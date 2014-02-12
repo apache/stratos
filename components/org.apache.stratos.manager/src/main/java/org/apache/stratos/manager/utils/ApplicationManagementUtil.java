@@ -256,7 +256,7 @@ public class ApplicationManagementUtil {
         log.info("Register service..");
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
-                    hostName, properties, autoscalingPoliyName, deploymentPolicyName);
+                    hostName, properties, autoscalingPoliyName, deploymentPolicyName, );
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);

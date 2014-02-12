@@ -69,6 +69,8 @@ public abstract class CartridgeSubscription implements Serializable {
     private String subscriptionKey;
     private SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
 
+    private String nothing;
+
     
     /**
      * Constructor
@@ -122,7 +124,16 @@ public abstract class CartridgeSubscription implements Serializable {
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
+        setNothing(nothing);
         getSubscriptionTenancyBehaviour().createSubscription(this);
+    }
+
+    public void setNothing(String nothing) {
+        this.nothing=nothing;
+    }
+
+    public String getNothing(){
+        return nothing;
     }
 
     /**

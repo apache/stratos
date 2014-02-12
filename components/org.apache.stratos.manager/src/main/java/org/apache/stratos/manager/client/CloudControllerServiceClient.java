@@ -108,7 +108,7 @@ public class CloudControllerServiceClient {
 	public boolean register(String clusterId, String cartridgeType,
 	                        String payload, String tenantRange,
                             String hostName, Properties properties,
-                            String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException,
+                            String autoscalorPolicyName, String deploymentPolicyName, boolean isPersistant) throws RemoteException,
                             CloudControllerServiceUnregisteredCartridgeExceptionException, 
                             CloudControllerServiceIllegalArgumentExceptionException {		
 	    Registrant registrant = new Registrant();
@@ -120,6 +120,7 @@ public class CloudControllerServiceClient {
 	    registrant.setPayload(payload);
 	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
         registrant.setDeploymentPolicyName(deploymentPolicyName);
+        registrant.setPersistant(isPersistant);
 		return stub.registerService(registrant);
 
 	}

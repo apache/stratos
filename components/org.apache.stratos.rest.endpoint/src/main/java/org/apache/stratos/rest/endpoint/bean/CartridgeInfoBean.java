@@ -32,6 +32,11 @@ public class CartridgeInfoBean {
     String dataCartridgeType;
     String dataCartridgeAlias;
 
+    boolean persistanceRequired;
+    int persistaneVolumeSize;
+    boolean deleteOnTermination;
+    String devicetoMap;
+
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -111,5 +116,37 @@ public class CartridgeInfoBean {
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public boolean isPersistanceRequired() {
+        return persistanceRequired;
+    }
+
+    public void setPersistanceRequired(boolean persistanceRequired) {
+        this.persistanceRequired = persistanceRequired;
+    }
+
+    public int getPersistaneVolumeSize() {
+        return persistaneVolumeSize;
+    }
+
+    public void setPersistaneVolumeSize(int persistaneVolumeSize) {
+        this.persistaneVolumeSize = persistaneVolumeSize;
+    }
+
+    public boolean isDeleteOnTermination() {
+        return deleteOnTermination;
+    }
+
+    public void setDeleteOnTermination(boolean deleteOnTermination) {
+        this.deleteOnTermination = deleteOnTermination;
+    }
+
+    public String getDevicetoMap() {
+        return devicetoMap;
+    }
+
+    public void setDevicetoMap(String devicetoMap) {
+        this.devicetoMap = devicetoMap;
     }
 }

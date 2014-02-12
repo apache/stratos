@@ -31,6 +31,7 @@ import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBehaviour;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionSingleTenantBehaviour;
@@ -51,67 +52,31 @@ public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
     //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
-
-    /**
-     * Subscribes to a cartridge
-     *
-     * @param cartridgeType Cartridge type
-     * @param subscriptionAlias Cartridge alias
-     * @param autoscalingPolicyName Autoscaling policy name
-     * @param deploymentPolicyName Deployment Policy name
-     * @param tenantDomain Subscriing tenant's domain
-     * @param tenantId Subscribing tenant's Id
-     * @param tenantAdminUsername Subscribing tenant's admin user name
-     * @param repositoryType Type of repository
-     * @param repositoryURL Repository URL
-     * @param isPrivateRepository If a private or a public repository
-     * @param repositoryUsername Repository username
-     * @param repositoryPassword Repository password
-     *
-     * @return Subscribed CartridgeSubscription object
-     * @throws ADCException
-     * @throws InvalidCartridgeAliasException
-     * @throws DuplicateCartridgeAliasException
-     * @throws PolicyException
-     * @throws UnregisteredCartridgeException
-     * @throws RepositoryRequiredException
-     * @throws RepositoryCredentialsRequiredException
-     * @throws RepositoryTransportException
-     * @throws AlreadySubscribedException
-     * @throws InvalidRepositoryException
-     */
-    public CartridgeSubscription subscribeToCartridge (String cartridgeType, String subscriptionAlias,
-                                                  String autoscalingPolicyName, String deploymentPolicyName,
-                                                  String tenantDomain, int tenantId,
-                                                  String tenantAdminUsername, String repositoryType,
-                                                  String repositoryURL, boolean isPrivateRepository,
-                                                  String repositoryUsername, String repositoryPassword, String lbClusterId)
-
-            throws ADCException, InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException,
-            UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
-            RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
-
-        return subscribeToCartridgeWithProperties(cartridgeType, subscriptionAlias, autoscalingPolicyName,
-                                                  deploymentPolicyName, tenantDomain, tenantId, tenantAdminUsername, 
-                                                  repositoryType, repositoryURL, isPrivateRepository, repositoryUsername, 
-                                                  repositoryPassword, lbClusterId, null);
-    }
     
-    public CartridgeSubscription subscribeToCartridgeWithProperties(String cartridgeType, String cartridgeAlias,
-        String autoscalingPolicyName, String deploymentPolicyName, String tenantDomain,
-        int tenantId, String tenantAdminUsername, String repositoryType, String repositoryURL,
-        boolean isPrivateRepository, String repositoryUsername, String repositoryPassword, String lbClusterId, Property[] props)
+    public CartridgeSubscription subscribeToCartridgeWithProperties(SubscriptionData subscriptionData)  throws ADCException,
+                                                                                            InvalidCartridgeAliasException,
+                                                                                            DuplicateCartridgeAliasException,
+                                                                                            PolicyException,
+                                                                                            UnregisteredCartridgeException,
+                                                                                            RepositoryRequiredException,
+                                                                                            RepositoryCredentialsRequiredException,
+                                                                                            RepositoryTransportException,
+                                                                                            AlreadySubscribedException,
+                                                                                            InvalidRepositoryException {
 
-    throws ADCException,
-        InvalidCartridgeAliasException,
-        DuplicateCartridgeAliasException,
-        PolicyException,
-        UnregisteredCartridgeException,
-        RepositoryRequiredException,
-        RepositoryCredentialsRequiredException,
-        RepositoryTransportException,
-        AlreadySubscribedException,
-        InvalidRepositoryException {
+        int tenantId = subscriptionData.getTenantId();
+        String cartridgeType = subscriptionData.getCartridgeType();
+        String cartridgeAlias =  subscriptionData.getCartridgeAlias();
+        Property [] props = subscriptionData.getProperties();
+        String repositoryPassword = subscriptionData.getRepositoryPassword();
+        String repositoryUsername = subscriptionData.getRepositoryUsername();
+        boolean isPrivateRepository = subscriptionData.isPrivateRepository();
+        String repositoryURL = subscriptionData.getRepositoryURL();
+        String tenantDomain = subscriptionData.getTenantDomain();
+        String tenantAdminUsername = subscriptionData.getTenantAdminUsername();
+        String autoscalingPolicyName = subscriptionData.getAutoscalingPolicyName();
+        String deploymentPolicyName = subscriptionData.getDeploymentPolicyName();
+        String lbClusterId = subscriptionData.getLbClusterId();
 
         // validate cartridge alias
         CartridgeSubscriptionUtils.validateCartridgeAlias(tenantId, cartridgeType, cartridgeAlias);
@@ -159,8 +124,10 @@ public class CartridgeSubscriptionManager {
         //Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
                 getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
-        
+
+
         String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+
         String encryptedRepoPassword = repositoryPassword != null && !repositoryPassword.isEmpty() ?
                 RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey) : "";
         
@@ -180,7 +147,7 @@ public class CartridgeSubscriptionManager {
 
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
-                                                 deploymentPolicyName, repository);
+                                                deploymentPolicyName, repository);
 
         // set the lb cluster id if its available
         if (lbClusterId != null && !lbClusterId.isEmpty()) {
