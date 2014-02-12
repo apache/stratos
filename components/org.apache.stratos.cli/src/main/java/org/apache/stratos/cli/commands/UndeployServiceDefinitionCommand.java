@@ -42,7 +42,7 @@ public class UndeployServiceDefinitionCommand implements Command<StratosCommandC
 
     @Override
     public String getArgumentSyntax() {
-        return "[ID]";
+        return "[Service Type]";
     }
 
     @Override

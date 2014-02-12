@@ -63,7 +63,6 @@ public class RestCommandLineService {
     // REST endpoints
     private final String initializeEndpoint = "/stratos/admin/init";
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
-    private final String describeAvailableCartridgeRestEndpoint = "/stratos/admin/cartridge/list/";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
     private final String listSubscribedCartridgeInfoRestEndpoint = "/stratos/admin/cartridge/info/";
     private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
@@ -74,11 +73,8 @@ public class RestCommandLineService {
     private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
     private final String autoscalingPolicyDeploymentEndPoint = "/stratos/admin/policy/autoscale";
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";
-    private final String describeParitionRestEndPoint = "/stratos/admin/partition/";
     private final String listParitionRestEndPoint = "/stratos/admin/partition";
-    private final String describeAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale/";
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
-    private final String describeDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment/";
     private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
     private final String deployServiceEndPoint = "/stratos/admin/service/definition";
 
@@ -839,6 +835,31 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to delete the created tenant
+    public void deleteTenant(String tenantDomain) throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doDelete(httpClient, restClientService.getUrl()
+                    + addTenantEndPoint + "/" + tenantDomain, restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully delete " + tenantDomain + " tenant");
+                return;
+            } else {
+                System.out.println("Error occured while deleting " + tenantDomain + " tenant");
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in deleting " + tenantDomain + " tenant", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -898,7 +919,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Exception in undeploying " + id + "cartridge", e);
+            handleException("Exception in undeploying " + id + " cartridge", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }

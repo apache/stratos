@@ -143,19 +143,23 @@ public class CliConstants {
      */
     public static final String DESCRIBE_PARTITION = "describe-partition";
     /**
-     * describe the auto scaling policy
+     * Describe the auto scaling policy
      */
     public static final String DESCRIBE_AUTO_SCALING_POLICY = "describe-autoscaling-policy";
     /**
-     * undeploy deploy service
+     * Undeploy deploy service
      */
     public static final String UNDEPLOY_SERVICE = "undeploy-service";
     /**
-     * undeploy cartridge definition
+     * Undeploy cartridge definition
      */
     public static final String UNDEPLOY_CARTRIDGE_DEFINITION = "undeploy-cartridge";
+    /**
+     * Delete tenant
+     */
+    public static final String DELETE_TENANT = "delete-tenant";
      /**
-     * describe the deployment policy
+     * Describe the deployment policy
      */
     public static final String DESCRIBE_DEPLOYMENT_POLICY = "describe-deployment-policy";
 

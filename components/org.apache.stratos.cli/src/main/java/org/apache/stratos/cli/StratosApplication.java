@@ -102,6 +102,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddTenantCommand();
         commands.put(command.getName(), command);
 
+        command = new DeleteTenantCommand();
+        commands.put(command.getName(), command);
+
         command = new CartridgeDeploymentCommand();
         commands.put(command.getName(), command);
 
