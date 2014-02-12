@@ -37,6 +37,7 @@ import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolic
 import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
+import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
 import org.apache.stratos.cli.beans.topology.Cluster;
 import org.apache.stratos.cli.beans.topology.Member;
 import org.apache.stratos.cli.exception.CommandException;
@@ -77,6 +78,7 @@ public class RestCommandLineService {
     private final String listAutoscalePolicyRestEndPoint = "/stratos/admin/policy/autoscale";
     private final String listDeploymentPolicyRestEndPoint = "/stratos/admin/policy/deployment";
     private final String deployServiceEndPoint = "/stratos/admin/service/definition";
+    private final String listDeployServices = "/stratos/admin/service";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -1037,6 +1039,83 @@ public class RestCommandLineService {
         }
     }
 
+    // This method list deploy services
+    public void listDeployServices() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listDeployServices,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if (responseCode.equals("" + CliConstants.RESPONSE_AUTHORIZATION_FAIL)) {
+                System.out.println("Invalid operations. Authorization failed");
+                return;
+            } else if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing deploy services");
+                return;
+            }
+
+            String resultString = getHttpResponseString(response);
+
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            ServiceDefinitionList definitionList = gson.fromJson(resultString, ServiceDefinitionList.class);
+
+            if (definitionList == null) {
+                System.out.println("Deploy service list is empty");
+                return;
+            }
+
+            RowMapper<ServiceDefinitionBean> deployServiceMapper = new RowMapper<ServiceDefinitionBean>() {
+
+                public String[] getData(ServiceDefinitionBean definition) {
+                    String[] data = new String[7];
+                    data[0] = definition.getServiceName();
+                    data[1] = definition.getCartridgeType();
+                    data[2] = definition.getDeploymentPolicyName();
+                    data[3] = definition.getAutoscalingPolicyName();
+                    data[4] = definition.getClusterDomain();
+                    data[5] = definition.getClusterSubDomain();
+                    data[6] = definition.getTenantRange();
+                    return data;
+                }
+            };
+
+            ServiceDefinitionBean[] definitionArry = new ServiceDefinitionBean[definitionList.getServiceDefinition().size()];
+            definitionArry = definitionList.getServiceDefinition().toArray(definitionArry);
+
+            if (definitionArry.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No deploy services are found");
+                }
+                System.out.println("There are no deploy services available");
+                return;
+            }
+
+            List<String> headers = new ArrayList<String>();
+            headers.add("Service Name");
+            headers.add("Cartridge Type");
+            headers.add("Deployment Policy Name");
+            headers.add("Autoscaling Policy Name");
+            headers.add("Cluster Domain");
+            headers.add("Cluster Sub Domain");
+            headers.add("Tenant Range");
+
+            System.out.println("Available Deploy Services :");
+            CommandLineUtils.printTable(definitionArry, deployServiceMapper, headers.toArray(new String[headers.size()]));
+
+        } catch (Exception e) {
+            handleException("Exception in listing deploy services", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to deploy deployment polices
     public void deployDeploymentPolicy (String deploymentPolicy) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1481,6 +1560,22 @@ public class RestCommandLineService {
 
         AutoscalePolicyList() {
             autoscalePolicy = new ArrayList<AutoscalePolicy>();
+        }
+    }
+
+    private class ServiceDefinitionList {
+        private ArrayList<ServiceDefinitionBean> serviceDefinition;
+
+        public ArrayList<ServiceDefinitionBean> getServiceDefinition() {
+            return serviceDefinition;
+        }
+
+        public void setServiceDefinition(ArrayList<ServiceDefinitionBean> serviceDefinition) {
+            this.serviceDefinition = serviceDefinition;
+        }
+
+        ServiceDefinitionList() {
+            serviceDefinition = new ArrayList<ServiceDefinitionBean>();
         }
     }
 
