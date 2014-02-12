@@ -96,7 +96,7 @@ public class PojoConverter {
         {
           System.out.println("persistance bean " + persistBeanArr[i].toString());
           PersistanceMapping persistMapping = new PersistanceMapping();
-          persistMapping.setSnapshotId(persistBeanArr[i].snapshotId);
+          persistMapping.setPersistanceRequired(persistBeanArr[i].persistanceRequired);
           persistMapping.setDevice(persistBeanArr[i].device);
           persistMapping.setSize(persistBeanArr[i].size);
           persistMapping.setRemoveOntermination(persistBeanArr[i].removeOnTermination);
