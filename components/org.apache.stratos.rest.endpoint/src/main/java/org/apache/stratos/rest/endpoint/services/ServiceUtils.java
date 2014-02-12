@@ -18,40 +18,20 @@
 
 package org.apache.stratos.rest.endpoint.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.AlreadySubscribedException;
-import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
-import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
-import org.apache.stratos.manager.exception.InvalidRepositoryException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.exception.PolicyException;
-import org.apache.stratos.manager.exception.RepositoryCredentialsRequiredException;
-import org.apache.stratos.manager.exception.RepositoryRequiredException;
-import org.apache.stratos.manager.exception.RepositoryTransportException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
@@ -67,8 +47,12 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class ServiceUtils {
     private static Log log = LogFactory.getLog(ServiceUtils.class);
@@ -546,6 +530,42 @@ public class ServiceUtils {
     		return true;
     	}		
 	}
+
+    public static List<ServiceDefinitionBean> getdeployedServiceInformation () throws RestAPIException {
+
+        Collection<Service> services = null;
+
+        try {
+            services = serviceDeploymentManager.getServices();
+
+        } catch (ADCException e) {
+            throw new RestAPIException("Error in getting Service Cluster details", e);
+        }
+
+        if (services != null && !services.isEmpty()) {
+            return PojoConverter.convertToServiceDefinitionBeans(services);
+        }
+
+        return null;
+    }
+
+    public static ServiceDefinitionBean getDeployedServiceInformation (String type) throws RestAPIException {
+
+        Service service = null;
+
+        try {
+            service = serviceDeploymentManager.getService(type);
+
+        } catch (ADCException e) {
+            throw new RestAPIException("Error in getting Service Cluster information for type " + type, e);
+        }
+
+        if (service != null) {
+            return PojoConverter.convertToServiceDefinitionBean(service);
+        }
+
+        return null;
+    }
 
 	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
 

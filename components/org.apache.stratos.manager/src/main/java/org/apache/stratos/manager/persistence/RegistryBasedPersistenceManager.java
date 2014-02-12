@@ -256,6 +256,30 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
     }
 
+
+    @Override
+    public Collection<Service> getServices() throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                return traverseAndGetDeloyedServices(STRATOS_MANAGER_REOSURCE + SERVICES);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            return traverseAndGetDeloyedServices(STRATOS_MANAGER_REOSURCE + SERVICES);
+        }
+    }
+
     @Override
     public Service getService(String cartridgeType) throws PersistenceManagerException {
 
@@ -277,6 +301,77 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         } else {
             return getDeployedService(cartridgeType);
         }
+    }
+
+    public Collection<Service> traverseAndGetDeloyedServices (String resourcePath) throws PersistenceManagerException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Root resource path: " + resourcePath);
+        }
+
+        Object resourceObj;
+
+        try {
+            resourceObj = RegistryManager.getInstance().retrieve(resourcePath);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        Collection<Service> services = new ArrayList<Service>();
+
+        if (resourceObj == null) {
+            // there is no resource at the given path
+            return null;
+
+        } else if (resourceObj instanceof String[]) {
+
+            // get the paths for all Service instances
+            String[] serviceResourcePaths = (String[]) resourceObj;
+            if (log.isDebugEnabled()) {
+                for (String retrievedResourcePath : serviceResourcePaths) {
+                    log.debug("Retrieved resource sub-path " + retrievedResourcePath);
+                }
+            }
+
+            // traverse the paths recursively
+            for (String serviceResourcePath : serviceResourcePaths) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Traversing resource path " + serviceResourcePath);
+                }
+
+                services.addAll(traverseAndGetDeloyedServices(serviceResourcePath));
+            }
+
+        } else {
+            // De-serialize
+            Object serviceObj;
+
+            try {
+                serviceObj = Deserializer.deserializeFromByteArray((byte[]) resourceObj);
+
+            } catch (Exception e) {
+                // issue might be de-serializing only this object, therefore log and continue without throwing
+                log.error("Error while de-serializing the object retrieved from "  + resourcePath, e);
+                return null;
+            }
+
+            if (serviceObj != null && serviceObj instanceof Service) {
+
+                Service deserilizedService = (Service) serviceObj;
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully de-serialized Service: " + deserilizedService.toString());
+                }
+
+                services.add(deserilizedService);
+
+            }
+        }
+
+        // remove any nulls
+        services.removeAll(Collections.singleton(null));
+        return services;
     }
 
     public Service getDeployedService (String cartridgeType) throws PersistenceManagerException {
