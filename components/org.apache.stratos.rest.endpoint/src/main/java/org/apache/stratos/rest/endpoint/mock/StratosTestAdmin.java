@@ -34,6 +34,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -197,6 +198,29 @@ public class StratosTestAdmin {
         MockContext.getInstance().deactivateTenant(tenantDomain);
     }
 
+   @POST
+   @Path("/service/definition")
+   @Produces("application/json")
+   @Consumes("application/json")
+   @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+   @SuperTenantService(true)
+   public boolean deployService(ServiceDefinitionBean serviceDefinitionBean)
+           throws RestAPIException {
+
+       log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
+       return MockContext.getInstance().deployService(serviceDefinitionBean);
+   }
+    @GET
+    @Path("/service")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean[] getServices () throws RestAPIException {
+        return MockContext.getInstance().getServices();
+
+    }
+
+
     @POST
     @Path("/cartridge/definition/")
     @Produces("application/json")
@@ -291,7 +315,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Partition[] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
-           return MockContext.getInstance().getPartitions(deploymentPolicyId,partitionGroupId);
+           return MockContext.getInstance().getPartitions(deploymentPolicyId, partitionGroupId);
 
     }
 

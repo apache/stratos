@@ -39,7 +39,8 @@ if(wizard.step == 1){
         }
     }
 }else if(wizard.step == 6){
-    step_data = require('data/mt_service_deployments.json');
+    step_data = utils.consoleAppUtil.getServices();
+    step_data = step_data.serviceDefinitionBean;
 }
 caramel.render({
     step_data:step_data,

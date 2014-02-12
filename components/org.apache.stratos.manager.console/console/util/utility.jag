@@ -93,8 +93,16 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/tenant/list",{}).data;
     };
 
+    this.getServices = function(){
+        return this.sendReceive("GET","/service",{}).data;
+    };
+
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
+    };
+
+    this.deployServiceDefinition = function(serviceDefinition){
+        return this.send("POST","/service/definition",serviceDefinition).data;
     };
 
     this.deployLbDefinition = function(lbDefinition){
