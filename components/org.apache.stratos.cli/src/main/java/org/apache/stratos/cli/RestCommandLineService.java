@@ -1563,6 +1563,7 @@ public class RestCommandLineService {
         }
     }
 
+    // This class convert JSON string to servicedefinitionbean object
     private class ServiceDefinitionList {
         private ArrayList<ServiceDefinitionBean> serviceDefinition;
 
