@@ -477,11 +477,12 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
-                    for(Property property: cartridgeInfo.getLbConfig().getProperties().getProperties()) {
+                    if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getLbConfig().getProperties() != null) {
+                        for(Property property: cartridgeInfo.getLbConfig().getProperties().getProperties()) {
                         if(property.getName().equals("load.balancer")) {
                             cartridge.setLoadBalancer(true);
                         }
-
+                        }
                     }
                     //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
