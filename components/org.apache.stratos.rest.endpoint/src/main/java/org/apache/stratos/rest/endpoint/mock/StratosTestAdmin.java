@@ -252,6 +252,16 @@ public class StratosTestAdmin {
         return MockContext.getInstance().getAvailableSingleTenantCartridgeInfo(cartridgeType);
     }
 
+    @GET
+    @Path("/cartridge/lb")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableLbCartridges() throws ADCException {
+        return MockContext.getInstance().getAvailableLbCartridges();
+    }
+
+
 
     @POST
     @Path("/policy/deployment/partition")

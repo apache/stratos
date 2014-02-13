@@ -77,62 +77,74 @@
 
                 {{#if config_on}}
                 <div class="col-lg-12">
+                    {{#if config_status.first_use}}
+                        <ul class="sub-menu-inactive">
+                            <li>Partitions</li>
+                            <li>Auto scale Policies</li>
+                            <li>Deployments Policies</li>
+                            <li>LBs</li>
+                            <li>Cartridges</li>
+                            <li>Multi-Tenant Services</li>
+                        </ul>
+                    {{else}}
+                        <ul class="sub-menu-wizard non-wizard">
+                            <li {{#ifCond step "==" 1 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=1" }}">
+                                <div class="wizard-number">1</div>
+                                <div>Partitions</div>
+                                </a>
+                            </li>
 
-                    <ul class="sub-menu-wizard non-wizard">
-                        <li {{#ifCond step "==" 1 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=1" }}">
-                            <div class="wizard-number">1</div>
-                            <div>Partitions</div>
-                            </a>
-                        </li>
+                            <li {{#ifCond step "==" 2 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=2" }}">
+                                <div class="wizard-number">2</div>
+                                <div>Auto scale Policies</div>
+                                </a>
+                            </li>
 
-                        <li {{#ifCond step "==" 2 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=2" }}">
-                            <div class="wizard-number">2</div>
-                            <div>Auto scale Policies</div>
-                            </a>
-                        </li>
-
-                        <li {{#ifCond step "==" 3 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=3" }}">
-                            <div class="wizard-number">3</div>
-                            <div>Deployments Policies</div>
-                            </a>
-                        </li>
-
-
-
-                        <li {{#ifCond step "==" 4 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=4" }}">
-                            <div class="wizard-number">4</div>
-                            <div>LBs</div>
-                            </a>
-                        </li>
-
-
-
-                        <li {{#ifCond step "==" 5 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=5" }}">
-                            <div class="wizard-number">5</div>
-                            <div>Cartridges</div>
-                            </a>
-                        </li>
+                            <li {{#ifCond step "==" 3 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=3" }}">
+                                <div class="wizard-number">3</div>
+                                <div>Deployments Policies</div>
+                                </a>
+                            </li>
 
 
-                        <li {{#ifCond step "==" 6 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=6" }}">
-                                <div class="wizard-number">6</div>
-                                <div>Multi-Tenant Services</div>
-                            </a>
-                        </li>
 
-                    </ul>
+                            <li {{#ifCond step "==" 4 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=4" }}">
+                                <div class="wizard-number">4</div>
+                                <div>LBs</div>
+                                </a>
+                            </li>
+
+
+
+                            <li {{#ifCond step "==" 5 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=5" }}">
+                                <div class="wizard-number">5</div>
+                                <div>Cartridges</div>
+                                </a>
+                            </li>
+
+
+                            <li {{#ifCond step "==" 6 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=6" }}">
+                                    <div class="wizard-number">6</div>
+                                    <div>Multi-Tenant Services</div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    {{/if}}
                     {{#unless wizard_on}}
-                    <div class="pull-right">
-                        <a href="{{url "/configure_stratos_wizard.jag" }}" class="btn btn-important">
-                            <div>Configuration Wizard</div>
-                        </a>
-                    </div>
+                        {{#unless config_status.first_use}}
+                            <div class="pull-right">
+                                <a href="{{url "/configure_stratos_wizard.jag" }}" class="btn btn-important">
+                                    <div>Configuration Wizard</div>
+                                </a>
+                            </div>
+                        {{/unless}}
                     {{/unless}}
                     </div>
 

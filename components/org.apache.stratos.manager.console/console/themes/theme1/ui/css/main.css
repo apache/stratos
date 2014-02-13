@@ -279,7 +279,7 @@ h4{
     padding-top: 10px;
 }
 .cartridge-description{
-    padding-top:20px;
+    padding-top:10px;
     font-size: 12px;
 }
 .required{
@@ -304,7 +304,7 @@ h4{
     width: 0;
     z-index: 1;
     left: -15px;
-    top: 25px;
+    top: 5px;
 }
 #credential_container h2{
     background: transparent;
@@ -408,6 +408,39 @@ div.in-active-wizard-item{
 ul.sub-menu-wizard li.active-no-background{
     background: #dcdcdc;
 }
+/* inactive menu */
+.sub-menu-inactive{
+    padding:0;
+    margin:-7px 0 0;
+    border-right:solid 4px #444;
+}
+
+.sub-menu-inactive li{
+    list-style: none;
+    float:left;
+    display:block;
+    padding:15px 10px;
+    border-left: solid 1px #f2f5f5;
+    border-right: solid 1px #d1d3d3;
+    height: 55px;
+    color:#888;
+    background: #ddd;
+}
+#messageModal i{
+    font-size:75px;
+}
+#messageModal i.error{
+    color:red;
+}
+#messageModal i.warning{
+    color: #ffba41;
+}
+#messageModal i.info{
+    color: #4b7eff;
+}
+#messageModal td.imageCell{
+    padding-right:20px;
+}
 /* syntax highlight styles */
 pre {border:none;background: transparent }
 .string { color: green; }
@@ -508,4 +541,16 @@ label.error{
 }
 .noDomain{
     color:red;
+}
+.un-subscribe-container{
+    position: absolute;
+    width:100%;
+    text-align: right;
+    padding-right:30px;
+}
+.un-subscribe-container a.un-subscribe{
+    color:red;
+}
+.un-subscribe-container i{
+    font-size:20px;
 }

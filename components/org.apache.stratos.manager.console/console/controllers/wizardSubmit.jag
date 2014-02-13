@@ -15,7 +15,7 @@
             utils.consoleAppUtil.deployAutoscalePolicyDefinition(policy);
         }
         if(parseInt(thisStep) == 3 && policy != "" ){
-            utils.consoleAppUtil.deployDeploymentPolicyDefinition(policy);
+            var foo = utils.consoleAppUtil.deployDeploymentPolicyDefinition(policy);
         }
         if(parseInt(thisStep) == 4 && policy != "" ){
             utils.consoleAppUtil.deployLbDefinition(policy);

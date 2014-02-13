@@ -165,7 +165,7 @@ public class CartridgeSubscriptionManager {
                  autoscalingPolicyName);
 
 
-        // Publish tenant subscribed event to message broker
+        // Publish tenant subscribed envent to message broker
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                 cartridgeSubscription.getCartridgeInfo().getType());
 
