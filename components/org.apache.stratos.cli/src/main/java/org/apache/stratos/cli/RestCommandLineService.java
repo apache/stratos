@@ -28,7 +28,6 @@ import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.SubscriptionInfo;
 import org.apache.stratos.cli.beans.TenantInfoBean;
