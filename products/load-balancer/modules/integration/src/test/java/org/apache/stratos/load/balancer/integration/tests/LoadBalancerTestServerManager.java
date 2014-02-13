@@ -16,14 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.lb.integration.tests;
+package org.apache.stratos.load.balancer.integration.tests;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -31,6 +33,11 @@ import java.io.IOException;
  * test runs
  */
 public class LoadBalancerTestServerManager extends TestServerManager {
+    private static final Log log = LogFactory.getLog(LoadBalancerTestServerManager.class);
+
+    public LoadBalancerTestServerManager() {
+        super(1);
+    }
 
     @Override
     @BeforeSuite(timeOut = 300000)
@@ -47,7 +54,16 @@ public class LoadBalancerTestServerManager extends TestServerManager {
     }
 
     protected void copyArtifacts(String carbonHome) throws IOException {
-        // Nothing to do
+        String resourceLocation = System.getProperty("framework.resource.location",
+                System.getProperty("basedir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator );
+        String confDir = carbonHome + File.separator + "repository"+ File.separator + "conf";
+
+        log.info("Copying loadbalancer.conf file...");
+        FileUtils.copyFile(new File(resourceLocation,"loadbalancer.conf"),new File(confDir,"loadbalancer.conf"));
+
+        // Could not provide the script name via Test Server Manager
+        FileUtils.copyFile(new File(carbonHome + File.separator + "bin", "stratos.sh"), new File(carbonHome + File.separator + "bin", "wso2server.sh"));
+        FileUtils.copyFile(new File(carbonHome + File.separator + "bin","stratos.bat"),new File(carbonHome + File.separator + "bin","wso2server.bat"));
     }
 }
 
