@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.load.balancer.util;
 
 public class Constants {
@@ -25,6 +26,8 @@ public class Constants {
     public static final String LB_HOST_NAME = "LB_HOST_NAME";
     public static final String LB_HTTP_PORT = "LB_HTTP_PORT";
     public static final String LB_HTTPS_PORT = "LB_HTTPS_PORT";
+
+    public static final String ALGORITHM_CONTEXT_CACHE = "algorithm.context.cache";
 
     public static final String AXIS2_MSG_CTX_TRANSPORT_IN_URL = "TransportInURL";
 }
