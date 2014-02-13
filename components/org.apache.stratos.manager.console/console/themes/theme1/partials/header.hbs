@@ -27,7 +27,7 @@
                      </ul>
                      <ul class="pull-right">
                      <li class="dropdown">
-                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><br /> admin <b class="caret"></b></a>
+                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><br /> {{#user}}{{/user}} <b class="caret"></b></a>
                              <ul class="dropdown-menu">
                                  <li><a><i class="fa fa-file-text-o"></i> View Profile</a></li>
                                 <li>
@@ -87,21 +87,12 @@
                             </a>
                         </li>
 
-
-
                         <li {{#ifCond step "==" 2 }}class="active"{{/ifCond}}>
                             <a href="{{url "/configure_stratos.jag?step=2" }}">
                             <div class="wizard-number">2</div>
                             <div>Auto scale Policies</div>
                             </a>
                         </li>
-                        <!--li>
-                            <div class="in-active-wizard-item">
-                                <div class="wizard-number">2</div>
-                                <div>Auto scale Policies</div>
-                            </div>
-                        </li -->
-
 
                         <li {{#ifCond step "==" 3 }}class="active"{{/ifCond}}>
                             <a href="{{url "/configure_stratos.jag?step=3" }}">
@@ -109,12 +100,7 @@
                             <div>Deployments Policies</div>
                             </a>
                         </li>
-                        <!--li>
-                            <div class="in-active-wizard-item">
-                                <div class="wizard-number">3</div>
-                                <div>Deployments Policies</div>
-                            </div>
-                        </li-->
+
 
 
                         <li {{#ifCond step "==" 4 }}class="active"{{/ifCond}}>
@@ -123,12 +109,7 @@
                             <div>LBs</div>
                             </a>
                         </li>
-                        <!--li>
-                            <div class="in-active-wizard-item">
-                                <div class="wizard-number">4</div>
-                                <div>LBs</div>
-                            </div>
-                        </li-->
+
 
 
                         <li {{#ifCond step "==" 5 }}class="active"{{/ifCond}}>
@@ -137,50 +118,22 @@
                             <div>Cartridges</div>
                             </a>
                         </li>
-                        <!--li>
-                        <div class="in-active-wizard-item">
-                            <div class="wizard-number">5</div>
-                            <div>Cartridges</div>
-                        </div>
-                        </li -->
 
-                    <!--
-                    **************************************
-                    UNCOMMENT WHEN THIS FEATURE IS NEEDED
 
-                    Remember to add fix the classes
-                    *************************************
-                    {{#if wizard_on_6}}
-                    <li class="active">
-                        <a href="{{url "/configure_stratos_wizard.jag?step=5" }}">
-                            <div class="wizard-number">6</div>
-                            <div>Multi-Tenant Services</div>
-                        </a>
-                    </li>
-                    <li class="sub-menu-wizard-pointer active-pointer no-background"></li>
-                    {{else}}
-                    <li>
-                        <div class="in-active-wizard-item">
-                            <div class="wizard-number">6</div>
-                            <div>Multi-Tenant Services</div>
-                        </div>
-                    </li>
-                    <li class="sub-menu-wizard-pointer no-background"></li>
-                    {{/if}}
-                    -->
+                        <li {{#ifCond step "==" 6 }}class="active"{{/ifCond}}>
+                            <a href="{{url "/configure_stratos.jag?step=6" }}">
+                                <div class="wizard-number">6</div>
+                                <div>Multi-Tenant Services</div>
+                            </a>
+                        </li>
+
+
 
                     </ul>
 
                     </div>
 
                 {{/if}}
-
-
-
-
-
-
-
 
 
                 {{#if wizard_on}}
@@ -261,7 +214,7 @@
                                 <div>Cartridges</div>
                             </a>
                         </li>
-                        <li class="sub-menu-wizard-pointer active-pointer no-background"></li>
+                        <li class="sub-menu-wizard-pointer active-pointer {{#unless wizard_on_6}}active-no-background{{/unless}}"></li>
                         {{else}}
                         <li>
                             <div class="in-active-wizard-item">
@@ -269,15 +222,10 @@
                                 <div>Cartridges</div>
                             </div>
                         </li>
-                        <li class="sub-menu-wizard-pointer no-background"></li>
+                        <li class="sub-menu-wizard-pointer"></li>
                         {{/if}}
 
-                        <!--
-                        **************************************
-                        UNCOMMENT WHEN THIS FEATURE IS NEEDED
 
-                        Remember to add fix the classes
-                        *************************************
                         {{#if wizard_on_6}}
                         <li class="active">
                             <a href="{{url "/configure_stratos_wizard.jag?step=6" }}">
@@ -295,7 +243,7 @@
                         </li>
                         <li class="sub-menu-wizard-pointer no-background"></li>
                         {{/if}}
-                        -->
+
 
                     </ul>
 
@@ -318,6 +266,11 @@
     </div>
     {{/if}}
 </div>
+
+<form action="{{url "/controllers/manageTenants.jag"}}" id="manageTenantsForm">
+<input type="hidden" value="" id="foo" name="foo" />
+<input type="hidden" value="" id="state" name="state" />
+</form>
 
 {{/unless}}
 

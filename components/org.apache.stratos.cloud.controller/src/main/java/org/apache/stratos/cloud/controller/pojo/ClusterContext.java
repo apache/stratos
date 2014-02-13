@@ -35,12 +35,25 @@ public class ClusterContext implements Serializable{
     // payload as a String
     private String payload;
     private String hostName;
+    private boolean isLbCluster;
+    private boolean isVolumeRequired;
+    private boolean shouldDeleteVolume;
+    private int volumeSize;
+    private String deviceName;
+    // optional volume id
+    private String volumeId;
 
-    public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName) {
+    public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, 
+    		boolean isLbCluster, boolean isVolumeRequired, boolean shouldDeleteVolume, int volumeSize, String deviceName) {
         this.clusterId = clusterId;
         this.cartridgeType = cartridgeType;
         this.payload = payload;
         this.setHostName(hostName);
+        this.isLbCluster = isLbCluster;
+        this.isVolumeRequired = isVolumeRequired;
+        this.shouldDeleteVolume = shouldDeleteVolume;
+        this.volumeSize = volumeSize;
+        this.deviceName = deviceName;
     }
     
     public String getClusterId() {
@@ -69,5 +82,53 @@ public class ClusterContext implements Serializable{
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
+
+	public boolean isLbCluster() {
+		return isLbCluster;
+	}
+
+	public void setLbCluster(boolean isLbCluster) {
+		this.isLbCluster = isLbCluster;
+	}
+
+	public boolean isVolumeRequired() {
+		return isVolumeRequired;
+	}
+
+	public void setVolumeRequired(boolean isVolumeRequired) {
+		this.isVolumeRequired = isVolumeRequired;
+	}
+
+	public String getVolumeId() {
+		return volumeId;
+	}
+
+	public void setVolumeId(String volumeId) {
+		this.volumeId = volumeId;
+	}
+
+	public boolean shouldDeleteVolume() {
+		return shouldDeleteVolume;
+	}
+
+	public void setShouldDeleteVolume(boolean shouldDeleteVolume) {
+		this.shouldDeleteVolume = shouldDeleteVolume;
+	}
+
+	public int getVolumeSize() {
+		return volumeSize;
+	}
+
+	public void setVolumeSize(int volumeSize) {
+		this.volumeSize = volumeSize;
+	}
+
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
+	}
 
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.runtime;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
@@ -26,8 +28,10 @@ import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -35,6 +39,8 @@ import java.util.Map;
 public class FasterLookUpDataHolder implements Serializable{
 
     private static final long serialVersionUID = -2662307358852779897L;
+    
+    private static final Log log = LogFactory.getLog(FasterLookUpDataHolder.class);
 
 	private static volatile FasterLookUpDataHolder ctxt;
 
@@ -44,47 +50,20 @@ public class FasterLookUpDataHolder implements Serializable{
      * Key - cluster id
      * Value - list of {@link MemberContext}
      */
-    private Map<String, List<MemberContext>> clusterIdToMemberContext = new HashMap<String, List<MemberContext>>();
+    private Map<String, List<MemberContext>> clusterIdToMemberContext = new ConcurrentHashMap<String, List<MemberContext>>();
     
 
     /**
 	 * Key - member id
 	 * Value - {@link MemberContext}
 	 */
-	private Map<String, MemberContext> memberIdToContext = new HashMap<String, MemberContext>();
+	private Map<String, MemberContext> memberIdToContext = new ConcurrentHashMap<String, MemberContext>();
 	
 	/**
 	 * Key - cluster id
 	 * Value - {@link ClusterContext}
 	 */
-	private Map<String, ClusterContext> clusterIdToContext = new HashMap<String, ClusterContext>();
-	
-	/**
-	 * Key - member id
-	 * Value - node id
-	 */
-//	private Map<String, String> memberIdToNodeId;
-
-	/**
-	 * Key - domain
-	 * value - {@link ServiceContext}
-	 */
-//	private Map<String, ServiceContext> serviceCtxts;
-	
-	/**
-	 * To make data retrieval from registry faster.
-	 */
-//	private List<ServiceContext> serviceCtxtList;
-
-//	public List<ServiceContext> getServiceCtxtList() {
-//    	return serviceCtxtList;
-//    }
-
-	/**
-	 * Key - node id
-	 * Value - {@link ServiceContext}
-	 */
-//	private Map<String, ServiceContext> nodeIdToServiceCtxt;
+	private Map<String, ClusterContext> clusterIdToContext = new ConcurrentHashMap<String, ClusterContext>();
 	
 	/**
 	 * List of registered {@link Cartridge}s
@@ -102,20 +81,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	private transient DataPublisherConfig dataPubConfig;
 	private boolean enableTopologySync;
 	private transient TopologyConfig topologyConfig;
-	
-	/**
-	 * Key - node id 
-	 * Value - Status of the instance
-	 * This map is only used by BAM data publisher in CC.
-	 */
-//	private Map<String, String> nodeIdToStatusMap = new HashMap<String, String>();
-	
-	/**
-	 * Key - iaas type
-	 * Value - # of running instance count
-	 * This map will be used to track the running instances count in each IaaS
-	 */
-//	private Map<String, Integer> iaasToActiveInstanceCountMap = new HashMap<String, Integer>();
 	
 	/**
      * Key - name of the topic
@@ -153,89 +118,9 @@ public class FasterLookUpDataHolder implements Serializable{
 
 	private FasterLookUpDataHolder() {
 
-//		serviceCtxtList = new ArrayList<ServiceContext>();
-//		serviceCtxts = new ConcurrentHashMap<String,ServiceContext>();
-//		nodeIdToServiceCtxt = new LinkedHashMap<String, ServiceContext>();
 		cartridges = new ArrayList<Cartridge>();
-//		setMemberIdToNodeId(new ConcurrentHashMap<String, String>());
 
 	}
-
-//	public void addServiceContext(ServiceContext ctx) {
-//
-//		if (ctx == null) {
-//			return;
-//		}
-//
-//		String domain = ctx.getClusterId();
-//
-//
-//		if (domain != null) {
-//			addToServiceCtxts(domain, ctx);
-//		}
-//
-//	}
-//
-//	public void removeServiceContext(ServiceContext ctxt) {
-//
-//		if (ctxt == null) {
-//			return;
-//		}
-//
-//		String domain = ctxt.getClusterId();
-//
-//		if (domain != null) {
-//			if (serviceCtxts.containsKey(domain)) {
-//                serviceCtxts.remove(ctxt);
-//			}
-//		}
-//		
-//		serviceCtxtList.remove(ctxt);
-//
-//	}
-//
-//	public ServiceContext getServiceContextFromDomain(String domain) {
-//
-//		if (serviceCtxts.get(domain) != null) {
-//			return serviceCtxts.get(domain);
-//		}
-//		return null;
-//	}
-//
-//	public ServiceContext getServiceContextFromNodeId(String nodeId) {
-//
-//		return nodeIdToServiceCtxt.get(nodeId);
-//	}
-//	
-//	public List<Object> getNodeIdsOfServiceCtxt(ServiceContext ctxt){
-//		return CloudControllerUtil.getKeysFromValue(nodeIdToServiceCtxt, ctxt);
-//	}
-//
-//	public Map<String, ServiceContext> getServiceContexts() {
-//		return serviceCtxts;
-//	}
-//
-//	public void addNodeId(String nodeId, ServiceContext ctxt) {
-//		nodeIdToServiceCtxt.put(nodeId, ctxt);
-//	}
-//
-//	public void removeNodeId(String nodeId) {
-//		nodeIdToServiceCtxt.remove(nodeId);
-//	}
-//	
-//	public void setNodeIdToServiceContextMap(Map<String, ServiceContext> map) {
-//		nodeIdToServiceCtxt = map;
-//	}
-//
-//	public Map<String, ServiceContext> getNodeIdToServiceContextMap() {
-//		return nodeIdToServiceCtxt;
-//	}
-//
-//	private void addToServiceCtxts(String domainName, ServiceContext ctxt) {
-//        serviceCtxts.put(domainName, ctxt);
-//        serviceCtxtList.add(ctxt);
-//
-//	}
 
 	public List<Cartridge> getCartridges() {
 		return cartridges;
@@ -255,36 +140,6 @@ public class FasterLookUpDataHolder implements Serializable{
 		return null;
 
 	}
-	
-//	public void updateActiveInstanceCount(String iaasType, int count) {
-//		int currentCount = 0;
-//		if(iaasToActiveInstanceCountMap.containsKey(iaasType)){
-//			currentCount = iaasToActiveInstanceCountMap.get(iaasType);
-//		}
-//		iaasToActiveInstanceCountMap.put(iaasType, currentCount+count);
-//	}
-//	
-//	public int getActiveInstanceCount(String iaasType) {
-//		Integer count = iaasToActiveInstanceCountMap.get(iaasType);
-//		return count == null ? 0 : count;
-//	}
-
-//	public void addCartridges(List<Cartridge> newCartridges) {
-//		if (this.cartridges == null) {
-//			this.cartridges = newCartridges;
-//		} else {
-//			for (Cartridge cartridge : newCartridges) {
-//				int idx;
-//				if ((idx = cartridges.indexOf(cartridge)) != -1) {
-//					Cartridge ref = cartridges.get(idx);
-//					ref = cartridge;
-//				} else {
-//					cartridges.add(cartridge);
-//				}
-//			}
-//		}
-//
-//	}
 	
 	public void addCartridge(Cartridge newCartridges) {
 	
@@ -327,16 +182,6 @@ public class FasterLookUpDataHolder implements Serializable{
 		this.serializationDir = serializationDir;
 	}
 
-	
-
-//	public Map<String, String> getNodeIdToStatusMap() {
-//		return nodeIdToStatusMap;
-//	}
-//
-//	public void setNodeIdToStatusMap(Map<String, String> nodeIdToStatusMap) {
-//		this.nodeIdToStatusMap = nodeIdToStatusMap;
-//	}
-
 	public AsyncDataPublisher getDataPublisher() {
 		return dataPublisher;
 	}
@@ -360,8 +205,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	public void setEnableBAMDataPublisher(boolean enableBAMDataPublisher) {
 		this.enableBAMDataPublisher = enableBAMDataPublisher;
 	}
-
-	
 
 	public boolean isPublisherRunning() {
 		return isPublisherRunning;
@@ -423,11 +266,18 @@ public class FasterLookUpDataHolder implements Serializable{
         if((ctxts = clusterIdToMemberContext.get(ctxt.getClusterId())) == null) {
             ctxts = new ArrayList<MemberContext>();
         } 
+        if(ctxts.contains(ctxt)) {
+        	ctxts.remove(ctxt);
+        }
         ctxts.add(ctxt);
         clusterIdToMemberContext.put(ctxt.getClusterId(), ctxts);
+        if(log.isDebugEnabled()) {
+        	
+        	log.debug("Added Member Context to the information model. "+ctxt);
+        }
     }
     
-    public void removeMemberContext(String clusterId) {
+    public void removeMemberContextsOfCluster(String clusterId) {
         List<MemberContext> ctxts = clusterIdToMemberContext.remove(clusterId);
         if(ctxts == null) {
             return;
@@ -436,6 +286,33 @@ public class FasterLookUpDataHolder implements Serializable{
             String memberId = memberContext.getMemberId();
             memberIdToContext.remove(memberId);
         }
+        if(log.isDebugEnabled()) {
+        	
+        	log.debug("Removed Member Context from the information model. "+ctxt);
+        }
+    }
+    
+    public void removeMemberContext(String memberId, String clusterId) {
+    	memberIdToContext.remove(memberId);
+        List<MemberContext> ctxts = clusterIdToMemberContext.get(clusterId);
+        if(ctxts == null) {
+            return;
+        }
+        
+        List<MemberContext> newCtxts =  new ArrayList<MemberContext>(ctxts);
+        
+        for (Iterator<MemberContext> iterator = newCtxts.iterator(); iterator.hasNext();) {
+			MemberContext memberContext = (MemberContext) iterator.next();
+			if(memberId.equals(memberContext.getMemberId())) {
+				if(log.isDebugEnabled()) {
+					
+					log.debug("MemberContext [id]: "+memberId+" removed from information model.");
+				}
+            	iterator.remove();
+            }
+		}
+        
+        clusterIdToMemberContext.put(clusterId, newCtxts);
     }
     
     public MemberContext getMemberContextOfMemberId(String memberId) {
@@ -453,21 +330,6 @@ public class FasterLookUpDataHolder implements Serializable{
     public void setClusterIdToMemberContext(Map<String, List<MemberContext>> clusterIdToMemberContext) {
         this.clusterIdToMemberContext = clusterIdToMemberContext;
     }
-//    public void addNodeId(String memberId, String nodeId) {
-//        memberIdToNodeId.put(memberId, nodeId);
-//    }
-//    
-//    public String getNodeId(String memberId) {
-//        return memberIdToNodeId.get(memberId);
-//    }
-//    
-//    public Map<String, String> getMemberIdToNodeId() {
-//        return memberIdToNodeId;
-//    }
-//
-//    public void setMemberIdToNodeId(Map<String, String> memberIdToNodeId) {
-//        this.memberIdToNodeId = memberIdToNodeId;
-//    }
 
     public Map<String, MemberContext> getMemberIdToContext() {
         return memberIdToContext;

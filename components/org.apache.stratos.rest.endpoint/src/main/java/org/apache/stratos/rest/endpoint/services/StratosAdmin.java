@@ -304,6 +304,37 @@ public class StratosAdmin extends AbstractAdmin {
         return ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
     }
 
+    @GET
+    @Path("/cartridge/available/info/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
+                                            throws ADCException, RestAPIException {
+        return ServiceUtils.getAvailableSingleTenantCartridgeInfo(cartridgeType, false, getConfigContext());
+    }
+
+    @GET
+    @Path("/cartridge/lb")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public List<Cartridge> getAvailableLbCartridges()
+                                            throws ADCException {
+        return ServiceUtils.getAvailableLbCartridges(false, getConfigContext());
+    }
+
+    @GET
+    @Path("/cartridge/active/{cartridgeType}/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public int getActiveInstances(@PathParam("cartridgeType") String cartridgeType,
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+        return ServiceUtils.getActiveInstances(cartridgeType, subscriptionAlias, getConfigContext());
+    }
+
+
     @POST
     @Path("/cartridge/subscribe")
     @Produces("application/json")
@@ -356,7 +387,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cluster getCluster(@PathParam("cartridgeType") String cartridgeType,
-                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException, RestAPIException {
 
         return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
     }
@@ -368,7 +399,16 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cluster getCluster(@PathParam("clusterId") String clusterId) throws ADCException {
     	Cluster cluster = null;
+    	if(log.isDebugEnabled()) {
+    		log.debug("Finding the Cluster for [id]: "+clusterId);
+    	}
         Cluster[] clusters = ServiceUtils.getClustersForTenant(getConfigContext());
+        if(log.isDebugEnabled()) {
+        	log.debug("Clusters retrieved from backend for cluster [id]: "+clusterId);
+    		for (Cluster c : clusters) {
+				log.debug(c+"\n");
+			}
+    	}
         for (Cluster clusterObj : clusters) {
 			if (clusterObj.clusterId.equals(clusterId)){
 				cluster = clusterObj;
@@ -694,6 +734,16 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @POST
+    @Path("tenant/availability/{tenantDomain}")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public boolean isDomainAvailable(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+        return CommonUtil.isDomainNameAvailable(tenantDomain);
+
+    }
+
+    @POST
     @Path("tenant/deactivate/{tenantDomain}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -740,6 +790,27 @@ public class StratosAdmin extends AbstractAdmin {
                serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
                serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
                serviceDefinitionBean.getTenantRange());
+    }
+
+    @GET
+    @Path("/service")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean[] getServices() throws RestAPIException {
+        List<ServiceDefinitionBean> serviceDefinitionBeans = ServiceUtils.getdeployedServiceInformation();
+        return serviceDefinitionBeans == null || serviceDefinitionBeans.isEmpty() ? new ServiceDefinitionBean[0] :
+            serviceDefinitionBeans.toArray(new ServiceDefinitionBean[serviceDefinitionBeans.size()]);
+    }
+
+    @GET
+    @Path("/service/{serviceType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean getService(@PathParam("serviceType") String serviceType)throws RestAPIException {
+
+        return ServiceUtils.getDeployedServiceInformation(serviceType);
     }
 
     @DELETE

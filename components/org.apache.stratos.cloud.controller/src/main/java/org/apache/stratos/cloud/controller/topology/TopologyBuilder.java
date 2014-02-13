@@ -105,7 +105,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated(Registrant registrant) {
+    public static void handleClusterCreated(Registrant registrant, boolean isLb) {
         Topology topology = TopologyManager.getTopology();
         Service service;
         try {
@@ -113,9 +113,6 @@ public class TopologyBuilder {
             String cartridgeType = registrant.getCartridgeType();
             service = topology.getService(cartridgeType);
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-            
-            String property = props.getProperty(Constants.IS_LOAD_BALANCER);
-            boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
             
             Cluster cluster;
             String clusterId = registrant.getClusterId();
@@ -150,6 +147,7 @@ public class TopologyBuilder {
     public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(ctxt.getCartridgeType());
+        String deploymentPolicy;
         if (service == null) {
             throw new RuntimeException(String.format("Service %s does not exist",
                     ctxt.getCartridgeType()));
@@ -163,12 +161,13 @@ public class TopologyBuilder {
 
         try {
             TopologyManager.acquireWriteLock();
-            service.removeCluster(ctxt.getClusterId());
+            Cluster cluster = service.removeCluster(ctxt.getClusterId());
+            deploymentPolicy = cluster.getDeploymentPolicyName();
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventPublisher.sendClusterRemovedEvent(ctxt);
+        TopologyEventPublisher.sendClusterRemovedEvent(ctxt, deploymentPolicy);
     }
 
     public static void handleMemberSpawned(String memberId, String serviceName, String clusterId,

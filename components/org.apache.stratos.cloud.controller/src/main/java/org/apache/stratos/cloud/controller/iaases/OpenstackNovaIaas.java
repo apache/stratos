@@ -32,7 +32,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
@@ -45,17 +44,24 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
+import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
+import org.jclouds.openstack.nova.v2_0.domain.Volume;
+import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
+import org.jclouds.openstack.nova.v2_0.extensions.VolumeApi;
+import org.jclouds.openstack.nova.v2_0.extensions.VolumeAttachmentApi;
+import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
+import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 public class OpenstackNovaIaas extends Iaas {
 
@@ -63,29 +69,37 @@ public class OpenstackNovaIaas extends Iaas {
 	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
 	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
 
+	public OpenstackNovaIaas(IaasProvider iaasProvider) {
+		super(iaasProvider);
+	}
+	
 	@Override
-	public void buildComputeServiceAndTemplate(IaasProvider iaasInfo) {
+	public void buildComputeServiceAndTemplate() {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		// builds and sets Compute Service
 		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
 
 		// builds and sets Template
-		buildTemplate(iaasInfo);
+		buildTemplate();
 
 	}
 
-	public void buildTemplate(IaasProvider iaas) {
-		if (iaas.getComputeService() == null) {
+	public void buildTemplate() {
+		IaasProvider iaasInfo = getIaasProvider();
+		
+		if (iaasInfo.getComputeService() == null) {
 			throw new CloudControllerException(
 					"Compute service is null for IaaS provider: "
-							+ iaas.getName());
+							+ iaasInfo.getName());
 		}
 
-		TemplateBuilder templateBuilder = iaas.getComputeService()
+		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
-		templateBuilder.imageId(iaas.getImage());
-        if(!(iaas instanceof IaasProvider)) {
-           templateBuilder.locationId(iaas.getType());
+		templateBuilder.imageId(iaasInfo.getImage());
+        if(!(iaasInfo instanceof IaasProvider)) {
+           templateBuilder.locationId(iaasInfo.getType());
         }
 
         // to avoid creation of template objects in each and every time, we
@@ -94,7 +108,7 @@ public class OpenstackNovaIaas extends Iaas {
 		String instanceType;
 
 		// set instance type
-		if (((instanceType = iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
+		if (((instanceType = iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
 
 			templateBuilder.hardwareId(instanceType);
 		}
@@ -105,7 +119,7 @@ public class OpenstackNovaIaas extends Iaas {
 		// blocking, but if you
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+		boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
 				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
@@ -115,17 +129,17 @@ public class OpenstackNovaIaas extends Iaas {
 		template.getOptions().as(TemplateOptions.class)
 				.inboundPorts(new int[] {});
 
-		if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(NovaTemplateOptions.class)
 					.securityGroupNames(
-							iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 		}
 
-		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
-					.keyPairName(iaas.getProperty(CloudControllerConstants.KEY_PAIR));
+					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
 		
 		//TODO
@@ -135,12 +149,14 @@ public class OpenstackNovaIaas extends Iaas {
 //        }
 
 		// set Template
-		iaas.setTemplate(template);
+		iaasInfo.setTemplate(template);
 	}
 
     @Override
-	public void setDynamicPayload(IaasProvider iaasInfo) {
+	public void setDynamicPayload() {
 
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
 		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
 
 			iaasInfo.getTemplate().getOptions().as(NovaTemplateOptions.class)
@@ -150,19 +166,18 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public synchronized boolean createKeyPairFromPublicKey(
-			IaasProvider iaasInfo, String region, String keyPairName,
+	public synchronized boolean createKeyPairFromPublicKey(String region, String keyPairName,
 			String publicKey) {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		String openstackNovaMsg = " Openstack-nova. Region: " + region
 				+ " - Name: ";
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		@SuppressWarnings("deprecation")
-        NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
-
-		KeyPairApi api = novaApi.getKeyPairExtensionForZone(region).get();
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		KeyPairApi api = nova.getApi().getKeyPairExtensionForZone(region).get();
 
 		KeyPair keyPair = api.createWithPublicKey(keyPairName, publicKey);
 
@@ -181,17 +196,17 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public synchronized String associateAddress(IaasProvider iaasInfo,
-			NodeMetadata node) {
+	public synchronized String associateAddress(NodeMetadata node) {
+		
+		IaasProvider iaasInfo = getIaasProvider();
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		@SuppressWarnings("deprecation")
-        NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		FloatingIPApi floatingIp = nova.getApi().getFloatingIPExtensionForZone(
 				region).get();
 
 		String ip = null;
@@ -232,6 +247,15 @@ public class OpenstackNovaIaas extends Iaas {
 		while (node.getPrivateAddresses() == null) {
 			CloudControllerUtil.sleep(1000);
 		}
+		
+		if (node.getPublicAddresses() != null
+				&& node.getPublicAddresses().iterator().hasNext()) {
+			log.info("A public IP ("
+					+ node.getPublicAddresses().iterator().next()
+					+ ") is already allocated to the instance [id] : "
+					+ node.getId());
+			return null;
+		}
 
 		int retries = 0;
 		while (retries < 5
@@ -252,16 +276,19 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
 	@Override
-	public synchronized void releaseAddress(IaasProvider iaasInfo, String ip) {
+	public synchronized void releaseAddress(String ip) {
 
+		IaasProvider iaasInfo = getIaasProvider();
+		
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		@SuppressWarnings("deprecation")
-        NovaApi novaApi = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIPApi = novaApi
+		@SuppressWarnings("deprecation")
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		@SuppressWarnings("deprecation")
+		FloatingIPApi floatingIPApi = nova.getApi()
 				.getFloatingIPExtensionForZone(region).get();
 
 		for (FloatingIP floatingIP : floatingIPApi.list()) {
@@ -283,7 +310,9 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
     @Override
-    public boolean isValidRegion(IaasProvider iaasInfo, String region) throws InvalidRegionException {
+    public boolean isValidRegion(String region) throws InvalidRegionException {
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         // jclouds' zone = region in openstack
         if (region == null || iaasInfo == null) {
             String msg =
@@ -294,9 +323,9 @@ public class OpenstackNovaIaas extends Iaas {
         }
         
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        @SuppressWarnings("deprecation")
-        NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
-        for (String configuredZone : api.getConfiguredZones()) {
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        Set<String> zones = nova.getApi().getConfiguredZones();
+        for (String configuredZone : zones) {
             if (region.equalsIgnoreCase(configuredZone)) {
                 if (log.isDebugEnabled()) {
                     log.debug("Found a matching region: " + region);
@@ -311,7 +340,9 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
     @Override
-    public boolean isValidZone(IaasProvider iaasInfo, String region, String zone) throws InvalidZoneException {
+    public boolean isValidZone(String region, String zone) throws InvalidZoneException {
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         // jclouds doesn't support zone in Openstack-Nova API
         String msg = "Invalid zone: " + zone +" in the region: "+region+ " and of the iaas: "+iaasInfo.getType();
         log.error(msg);
@@ -320,7 +351,9 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
     @Override
-    public boolean isValidHost(IaasProvider iaasInfo, String zone, String host) throws InvalidHostException {
+    public boolean isValidHost(String zone, String host) throws InvalidHostException {
+    	IaasProvider iaasInfo = getIaasProvider();
+    	
         if (host == null || zone == null || iaasInfo == null) {
             String msg = "Host or Zone or IaaSProvider is null: host: " + host + " - zone: " +
                     zone + " - IaaSProvider: " + iaasInfo;
@@ -328,9 +361,8 @@ public class OpenstackNovaIaas extends Iaas {
             throw new InvalidHostException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        @SuppressWarnings("deprecation")
-        NovaApi api = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
-        HostAggregateApi hostApi = api.getHostAggregateExtensionForZone(zone).get();
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        HostAggregateApi hostApi = nova.getApi().getHostAggregateExtensionForZone(zone).get();
         for (HostAggregate hostAggregate : hostApi.list()) {
             for (String configuredHost : hostAggregate.getHosts()) {
                 if (host.equalsIgnoreCase(configuredHost)) {
@@ -353,10 +385,110 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
 	@Override
-	public void mapPersistanceVolumes(Template template,
-			List<PersistanceMapping> persistancemapings) {
-		// TODO Auto-generated method stub
+	public String createVolume(int sizeGB) {
+		IaasProvider iaasInfo = getIaasProvider();
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+        if (region == null || iaasInfo == null) {
+        	log.fatal("Cannot create a new volume in the [region] : "+region
+					+" of Iaas : "+iaasInfo);
+            return null;
+        }
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
+        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(region));
+        if (volume == null) {
+			log.fatal("Volume creation was unsuccessful. [region] : " + region
+					+ " of Iaas : " + iaasInfo);
+			return null;
+		}
 		
+		log.info("Successfully created a new volume [id]: "+volume.getId()
+				+" in [region] : "+region+" of Iaas : "+iaasInfo);
+		return volume.getId();
+	}
+
+	@Override
+	public String attachVolume(String instanceId, String volumeId, String deviceName) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		String device = deviceName == null ? "/dev/vdc" : deviceName;
+		
+		if(region == null) {
+			log.fatal("Cannot attach the volume [id]: "+volumeId+" in the [region] : "+region
+					+" of Iaas : "+iaasInfo);
+			return null;
+		}
+		
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+        VolumeAttachment attachment = api.attachVolumeToServerAsDevice(volumeId, instanceId, device);
+        
+        if (attachment == null) {
+			log.fatal("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
+					+" was unsuccessful. [region] : " + region
+					+ " of Iaas : " + iaasInfo);
+			return null;
+		}
+		
+		log.info("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
+				+" was successful [status]: "+"Attaching"+". [region] : " + region
+				+ " of Iaas : " + iaasInfo);
+		return "Attaching";
+	}
+
+	@Override
+	public void detachVolume(String instanceId, String volumeId) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		
+		if(region == null) {
+			log.fatal("Cannot detach the volume [id]: "+volumeId+" from the instance [id]: "+instanceId
+					+" of the [region] : "+region
+					+" of Iaas : "+iaasInfo);
+			return;
+		}
+		
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+        if (api.detachVolumeFromServer(volumeId, instanceId)) {
+        	log.info("Detachment of Volume [id]: "+volumeId+" from instance [id]: "+instanceId
+    				+" was successful. [region] : " + region
+    				+ " of Iaas : " + iaasInfo);
+        }
+        
+	}
+
+	@Override
+	public void deleteVolume(String volumeId) {
+		IaasProvider iaasInfo = getIaasProvider();
+
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+		
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		
+		if(region == null) {
+			log.fatal("Cannot delete the volume [id]: "+volumeId+" of the [region] : "+region
+					+" of Iaas : "+iaasInfo);
+			return;
+		}
+		
+		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+		VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
+        if (api.delete(volumeId)) {
+        	log.info("Deletion of Volume [id]: "+volumeId+" was successful. [region] : " + region
+    				+ " of Iaas : " + iaasInfo);
+        }
 	}
 
 }

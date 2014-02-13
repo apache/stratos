@@ -1,7 +1,24 @@
 <%
 
 (function(){
-    var config=require('/config/console.json');
+    var carbon = require('carbon');
+    var conf = carbon.server.loadConfig('carbon.xml');
+    var offset = conf.*::['Ports'].*::['Offset'].text();
+    var hostName = conf.*::['HostName'].text().toString();
+
+    if (hostName === null || hostName === '') {
+        hostName = 'localhost';
+    }
+
+    var httpPort = 9763 + parseInt(offset, 10);
+    var httpsPort = 9443 + parseInt(offset, 10);
+
+    var process = require('process');
+    process.setProperty('server.host', hostName);
+    process.setProperty('http.port', httpPort.toString());
+    process.setProperty('https.port', httpsPort.toString());
+
+    var config=require('/config/console.js').config();
     var log = new Log("controller.router");
     var acl = require('/util/acl.jag');
 
@@ -23,15 +40,15 @@
 
     //This will short circuit the handling of the requests
     var passed=sm.check(session);
-    //var tenantDomain = session.get("TENANT_DOMAIN");
-    //var roleArray = session.get("ROLE_ARRAY");
+    var tenantDomain = session.get("TENANT_DOMAIN");
+    var roleArray = session.get("ROLE_ARRAY");
 
     // comment out the above and uncomment below code bits for testing. It removes authentication/authorization
     // of the app.
 
     //var passed=true;
-    var tenantDomain = "carbon.super";
-    var roleArray = ["admin","Internal/Everyone"];
+    //var tenantDomain = "carbon.super";
+    //var roleArray = ["admin","Internal/Everyone"];
 
     //Stop servicing the request if the check failed
     if(!passed){

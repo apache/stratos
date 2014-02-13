@@ -57,12 +57,12 @@ public class CliConstants {
 	/**
 	 * List the subscribed cartridges
 	 */
-	public static final String LIST_ACTION = "list-subscribe-cartridges";
+	public static final String LIST_ACTION = "list-subscribed-cartridges";
 	
 	/**
-	 * List the subscribed cartridges
+	 * List the subscribed cartridges' information
 	 */
-	public static final String LIST_INFO_ACTION = "subscribe-cartridges-info";
+	public static final String LIST_INFO_ACTION = "subscribed-cartridges-info";
 
 	/**
 	 * List the available cartridges
@@ -73,6 +73,11 @@ public class CliConstants {
      * List the available autoscaling policies
      */
     public static final String LIST_AUTOSCALE_POLICY = "list-autoscale-policies";
+
+    /**
+     * List the available deploy services
+     */
+    public static final String LIST_DEPLOY_SERVICE= "list-deploy-services";
 
     /**
      * Add tenant
@@ -115,6 +120,11 @@ public class CliConstants {
     public static final String AUTOSCALING_POLICY_DEPLOYMENT = "deploy-autoscaling-policy";
 
     /**
+     * Deploy, deployment service
+     */
+    public static final String DEPLOY_SERVICE_DEPLOYMENT = "deploy-service";
+
+    /**
      * Deployment policy deployment
      */
     public static final String DEPLOYMENT_POLICY_DEPLOYMENT = "deploy-deployment-policy";
@@ -137,12 +147,32 @@ public class CliConstants {
      * Describe the partition
      */
     public static final String DESCRIBE_PARTITION = "describe-partition";
-     /**
-     * describe the auto scaling policy
+    /**
+     * Describe the auto scaling policy
      */
     public static final String DESCRIBE_AUTO_SCALING_POLICY = "describe-autoscaling-policy";
+    /**
+     * Undeploy deploy service
+     */
+    public static final String UNDEPLOY_SERVICE = "undeploy-service";
+    /**
+     * Undeploy cartridge definition
+     */
+    public static final String UNDEPLOY_CARTRIDGE_DEFINITION = "undeploy-cartridge";
+    /**
+     * Delete tenant
+     */
+    public static final String DELETE_TENANT = "delete-tenant";
+    /**
+     * Deactivate tenant
+     */
+    public static final String DEACTIVATE_TENANT = "deactivate-tenant";
+    /**
+     * Activate tenant
+     */
+    public static final String ACTIVATE_TENANT = "activate-tenant";
      /**
-     * describe the deployment policy
+     * Describe the deployment policy
      */
     public static final String DESCRIBE_DEPLOYMENT_POLICY = "describe-deployment-policy";
 

@@ -114,6 +114,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.manager</artifactId>
             <version>4.0.0-SNAPSHOT</version>
             <scope>provided</scope>
@@ -130,5 +136,6 @@
             <version>4.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 </project>

@@ -25,6 +25,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
@@ -33,13 +34,34 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/admin/")
 public class StratosTestAdmin {
     private static Log log = LogFactory.getLog(StratosTestAdmin.class);
+    @Context
+    HttpServletRequest httpServletRequest;
+
+    
+    @GET
+    @Path("/cookie")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getCookie(){
+        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
+        String sessionId = httpSession.getId();
+        return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
+                entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
+    }
 
     @GET
     @Path("/cartridge/tenanted/list")
@@ -78,7 +100,14 @@ public class StratosTestAdmin {
     }
 
 
-
+    @GET
+    @Path("/cartridge/info/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+        return MockContext.getInstance().getCartridgeInfo(subscriptionAlias);
+    }
 
 
     @POST
@@ -168,6 +197,29 @@ public class StratosTestAdmin {
     public void deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
         MockContext.getInstance().deactivateTenant(tenantDomain);
     }
+
+   @POST
+   @Path("/service/definition")
+   @Produces("application/json")
+   @Consumes("application/json")
+   @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+   @SuperTenantService(true)
+   public boolean deployService(ServiceDefinitionBean serviceDefinitionBean)
+           throws RestAPIException {
+
+       log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
+       return MockContext.getInstance().deployService(serviceDefinitionBean);
+   }
+    @GET
+    @Path("/service")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean[] getServices () throws RestAPIException {
+        return MockContext.getInstance().getServices();
+
+    }
+
 
     @POST
     @Path("/cartridge/definition/")
@@ -263,7 +315,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Partition[] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
-           return MockContext.getInstance().getPartitions(deploymentPolicyId,partitionGroupId);
+           return MockContext.getInstance().getPartitions(deploymentPolicyId, partitionGroupId);
 
     }
 

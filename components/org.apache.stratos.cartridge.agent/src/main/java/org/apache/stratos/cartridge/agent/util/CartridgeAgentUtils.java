@@ -46,7 +46,7 @@ public class CartridgeAgentUtils {
         StringTokenizer tokenizer = new StringTokenizer(string, delimiter);
         List<String> list = new ArrayList<String>(string.length());
         while (tokenizer.hasMoreTokens()) {
-            list.add(tokenizer.nextToken());
+            list.add(tokenizer.nextToken().trim());
         }
         return list;
     }
@@ -71,7 +71,7 @@ public class CartridgeAgentUtils {
         return decryptPassword;
     }
 
-    public static void waitUntilPortsActive() {
+    public static void waitUntilPortsActive(String ipAddress, List<Integer> ports) {
         long portCheckTimeOut = 1000 * 60 * 10;
         String portCheckTimeOutStr = System.getProperty("port.check.timeout");
         if (StringUtils.isNotBlank(portCheckTimeOutStr)) {
@@ -87,7 +87,7 @@ public class CartridgeAgentUtils {
             if(log.isInfoEnabled()) {
                 log.info("Waiting for ports to be active");
             }
-            active = checkPortsActive();
+            active = checkPortsActive(ipAddress,  ports);
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
             if (duration > portCheckTimeOut) {
@@ -100,15 +100,15 @@ public class CartridgeAgentUtils {
         }
     }
 
-    public static boolean checkPortsActive() {
-        List<Integer> ports = CartridgeAgentConfiguration.getInstance().getPorts();
+    public static boolean checkPortsActive(String ipAddress, List<Integer> ports) {
+        //List<Integer> ports = CartridgeAgentConfiguration.getInstance().getPorts();
         if (ports.size() == 0) {
             throw new RuntimeException("No ports found");
         }
         for (int port : ports) {
             Socket socket = null;
             try {
-                SocketAddress httpSockaddr = new InetSocketAddress("localhost", port);
+                SocketAddress httpSockaddr = new InetSocketAddress(ipAddress, port);
                 socket = new Socket();
                 socket.connect(httpSockaddr, 5000);
                 if (log.isInfoEnabled()) {

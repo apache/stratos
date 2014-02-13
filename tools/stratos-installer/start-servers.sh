@@ -73,21 +73,15 @@ do
     if [[ $x = "as" ]]; then
         as="true"
     fi
-    if [[ $x = "sc" ]]; then
-        sc="true"
+    if [[ $x = "sm" ]]; then
+        sm="true"
     fi
     if [[ $x = "all" ]]; then
 	mb="true"
         cc="true"
         as="true"
-        sc="true"
+        sm="true"
         cep="true"
-    fi
-    if [[ $x = "demo" ]]; then
-        demo="true"
-        cc="true"
-        as="true"
-        sc="true"
     fi
 done
 product_list=`echo $product_list | sed 's/^ *//g' | sed 's/ *$//g'`

@@ -93,12 +93,36 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/tenant/list",{}).data;
     };
 
+    this.getServices = function(){
+        return this.sendReceive("GET","/service",{}).data;
+    };
+
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
     };
 
+    this.deployServiceDefinition = function(serviceDefinition){
+        return this.send("POST","/service/definition",serviceDefinition).data;
+    };
+
     this.deployLbDefinition = function(lbDefinition){
         return this.send("POST","/cartridge/definition",lbDefinition).data;
+    };
+
+    this.activateTenant = function(tenantDomain){
+            return this.send("POST","/tenant/activate/" + tenantDomain,{}).data;
+            };
+
+    this.deactivateTenant = function(tenantDomain){
+        return this.send("POST","/tenant/deactivate/" + tenantDomain,{}).data;
+    };
+
+    this.deleteTenant = function(tenantDomain){
+        return this.send("DELETE","/tenant/" + tenantDomain,{}).data;
+    };
+
+    this.checkAvailability = function(tenantDomain){
+        return this.send("POST","/tenant/availability/" + tenantDomain,{}).data;
     };
 
     this.deployPartitionDefinition = function(partitionDefinition){
@@ -134,6 +158,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/partition",{}).data;
     };
 
+    this.getSingleTenantCartridgeInfo = function(cartridgeType){
+        return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{}).data;
+    };
+
     this.getPolicyAutoScale = function(){
         return this.sendReceive("GET","/policy/autoscale",{}).data;
     };
@@ -144,6 +172,14 @@ consoleAppUtil = new function(){
 
     this.getCartridges = function(){
         return this.sendReceive("GET","/cartridge/list",{}).data;
+    };
+
+    this.getLbCartridges = function(){
+        return this.sendReceive("GET","/cartridge/lb",{}).data;
+    };
+
+    this.getCartridgeInfo = function(alias){
+        return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };
     this.getConfigStatus = function(){
         var configStatus = {};
@@ -203,7 +239,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug(response.data);
+        log.info("recieved data is: " + stringify(response.data));
         return response;
     };
 
@@ -231,7 +267,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug(response.data);
+        log.info("sent response is: " + stringify(response.data));
         return response;
     };
 

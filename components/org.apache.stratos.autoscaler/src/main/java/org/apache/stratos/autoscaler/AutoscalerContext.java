@@ -30,16 +30,13 @@ public class AutoscalerContext {
     // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
-    public static AutoscalerContext getInstance() {
-        if (instance == null) {
-            synchronized (AutoscalerContext.class){
-                if (instance == null) {
-                    instance = new AutoscalerContext();
-                }
-            }
-        }
-        return instance;
-    }
+	private static class Holder {
+		private static final AutoscalerContext INSTANCE = new AutoscalerContext();
+	}
+
+	public static AutoscalerContext getInstance() {
+		return Holder.INSTANCE;
+	}
 
     public void addMonitor(ClusterMonitor monitor) {
         monitors.put(monitor.getClusterId(), monitor);
@@ -62,11 +59,19 @@ public class AutoscalerContext {
     }
 
     public ClusterMonitor removeMonitor(String clusterId) {
-    	log.info("Remove moniter clusterid" + clusterId);
+    	if(!moniterExist(clusterId)) {
+    		log.fatal("Cluster monitor not found for cluster id: "+clusterId);
+    		return null;
+    	}
+    	log.info("Removed monitor [cluster id]: " + clusterId);
         return monitors.remove(clusterId);
     }
     public LbClusterMonitor removeLbMonitor(String clusterId) {
-    	log.info("Remove moniter clusterid" + clusterId);
+    	if(!lbMoniterExist(clusterId)) {
+    		log.fatal("LB monitor not found for cluster id: "+clusterId);
+    		return null;
+    	}
+    	log.info("Removed LB monitor [cluster id]: " + clusterId);
         return lbMonitors.remove(clusterId);
     }
 

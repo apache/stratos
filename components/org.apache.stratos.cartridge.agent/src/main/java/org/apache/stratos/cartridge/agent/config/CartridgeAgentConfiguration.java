@@ -27,6 +27,7 @@ public class CartridgeAgentConfiguration {
     private final String appPath;
     private final String repoUrl;
     private final List<Integer> ports;
+    private final List<String> logFilePaths;
     private boolean isMultitenant;
 
     private CartridgeAgentConfiguration() {
@@ -39,6 +40,7 @@ public class CartridgeAgentConfiguration {
         appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
         repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
         ports = readPorts();
+        logFilePaths = readLogFilePaths();
         isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
 
         if(log.isInfoEnabled()) {
@@ -114,6 +116,15 @@ public class CartridgeAgentConfiguration {
         return ports;
     }
 
+    private List<String> readLogFilePaths () {
+
+        String logFileStr = readParameterValue(CartridgeAgentConstants.LOG_FILE_PATHS);
+        if (logFileStr == null || logFileStr.isEmpty()) {
+            return null;
+        }
+        return CartridgeAgentUtils.splitUsingTokenizer(logFileStr.trim(), "|");
+    }
+
     public String getServiceName() {
         return serviceName;
     }
@@ -148,6 +159,10 @@ public class CartridgeAgentConfiguration {
 
     public List<Integer> getPorts() {
         return ports;
+    }
+
+    public List<String> getLogFilePaths() {
+        return logFilePaths;
     }
 
 	public boolean isMultitenant() {

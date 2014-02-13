@@ -34,6 +34,8 @@ public class MemberContext implements Serializable{
     private String memberId;
     // corresponding jclouds node id
     private String nodeId;
+    // instance id - derived from nodeId
+    private String instanceId;
     // cluster id of this member
     private String clusterId;
     // partition this member is in.
@@ -151,4 +153,51 @@ public class MemberContext implements Serializable{
                allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId +
                ", networkPartitionId=" + networkPartitionId + "]";
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((clusterId == null) ? 0 : clusterId.hashCode());
+		result = prime * result
+				+ ((memberId == null) ? 0 : memberId.hashCode());
+		result = prime * result + ((nodeId == null) ? 0 : nodeId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MemberContext other = (MemberContext) obj;
+		if (clusterId == null) {
+			if (other.clusterId != null)
+				return false;
+		} else if (!clusterId.equals(other.clusterId))
+			return false;
+		if (memberId == null) {
+			if (other.memberId != null)
+				return false;
+		} else if (!memberId.equals(other.memberId))
+			return false;
+		if (nodeId == null) {
+			if (other.nodeId != null)
+				return false;
+		} else if (!nodeId.equals(other.nodeId))
+			return false;
+		return true;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
 }

@@ -133,6 +133,30 @@ public class NetworkPartitionLbHolder implements Serializable{
 
     }
 
+    public boolean removeLbClusterId(String clusterId) {
+    	if (isLBExist(clusterId)) {
+    		if(isDefaultLBExist() && defaultLbClusterId.equals(clusterId)) {
+    			defaultLbClusterId = null;
+    			return true;
+    			
+    		} else if (serviceNameToLBClusterIdMap.containsValue(clusterId)){
+    			for (String service : serviceNameToLBClusterIdMap.keySet()) {
+					if(clusterId.equals(serviceNameToLBClusterIdMap.get(service))) {
+						serviceNameToLBClusterIdMap.remove(service);
+						return true;
+					}
+				}
+    		} else if (clusterIdToLBClusterIdMap.containsValue(clusterId)){
+    			for (String cluster : clusterIdToLBClusterIdMap.keySet()) {
+					if(clusterId.equals(clusterIdToLBClusterIdMap.get(cluster))) {
+						clusterIdToLBClusterIdMap.remove(cluster);
+						return true;
+					}
+				}
+    		}
+    	}
+    	return false;
+    }
 
     public boolean isLBExist(final String clusterId) {
 
@@ -211,12 +235,6 @@ public class NetworkPartitionLbHolder implements Serializable{
     }
 
 
-
-    @Override
-    public String toString() {
-        return "NetworkPartitionContext [networkPartitionId=" + networkPartitionId + ", defaultLbClusterId="
-                + defaultLbClusterId;
-    }
 
 //    public int getCurrentPartitionIndex() {
 //        return currentPartitionIndex;
@@ -407,7 +425,16 @@ public class NetworkPartitionLbHolder implements Serializable{
 
 
 
-    public String getNetworkPartitionId() {
+    @Override
+	public String toString() {
+		return "NetworkPartitionLbHolder [networkPartitionId="
+				+ networkPartitionId + ", defaultLbClusterId="
+				+ defaultLbClusterId + ", serviceNameToLBClusterIdMap="
+				+ serviceNameToLBClusterIdMap + ", clusterIdToLBClusterIdMap="
+				+ clusterIdToLBClusterIdMap + "]";
+	}
+
+	public String getNetworkPartitionId() {
         return networkPartitionId;
     }
 
