@@ -58,6 +58,7 @@ public class Cartridge implements Comparable<Cartridge> {
 
     private String defaultDeploymentPolicy;
 
+    private boolean isPersistant;
 
 	public String getDisplayName() {
 		return displayName;
@@ -261,5 +262,12 @@ public class Cartridge implements Comparable<Cartridge> {
 
     public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
         this.defaultDeploymentPolicy = defaultDeploymentPolicy;
+}
+    public boolean isPersistant() {
+        return isPersistant;
+    }
+
+    public void setPersistant(boolean isPersistant) {
+        this.isPersistant = isPersistant;
     }
 }

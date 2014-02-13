@@ -24,6 +24,7 @@ package org.apache.stratos.manager.service;
 */
 
 
+import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 /**
@@ -37,7 +38,7 @@ public class RepositoryInfoBean {
 	private String userName;
 	private String password;
 	private String[] dirArray;
-	private CartridgeInfo cartridgeInfo;	
+	private CartridgeInfo cartridgeInfo;
 	
 	
 	public RepositoryInfoBean(String repoURL, String cartridgeAlias, String tenantDomain,

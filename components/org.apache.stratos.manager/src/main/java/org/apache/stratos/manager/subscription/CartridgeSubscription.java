@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.Cluster;
@@ -68,6 +69,7 @@ public abstract class CartridgeSubscription implements Serializable {
     //private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
     private SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
+    private PersistanceMapping persistanceMapping;
 
     
     /**
@@ -122,6 +124,7 @@ public abstract class CartridgeSubscription implements Serializable {
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
+
         getSubscriptionTenancyBehaviour().createSubscription(this);
     }
 
@@ -149,10 +152,10 @@ public abstract class CartridgeSubscription implements Serializable {
     public CartridgeSubscriptionInfo registerSubscription(Properties properties)
             throws ADCException, UnregisteredCartridgeException {
 
-        Properties props = new Properties();
-        props.setProperties(getCartridgeInfo().getProperties());
+        // Properties props = new Properties();
+        //props.setProperties(getCartridgeInfo().getProperties());
 
-        getSubscriptionTenancyBehaviour().registerSubscription(this, props);
+        getSubscriptionTenancyBehaviour().registerSubscription(this, properties);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
@@ -435,5 +438,13 @@ public abstract class CartridgeSubscription implements Serializable {
 
     public void setLbClusterId(String lbClusterId) {
         this.lbClusterId = lbClusterId;
+    }
+
+    public PersistanceMapping getPersistanceMapping() {
+        return persistanceMapping;
+    }
+
+    public void setPersistanceMapping(PersistanceMapping persistanceMapping) {
+        this.persistanceMapping = persistanceMapping;
     }
 }
