@@ -242,6 +242,17 @@ public class StratosTestAdmin {
          MockContext.getInstance().deleteCartridgeDefinition(cartridgeType);
     }
 
+    @GET
+    @Path("/cartridge/available/info/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
+            throws ADCException, RestAPIException {
+        return MockContext.getInstance().getAvailableSingleTenantCartridgeInfo(cartridgeType);
+    }
+
+
     @POST
     @Path("/policy/deployment/partition")
     @Produces("application/json")

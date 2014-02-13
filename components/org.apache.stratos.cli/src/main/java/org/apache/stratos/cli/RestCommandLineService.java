@@ -350,7 +350,7 @@ public class RestCommandLineService {
             // Filter out LB cartridges
             List<Cartridge> allCartridges = cartridgeList.getCartridge();
             for (Cartridge cartridge : allCartridges) {
-				if(!cartridge.getProvider().equals("lb")){
+				if( ! cartridge.isLoadBalancer()) {
 					applicationCartridgeList.getCartridge().add(cartridge);
 				}
 			}
@@ -377,7 +377,7 @@ public class RestCommandLineService {
                     data[4] = cartridge.getCartridgeAlias();
                     data[5] = cartridge.getStatus();
                     data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-                    data[7] = cartridge.getLbClusterId();
+                    data[7] = cartridge.getHostName();
                     if (full) {
                         data[8] = getAccessURLs(cartridge);
                         data[9] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
@@ -395,7 +395,8 @@ public class RestCommandLineService {
             headers.add("Alias");
             headers.add("Status");
             headers.add("Running Instances");
-            headers.add("LB Cluster ID");
+            //headers.add("LB Cluster ID");
+            headers.add("Host Name");
             if (full) {
                 headers.add("Access URL(s)");
                 headers.add("Repo URL");
@@ -404,6 +405,7 @@ public class RestCommandLineService {
             System.out.println("Subscribed Cartridges:");
             CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
             System.out.println();
+
         } catch (Exception e) {
             handleException("Exception in listing subscribe cartridges", e);
         } finally {

@@ -199,6 +199,10 @@ function cep_conf_validate {
         echo "Please copy the cep extension jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
     fi
+    if [[ ! -f $andes_client_jar ]]; then
+        echo "Please copy the andes client jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
+        exit 1
+    fi
 }
 
 function cc_conf_validate {
@@ -377,6 +381,7 @@ function cep_setup {
 
     cp -f ./config/cep/repository/conf/jndi.properties $cep_path/repository/conf/
     cp -f $cep_extension_jar $cep_path/repository/components/lib/
+    cp -f $andes_client_jar $cep_path/repository/components/dropins/
     cp -f $cep_extension_path/artifacts/eventbuilders/*.xml $cep_path/repository/deployment/server/eventbuilders/
     cp -f $cep_extension_path/artifacts/inputeventadaptors/*.xml $cep_path/repository/deployment/server/inputeventadaptors/
     cp -f $cep_extension_path/artifacts/outputeventadaptors/*.xml $cep_path/repository/deployment/server/outputeventadaptors/

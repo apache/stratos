@@ -136,6 +136,10 @@ public class MockContext {
           return subscribedCartridges.get(alias);
     }
 
+    public Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType){
+        return availableSingleTenantCartridges.get(cartridgeType);
+    }
+
     public void deleteTenant(String tenantDomain) {
           tenantMap.remove(tenantDomain);
     }

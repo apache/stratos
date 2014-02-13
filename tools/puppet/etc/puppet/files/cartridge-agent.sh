@@ -90,6 +90,19 @@ cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
 cat bin/$cartridge_agent_script.tmp | sed -e "s@CERT-TRUSTSTORE@$truststore_path/$CERT_TRUSTSTORE@g" > bin/$cartridge_agent_script
 cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
 cat bin/$cartridge_agent_script.tmp | sed -e "s@\bTRUSTSTORE-PASSWORD\b@$TRUSTSTORE_PASSWORD@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bENABLE-DATA-PUBLISHER\b@$ENABLE_DATA_PUBLISHER@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bMONITORING-SERVER-IP\b@$MONITORING_SERVER_IP@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bMONITORING-SERVER-PORT\b@$MONITORING_SERVER_PORT@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bMONITORING-SERVER-SECURE-PORT\b@$MONITORING_SERVER_SECURE_PORT@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bMONITORING-SERVER-ADMIN-USERNAME\b@$MONITORING_SERVER_ADMIN_USERNAME@g" > bin/$cartridge_agent_script
+cp -f bin/$cartridge_agent_script bin/$cartridge_agent_script.tmp
+cat bin/$cartridge_agent_script.tmp | sed -e "s@\bMONITORING-SERVER-ADMIN-PASSWORD\b@$MONITORING_SERVER_ADMIN_PASSWORD@g" > bin/$cartridge_agent_script
+
 rm -f bin/$cartridge_agent_script.tmp
 popd
 
