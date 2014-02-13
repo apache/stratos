@@ -33,6 +33,8 @@ node confignode inherits basenode  {
 
 	## Server details for billing
 	$time_zone		= "GMT-8:00"
+	
+	## global configs to send in payload
 	$mb_ip                   = "54.251.211.89",
         $mb_port                 = "5677",
         $cep_ip                  = "54.251.211.89",
