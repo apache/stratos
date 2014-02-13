@@ -54,7 +54,7 @@ public interface GenericRestClient {
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord);
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) throws Exception;
 
     public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord);
 

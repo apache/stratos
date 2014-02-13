@@ -113,7 +113,7 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) {
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) throws Exception{
         try {
             HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
@@ -132,8 +132,9 @@ public class RestClient implements GenericRestClient{
 
             return response;
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            return null;
+            throw new ClientProtocolException();
+        } catch (ConnectException e) {
+            throw new ConnectException();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
