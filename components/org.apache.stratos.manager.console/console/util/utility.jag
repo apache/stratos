@@ -183,17 +183,23 @@ consoleAppUtil = new function(){
     };
     this.getConfigStatus = function(){
         var configStatus = {};
-        if(this.sendReceive("GET","/partition",{}).data.partition.length == 0){
+        var get_status = session.get("get-status");
+        if(get_status == "succeeded") {
+            if(this.sendReceive("GET","/partition",{}).data.partition.length == 0){
             configStatus.first_use = true;
-        }else{
-            if(this.sendReceive("GET","/service",{}).data.serviceDefinitionBean.length == 0){
-                configStatus.first_use = false;
-                configStatus.not_complete = true;
             }else{
-                configStatus.not_complete = false;
-                configStatus.first_use = false;
+                if(this.sendReceive("GET","/service",{}).data.serviceDefinitionBean.length == 0){
+                    configStatus.first_use = false;
+                    configStatus.not_complete = true;
+                }else{
+                    configStatus.not_complete = false;
+                    configStatus.first_use = false;
+                }
             }
+        } else {
+
         }
+
         return configStatus;
     };
 
@@ -239,7 +245,11 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("recieved data is: " + stringify(response.data));
+        if(response.data.Error) {
+            session.put("get-status", response.data.Error.errorMessage);
+        } else {
+            session.put("get-status", "succeeded");
+        }
         return response;
     };
 
@@ -253,23 +263,29 @@ consoleAppUtil = new function(){
         var response;
         switch (httpMethod){
             case  "GET":
-                response = get(endpoint,{},headers);
+                response = get(endpoint,{},headers, 'json');
                 break;
             case   "POST":
-                response = post(endpoint,data,headers);
+                response = post(endpoint,data,headers, 'json');
                 break;
             case    "PUT":
-                response = put(endpoint,data,headers);
+                response = put(endpoint,data,headers, 'json');
                 break;
             case    "DELETE":
-                response = del(endpoint,data,headers);
+                response = del(endpoint,data,headers, 'json');
                 break;
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("sent response is: " + stringify(response.data));
-        return response;
-    };
+        if(response.data.stratosAdminResponse) {
+            session.put("deploy-status", "succeeded");
+        } else if (response.data.Error) {
+            session.put("deploy-status", response.data.Error.errorMessage);
+        } else {
+            session.put("deploy-status", "Error occurred while deploying...");
+        }
+            return response;
+        };
 
 
 

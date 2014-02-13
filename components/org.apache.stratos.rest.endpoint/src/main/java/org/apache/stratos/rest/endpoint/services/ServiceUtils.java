@@ -45,6 +45,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -67,7 +68,7 @@ public class ServiceUtils {
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
-    static void deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+    static StratosAdminResponse deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
         String userName, String tenantDomain) throws RestAPIException {
 
         log.info("Starting to deploy a Cartridge [type] "+cartridgeDefinitionBean.type);
@@ -93,6 +94,10 @@ public class ServiceUtils {
                 throw new RestAPIException(e);
             }
         }
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed cartridge definition with type " + cartridgeDefinitionBean.type);
+        return stratosAdminResponse;
     }
 
     @SuppressWarnings("unused")
@@ -115,7 +120,7 @@ public class ServiceUtils {
         return commonPolicies.toArray(new DeploymentPolicy[0]);
     }
     
-    static void undeployCartridge (String cartridgeType) throws RestAPIException {
+    static StratosAdminResponse undeployCartridge(String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -126,10 +131,14 @@ public class ServiceUtils {
                 throw new RestAPIException(e);
             }
         }
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully undeployed cartridge definition with type " + cartridgeType);
+        return stratosAdminResponse;
     }
 
 
-    public static boolean deployPartition (Partition partitionBean) throws RestAPIException {
+    public static StratosAdminResponse deployPartition(Partition partitionBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
@@ -140,17 +149,19 @@ public class ServiceUtils {
                     PojoConverter.convertToCCPartitionPojo(partitionBean);
 
             try {
-                return autoscalerServiceClient.deployPartition(partition);
+                autoscalerServiceClient.deployPartition(partition);
 
             } catch (Exception e) {
                 throw new RestAPIException(e.getMessage(), e);
             }
         }
 
-        return false;
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed partition definition with id " + partitionBean.id);
+        return stratosAdminResponse;
     }
 
-    public static boolean deployAutoscalingPolicy (AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
+    public static StratosAdminResponse deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
@@ -161,18 +172,20 @@ public class ServiceUtils {
                     convertToCCAutoscalerPojo(autoscalePolicyBean);
 
             try {
-                return autoscalerServiceClient.deployAutoscalingPolicy(autoscalePolicy);
+                autoscalerServiceClient.deployAutoscalingPolicy(autoscalePolicy);
 
             } catch (Exception e) {
                 throw new RestAPIException(e);
             }
         }
 
-        return false;
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed autoscaling policy definition with id " + autoscalePolicyBean.getId());
+        return stratosAdminResponse;
     }
 
-    public static boolean deployDeploymentPolicy (
-        org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean) 
+    public static StratosAdminResponse deployDeploymentPolicy(
+            org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
                 throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
@@ -184,14 +197,16 @@ public class ServiceUtils {
                     PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
-                return autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
+                autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
 
             } catch (Exception e) {
                 throw new RestAPIException(e);
             }
         }
 
-        return false;
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed deployment policy definition with type " + deploymentPolicyBean.id);
+        return stratosAdminResponse;
     }
 
     private static CloudControllerServiceClient getCloudControllerServiceClient () {
@@ -573,7 +588,7 @@ public class ServiceUtils {
             return PojoConverter.convertToServiceDefinitionBean(service);
         }
 
-        return null;
+        return new ServiceDefinitionBean();
     }
 
 	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
@@ -1194,7 +1209,7 @@ public class ServiceUtils {
         return cartridgeSubscription.getClusterDomain();
     }
 
-    static void unsubscribe(String alias, String tenantDomain) throws RestAPIException {
+    static StratosAdminResponse unsubscribe(String alias, String tenantDomain) throws RestAPIException {
 
         try {
             cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
@@ -1205,6 +1220,10 @@ public class ServiceUtils {
         } catch (NotSubscribedException e) {
             throw new RestAPIException(e);
         }
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully terminated the subscription with alias " + alias);
+        return stratosAdminResponse;
     }
     
     /**
@@ -1212,12 +1231,12 @@ public class ServiceUtils {
      * Super tenant will deploy multitenant service. 
      * 
      * get domain , subdomain as well..
-     * @param clusterDomain 
-     * @param clusterSubdomain 
+     * @param clusterDomain
+     * @param clusterSubdomain
      * 
      */
-    static void deployService (String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy, 
-    		String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) throws RestAPIException {
+    static StratosAdminResponse deployService(String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy,
+                                              String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) throws RestAPIException {
     	log.info("Deploying service..");
     	try {
     		serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange, tenantDomain, tenantUsername);
@@ -1225,9 +1244,13 @@ public class ServiceUtils {
 		} catch (Exception e) {
 			throw new RestAPIException(e);
 		}
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed service cluster definition with type " + cartridgeType);
+        return stratosAdminResponse;
     }
 
-    static void undeployService (String serviceType) throws RestAPIException {
+    static StratosAdminResponse undeployService(String serviceType) throws RestAPIException {
 
         try {
             serviceDeploymentManager.undeployService(serviceType);
@@ -1236,6 +1259,8 @@ public class ServiceUtils {
             throw new RestAPIException(e);
         }
 
-
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully undeployed service cluster definition for service type " + serviceType);
+        return stratosAdminResponse;
     }
 }
