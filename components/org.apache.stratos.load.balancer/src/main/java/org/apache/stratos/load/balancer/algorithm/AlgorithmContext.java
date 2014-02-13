@@ -19,18 +19,20 @@
 
 package org.apache.stratos.load.balancer.algorithm;
 
+import org.apache.stratos.load.balancer.cache.AlgorithmContextCache;
+
 /**
  * Algorithm context is used for identifying the cluster and its current member for executing load balancing algorithms.
+ * Key: service name, cluster id
  */
 public class AlgorithmContext {
     private String serviceName;
     private String clusterId;
-    private int currentMemberIndex;
 
     public AlgorithmContext(String serviceName, String clusterId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.currentMemberIndex = 0;
+        AlgorithmContextCache.putCurrentMemberIndex(serviceName, clusterId, 0);
     }
 
     public String getServiceName() {
@@ -42,10 +44,10 @@ public class AlgorithmContext {
     }
 
     public int getCurrentMemberIndex() {
-        return currentMemberIndex;
+        return AlgorithmContextCache.getCurrentMemberIndex(getServiceName(), getClusterId());
     }
 
     public void setCurrentMemberIndex(int currentMemberIndex) {
-        this.currentMemberIndex = currentMemberIndex;
+        AlgorithmContextCache.putCurrentMemberIndex(getServiceName(), getClusterId(), currentMemberIndex);
     }
 }
