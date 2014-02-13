@@ -59,7 +59,6 @@
                         <property name="jclouds.ec2.ami-query" value="owner-id=EC2_OWNER_ID;state=available;image-type=machine"/>
                         <property name="availabilityZone" value="EC2_AVAILABILITY_ZONE"/>
                         <property name="securityGroups" value="EC2_SECURITY_GROUPS"/>
-                        <property name="instanceType" value="EC2_INSTANCE_TYPE"/>
                         <property name="autoAssignIp" value="true" />
                         <property name="keyPair" value="EC2_KEYPAIR"/>
                 </iaasProviderEC2_PROVIDER_END>

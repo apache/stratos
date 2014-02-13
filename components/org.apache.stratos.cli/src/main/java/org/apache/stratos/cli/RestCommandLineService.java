@@ -579,8 +579,7 @@ public class RestCommandLineService {
         }
     }
 
-	private Member[] getMembers(String cartridgeType, String alias,
-			DefaultHttpClient httpClient) {
+	private Member[] getMembers(String cartridgeType, String alias, DefaultHttpClient httpClient) {
 		HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
 		        + cartridgeType + "/" + alias,
 		        restClientService.getUsername(), restClientService.getPassword());
