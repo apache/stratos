@@ -186,7 +186,7 @@ consoleAppUtil = new function(){
         if(this.sendReceive("GET","/partition",{}).data.partition.length == 0){
             configStatus.first_use = true;
         }else{
-            if(this.sendReceive("GET","/cartridge/list",{}).data.cartridge.length == 0){
+            if(this.sendReceive("GET","/service",{}).data.serviceDefinitionBean.length == 0){
                 configStatus.first_use = false;
                 configStatus.not_complete = true;
             }else{

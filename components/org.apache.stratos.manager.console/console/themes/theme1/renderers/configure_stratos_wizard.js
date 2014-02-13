@@ -23,7 +23,9 @@ var render = function (theme, data, meta, require) {
     }else if( config_status.step == 6 ){
         title = 'Multi-Tenant Service Deployment';
     }
-
+    for(var i=0;i<step_data.length;i++){
+        step_data[i].json_string = stringify(step_data[i]);
+    }
     theme('index', {
         body: [
             {
@@ -32,6 +34,7 @@ var render = function (theme, data, meta, require) {
                     title:title,
                     step_data:data.step_data,
                     step:config_status.step,
+                    wizard_on:true,
                     wizard_on_1:wizard_on_val[0],
                     wizard_on_2:wizard_on_val[1],
                     wizard_on_3:wizard_on_val[2],
