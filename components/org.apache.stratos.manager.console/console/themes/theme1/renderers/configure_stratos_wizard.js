@@ -1,6 +1,10 @@
 var render = function (theme, data, meta, require) {
     session.put("configuring","false");
+    var deploy_status = session.get("deploy-status");
+    var list_status = session.get("get-status");
+    var err_message = "";
     var title;
+    var isErr = false;
     var wizard_on_val = [];
     for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
@@ -9,6 +13,24 @@ var render = function (theme, data, meta, require) {
             wizard_on_val.push(false);
         }
     }
+    if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && list_status == "succeeded")) {
+       isErr = false;
+    } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null && !(list_status == "succeeded"))) {
+       isErr = true;
+       step_data = "[]";
+        err_message = deploy_status + " ," + list_status;
+    } else if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && !(list_status == "succeeded"))) {
+        isErr = true;
+        err_message = list_status;
+        step_data = "[]";
+    } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null &&  list_status == "succeeded")) {
+       isErr = true;
+       err_message = deploy_status;
+    }
+
+    session.remove("get-status");
+    session.remove("deploy-status");
+
     var config_status = data.wizard;
     if( config_status.step == 1 ){
         title = 'Partition Deployment';
@@ -66,7 +88,9 @@ var render = function (theme, data, meta, require) {
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
                     step:step,
-                    configure_stratos:true
+                    configure_stratos:true,
+                    error:isErr,
+                    error_msg:err_message
                 }
             }
         ],

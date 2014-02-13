@@ -426,6 +426,10 @@ textarea.jsonEditor{
     width:100%;
     margin-top:-10px;
 }
+div.error{
+    background:#ff9998;
+    color:#444;
+}
 .color-a-full-icons{
     color:#ff9000;
     font-size:30px;

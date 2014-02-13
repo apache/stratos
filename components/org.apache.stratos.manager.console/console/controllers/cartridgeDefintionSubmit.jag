@@ -5,5 +5,10 @@
     var cartridgeDefinition = request.getParameter("cartridge-definition").trim();
     var response = utils.consoleAppUtil.deployCartridgeDefinition(cartridgeDefinition);
     response.sendRedirect(request.getContextPath() + '/cartridge_deployments.jag');
+    if(response.data) {
+       session.put("Action successful");
+    } else {
+        session.put("Error occurred while deploying the cartidge");
+    }
 }());
 %>

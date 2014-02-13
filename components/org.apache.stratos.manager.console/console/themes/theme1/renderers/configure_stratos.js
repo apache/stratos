@@ -1,6 +1,10 @@
 var render = function (theme, data, meta, require) {
     session.put("configuring","true");
     var title;
+    var deploy_status = session.get("deploy-status");
+    var list_status = session.get("get-status");
+    var err_message = "";
+    var isErr = false;
     var wizard_on_val = [];
     for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
@@ -24,6 +28,22 @@ var render = function (theme, data, meta, require) {
         title = 'Multi-Tenant Service Deployment';
     }
 
+    if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && list_status == "succeeded")) {
+       isErr = false;
+    } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null && !(list_status == "succeeded"))) {
+       isErr = true;
+       step_data = "[]";
+        err_message = deploy_status + " , " + list_status;
+    } else if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && !(list_status == "succeeded"))) {
+        isErr = true;
+        err_message = list_status;
+        step_data = "[]";
+    } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null &&  list_status == "succeeded")) {
+       isErr = true;
+       err_message = deploy_status;
+    }
+    session.remove("get-status");
+    session.remove("deploy-status");
 
     for(var i=0;i<step_data.length;i++){
         step_data[i].json_string = stringify(step_data[i]);
@@ -46,7 +66,8 @@ var render = function (theme, data, meta, require) {
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
                     config_status:data.config_status,
-                    data_string:stringify(data.step_data)
+                    data_string:stringify(data.step_data),
+                    configure_stratos:true
 
                 }
             }
@@ -73,7 +94,9 @@ var render = function (theme, data, meta, require) {
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
                     step:step,
-                    configure_stratos:true
+                    configure_stratos:true,
+                    error:isErr,
+                    error_msg:err_message
                 }
             }
         ],
