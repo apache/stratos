@@ -804,6 +804,8 @@ public class ServiceUtils {
             persistanceMapping.setRemoveOntermination(persistanceMappingBean.removeOnTermination);
             subscriptionData.setPersistanceMapping(persistanceMapping);
             */
+
+            // Add persistance mapping properties to the subscription.
             Property persistanceRequiredProperty = new Property();
             persistanceRequiredProperty.setName("is-required");
             persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.persistanceRequired));
@@ -825,8 +827,6 @@ public class ServiceUtils {
         }
 
 
-
-
         // If multitenant, return for now. TODO -- fix properly
         if(cartridgeInfo != null && cartridgeInfo.getMultiTenant()) {
                log.info(" ******* MT cartridge ******* ");
@@ -834,7 +834,7 @@ public class ServiceUtils {
             subscriptionData.setPrivateRepository(false);
             subscriptionData.setLbClusterId(null);
             subscriptionData.setProperties(null);
-                       
+
             CartridgeSubscription cartridgeSubscription =
                                         cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
                log.info(" --- ** -- ");

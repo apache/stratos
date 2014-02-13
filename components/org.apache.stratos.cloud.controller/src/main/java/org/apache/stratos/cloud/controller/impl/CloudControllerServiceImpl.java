@@ -850,9 +850,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         //updating the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getMemberId());
 
-        // update data holders
-        dataHolder.removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
-        
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
                                                         memberContext.getPartition().getId(),
@@ -862,6 +859,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                                         MemberStatus.Terminated.toString(),
                                                         null);
 
+        // update data holders
+        dataHolder.removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
+        
 		// persist
 		persist();
 

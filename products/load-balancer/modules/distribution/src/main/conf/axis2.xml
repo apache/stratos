@@ -346,7 +346,8 @@
      corresponding to the "class" attribute of the "clustering" element. It is also responsible for
      getting this node to join the cluster.
      -->
-    <clustering class="org.apache.axis2.clustering.tribes.TribesClusteringAgent" enable="false">
+    <clustering class="org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent"
+                enable="false">
 
         <!--
            This parameter indicates whether the cluster has to be automatically initalized
@@ -369,6 +370,8 @@
                     Service (GMS) using a TCP ping mechanism.
         -->
         <parameter name="membershipScheme">wka</parameter>
+        <!--<parameter name="licenseKey">xxx</parameter>-->
+        <!--<parameter name="mgtCenterURL">http://localhost:8081/mancenter/</parameter>-->
 
         <!--
          The clustering domain/group. Nodes in the same group will belong to the same multicast
@@ -376,95 +379,89 @@
         -->
         <parameter name="domain">lb.domain</parameter>
 
-        <!--
-           When a Web service request is received, and processed, before the response is sent to the
-           client, should we update the states of all members in the cluster? If the value of
-           this parameter is set to "true", the response to the client will be sent only after
-           all the members have been updated. Obviously, this can be time consuming. In some cases,
-           such this overhead may not be acceptable, in which case the value of this parameter
-           should be set to "false"
-        -->
-        <parameter name="synchronizeAll">false</parameter>
-
-        <!--
-          The maximum number of times we need to retry to send a message to a particular node
-          before giving up and considering that node to be faulty
-        -->
-        <parameter name="maxRetries">10</parameter>
-
         <!-- The multicast address to be used -->
-        <parameter name="mcastAddress">228.0.0.4</parameter>
+        <!--<parameter name="mcastAddress">228.0.0.4</parameter>-->
 
         <!-- The multicast port to be used -->
         <parameter name="mcastPort">45564</parameter>
 
-        <!-- The frequency of sending membership multicast messages (in ms) -->
-        <parameter name="mcastFrequency">500</parameter>
+        <parameter name="mcastTTL">100</parameter>
 
-        <!-- The time interval within which if a member does not respond, the member will be
-         deemed to have left the group (in ms)
-         -->
-        <parameter name="memberDropTime">3000</parameter>
+        <parameter name="mcastTimeout">60</parameter>
 
         <!--
            The IP address of the network interface to which the multicasting has to be bound to.
            Multicasting would be done using this interface.
         -->
-        <parameter name="mcastBindAddress">127.0.0.1</parameter>
-
+        <!--
+            <parameter name="mcastBindAddress">127.0.0.1</parameter>
+        -->
         <!-- The host name or IP address of this member -->
-        
-        <!--parameter name="localMemberHost">127.0.0.1</parameter-->
-        
+
+        <parameter name="localMemberHost">127.0.0.1</parameter>
+
+        <!--
+            The bind adress of this member. The difference between localMemberHost & localMemberBindAddress
+            is that localMemberHost is the one that is advertised by this member, while localMemberBindAddress
+            is the address to which this member is bound to.
+        -->
+        <!--
+        <parameter name="localMemberBindAddress">127.0.0.1</parameter>
+        -->
 
         <!--
         The TCP port used by this member. This is the port through which other nodes will
         contact this member
          -->
-        <parameter name="localMemberPort">4000</parameter>
+        <parameter name="localMemberPort">4100</parameter>
 
         <!--
-        Preserve message ordering. This will be done according to sender order.
+            The bind port of this member. The difference between localMemberPort & localMemberBindPort
+            is that localMemberPort is the one that is advertised by this member, while localMemberBindPort
+            is the port to which this member is bound to.
         -->
-        <parameter name="preserveMessageOrder">false</parameter>
+        <!--
+        <parameter name="localMemberBindPort">4001</parameter>
+        -->
 
         <!--
-        Maintain atmost-once message processing semantics
+        Properties specific to this member
         -->
-        <parameter name="atmostOnceMessageSemantics">false</parameter>
-         
+        <parameter name="properties">
+            <property name="backendServerURL" value="https://${hostName}:${httpsPort}/services/"/>
+            <property name="mgtConsoleURL" value="https://${hostName}:${httpsPort}/"/>
+ 	    <!-- Manger Setup with Port Mapping-->
+	    <!--property name="port.mapping.8280" value="9764"/>
+            <property name="port.mapping.8243" value="9444"/>
+            <property name="subDomain" value="mgt"/-->
+
+	    <!-- Worker Setup-->
+	    <!--property name="subDomain" value="worker"/-->
+        </parameter>
+
         <!--
-           This interface is responsible for handling state replication. The property changes in
-           the Axis2 context hierarchy in this node, are propagated to all other nodes in the cluster.
-
-           The "excludes" patterns can be used to specify the prefixes (e.g. local_*) or
-           suffixes (e.g. *_local) of the properties to be excluded from replication. The pattern
-           "*" indicates that all properties in a particular context should not be replicated.
-
-            The "enable" attribute indicates whether context replication has been enabled
+           The list of static or well-known members. These entries will only be valid if the
+           "membershipScheme" above is set to "wka"
         -->
-        <stateManager class="org.apache.axis2.clustering.state.DefaultStateManager"
-                      enable="false">
-            <replication>
-                <defaults>
-                    <exclude name="local_*"/>
-                    <exclude name="LOCAL_*"/>
-                </defaults>
-                <context class="org.apache.axis2.context.ConfigurationContext">
-                    <exclude name="local_*"/>
-                    <exclude name="UseAsyncOperations"/>
-                    <exclude name="SequencePropertyBeanMap"/>
-                </context>
-                <context class="org.apache.axis2.context.ServiceGroupContext">
-                    <exclude name="local_*"/>
-                    <exclude name="my.sandesha.*"/>
-                </context>
-                <context class="org.apache.axis2.context.ServiceContext">
-                    <exclude name="local_*"/>
-                    <exclude name="my.sandesha.*"/>
-                </context>
-            </replication>
-        </stateManager>
+        <members>
+            <member>
+                <hostName>127.0.0.1</hostName>
+                <port>4000</port>
+            </member>
+        </members>
+
+        <!--
+        Enable the groupManagement entry if you need to run this node as a cluster manager.
+        Multiple application domains with different GroupManagementAgent implementations
+        can be defined in this section.
+        -->
+        <groupManagement enable="false">
+            <applicationDomain name="lb.domain"
+                               description="LB group"
+                               agent="org.wso2.carbon.core.clustering.hazelcast.HazelcastGroupManagementAgent"
+                               subDomain="worker"
+                               port="2222"/>
+        </groupManagement>
     </clustering>
 
     <!-- ================================================= -->
