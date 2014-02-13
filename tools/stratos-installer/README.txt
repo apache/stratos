@@ -63,14 +63,14 @@ How to Install
 	- stratos_pack_path 	==> Folder path containing stratos packages(all stratos packs + cep + mb) 
 	- stratos_path 		==> Folder which stratos will be installed (Eg: /opt )
 	- JAVA_HOME 		==> java home
-	- host_user 		==> A host user account for stratos. If not provided deafult is assumed stratos. If no account #named stratos exist it will be created.
+	- host_user 		==> A host user account for stratos
 	- mb_ip 		==> Machine ip on which mb run
  	- cep_ip		==> Machine ip on which cep run
  	- cc_ip 		==> Machine ip on which cc run
  	- as_ip 		==> Machine ip on which auto scalar run
  	- sm_ip 		==> Machine ip on which sc run
  	- puppet_ip 		==> Machine ip on which puppet master run
-	- cep_extension_path 	==> Folder path containing cep extensions(STRATOS_SOURCE_ROOT/extensions/cep)
+	- cep_artifacts_path 	==> Folder path containing cep artifacts(STRATOS_SOURCE_ROOT/extensions/cep/artifacts)
 	- andes_client_jar 	==> andes client jar file name
 	- mysql_connector_jar 	==> mysql connector jar file name
 	- userstore_db_hostname ==> hostname or ip where mysql is running

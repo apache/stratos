@@ -49,12 +49,6 @@ cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_CREDENTIAL@$ec2_credential@g" > repository/conf/cloud-controller.xml
        
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SCALEUP_ORDER@$ec2_scaleup_order@g" > repository/conf/cloud-controller.xml
-       
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SCALEDOWN_ORDER@$ec2_scaledown_order@g" > repository/conf/cloud-controller.xml
-       
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_OWNER_ID@$ec2_owner_id@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
@@ -62,15 +56,9 @@ cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_AVAILABILITY_ZONE@
        
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_SECURITY_GROUPS@$ec2_security_groups@g" > repository/conf/cloud-controller.xml
-       
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_INSTANCE_TYPE@$ec2_instance_type@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_KEYPAIR@$ec2_keypair_name@g" > repository/conf/cloud-controller.xml
-
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_IMAGE_ID@$ec2_image_id@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_END@@g" > repository/conf/cloud-controller.xml
