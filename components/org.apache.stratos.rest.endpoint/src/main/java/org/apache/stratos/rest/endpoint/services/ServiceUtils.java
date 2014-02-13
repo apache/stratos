@@ -58,6 +58,11 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class ServiceUtils {
+    public static final String IS_VOLUME_REQUIRED = "volume.required";
+    public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
+    public static final String VOLUME_SIZE = "volume.size.gb";
+    public static final String DEVICE_NAME = "volume.device.name";
+
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
@@ -794,8 +799,7 @@ public class ServiceUtils {
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
 
         Properties properties = new Properties();
-        if(cartridgeInfoBean.getPersistanceMappingBean() != null){
-            PersistanceMappingBean  persistanceMappingBean = cartridgeInfoBean.getPersistanceMappingBean();
+        if(cartridgeInfoBean.isPersistanceRequired()){
             /*
             PersistanceMapping persistanceMapping = new PersistanceMapping();
             persistanceMapping.setPersistanceRequired(persistanceMappingBean.persistanceRequired);
@@ -807,20 +811,20 @@ public class ServiceUtils {
 
             // Add persistance mapping properties to the subscription.
             Property persistanceRequiredProperty = new Property();
-            persistanceRequiredProperty.setName("is-required");
-            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.persistanceRequired));
+            persistanceRequiredProperty.setName(IS_VOLUME_REQUIRED);
+            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
 
             Property sizeProperty = new Property();
-            persistanceRequiredProperty.setName("is-required");
-            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.size));
+            persistanceRequiredProperty.setName(VOLUME_SIZE);
+            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.getSize()));
 
             Property deviceProperty = new Property();
-            persistanceRequiredProperty.setName("is-required");
-            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.device));
+            persistanceRequiredProperty.setName(DEVICE_NAME);
+            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.getDevice()));
 
             Property deleteOnTerminationProperty = new Property();
-            persistanceRequiredProperty.setName("is-required");
-            persistanceRequiredProperty.setValue(String.valueOf(persistanceMappingBean.removeOnTermination));
+            persistanceRequiredProperty.setName(SHOULD_DELETE_VOLUME);
+            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
 
             Properties props = new Properties();
             props.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
