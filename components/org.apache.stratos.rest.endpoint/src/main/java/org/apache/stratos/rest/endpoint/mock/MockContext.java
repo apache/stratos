@@ -80,6 +80,31 @@ public class MockContext {
         return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
     }
 
+
+    public Cartridge[] getAvailableLbCartridges(){
+        Map<Cartridge,String> availableLbCartridges = new HashMap<Cartridge, String>();
+        Iterator it = availableSingleTenantCartridges.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry pairs = (Map.Entry)it.next();
+            Cartridge cartridge = (Cartridge)pairs.getValue();
+            if(cartridge.getCartridgeType().equals("lb")){
+                availableLbCartridges.put(cartridge,cartridge.getCartridgeType());
+            }
+            it.remove();
+        }
+
+        it = availableMultiTenantCartridges.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry pairs = (Map.Entry)it.next();
+            Cartridge cartridge = (Cartridge)pairs.getValue();
+            if(cartridge.getCartridgeType().equals("lb")){
+                availableLbCartridges.put(cartridge,cartridge.getCartridgeType());
+            }
+            it.remove();
+        }
+        return availableLbCartridges.values().toArray(new Cartridge[0]);
+    }
+
     public Cartridge[] getSubscribedCartridges(){
         return subscribedCartridges.values().toArray(new Cartridge[0]);
     }

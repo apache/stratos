@@ -110,7 +110,7 @@
                                         <button data-step="{{step}}" type="button" class="btn btn-primary" id="wizardNext">Deploy</button>
                                         {{else}}
                                         <button data-step="{{step}}" type="button" class="btn btn-default" {{#unless wizard_on_2}} disabled="disabled" {{/unless}} id="wizardBack"><< Back</button>
-                                        <button data-step="{{step}}" type="button" class="btn {{#unless wizard_on_6}}{{#unless wizard_on_4}}btn-primary{{else}}btn-default{{/unless}}{{else}}btn-default{{/unless}}" id="wizardNext" {{#if wizard_on_6}} disabled="disabled" {{/if}}>Next >></button>
+                                        <button data-step="{{step}}" type="button" class="btn {{#ifCond step "==" 1 }}btn-primary{{/ifCond}}{{#ifCond step "==" 2 }}btn-primary{{/ifCond}}{{#ifCond step "==" 3 }}btn-primary{{/ifCond}}{{#ifCond step "==" 4 }}btn-default{{/ifCond}}{{#ifCond step "==" 5 }}btn-primary{{/ifCond}}{{#ifCond step "==" 6 }}btn-default{{/ifCond}}" id="wizardNext" {{#if wizard_on_6}} disabled="disabled" {{/if}}>Next >></button>
                                         {{#ifCond step "==" 4}}<button data-step="{{step}}" type="button" class="btn btn-primary" id="wizardSkip">Skip >></button>{{/ifCond}}
                                         <button data-step="{{step}}" type="button" class="btn {{#if wizard_on_6}}btn-primary{{else}}btn-default{{/if}}" id="wizardFinish" {{#unless wizard_on_6}} disabled="disabled" {{/unless}}>Finish</button>
                                         {{/if}}

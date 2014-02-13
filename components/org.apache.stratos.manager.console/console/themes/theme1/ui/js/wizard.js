@@ -17,9 +17,9 @@ $(function () {
     $('#wizardFinish').click(function () {
         var newStep = parseInt($(this).attr('data-step')) + 1;
         $('#nextStep').val(newStep);
-        if(isValidForm()){
+        //if(isValidForm()){
             $('#jsonForm').submit();
-        }
+        //}
     });
 
 
