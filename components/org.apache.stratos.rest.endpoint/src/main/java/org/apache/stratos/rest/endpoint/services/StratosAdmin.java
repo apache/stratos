@@ -342,16 +342,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) {
         try {
-            return ServiceUtils.subscribe(cartridgeInfoBean.getCartridgeType(),
-                    cartridgeInfoBean.getAlias(),
-                    cartridgeInfoBean.getAutoscalePolicy(),
-                    cartridgeInfoBean.getDeploymentPolicy(),
-                    cartridgeInfoBean.getRepoURL(),
-                    cartridgeInfoBean.isPrivateRepo(),
-                    cartridgeInfoBean.getRepoUsername(),
-                    cartridgeInfoBean.getRepoPassword(),
-                    cartridgeInfoBean.getDataCartridgeType(),
-                    cartridgeInfoBean.getDataCartridgeAlias(),
+            return ServiceUtils.subscribe(cartridgeInfoBean,
                     getConfigContext(),
                     getUsername(),
                     getTenantDomain());

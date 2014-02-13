@@ -23,30 +23,14 @@ import java.io.Serializable;
 public class PersistanceMapping implements Serializable{
 	
 	private static final long serialVersionUID = 3455721979991902731L;
-	private String snapshotId;
+	private boolean persistanceRequired;
 	private int size;
 	private String device;
 	private boolean removeOntermination;		
 
     public String toString () {
-        return "Snapshot: " + snapshotId + ", Size: " + size + ", device: " + device + " remove on termination " + removeOntermination;
+        return "Persistance Required: " + isPersistanceRequired() + ", Size: " + size + ", device: " + device + " remove on termination " + removeOntermination;
     }
-
-	/**
-	 * @return the snapshotId
-	 */
-    public String getSnapshotId() {
-		return snapshotId;
-	}
-
-
-
-	/**
-	 * @param snapshotId the snapshotId to set
-	 */
-    public void setSnapshotId(String snapshotId) {
-		this.snapshotId = snapshotId;
-	}
 
 	/**
 	 * @return the size
@@ -90,4 +74,11 @@ public class PersistanceMapping implements Serializable{
 		this.removeOntermination = removeOntermination;
 	}
 
+    public boolean isPersistanceRequired() {
+        return persistanceRequired;
+    }
+
+    public void setPersistanceRequired(boolean persistanceRequired) {
+        this.persistanceRequired = persistanceRequired;
+    }
 }

@@ -17,6 +17,8 @@
 */
 package org.apache.stratos.rest.endpoint.bean;
 
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -31,6 +33,8 @@ public class CartridgeInfoBean {
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
+    PersistanceMappingBean persistanceMappingBean;
+
 
 
     public String getCartridgeType() {
@@ -111,5 +115,13 @@ public class CartridgeInfoBean {
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public PersistanceMappingBean getPersistanceMappingBean() {
+        return persistanceMappingBean;
+    }
+
+    public void setPersistanceMappingBean(PersistanceMappingBean persistanceMappingBean) {
+        this.persistanceMappingBean = persistanceMappingBean;
     }
 }

@@ -36,6 +36,7 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
@@ -256,7 +257,7 @@ public class ApplicationManagementUtil {
         log.info("Register service..");
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
-                    hostName, properties, autoscalingPoliyName, deploymentPolicyName);
+                    hostName, properties, autoscalingPoliyName, deploymentPolicyName );
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);

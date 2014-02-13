@@ -28,6 +28,7 @@ import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.SubscriptionInfo;
 import org.apache.stratos.cli.beans.TenantInfoBean;
@@ -63,6 +64,7 @@ public class RestCommandLineService {
 
     // REST endpoints
     private final String initializeEndpoint = "/stratos/admin/init";
+    private final String initializeCookieEndpoint = "/stratos/admin/cookie";
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
     private final String listSubscribedCartridgeInfoRestEndpoint = "/stratos/admin/cartridge/info/";
@@ -133,13 +135,25 @@ public class RestCommandLineService {
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-
             if (validateLogin) {
-                restClientService.doPost(httpClient, restClientService.getUrl() + initializeEndpoint, "",
+                HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + initializeCookieEndpoint,
                         restClientService.getUsername(), restClientService.getPassword());
+
+                if (response != null) {
+                    String responseCode = "" + response.getStatusLine().getStatusCode();
+                    if ( (responseCode.equals(CliConstants.RESPONSE_OK)) && (response.toString().contains("WWW-Authenticate: Basic"))) {
+                        return true;
+                    }
+                    else {
+                        System.out.println("Invalid STRATOS_URL");
+                        return false;
+                    }
+                }
+
                 if (logger.isDebugEnabled()) {
                     logger.debug("Tenant Domain {}", restClientService.getUsername());
                 }
+
                 return true;
             } else {
                 // Just return true as we don't need to validate
@@ -350,7 +364,7 @@ public class RestCommandLineService {
             // Filter out LB cartridges
             List<Cartridge> allCartridges = cartridgeList.getCartridge();
             for (Cartridge cartridge : allCartridges) {
-				if(!cartridge.getProvider().equals("lb")){
+				if( ! cartridge.isLoadBalancer()) {
 					applicationCartridgeList.getCartridge().add(cartridge);
 				}
 			}
@@ -377,7 +391,7 @@ public class RestCommandLineService {
                     data[4] = cartridge.getCartridgeAlias();
                     data[5] = cartridge.getStatus();
                     data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-                    data[7] = cartridge.getLbClusterId();
+                    data[7] = cartridge.getHostName();
                     if (full) {
                         data[8] = getAccessURLs(cartridge);
                         data[9] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
@@ -395,7 +409,8 @@ public class RestCommandLineService {
             headers.add("Alias");
             headers.add("Status");
             headers.add("Running Instances");
-            headers.add("LB Cluster ID");
+            //headers.add("LB Cluster ID");
+            headers.add("Host Name");
             if (full) {
                 headers.add("Access URL(s)");
                 headers.add("Repo URL");
@@ -404,6 +419,7 @@ public class RestCommandLineService {
             System.out.println("Subscribed Cartridges:");
             CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
             System.out.println();
+
         } catch (Exception e) {
             handleException("Exception in listing subscribe cartridges", e);
         } finally {
@@ -478,48 +494,52 @@ public class RestCommandLineService {
         }
     }
     
-    private Map<String, Set<String>> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) {
-    	
-    	Map<String, Set<String>> privateFloatingLBIPMap = new HashMap<String, Set<String>>();
-    	Set<String> lbFloatingIpSet = new HashSet<String>();
-    	Set<String> lbPrivateIpSet = new HashSet<String>();
-    	Member[] members = getMembers(cartridge.getCartridgeType(), cartridge.getCartridgeAlias(), httpClient);
-    	
-    	Set<String> lbClusterIdSet = new HashSet<String>();
-    	
-    	for (Member member : members) {
-			lbClusterIdSet.add(member.getLbClusterId());
-			cartridge.setIp(member.getMemberIp());
-			cartridge.setPublicIp(member.getMemberPublicIp());
-		}
-    	
-        // Invoke  cluster/{clusterId}
-        for (String clusterId : lbClusterIdSet) {
-        	HttpResponse responseCluster = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
-                    +"clusterId/"+ clusterId,
-                    restClientService.getUsername(), restClientService.getPassword());
-            String resultStringCluster = getHttpResponseString(responseCluster);
-            
-            Cluster cluster = getClusterObjectFromString(resultStringCluster);
+    private Map<String, Set<String>> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) throws Exception{
+    	try {
+            Map<String, Set<String>> privateFloatingLBIPMap = new HashMap<String, Set<String>>();
+            Set<String> lbFloatingIpSet = new HashSet<String>();
+            Set<String> lbPrivateIpSet = new HashSet<String>();
+            Member[] members = getMembers(cartridge.getCartridgeType(), cartridge.getCartridgeAlias(), httpClient);
 
-            if (cluster == null) {
-                System.out.println("Subscribe cartridge list is null");
-                return null;
+            Set<String> lbClusterIdSet = new HashSet<String>();
+
+            for (Member member : members) {
+                lbClusterIdSet.add(member.getLbClusterId());
+                cartridge.setIp(member.getMemberIp());
+                cartridge.setPublicIp(member.getMemberPublicIp());
             }
 
-            Member[] lbMembers = new Member[cluster.getMember().size()];
-            lbMembers = cluster.getMember().toArray(lbMembers);
-           
-            for (Member lbMember : lbMembers) {
-            	lbPrivateIpSet.add(lbMember.getMemberIp());
-            	lbFloatingIpSet.add(lbMember.getMemberPublicIp());
-			}
-            
-		}
-        privateFloatingLBIPMap.put("private", lbPrivateIpSet);
-        privateFloatingLBIPMap.put("floating", lbFloatingIpSet);
+            // Invoke  cluster/{clusterId}
+            for (String clusterId : lbClusterIdSet) {
+                HttpResponse responseCluster = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
+                        +"clusterId/"+ clusterId,
+                        restClientService.getUsername(), restClientService.getPassword());
+                String resultStringCluster = getHttpResponseString(responseCluster);
 
-		return privateFloatingLBIPMap;
+                Cluster cluster = getClusterObjectFromString(resultStringCluster);
+
+                if (cluster == null) {
+                    System.out.println("Subscribe cartridge list is null");
+                    return null;
+                }
+
+                Member[] lbMembers = new Member[cluster.getMember().size()];
+                lbMembers = cluster.getMember().toArray(lbMembers);
+
+                for (Member lbMember : lbMembers) {
+                    lbPrivateIpSet.add(lbMember.getMemberIp());
+                    lbFloatingIpSet.add(lbMember.getMemberPublicIp());
+                }
+
+            }
+            privateFloatingLBIPMap.put("private", lbPrivateIpSet);
+            privateFloatingLBIPMap.put("floating", lbFloatingIpSet);
+
+            return privateFloatingLBIPMap;
+        } catch (Exception e) {
+            handleException("Exception in get LB ip list", e);
+            return null;
+        }
 	}
 
 	public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
@@ -577,29 +597,34 @@ public class RestCommandLineService {
         }
     }
 
-	private Member[] getMembers(String cartridgeType, String alias,
-			DefaultHttpClient httpClient) {
-		HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
-		        + cartridgeType + "/" + alias,
-		        restClientService.getUsername(), restClientService.getPassword());
+	private Member[] getMembers(String cartridgeType, String alias, DefaultHttpClient httpClient) throws Exception{
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
+                    + cartridgeType + "/" + alias,
+                    restClientService.getUsername(), restClientService.getPassword());
 
-		String responseCode = "" + response.getStatusLine().getStatusCode();
-		if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-		    System.out.println("Error occured while listing members of a cluster");
-		    return null;
-		}
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("Error occured while listing members of a cluster");
+                return null;
+            }
 
-		Cluster cluster = getClusterObjectFromString(getHttpResponseString(response));
-		
-		 if (cluster == null) {
-             System.out.println("No existing subscriptions found for alias " + alias);
-             return null;
-         }
+            Cluster cluster = getClusterObjectFromString(getHttpResponseString(response));
 
-         Member[] members = new Member[cluster.getMember().size()];
-         members = cluster.getMember().toArray(members);
+             if (cluster == null) {
+                 System.out.println("No existing subscriptions found for alias " + alias);
+                 return null;
+             }
+
+             Member[] members = new Member[cluster.getMember().size()];
+             members = cluster.getMember().toArray(members);
          
 		return members;
+        } catch (Exception e) {
+            handleException("Exception in get member", e);
+            return null;
+        }
+
 	}
 
 	private Cluster getClusterObjectFromString(String resultString) {

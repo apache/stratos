@@ -52,15 +52,6 @@ cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_ENDPOINT@$openstack_jclouds_endpoint@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_SCALEUP_ORDER@$openstack_scaleup_order@g" > repository/conf/cloud-controller.xml
-
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_SCALEDOWN_ORDER@$openstack_scaledown_order@g" > repository/conf/cloud-controller.xml
-
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_IMAGE_ID@$openstack_image_id@g" > repository/conf/cloud-controller.xml
-
-cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig

@@ -33,7 +33,20 @@ node confignode inherits basenode  {
 
 	## Server details for billing
 	$time_zone		= "GMT-8:00"
-
+	
+	## global configs to send in payload
+	$mb_ip                   = "54.251.211.89"
+        $mb_port                 = "5677"
+        $cep_ip                  = "54.251.211.89"
+        $cep_port                = "7615"
+        $cert_truststore         = "client-truststore.jks"
+        $truststore_password     = "wso2carbon"
+	$enable_data_publishing  = "false"
+	$monitoring_server_ip    = "xx.xx.xx.xx"
+	$monitoring_server_port  = "xxxx"
+	$monitoring_server_secure_port = "xxxx"
+	$monitoring_server_admin_username = "xxxx"
+	$monitoring_server_admin_password = "xxxx"
 }
 
 node 'puppet.novalocal' inherits confignode {
@@ -44,8 +57,7 @@ node 'puppet.novalocal' inherits confignode {
 
 }
 
-
-node /[0-9]{1,12}.default.php/ {
+node /[0-9]{1,12}.default.php/ inherits confignode {
        
 	 include java
  
@@ -54,56 +66,70 @@ node /[0-9]{1,12}.default.php/ {
                         docroot         	   => "/var/www/www",
                         samlalias        	   => "/var/www/simplesamlphp/www",
                         serverport        	   => "443",
-                        mb_ip       		   => "54.251.211.89",
-                        mb_port       		   => "5677",
-                        cep_ip        		   => "54.251.211.89",
-                        cep_port      		   => "7615",
-	            		cert_truststore  	   => "client-truststore.jks",
-                        truststore_password  	   => "wso2carbon",
-
+                        mb_ip       		   => $mb_ip,
+                        mb_port       		   => $mb_port,
+                        cep_ip        		   => $cep_ip,
+                        cep_port      		   => $cep_port,
+	                cert_truststore  	   => $cert_truststore,
+                        truststore_password  	   => $truststore_password,
+			enable_data_publishing     => $enable_data_publishing,
+		        monitoring_server_ip       => $monitoring_server_ip,
+        		monitoring_server_port     => $monitoring_server_port,
+       			monitoring_server_secure_port => $monitoring_server_secure_port,
+        		monitoring_server_admin_username => $monitoring_server_admin_username,
+        		monitoring_server_admin_password => $monitoring_server_admin_password,
         }
 }
 
-node /[0-9]{1,12}.default.lb/ inherits confignode{
+node /[0-9]{1,12}.default.lb/ inherits confignode {
         $server_ip      = $ec2_local_ipv4
 
 	include java
 
         class {"stratos::lb":
-                version            => "4.0.0-SNAPSHOT",
-                offset             => 0,
-                tribes_port        => 4100,
-                maintenance_mode   => "false",
-                owner              => "root",
-                group              => "root",
-                stage              => "deploy",
-                adc_host           => "sc.stratos.org",
-                adc_port           => 9445,
-                cartridge_type     => "load-balancer",
-                generic            => 1,
-                mb_ip             => "54.251.196.18",
-                mb_port           => "5677",
-                cep_ip            => "54.251.196.18",
-                cep_port          => "7615",
-                java_truststore   => "client-truststore.jks",
-                java_truststore_password => "wso2carbon",
-
-
+                version                    => "4.0.0-SNAPSHOT",
+                offset                     => 0,
+                tribes_port                => 4100,
+                maintenance_mode           => "false",
+                owner                      => "root",
+                group                      => "root",
+                stage                      => "deploy",
+                adc_host                   => "sc.stratos.org",
+                adc_port                   => 9445,
+                cartridge_type             => "load-balancer",
+                generic                    => 1,
+                mb_ip                      => $mb_ip,
+                mb_port                    => $mb_port,
+                cep_ip                     => $cep_ip,
+                cep_port                   => $cep_port,
+                cert_truststore            => $cert_truststore,
+                truststore_password        => $truststore_password,               
+                enable_data_publishing     => $enable_data_publishing,
+                monitoring_server_ip       => $monitoring_server_ip,
+                monitoring_server_port     => $monitoring_server_port,
+                monitoring_server_secure_port => $monitoring_server_secure_port,
+                monitoring_server_admin_username => $monitoring_server_admin_username,
+                monitoring_server_admin_password => $monitoring_server_admin_password, 
         }   
 
 }
 
-node /[0-9]{1,12}.default.mysql/ {
+node /[0-9]{1,12}.default.mysql/ inherits confignode {
 
         include java
 
         class {"mysql":
-                        mb_ip                  => "54.251.211.89",
-                        mb_port                => "5677",
-                        cep_ip                 => "54.251.211.89",
-                        cep_port               => "7615",
-                        cert_truststore        => "client-truststore.jks",
-                        truststore_password        => "wso2carbon",
-
-        }
+                mb_ip                      => $mb_ip,
+                mb_port                    => $mb_port,
+                cep_ip                     => $cep_ip,
+                cep_port                   => $cep_port,
+                cert_truststore            => $cert_truststore,
+                truststore_password        => $truststore_password,
+	        enable_data_publishing     => $enable_data_publishing,
+                monitoring_server_ip       => $monitoring_server_ip,
+                monitoring_server_port     => $monitoring_server_port,
+                monitoring_server_secure_port => $monitoring_server_secure_port,
+                monitoring_server_admin_username => $monitoring_server_admin_username,
+                monitoring_server_admin_password => $monitoring_server_admin_password,
+	}
 }

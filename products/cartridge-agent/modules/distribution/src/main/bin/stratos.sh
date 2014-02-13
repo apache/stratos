@@ -38,7 +38,7 @@ properties="-Dmb.ip=MB-IP
             -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD
 	    -Denable.artifact.update=true
 	    -Dartifact.update.interval=10
-	    -Denable.data.publisher=false
+	    -Denable.data.publisher=ENABLE-DATA-PUBLISHER
             -Dmonitoring.server.ip=MONITORING-SERVER-IP
 	    -Dmonitoring.server.port=MONITORING-SERVER-PORT
 	    -Dmonitoring.server.secure.port=MONITORING-SERVER-SECURE-PORT
