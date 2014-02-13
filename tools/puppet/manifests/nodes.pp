@@ -35,18 +35,18 @@ node confignode inherits basenode  {
 	$time_zone		= "GMT-8:00"
 	
 	## global configs to send in payload
-	$mb_ip                   = "54.251.211.89",
-        $mb_port                 = "5677",
-        $cep_ip                  = "54.251.211.89",
-        $cep_port                = "7615",
-        $cert_truststore         = "client-truststore.jks",
-        $truststore_password     = "wso2carbon",
-	$enable_data_publishing  = "false",
-	$monitoring_server_ip    = "xx.xx.xx.xx",
-	$monitoring_server_port  = "xxxx",
-	$monitoring_server_secure_port = "xxxx",
-	$monitoring_server_admin_username = "xxxx",
-	$monitoring_server_admin_password = "xxxx",
+	$mb_ip                   = "54.251.211.89"
+        $mb_port                 = "5677"
+        $cep_ip                  = "54.251.211.89"
+        $cep_port                = "7615"
+        $cert_truststore         = "client-truststore.jks"
+        $truststore_password     = "wso2carbon"
+	$enable_data_publishing  = "false"
+	$monitoring_server_ip    = "xx.xx.xx.xx"
+	$monitoring_server_port  = "xxxx"
+	$monitoring_server_secure_port = "xxxx"
+	$monitoring_server_admin_username = "xxxx"
+	$monitoring_server_admin_password = "xxxx"
 }
 
 node 'puppet.novalocal' inherits confignode {
@@ -71,7 +71,13 @@ node /[0-9]{1,12}.default.php/ inherits confignode {
                         cep_ip        		   => $cep_ip,
                         cep_port      		   => $cep_port,
 	                cert_truststore  	   => $cert_truststore,
-                        truststore_password  	   => $cert_truststore,
+                        truststore_password  	   => $truststore_password,
+			enable_data_publishing     => $enable_data_publishing,
+		        monitoring_server_ip       => $monitoring_server_ip,
+        		monitoring_server_port     => $monitoring_server_port,
+       			monitoring_server_secure_port => $monitoring_server_secure_port,
+        		monitoring_server_admin_username => $monitoring_server_admin_username,
+        		monitoring_server_admin_password => $monitoring_server_admin_password,
         }
 }
 
@@ -97,7 +103,13 @@ node /[0-9]{1,12}.default.lb/ inherits confignode {
                 cep_ip                     => $cep_ip,
                 cep_port                   => $cep_port,
                 cert_truststore            => $cert_truststore,
-                truststore_password        => $cert_truststore,                
+                truststore_password        => $truststore_password,               
+                enable_data_publishing     => $enable_data_publishing,
+                monitoring_server_ip       => $monitoring_server_ip,
+                monitoring_server_port     => $monitoring_server_port,
+                monitoring_server_secure_port => $monitoring_server_secure_port,
+                monitoring_server_admin_username => $monitoring_server_admin_username,
+                monitoring_server_admin_password => $monitoring_server_admin_password, 
         }   
 
 }
@@ -112,6 +124,12 @@ node /[0-9]{1,12}.default.mysql/ inherits confignode {
                 cep_ip                     => $cep_ip,
                 cep_port                   => $cep_port,
                 cert_truststore            => $cert_truststore,
-                truststore_password        => $cert_truststore,
+                truststore_password        => $truststore_password,
+	        enable_data_publishing     => $enable_data_publishing,
+                monitoring_server_ip       => $monitoring_server_ip,
+                monitoring_server_port     => $monitoring_server_port,
+                monitoring_server_secure_port => $monitoring_server_secure_port,
+                monitoring_server_admin_username => $monitoring_server_admin_username,
+                monitoring_server_admin_password => $monitoring_server_admin_password,
 	}
 }
