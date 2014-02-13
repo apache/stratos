@@ -18,7 +18,7 @@ var render = function (theme, data, meta, require) {
     } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null && !(list_status == "succeeded"))) {
        isErr = true;
        step_data = "[]";
-        err_message = deploy_status + " and " + list_status;
+        err_message = deploy_status + " ," + list_status;
     } else if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && !(list_status == "succeeded"))) {
         isErr = true;
         err_message = list_status;
