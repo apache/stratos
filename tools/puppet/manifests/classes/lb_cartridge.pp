@@ -15,7 +15,13 @@ class stratos::lb ( $version,
                    $cep_ip,
                    $cep_port,
                    $java_truststore,
-                   $java_truststore_password) {
+                   $java_truststore_password,
+		   $enable_data_publisher,
+		   $monitoring_server_ip,
+		   $monitoring_server_port,
+		   $monitoring_server_secure_port,
+		   $monitoring_server_admin_username,
+		   $monitoring_server_admin_password) {
 	
 	
 	$deployment_code	= "load-balancer"
@@ -118,7 +124,7 @@ class stratos::lb ( $version,
 
         file {"/tmp/puppet-payload":
                  ensure  => present,
-                 content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port},CERT_TRUSTSTORE=${java_truststore},TRUSTSTORE_PASSWORD=${java_truststore_password}",
+                 content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port},CERT_TRUSTSTORE=${java_truststore},TRUSTSTORE_PASSWORD=${java_truststore_password},ENABLE_DATA_PUBLISHER=${enable_data_publisher},MONITORING_SERVER_IP=${monitoring_server_ip},MONITORING_SERVER_PORT=${monitoring_server_port},MONITORING_SERVER_SECURE_PORT=${monitoring_server_secure_port},MONITORING_SERVER_ADMIN_USERNAME=${monitoring_server_admin_username},MONITORING_SERVER_ADMIN_PASSWORD=${monitoring_server_admin_password}",
 	}
 
         exec {"run_agent_script-$deployment_code":
