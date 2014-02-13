@@ -33,18 +33,18 @@ node confignode inherits basenode  {
 
 	## Server details for billing
 	$time_zone		= "GMT-8:00"
-	mb_ip                  => "54.251.211.89",
-        mb_port                => "5677",
-        cep_ip                 => "54.251.211.89",
-        cep_port               => "7615",
-        cert_truststore        => "client-truststore.jks",
-        truststore_password    => "wso2carbon",
-	enable_data_publishing => "false",
-	monitoring_server_ip   => "xx.xx.xx.xx",
-	monitoring_server_port => "xxxx",
-	monitoring_server_secure_port => "xxxx",
-	monitoring_server_admin_username => "xxxx",
-	monitoring_server_admin_password => "xxxx",
+	$mb_ip                   = "54.251.211.89",
+        $mb_port                 = "5677",
+        $cep_ip                  = "54.251.211.89",
+        $cep_port                = "7615",
+        $cert_truststore         = "client-truststore.jks",
+        $truststore_password     = "wso2carbon",
+	$enable_data_publishing  = "false",
+	$monitoring_server_ip    = "xx.xx.xx.xx",
+	$monitoring_server_port  = "xxxx",
+	$monitoring_server_secure_port = "xxxx",
+	$monitoring_server_admin_username = "xxxx",
+	$monitoring_server_admin_password = "xxxx",
 }
 
 node 'puppet.novalocal' inherits confignode {
