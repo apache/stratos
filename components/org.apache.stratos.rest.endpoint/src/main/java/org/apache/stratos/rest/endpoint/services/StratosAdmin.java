@@ -290,6 +290,17 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
+    @Path("/cartridge/available/list")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableCartridges() throws ADCException {
+        List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, null, getConfigContext());
+        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    }
+
+
+    @GET
     @Path("/cartridge/list/subscribed")
     @Produces("application/json")
     @Consumes("application/json")

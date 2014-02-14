@@ -279,18 +279,30 @@
         </div>
     </div>
     {{else}}
-        {{#if config_status.not_complete}}
-            <div class="info-bar">
+        {{#if deploy_status}}
+           <div class="info-bar success">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-3">
-                        </div>
-                        <div class="col-lg-6">
-                            <i class="icon-exclamation"></i> Configure Stratos is not completed. <a href="{{url "/configure_stratos_wizard.jag"}}">Take the Wizard</a>
+                        <div class="col-lg-12">
+                            <i class="icon-exclamation"></i>{{type}} successful.</a>
                         </div>
                     </div>
                 </div>
             </div>
+        {{else}}
+            {{#if config_status.not_complete}}
+                <div class="info-bar">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <i class="icon-exclamation"></i> Configure Stratos is not completed. <a href="{{url "/configure_stratos_wizard.jag"}}">Take the Wizard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
         {{/if}}
 
     {{/if}}

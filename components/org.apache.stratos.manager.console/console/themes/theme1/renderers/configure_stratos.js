@@ -1,10 +1,14 @@
 var render = function (theme, data, meta, require) {
     session.put("configuring","true");
     var title;
+    var header_type;
     var deploy_status = session.get("deploy-status");
     var list_status = session.get("get-status");
-    var err_message = "";
+    var err_message;
+    var isErrDeply = false;
+    var isErrGet = false;
     var isErr = false;
+    var isSucceeded = false;
     var wizard_on_val = [];
     for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
@@ -27,21 +31,43 @@ var render = function (theme, data, meta, require) {
     }else if( config_status.step == 6 ){
         title = 'Multi-Tenant Service Deployment';
     }
+    var log = new Log();
 
-    if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && list_status == "succeeded")) {
-       isErr = false;
-    } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null && !(list_status == "succeeded"))) {
-       isErr = true;
-       step_data = "[]";
-        err_message = deploy_status + " , " + list_status;
-    } else if((deploy_status != null && deploy_status == "succeeded") && (list_status != null && !(list_status == "succeeded"))) {
-        isErr = true;
-        err_message = list_status;
+    if(deploy_status == "succeeded") {
+        isErrDeply = false;
+        isSucceeded = true;
+    } else if(deploy_status == null) {
+        isErrDeply = false;
+    } else {
+        isErrDeply = true;
+        err_message = deploy_status;
         step_data = "[]";
-    } else if((deploy_status != null && !(deploy_status == "succeeded")) && (list_status != null &&  list_status == "succeeded")) {
-       isErr = true;
-       err_message = deploy_status;
     }
+
+        log.info("****************************--------------" + err_message + isErrDeply);
+
+
+    if(list_status == "succeeded") {
+        isErrGet = false;
+    } else if(list_status == null) {
+        isErrGet = false;
+    } else {
+        isErrGet = true;
+        if(err_message == undefined) {
+                   err_message = list_status;
+        } else {
+            err_message = err_message + ", " + list_status;
+        }
+        step_data = "[]";
+    }
+
+    if(isErrDeply || isErrGet) {
+     isErr = true;
+    }
+
+
+    log.info("****************************" + err_message);
+    log.info("------------------: " + isErr);
     session.remove("get-status");
     session.remove("deploy-status");
 
@@ -96,7 +122,9 @@ var render = function (theme, data, meta, require) {
                     step:step,
                     configure_stratos:true,
                     error:isErr,
-                    error_msg:err_message
+                    deploy_status:isSucceeded,
+                    error_msg:err_message,
+                    type:title
                 }
             }
         ],

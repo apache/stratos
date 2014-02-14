@@ -460,9 +460,15 @@ textarea.jsonEditor{
     margin-top:-10px;
 }
 div.error{
-    background:#ff9998;
+    background:#fa6f3e;
     color:#444;
 }
+
+div.success{
+    background:#ffe096;
+    color:#058a26;
+}
+
 .color-a-full-icons{
     color:#ff9000;
     font-size:30px;

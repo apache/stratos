@@ -500,6 +500,13 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
+
+                    if(cartridgeInfo.getPeristanceMappings() != null) {
+                        for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
+                            cartridge.addPersistanceMapping(persistanceMapping);
+                        }
+                    }
+
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
                         for(Property property: cartridgeInfo.getProperties()) {
                         if(property.getName().equals("load.balancer")) {
