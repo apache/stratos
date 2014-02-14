@@ -31,7 +31,6 @@ var render = function (theme, data, meta, require) {
     }else if( config_status.step == 6 ){
         title = 'Multi-Tenant Service Deployment';
     }
-    var log = new Log();
 
     if(deploy_status == "succeeded") {
         isErrDeply = false;
@@ -43,9 +42,6 @@ var render = function (theme, data, meta, require) {
         err_message = deploy_status;
         step_data = "[]";
     }
-
-        log.info("****************************--------------" + err_message + isErrDeply);
-
 
     if(list_status == "succeeded") {
         isErrGet = false;
@@ -65,9 +61,6 @@ var render = function (theme, data, meta, require) {
      isErr = true;
     }
 
-
-    log.info("****************************" + err_message);
-    log.info("------------------: " + isErr);
     session.remove("get-status");
     session.remove("deploy-status");
 

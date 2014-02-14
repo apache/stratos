@@ -38,7 +38,4 @@ var render = function (theme, data, meta, require) {
             }
         ]
     });
-
-    var log = new Log();
-    log.info("jssssss...: " + stringify(data.cartridge.cartridge));
 };

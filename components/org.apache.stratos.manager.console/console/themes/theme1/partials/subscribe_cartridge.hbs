@@ -25,12 +25,37 @@
                 </div>
             </div>
             {{#ifCond cartridge.provider "==" "data"}}
-                <label class="required">Persistence Storage:</label>
-                <div class="checkbox">
-                    <label>
-                        <input name="backed By Volume" type="checkbox" checked="checked" id="volume_check" /> Persistence storage for the cartridge instance
-                    </label>
-                </div>
+                {{#if cartridge.persistance}}
+                    <label class="required">Persistence Storage:</label>
+                        <label>
+                            <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistence storage
+                        </label>
+                    <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
+                        <h2>Persistence Mappings</h2>
+                        {{#each cartridge.persistanceMappingBeans}}
+                            <div class="form-group">
+                                <label class="required">device:</label>
+                                <div class="form-inline">
+                                    <input name="device" class="form-control input-xlarge" value={{device}}/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Size:</label>
+                                <div class="form-inline">
+                                    <input name="size" class="form-control input-xlarge" value={{size}}/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input name="removeontermination" type="checkbox" {{#if removeOntermination}}checked="checked"{{/if}} id="volume_check" />Remove on termination
+                                </label>
+                            </div>
+                        {{/each}}
+                    </div>
+
+
+                {{/if}}
+
                 {{else}}
 
 
@@ -138,6 +163,15 @@
         }
         $public_check.click(function(){
             $('#credential_container').toggle($public_check.checked);
+        });
+
+        var $volume_check = $('#volume_check');
+
+        if($volume_check.is(':checked')){
+            $('#volume_check').prop("checked",false);
+        }
+        $volume_check.click(function(){
+            $('#persistence_container').toggle($volume_check.checked);
         });
     });
 

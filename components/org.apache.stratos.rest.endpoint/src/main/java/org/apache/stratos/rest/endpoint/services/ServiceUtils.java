@@ -507,7 +507,10 @@ public class ServiceUtils {
                     if(cartridgeInfo.getPeristanceMappings() != null) {
                         for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
                             cartridge.addPersistanceMapping(persistanceMapping);
+                            cartridge.setPersistance(true);
                         }
+                    } else {
+                        cartridge.setPersistance(false);
                     }
 
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
