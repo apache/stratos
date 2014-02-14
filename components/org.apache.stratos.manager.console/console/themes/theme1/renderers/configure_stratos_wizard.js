@@ -27,7 +27,6 @@ var render = function (theme, data, meta, require) {
     } else {
         isErrDeply = true;
         err_message = deploy_status;
-        step_data = "[]";
     }
 
     if(list_status == "succeeded") {
