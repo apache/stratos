@@ -255,15 +255,14 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("-----------------------:" + stringify(response));
-        response = {"data" : {"Error" : {"errorCode" : " 400", "errorMessage" : " Error getting available partitions"}}, "xhr" : {}};
+        log.debug("-----------------------:" + stringify(response));
         if(response.data.Error) {
             session.put("get-status", response.data.Error.errorMessage);
         } else {
             session.put("get-status", "succeeded");
         }
 
-        log.info("--------------------:    +  " + urlPostFix + "      "+ session.get("get-status"));
+        log.debug("--------------------:    +  " + urlPostFix + "      "+ session.get("get-status"));
         return response;
     };
 
@@ -298,8 +297,7 @@ consoleAppUtil = new function(){
         } else {
             session.put("deploy-status", "Error occurred while deploying...");
         }
-        //log.info("sent is: " + stringify(response));
-                //log.info("--------------------:    +  " + urlPostFix + "      "+ session.get("deploy-status"));
+        log.debug("sent is: " + stringify(response));
 
             return response;
         };
