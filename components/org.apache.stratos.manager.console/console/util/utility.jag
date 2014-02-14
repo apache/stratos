@@ -173,7 +173,7 @@ consoleAppUtil = new function(){
         return this.send("POST","/cartridge/unsubscribe",alias).data;
     };
     this.getCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list",{}).data;
+        return this.sendReceive("GET","/cartridge/available/list",{}).data;
     };
 
     this.getLbCartridges = function(){
@@ -185,17 +185,25 @@ consoleAppUtil = new function(){
     };
     this.getConfigStatus = function(){
         var configStatus = {};
+
+        var par_res = this.sendReceive("GET","/partition",{}).data;
         var get_status = session.get("get-status");
+
         if(get_status == "succeeded") {
-            if(this.sendReceive("GET","/partition",{}).data.partition.length == 0){
-            configStatus.first_use = true;
+            if(par_res.partition.length == 0){
+                configStatus.first_use = true;
             }else{
-            if(this.sendReceive("GET","/cartridge/list",{}).data.cartridge.length == 0){
-                    configStatus.first_use = false;
-                    configStatus.not_complete = true;
-                }else{
-                    configStatus.not_complete = false;
-                    configStatus.first_use = false;
+            var car_res = this.sendReceive("GET","/cartridge/list",{}).data;
+            var get_status = session.get("get-status");
+
+            if(get_status == "succeeded") {
+                if(car_res.cartridge.length == 0){
+                        configStatus.first_use = false;
+                        configStatus.not_complete = true;
+                    }else{
+                        configStatus.not_complete = false;
+                        configStatus.first_use = false;
+                    }
                 }
             }
         } else {
@@ -247,11 +255,14 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
+        log.debug("-----------------------:" + stringify(response));
         if(response.data.Error) {
             session.put("get-status", response.data.Error.errorMessage);
         } else {
             session.put("get-status", "succeeded");
         }
+
+        log.debug("--------------------:    +  " + urlPostFix + "      "+ session.get("get-status"));
         return response;
     };
 
@@ -286,6 +297,8 @@ consoleAppUtil = new function(){
         } else {
             session.put("deploy-status", "Error occurred while deploying...");
         }
+        log.debug("sent is: " + stringify(response));
+
             return response;
         };
 

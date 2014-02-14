@@ -2,6 +2,7 @@ var render = function (theme, data, meta, require) {
       // Re-create the data structure of the cartridges.
 
     var cartridges_old = data.mycartridges.cartridge;
+
     var cartridges_new = [
         {
             kind: "Framework",

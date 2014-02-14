@@ -50,11 +50,11 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
+import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -91,7 +91,9 @@ public class ServiceUtils {
                 log.info("Successfully deployed Cartridge [type] "+cartridgeDefinitionBean.type);
                 
             } catch (Exception e) {
-                throw new RestAPIException(e);
+                String errorMsg = "Error while deploying cartridge definition";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -128,7 +130,9 @@ public class ServiceUtils {
                 cloudControllerServiceClient.unDeployCartridgeDefinition(cartridgeType);
 
             } catch (Exception e) {
-                throw new RestAPIException(e);
+                String errorMsg = "Error while undeploying cartridge definition for type " + cartridgeType;
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -152,7 +156,9 @@ public class ServiceUtils {
                 autoscalerServiceClient.deployPartition(partition);
 
             } catch (Exception e) {
-                throw new RestAPIException(e.getMessage(), e);
+                String errorMsg = "Error in deploying partition definition";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -175,7 +181,9 @@ public class ServiceUtils {
                 autoscalerServiceClient.deployAutoscalingPolicy(autoscalePolicy);
 
             } catch (Exception e) {
-                throw new RestAPIException(e);
+                String errorMsg = "Error in deploying autoscaling policy definition";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -200,7 +208,9 @@ public class ServiceUtils {
                 autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
 
             } catch (Exception e) {
-                throw new RestAPIException(e);
+                String errorMsg = "Error in deploying deployment policy definition";
+                log.error(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -232,7 +242,7 @@ public class ServiceUtils {
             } catch (Exception e) {
                 String errorMsg = "Error getting available partitions";
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -250,9 +260,9 @@ public class ServiceUtils {
                              autoscalerServiceClient.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partitions";
+                String errorMsg = "Error getting available partitions for deployment policy id " + deploymentPolicyId;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -270,9 +280,10 @@ public class ServiceUtils {
                              autoscalerServiceClient.getPartitionsOfGroup(deploymentPolicyId, groupId);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partitions";
+                String errorMsg = "Error getting available partitions for deployment policy id " + deploymentPolicyId +
+                        ", group id " + groupId;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -288,9 +299,9 @@ public class ServiceUtils {
                 partition = autoscalerServiceClient.getPartition(partitionId);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partition";
+                String errorMsg = "Error getting partition for id " + partitionId;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -320,7 +331,7 @@ public class ServiceUtils {
             } catch (Exception e) {
                 String errorMsg = "Error getting available autoscaling policies";
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -336,9 +347,9 @@ public class ServiceUtils {
                 autoscalePolicy = autoscalerServiceClient.getAutoScalePolicy(autoscalePolicyId);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available autoscaling policies";
+                String errorMsg = "Error getting information for autoscaling policy with id " + autoscalePolicyId;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -357,7 +368,7 @@ public class ServiceUtils {
             } catch (Exception e) {
                 String errorMsg = "Error getting available deployment policies";
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -374,9 +385,9 @@ public class ServiceUtils {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies(cartridgeType);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available deployment policies";
+                String errorMsg = "Error getting available deployment policies for cartridge type " + cartridgeType;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -393,9 +404,9 @@ public class ServiceUtils {
                 deploymentPolicy = autoscalerServiceClient.getDeploymentPolicy(deploymentPolicyId);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available deployment policies";
+                String errorMsg = "Error getting deployment policy with id " + deploymentPolicyId;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
@@ -412,26 +423,26 @@ public class ServiceUtils {
                 partitionGroups = autoscalerServiceClient.getPartitionGroups(deploymentPolicyId);
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partition groups";
+                String errorMsg = "Error getting available partition groups for deployment policy id " + deploymentPolicyId;
                 log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
+                throw new RestAPIException(errorMsg);
             }
         }
 
         return PojoConverter.populatePartitionGroupPojos(partitionGroups);
     }
 
-    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
-       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
+       List<Cartridge> cartridges = getAvailableCartridges(null, null, configurationContext);
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
                 return cartridge;
             }
         }
-         throw new RestAPIException("cannot find the required cartridge Type") ;
+         throw new RestAPIException("cannot find the required cartridge type " + cartridgeType) ;
     }
 
-    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
+    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
        List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
         List<Cartridge> lbCartridges = new ArrayList<Cartridge>();
         for(Cartridge cartridge : cartridges) {
@@ -442,7 +453,7 @@ public class ServiceUtils {
         return lbCartridges;
     }
 
-    static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
+    static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
         if (log.isDebugEnabled()) {
@@ -500,6 +511,16 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
+
+                    if(cartridgeInfo.getPeristanceMappings() != null) {
+                        for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
+                            cartridge.addPersistanceMapping(persistanceMapping);
+                            cartridge.setPersistance(true);
+                        }
+                    } else {
+                        cartridge.setPersistance(false);
+                    }
+
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
                         for(Property property: cartridgeInfo.getProperties()) {
                         if(property.getName().equals("load.balancer")) {
@@ -530,9 +551,9 @@ public class ServiceUtils {
                 }
             }
         } catch (Exception e) {
-            String msg = "Error when getting available cartridges. " + e.getMessage();
+            String msg = "Error when getting available cartridges";
             log.error(msg, e);
-            throw new ADCException("An error occurred getting available cartridges ", e);
+            throw new RestAPIException(msg);
         }
 
         Collections.sort(cartridges);
@@ -563,7 +584,9 @@ public class ServiceUtils {
             services = serviceDeploymentManager.getServices();
 
         } catch (ADCException e) {
-            throw new RestAPIException("Error in getting Service Cluster details", e);
+            String msg = "Error in getting deployed service information ";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
         }
 
         if (services != null && !services.isEmpty()) {
@@ -581,7 +604,9 @@ public class ServiceUtils {
             service = serviceDeploymentManager.getService(type);
 
         } catch (ADCException e) {
-            throw new RestAPIException("Error in getting Service Cluster information for type " + type, e);
+            String msg = "Error in getting deployed service cluster definition " + type;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
         }
 
         if (service != null) {
@@ -591,7 +616,7 @@ public class ServiceUtils {
         return new ServiceDefinitionBean();
     }
 
-	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
+	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws RestAPIException {
 
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -613,6 +638,9 @@ public class ServiceUtils {
                         continue;
                     }
                     Cartridge cartridge = getCartridgeFromSubscription(subscription);
+                    if (cartridge == null) {
+                		continue;
+                	}
                     Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                             ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
                     String cartridgeStatus = "Inactive";
@@ -636,9 +664,9 @@ public class ServiceUtils {
                 }
             }
         } catch (Exception e) {
-            String msg = "Error when getting subscribed cartridges. " + e.getMessage();
+            String msg = "Error when getting subscribed cartridges";
             log.error(msg, e);
-            throw new ADCException("An Error occurred when getting subscribed cartridges.", e);
+            throw new RestAPIException(msg);
         }
 
         Collections.sort(cartridges);
@@ -651,11 +679,14 @@ public class ServiceUtils {
     }
 
     
-    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws RestAPIException {
     	
     	Cartridge cartridge =  getCartridgeFromSubscription(cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.
                     getTenantId(configurationContext), cartridgeAlias));
     	
+    	if (cartridge == null) {
+    		throw new RestAPIException(Response.Status.NOT_FOUND, "Unregistered [alias]: "+cartridgeAlias+"! Please enter a valid alias.");
+    	}
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
         String cartridgeStatus = "Inactive";
@@ -673,7 +704,7 @@ public class ServiceUtils {
     	
     }
 
-    static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws RestAPIException {
     	int noOfActiveInstances = 0;
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , cartridgeAlias);
@@ -685,8 +716,12 @@ public class ServiceUtils {
 		return noOfActiveInstances;
     }
     
-    private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
+    private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws RestAPIException {
 
+    	if (subscription == null) {
+    		return null;
+    	}
+    	
         Cartridge cartridge = new Cartridge();
         cartridge.setCartridgeType(subscription.getCartridgeInfo().getType());
         cartridge.setMultiTenant(subscription.getCartridgeInfo().getMultiTenant());
@@ -1214,10 +1249,12 @@ public class ServiceUtils {
             cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
 
         } catch (ADCException e) {
-            throw new RestAPIException(e);
+            throw new RestAPIException(e.getMessage(), e);
 
         } catch (NotSubscribedException e) {
-            throw new RestAPIException(e);
+            String msg = "Error in terminating subscription with alias  "+ alias;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
         }
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
@@ -1241,7 +1278,9 @@ public class ServiceUtils {
     		serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange, tenantDomain, tenantUsername);
 
 		} catch (Exception e) {
-			throw new RestAPIException(e);
+            String msg = "Error in deploying service cluster definition";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
 		}
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
@@ -1255,7 +1294,9 @@ public class ServiceUtils {
             serviceDeploymentManager.undeployService(serviceType);
 
         } catch (Exception e) {
-            throw new RestAPIException(e);
+            String msg = "Error in undeploying service cluster definition for type " + serviceType;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
         }
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
