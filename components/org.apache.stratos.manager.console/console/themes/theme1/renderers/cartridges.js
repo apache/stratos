@@ -4,15 +4,15 @@ var render = function (theme, data, meta, require) {
     var cartridges_old = data.cartridges.cartridge;
     var cartridges_new = [
         {
-            kind: "Cartridges",
+            kind: "Framework",
             cartridges: []}
     ];
     var cartridgesToPush;
     for (var i = 0; i < cartridges_old.length; i++) {
-        if (cartridges_old[i].category == undefined) {
+        if (cartridges_old[i].provider == undefined || (cartridges_old[i].provider.toLowerCase() != "application" && cartridges_old[i].provider.toLowerCase() != "data" )) {
             cartridgesToPush = null;
             for (var j = 0; j < cartridges_new.length; j++) {
-                if (cartridges_new[j].kind == "Cartridges") {
+                if (cartridges_new[j].kind == "Framework") {
                     cartridgesToPush = cartridges_new[j].cartridges;
                 }
             }
@@ -20,12 +20,13 @@ var render = function (theme, data, meta, require) {
         } else {
             cartridgesToPush = null;
             for (var j = 0; j < cartridges_new.length; j++) {
-                if (cartridges_new[j].kind == cartridges_old[i].category) {
+                if (cartridges_new[j].kind == cartridges_old[i].provider) {
                     cartridgesToPush = cartridges_new[j].cartridges;
                 }
             }
             if (cartridgesToPush == null) {
-                cartridges_new.push({kind: cartridges_old[i].category, cartridges: [cartridges_old[i]]})
+                var kind = cartridges_old[i].provider;
+                cartridges_new.push({kind: cartridges_old[i].provider, cartridges: [cartridges_old[i]]})
             } else {
                 cartridgesToPush.push(cartridges_old[i]);
             }

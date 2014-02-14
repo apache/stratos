@@ -28,14 +28,17 @@
 	    <cloudController>
 	        <hostname>localhost</hostname>
 		<port>9444</port>
+		<!-->CC client timout in ms<-->
                 <clientTimeout>300000</clientTimeout>
 	    </cloudController>
             <stratosManager>
 	        <hostname>localhost</hostname>
 		<port>9445</port>
+		<!--SM client timeout in ms-->
                 <clientTimeout>300000</clientTimeout>
 	    </stratosManager>
 	    <member>
+		<!-->member expiry timeout (time waited till activation) in ms<-->
 		<expiryTimeout>900000</expiryTimeout>
 	    </member>
 	</autoscaler>

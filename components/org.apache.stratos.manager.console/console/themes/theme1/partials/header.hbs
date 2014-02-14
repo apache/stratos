@@ -1,4 +1,3 @@
-
 {{#if login}}
         <div class="top-blue-strip"></div>
         <div class="login-logo-section"><a  href="{{url "/"}}"><img src="{{url "/themes/theme1/ui/img/logo-login.png"}}"/></a></div>
@@ -27,7 +26,7 @@
                      </ul>
                      <ul class="pull-right">
                      <li class="dropdown">
-                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><br /> admin <b class="caret"></b></a>
+                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><br /> {{#user}}{{/user}} <b class="caret"></b></a>
                              <ul class="dropdown-menu">
                                  <li><a><i class="fa fa-file-text-o"></i> View Profile</a></li>
                                 <li>
@@ -45,31 +44,31 @@
         <div class="container">
             <div class="row">
                 {{#unless wizard_on}}
-                {{#unless config_on}}
-                    <div class="col-lg-3">
-                        <a class="btn {{button.class_name}}" href="{{url button.link }}"><i class="{{button.class_icon}}"></i> {{button.name}}</a>
-                    </div>
-                    {{#if has_action_buttons}}
-                    <div class="col-lg-3">
-                        <button class="btn btn-default" onclick="manage_selected('activate')" type="button">Activate</button>
-                        <button class="btn btn-default" onclick="manage_selected('deactivate')">Deactivate</button>
-                        <button class="btn btn-default" onclick="manage_selected('delete')">Delete</button>
-                    </div>
-                    <div class="col-lg-6 help-section">
-                        {{#if has_help}}
-                            <i class="icons-help"></i>
-                            <p>{{help}}</p>
+                    {{#unless config_on}}
+                        <div class="col-lg-3">
+                            <a class="btn {{button.class_name}}" href="{{url button.link }}"><i class="{{button.class_icon}}"></i> {{button.name}}</a>
+                        </div>
+                        {{#if has_action_buttons}}
+                        <div class="col-lg-3">
+                            <button class="btn btn-default" onclick="manage_selected('activate')" type="button">Activate</button>
+                            <button class="btn btn-default" onclick="manage_selected('deactivate')">Deactivate</button>
+                            <button class="btn btn-default" onclick="manage_selected('delete')">Delete</button>
+                        </div>
+                        <div class="col-lg-6 help-section">
+                            {{#if has_help}}
+                                <i class="icons-help"></i>
+                                <p>{{help}}</p>
+                            {{/if}}
+                        </div>
+                        {{else}}
+                        <div class="col-lg-9 help-section">
+                            {{#if has_help}}
+                                <i class="icons-help"></i>
+                                <p>{{help}}</p>
+                            {{/if}}
+                        </div>
                         {{/if}}
-                    </div>
-                    {{else}}
-                    <div class="col-lg-9 help-section">
-                        {{#if has_help}}
-                            <i class="icons-help"></i>
-                            <p>{{help}}</p>
-                        {{/if}}
-                    </div>
-                    {{/if}}
-                {{/unless}}  <!-- configon -->
+                    {{/unless}}  <!-- configon -->
                 {{/unless}}  <!-- wizardon -->
 
 
@@ -78,109 +77,78 @@
 
                 {{#if config_on}}
                 <div class="col-lg-12">
+                    {{#if config_status.first_use}}
+                        <ul class="sub-menu-inactive">
+                            <li>Partitions</li>
+                            <li>Auto scale Policies</li>
+                            <li>Deployments Policies</li>
+                            <li>LBs</li>
+                            <li>Cartridges</li>
+                            <li>Multi-Tenant Services</li>
+                        </ul>
+                    {{else}}
+                        <ul class="sub-menu-wizard non-wizard">
+                            <li {{#ifCond step "==" 1 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=1" }}">
+                                <div class="wizard-number">1</div>
+                                <div>Partitions</div>
+                                </a>
+                            </li>
 
-                    <ul class="sub-menu-wizard non-wizard">
-                        <li {{#ifCond step "==" 1 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=1" }}">
-                            <div class="wizard-number">1</div>
-                            <div>Partitions</div>
-                            </a>
-                        </li>
-
-
-
-                        <li {{#ifCond step "==" 2 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=2" }}">
-                            <div class="wizard-number">2</div>
-                            <div>Auto scale Policies</div>
-                            </a>
-                        </li>
-                        <!--li>
-                            <div class="in-active-wizard-item">
+                            <li {{#ifCond step "==" 2 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=2" }}">
                                 <div class="wizard-number">2</div>
                                 <div>Auto scale Policies</div>
-                            </div>
-                        </li -->
+                                </a>
+                            </li>
 
-
-                        <li {{#ifCond step "==" 3 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=3" }}">
-                            <div class="wizard-number">3</div>
-                            <div>Deployments Policies</div>
-                            </a>
-                        </li>
-                        <!--li>
-                            <div class="in-active-wizard-item">
+                            <li {{#ifCond step "==" 3 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=3" }}">
                                 <div class="wizard-number">3</div>
                                 <div>Deployments Policies</div>
-                            </div>
-                        </li-->
+                                </a>
+                            </li>
 
 
-                        <li {{#ifCond step "==" 4 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=4" }}">
-                            <div class="wizard-number">4</div>
-                            <div>LBs</div>
-                            </a>
-                        </li>
-                        <!--li>
-                            <div class="in-active-wizard-item">
+
+                            <li {{#ifCond step "==" 4 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=4" }}">
                                 <div class="wizard-number">4</div>
                                 <div>LBs</div>
-                            </div>
-                        </li-->
+                                </a>
+                            </li>
 
 
-                        <li {{#ifCond step "==" 5 }}class="active"{{/ifCond}}>
-                            <a href="{{url "/configure_stratos.jag?step=5" }}">
-                            <div class="wizard-number">5</div>
-                            <div>Cartridges</div>
-                            </a>
-                        </li>
-                        <!--li>
-                        <div class="in-active-wizard-item">
-                            <div class="wizard-number">5</div>
-                            <div>Cartridges</div>
-                        </div>
-                        </li -->
 
-                    <!--
-                    **************************************
-                    UNCOMMENT WHEN THIS FEATURE IS NEEDED
+                            <li {{#ifCond step "==" 5 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=5" }}">
+                                <div class="wizard-number">5</div>
+                                <div>Cartridges</div>
+                                </a>
+                            </li>
 
-                    Remember to add fix the classes
-                    *************************************
-                    {{#if wizard_on_6}}
-                    <li class="active">
-                        <a href="{{url "/configure_stratos_wizard.jag?step=5" }}">
-                            <div class="wizard-number">6</div>
-                            <div>Multi-Tenant Services</div>
-                        </a>
-                    </li>
-                    <li class="sub-menu-wizard-pointer active-pointer no-background"></li>
-                    {{else}}
-                    <li>
-                        <div class="in-active-wizard-item">
-                            <div class="wizard-number">6</div>
-                            <div>Multi-Tenant Services</div>
-                        </div>
-                    </li>
-                    <li class="sub-menu-wizard-pointer no-background"></li>
+
+                            <li {{#ifCond step "==" 6 }}class="active"{{/ifCond}}>
+                                <a href="{{url "/configure_stratos.jag?step=6" }}">
+                                    <div class="wizard-number">6</div>
+                                    <div>Multi-Tenant Services</div>
+                                </a>
+                            </li>
+
+                        </ul>
                     {{/if}}
-                    -->
-
-                    </ul>
-
+                    {{#unless wizard_on}}
+                        {{#unless config_status.first_use}}
+                            <div class="pull-right">
+                                <a href="{{url "/configure_stratos_wizard.jag" }}" class="btn btn-important">
+                                    <div>Configuration Wizard</div>
+                                </a>
+                            </div>
+                        {{/unless}}
+                    {{/unless}}
                     </div>
 
                 {{/if}}
-
-
-
-
-
-
-
 
 
                 {{#if wizard_on}}
@@ -261,7 +229,7 @@
                                 <div>Cartridges</div>
                             </a>
                         </li>
-                        <li class="sub-menu-wizard-pointer active-pointer no-background"></li>
+                        <li class="sub-menu-wizard-pointer active-pointer {{#unless wizard_on_6}}active-no-background{{/unless}}"></li>
                         {{else}}
                         <li>
                             <div class="in-active-wizard-item">
@@ -269,15 +237,10 @@
                                 <div>Cartridges</div>
                             </div>
                         </li>
-                        <li class="sub-menu-wizard-pointer no-background"></li>
+                        <li class="sub-menu-wizard-pointer"></li>
                         {{/if}}
 
-                        <!--
-                        **************************************
-                        UNCOMMENT WHEN THIS FEATURE IS NEEDED
 
-                        Remember to add fix the classes
-                        *************************************
                         {{#if wizard_on_6}}
                         <li class="active">
                             <a href="{{url "/configure_stratos_wizard.jag?step=6" }}">
@@ -295,7 +258,7 @@
                         </li>
                         <li class="sub-menu-wizard-pointer no-background"></li>
                         {{/if}}
-                        -->
+
 
                     </ul>
 
@@ -304,19 +267,46 @@
             </div>
         </div>
     </div>
-    {{#if config_status.not_complete}}
-    <div class="info-bar">
+
+    {{#if error}}
+    <div class="info-bar error">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3">
-                </div>
-                <div class="col-lg-6">
-                    <i class="icon-exclamation"></i> Configure Stratos is not completed. <a href="{{url "/configure_stratos_wizard.jag"}}">Take the Wizard</a>
+                <div class="col-lg-12">
+                    <i class="icon-exclamation"></i>{{error_msg}}</a>
                 </div>
             </div>
         </div>
     </div>
+    {{else}}
+        {{#if deploy_status}}
+           <div class="info-bar success">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <i class="icon-exclamation"></i>{{type}} successful.</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            {{#if config_status.not_complete}}
+                <div class="info-bar">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <i class="icon-exclamation"></i> Configure Stratos is not completed. <a href="{{url "/configure_stratos_wizard.jag"}}">Take the Wizard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+        {{/if}}
+
     {{/if}}
+
 </div>
 
 <form action="{{url "/controllers/manageTenants.jag"}}" id="manageTenantsForm">

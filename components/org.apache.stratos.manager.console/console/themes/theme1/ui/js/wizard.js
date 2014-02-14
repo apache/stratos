@@ -17,9 +17,9 @@ $(function () {
     $('#wizardFinish').click(function () {
         var newStep = parseInt($(this).attr('data-step')) + 1;
         $('#nextStep').val(newStep);
-        if(isValidForm()){
+        //if(isValidForm()){
             $('#jsonForm').submit();
-        }
+        //}
     });
 
 
@@ -47,7 +47,7 @@ $(function () {
     });
 
     var isValidForm = function(){
-        if(parseInt($('#items').val()) == 0){
+        if(parseInt($('#items').val()) == 0 || $('#wizard_on').val() == "false"){
             if($('#policy').val() == ""){
                 $('#policy').addClass('error').focus();
                 $('#policyError').show();

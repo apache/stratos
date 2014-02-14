@@ -20,6 +20,7 @@
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -30,6 +31,7 @@ import org.apache.stratos.rest.endpoint.bean.topology.Member;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class PojoConverter {
@@ -46,6 +48,9 @@ public class PojoConverter {
         cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
         cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
+        cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
+
+
         
         //deployment information
         if(cartridgeDefinitionBean.deployment != null) {
@@ -91,7 +96,7 @@ public class PojoConverter {
         {
           System.out.println("persistance bean " + persistBeanArr[i].toString());
           PersistanceMapping persistMapping = new PersistanceMapping();
-          persistMapping.setSnapshotId(persistBeanArr[i].snapshotId);
+          persistMapping.setPersistanceRequired(persistBeanArr[i].persistanceRequired);
           persistMapping.setDevice(persistBeanArr[i].device);
           persistMapping.setSize(persistBeanArr[i].size);
           persistMapping.setRemoveOntermination(persistBeanArr[i].removeOnTermination);
@@ -586,5 +591,28 @@ public class PojoConverter {
         }
 
         return partitionList;
+    }
+
+    public static ServiceDefinitionBean convertToServiceDefinitionBean (Service service) {
+
+        ServiceDefinitionBean serviceDefinitionBean = new ServiceDefinitionBean();
+        serviceDefinitionBean.setCartridgeType(service.getType());
+        serviceDefinitionBean.setTenantRange(service.getTenantRange());
+        serviceDefinitionBean.setClusterDomain(service.getClusterId());
+        serviceDefinitionBean.setAutoscalingPolicyName(service.getAutoscalingPolicyName());
+        serviceDefinitionBean.setDeploymentPolicyName(service.getDeploymentPolicyName());
+
+        return serviceDefinitionBean;
+    }
+
+    public static List<ServiceDefinitionBean> convertToServiceDefinitionBeans (Collection<Service> services) {
+
+        List<ServiceDefinitionBean> serviceDefinitionBeans = new ArrayList<ServiceDefinitionBean>();
+
+        for (Service service : services) {
+            serviceDefinitionBeans.add(convertToServiceDefinitionBean(service));
+        }
+
+        return serviceDefinitionBeans;
     }
 }

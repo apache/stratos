@@ -33,14 +33,18 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommandLineApplication.class);
 
-	protected final ConsoleReader reader;
+	protected ConsoleReader reader;
 	protected FileHistory history;
+    protected String userName;
 
-	public CommandLineApplication() {
-		reader = createConsoleReader();
-	}
+	public CommandLineApplication(String[] args) {
+        if (args != null && args.length > 1) {
+            userName = args[1];
+        }
+        reader = createConsoleReader();
+    }
 
-	/**
+    /**
 	 * Creates new jline ConsoleReader.
 	 * 
 	 * @return a jline ConsoleReader instance
@@ -50,13 +54,27 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 		try {
 			consoleReader = new ConsoleReader();
 			consoleReader.setPrompt(getPrompt());
-			history = new FileHistory(getHistoryFile());
+			history = new FileHistory(getHistoryFile(userName));
 			consoleReader.setHistory(history);
 		} catch (IOException e) {
 			throw new IllegalStateException("Cannot create jline console reader", e);
 		}
 		return consoleReader;
 	}
+
+    protected ConsoleReader createConsoleReaderWhithoutArgs(String enteredUserName) {
+        ConsoleReader consoleReader = null;
+        history = null;
+        try {
+            consoleReader = new ConsoleReader();
+            consoleReader.setPrompt(getPrompt());
+            history = new FileHistory(getHistoryFile(enteredUserName));
+            consoleReader.setHistory(history);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot create jline console reader", e);
+        }
+        return consoleReader;
+    }
 
 	public ConsoleReader getConsoleReader() {
 		return reader;
@@ -69,7 +87,7 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 	 * 
 	 * @return File for storing history
 	 */
-	protected abstract File getHistoryFile();
+	protected abstract File getHistoryFile(String userName);
 
 	public final void start(String[] args) {
 		Thread shutdownHookThread = new Thread("CLI Shutdown Hook") {

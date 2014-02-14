@@ -33,7 +33,6 @@ export LOG=$log_path/stratos-setup.log
 
 mb="false"
 cc="false"
-lb="false"
 as="false"
 sm="false"
 cep="false"
@@ -107,6 +106,11 @@ if [[ -z $product_list || $product_list = "" ]]; then
     exit 1
 fi
 
+if [[ $host_user == "" ]]; then
+    echo "user provided in conf/setup.conf is null. Please provide a user"
+    exit 1
+fi
+
 echo "user provided in conf/setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
 echo "If you want to continue with $host_user just press enter to continue"
 read username
@@ -119,12 +123,7 @@ if [[ $? = 1 ]]; then
     adduser --home /home/$host_user $host_user
 fi
 
-echo "StrictHostKeyChecking no" > /home/$host_user/.ssh/config
-chmod 600 /home/$host_user/.ssh/config
-chown $host_user:$host_user /home/$host_user/.ssh/config
-export $enable_internal_git
 export $host_user
-export hostname=`hostname -f`
 
 # Check validity of IP
 function valid_ip()
@@ -195,8 +194,16 @@ function cep_conf_validate {
 	helpsetup CEP
 	exit 1
     fi
+    if [[ ! -d $cep_artifacts_path ]]; then
+        echo "Please specify the cep_artifacts_path folder which contains cep artifacts files"
+        exit 1
+    fi
     if [[ ! -f $cep_extension_jar ]]; then
         echo "Please copy the cep extension jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
+        exit 1
+    fi
+    if [[ ! -f $andes_client_jar ]]; then
+        echo "Please copy the andes client jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
     fi
 }
@@ -250,7 +257,7 @@ function as_conf_validate {
 }
 
 function sm_conf_validate {
-    if [[ (-z $sm_path || -z $sm_port_offset || -z $stratos_foundation_db_user || -z $stratos_foundation_db_pass) ]]; then
+    if [[ (-z $sm_path || -z $sm_port_offset) ]]; then
 	helpsetup SM
 	exit 1
     fi
@@ -258,15 +265,15 @@ function sm_conf_validate {
         echo "Please copy the mysql connector jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
     fi
-    if [[ -z $cc_port_offset || -z $as_port_offset || -z $cep_port_offset ]]; then
-        echo "Please specify the port offset of AS and/or CC and/or CEP"
+    if [[ -z $cc_port_offset || -z $as_port_offset ]]; then
+        echo "Please specify the port offset of AS and/or CC"
         exit 1
     fi
-    if [[ -z $sm_ip || -z $as_ip || -z $cc_ip || -z $cep_ip ]]; then
-        echo "Please specify the ips of SM and/or AS and/or CC and/or CEP"
+    if [[ -z $sm_ip || -z $as_ip || -z $cc_ip ]]; then
+        echo "Please specify the ips of SM and/or AS and/or CC"
         exit 1
-    elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip && valid_ip $cep_ip); then
-        echo "Please provide valid ips for SM and/or AS and/or CC and/or CEP"
+    elif !(valid_ip $sm_ip && valid_ip $cc_ip && valid_ip $as_ip); then
+        echo "Please provide valid ips for SM and/or AS and/or CC"
         exit 1
     fi
     if [[ -z $puppet_ip ]]; then
@@ -377,12 +384,13 @@ function cep_setup {
 
     cp -f ./config/cep/repository/conf/jndi.properties $cep_path/repository/conf/
     cp -f $cep_extension_jar $cep_path/repository/components/lib/
-    cp -f $cep_extension_path/artifacts/eventbuilders/*.xml $cep_path/repository/deployment/server/eventbuilders/
-    cp -f $cep_extension_path/artifacts/inputeventadaptors/*.xml $cep_path/repository/deployment/server/inputeventadaptors/
-    cp -f $cep_extension_path/artifacts/outputeventadaptors/*.xml $cep_path/repository/deployment/server/outputeventadaptors/
-    cp -f $cep_extension_path/artifacts/executionplans/*.xml $cep_path/repository/deployment/server/executionplans/
-    cp -f $cep_extension_path/artifacts/eventformatters/*.xml $cep_path/repository/deployment/server/eventformatters/
-    cp -f $cep_extension_path/artifacts/streamdefinitions/*.xml $cep_path/repository/conf/
+    cp -f $andes_client_jar $cep_path/repository/components/dropins/
+    cp -f $cep_artifacts_path/eventbuilders/*.xml $cep_path/repository/deployment/server/eventbuilders/
+    cp -f $cep_artifacts_path/inputeventadaptors/*.xml $cep_path/repository/deployment/server/inputeventadaptors/
+    cp -f $cep_artifacts_path/outputeventadaptors/*.xml $cep_path/repository/deployment/server/outputeventadaptors/
+    cp -f $cep_artifacts_path/executionplans/*.xml $cep_path/repository/deployment/server/executionplans/
+    cp -f $cep_artifacts_path/eventformatters/*.xml $cep_path/repository/deployment/server/eventformatters/
+    cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_path/repository/conf/
 
     pushd $cep_path
 
@@ -526,45 +534,11 @@ function sm_setup {
     cat repository/conf/jndi.properties.orig | sed -e "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_hostname:$sm_mb_listen_port@g" > repository/conf/jndi.properties
 
     echo "In repository/conf/cartridge-config.properties" >> $LOG
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@SM_IP@$sm_ip@g" > repository/conf/cartridge-config.properties
-
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_DOMAIN@$stratos_domain@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@SM_HOSTNAME:SM_HTTPS_PORT@$sm_ip:$sm_https_port@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_HOSTNAME:STRATOS_FOUNDATION_DB_PORT@$stratos_foundation_db_hostname:$stratos_foundation_db_port@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_USER@$stratos_foundation_db_user@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_PASS@$stratos_foundation_db_pass@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@STRATOS_FOUNDATION_DB_SCHEMA@$stratos_foundation_db_schema@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_IP@$sm_mb_ip@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@MB_LISTEN_PORT@$sm_mb_listen_port@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_IP@$sm_cep_ip@g" > repository/conf/cartridge-config.properties
-
-    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
-    cat repository/conf/cartridge-config.properties.orig | sed -e "s@CEP_LISTEN_PORT@$sm_cep_tcp_port@g" > repository/conf/cartridge-config.properties
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@PUPPET_IP@$sm_puppet_ip@g" > repository/conf/cartridge-config.properties

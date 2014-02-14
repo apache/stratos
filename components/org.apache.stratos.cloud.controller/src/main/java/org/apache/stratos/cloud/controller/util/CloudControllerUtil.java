@@ -24,15 +24,9 @@ import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
-import org.apache.stratos.cloud.controller.pojo.AppType;
-import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.IaasConfig;
-import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.pojo.PortMapping;
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -186,6 +180,8 @@ public class CloudControllerUtil {
                                                                   .size()]));
 		
 		List<Property> propList = new ArrayList<Property>();
+        carInfo.setPeristanceMappings(cartridge.getPeristanceMappings().
+                toArray(new PersistanceMapping[cartridge.getPeristanceMappings().size()]));
 		
 		for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
 	        @SuppressWarnings("unchecked")
@@ -203,18 +199,7 @@ public class CloudControllerUtil {
     
     public static Iaas setIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
 
-		Iaas iaas;
-		try {
-			Constructor<?> c = Class.forName(iaasProvider.getClassName())
-					.getConstructor(IaasProvider.class);
-			iaas = (Iaas) c.newInstance(iaasProvider);
-		} catch (Exception e) {
-			String msg = "Class [" + iaasProvider.getClassName()
-					+ "] which represents the iaas of type: ["
-					+ iaasProvider.getType() + "] has failed to instantiate.";
-			log.error(msg, e);
-			throw new InvalidIaasProviderException(msg, e);
-		}
+    	Iaas iaas = loadIaas(iaasProvider);
 
 		try {
 			iaas.buildComputeServiceAndTemplate();
@@ -223,6 +208,46 @@ public class CloudControllerUtil {
 		} catch (Exception e) {
 			String msg = "Unable to build the jclouds object for iaas "
 					+ "of type: " + iaasProvider.getType();
+			log.error(msg, e);
+			throw new InvalidIaasProviderException(msg, e);
+		}
+	}
+    
+    public static Iaas getIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
+    	if(iaasProvider.getImage() != null) {
+    		return setIaas(iaasProvider);
+    	} else {
+    		return setDefaultIaas(iaasProvider);
+    	}
+    }
+    
+    public static Iaas setDefaultIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
+
+		Iaas iaas = loadIaas(iaasProvider);
+
+		try {
+			ComputeServiceBuilderUtil.buildDefaultComputeService(iaasProvider);
+			iaasProvider.setIaas(iaas);
+			return iaas;
+		} catch (Exception e) {
+			String msg = "Unable to build the jclouds object for iaas "
+					+ "of type: " + iaasProvider.getType();
+			log.error(msg, e);
+			throw new InvalidIaasProviderException(msg, e);
+		}
+	}
+
+	private static Iaas loadIaas(IaasProvider iaasProvider)
+			throws InvalidIaasProviderException {
+		try {
+			Constructor<?> c = Class.forName(iaasProvider.getClassName())
+					.getConstructor(IaasProvider.class);
+			Iaas iaas = (Iaas) c.newInstance(iaasProvider);
+			return iaas;
+		} catch (Exception e) {
+			String msg = "Class [" + iaasProvider.getClassName()
+					+ "] which represents the iaas of type: ["
+					+ iaasProvider.getType() + "] has failed to instantiate.";
 			log.error(msg, e);
 			throw new InvalidIaasProviderException(msg, e);
 		}

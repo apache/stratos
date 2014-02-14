@@ -1,7 +1,7 @@
 <div class="container content-starter">
     <div class="row">
         <div class="col-lg-12">
-            <h1>{{title}}</h1>
+            <h1>{{cartridgeType}} {{cartridge.version}} Cartridge</h1>
         </div>
     </div>
 </div>
@@ -17,26 +17,36 @@
                     <input name="alias"
                            type="text"
                            class="form-control input-xlarge js-help"
-                           data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
-                                   nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
-                                   Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
-                           data-help-x-offset="200"
-                           data-help-y-offset="-10"
+                           data-help="Specify a unique alias which can be used to generate the hostname as alias.hostname from cartridge"
+                           data-help-x-offset="50"
+                           data-help-y-offset="10"
                            placeholder="myphp" />
-                    <label>-lakmal.php.stratos.com</label>
+                    <label>.{{cartridge.hostName}}</label>
                 </div>
             </div>
-            <div class="form-group">
+            {{#ifCond cartridge.provider "==" "data"}}
+                <label class="required">Persistence Storage:</label>
+                <div class="checkbox">
+                    <label>
+                        <input name="backed By Volume" type="checkbox" checked="checked" id="volume_check" /> Persistence storage for the cartridge instance
+                    </label>
+                </div>
+                {{else}}
+
+
+             {{#ifCond cartridge.provider "==" "application"}}
+
+
+             {{else}}
+                <div class="form-group">
                 <label class="required">Repo URL:</label>
                 <div class="form-inline">
                     <input name="repoURL"
                            type="text"
                            class="form-control input-xlarge js-help"
-                           data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
-                                       nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
-                                       Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
-                           data-help-x-offset="200"
-                           data-help-y-offset="-10"
+                           data-help="Specify a repository URL of the artifacts."
+                           data-help-x-offset="50"
+                           data-help-y-offset="10"
                            placeholder="myphp" />
                 </div>
                 <div class="checkbox">
@@ -60,17 +70,20 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+             {{/ifCond}}
+
+             {{/ifCond}}
+
+             <div class="form-group">
                 <label class="required">Autoscale Policy:</label>
                 <div class="form-inline">
                     <select
                             name="autoscalePolicy"
                             class="form-control input-xlarge js-help"
-                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
-                                       nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
-                                       Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
+                            data-help="Please choose a applicable autoscaling policy for the subscription."
                             data-help-x-offset="50"
-                            data-help-y-offset="-10" >
+                            data-help-y-offset="10"
+                            >
                         {{#each autoScalePolicies}}
                         <option>{{id}}</option>
                         {{/each}}
@@ -83,11 +96,10 @@
                     <select
                             name="deploymentPolicy"
                             class="form-control input-xlarge js-help"
-                            data-help="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis
-                                       nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin.
-                                       Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien."
+                            data-help="Please choose a applicable deployment policy for the subscription.."
                             data-help-x-offset="50"
-                            data-help-y-offset="-10" >
+                            data-help-y-offset="10"
+                            >
                         {{#each deploymentPolicies}}
                             <option>{{id}}</option>
                         {{/each}}
@@ -127,6 +139,13 @@
         $public_check.click(function(){
             $('#credential_container').toggle($public_check.checked);
         });
+    });
+
+     $('#alias').keyup(function(){
+        if($(this).val() != ""){
+             $('#domainMessage').show().html('Domain is not available').addClass('noDomain').removeClass('hasDomain');
+        }
+
     });
 
 </script>

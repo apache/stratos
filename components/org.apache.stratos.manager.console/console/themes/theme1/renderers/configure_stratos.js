@@ -1,6 +1,14 @@
 var render = function (theme, data, meta, require) {
     session.put("configuring","true");
     var title;
+    var header_type;
+    var deploy_status = session.get("deploy-status");
+    var list_status = session.get("get-status");
+    var err_message;
+    var isErrDeply = false;
+    var isErrGet = false;
+    var isErr = false;
+    var isSucceeded = false;
     var wizard_on_val = [];
     for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
@@ -23,7 +31,45 @@ var render = function (theme, data, meta, require) {
     }else if( config_status.step == 6 ){
         title = 'Multi-Tenant Service Deployment';
     }
+    var log = new Log();
 
+    if(deploy_status == "succeeded") {
+        isErrDeply = false;
+        isSucceeded = true;
+    } else if(deploy_status == null) {
+        isErrDeply = false;
+    } else {
+        isErrDeply = true;
+        err_message = deploy_status;
+        step_data = "[]";
+    }
+
+        log.info("****************************--------------" + err_message + isErrDeply);
+
+
+    if(list_status == "succeeded") {
+        isErrGet = false;
+    } else if(list_status == null) {
+        isErrGet = false;
+    } else {
+        isErrGet = true;
+        if(err_message == undefined) {
+                   err_message = list_status;
+        } else {
+            err_message = err_message + ", " + list_status;
+        }
+        step_data = "[]";
+    }
+
+    if(isErrDeply || isErrGet) {
+     isErr = true;
+    }
+
+
+    log.info("****************************" + err_message);
+    log.info("------------------: " + isErr);
+    session.remove("get-status");
+    session.remove("deploy-status");
 
     for(var i=0;i<step_data.length;i++){
         step_data[i].json_string = stringify(step_data[i]);
@@ -46,7 +92,8 @@ var render = function (theme, data, meta, require) {
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
                     config_status:data.config_status,
-                    data_string:stringify(data.step_data)
+                    data_string:stringify(data.step_data),
+                    configure_stratos:true
 
                 }
             }
@@ -73,7 +120,11 @@ var render = function (theme, data, meta, require) {
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
                     step:step,
-                    configure_stratos:true
+                    configure_stratos:true,
+                    error:isErr,
+                    deploy_status:isSucceeded,
+                    error_msg:err_message,
+                    type:title
                 }
             }
         ],

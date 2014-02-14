@@ -15,7 +15,7 @@
             utils.consoleAppUtil.deployAutoscalePolicyDefinition(policy);
         }
         if(parseInt(thisStep) == 3 && policy != "" ){
-            utils.consoleAppUtil.deployDeploymentPolicyDefinition(policy);
+            var foo = utils.consoleAppUtil.deployDeploymentPolicyDefinition(policy);
         }
         if(parseInt(thisStep) == 4 && policy != "" ){
             utils.consoleAppUtil.deployLbDefinition(policy);
@@ -23,10 +23,20 @@
         if(parseInt(thisStep) == 5 && policy != "" ){
             utils.consoleAppUtil.deployCartridgeDefinition(policy);
         }
+        if(parseInt(thisStep) == 6 && policy != "" ){
+            utils.consoleAppUtil.deployServiceDefinition(policy);
+        }
     }
 
     var configuring = session.get("configuring");
-    var url = request.getContextPath() + '/configure_stratos_wizard.jag?step=' + nextStep;
+    var get_status = session.get("get-status");
+    var deploy_status = session.get("deploy-status");
+    var url = "";
+    if(get_status != "succeeded" || deploy_status != "succeeded") {
+       url = request.getContextPath() + '/configure_stratos_wizard.jag?step=' + thisStep;
+    } else {
+       url = request.getContextPath() + '/configure_stratos_wizard.jag?step=' + nextStep;
+   }
     if(configuring == "true"){
         url =  request.getContextPath() + '/configure_stratos.jag?step=' + thisStep;
     }

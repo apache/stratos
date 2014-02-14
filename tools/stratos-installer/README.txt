@@ -46,29 +46,32 @@ How to Install
 
 7. Download MySql Java connector from http://dev.mysql.com/downloads and copy the jar file to stratos-pack-path.
 
-8. Create and download keys from IaaSs and store them on a secure location.
+8. Download andes client jar from http://maven.wso2.org/nexus/content/groups/wso2-public/org/wso2/andes/wso2/andes-client/0.13.wso2v8/ and copy to stratos-pack-path.
 
-9. If Apache Stratos being setup in multiple nodes open up the security rules in IaaSs for ports which are used in cloud controller, stratos manager, autoscaler,
+9. Create and download keys from IaaSs and store them on a secure location.
+
+10. If Apache Stratos being setup in multiple nodes open up the security rules in IaaSs for ports which are used in cloud controller, stratos manager, autoscaler,
    WSO2 Message Broker and WSO2 Complex Event Processor as well as stratos_db_port, userstore_db_port ports (defined in ./conf/setup.conf file).
 
-10. Either download pre-built cartridge images from Apache Stratos website or create your own cartridges. Please refer Apache Stratos documentation 
+11. Either download pre-built cartridge images from Apache Stratos website or create your own cartridges. Please refer Apache Stratos documentation 
    for more information on creating cartridge images. For Amazon EC2, you could find pre-built PHP, MySQL and Tomcat cartridges published in Amazon EC2
    AMI image repository.
 
-11. Update ./conf/setup.conf and configure settings. If you run the stratos in a single node and for openstack, please update the following entries in the setup.conf
+12. Update ./conf/setup.conf and configure settings. If you run the stratos in a single node and for openstack, please update the following entries in the setup.conf
 
 	- setup_path 		==> Folder path containing stratos_setup(stratos_installer)
 	- stratos_pack_path 	==> Folder path containing stratos packages(all stratos packs + cep + mb) 
 	- stratos_path 		==> Folder which stratos will be installed (Eg: /opt )
 	- JAVA_HOME 		==> java home
-	- host_user 		==> A host user account for stratos. If not provided deafult is assumed stratos. If no account #named stratos exist it will be created.
+	- host_user 		==> A host user account for stratos
 	- mb_ip 		==> Machine ip on which mb run
  	- cep_ip		==> Machine ip on which cep run
  	- cc_ip 		==> Machine ip on which cc run
  	- as_ip 		==> Machine ip on which auto scalar run
  	- sm_ip 		==> Machine ip on which sc run
  	- puppet_ip 		==> Machine ip on which puppet master run
-	- cep_extension_path 	==> Folder path containing cep extensions(STRATOS_SOURCE_ROOT/extensions/cep)
+	- cep_artifacts_path 	==> Folder path containing cep artifacts(STRATOS_SOURCE_ROOT/extensions/cep/artifacts)
+	- andes_client_jar 	==> andes client jar file name
 	- mysql_connector_jar 	==> mysql connector jar file name
 	- userstore_db_hostname ==> hostname or ip where mysql is running
 	- userstore_db_schema 	==> "userstore": the name of the userstore database
@@ -96,7 +99,7 @@ How to Install
 	- openstack_jclouds_endpoint 	==> "http://xxxxxxxxx:5000/v2.0"
 
 
-12. Run setup.sh as root to install.
+13. Run setup.sh as root to install.
 
     sudo ./setup.sh -p "<product-list>"
     <product-list> could be defined as "cc sm as mb cep" or any other combination according to the deployment configuration.

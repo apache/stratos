@@ -17,6 +17,8 @@
 */
 package org.apache.stratos.rest.endpoint.bean;
 
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -32,6 +34,10 @@ public class CartridgeInfoBean {
     String dataCartridgeType;
     String dataCartridgeAlias;
 
+    private boolean persistanceRequired;
+    private int size;
+    private String device;
+    private boolean removeOnTermination;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -111,5 +117,37 @@ public class CartridgeInfoBean {
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public boolean isPersistanceRequired() {
+        return persistanceRequired;
+    }
+
+    public void setPersistanceRequired(boolean persistanceRequired) {
+        this.persistanceRequired = persistanceRequired;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public boolean isRemoveOnTermination() {
+        return removeOnTermination;
+    }
+
+    public void setRemoveOnTermination(boolean removeOnTermination) {
+        this.removeOnTermination = removeOnTermination;
     }
 }

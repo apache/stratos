@@ -43,6 +43,8 @@ public class Constants {
     public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
     public static final String TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID = "lb-cluster-id";
 
+    public static final String REQUEST_BASE_CONTEXT = "org.wso2.carbon.context.RequestBaseContext";
+    
     // to identify a lb cluster
     public static final String IS_LOAD_BALANCER = "load.balancer";
     public static final String LOAD_BALANCER_REF = "load.balancer.ref";
@@ -51,6 +53,11 @@ public class Constants {
     public static final String NO_LOAD_BALANCER = "no.load.balancer";
     public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
     public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
-    
-    public static final String REQUEST_BASE_CONTEXT = "org.wso2.carbon.context.RequestBaseContext";
+
+    // volume 
+    public static final String IS_VOLUME_REQUIRED = "volume.required";
+    public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
+    public static final String VOLUME_SIZE = "volume.size.gb";
+    public static final String DEVICE_NAME = "volume.device.name";
+
 }

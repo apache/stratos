@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.stratos.load.balancer</groupId>
         <artifactId>load-balancer-parent</artifactId>
-        <version>2.0.5</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.integration.framework</artifactId>
-            <version>${carbon.version}</version>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -141,6 +141,21 @@
             <artifactId>SecVerifier</artifactId>
             <version>${carbon.version}</version>
             <type>aar</type>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.load.balancer</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

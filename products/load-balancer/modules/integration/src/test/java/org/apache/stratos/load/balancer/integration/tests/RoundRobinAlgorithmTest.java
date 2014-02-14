@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.load.balancer.test;
+package org.apache.stratos.load.balancer.integration.tests;
 
 import org.apache.stratos.load.balancer.algorithm.AlgorithmContext;
 import org.apache.stratos.load.balancer.algorithm.RoundRobin;

@@ -19,6 +19,7 @@
 
 package org.apache.stratos.cartridge.agent.statistics.publisher;
 
+import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.lang.management.ManagementFactory;
@@ -42,6 +43,6 @@ public class HealthStatisticsReader {
     }
 
     public static boolean allPortsActive() {
-        return CartridgeAgentUtils.checkPortsActive();
+        return CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
     }
 }

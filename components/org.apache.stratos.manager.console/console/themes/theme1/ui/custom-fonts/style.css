@@ -24,35 +24,38 @@
 }
 
 .icons-active:before {
-	content: "\e600";
+	content: "\e600" !important;
 }
 .icons-refresh:before {
-	content: "\e601";
+	content: "\e601" !important;
 }
 .icons-mysql:before {
-	content: "\e602";
+	content: "\e602" !important;
 }
 .icons-ruby:before {
-	content: "\e603";
+	content: "\e603" !important;
 }
 .icons-php:before {
-	content: "\e604";
+	content: "\e604" !important;
 }
 .icons-cakephp:before {
-	content: "\e605";
+	content: "\e605" !important;
 }
 .icons-python:before {
-	content: "\e606";
+	content: "\e606" !important;
 }
 .icons-topology:before {
-	content: "\e607";
+	content: "\e607" !important;
 }
 .icons-help:before {
-	content: "\e608";
+	content: "\e608" !important;
 }
 .icons-cartridge:before {
-	content: "\e609";
+	content: "\e609" !important;
 }
 .icons-tenant:before {
-	content: "\e60a";
+	content: "\e60a" !important;
+}
+.icons-default:before {
+    content: "\e607";
 }

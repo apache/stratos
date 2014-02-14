@@ -22,6 +22,7 @@ package org.apache.stratos.manager.manager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
@@ -31,6 +32,7 @@ import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBehaviour;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionSingleTenantBehaviour;
@@ -51,67 +53,31 @@ public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
     //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
-
-    /**
-     * Subscribes to a cartridge
-     *
-     * @param cartridgeType Cartridge type
-     * @param subscriptionAlias Cartridge alias
-     * @param autoscalingPolicyName Autoscaling policy name
-     * @param deploymentPolicyName Deployment Policy name
-     * @param tenantDomain Subscriing tenant's domain
-     * @param tenantId Subscribing tenant's Id
-     * @param tenantAdminUsername Subscribing tenant's admin user name
-     * @param repositoryType Type of repository
-     * @param repositoryURL Repository URL
-     * @param isPrivateRepository If a private or a public repository
-     * @param repositoryUsername Repository username
-     * @param repositoryPassword Repository password
-     *
-     * @return Subscribed CartridgeSubscription object
-     * @throws ADCException
-     * @throws InvalidCartridgeAliasException
-     * @throws DuplicateCartridgeAliasException
-     * @throws PolicyException
-     * @throws UnregisteredCartridgeException
-     * @throws RepositoryRequiredException
-     * @throws RepositoryCredentialsRequiredException
-     * @throws RepositoryTransportException
-     * @throws AlreadySubscribedException
-     * @throws InvalidRepositoryException
-     */
-    public CartridgeSubscription subscribeToCartridge (String cartridgeType, String subscriptionAlias,
-                                                  String autoscalingPolicyName, String deploymentPolicyName,
-                                                  String tenantDomain, int tenantId,
-                                                  String tenantAdminUsername, String repositoryType,
-                                                  String repositoryURL, boolean isPrivateRepository,
-                                                  String repositoryUsername, String repositoryPassword)
-
-            throws ADCException, InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException,
-            UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
-            RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
-
-        return subscribeToCartridgeWithProperties(cartridgeType, subscriptionAlias, autoscalingPolicyName,
-                                                  deploymentPolicyName, tenantDomain, tenantId, tenantAdminUsername, 
-                                                  repositoryType, repositoryURL, isPrivateRepository, repositoryUsername, 
-                                                  repositoryPassword, null);
-    }
     
-    public CartridgeSubscription subscribeToCartridgeWithProperties(String cartridgeType, String cartridgeAlias,
-        String autoscalingPolicyName, String deploymentPolicyName, String tenantDomain,
-        int tenantId, String tenantAdminUsername, String repositoryType, String repositoryURL,
-        boolean isPrivateRepository, String repositoryUsername, String repositoryPassword, Property[] props)
+    public CartridgeSubscription subscribeToCartridgeWithProperties(SubscriptionData subscriptionData)  throws ADCException,
+                                                                                            InvalidCartridgeAliasException,
+                                                                                            DuplicateCartridgeAliasException,
+                                                                                            PolicyException,
+                                                                                            UnregisteredCartridgeException,
+                                                                                            RepositoryRequiredException,
+                                                                                            RepositoryCredentialsRequiredException,
+                                                                                            RepositoryTransportException,
+                                                                                            AlreadySubscribedException,
+                                                                                            InvalidRepositoryException {
 
-    throws ADCException,
-        InvalidCartridgeAliasException,
-        DuplicateCartridgeAliasException,
-        PolicyException,
-        UnregisteredCartridgeException,
-        RepositoryRequiredException,
-        RepositoryCredentialsRequiredException,
-        RepositoryTransportException,
-        AlreadySubscribedException,
-        InvalidRepositoryException {
+        int tenantId = subscriptionData.getTenantId();
+        String cartridgeType = subscriptionData.getCartridgeType();
+        String cartridgeAlias =  subscriptionData.getCartridgeAlias();
+        Property [] props = subscriptionData.getProperties();
+        String repositoryPassword = subscriptionData.getRepositoryPassword();
+        String repositoryUsername = subscriptionData.getRepositoryUsername();
+        boolean isPrivateRepository = subscriptionData.isPrivateRepository();
+        String repositoryURL = subscriptionData.getRepositoryURL();
+        String tenantDomain = subscriptionData.getTenantDomain();
+        String tenantAdminUsername = subscriptionData.getTenantAdminUsername();
+        String autoscalingPolicyName = subscriptionData.getAutoscalingPolicyName();
+        String deploymentPolicyName = subscriptionData.getDeploymentPolicyName();
+        String lbClusterId = subscriptionData.getLbClusterId();
 
         // validate cartridge alias
         CartridgeSubscriptionUtils.validateCartridgeAlias(tenantId, cartridgeType, cartridgeAlias);
@@ -120,6 +86,7 @@ public class CartridgeSubscriptionManager {
         try {
             cartridgeInfo =
                             CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+            /*
             if (props != null) {
                 // TODO: temp fix, need to do a proper fix
                 Property[] cartridgeInfoProperties = cartridgeInfo.getProperties();
@@ -134,7 +101,7 @@ public class CartridgeSubscriptionManager {
                 }
 
             }
-
+            */
         } catch (UnregisteredCartridgeException e) {
             String message =
                              cartridgeType +
@@ -159,8 +126,10 @@ public class CartridgeSubscriptionManager {
         //Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
                 getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
-        
+
+
         String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+
         String encryptedRepoPassword = repositoryPassword != null && !repositoryPassword.isEmpty() ?
                 RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey) : "";
         
@@ -178,10 +147,17 @@ public class CartridgeSubscriptionManager {
         //Set the key
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
+        // Set persistance mappings
+        cartridgeSubscription.setPersistanceMapping(subscriptionData.getPersistanceMapping());
+
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
-                                                 deploymentPolicyName, repository);
+                                                deploymentPolicyName, repository);
 
+        // set the lb cluster id if its available
+        if (lbClusterId != null && !lbClusterId.isEmpty()) {
+            cartridgeSubscription.setLbClusterId(lbClusterId);
+        }
 
         log.info("Tenant [" + tenantId + "] with username [" + tenantAdminUsername +
                  " subscribed to " + "] Cartridge Alias " + cartridgeAlias + ", Cartridge Type: " +
@@ -189,7 +165,7 @@ public class CartridgeSubscriptionManager {
                  autoscalingPolicyName);
 
 
-        // Publish tenant subscribed event to message broker
+        // Publish tenant subscribed envent to message broker
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                 cartridgeSubscription.getCartridgeInfo().getType());
 
@@ -205,10 +181,10 @@ public class CartridgeSubscriptionManager {
      * @throws ADCException
      * @throws UnregisteredCartridgeException
      */
-    public SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription)
+    public SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)
             throws ADCException, UnregisteredCartridgeException {
 
-        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(null);
+        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(properties);
 
         //set status as 'SUBSCRIBED'
         cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
@@ -283,5 +259,20 @@ public class CartridgeSubscriptionManager {
             log.error(errorMsg);
             throw new NotSubscribedException(errorMsg, alias);
         }
+    }
+    
+    
+    /**
+     * 
+     * Returns a collection of Cartridge subscriptions for a particular tenant and a cartridge type
+     * 
+     * @param tenantId
+     * @param cartridgeType
+     * @return
+     */
+    public Collection<CartridgeSubscription> isCartridgeSubscribed(int tenantId, String cartridgeType) {
+    	
+    	DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+        return dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType);
     }
 }

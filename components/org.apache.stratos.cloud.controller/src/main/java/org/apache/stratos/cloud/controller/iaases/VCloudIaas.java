@@ -212,4 +212,28 @@ public class VCloudIaas extends Iaas {
         return new VCloudPartitionValidator();
     }
 
+	@Override
+	public String createVolume(int sizeGB) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String attachVolume(String instanceId, String volumeId, String deviceName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void detachVolume(String instanceId, String volumeId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteVolume(String volumeId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

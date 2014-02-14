@@ -93,8 +93,16 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/tenant/list",{}).data;
     };
 
+    this.getServices = function(){
+        return this.sendReceive("GET","/service",{}).data;
+    };
+
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
+    };
+
+    this.deployServiceDefinition = function(serviceDefinition){
+        return this.send("POST","/service/definition",serviceDefinition).data;
     };
 
     this.deployLbDefinition = function(lbDefinition){
@@ -150,6 +158,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/partition",{}).data;
     };
 
+    this.getSingleTenantCartridgeInfo = function(cartridgeType){
+        return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{}).data;
+    };
+
     this.getPolicyAutoScale = function(){
         return this.sendReceive("GET","/policy/autoscale",{}).data;
     };
@@ -157,23 +169,47 @@ consoleAppUtil = new function(){
     this.getPolicyDeployment = function(){
         return this.sendReceive("GET","/policy/deployment",{}).data;
     };
-
+    this.unsubscribeCartridge = function(alias){
+        return this.send("POST","/cartridge/unsubscribe",alias).data;
+    };
     this.getCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list",{}).data;
+        return this.sendReceive("GET","/cartridge/available/list",{}).data;
+    };
+
+    this.getLbCartridges = function(){
+        return this.sendReceive("GET","/cartridge/lb",{}).data;
+    };
+
+    this.getCartridgeInfo = function(alias){
+        return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };
     this.getConfigStatus = function(){
         var configStatus = {};
-        if(this.sendReceive("GET","/partition",{}).data.partition.length == 0){
-            configStatus.first_use = true;
-        }else{
-            if(this.sendReceive("GET","/cartridge/list",{}).data.cartridge.length == 0){
-                configStatus.first_use = false;
-                configStatus.not_complete = true;
+
+        var par_res = this.sendReceive("GET","/partition",{}).data;
+        var get_status = session.get("get-status");
+
+        if(get_status == "succeeded") {
+            if(par_res.partition.length == 0){
+                configStatus.first_use = true;
             }else{
-                configStatus.not_complete = false;
-                configStatus.first_use = false;
+            var car_res = this.sendReceive("GET","/cartridge/list",{}).data;
+            var get_status = session.get("get-status");
+
+            if(get_status == "succeeded") {
+                if(car_res.cartridge.length == 0){
+                        configStatus.first_use = false;
+                        configStatus.not_complete = true;
+                    }else{
+                        configStatus.not_complete = false;
+                        configStatus.first_use = false;
+                    }
+                }
             }
+        } else {
+
         }
+
         return configStatus;
     };
 
@@ -219,7 +255,15 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("recieved data is: " + stringify(response.data));
+        log.info("-----------------------:" + stringify(response));
+        //response = {"data" : {"Error" : {"errorCode" : " 400", "errorMessage" : " Error getting available partitions"}}, "xhr" : {}};
+        if(response.data.Error) {
+            session.put("get-status", response.data.Error.errorMessage);
+        } else {
+            session.put("get-status", "succeeded");
+        }
+
+        log.info("--------------------:    +  " + urlPostFix + "      "+ session.get("get-status"));
         return response;
     };
 
@@ -233,23 +277,32 @@ consoleAppUtil = new function(){
         var response;
         switch (httpMethod){
             case  "GET":
-                response = get(endpoint,{},headers);
+                response = get(endpoint,{},headers, 'json');
                 break;
             case   "POST":
-                response = post(endpoint,data,headers);
+                response = post(endpoint,data,headers, 'json');
                 break;
             case    "PUT":
-                response = put(endpoint,data,headers);
+                response = put(endpoint,data,headers, 'json');
                 break;
             case    "DELETE":
-                response = del(endpoint,data,headers);
+                response = del(endpoint,data,headers, 'json');
                 break;
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("sent response is: " + stringify(response.data));
-        return response;
-    };
+        if(response.data.stratosAdminResponse) {
+            session.put("deploy-status", "succeeded");
+        } else if (response.data.Error) {
+            session.put("deploy-status", response.data.Error.errorMessage);
+        } else {
+            session.put("deploy-status", "Error occurred while deploying...");
+        }
+        log.info("sent is: " + stringify(response));
+                log.info("--------------------:    +  " + urlPostFix + "      "+ session.get("deploy-status"));
+
+            return response;
+        };
 
 
 
