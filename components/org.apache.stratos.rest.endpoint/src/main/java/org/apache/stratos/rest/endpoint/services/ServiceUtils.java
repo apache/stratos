@@ -422,7 +422,7 @@ public class ServiceUtils {
     }
 
     static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
-       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+       List<Cartridge> cartridges = getAvailableCartridges(null, null, configurationContext);
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
                 return cartridge;
