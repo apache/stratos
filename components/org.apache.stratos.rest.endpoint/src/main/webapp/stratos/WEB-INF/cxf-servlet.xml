@@ -53,7 +53,6 @@
         <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
     </bean>
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
-        <property name="dropRootElement" value="true" />
         <property name="serializeAsArray" value="true"/>
         <property name="arrayKeys">
             <list>
