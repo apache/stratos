@@ -434,17 +434,19 @@ public class RestCommandLineService {
             		+alias, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while listing subscribe cartridges");
+            String resultString = getHttpResponseString(response);
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            
+            if ( !responseCode.equals(CliConstants.RESPONSE_OK)) {
+            	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+            	System.out.println(exception);
                 return;
             }
 
-            String resultString = getHttpResponseString(response);
+            CartridgeWrapper cartridgeWrapper = gson.fromJson(resultString, CartridgeWrapper.class);
+            Cartridge cartridge = cartridgeWrapper.getCartridge();
 
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
-            Cartridge cartridge = cartridgeList.getCartridge().get(0);
             if (cartridge == null) {
                 System.out.println("Cartridge is null");
                 return;
@@ -1741,4 +1743,66 @@ public class RestCommandLineService {
         System.out.println(message);
         throw new CommandException(message, e);
     }
+    
+    /**
+     * To map RestApiException of back-end.
+     * @author nirmal
+     *
+     */
+    public class ExceptionMapper {
+    	@Override
+		public String toString() {
+			return Error.toString();
+		}
+
+		private ErrorWrapper Error;
+
+		public ErrorWrapper getError() {
+			return Error;
+		}
+
+		public void setError(ErrorWrapper error) {
+			Error = error;
+		}
+    	
+    }
+    
+    public class ErrorWrapper {
+    	private String errorCode;
+    	private String errorMessage;
+    	public String getErrorCode() {
+    		return errorCode;
+    	}
+    	public void setErrorCode(String errorCode) {
+    		this.errorCode = errorCode;
+    	}
+    	public String getErrorMessage() {
+    		return errorMessage;
+    	}
+    	public void setErrorMessage(String errorMessage) {
+    		this.errorMessage = errorMessage;
+    	}
+    	@Override
+    	public String toString() {
+    		return "Exception [errorCode=" + errorCode
+    				+ ", errorMessage=" + errorMessage + "]";
+    	}
+    	
+    }
+    
+	// This class is to convert JSON string to Cartridge object
+	public class CartridgeWrapper {
+		private Cartridge cartridge;
+
+		public Cartridge getCartridge() {
+			return cartridge;
+		}
+
+		public void setCartridge(Cartridge cartridge) {
+			this.cartridge = cartridge;
+		}
+
+		public CartridgeWrapper() {
+		}
+	}
 }
