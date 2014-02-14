@@ -316,7 +316,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         return ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
     }
 

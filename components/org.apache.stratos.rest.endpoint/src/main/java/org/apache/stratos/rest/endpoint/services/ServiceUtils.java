@@ -20,6 +20,7 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -57,6 +58,8 @@ import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import java.util.*;
 import java.util.regex.Pattern;
+
+import javax.ws.rs.core.Response;
 
 public class ServiceUtils {
     public static final String IS_VOLUME_REQUIRED = "volume.required";
@@ -620,6 +623,9 @@ public class ServiceUtils {
                         continue;
                     }
                     Cartridge cartridge = getCartridgeFromSubscription(subscription);
+                    if (cartridge == null) {
+                		continue;
+                	}
                     Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                             ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
                     String cartridgeStatus = "Inactive";
@@ -658,11 +664,14 @@ public class ServiceUtils {
     }
 
     
-    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    static Cartridge getSubscription(String cartridgeAlias, ConfigurationContext configurationContext) throws RestAPIException {
     	
     	Cartridge cartridge =  getCartridgeFromSubscription(cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.
                     getTenantId(configurationContext), cartridgeAlias));
     	
+    	if (cartridge == null) {
+    		throw new RestAPIException(Response.Status.NOT_FOUND, "Unregistered [alias]: "+cartridgeAlias+"! Please enter a valid alias.");
+    	}
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
         String cartridgeStatus = "Inactive";
@@ -692,8 +701,12 @@ public class ServiceUtils {
 		return noOfActiveInstances;
     }
     
-    private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws ADCException {
+    private static Cartridge getCartridgeFromSubscription (CartridgeSubscription subscription) throws RestAPIException {
 
+    	if (subscription == null) {
+    		return null;
+    	}
+    	
         Cartridge cartridge = new Cartridge();
         cartridge.setCartridgeType(subscription.getCartridgeInfo().getType());
         cartridge.setMultiTenant(subscription.getCartridgeInfo().getMultiTenant());
