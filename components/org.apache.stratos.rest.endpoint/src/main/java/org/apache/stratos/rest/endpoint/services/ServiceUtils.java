@@ -866,7 +866,7 @@ public class ServiceUtils {
 
             Property sizeProperty = new Property();
             sizeProperty.setName(VOLUME_SIZE);
-            sizeProperty.setValue(String.valueOf(cartridgeInfoBean.getSize()));
+            sizeProperty.setValue(cartridgeInfoBean.getSize());
 
             Property deviceProperty = new Property();
             deviceProperty.setName(DEVICE_NAME);
@@ -874,7 +874,7 @@ public class ServiceUtils {
 
             Property deleteOnTerminationProperty = new Property();
             deleteOnTerminationProperty.setName(SHOULD_DELETE_VOLUME);
-            deleteOnTerminationProperty.setValue(String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
+            deleteOnTerminationProperty.setValue(String.valueOf(    cartridgeInfoBean.isRemoveOnTermination()));
 
             properties.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
         }
