@@ -830,19 +830,18 @@ public class ServiceUtils {
             persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
 
             Property sizeProperty = new Property();
-            persistanceRequiredProperty.setName(VOLUME_SIZE);
-            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.getSize()));
+            sizeProperty.setName(VOLUME_SIZE);
+            sizeProperty.setValue(String.valueOf(cartridgeInfoBean.getSize()));
 
             Property deviceProperty = new Property();
-            persistanceRequiredProperty.setName(DEVICE_NAME);
-            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.getDevice()));
+            deviceProperty.setName(DEVICE_NAME);
+            deviceProperty.setValue(String.valueOf(cartridgeInfoBean.getDevice()));
 
             Property deleteOnTerminationProperty = new Property();
-            persistanceRequiredProperty.setName(SHOULD_DELETE_VOLUME);
-            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
+            deleteOnTerminationProperty.setName(SHOULD_DELETE_VOLUME);
+            deleteOnTerminationProperty.setValue(String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
 
-            Properties props = new Properties();
-            props.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
+            properties.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
         }
 
 
@@ -1177,7 +1176,7 @@ public class ServiceUtils {
 
             SubscriptionData subscriptionData = new SubscriptionData();
             subscriptionData.setCartridgeType(cartridgeType);
-            subscriptionData.setLbAlias(lbAlias.trim());
+            subscriptionData.setCartridgeAlias(lbAlias.trim());
             subscriptionData.setAutoscalingPolicyName(defaultAutoscalingPolicy);
             subscriptionData.setDeploymentPolicyName(deploymentPolicy);
             subscriptionData.setTenantDomain(tenantDomain);

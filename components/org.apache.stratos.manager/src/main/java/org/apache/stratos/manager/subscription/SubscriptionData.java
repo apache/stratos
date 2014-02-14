@@ -162,14 +162,6 @@ public class SubscriptionData {
 
     public String getDataCartridgeAlias() {return dataCartridgeAlias;}
 
-    public String getLbAlias() {
-        return lbAlias;
-    }
-
-    public void setLbAlias(String lbAlias) {
-        this.lbAlias = lbAlias;
-    }
-
     public PersistanceMapping getPersistanceMapping() {
         return persistanceMapping;
     }
