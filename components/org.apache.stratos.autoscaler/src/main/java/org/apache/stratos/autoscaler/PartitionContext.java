@@ -166,6 +166,23 @@ public class PartitionContext implements Serializable{
         this.pendingMembers.add(ctxt);
     }
     
+    public boolean removePendingMember(String id) {
+    	if (id == null) {
+            return false;
+        }
+
+    	for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext();) {
+    		MemberContext pendingMember = (MemberContext) iterator.next();
+    		if(id.equals(pendingMember.getMemberId())){
+    			iterator.remove();
+    			return true;
+    		}
+			
+		}
+    	
+    	return false;
+    }
+    
     public void movePendingMemberToActiveMembers(String memberId) {
         if (memberId == null) {
             return;
