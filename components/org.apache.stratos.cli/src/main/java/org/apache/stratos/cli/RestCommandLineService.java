@@ -208,18 +208,20 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while listing available cartridges");
-                return;
-            }
-
             String resultString = getHttpResponseString(response);
             if (resultString == null) {
+            	return;
+            }
+            
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+            	System.out.println(exception);
                 return;
             }
 
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
             CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
 
             if (cartridgeList == null) {
@@ -300,18 +302,20 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
-            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while listing available cartridges");
-                return;
-            }
-
             String resultString = getHttpResponseString(response);
             if (resultString == null) {
+            	return;
+            }
+            
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+            	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+            	System.out.println(exception);
                 return;
             }
 
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
             CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
 
             if (cartridgeList == null) {
@@ -342,15 +346,17 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            String resultString = getHttpResponseString(response);
+            
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            
             if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while listing subscribe cartridges");
+            	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+            	System.out.println(exception);
                 return;
             }
 
-            String resultString = getHttpResponseString(response);
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
             CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
 
             if (cartridgeList == null) {
@@ -605,8 +611,12 @@ public class RestCommandLineService {
                     restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
+            
+            Gson gson = new Gson();
             if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("Error occured while listing members of a cluster");
+            	String resultString = getHttpResponseString(response);
+            	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+            	System.out.println(exception);
                 return null;
             }
 
@@ -854,7 +864,9 @@ public class RestCommandLineService {
                 System.out.println("Error occured while creating tenant");
                 return;
             } else {
-                System.out.println ("Unhandle error");
+            	String resultString = getHttpResponseString(response);
+            	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+            	System.out.println(exception);
                 return;
             }
 
