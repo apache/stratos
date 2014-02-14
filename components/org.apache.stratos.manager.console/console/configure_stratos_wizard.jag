@@ -13,6 +13,7 @@ var wizard = {
 
 var utils = require('/util/utility.jag');
 
+
 if(wizard.step == 1){
     var partition_deployments =  utils.consoleAppUtil.getPartitions();
     step_data = partition_deployments.partition;

@@ -422,7 +422,7 @@ public class ServiceUtils {
     }
 
     static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
-       List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+       List<Cartridge> cartridges = getAvailableCartridges(null, null, configurationContext);
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
                 return cartridge;
@@ -500,6 +500,13 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
+
+                    if(cartridgeInfo.getPeristanceMappings() != null) {
+                        for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
+                            cartridge.addPersistanceMapping(persistanceMapping);
+                        }
+                    }
+
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
                         for(Property property: cartridgeInfo.getProperties()) {
                         if(property.getName().equals("load.balancer")) {
