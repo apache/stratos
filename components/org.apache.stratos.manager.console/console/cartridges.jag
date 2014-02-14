@@ -1,8 +1,22 @@
 <%
-var caramel = require('caramel')
-var utils = require('/util/utility.jag');
-var availableSingleTenantCartridges = utils.consoleAppUtil.getCartridges();
-caramel.render({
-    cartridges:availableSingleTenantCartridges
-});
+    var caramel = require('caramel')
+    var utils = require('/util/utility.jag');
+    var availableSingleTenantCartridges = utils.consoleAppUtil.getCartridges();
+    availableSingleTenantCartridges = availableSingleTenantCartridges.cartridge;
+
+
+     var log = new Log("config.stratos");
+    for(var i=0;i<availableSingleTenantCartridges.length;i++) {
+        if(availableSingleTenantCartridges[i].loadBalancer == true ) {
+            availableSingleTenantCartridges.splice(i,1);
+            i = i - 1;
+        }
+    }
+         log.info("~~~~~~~~~~~~~: " + stringify(availableSingleTenantCartridges));
+
+    var availableLbCartridges =  utils.consoleAppUtil.getLbCartridges();
+    caramel.render({
+        cartridges:availableSingleTenantCartridges,
+        lbcartridges:availableLbCartridges
+    });
 %>
