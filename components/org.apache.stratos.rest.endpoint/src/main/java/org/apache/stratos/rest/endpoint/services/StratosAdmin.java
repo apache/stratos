@@ -26,7 +26,6 @@ import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -274,7 +273,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableMultiTenantCartridges() throws ADCException {
+    public Cartridge[] getAvailableMultiTenantCartridges() throws RestAPIException {
         List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, true, getConfigContext());
         return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
     }
@@ -284,7 +283,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableSingleTenantCartridges() throws ADCException {
+    public Cartridge[] getAvailableSingleTenantCartridges() throws RestAPIException {
         List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, false, getConfigContext());
         return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
     }
@@ -294,7 +293,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableCartridges() throws ADCException {
+    public Cartridge[] getAvailableCartridges() throws RestAPIException {
         List<Cartridge> cartridges = ServiceUtils.getAvailableCartridges(null, null, getConfigContext());
         return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
     }
@@ -305,7 +304,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getSubscribedCartridges() throws ADCException {
+    public Cartridge[] getSubscribedCartridges() throws RestAPIException {
         List<Cartridge> cartridgeList = ServiceUtils.getSubscriptions(null, getConfigContext());
         // Following is very important when working with axis2
         return cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]);
@@ -326,7 +325,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
-                                            throws ADCException, RestAPIException {
+                                            throws RestAPIException {
         return ServiceUtils.getAvailableSingleTenantCartridgeInfo(cartridgeType, false, getConfigContext());
     }
 
@@ -336,7 +335,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public List<Cartridge> getAvailableLbCartridges()
-                                            throws ADCException {
+                                            throws RestAPIException {
         return ServiceUtils.getAvailableLbCartridges(false, getConfigContext());
     }
 
@@ -346,7 +345,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public int getActiveInstances(@PathParam("cartridgeType") String cartridgeType,
-                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         return ServiceUtils.getActiveInstances(cartridgeType, subscriptionAlias, getConfigContext());
     }
 
@@ -373,7 +372,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cluster[] getClustersForTenant() throws ADCException {
+    public Cluster[] getClustersForTenant() throws RestAPIException {
 
         return ServiceUtils.getClustersForTenant(getConfigContext());
     }
@@ -383,7 +382,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cluster[] getClusters(@PathParam("cartridgeType") String cartridgeType) throws ADCException {
+    public Cluster[] getClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         return ServiceUtils.getClustersForTenantAndCartridgeType(getConfigContext(), cartridgeType);
     }
@@ -394,7 +393,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cluster getCluster(@PathParam("cartridgeType") String cartridgeType,
-                              @PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException, RestAPIException {
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException, RestAPIException {
 
         return ServiceUtils.getCluster(cartridgeType, subscriptionAlias, getConfigContext());
     }
@@ -404,7 +403,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cluster getCluster(@PathParam("clusterId") String clusterId) throws ADCException {
+    public Cluster getCluster(@PathParam("clusterId") String clusterId) throws RestAPIException {
     	Cluster cluster = null;
     	if(log.isDebugEnabled()) {
     		log.debug("Finding the Cluster for [id]: "+clusterId);

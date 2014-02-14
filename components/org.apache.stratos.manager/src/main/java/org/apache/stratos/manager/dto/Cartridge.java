@@ -61,6 +61,8 @@ public class Cartridge implements Comparable<Cartridge> {
 
     private String defaultDeploymentPolicy;
 
+    private boolean isPersistance;
+
     private List<PersistanceMapping>  persistanceMappingBeans = new ArrayList<PersistanceMapping>();
 
 	public String getDisplayName() {
@@ -281,5 +283,13 @@ public class Cartridge implements Comparable<Cartridge> {
 
     public void setPersistanceMappingBeans(List<PersistanceMapping> persistanceMappingBeans) {
         this.persistanceMappingBeans = persistanceMappingBeans;
+    }
+
+    public boolean isPersistance() {
+        return isPersistance;
+    }
+
+    public void setPersistance(boolean persistance) {
+        isPersistance = persistance;
     }
 }

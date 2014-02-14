@@ -256,7 +256,7 @@ consoleAppUtil = new function(){
                 log.error("Error in the programme flow.");
         }
         log.info("-----------------------:" + stringify(response));
-        //response = {"data" : {"Error" : {"errorCode" : " 400", "errorMessage" : " Error getting available partitions"}}, "xhr" : {}};
+        response = {"data" : {"Error" : {"errorCode" : " 400", "errorMessage" : " Error getting available partitions"}}, "xhr" : {}};
         if(response.data.Error) {
             session.put("get-status", response.data.Error.errorMessage);
         } else {
@@ -298,8 +298,8 @@ consoleAppUtil = new function(){
         } else {
             session.put("deploy-status", "Error occurred while deploying...");
         }
-        log.info("sent is: " + stringify(response));
-                log.info("--------------------:    +  " + urlPostFix + "      "+ session.get("deploy-status"));
+        //log.info("sent is: " + stringify(response));
+                //log.info("--------------------:    +  " + urlPostFix + "      "+ session.get("deploy-status"));
 
             return response;
         };

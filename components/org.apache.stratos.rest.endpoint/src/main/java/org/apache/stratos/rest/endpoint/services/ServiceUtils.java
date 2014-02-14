@@ -20,7 +20,6 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -51,15 +50,13 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistanceMappingBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
+import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.regex.Pattern;
-
-import javax.ws.rs.core.Response;
 
 public class ServiceUtils {
     public static final String IS_VOLUME_REQUIRED = "volume.required";
@@ -424,7 +421,7 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionGroupPojos(partitionGroups);
     }
 
-    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException, RestAPIException {
+    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
        List<Cartridge> cartridges = getAvailableCartridges(null, null, configurationContext);
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
@@ -434,7 +431,7 @@ public class ServiceUtils {
          throw new RestAPIException("cannot find the required cartridge Type") ;
     }
 
-    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
+    static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
        List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
         List<Cartridge> lbCartridges = new ArrayList<Cartridge>();
         for(Cartridge cartridge : cartridges) {
@@ -445,7 +442,7 @@ public class ServiceUtils {
         return lbCartridges;
     }
 
-    static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws ADCException {
+    static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
         if (log.isDebugEnabled()) {
@@ -507,7 +504,10 @@ public class ServiceUtils {
                     if(cartridgeInfo.getPeristanceMappings() != null) {
                         for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
                             cartridge.addPersistanceMapping(persistanceMapping);
+                            cartridge.setPersistance(true);
                         }
+                    } else {
+                        cartridge.setPersistance(false);
                     }
 
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
@@ -542,7 +542,7 @@ public class ServiceUtils {
         } catch (Exception e) {
             String msg = "Error when getting available cartridges. " + e.getMessage();
             log.error(msg, e);
-            throw new ADCException("An error occurred getting available cartridges ", e);
+            throw new RestAPIException("An error occurred getting available cartridges ", e);
         }
 
         Collections.sort(cartridges);
@@ -601,7 +601,7 @@ public class ServiceUtils {
         return new ServiceDefinitionBean();
     }
 
-	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws ADCException {
+	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws RestAPIException {
 
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -651,7 +651,7 @@ public class ServiceUtils {
         } catch (Exception e) {
             String msg = "Error when getting subscribed cartridges. " + e.getMessage();
             log.error(msg, e);
-            throw new ADCException("An Error occurred when getting subscribed cartridges.", e);
+            throw new RestAPIException("An Error occurred when getting subscribed cartridges.", e);
         }
 
         Collections.sort(cartridges);
@@ -689,7 +689,7 @@ public class ServiceUtils {
     	
     }
 
-    static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws ADCException {
+    static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws RestAPIException {
     	int noOfActiveInstances = 0;
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
                 ,cartridgeType , cartridgeAlias);
