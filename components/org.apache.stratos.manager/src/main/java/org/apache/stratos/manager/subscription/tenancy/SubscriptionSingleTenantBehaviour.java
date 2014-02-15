@@ -23,8 +23,10 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.exception.NotSubscribedException;
@@ -32,10 +34,10 @@ import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.payload.PayloadFactory;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
-import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.util.Map;
@@ -46,30 +48,28 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
 
     private static Log log = LogFactory.getLog(SubscriptionSingleTenantBehaviour.class);
 
-
-
-    public void createSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, AlreadySubscribedException {
+    public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+                        String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException {
 
         //set the cluster and hostname
         //cartridgeSubscription.getCluster().setClusterDomain(cartridgeSubscription.getAlias() + "." +
         //        cartridgeSubscription.getCluster().getHostName() + "." + cartridgeSubscription.getType() + ".domain");
-        String clusterId = cartridgeSubscription.getAlias() + "." + cartridgeSubscription.getType() + ".domain";
+        String clusterId = alias + "." + cartridgeInfo.getType() + ".domain";
 
         // limit the cartridge alias to 30 characters in length
         if (clusterId.length() > 30) {
             clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
         }
-        cartridgeSubscription.getCluster().setClusterDomain(clusterId);
+        cluster.setClusterDomain(clusterId);
         // set hostname
-        cartridgeSubscription.getCluster().setHostName(cartridgeSubscription.getAlias() + "." +
-                cartridgeSubscription.getCluster().getHostName());
+        cluster.setHostName(alias + "." + cluster.getHostName());
 
         //Create the payload
-        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(cartridgeSubscription);
+        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(cartridgeInfo, subscriptionKey, cluster, repository,
+                alias, subscriber);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
-        CartridgeInfo cartridgeInfo = cartridgeSubscription.getCartridgeInfo();
         PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
                 cartridgeInfo.getType(), basicPayloadData);
 
@@ -89,63 +89,60 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
         }
 
         //check if there are any custom payload entries defined
-        if (cartridgeSubscription.getCustomPayloadEntries() != null) {
+        if (customPayloadEntries != null) {
             //add them to the payload
-            Map<String, String> customPayloadEntries = cartridgeSubscription.getCustomPayloadEntries();
             Set<Map.Entry<String,String>> entrySet = customPayloadEntries.entrySet();
             for (Map.Entry<String, String> entry : entrySet) {
                 payloadData.add(entry.getKey(), entry.getValue());
             }
         }
 
-        cartridgeSubscription.setPayloadData(payloadData);
+        return payloadData;
     }
 
-    public void registerSubscription(CartridgeSubscription cartridgeSubscription, Properties properties) throws ADCException, UnregisteredCartridgeException {
+    public void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
+                          String deploymentPolicyName, Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        log.info("Payload: " + cartridgeSubscription.getPayloadData().getCompletePayloadData().toString());
+        log.info("Payload: " + payloadData.getCompletePayloadData().toString());
 
-        ApplicationManagementUtil.registerService(cartridgeSubscription.getType(),
-                cartridgeSubscription.getCluster().getClusterDomain(),
-                cartridgeSubscription.getCluster().getClusterSubDomain(),
-                cartridgeSubscription.getPayloadData().getCompletePayloadData(),
-                cartridgeSubscription.getPayloadData().getBasicPayloadData().getTenantRange(),
-                cartridgeSubscription.getCluster().getHostName(),
-                cartridgeSubscription.getAutoscalingPolicyName(),
-                cartridgeSubscription.getDeploymentPolicyName(),
+        ApplicationManagementUtil.registerService(cartridgeInfo.getType(),
+                cluster.getClusterDomain(),
+                cluster.getClusterSubDomain(),
+                payloadData.getCompletePayloadData(),
+                payloadData.getBasicPayloadData().getTenantRange(),
+                cluster.getHostName(),
+                autoscalePolicyName,
+                deploymentPolicyName,
                 properties);
     }
 
-    public void removeSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, NotSubscribedException {
+    public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
 
         try {
-            CloudControllerServiceClient.getServiceClient().terminateAllInstances(cartridgeSubscription.getCluster().getClusterDomain());
+            CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
 
         } catch (AxisFault e) {
-            String errorMsg = "Error in terminating cartridge subscription, alias " + cartridgeSubscription.getAlias();
+            String errorMsg = "Error in terminating cartridge subscription, alias " + alias;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
 
         } catch (Exception e) {
-            String errorMsg = "Error in terminating cartridge subscription, alias " + cartridgeSubscription.getAlias();
+            String errorMsg = "Error in terminating cartridge subscription, alias " + alias;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }
 
-        log.info("Terminated all instances of " + cartridgeSubscription.getCluster().getClusterDomain() + " " +
-                cartridgeSubscription.getCluster().getClusterSubDomain());
+        log.info("Terminated all instances of " + clusterId);
 
         try {
-            CloudControllerServiceClient.getServiceClient().unregisterService(cartridgeSubscription.getCluster().getClusterDomain());
+            CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);
 
         } catch (Exception e) {
-            String errorMsg = "Error in unregistering service cluster with domain " + cartridgeSubscription.getCluster().getClusterDomain() +
-                    ", sub domain " + cartridgeSubscription.getCluster().getClusterSubDomain();
+            String errorMsg = "Error in unregistering service cluster with domain " + clusterId;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }
 
-        log.info("Unregistered service cluster, domain " + cartridgeSubscription.getCluster().getClusterDomain() + ", sub domain " +
-                cartridgeSubscription.getCluster().getClusterSubDomain());
+        log.info("Unregistered service cluster, domain " + clusterId);
     }
 }

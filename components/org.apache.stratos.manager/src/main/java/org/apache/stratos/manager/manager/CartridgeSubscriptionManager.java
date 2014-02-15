@@ -26,8 +26,10 @@ import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
@@ -42,9 +44,11 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
+import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.CarbonContext;
 
 import java.util.Collection;
+import java.util.Random;
 
 /**
  * Manager class for the purpose of managing CartridgeSubscriptionInfo subscriptions, groupings, etc.
@@ -166,6 +170,93 @@ public class CartridgeSubscriptionManager {
 
 
         // Publish tenant subscribed envent to message broker
+        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                cartridgeSubscription.getCartridgeInfo().getType());
+
+        return cartridgeSubscription;
+    }
+
+    private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext)
+
+            throws ADCException, InvalidCartridgeAliasException,
+            DuplicateCartridgeAliasException, PolicyException, UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
+            RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
+
+        LoadBalancerCategory loadBalancerCategory = null;
+
+        if (lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
+            // no load balancer subscription required
+            return null;
+
+        }
+
+        String lbAlias = "lb" + lbDataContext.getLbCartridgeInfo().getType() + new Random().nextInt();
+
+        String lbClusterId = lbAlias + "." + lbDataContext.getLbCartridgeInfo().getType() + ".domain";
+
+        // limit the cartridge alias to 30 characters in length
+        if (lbClusterId.length() > 30) {
+            lbClusterId = CartridgeSubscriptionUtils.limitLengthOfString(lbClusterId, 30);
+        }
+
+        Cluster lbCluster = new Cluster();
+        lbCluster.setClusterDomain(lbClusterId);
+        // set hostname
+        lbCluster.setHostName(lbAlias + "." + lbDataContext.getLbCartridgeInfo().getHostName());
+
+        LBCategoryContext lbCategoryContext = new LBCategoryContext(lbDataContext.getLbCartridgeInfo().getType(), lbCluster, lbDataContext.getAutoscalePolicy(),
+                lbDataContext.getDeploymentPolicy(), lbDataContext.getLbCartridgeInfo(), );
+
+        if (lbDataContext.getLbCategory().equals(Constants.EXISTING_LOAD_BALANCERS)) {
+
+            loadBalancerCategory = new ExistingLoadBalancerCategory();
+
+        } else if (lbDataContext.getLbCategory().equals(Constants.DEFAULT_LOAD_BALANCER)) {
+            loadBalancerCategory = new DefaultLoadBalancerCategory();
+
+        } else if (lbDataContext.getLbCategory().equals(Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+            loadBalancerCategory = new ServiceLevelLoadBalancerCategory();
+        }
+
+        if (loadBalancerCategory == null) {
+            throw new ADCException("The given Load Balancer category " + lbDataContext.getLbCategory() + " not found");
+        }
+
+        if(lbDataContext.getLbCartridgeInfo().getMultiTenant()) {
+            throw new ADCException("LB Cartridge must be single tenant");
+        }
+
+        // Create the CartridgeSubscription instance
+        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getLBCartridgeSubscriptionInstance(lbDataContext, loadBalancerCategory);
+
+        // Generate and set the key
+        String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+        cartridgeSubscription.setSubscriptionKey(subscriptionKey);
+
+        // Create repository
+        Repository repository = cartridgeSubscription.manageRepository(null,
+                "",
+                "",
+                false,
+                lbAlias,
+                lbDataContext.getLbCartridgeInfo(),
+                subscriptionData.getTenantDomain());
+
+        // Create subscriber
+        Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
+
+        // create subscription
+        cartridgeSubscription.createSubscription(subscriber, lbAlias, lbDataContext.getAutoscalePolicy(),
+                lbDataContext.getDeploymentPolicy(), repository);
+
+
+        log.info("Tenant [" + subscriptionData.getTenantId() + "] with username [" + subscriptionData.getTenantAdminUsername() +
+                " subscribed to " + "] Cartridge with Alias " + lbAlias + ", Cartridge Type: " +
+                lbCategoryContext.getLbType() + ", Autoscale Policy: " +
+                lbDataContext.getAutoscalePolicy() + ", Deployment Policy: " + lbDataContext.getDeploymentPolicy());
+
+
+        // Publish tenant subscribed event to message broker
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                 cartridgeSubscription.getCartridgeInfo().getType());
 

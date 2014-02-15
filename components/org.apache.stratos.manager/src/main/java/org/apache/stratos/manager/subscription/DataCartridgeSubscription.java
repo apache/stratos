@@ -59,7 +59,8 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
 
         //Properties props = new Properties();
         //props.setProperties(getCartridgeInfo().getProperties());
-        getSubscriptionTenancyBehaviour().registerSubscription(this, properties);
+        getSubscriptionTenancyBehaviour().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
+                getDeploymentPolicyName(), properties);
 
         DataCartridge dataCartridge = new DataCartridge();
         dataCartridge.setUserName(getDBUsername());
