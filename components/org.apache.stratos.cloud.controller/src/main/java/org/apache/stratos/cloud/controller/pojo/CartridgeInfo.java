@@ -51,9 +51,13 @@ public class CartridgeInfo {
     private Property[] properties;
     
     private String defaultAutoscalingPolicy;
+
+    private String defaultDeploymentPolicy;
     
     private LoadbalancerConfig lbConfig;
-    
+
+    private PersistanceMapping[] peristanceMappings;
+
     public CartridgeInfo(){
     	
     }
@@ -180,4 +184,26 @@ public class CartridgeInfo {
     public void setLbConfig(LoadbalancerConfig lbConfig) {
         this.lbConfig = lbConfig;
     }
+
+    public String getDefaultDeploymentPolicy() {
+        return defaultDeploymentPolicy;
+    }
+
+    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
+    }
+
+    /**
+	 * @return the peristanceMappings
+	 */
+	public PersistanceMapping[] getPeristanceMappings() {
+		return peristanceMappings;
+	}
+
+	/**
+	 * @param peristanceMappings the peristanceMappings to set
+	 */
+	public void setPeristanceMappings(PersistanceMapping[] peristanceMappings) {
+		this.peristanceMappings = peristanceMappings;
+	}
 }

@@ -19,23 +19,33 @@
 
 package org.apache.stratos.manager.subscription;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
+import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.Cluster;
-import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.AlreadySubscribedException;
+import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
+import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
+import org.apache.stratos.manager.exception.InvalidRepositoryException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
+import org.apache.stratos.manager.exception.PolicyException;
+import org.apache.stratos.manager.exception.RepositoryCredentialsRequiredException;
+import org.apache.stratos.manager.exception.RepositoryRequiredException;
+import org.apache.stratos.manager.exception.RepositoryTransportException;
+import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.manager.utils.RepositoryFactory;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-
-import java.io.Serializable;
-import java.util.Map;
 
 public abstract class CartridgeSubscription implements Serializable {
 
@@ -52,12 +62,14 @@ public abstract class CartridgeSubscription implements Serializable {
     private CartridgeInfo cartridgeInfo;
     private PayloadData payloadData;
     private Cluster cluster;
+    private String lbClusterId;
     private String subscriptionStatus;
     //private String serviceStatus;
     private String mappedDomain;
     //private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
     private SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
+    private PersistanceMapping persistanceMapping;
 
     
     /**
@@ -112,6 +124,7 @@ public abstract class CartridgeSubscription implements Serializable {
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
+
         getSubscriptionTenancyBehaviour().createSubscription(this);
     }
 
@@ -139,10 +152,10 @@ public abstract class CartridgeSubscription implements Serializable {
     public CartridgeSubscriptionInfo registerSubscription(Properties properties)
             throws ADCException, UnregisteredCartridgeException {
 
-        Properties props = new Properties();
-        props.setProperties(getCartridgeInfo().getProperties());
+        // Properties props = new Properties();
+        //props.setProperties(getCartridgeInfo().getProperties());
 
-        getSubscriptionTenancyBehaviour().registerSubscription(this, props);
+        getSubscriptionTenancyBehaviour().registerSubscription(this, properties);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
@@ -227,53 +240,7 @@ public abstract class CartridgeSubscription implements Serializable {
      */
     protected void cleanupSubscription () throws ADCException {
 
-        try {
-            new RepositoryFactory().destroyRepository(alias, subscriber.getTenantDomain(),
-                    subscriber.getAdminUserName());
-            log.info("Repo is destroyed successfully.. ");
-
-        } catch (Exception e) {
-            String errorMsg = "Error in destroying repository for tenant " + subscriber.getTenantDomain() +
-                    "cartridge type " + type;
-            log.error(errorMsg);
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /*try {
-            PersistenceManager.updateSubscriptionState(subscriptionId, "UNSUBSCRIBED");
-
-        } catch (Exception e) {
-            String errorMsg = "Error in unscubscribing from cartridge, alias " + alias + ", tenant " +
-                    subscriber.getTenantDomain();
-            throw new ADCException(errorMsg, e);
-        }*/
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //TODO: FIXME: do we need this?
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /*new DNSManager().removeSubDomain(getCluster().getHostName());
-
-        try {
-            new RegistryManager().removeDomainMappingFromRegistry(getCluster().getHostName());
-
-        } catch (Exception e) {
-            String errorMsg = "Error in removing domain mapping, alias " + alias + ", tenant " +
-                    subscriber.getTenantDomain();
-            log.error(errorMsg, e);
-        }*/
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /*TopologyManagementService topologyMgtService = DataHolder.getTopologyMgtService();
-        String[] ips = topologyMgtService.getActiveIPs(type, getCluster().getClusterDomain(), getCluster().getClusterSubDomain());
-        try {
-            PersistenceManager.updateInstanceState("INACTIVE", ips, getCluster().getClusterDomain(), getCluster().getClusterSubDomain(), type);
-
-        } catch (Exception e) {
-            String errorMsg = "Error in updating state to INACTIVE";
-            log.error(errorMsg, e);
-        }*/
-
-        //this.setSubscriptionStatus(CartridgeConstants.UNSUBSCRIBED);
+        
     }
 
     public Map<String, String> getCustomPayloadEntries () {
@@ -463,5 +430,21 @@ public abstract class CartridgeSubscription implements Serializable {
                ", deploymentPolicyName=" + deploymentPolicyName + ", subscriber=" + subscriber +
                ", repository=" + repository + ", cartridgeInfo=" + cartridgeInfo + ", payload=" +
                payloadData + ", cluster=" + cluster + "]";
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
+    }
+
+    public PersistanceMapping getPersistanceMapping() {
+        return persistanceMapping;
+    }
+
+    public void setPersistanceMapping(PersistanceMapping persistanceMapping) {
+        this.persistanceMapping = persistanceMapping;
     }
 }

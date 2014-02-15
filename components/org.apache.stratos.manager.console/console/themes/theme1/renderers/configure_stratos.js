@@ -1,6 +1,14 @@
 var render = function (theme, data, meta, require) {
     session.put("configuring","true");
     var title;
+    var header_type;
+    var deploy_status = session.get("deploy-status");
+    var list_status = session.get("get-status");
+    var err_message;
+    var isErrDeply = false;
+    var isErrGet = false;
+    var isErr = false;
+    var isSucceeded = false;
     var wizard_on_val = [];
     for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
@@ -24,6 +32,41 @@ var render = function (theme, data, meta, require) {
         title = 'Multi-Tenant Service Deployment';
     }
 
+    if(deploy_status == "succeeded") {
+        isErrDeply = false;
+        isSucceeded = true;
+    } else if(deploy_status == null) {
+        isErrDeply = false;
+    } else {
+        isErrDeply = true;
+        err_message = deploy_status;
+    }
+
+    if(list_status == "succeeded") {
+        isErrGet = false;
+    } else if(list_status == null) {
+        isErrGet = false;
+    } else {
+        isErrGet = true;
+        if(err_message == undefined) {
+                   err_message = list_status;
+        } else {
+            err_message = err_message + ", " + list_status;
+        }
+        step_data = "[]";
+    }
+
+    if(isErrDeply || isErrGet) {
+     isErr = true;
+    }
+
+    session.remove("get-status");
+    session.remove("deploy-status");
+
+    for(var i=0;i<step_data.length;i++){
+        step_data[i].json_string = stringify(step_data[i]);
+    }
+
     theme('index', {
         body: [
             {
@@ -40,7 +83,10 @@ var render = function (theme, data, meta, require) {
                     wizard_on_4:wizard_on_val[3],
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
-                    config_status:data.config_status
+                    config_status:data.config_status,
+                    data_string:stringify(data.step_data),
+                    configure_stratos:true
+
                 }
             }
         ],
@@ -66,7 +112,11 @@ var render = function (theme, data, meta, require) {
                     wizard_on_5:wizard_on_val[4],
                     wizard_on_6:wizard_on_val[5],
                     step:step,
-                    configure_stratos:true
+                    configure_stratos:true,
+                    error:isErr,
+                    deploy_status:isSucceeded,
+                    error_msg:err_message,
+                    type:title
                 }
             }
         ],

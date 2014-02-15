@@ -19,17 +19,23 @@
 
 package org.apache.stratos.autoscaler.message.receiver.topology;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
+import org.apache.stratos.autoscaler.partition.PartitionManager;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -147,11 +153,36 @@ public class AutoscalerTopologyReceiver implements Runnable {
 				try {
 					ClusterRemovedEvent e = (ClusterRemovedEvent) event;
 					TopologyManager.acquireReadLock();
+					
 					String serviceName = e.getServiceName();
 					String clusterId = e.getClusterId();
+					String deploymentPolicy = e.getDeploymentPolicy();
+					
 					AbstractMonitor monitor;
 
 					if (e.isLbCluster()) {
+						DeploymentPolicy depPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicy);
+						if (depPolicy != null) {
+							List<NetworkPartitionLbHolder> lbHolders = PartitionManager.getInstance()
+									.getNetworkPartitionLbHolders(depPolicy);
+							
+							for (NetworkPartitionLbHolder networkPartitionLbHolder : lbHolders) {
+								// removes lb cluster ids
+								boolean isRemoved = networkPartitionLbHolder.removeLbClusterId(clusterId);
+								if (isRemoved) {
+									log.info("Removed the lb cluster [id]:"
+											+ clusterId
+											+ " reference from Network Partition [id]: "
+											+ networkPartitionLbHolder
+													.getNetworkPartitionId());
+
+								}
+								if (log.isDebugEnabled()) {
+									log.debug(networkPartitionLbHolder);
+								}
+								
+							}
+						}
 						monitor = AutoscalerContext.getInstance()
 								.removeLbMonitor(clusterId);
 
@@ -205,14 +236,24 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
 
                 PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
-                partitionContext.removeMemberStatsContext(e.getMemberId());
-                if(!partitionContext.removeTerminationPendingMember(e.getMemberId())){
+                String memberId = e.getMemberId();
+				partitionContext.removeMemberStatsContext(memberId);
+                
+                if(partitionContext.removePendingMember(memberId)) {
+                	if(log.isDebugEnabled()){
+                        log.debug(String.format("Member is removed from pending list: [member] %s", memberId));
+                    }
+                }
+                
+                if(!partitionContext.removeTerminationPendingMember(memberId)){
 
                     if(log.isDebugEnabled()){
-                        log.debug(String.format("Member is not available in termination pending list: [member] %s", e.getMemberId()));
+                        log.debug(String.format("Member is not available in termination pending list: [member] %s", memberId));
                     }
-                } else if(log.isInfoEnabled()){
-                    log.info(String.format("Member stat context has been removed successfully: [member] %s", e.getMemberId()));
+                } 
+                
+                if(log.isInfoEnabled()){
+                    log.info(String.format("Member stat context has been removed successfully: [member] %s", memberId));
                 }
 //                partitionContext.decrementCurrentActiveMemberCount(1);
 

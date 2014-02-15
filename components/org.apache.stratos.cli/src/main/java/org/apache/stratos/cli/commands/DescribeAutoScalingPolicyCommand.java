@@ -60,7 +60,7 @@ public class DescribeAutoScalingPolicyCommand implements Command<StratosCommandC
 			if (logger.isDebugEnabled()) {
 				logger.debug("Getting Autoscale policy info {}", id);
 			}
-			 RestCommandLineService.getInstance().describeAutoScalingPolicy(id);
+			RestCommandLineService.getInstance().describeAutoScalingPolicy(id);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());

@@ -16,16 +16,21 @@
         {{#each cartridges}}
         <div class="col-md-6">
             <div class="box-container">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="box-left"><i class="icons-{{cartridgeType}} big-pro-icons"></i></div>
-                            <div class="big-pro-icons-title">{{version}}</div>
-                        </div>
-                        <div class="col-lg-9">
-                            <a href="{{url "/subscribe_cartridge.jag"}}?cartridgeType={{cartridgeType}}"><h3>{{displayName}} - {{version}}</h3></a>
-                            <div class="cartridge-description">{{description}}</div>
-
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
+                    </div>
+                    <div class="col-lg-9">
+                        <a href="{{url "/subscribe_cartridge.jag"}}?cartridgeType={{cartridgeType}}"><h3>{{displayName}} - {{version}}</h3></a>
+                        <div class="cartridge-description">{{description}}</div>
+                        <div class="cartridge-description">
+                            {{#unless loadBalancer}}
+                                {{#if multiTenant}}
+                                    <i class="fa fa-users"></i> Multi Tenant Enabled
+                                {{else}}
+                                    <i class="fa fa-user"></i> Single Tenant
+                                {{/if}}
+                            {{/unless}}
                         </div>
                     </div>
                 </div>

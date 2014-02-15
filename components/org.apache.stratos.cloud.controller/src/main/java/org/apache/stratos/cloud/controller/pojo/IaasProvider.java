@@ -19,7 +19,9 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
 
@@ -206,6 +208,13 @@ public class IaasProvider implements Serializable{
     }
 
     public Iaas getIaas() {
+    	if (iaas == null) {
+    		try {
+				iaas = CloudControllerUtil.getIaas(this);
+			} catch (InvalidIaasProviderException e) {
+				return null;
+			}
+    	}
         return iaas;
     }
 

@@ -2,7 +2,8 @@
 (function(){
     var log = new Log('controllers.logout');
     var user = require('console').server.current(session).username;//session.get("LOGGED_IN_USER");
-    var dataConfig = require('/config/console.json');
+    var dataConfig = require('/config/console.js').config();
+
     if(user === null) {
         response.sendRedirect('/portal');
     } else if(!dataConfig.ssoConfiguration.enabled){
@@ -10,7 +11,7 @@
         session.invalidate();
         response.sendRedirect(request.getContextPath());
     }else{
-        var config = require('/console.json'),
+        var config = require('/config/console.js').config(),
                 sso = require('sso'),
                 sso_sessions = application.get('sso_sessions'),
                 sessionId = session.getId(),

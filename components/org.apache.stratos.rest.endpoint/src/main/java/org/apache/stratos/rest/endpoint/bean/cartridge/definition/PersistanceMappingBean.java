@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class PersistanceMappingBean {
 
-    public String snapshotId;
+    public boolean persistanceRequired;
 
     public int size;
 
@@ -33,6 +33,6 @@ public class PersistanceMappingBean {
     public boolean removeOnTermination;
 
     public String toString () {
-        return " [ Snapshot : " + snapshotId + ", Size: " + size + ", device: " + device + " remove on termination " + removeOnTermination +"] ";
+        return " [ Persistance Required : " + persistanceRequired + ", Size: " + size + ", device: " + device + " remove on termination " + removeOnTermination +"] ";
     }
 }

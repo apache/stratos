@@ -58,6 +58,13 @@ var engine = require('caramel').engine('handlebars', (function () {
                 }
             });
 
+            Handlebars.registerHelper('user', function(action, options) {
+                if(caramel.meta().session.get("USER_NAME") != undefined ) {
+                    return caramel.meta().session.get("USER_NAME");
+                }
+                return "";
+            });
+
         }
     }
 }()));

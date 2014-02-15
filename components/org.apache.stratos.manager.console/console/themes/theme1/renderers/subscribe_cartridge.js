@@ -4,9 +4,9 @@ var render = function (theme, data, meta, require) {
             {
                 partial: 'subscribe_cartridge',
                 context: {
-                    title:data.name,
                     autoScalePolicies:data.autoScalePolicies.autoscalePolicy,
                     deploymentPolicies:data.deploymentPolicies.deploymentPolicy,
+                    cartridge:data.cartridge.cartridge,
                     cartridgeType:meta.request.getParameter('cartridgeType')
                 }
             }
@@ -32,7 +32,8 @@ var render = function (theme, data, meta, require) {
             {
                 partial:'title',
                 context:{
-                    title:"Subscribe Cartridge -" + data.name
+                    title:"Subscribe Cartridge -" + data.cartridge.cartridge.cartridgeType + " " + data.cartridge.cartridge.version + " Cartridge",
+                    cartridge:data.cartridge.cartridge,
                 }
             }
         ]

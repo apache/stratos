@@ -289,7 +289,7 @@ public class TopologyClusterInformationModel {
                             //iterate and convert to Cluster set
                             Iterator<SubscriptionAliasContext> aliasCtxIterator = subscriptionAliasContextSet.iterator();
 
-                            clusterSet = new HashSet<Cluster>();
+                            //clusterSet = new HashSet<Cluster>();
                             while (aliasCtxIterator.hasNext()) {
                                 Cluster cluster = aliasCtxIterator.next().getCluster();
                                 // add the cluster to the set

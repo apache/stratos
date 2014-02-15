@@ -20,7 +20,7 @@
 # --------------------------------------------------------------
 
 
-class mysql (mb_ip,mb_port,cep_ip,cep_port,java_truststore,java_truststore_password) {
+class mysql (mb_ip,mb_port,cep_ip,cep_port,cert_truststore,truststore_password,enable_data_publishing,monitoring_server_ip,monitoring_server_port,monitoring_server_secure_port,monitoring_server_admin_username,monitoring_server_admin_password) {
 
   if $stratos_mysql_password {
     $root_password = $stratos_mysql_password
@@ -109,7 +109,7 @@ class mysql (mb_ip,mb_port,cep_ip,cep_port,java_truststore,java_truststore_passw
 
         file {"/tmp/puppet-payload":
                  ensure  => present,
-                 content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port},CERT_TRUSTSTORE=${java_truststore},TRUSTSTORE_PASSWORD=${java_truststore_password},APP_PATH=null",
+                 content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port},CERT_TRUSTSTORE=${cert_truststore},TRUSTSTORE_PASSWORD=${truststore_password},APP_PATH=null,ENABLE_DATA_PUBLISHER=${enable_data_publishing},MONITORING_SERVER_IP=${monitoring_server_ip},MONITORING_SERVER_PORT=${monitoring_server_port},MONITORING_SERVER_SECURE_PORT=${monitoring_server_secure_port},MONITORING_SERVER_ADMIN_USERNAME=${monitoring_server_admin_username},MONITORING_SERVER_ADMIN_PASSWORD=${monitoring_server_admin_password}",
                  require => Service['apache2'];
         }
 

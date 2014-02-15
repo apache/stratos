@@ -54,6 +54,8 @@ public class CartridgeDefinitionBean {
     
     public String defaultAutoscalingPolicy;
 
+    public String defaultDeploymentPolicy;
+
     public String toString () {
 
         return "Type: " + type + ", Provider: " + provider + ", Host: " + host + ", Display Name: " + displayName +

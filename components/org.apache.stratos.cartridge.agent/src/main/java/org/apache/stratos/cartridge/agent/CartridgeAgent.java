@@ -6,6 +6,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.RepositoryInformation;
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.impl.GitBasedArtifactRepository;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
+import org.apache.stratos.cartridge.agent.data.publisher.DataPublisherConfiguration;
+import org.apache.stratos.cartridge.agent.data.publisher.exception.DataPublisherException;
+import org.apache.stratos.cartridge.agent.data.publisher.log.LogPublisherManager;
 import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPublisher;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
@@ -20,6 +23,8 @@ import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMe
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageDelegator;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageReceiver;
+
+import java.util.List;
 
 /**
  * Cartridge agent runnable.
@@ -113,7 +118,7 @@ public class CartridgeAgent implements Runnable {
         ExtensionUtils.executeStartServersExtension();
 
         // Wait for all ports to be active
-        CartridgeAgentUtils.waitUntilPortsActive();
+        CartridgeAgentUtils.waitUntilPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
@@ -126,13 +131,54 @@ public class CartridgeAgent implements Runnable {
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         }
 
+
         // TODO: Start this thread only if this node is configured as a commit true node
         // Start periodical file checker task
         // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         // scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0, 10, TimeUnit.SECONDS);
 
         // Keep the thread live until terminated
+
+        // start log publishing
+        LogPublisherManager logPublisherManager = new LogPublisherManager();
+        publishLogs(logPublisherManager);
+
         while (!terminated);
+
+        logPublisherManager.stop();
+    }
+
+    private static void publishLogs (LogPublisherManager logPublisherManager) {
+
+        // check if enabled
+        if (DataPublisherConfiguration.getInstance().isEnabled()) {
+
+            List<String> logFilePaths = CartridgeAgentConfiguration.getInstance().getLogFilePaths();
+            if (logFilePaths == null) {
+                log.error("No valid log file paths found, no logs will be published");
+                return;
+
+            } else {
+                // initialize the log publishing
+                try {
+                    logPublisherManager.init(DataPublisherConfiguration.getInstance());
+
+                } catch (DataPublisherException e) {
+                    log.error("Error occurred in log publisher initialization", e);
+                    return;
+                }
+
+                // start a log publisher for each file path
+                for (String logFilePath : logFilePaths) {
+                    try {
+                        logPublisherManager.start(logFilePath);
+
+                    } catch (DataPublisherException e) {
+                        log.error("Error occurred in publishing logs ", e);
+                    }
+                }
+            }
+        }
     }
 
     private void onArtifactUpdateEvent(ArtifactUpdatedEvent event) {
@@ -172,7 +218,29 @@ public class CartridgeAgent implements Runnable {
             }
 
             // Start the artifact update task
-            GitBasedArtifactRepository.getInstance().scheduleSyncTask(repoInformation, 10);
+            boolean artifactUpdateEnabled = Boolean.parseBoolean(System.getProperty(CartridgeAgentConstants.ENABLE_ARTIFACT_UPDATE));
+            if (artifactUpdateEnabled) {
+
+                long artifactUpdateInterval = 10;
+                // get update interval
+                String artifactUpdateIntervalStr = System.getProperty(CartridgeAgentConstants.ARTIFACT_UPDATE_INTERVAL);
+
+                if (artifactUpdateIntervalStr != null && !artifactUpdateIntervalStr.isEmpty()) {
+                    try {
+                        artifactUpdateInterval = Long.parseLong(artifactUpdateIntervalStr);
+
+                    } catch (NumberFormatException e) {
+                        log.error("Invalid artifact sync interval specified ", e);
+                        artifactUpdateInterval = 10;
+                    }
+                }
+
+                log.info("Artifact updating task enabled, update interval: " + artifactUpdateInterval + "s");
+                GitBasedArtifactRepository.getInstance().scheduleSyncTask(repoInformation, artifactUpdateInterval);
+
+            } else {
+                log.info("Artifact updating task disabled");
+            }
 
         }
     }

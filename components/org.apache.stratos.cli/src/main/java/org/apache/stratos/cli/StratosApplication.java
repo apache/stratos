@@ -50,14 +50,14 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
 	private final Options options;
 
-	public StratosApplication() {
+	public StratosApplication(String[] args) {
+        super(args);
 		commands = new TreeMap<String, Command<StratosCommandContext>>();
 		context = new StratosCommandContext(this);
 
 		options = constructOptions();
 
 		createCommands();
-		createAutocomplete();
 	}
 
 	/**
@@ -102,6 +102,15 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddTenantCommand();
         commands.put(command.getName(), command);
 
+        //command = new DeleteTenantCommand();
+        //commands.put(command.getName(), command);
+
+        command = new DeactivateTenantCommand();
+        commands.put(command.getName(), command);
+
+        command = new ActivateTenantCommand();
+        commands.put(command.getName(), command);
+
         command = new CartridgeDeploymentCommand();
         commands.put(command.getName(), command);
 
@@ -109,6 +118,18 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         commands.put(command.getName(), command);
 
         command = new AutoscalingPolicyDeploymentCommand();
+        commands.put(command.getName(), command);
+
+        //command = new DeployServiceDeploymentCommand();
+        //commands.put(command.getName(), command);
+
+        //command = new UndeployServiceDefinitionCommand();
+        //commands.put(command.getName(), command);
+
+        //command = new ListDeployServiceCommand();
+        //commands.put(command.getName(), command);
+
+        command = new UndeployCartridgeDefinitionCommand();
         commands.put(command.getName(), command);
 
         command = new DeploymentPolicyDeploymentCommand();
@@ -171,9 +192,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 	}
 
 	@Override
-	protected File getHistoryFile() {
+	protected File getHistoryFile(String userName) {
 		File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
-		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR);
+		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR + "_" + userName);
 		return historyFile;
 	}
 
@@ -343,6 +364,15 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		String stratosURL = null;
 		stratosURL = context.getString(CliConstants.STRATOS_URL_ENV_PROPERTY);
 
+        // This is to create the history file.
+        // This section execute only when user didn't enter the username as command line arguments
+        if (userName == null) {
+            reader = null;
+            reader = createConsoleReaderWhithoutArgs(usernameInput);
+        }
+
+        createAutocomplete();
+
 		try {
             success = RestCommandLineService.getInstance().login(stratosURL, usernameInput, passwordInput, validateLogin);
 			//success = CommandLineService.getInstance().login(stratosURL, usernameInput, passwordInput, validateLogin);
@@ -485,7 +515,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		for (String action : commands.keySet()) {
 			Command<StratosCommandContext> command = commands.get(action);
 			if (command != null) {
-				System.out.format("%-25s %s%n", command.getName(), command.getDescription());
+				System.out.format("%-35s %s%n", command.getName(), command.getDescription());
 			}
 		}
 

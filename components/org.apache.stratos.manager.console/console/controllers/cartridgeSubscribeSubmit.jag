@@ -12,6 +12,11 @@
     var repoPassword = request.getParameter('repoPassword');
     var autoscalePolicy = request.getParameter('autoscalePolicy');
     var deploymentPolicy = request.getParameter('deploymentPolicy');
+    var device = request.getParameter('device');
+    var size = request.getParameter('size');
+    var removeontermination = request.getParameter('removeontermination');
+    var persistencerequired = request.getParameter('persistencerequired');
+
 
     // constructing the json request
     jsonRequest.cartridgeInfoBean.cartridgeType = cartridgeType;
@@ -25,6 +30,11 @@
     }
     jsonRequest.cartridgeInfoBean.autoscalePolicy = autoscalePolicy;
     jsonRequest.cartridgeInfoBean.deploymentPolicy = deploymentPolicy;
+    jsonRequest.cartridgeInfoBean.size = size;
+    jsonRequest.cartridgeInfoBean.device = device;
+    jsonRequest.cartridgeInfoBean.persistanceRequired = persistencerequired;
+    jsonRequest.cartridgeInfoBean.removeOnTermination = removeontermination;
+
 
     var result = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
     response.sendRedirect(request.getContextPath() + '/index.jag');

@@ -16,17 +16,15 @@
         {{#each cartridges}}
         <div class="col-md-6">
             <div class="box-container">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="box-left"><i class="icons-{{cartridgeType}} big-pro-icons"></i></div>
-                            <div class="big-pro-icons-title">{{version}}</div>
-                        </div>
-                        <div class="col-lg-9">
-                            <a href="{{url "/subscribe_cartridge.jag"}}"><h3>{{displayName}} - {{version}}</h3></a>
-                            <div class="cartridge-description">{{description}}</div>
-
-                        </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="un-subscribe-container"><a class="un-subscribe" id="unsubscribeBtn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class="fa fa-times-circle-o"></i></a></div>
+                        <a href="{{url "/cartridge_info.jag?alias="}}{{cartridgeAlias}}"><h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3></a>
+                        <div class="cartridge-description">{{description}}</div>
+                        <div class="cartridge-description">{{repoURL}}</div>
                     </div>
                 </div>
             </div>
@@ -35,3 +33,8 @@
     </div>
 </div>
 {{/each}}
+<form method="post" id="cForm" action="{{url "/controllers/cartridgeUnsubscribeSubmit.jag"}}">
+        <input type="hidden" name="alias" id="alias" />
+</form>
+<script src="{{url "/themes/theme1/ui/js/popup.js"}}"></script>
+<script src="{{url "/themes/theme1/ui/js/mycartridges.js"}}"></script>

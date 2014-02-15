@@ -26,7 +26,6 @@ import org.apache.stratos.manager.publisher.TenantSynchronizerTaskScheduler;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyReceiver;
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
-import org.apache.stratos.manager.utils.StratosDBUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;
@@ -66,7 +65,6 @@ public class ADCManagementServerComponent {
     protected void activate(ComponentContext componentContext) throws Exception {
 		try {
 			CartridgeConfigFileReader.readProperties();
-			StratosDBUtils.initialize();
 			DataHolder.setEventPublisher(new EventPublisher(Constants.INSTANCE_NOTIFIER_TOPIC));
 
             // Schedule complete tenant event synchronizer
