@@ -295,6 +295,13 @@ public class CartridgeSubscriptionUtils {
                         throw new ADCException(message, e);
                     }
 
+                    if (lbCartridgeInfo == null) {
+                        String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
+                            Constants.DEFAULT_LOAD_BALANCER;
+                        log.error(msg);
+                        throw new ADCException(msg);
+                    }
+
                     lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
 
                     if (log.isDebugEnabled()) {
@@ -361,6 +368,13 @@ public class CartridgeSubscriptionUtils {
                         String message = "Error getting info for " + lbCartridgeType;
                         log.error(message, e);
                         throw new ADCException(message, e);
+                    }
+
+                    if (lbCartridgeInfo == null) {
+                        String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
+                                Constants.SERVICE_AWARE_LOAD_BALANCER;
+                        log.error(msg);
+                        throw new ADCException(msg);
                     }
 
                     lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
