@@ -1,3 +1,4 @@
+package org.apache.stratos.manager.behaviour;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,11 +18,8 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.subscription.tenancy;
-
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
@@ -34,18 +32,15 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import java.io.Serializable;
 import java.util.Map;
 
-public abstract class SubscriptionTenancyBehaviour implements CartridgeMgtBehaviour, Serializable {
+public interface CartridgeMgtBehaviour extends Serializable {
 
-    private static final long serialVersionUID = 6529685098267757690L;
+    public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+                        String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException;
 
-    public abstract PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
-                                 String subscriptionKey, Map<String, String> customPayloadEntries)
-            throws ADCException, AlreadySubscribedException;
-
-    public abstract void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
-                                   String deploymentPolicyName, Properties properties)
+    public void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
+                          String deploymentPolicyName, Properties properties)
             throws ADCException, UnregisteredCartridgeException;
 
-    public abstract void remove (String clusterId, String alias)
+    public void remove (String clusterId, String alias)
             throws ADCException, NotSubscribedException;
 }

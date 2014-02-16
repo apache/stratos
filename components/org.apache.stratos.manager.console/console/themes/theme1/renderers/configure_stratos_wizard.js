@@ -8,6 +8,8 @@ var render = function (theme, data, meta, require) {
     var isErrGet = false;
     var isErr = false;
     var isSucceeded = false;
+    var artifact_deploy = session.get("deploy_artifacts");
+    session.remove("deploy_artifacts");
     var wizard_on_val = [];
     for(var i=0; i<6 ;i++){
         if(i <= data.wizard.step-1){
@@ -25,7 +27,6 @@ var render = function (theme, data, meta, require) {
     } else {
         isErrDeply = true;
         err_message = deploy_status;
-        step_data = "[]";
     }
 
     if(list_status == "succeeded") {
@@ -110,7 +111,7 @@ var render = function (theme, data, meta, require) {
                     error:isErr,
                     deploy_status:isSucceeded,
                     error_msg:err_message,
-                    type:title
+                    type:artifact_deploy
                 }
             }
         ],

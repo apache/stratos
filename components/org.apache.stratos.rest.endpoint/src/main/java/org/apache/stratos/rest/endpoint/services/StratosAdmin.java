@@ -44,6 +44,7 @@ import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -440,36 +441,55 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws Exception {
+    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
             String msg = "Invalid email is provided.";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg);
         }
         String tenantDomain = tenantInfoBean.getTenantDomain();
-        TenantMgtUtil.validateDomain(tenantDomain);
+        try {
+            TenantMgtUtil.validateDomain(tenantDomain);
+        } catch (Exception e) {
+            String msg = "Tenant domain validation error for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
         UserRegistry userRegistry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext().
                 getRegistry(RegistryType.USER_GOVERNANCE);
         if (userRegistry == null) {
             log.error("Security Alert! User registry is null. A user is trying create a tenant "
                     + " without an authenticated session.");
-            throw new Exception("Invalid data."); // obscure error message.
+            throw new RestAPIException("Invalid data."); // obscure error message.
         }
 
         if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
             log.error("Security Alert! Non super tenant trying to create a tenant.");
-            throw new Exception("Invalid data."); // obscure error message.
+            throw new RestAPIException("Invalid data."); // obscure error message.
         }
         Tenant tenant = TenantMgtUtil.initializeTenant(tenantInfoBean);
         TenantPersistor persistor = ServiceHolder.getTenantPersistor();
         // not validating the domain ownership, since created by super tenant
-        int tenantId = persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
-                tenantInfoBean.getOriginatedService(),false); //TODO verify whether this is the correct approach (isSkeleton)
+        int tenantId = 0; //TODO verify whether this is the correct approach (isSkeleton)
+        try {
+            tenantId = persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
+                    tenantInfoBean.getOriginatedService(),false);
+        } catch (Exception e) {
+            String msg = "Error in persisting tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
         tenantInfoBean.setTenantId(tenantId);
 
-        TenantMgtUtil.addClaimsToUserStoreManager(tenant);
+        try {
+            TenantMgtUtil.addClaimsToUserStoreManager(tenant);
+        } catch (Exception e) {
+            String msg = "Error in granting permissions for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
 
         //Notify tenant addition
         try {
@@ -477,12 +497,24 @@ public class StratosAdmin extends AbstractAdmin {
         } catch (StratosException e) {
             String msg = "Error in notifying tenant addition.";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg);
         }
         // For the super tenant tenant creation, tenants are always activated as they are created.
-        TenantMgtUtil.activateTenantInitially(tenantInfoBean, tenantId);
+        try {
+            TenantMgtUtil.activateTenantInitially(tenantInfoBean, tenantId);
+        } catch (Exception e) {
+            String msg = "Error in initial activation of tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
 
-        TenantMgtUtil.prepareStringToShowThemeMgtPage(tenant.getId());
+        try {
+            TenantMgtUtil.prepareStringToShowThemeMgtPage(tenant.getId());
+        } catch (RegistryException e) {
+            String msg = "Error in preparing theme mgt page for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully added new tenant with domain " + tenantInfoBean.getTenantDomain());
@@ -495,7 +527,19 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse updateTenant(TenantInfoBean tenantInfoBean) throws Exception {
+    public StratosAdminResponse updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+
+        try {
+            return updateExistingTenant(tenantInfoBean);
+        } catch (Exception e) {
+            String msg = "Error in updating tenant " + tenantInfoBean.getTenantDomain();
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+    }
+
+    private StratosAdminResponse updateExistingTenant(TenantInfoBean tenantInfoBean) throws Exception {
+
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         UserStoreManager userStoreManager;
 
@@ -625,7 +669,19 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean getTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+    public TenantInfoBean getTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+
+        try {
+            return getTenantForDomain(tenantDomain);
+        } catch (Exception e) {
+            String msg = "Error in getting tenant information for tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+    }
+
+    private TenantInfoBean getTenantForDomain (String tenantDomain) throws Exception {
+
         TenantManager tenantManager = ServiceHolder.getTenantManager();
 
         int tenantId;
@@ -673,9 +729,16 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+    public StratosAdminResponse deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
-        int tenantId = tenantManager.getTenantId(tenantDomain);
+        int tenantId = 0;
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+        } catch (org.wso2.carbon.user.api.UserStoreException e) {
+            String msg = "Error in deleting tenant " + tenantDomain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
         try {
             //TODO: billing related info cleanup
             TenantMgtUtil.deleteTenantRegistryData(tenantId);
@@ -687,7 +750,7 @@ public class StratosAdmin extends AbstractAdmin {
             String msg = "Error deleting tenant with domain: " + tenantDomain + " and tenant id: " +
                     tenantId + ".";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg);
         }
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
@@ -701,8 +764,15 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrieveTenants() throws Exception {
-        List<TenantInfoBean> tenantList = getAllTenants();
+    public TenantInfoBean[] retrieveTenants() throws RestAPIException {
+        List<TenantInfoBean> tenantList = null;
+        try {
+            tenantList = getAllTenants();
+        } catch (Exception e) {
+            String msg = "Error in retrieving tenants";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
         return tenantList.toArray(new TenantInfoBean[tenantList.size()]);
     }
 
@@ -712,8 +782,15 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws Exception {
-        List<TenantInfoBean> tenantList = searchPartialTenantsDomains(domain);
+    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws RestAPIException {
+        List<TenantInfoBean> tenantList = null;
+        try {
+            tenantList = searchPartialTenantsDomains(domain);
+        } catch (Exception e) {
+            String msg = "Error in getting information for tenant " + domain;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
         return tenantList.toArray(new TenantInfoBean[tenantList.size()]);
     }
 
@@ -766,8 +843,14 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public boolean isDomainAvailable(@PathParam("tenantDomain") String tenantDomain) throws Exception {
-        return CommonUtil.isDomainNameAvailable(tenantDomain);
+    public boolean isDomainAvailable(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+        try {
+            return CommonUtil.isDomainNameAvailable(tenantDomain);
+        } catch (Exception e) {
+            String msg = "Error in checking domain " + tenantDomain + " is available";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
 
     }
 
@@ -868,14 +951,15 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
 
-    private List<TenantInfoBean> getAllTenants() throws Exception {
+    private List<TenantInfoBean> getAllTenants() throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         Tenant[] tenants;
         try {
             tenants = (Tenant[]) tenantManager.getAllTenants();
-        } catch (UserStoreException e) {
-            String msg = "Error in retrieving the tenant information.";
-            throw new Exception(msg, e);
+        } catch (Exception e) {
+            String msg = "Error in retrieving the tenant information";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
         }
 
         List<TenantInfoBean> tenantList = new ArrayList<TenantInfoBean>();
@@ -886,16 +970,16 @@ public class StratosAdmin extends AbstractAdmin {
         return tenantList;
     }
 
-    private List<TenantInfoBean> searchPartialTenantsDomains(String domain) throws Exception {
+    private List<TenantInfoBean> searchPartialTenantsDomains(String domain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         Tenant[] tenants;
         try {
             domain = domain.trim();
             tenants = (Tenant[]) tenantManager.getAllTenantsForTenantDomainStr(domain);
-        } catch (UserStoreException e) {
+        } catch (Exception e) {
             String msg = "Error in retrieving the tenant information.";
             log.error(msg, e);
-            throw new Exception(msg, e);
+            throw new RestAPIException(msg);
         }
 
         List<TenantInfoBean> tenantList = new ArrayList<TenantInfoBean>();

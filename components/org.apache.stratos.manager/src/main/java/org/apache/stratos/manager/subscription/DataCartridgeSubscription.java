@@ -57,7 +57,8 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException,
             UnregisteredCartridgeException {
 
-        getSubscriptionTenancyBehaviour().registerSubscription(this, properties);
+        getSubscriptionTenancyBehaviour().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
+                getDeploymentPolicyName(), properties);
 
         DataCartridge dataCartridge = new DataCartridge();
         dataCartridge.setUserName(getDBUsername());
