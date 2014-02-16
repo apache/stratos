@@ -19,33 +19,8 @@
 
 package org.apache.stratos.manager.subscription.tenancy;
 
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
-import org.apache.stratos.manager.dao.Cluster;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.AlreadySubscribedException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.payload.PayloadData;
-import org.apache.stratos.manager.repository.Repository;
-import org.apache.stratos.manager.subscriber.Subscriber;
 
-import java.io.Serializable;
-import java.util.Map;
+public abstract class SubscriptionTenancyBehaviour extends CartridgeMgtBehaviour  {
 
-public abstract class SubscriptionTenancyBehaviour implements CartridgeMgtBehaviour, Serializable {
-
-    private static final long serialVersionUID = 6529685098267757690L;
-
-    public abstract PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
-                                 String subscriptionKey, Map<String, String> customPayloadEntries)
-            throws ADCException, AlreadySubscribedException;
-
-    public abstract void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
-                                   String deploymentPolicyName, Properties properties)
-            throws ADCException, UnregisteredCartridgeException;
-
-    public abstract void remove (String clusterId, String alias)
-            throws ADCException, NotSubscribedException;
 }

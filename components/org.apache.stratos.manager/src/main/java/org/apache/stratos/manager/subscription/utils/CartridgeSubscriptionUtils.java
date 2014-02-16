@@ -36,12 +36,10 @@ import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
 import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.lb.category.LBCategoryContext;
 import org.apache.stratos.manager.lb.category.LBDataContext;
 import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
-import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
@@ -60,17 +58,28 @@ public class CartridgeSubscriptionUtils {
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setApplicationPath(cartridgeInfo.getBaseDir());
         basicPayloadData.setSubscriptionKey(subscriptionKey);
-        basicPayloadData.setClusterId(cluster.getClusterDomain());
         basicPayloadData.setDeployment("default");//currently hard coded to default
-        if(repository != null) {
-            basicPayloadData.setGitRepositoryUrl(repository.getUrl());
-        }
-        basicPayloadData.setHostName(cluster.getHostName());
         basicPayloadData.setMultitenant(String.valueOf(cartridgeInfo.getMultiTenant()));
         basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridgeInfo));
         basicPayloadData.setServiceName(cartridgeInfo.getType());
-        basicPayloadData.setSubscriptionAlias(alias);
-        basicPayloadData.setTenantId(subscriber.getTenantId());
+
+        if(repository != null) {
+            basicPayloadData.setGitRepositoryUrl(repository.getUrl());
+        }
+
+        if (cluster != null) {
+            basicPayloadData.setClusterId(cluster.getClusterDomain());
+            basicPayloadData.setHostName(cluster.getHostName());
+        }
+
+        if (alias != null) {
+            basicPayloadData.setSubscriptionAlias(alias);
+        }
+
+        if (subscriber != null) {
+            basicPayloadData.setTenantId(subscriber.getTenantId());
+        }
+
         //TODO:remove. we do not want to know about the tenant rance in subscription!
         if(cartridgeInfo.getMultiTenant() || subscriber.getTenantId() == -1234) {  //TODO: fix properly
             basicPayloadData.setTenantRange("*");
@@ -98,28 +107,28 @@ public class CartridgeSubscriptionUtils {
         return basicPayloadData;
     }
 
-    public static BasicPayloadData createBasicPayload (LBCategoryContext lbCategoryContext) {
-
-        BasicPayloadData basicPayloadData = new BasicPayloadData();
-        basicPayloadData.setApplicationPath(lbCategoryContext.getCartridgeInfo().getBaseDir());
-        basicPayloadData.setSubscriptionKey(lbCategoryContext.getKey());
-        basicPayloadData.setClusterId(lbCategoryContext.getCluster().getClusterDomain());
-        basicPayloadData.setDeployment("default");//currently hard coded to default
-        basicPayloadData.setHostName(lbCategoryContext.getCluster().getHostName());
-        basicPayloadData.setMultitenant(String.valueOf(lbCategoryContext.getCartridgeInfo().getMultiTenant()));
-        basicPayloadData.setPortMappings(createPortMappingPayloadString(lbCategoryContext.getCartridgeInfo()));
-        basicPayloadData.setServiceName(lbCategoryContext.getLbType());
-
-        if (lbCategoryContext.getSubscriptionAlias() != null && !lbCategoryContext.getSubscriptionAlias().isEmpty()) {
-            basicPayloadData.setSubscriptionAlias(lbCategoryContext.getSubscriptionAlias());
-        }
-
-        if (lbCategoryContext.getSubscriber() != null) {
-            basicPayloadData.setTenantId(lbCategoryContext.getSubscriber().getTenantId());
-        }
-
-        return basicPayloadData;
-    }
+//    public static BasicPayloadData createBasicPayload (LBCategoryContext lbCategoryContext) {
+//
+//        BasicPayloadData basicPayloadData = new BasicPayloadData();
+//        basicPayloadData.setApplicationPath(lbCategoryContext.getCartridgeInfo().getBaseDir());
+//        basicPayloadData.setSubscriptionKey(lbCategoryContext.getKey());
+//        basicPayloadData.setClusterId(lbCategoryContext.getCluster().getClusterDomain());
+//        basicPayloadData.setDeployment("default");//currently hard coded to default
+//        basicPayloadData.setHostName(lbCategoryContext.getCluster().getHostName());
+//        basicPayloadData.setMultitenant(String.valueOf(lbCategoryContext.getCartridgeInfo().getMultiTenant()));
+//        basicPayloadData.setPortMappings(createPortMappingPayloadString(lbCategoryContext.getCartridgeInfo()));
+//        basicPayloadData.setServiceName(lbCategoryContext.getLbType());
+//
+//        if (lbCategoryContext.getSubscriptionAlias() != null && !lbCategoryContext.getSubscriptionAlias().isEmpty()) {
+//            basicPayloadData.setSubscriptionAlias(lbCategoryContext.getSubscriptionAlias());
+//        }
+//
+//        if (lbCategoryContext.getSubscriber() != null) {
+//            basicPayloadData.setTenantId(lbCategoryContext.getSubscriber().getTenantId());
+//        }
+//
+//        return basicPayloadData;
+//    }
 
     private static String createPortMappingPayloadString (CartridgeInfo cartridgeInfo) {
 
@@ -213,13 +222,13 @@ public class CartridgeSubscriptionUtils {
         return source.substring(0, length);
     }
 
-    public static LBDataContext getLoadBalancerDataContext (SubscriptionData subscriptionData, LoadbalancerConfig lbConfig) throws UnregisteredCartridgeException, ADCException {
+    public static LBDataContext getLoadBalancerDataContext (int tenantId, String serviceType, String deploymentPolicyName, LoadbalancerConfig lbConfig) throws UnregisteredCartridgeException, ADCException {
 
         String lbCartridgeType = lbConfig.getType();
 
         LBDataContext lbDataCtxt = new LBDataContext();
         // set tenant Id
-        lbDataCtxt.setTenantId(subscriptionData.getTenantId());
+        lbDataCtxt.setTenantId(tenantId);
 
         Properties lbReferenceProperties = lbConfig.getProperties();
 
@@ -236,8 +245,7 @@ public class CartridgeSubscriptionUtils {
 
                 if ("true".equals(value)) {
                     if (log.isDebugEnabled()) {
-                        log.debug("This cartridge does not require a load balancer. " +
-                                "[Type] " + subscriptionData.getCartridgeType());
+                        log.debug("This cartridge does not require a load balancer. " + "[Type] " + serviceType);
                     }
                     lbRefProperty.setValue(name);
                     lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
@@ -247,15 +255,14 @@ public class CartridgeSubscriptionUtils {
 
                 String clusterIdsVal = value;
                 if (log.isDebugEnabled()) {
-                    log.debug("This cartridge refers to existing load balancers. " + "[Type] " +
-                            subscriptionData.getCartridgeType() + "[Referenced Cluster Ids] " + clusterIdsVal);
+                    log.debug("This cartridge refers to existing load balancers. " + "[Type] " + serviceType + "[Referenced Cluster Ids] " + clusterIdsVal);
                 }
 
                 String[] clusterIds = clusterIdsVal.split(",");
 
                 for (String clusterId : clusterIds) {
                     try {
-                        AutoscalerServiceClient.getServiceClient().checkLBExistenceAgainstPolicy(clusterId, subscriptionData.getDeploymentPolicyName());
+                        AutoscalerServiceClient.getServiceClient().checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyName);
                     } catch (Exception ex) {
                         // we don't need to throw the error here.
                         log.error(ex.getMessage(), ex);
@@ -291,7 +298,7 @@ public class CartridgeSubscriptionUtils {
                     lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("This cartridge uses default load balancer. " + "[Type] " + subscriptionData.getCartridgeType());
+                        log.debug("This cartridge uses default load balancer. " + "[Type] " + serviceType);
                     }
 
                     try {
@@ -302,9 +309,9 @@ public class CartridgeSubscriptionUtils {
                         for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
 
                             // check existence of the subscribed policy
-                            if (subscriptionData.getDeploymentPolicyName().equals(policy.getId())) {
+                            if (deploymentPolicyName.equals(policy.getId())) {
 
-                                if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(subscriptionData.getDeploymentPolicyName())) {
+                                if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
 
                                     Properties lbProperties = new Properties();
 
@@ -327,7 +334,7 @@ public class CartridgeSubscriptionUtils {
                     }
 
                     // set deployment and autoscaling policies
-                    lbDataCtxt.setDeploymentPolicy(subscriptionData.getDeploymentPolicyName());
+                    lbDataCtxt.setDeploymentPolicy(deploymentPolicyName);
                     lbDataCtxt.setAutoscalePolicy(lbCartridgeInfo.getDefaultAutoscalingPolicy());
 
                     lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
@@ -362,10 +369,10 @@ public class CartridgeSubscriptionUtils {
                     Property loadBalancedServiceTypeProperty = new Property();
                     loadBalancedServiceTypeProperty.setName(Constants.LOAD_BALANCED_SERVICE_TYPE);
                     // set the load balanced service type
-                    loadBalancedServiceTypeProperty.setValue(subscriptionData.getCartridgeType());
+                    loadBalancedServiceTypeProperty.setValue(serviceType);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("This cartridge uses a service aware load balancer. [Type] " + subscriptionData.getCartridgeType());
+                        log.debug("This cartridge uses a service aware load balancer. [Type] " + serviceType);
                     }
 
                     try {
@@ -375,10 +382,9 @@ public class CartridgeSubscriptionUtils {
                         // traverse deployment policies of lb cartridge
                         for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
                             // check existence of the subscribed policy
-                            if (subscriptionData.getDeploymentPolicyName().equals(policy.getId())) {
+                            if (deploymentPolicyName.equals(policy.getId())) {
 
-                                if (!getAutoscalerServiceClient().checkServiceLBExistenceAgainstPolicy(subscriptionData.getCartridgeType(),
-                                        subscriptionData.getDeploymentPolicyName())) {
+                                if (!getAutoscalerServiceClient().checkServiceLBExistenceAgainstPolicy(serviceType, deploymentPolicyName)) {
 
                                     Properties lbProperties = new Properties();
 
@@ -393,7 +399,7 @@ public class CartridgeSubscriptionUtils {
                                     // set a payload property for load balanced service type
                                     Property payloadProperty = new Property();
                                     payloadProperty.setName("LOAD_BALANCED_SERVICE_TYPE");  //TODO: refactor hardcoded name
-                                    payloadProperty.setValue(subscriptionData.getCartridgeType());
+                                    payloadProperty.setValue(serviceType);
 
                                     lbDataCtxt.addLBProperties(lbProperties);
                                 }
@@ -406,7 +412,7 @@ public class CartridgeSubscriptionUtils {
                     }
 
                     // set deployment and autoscaling policies
-                    lbDataCtxt.setDeploymentPolicy(subscriptionData.getDeploymentPolicyName());
+                    lbDataCtxt.setDeploymentPolicy(deploymentPolicyName);
                     lbDataCtxt.setAutoscalePolicy(lbCartridgeInfo.getDefaultAutoscalingPolicy());
 
                     lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);

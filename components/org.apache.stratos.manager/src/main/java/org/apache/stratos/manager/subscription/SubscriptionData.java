@@ -29,7 +29,6 @@ public class SubscriptionData {
 
     private String cartridgeType;
     private String cartridgeAlias;
-
     private String autoscalingPolicyName;
     private String deploymentPolicyName;
     private String tenantDomain;
@@ -43,7 +42,6 @@ public class SubscriptionData {
     private String lbClusterId;
     private Property[] properties;
     private String dataCartridgeAlias;
-    private String lbAlias;
     private PersistanceMapping persistanceMapping;
 
     public String getCartridgeType() {

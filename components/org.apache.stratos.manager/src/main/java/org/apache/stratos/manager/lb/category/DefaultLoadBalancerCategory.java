@@ -21,8 +21,4 @@ package org.apache.stratos.manager.lb.category;
 
 public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
 
-    public DefaultLoadBalancerCategory(LBCategoryContext lbCategoryContext) {
-        super(lbCategoryContext);
-    }
-
 }

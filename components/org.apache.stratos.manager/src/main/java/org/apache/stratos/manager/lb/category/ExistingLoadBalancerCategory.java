@@ -19,26 +19,35 @@
 
 package org.apache.stratos.manager.lb.category;
 
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.AlreadySubscribedException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.payload.PayloadData;
+import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.subscriber.Subscriber;
+
+import java.util.Map;
 
 public class ExistingLoadBalancerCategory extends LoadBalancerCategory {
 
-    public ExistingLoadBalancerCategory(LBCategoryContext lbCategoryContext) {
-        super(lbCategoryContext);
-    }
+    public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+                               String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException {
 
-    public void register () throws ADCException, UnregisteredCartridgeException {
-        //TODO
-    }
-
-    public PayloadData createPayload() throws ADCException {
-        //TODO;
+        // TODO
         return null;
     }
 
-    public void unregister () throws ADCException {
+    public void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName, String deploymentPolicyName, Properties properties) throws ADCException, UnregisteredCartridgeException {
+
+        //TODO
+    }
+
+    public void remove(String clusterId, String alias) throws ADCException, NotSubscribedException {
+
         //TODO
     }
 }

@@ -19,20 +19,26 @@
 
 package org.apache.stratos.manager.lb.category;
 
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.payload.PayloadData;
+import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.subscriber.Subscriber;
+
+import java.util.Map;
 
 public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
 
-    public ServiceLevelLoadBalancerCategory(LBCategoryContext lbCategoryContext) {
-        super(lbCategoryContext);
-    }
+    public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+                               String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException {
 
-    public PayloadData createPayload() throws ADCException {
 
         // add payload entry for load balanced service type
-        PayloadData serviceLevelLbPayloadData = super.createPayload();
-        serviceLevelLbPayloadData.add("LOAD_BALANCED_SERVICE_TYPE", getLbCategoryContext().getLoadbalancedServiceType());
+        PayloadData serviceLevelLbPayloadData = super.create(alias, cluster, subscriber, repository, cartridgeInfo, subscriptionKey,
+                customPayloadEntries);
+        serviceLevelLbPayloadData.add("LOAD_BALANCED_SERVICE_TYPE", getLoadBalancedServiceType());
         return serviceLevelLbPayloadData;
     }
 }
