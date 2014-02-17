@@ -7,6 +7,7 @@ import org.apache.stratos.cartridge.agent.statistics.publisher.HealthStatisticsN
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -19,6 +20,7 @@ public class CartridgeAgentEventPublisher {
     private static boolean started;
     private static boolean activated;
     private static boolean readyToShutdown;
+    private static boolean maintenance;
 
     public static void publishInstanceStartedEvent() {
         if (!started) {
@@ -107,4 +109,30 @@ public class CartridgeAgentEventPublisher {
             }
         }
     }
+
+     public static void publishMaintenanceModeEvent() {
+        if (!maintenance) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing instance maintenance mode event");
+            }
+            InstanceMaintenanceModeEvent event = new InstanceMaintenanceModeEvent(
+                    CartridgeAgentConfiguration.getInstance().getServiceName(),
+                    CartridgeAgentConfiguration.getInstance().getClusterId(),
+                    CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+                    CartridgeAgentConfiguration.getInstance().getPartitionId(),
+                    CartridgeAgentConfiguration.getInstance().getMemberId());
+
+            EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
+            eventPublisher.publish(event);
+            maintenance = true;
+            if (log.isInfoEnabled()) {
+                log.info("Instance Maintenance mode event published");
+            }
+        } else {
+            if (log.isWarnEnabled()) {
+                log.warn("Instance already in a Maintenance mode....");
+            }
+        }
+    }
 }
+
