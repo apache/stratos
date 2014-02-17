@@ -49,7 +49,7 @@ public class CartridgeConfig implements Serializable {
 
     private PortMapping[] portMappings;
     
-    private PersistanceMapping [] persistanceMappings;
+    private Persistence persistence;
     
     private String defaultAutoscalingPolicy;
 
@@ -238,25 +238,25 @@ public class CartridgeConfig implements Serializable {
         this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
 
-	/**
-	 * @return the persistanceMappings
-	 */
-	public PersistanceMapping [] getPersistanceMappings() {
-		return persistanceMappings;
-	}
-
-	/**
-	 * @param persistanceMappings the persistanceMappings to set
-	 */
-	public void setPersistanceMappings(PersistanceMapping [] persistanceMappings) {
-		this.persistanceMappings = persistanceMappings;
-	}
-
     public String getDefaultDeploymentPolicy() {
         return defaultDeploymentPolicy;
     }
 
     public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
         this.defaultDeploymentPolicy = defaultDeploymentPolicy;
+    }
+
+    /**
+	 * @return the persistence
+	 */
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    /**
+	 * @param persistence the persistanceMappings to set
+	 */
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
     }
 }

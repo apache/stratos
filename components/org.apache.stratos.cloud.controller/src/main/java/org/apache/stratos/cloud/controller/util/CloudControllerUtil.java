@@ -69,8 +69,8 @@ public class CloudControllerUtil {
 			cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
 		}
         
-        if(config.getPersistanceMappings() != null && config.getPersistanceMappings().length >0){
-        	cartridge.setPeristanceMappings(Arrays.asList(config.getPersistanceMappings()));
+        if(config.getPersistence() != null){
+        	cartridge.setPersistence(config.getPersistence());
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
@@ -180,8 +180,7 @@ public class CloudControllerUtil {
                                                                   .size()]));
 		
 		List<Property> propList = new ArrayList<Property>();
-        carInfo.setPeristanceMappings(cartridge.getPeristanceMappings().
-                toArray(new PersistanceMapping[cartridge.getPeristanceMappings().size()]));
+        carInfo.setPersistence(cartridge.getPersistence());
 		
 		for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
 	        @SuppressWarnings("unchecked")

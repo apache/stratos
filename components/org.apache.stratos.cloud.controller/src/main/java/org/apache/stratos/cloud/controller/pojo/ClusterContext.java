@@ -42,18 +42,16 @@ public class ClusterContext implements Serializable{
     private String deviceName;
     // optional volume id
     private String volumeId;
+    // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
+    private long timeoutInMillis;
 
     public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, 
-    		boolean isLbCluster, boolean isVolumeRequired, boolean shouldDeleteVolume, int volumeSize, String deviceName) {
+    		boolean isLbCluster) {
         this.clusterId = clusterId;
         this.cartridgeType = cartridgeType;
         this.payload = payload;
         this.setHostName(hostName);
         this.isLbCluster = isLbCluster;
-        this.isVolumeRequired = isVolumeRequired;
-        this.shouldDeleteVolume = shouldDeleteVolume;
-        this.volumeSize = volumeSize;
-        this.deviceName = deviceName;
     }
     
     public String getClusterId() {
@@ -129,6 +127,14 @@ public class ClusterContext implements Serializable{
 
 	public void setDeviceName(String deviceName) {
 		this.deviceName = deviceName;
+	}
+
+	public long getTimeoutInMillis() {
+		return timeoutInMillis;
+	}
+
+	public void setTimeoutInMillis(long timeoutInMillis) {
+		this.timeoutInMillis = timeoutInMillis;
 	}
 
 }

@@ -247,7 +247,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
                         
-            addToPayload(payload, "PERSISTANCE_MAPPING", getPersistancePayload(cartridge).toString());
+            addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -375,24 +375,29 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		ctxt.setVolumeId(volumeId);
 	}
 
-	private StringBuilder getPersistancePayload(Cartridge cartridge) {
-		StringBuilder persistancePayload = new StringBuilder();
-		if(isPersistanceMappingAvailable(cartridge)){
-			int i=0;
-			for(; i<cartridge.getPeristanceMappings().size()-1;i++){
+	private StringBuilder getPersistencePayload(Cartridge cartridge) {
+		StringBuilder persistencePayload = new StringBuilder();
+		if(isPersistenceMappingAvailable(cartridge)){
+			for(Volume volume : cartridge.getPersistence().getVolumes()){
 				if(log.isDebugEnabled()){
-					log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
+					log.debug("Adding persistence mapping " + volume.toString());
 				}
-				persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-				persistancePayload.append("|");
+                if(persistencePayload.toString() != null) {
+                   persistencePayload.append("|");
+                }
+				persistencePayload.append(volume.getDevice());
+				persistencePayload.append("|");
+                persistencePayload.append(volume.getMappingPath());
 			}
-			persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
 		}
-		return persistancePayload;
+        if(log.isDebugEnabled()){
+            log.debug("Persistence payload is" + persistencePayload.toString());
+        }
+		return persistencePayload;
 	}
 
-	private boolean isPersistanceMappingAvailable(Cartridge cartridge) {
-		return cartridge.getPeristanceMappings() != null && !cartridge.getPeristanceMappings().isEmpty();
+	private boolean isPersistenceMappingAvailable(Cartridge cartridge) {
+		return cartridge.getPersistence() != null && cartridge.getPersistence().isPersistanceRequired();
 	}
 
 	private void addToPayload(StringBuilder payload, String name, String value) {
@@ -900,21 +905,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
-        
+
         property = props.getProperty(Constants.IS_VOLUME_REQUIRED);
         boolean isVolumeRequired = property != null ? Boolean.parseBoolean(property) : false;
-        
+
         property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
         boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : false;
         
         property = props.getProperty(Constants.VOLUME_SIZE);
-        int volumeSize = property != null ? Integer.parseInt(property) : 8;
+        int volumeSize = property != null ? Integer.parseInt(property) : 0;
         
-        property = props.getProperty(Constants.DEVICE_NAME);
-        String deviceName = property != null ? property : null;
+        property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
+        long timeout = property != null ? Long.parseLong(property) : 30000;
         
-	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, 
-	    		hostName, isLb, isVolumeRequired, shouldDeleteVolume, volumeSize, deviceName));
+	    ClusterContext ctxt = new ClusterContext(clusterId, cartridgeType, payload, 
+	    		hostName, isLb);
+	    ctxt.setVolumeRequired(isVolumeRequired);
+	    ctxt.setShouldDeleteVolume(shouldDeleteVolume);
+	    //ctxt.setDeviceName(deviceName);
+	    ctxt.setVolumeSize(volumeSize);
+	    ctxt.setTimeoutInMillis(timeout);
+	    
+		dataHolder.addClusterContext(ctxt);
 	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
 	    persist();
@@ -967,16 +979,33 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Runnable r = new Runnable() {
                  public void run() {
                      ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                     if(ctxt == null) {
+                    	 String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                    	 log.error(msg);
+                     }
                      Collection<Member> members = TopologyManager.getTopology().
                              getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                     while(members.size() > 0) {
-                        //waiting until all the members got removed from the Topology
+                     long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+                     
+                     while(members.size() > 0 && System.currentTimeMillis()< endTime) {
+                        //waiting until all the members got removed from the Topology/ timed out
                         CloudControllerUtil.sleep(1000);
                      }
-                    if(ctxt == null) {
-                        String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                        log.error(msg);
-                    }
+                     
+                     // if there're still alive members
+                     if(members.size() > 0) {
+                    	 //forcefully terminate them
+                    	 for (Member member : members) {
+							
+                    		 try {
+								terminateInstance(member.getMemberId());
+							} catch (Exception e) {
+								// we are not gonna stop the execution due to errors.
+								log.warn("Instance termination failed of member [id] "+member.getMemberId(), e);
+							}
+						}
+                     }
+                     
                      log.info("Unregistration of service cluster: " + clusterId_);
                      if(ctxt.shouldDeleteVolume()) {
                     	 Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());

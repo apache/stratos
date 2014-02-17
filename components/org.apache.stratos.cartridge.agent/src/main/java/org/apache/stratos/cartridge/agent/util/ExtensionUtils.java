@@ -111,4 +111,25 @@ public class ExtensionUtils {
             log.error("Could not execute artifacts updated extension", e);
         }
     }
+
+    /*
+    This will execute the volume mounting script which format and mount the
+    persistance volumes.
+     */
+    public static void executeVolumeMountExtension() {
+        try {
+            if(log.isDebugEnabled()) {
+                    log.debug("Executing volume mounting extension");
+            }
+            String command = prepareCommand(CartridgeAgentConstants.MOUNT_VOLUMES_SH);
+            String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
+
+            // add payload file path as argument so inside the script we can source
+            // it  to get the env variables set by the startup script
+            CommandUtils.executeCommand(command + " " + payloadPath);
+        }
+        catch (Exception e) {
+                log.error("Could not execute volume mounting extension", e);
+        }
+    }
 }

@@ -25,14 +25,18 @@ public class CartridgeInfoBean {
     String alias;
     String policy;
     String repoURL;
-    boolean privateRepo;
     String repoUsername;
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
+
     private String autoscalePolicy;
     private String deploymentPolicy;
+    private String size;
 
+    boolean privateRepo;
+    private boolean removeOnTermination;
+    private boolean persistanceRequired;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -120,5 +124,29 @@ public class CartridgeInfoBean {
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public boolean isRemoveOnTermination() {
+        return removeOnTermination;
+    }
+
+    public void setRemoveOnTermination(boolean removeOnTermination) {
+        this.removeOnTermination = removeOnTermination;
+    }
+
+    public boolean isPersistanceRequired() {
+        return persistanceRequired;
+    }
+
+    public void setPersistanceRequired(boolean persistanceRequired) {
+        this.persistanceRequired = persistanceRequired;
     }
 }

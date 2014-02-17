@@ -18,15 +18,11 @@
  */
 package org.apache.stratos.cloud.controller.pojo;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds information regarding a Cartridge.
@@ -57,7 +53,7 @@ public class Cartridge implements Serializable{
     
     private List<PortMapping> portMappings = new ArrayList<PortMapping>();
     
-    private List<PersistanceMapping> peristanceMappings = new ArrayList<PersistanceMapping>();
+    private Persistence persistence;
     
     private List<AppType> appTypeMappings = new ArrayList<AppType>();
     
@@ -304,18 +300,17 @@ public class Cartridge implements Serializable{
         this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
     }
 
-	/**
-	 * @return the peristanceMappings
+    /**
+	 * @return the persistence
 	 */
-	public List<PersistanceMapping> getPeristanceMappings() {
-		return peristanceMappings;
-	}
+    public Persistence getPersistence() {
+        return persistence;
+    }
 
-	/**
-	 * @param peristanceMappings the peristanceMappings to set
+    /**
+	 * @param persistence the peristanceMappings to set
 	 */
-	public void setPeristanceMappings(List<PersistanceMapping> peristanceMappings) {
-		this.peristanceMappings = peristanceMappings;
-	}
-    
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
 }

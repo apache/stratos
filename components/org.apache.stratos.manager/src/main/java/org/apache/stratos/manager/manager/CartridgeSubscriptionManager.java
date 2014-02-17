@@ -147,9 +147,6 @@ public class CartridgeSubscriptionManager {
         //Set the key
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
-        // Set persistance mappings
-        cartridgeSubscription.setPersistanceMapping(subscriptionData.getPersistanceMapping());
-
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, cartridgeAlias, autoscalingPolicyName,
                                                 deploymentPolicyName, repository);
