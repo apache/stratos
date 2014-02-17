@@ -246,9 +246,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
-                        
-            addToPayload(payload, "PERSISTANCE_MAPPING", getPersistancePayload(cartridge).toString());
-            
+
+            if(ctxt.isVolumeRequired()){
+                addToPayload(payload, "PERSISTANCE_MAPPING", getPersistancePayload(ctxt).toString());
+            }
+
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
@@ -369,19 +371,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		ctxt.setVolumeId(volumeId);
 	}
 
-	private StringBuilder getPersistancePayload(Cartridge cartridge) {
+	private StringBuilder getPersistancePayload(ClusterContext clusterContext) {
 		StringBuilder persistancePayload = new StringBuilder();
-		if(isPersistanceMappingAvailable(cartridge)){
-			int i=0;
-			for(; i<cartridge.getPeristanceMappings().size()-1;i++){
-				if(log.isDebugEnabled()){
-					log.debug("Adding persistance mapping " + cartridge.getPeristanceMappings().get(i).toString());
-				}
-				persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-				persistancePayload.append("|");
-			}
-			persistancePayload.append(cartridge.getPeristanceMappings().get(i).getDevice());
-		}
+		persistancePayload.append(clusterContext.getDeviceName());
 		return persistancePayload;
 	}
 
