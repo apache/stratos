@@ -511,15 +511,7 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
-
-                    if(cartridgeInfo.getPeristanceMappings() != null) {
-                        for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
-                            cartridge.addPersistanceMapping(persistanceMapping);
-                            cartridge.setPersistance(true);
-                        }
-                    } else {
-                        cartridge.setPersistance(false);
-                    }
+                    cartridge.setPersistence(cartridgeInfo.getPersistence());
 
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
                         for(Property property: cartridgeInfo.getProperties()) {
@@ -868,15 +860,11 @@ public class ServiceUtils {
             sizeProperty.setName(VOLUME_SIZE);
             sizeProperty.setValue(cartridgeInfoBean.getSize());
 
-            Property deviceProperty = new Property();
-            deviceProperty.setName(DEVICE_NAME);
-            deviceProperty.setValue(String.valueOf(cartridgeInfoBean.getDevice()));
-
             Property deleteOnTerminationProperty = new Property();
             deleteOnTerminationProperty.setName(SHOULD_DELETE_VOLUME);
             deleteOnTerminationProperty.setValue(String.valueOf(    cartridgeInfoBean.isRemoveOnTermination()));
 
-            properties.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
+            properties.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deleteOnTerminationProperty});
         }
 
 
