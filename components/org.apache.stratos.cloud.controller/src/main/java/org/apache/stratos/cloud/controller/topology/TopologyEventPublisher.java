@@ -129,11 +129,20 @@ public class TopologyEventPublisher {
 
     public static void sendMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
          if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member activated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
+            log.info(String.format("Publishing member Ready to shut down event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
                     memberReadyToShutdownEvent.getServiceName(), memberReadyToShutdownEvent.getClusterId(), memberReadyToShutdownEvent.getNetworkPartitionId(), memberReadyToShutdownEvent.getPartitionId(), memberReadyToShutdownEvent.getMemberId()));
          }
          publishEvent(memberReadyToShutdownEvent);
     }
+
+    public static void sendMemberMaintenanceModeEvent(MemberMaintenanceModeEvent memberMaintenanceModeEvent) {
+            if(log.isInfoEnabled()) {
+               log.info(String.format("Publishing Maintenance mode event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
+                       memberMaintenanceModeEvent.getServiceName(), memberMaintenanceModeEvent.getClusterId(), memberMaintenanceModeEvent.getNetworkPartitionId(), memberMaintenanceModeEvent.getPartitionId(), memberMaintenanceModeEvent.getMemberId()));
+            }
+            publishEvent(memberMaintenanceModeEvent);
+       }
+
 
     public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
