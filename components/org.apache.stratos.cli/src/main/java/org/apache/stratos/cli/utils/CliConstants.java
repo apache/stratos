@@ -219,6 +219,9 @@ public class CliConstants {
     public static final String VOLUME_SIZE_OPTION = "v";
     public static final String VOLUME_SIZE_LONG_OPTION = "volume-size";
 
+    public static final String PERSISTANCE_MAPPING_OPTION = "pm";
+    public static final String PERSISTANCE_MAPPING_LONG_OPTION = "persistance-mapping";
+
     public static final String AUTOSCALING_POLICY_OPTION = "ap";
     public static final String AUTOSCALING_POLICY_LONG_OPTION = "autoscaling-policy";
 

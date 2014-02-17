@@ -36,6 +36,7 @@ public class CartridgeInfoBean {
 
     boolean privateRepo;
     private boolean removeOnTermination;
+    private boolean persistanceRequired;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -139,5 +140,13 @@ public class CartridgeInfoBean {
 
     public void setRemoveOnTermination(boolean removeOnTermination) {
         this.removeOnTermination = removeOnTermination;
+    }
+
+    public boolean isPersistanceRequired() {
+        return persistanceRequired;
+    }
+
+    public void setPersistanceRequired(boolean persistanceRequired) {
+        this.persistanceRequired = persistanceRequired;
     }
 }
