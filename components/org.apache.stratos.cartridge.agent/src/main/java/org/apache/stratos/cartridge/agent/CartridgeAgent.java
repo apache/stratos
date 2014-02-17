@@ -120,9 +120,6 @@ public class CartridgeAgent implements Runnable {
         // Wait for all ports to be active
         CartridgeAgentUtils.waitUntilPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
 
-        // Mount persistance volumes.
-        ExtensionUtils.executeVolumeMountExtension();
-
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
         if ("null".equals(repoUrl) || StringUtils.isBlank(repoUrl)) {
@@ -252,6 +249,9 @@ public class CartridgeAgent implements Runnable {
         if(log.isInfoEnabled()) {
             log.info("Executing cleaning up the data in the cartridge instance...");
         }
+        //sending event on the maintenance mode
+        CartridgeAgentEventPublisher.publishMaintenanceModeEvent();
+
         //cleaning up the cartridge instance's data
         ExtensionUtils.executeCleanupExtension();
         if(log.isInfoEnabled()) {
