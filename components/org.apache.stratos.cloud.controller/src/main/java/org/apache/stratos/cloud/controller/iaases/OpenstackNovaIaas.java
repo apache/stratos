@@ -396,6 +396,8 @@ public class OpenstackNovaIaas extends Iaas {
 	public String createVolume(int sizeGB) {
 		IaasProvider iaasInfo = getIaasProvider();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
+		
         if (region == null || iaasInfo == null) {
         	log.fatal("Cannot create a new volume in the [region] : "+region
 					+" of Iaas : "+iaasInfo);
@@ -405,15 +407,15 @@ public class OpenstackNovaIaas extends Iaas {
         
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
-        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(region));
+        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
         if (volume == null) {
-			log.fatal("Volume creation was unsuccessful. [region] : " + region
+			log.fatal("Volume creation was unsuccessful. [region] : " + region+" [zone] : " + zone
 					+ " of Iaas : " + iaasInfo);
 			return null;
 		}
 		
 		log.info("Successfully created a new volume [id]: "+volume.getId()
-				+" in [region] : "+region+" of Iaas : "+iaasInfo);
+				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo);
 		return volume.getId();
 	}
 
