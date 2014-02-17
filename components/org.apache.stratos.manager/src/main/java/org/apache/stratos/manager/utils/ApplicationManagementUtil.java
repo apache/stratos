@@ -36,7 +36,7 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
+import org.apache.stratos.cloud.controller.pojo.Persistence;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;

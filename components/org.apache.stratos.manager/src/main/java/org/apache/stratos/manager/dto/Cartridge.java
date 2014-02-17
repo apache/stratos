@@ -20,7 +20,7 @@
 package org.apache.stratos.manager.dto;
 
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
+import org.apache.stratos.cloud.controller.pojo.Persistence;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class Cartridge implements Comparable<Cartridge> {
 
     private boolean isPersistance;
 
-    private List<PersistanceMapping>  persistanceMappingBeans = new ArrayList<PersistanceMapping>();
+    private Persistence  persistence;
 
 	public String getDisplayName() {
 		return displayName;
@@ -269,27 +269,19 @@ public class Cartridge implements Comparable<Cartridge> {
         this.defaultDeploymentPolicy = defaultDeploymentPolicy;
 }
 
-    public List<PersistanceMapping> getPersistanceMappingBeans() {
-        return persistanceMappingBeans;
-    }
-
-    public void addPersistanceMapping(PersistanceMapping persistanceMappingBean) {
-        this.persistanceMappingBeans.add(persistanceMappingBean);
-    }
-
-    public void removePersistanceMapping(PersistanceMapping persistanceMappingBean) {
-        this.persistanceMappingBeans.remove(persistanceMappingBean);
-    }
-
-    public void setPersistanceMappingBeans(List<PersistanceMapping> persistanceMappingBeans) {
-        this.persistanceMappingBeans = persistanceMappingBeans;
-    }
-
     public boolean isPersistance() {
         return isPersistance;
     }
 
     public void setPersistance(boolean persistance) {
         isPersistance = persistance;
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
     }
 }

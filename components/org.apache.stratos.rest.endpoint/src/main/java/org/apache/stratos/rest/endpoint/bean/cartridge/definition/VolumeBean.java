@@ -16,23 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.stratos.rest.endpoint.bean.cartridge.definition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class PersistanceMappingBean {
+public class VolumeBean {
 
-    public boolean persistanceRequired;
-
-    public int size;
+    public String size;
 
     public String device;
-    
+
     public boolean removeOnTermination;
 
+    public String mappingPath;
+
     public String toString () {
-        return " [ Persistance Required : " + persistanceRequired + ", Size: " + size + ", device: " + device + " remove on termination " + removeOnTermination +"] ";
+        return " [ Persistence Required : " + ", Size: " + size + ", device: " +
+                device + " remove on termination " + removeOnTermination +
+                ", mappingPath : " + mappingPath + "] ";
     }
 }

@@ -66,8 +66,8 @@ public class PojoConverter {
         }
         
         //persistance mapping
-        if(cartridgeDefinitionBean.persistanceMapping != null && !cartridgeDefinitionBean.persistanceMapping.isEmpty()) {
-            cartridgeConfig.setPersistanceMappings(getPersistanceMappingsAsArray(cartridgeDefinitionBean.persistanceMapping));
+        if(cartridgeDefinitionBean.persistence != null) {
+            cartridgeConfig.setPersistence(getPersistence(cartridgeDefinitionBean.persistence));
         }
         
         //IaaS
@@ -85,26 +85,6 @@ public class PojoConverter {
 
         return cartridgeConfig;
     }
-
-    private static PersistanceMapping[] getPersistanceMappingsAsArray(List<PersistanceMappingBean> persistanceMappingBeans) {
-    	System.out.println("no of persistance beans " + persistanceMappingBeans.size());
-    	PersistanceMappingBean[] persistBeanArr = new PersistanceMappingBean[persistanceMappingBeans.size()];
-        persistBeanArr = (PersistanceMappingBean[])persistanceMappingBeans.toArray(new PersistanceMappingBean[0]);
-
-        PersistanceMapping[] persistanceMappingArr = new PersistanceMapping[persistBeanArr.length];
-        for (int i = 0; i < persistanceMappingArr.length; i++)
-        {
-          System.out.println("persistance bean " + persistBeanArr[i].toString());
-          PersistanceMapping persistMapping = new PersistanceMapping();
-          persistMapping.setPersistanceRequired(persistBeanArr[i].persistanceRequired);
-          persistMapping.setDevice(persistBeanArr[i].device);
-          persistMapping.setSize(persistBeanArr[i].size);
-          persistMapping.setRemoveOntermination(persistBeanArr[i].removeOnTermination);
-          persistanceMappingArr[i] = persistMapping;
-        }
-
-        return persistanceMappingArr;
-	}
 
 	private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
         LoadbalancerConfig lbConfig = new LoadbalancerConfig();
@@ -158,6 +138,25 @@ public class PojoConverter {
             iaasConfigsArray[i] = iaasConfig;
         }
         return iaasConfigsArray;
+    }
+
+    private static Persistence getPersistence(PersistenceBean persistenceBean) {
+        Persistence persistence = new Persistence();
+        persistence.setPersistanceRequired(persistenceBean.isRequired);
+        VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];
+        persistenceBean.volume.toArray(volumeBean);
+        Volume[] volumes = new Volume[persistenceBean.volume.size()];
+        for (int i = 0 ; i < volumes.length ; i++) {
+            Volume volume = new Volume();
+            volume.setSize(Integer.parseInt(volumeBean[i].size));
+            volume.setDevice(volumeBean[i].device);
+            volume.setRemoveOntermination(volumeBean[i].removeOnTermination);
+            volume.setMappingPath(volumeBean[i].mappingPath);
+            volumes[i] = volume;
+        }
+        persistence.setVolumes(volumes);
+        return persistence;
+
     }
 
     private static Properties getProperties (List<PropertyBean> propertyBeans) {
