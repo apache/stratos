@@ -25,32 +25,24 @@
                 </div>
             </div>
             {{#ifCond cartridge.provider "==" "data"}}
-                {{#if cartridge.persistance}}
+                {{#if cartridge.persistence.persistanceRequired}}
                     <label class="required">Persistence Storage:</label>
                         <label>
                             <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistence storage
                         </label>
                     <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
                         <h2>Persistence Mappings</h2>
-                        {{#each cartridge.persistanceBeans}}
-                            <div class="form-group">
-                                <label class="required">device:</label>
-                                <div class="form-inline">
-                                    <input name="device" class="form-control input-xlarge" value={{device}}/>
-                                </div>
-                            </div>
                             <div class="form-group">
                                 <label class="required">Size:</label>
                                 <div class="form-inline">
-                                    <input name="size" class="form-control input-xlarge" value={{size}}/>
+                                    <input name="size" class="form-control input-xlarge" placeholder="10"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>
-                                    <input name="removeontermination" type="checkbox" {{#if removeOntermination}}checked="checked"{{/if}} id="volume_check" />Remove on termination
+                                    <input name="removeOnUnsubscription" type="checkbox" id="volume_check" />Remove On Unsubscription
                                 </label>
                             </div>
-                        {{/each}}
                     </div>
 
 

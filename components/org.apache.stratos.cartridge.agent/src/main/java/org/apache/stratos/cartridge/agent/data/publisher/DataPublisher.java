@@ -30,7 +30,7 @@ import org.wso2.carbon.databridge.commons.StreamDefinition;
 
 import java.util.Date;
 
-public abstract class DataPublisher {
+public abstract class DataPublisher implements GenericDataPublisher {
 
     private static final Log log = LogFactory.getLog(DataPublisher.class);
 
@@ -65,7 +65,7 @@ public abstract class DataPublisher {
         log.info("DataPublisher initialized");
     }
 
-    protected void publish (DataContext dataContext) {
+    public void publish (DataContext dataContext) {
 
         Event event = new Event();
         event.setTimeStamp(new Date().getTime());
@@ -82,7 +82,7 @@ public abstract class DataPublisher {
         }
     }
 
-    protected void terminate () {
+    public void terminate () {
 
         dataPublisher.stop();
     }
