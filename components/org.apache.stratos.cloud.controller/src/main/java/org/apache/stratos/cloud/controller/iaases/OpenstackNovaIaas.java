@@ -60,6 +60,7 @@ import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
@@ -140,6 +141,13 @@ public class OpenstackNovaIaas extends Iaas {
 		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
 					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+		}
+		
+		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
+			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
+			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
+			template.getOptions()
+					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
 		}
 		
 		//TODO
