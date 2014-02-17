@@ -246,9 +246,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
+
+            if(ctxt.isVolumeRequired()){
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
+            }
                         
-            addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
-            
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
