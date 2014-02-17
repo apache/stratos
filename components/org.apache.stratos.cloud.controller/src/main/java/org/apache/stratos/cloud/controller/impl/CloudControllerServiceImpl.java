@@ -335,7 +335,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						.substring(nodeId.indexOf('/') + 1, nodeId.length())
 						: nodeId;
 				memberContext.setInstanceId(instanceId);
-				iaas.attachVolume(instanceId, ctxt.getVolumeId(), ctxt.getDeviceName());
+				try {
+					iaas.attachVolume(instanceId, ctxt.getVolumeId(),
+							ctxt.getDeviceName());
+				} catch (Exception e) {
+					//continue without throwing an exception, since there is an instance already running
+					log.error("Attaching Volume to Instance [ " + instanceId + " ] failed!", e);
+				}
 			}
 
             log.info("Instance is successfully starting up. "+memberContext.toString());
