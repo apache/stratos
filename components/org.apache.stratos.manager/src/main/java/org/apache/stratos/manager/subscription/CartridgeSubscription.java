@@ -19,9 +19,6 @@
 
 package org.apache.stratos.manager.subscription;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
@@ -29,23 +26,16 @@ import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.Cluster;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.AlreadySubscribedException;
-import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
-import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
-import org.apache.stratos.manager.exception.InvalidRepositoryException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.exception.PolicyException;
-import org.apache.stratos.manager.exception.RepositoryCredentialsRequiredException;
-import org.apache.stratos.manager.exception.RepositoryRequiredException;
-import org.apache.stratos.manager.exception.RepositoryTransportException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+
+import java.io.Serializable;
+import java.util.Map;
 
 public abstract class CartridgeSubscription implements Serializable {
 
@@ -125,7 +115,8 @@ public abstract class CartridgeSubscription implements Serializable {
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
 
-        getSubscriptionTenancyBehaviour().createSubscription(this);
+        setPayloadData(getSubscriptionTenancyBehaviour().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
+                getSubscriptionKey(), getCustomPayloadEntries()));
     }
 
     /**
@@ -136,7 +127,7 @@ public abstract class CartridgeSubscription implements Serializable {
      */
     public void removeSubscription() throws ADCException, NotSubscribedException {
 
-        getSubscriptionTenancyBehaviour().removeSubscription(this);
+        getSubscriptionTenancyBehaviour().remove(getCluster().getClusterDomain(), getAlias());
         cleanupSubscription();
     }
 
@@ -155,7 +146,8 @@ public abstract class CartridgeSubscription implements Serializable {
         // Properties props = new Properties();
         //props.setProperties(getCartridgeInfo().getProperties());
 
-        getSubscriptionTenancyBehaviour().registerSubscription(this, properties);
+        getSubscriptionTenancyBehaviour().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
+                getDeploymentPolicyName(), properties);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

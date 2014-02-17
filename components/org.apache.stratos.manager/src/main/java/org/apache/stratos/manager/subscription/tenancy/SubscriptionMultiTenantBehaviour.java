@@ -21,13 +21,19 @@ package org.apache.stratos.manager.subscription.tenancy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.publisher.InstanceNotificationPublisher;
+import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+
+import java.util.Map;
 
 
 public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehaviour {
@@ -35,7 +41,8 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
     private static Log log = LogFactory.getLog(SubscriptionMultiTenantBehaviour.class);
 
 
-    public void createSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, AlreadySubscribedException {
+    public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+                        String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException {
 
         boolean allowMultipleSubscription = Boolean.
                 valueOf(System.getProperty(CartridgeConstants.FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED));
@@ -45,22 +52,20 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
             boolean subscribed;
 
             try {
-                subscribed = hasAlreadySubscribed(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getType());
+                subscribed = hasAlreadySubscribed(subscriber.getTenantId(), cartridgeInfo.getType());
 
             } catch (Exception e) {
-                String msg = "Error checking whether the cartridge type " + cartridgeSubscription.getType() +
-                        " is already subscribed";
+                String msg = "Error checking whether the cartridge type " + cartridgeInfo.getType() + " is already subscribed";
                 log.error(msg, e);
                 throw new ADCException(msg, e);
             }
 
             if (subscribed) {
-                String msg = "Already subscribed to " + cartridgeSubscription.getType()
-                        + ". This multi-tenant cartridge will not be available to createSubscription";
+                String msg = "Already subscribed to " + cartridgeInfo.getType() + ". This multi-tenant cartridge will not be available to createSubscription";
                 if (log.isDebugEnabled()) {
                     log.debug(msg);
                 }
-                throw new AlreadySubscribedException(msg, cartridgeSubscription.getType());
+                throw new AlreadySubscribedException(msg, cartridgeInfo.getType());
             }
         }
 
@@ -69,7 +74,7 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
 
         Service deployedService;
         try {
-            deployedService = dataInsertionAndRetrievalManager.getService(cartridgeSubscription.getType());
+            deployedService = dataInsertionAndRetrievalManager.getService(cartridgeInfo.getType());
 
         } catch (PersistenceManagerException e) {
             String errorMsg = "Error in checking if Service is available is PersistenceManager";
@@ -78,43 +83,44 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
         }
 
         if (deployedService == null) {
-            String errorMsg = "There is no deployed Service for type " + cartridgeSubscription.getType();
+            String errorMsg = "There is no deployed Service for type " + cartridgeInfo.getType();
             log.error(errorMsg);
             throw new ADCException(errorMsg);
         }
 
         //set the cluster and hostname
-        cartridgeSubscription.setClusterDomain(deployedService.getClusterId());
-        cartridgeSubscription.setHostName(deployedService.getHostName());
+        cluster.setClusterDomain(deployedService.getClusterId());
+        cluster.setHostName(deployedService.getHostName());
 
-        if (cartridgeSubscription.getRepository() != null) {
+        if (repository != null) {
 
             // publish the ArtifactUpdated event
             log.info(" Multitenant --> Publishing Artifact update event -- ");
-            log.info(" Values :  cluster id - " + cartridgeSubscription.getClusterDomain() + "  tenant - " +
-                    cartridgeSubscription.getSubscriber().getTenantId());
+            log.info(" Values :  cluster id - " + cluster.getClusterDomain() + "  tenant - " + subscriber.getTenantId());
             InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
-            publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
-                    cartridgeSubscription.getClusterDomain(), // clusterId
-                    String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+            publisher.sendArtifactUpdateEvent(repository, cluster.getClusterDomain(), String.valueOf(subscriber.getTenantId()));
 
         } else {
             if(log.isDebugEnabled()) {
-                log.debug("No repository found for subscription with alias: " + cartridgeSubscription.getAlias() + ", type: " + cartridgeSubscription.getType()+
+                log.debug("No repository found for subscription with alias: " + alias + ", type: " + cartridgeInfo.getType() +
                         ". Not sending the Artifact Updated event");
             }
         }
+
+        // no payload
+        return null;
     }
 
-    public void registerSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)
+    public void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
+                          String deploymentPolicyName, Properties properties)
             throws ADCException, UnregisteredCartridgeException {
 
         //nothing to do
     }
 
-    public void removeSubscription(CartridgeSubscription cartridgeSubscription) throws ADCException, NotSubscribedException {
+    public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
 
-        log.info("Cartridge with alias " + cartridgeSubscription.getAlias() + ", and type " + cartridgeSubscription.getType() +
+        log.info("Cartridge Subscription with alias " + alias + ", and cluster id " + clusterId +
                 " is a multi-tenant cartridge and therefore will not terminate all instances and " +
                 "unregister services");
     }

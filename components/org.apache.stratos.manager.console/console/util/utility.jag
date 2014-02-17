@@ -193,7 +193,7 @@ consoleAppUtil = new function(){
             if(par_res.partition.length == 0){
                 configStatus.first_use = true;
             }else{
-            var car_res = this.sendReceive("GET","/cartridge/list",{}).data;
+            var car_res = this.sendReceive("GET","/cartridge/available/list",{}).data;
             var get_status = session.get("get-status");
 
             if(get_status == "succeeded") {
@@ -201,15 +201,13 @@ consoleAppUtil = new function(){
                         configStatus.first_use = false;
                         configStatus.not_complete = true;
                     }else{
+
                         configStatus.not_complete = false;
                         configStatus.first_use = false;
                     }
                 }
             }
-        } else {
-
         }
-
         return configStatus;
     };
 

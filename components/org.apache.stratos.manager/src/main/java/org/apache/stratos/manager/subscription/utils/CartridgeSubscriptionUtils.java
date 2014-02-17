@@ -22,14 +22,16 @@ package org.apache.stratos.manager.subscription.utils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
 import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
 import org.apache.stratos.manager.payload.BasicPayloadData;
+import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
@@ -41,28 +43,28 @@ public class CartridgeSubscriptionUtils {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionUtils.class);
 
-    public static BasicPayloadData createBasicPayload (CartridgeSubscription cartridgeSubscription) {
+    public static BasicPayloadData createBasicPayload (CartridgeInfo cartridgeInfo, String subscriptionKey, Cluster cluster,
+                                                       Repository repository, String alias, Subscriber subscriber) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
-        basicPayloadData.setApplicationPath(cartridgeSubscription.getCartridgeInfo().getBaseDir());
-        basicPayloadData.setSubscriptionKey(cartridgeSubscription.getSubscriptionKey());
-        basicPayloadData.setClusterId(cartridgeSubscription.getClusterDomain());
+        basicPayloadData.setApplicationPath(cartridgeInfo.getBaseDir());
+        basicPayloadData.setSubscriptionKey(subscriptionKey);
+        basicPayloadData.setClusterId(cluster.getClusterDomain());
         basicPayloadData.setDeployment("default");//currently hard coded to default
-        if(cartridgeSubscription.getRepository() != null) {
-            basicPayloadData.setGitRepositoryUrl(cartridgeSubscription.getRepository().getUrl());
+        if(repository != null) {
+            basicPayloadData.setGitRepositoryUrl(repository.getUrl());
         }
-        basicPayloadData.setHostName(cartridgeSubscription.getHostName());
-        basicPayloadData.setMultitenant(String.valueOf(cartridgeSubscription.getCartridgeInfo().getMultiTenant()));
-        basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridgeSubscription.getCartridgeInfo()));
-        basicPayloadData.setServiceName(cartridgeSubscription.getCartridgeInfo().getType());
-        basicPayloadData.setSubscriptionAlias(cartridgeSubscription.getAlias());
-        basicPayloadData.setTenantId(cartridgeSubscription.getSubscriber().getTenantId());
+        basicPayloadData.setHostName(cluster.getHostName());
+        basicPayloadData.setMultitenant(String.valueOf(cartridgeInfo.getMultiTenant()));
+        basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridgeInfo));
+        basicPayloadData.setServiceName(cartridgeInfo.getType());
+        basicPayloadData.setSubscriptionAlias(alias);
+        basicPayloadData.setTenantId(subscriber.getTenantId());
         //TODO:remove. we do not want to know about the tenant rance in subscription!
-        if(cartridgeSubscription.getCartridgeInfo().getMultiTenant() ||
-                cartridgeSubscription.getSubscriber().getTenantId() == -1234) {  //TODO: fix properly
+        if(cartridgeInfo.getMultiTenant() || subscriber.getTenantId() == -1234) {  //TODO: fix properly
             basicPayloadData.setTenantRange("*");
         } else {
-            basicPayloadData.setTenantRange(String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+            basicPayloadData.setTenantRange(String.valueOf(subscriber.getTenantId()));
         }
 
         return basicPayloadData;
