@@ -59,5 +59,6 @@ public class Constants {
     public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
+	public static final String GRACEFUL_SHUTDOWN_TIMEOUT = "graceful.shutdown.timeout";
 
 }
