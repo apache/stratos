@@ -66,6 +66,15 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         deployment.setArgName("deployment-policy");
         options.addOption(deployment);
 
+        Option removeOnTermination = new Option(CliConstants.REMOVE_ON_TERMINATION_OPTION, CliConstants.REMOVE_ON_TERMINATION_LONG_OPTION,
+                true, "Remove-on-termination");
+        removeOnTermination.setArgName("remove-on-termination");
+        options.addOption(removeOnTermination);
+
+        Option size = new Option(CliConstants.VOLUME_SIZE_OPTION, CliConstants.VOLUME_SIZE_LONG_OPTION, true, "Volume-size");
+        size.setArgName("volume-size");
+        options.addOption(size);
+
 		Option connectOption = new Option(CliConstants.CONNECT_OPTION, CliConstants.CONNECT_LONG_OPTION, true,
 				"Data cartridge type");
 		connectOption.setArgName("data cartridge type");
@@ -122,7 +131,11 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
             String asPolicy = null;
             String depPolicy = null;
 			String repoURL = null, dataCartridgeType = null, dataCartridgeAlias = null, username = "", password = "";
+            String size = null;
+
+            boolean removeOnTermination = false;
 			boolean privateRepo = false;
+
 			final CommandLineParser parser = new GnuParser();
 			CommandLine commandLine;
 			try {
@@ -171,6 +184,20 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 				//	}
 				//	privateRepo = true;
 				//}
+                if (commandLine.hasOption(CliConstants.VOLUME_SIZE_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Volume size option is passed");
+
+                    }
+                    size = commandLine.getOptionValue(CliConstants.VOLUME_SIZE_OPTION);
+                }
+                if (commandLine.hasOption(CliConstants.REMOVE_ON_TERMINATION_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Remove on termination option is passed");
+
+                    }
+                    removeOnTermination = true;
+                }
 				if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Username option is passed");
@@ -219,10 +246,10 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 				}
 
                 RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
-                		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy);
-				//CommandLineService.getInstance().subscribe(type, alias, policy, repoURL, privateRepo, username,
-				//		password, dataCartridgeType, dataCartridgeAlias);
+                		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy, size, removeOnTermination);
+
 				return CliConstants.SUCCESSFUL_CODE;
+
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments", e);

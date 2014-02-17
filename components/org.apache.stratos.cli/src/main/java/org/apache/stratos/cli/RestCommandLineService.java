@@ -708,7 +708,8 @@ public class RestCommandLineService {
 
 	// This method does the cartridge subscription
     public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
-                          String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy, String depPolicy)
+                          String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy,
+                          String depPolicy, String size, boolean remoOnTermination)
             throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
@@ -723,6 +724,8 @@ public class RestCommandLineService {
         cartridgeInfoBean.setDeploymentPolicy(null);
         cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
         cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
+        cartridgeInfoBean.setSize(size);
+        cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
@@ -784,6 +787,8 @@ public class RestCommandLineService {
             cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
             cartridgeInfoBean.setAutoscalePolicy(asPolicy);
             cartridgeInfoBean.setDeploymentPolicy(depPolicy);
+            cartridgeInfoBean.setSize(size);
+            cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
 
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
             completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";

@@ -56,7 +56,7 @@ public class CartridgeInfo {
     
     private LoadbalancerConfig lbConfig;
 
-    private PersistanceMapping[] peristanceMappings;
+    private Persistence persistence;
 
     public CartridgeInfo(){
     	
@@ -193,17 +193,17 @@ public class CartridgeInfo {
         this.defaultDeploymentPolicy = defaultDeploymentPolicy;
     }
 
-    /**
-	 * @return the peristanceMappings
+     /**
+	 * @return the persistence
 	 */
-	public PersistanceMapping[] getPeristanceMappings() {
-		return peristanceMappings;
-	}
+    public Persistence getPersistence() {
+        return persistence;
+    }
 
-	/**
-	 * @param peristanceMappings the peristanceMappings to set
+    /**
+	 * @param persistence the persistanceMappings to set
 	 */
-	public void setPeristanceMappings(PersistanceMapping[] peristanceMappings) {
-		this.peristanceMappings = peristanceMappings;
-	}
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
 }
