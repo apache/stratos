@@ -907,8 +907,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         property = props.getProperty(Constants.DEVICE_NAME);
         String deviceName = property != null ? property : null;
         
-	    dataHolder.addClusterContext(new ClusterContext(clusterId, cartridgeType, payload, 
-	    		hostName, isLb, isVolumeRequired, shouldDeleteVolume, volumeSize, deviceName));
+        property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
+        long timeout = property != null ? Long.parseLong(property) : 30000;
+        
+	    ClusterContext ctxt = new ClusterContext(clusterId, cartridgeType, payload, 
+	    		hostName, isLb);
+	    ctxt.setVolumeRequired(isVolumeRequired);
+	    ctxt.setShouldDeleteVolume(shouldDeleteVolume);
+	    ctxt.setDeviceName(deviceName);
+	    ctxt.setVolumeSize(volumeSize);
+	    ctxt.setTimeoutInMillis(timeout);
+	    
+		dataHolder.addClusterContext(ctxt);
 	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
 	    persist();
@@ -961,16 +971,33 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Runnable r = new Runnable() {
                  public void run() {
                      ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                     if(ctxt == null) {
+                    	 String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                    	 log.error(msg);
+                     }
                      Collection<Member> members = TopologyManager.getTopology().
                              getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                     while(members.size() > 0) {
-                        //waiting until all the members got removed from the Topology
+                     long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+                     
+                     while(members.size() > 0 && System.currentTimeMillis()< endTime) {
+                        //waiting until all the members got removed from the Topology/ timed out
                         CloudControllerUtil.sleep(1000);
                      }
-                    if(ctxt == null) {
-                        String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                        log.error(msg);
-                    }
+                     
+                     // if there're still alive members
+                     if(members.size() > 0) {
+                    	 //forcefully terminate them
+                    	 for (Member member : members) {
+							
+                    		 try {
+								terminateInstance(member.getMemberId());
+							} catch (Exception e) {
+								// we are not gonna stop the execution due to errors.
+								log.warn("Instance termination failed of member [id] "+member.getMemberId(), e);
+							}
+						}
+                     }
+                     
                      log.info("Unregistration of service cluster: " + clusterId_);
                      if(ctxt.shouldDeleteVolume()) {
                     	 Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
