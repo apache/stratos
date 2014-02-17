@@ -53,8 +53,10 @@ import org.jclouds.ec2.features.ElasticBlockStoreApi;
 import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 import org.jclouds.ec2.options.DetachVolumeOptions;
+import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
@@ -81,27 +83,27 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	public void buildTemplate() {
-		IaasProvider iaas = getIaasProvider();
-		if (iaas.getComputeService() == null) {
+		IaasProvider iaasInfo = getIaasProvider();
+		if (iaasInfo.getComputeService() == null) {
 			String msg = "Compute service is null for IaaS provider: "
-					+ iaas.getName();
+					+ iaasInfo.getName();
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
 
-		TemplateBuilder templateBuilder = iaas.getComputeService()
+		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
 
 		// set image id specified
-		templateBuilder.imageId(iaas.getImage());
+		templateBuilder.imageId(iaasInfo.getImage());
 
-        if(!(iaas instanceof IaasProvider)) {
-           templateBuilder.locationId(iaas.getType());
+        if(!(iaasInfo instanceof IaasProvider)) {
+           templateBuilder.locationId(iaasInfo.getType());
         }
 
-		if (iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
 			// set instance type eg: m1.large
-			templateBuilder.hardwareId(iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE));
+			templateBuilder.hardwareId(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE));
 		}
 
 		// build the Template
@@ -111,7 +113,7 @@ public class AWSEC2Iaas extends Iaas {
 		// blocking, but if you
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+		boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
 				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
@@ -122,43 +124,50 @@ public class AWSEC2Iaas extends Iaas {
 				.inboundPorts(new int[] {});
 
 		// set EC2 specific options
-		if (iaas.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.subnetId(iaas.getProperty(CloudControllerConstants.SUBNET_ID));
+					.subnetId(iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID));
 		}
 
-		if (iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.placementGroup(iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
+					.placementGroup(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
 		}
 
         // security group names
-		if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
 					.securityGroups(
-							iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 
 		}
 
         // security group ids
-        if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
+        if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(AWSEC2TemplateOptions.class)
-                    .securityGroupIds(iaas.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
+                    .securityGroupIds(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
                                         .split(CloudControllerConstants.ENTRY_SEPARATOR));
 
         }
 
 
-		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.keyPair(iaas.getProperty(CloudControllerConstants.KEY_PAIR));
+					.keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+		}
+		
+		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
+			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
+			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
+			template.getOptions()
+					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
 		}
 
 		// set Template
-		iaas.setTemplate(template);
+		iaasInfo.setTemplate(template);
 	}
 
 	@Override

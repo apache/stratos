@@ -60,6 +60,7 @@ import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
@@ -140,6 +141,13 @@ public class OpenstackNovaIaas extends Iaas {
 		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
 					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+		}
+		
+		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
+			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
+			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
+			template.getOptions()
+					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
 		}
 		
 		//TODO
@@ -388,6 +396,8 @@ public class OpenstackNovaIaas extends Iaas {
 	public String createVolume(int sizeGB) {
 		IaasProvider iaasInfo = getIaasProvider();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
+		
         if (region == null || iaasInfo == null) {
         	log.fatal("Cannot create a new volume in the [region] : "+region
 					+" of Iaas : "+iaasInfo);
@@ -397,15 +407,15 @@ public class OpenstackNovaIaas extends Iaas {
         
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
-        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(region));
+        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
         if (volume == null) {
-			log.fatal("Volume creation was unsuccessful. [region] : " + region
+			log.fatal("Volume creation was unsuccessful. [region] : " + region+" [zone] : " + zone
 					+ " of Iaas : " + iaasInfo);
 			return null;
 		}
 		
 		log.info("Successfully created a new volume [id]: "+volume.getId()
-				+" in [region] : "+region+" of Iaas : "+iaasInfo);
+				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo);
 		return volume.getId();
 	}
 
