@@ -51,6 +51,8 @@ import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
+import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
+import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneAPI;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
@@ -351,7 +353,26 @@ public class OpenstackNovaIaas extends Iaas {
     public boolean isValidZone(String region, String zone) throws InvalidZoneException {
     	IaasProvider iaasInfo = getIaasProvider();
     	
-        // jclouds doesn't support zone in Openstack-Nova API
+    	// jclouds availability zone = stratos zone
+    	if (region == null || zone == null || iaasInfo == null) {
+            String msg = "Host or Zone or IaaSProvider is null: region: " + region + " - zone: " +
+                    zone + " - IaaSProvider: " + iaasInfo;
+            log.error(msg);
+            throw new InvalidZoneException(msg);
+        }
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        AvailabilityZoneAPI zoneApi = nova.getApi().getAvailabilityZoneApi(region);
+        for (AvailabilityZone z : zoneApi.list()) {
+			
+        	if (zone.equalsIgnoreCase(z.getName())) {
+        		if (log.isDebugEnabled()) {
+        			log.debug("Found a matching availability zone: " + zone);
+        		}
+        		return true;
+        	}
+		}
+        
         String msg = "Invalid zone: " + zone +" in the region: "+region+ " and of the iaas: "+iaasInfo.getType();
         log.error(msg);
         throw new InvalidZoneException(msg);

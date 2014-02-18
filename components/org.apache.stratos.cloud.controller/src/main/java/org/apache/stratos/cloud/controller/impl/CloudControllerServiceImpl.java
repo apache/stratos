@@ -296,10 +296,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String group = str.replaceAll("[^a-z0-9-]", "");
             
             if(ctxt.isVolumeRequired()) {
-            	if (ctxt.getVolumeId() == null) {
-            		// create a new volume
-            		createVolumeAndSetInClusterContext(ctxt, iaasProvider);
-            	} 
+            	if (!ctxt.getListOfVolumes().isEmpty()) {
+            		for (Volume volume : ctxt.getListOfVolumes()) {
+						
+            			if (volume.getId() == null) {
+            				// create a new volume
+            				createVolumeAndSetInClusterContext(volume, iaasProvider);
+            			} 
+					}
+            	}
             }
             
             NodeMetadata node;
@@ -328,14 +333,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Node id was set. "+memberContext.toString());
                 }
                 
-                // attach volume
+                // attach volumes
 			if (ctxt.isVolumeRequired()) {
 				// remove region prefix
 				String instanceId = nodeId.indexOf('/') != -1 ? nodeId
 						.substring(nodeId.indexOf('/') + 1, nodeId.length())
 						: nodeId;
 				memberContext.setInstanceId(instanceId);
-				iaas.attachVolume(instanceId, ctxt.getVolumeId(), ctxt.getDeviceName());
+				if (!ctxt.getListOfVolumes().isEmpty()) {
+            		for (Volume volume : ctxt.getListOfVolumes()) {
+            			
+            			iaas.attachVolume(instanceId, volume.getId(), volume.getDevice());
+            		}
+				}
 			}
 
             log.info("Instance is successfully starting up. "+memberContext.toString());
@@ -350,7 +360,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-	private void createVolumeAndSetInClusterContext(ClusterContext ctxt,
+	private void createVolumeAndSetInClusterContext(Volume volume,
 			IaasProvider iaasProvider) {
 
 		Iaas iaas = iaasProvider.getIaas();
@@ -364,9 +374,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				throw new CloudControllerException(msg, e);
 			}
 		}
-		int sizeGB = ctxt.getVolumeSize();
+		int sizeGB = volume.getSize();
 		String volumeId = iaas.createVolume(sizeGB);
-		ctxt.setVolumeId(volumeId);
+		volume.setId(volumeId);
+		volume.setIaasType(iaasProvider.getType());
 	}
 
 	private StringBuilder getPersistencePayload(Cartridge cartridge) {
@@ -834,18 +845,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	private void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
-		try {
 		String clusterId = ctxt.getClusterId();
 		ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
-		String volumeId = clusterCtxt.getVolumeId();
-		if(volumeId == null) {
-			return;
-		}
-		Iaas iaas = iaasProvider.getIaas();
-		iaas.detachVolume(ctxt.getInstanceId(), volumeId);
-		} catch (ResourceNotFoundException ignore) {
-			if(log.isDebugEnabled()) {
-				log.debug(ignore);
+		if (clusterCtxt.getListOfVolumes() != null) {
+			for (Volume volume : clusterCtxt.getListOfVolumes()) {
+				
+				try {
+					String volumeId = volume.getId();
+					if (volumeId == null) {
+						return;
+					}
+					Iaas iaas = iaasProvider.getIaas();
+					iaas.detachVolume(ctxt.getInstanceId(), volumeId);
+				} catch (ResourceNotFoundException ignore) {
+					if(log.isDebugEnabled()) {
+						log.debug(ignore);
+					}
+				}
 			}
 		}
 	}
@@ -888,7 +904,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	        throw new IllegalArgumentException(msg);
 	    }
 	    
-        if (dataHolder.getCartridge(cartridgeType) == null) {
+        Cartridge cartridge = null;
+        if ((cartridge = dataHolder.getCartridge(cartridgeType)) == null) {
 
             String msg = "Registration of cluster: "+clusterId+
                     " failed. - Unregistered Cartridge type: " + cartridgeType;
@@ -900,25 +917,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
-        property = props.getProperty(Constants.IS_VOLUME_REQUIRED);
-        boolean isVolumeRequired = property != null ? Boolean.parseBoolean(property) : false;
-
-        property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
-        boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : false;
-        
-        property = props.getProperty(Constants.VOLUME_SIZE);
-        int volumeSize = property != null ? Integer.parseInt(property) : 0;
-        
-        property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
-        long timeout = property != null ? Long.parseLong(property) : 30000;
-        
-	    ClusterContext ctxt = new ClusterContext(clusterId, cartridgeType, payload, 
-	    		hostName, isLb);
-	    ctxt.setVolumeRequired(isVolumeRequired);
-	    ctxt.setShouldDeleteVolume(shouldDeleteVolume);
-	    //ctxt.setDeviceName(deviceName);
-	    ctxt.setVolumeSize(volumeSize);
-	    ctxt.setTimeoutInMillis(timeout);
+        ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
+				payload, hostName, props, isLb);
 	    
 		dataHolder.addClusterContext(ctxt);
 	    TopologyBuilder.handleClusterCreated(registrant, isLb);
@@ -926,6 +926,55 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    persist();
 	    
 		return true;
+	}
+
+	private ClusterContext buildClusterContext(Cartridge cartridge,
+			String clusterId, String payload, String hostName,
+			Properties props, boolean isLb) {
+		
+		// initialize ClusterContext
+		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
+				hostName, isLb);
+		
+		String property;
+		property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
+		long timeout = property != null ? Long.parseLong(property) : 30000;
+		
+		property = props.getProperty(Constants.IS_VOLUME_REQUIRED);
+        boolean isVolumeRequired = property != null ? Boolean.parseBoolean(property) : false;
+        
+        if(isVolumeRequired) {
+        	Persistence persistenceData = cartridge.getPersistence();
+        	
+        	if(persistenceData != null) {
+        		Volume[] volumes = persistenceData.getVolumes();
+        		
+        		property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
+        		property = props.getProperty(Constants.VOLUME_SIZE);
+        		
+        		for (Volume volume : volumes) {
+        			int volumeSize = property != null ? Integer.parseInt(property) : volume.getSize();
+        			boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
+        			
+        			Volume v = new Volume();
+        			v.setSize(volumeSize);
+        			v.setRemoveOntermination(shouldDeleteVolume);
+        			v.setDevice(volume.getDevice());
+        			v.setMappingPath(volume.getMappingPath());
+        			ctxt.addVolume(v);
+					
+				}
+        	} else {
+        		// if we cannot find necessary data, we would not consider 
+        		// this as a volume required instance.
+        		isVolumeRequired = false;
+        	}
+        	
+        	ctxt.setVolumeRequired(isVolumeRequired);
+        }
+        
+	    ctxt.setTimeoutInMillis(timeout);
+		return ctxt;
 	}
 
 	@Override
@@ -1001,23 +1050,36 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                      }
                      
                      log.info("Unregistration of service cluster: " + clusterId_);
-                     if(ctxt.shouldDeleteVolume()) {
-                    	 Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
-                    	 if(cartridge != null && cartridge.getIaases() != null) {
-                    		 for (IaasProvider prov : cartridge.getIaases()) {
-								if (prov != null) {
-									Iaas iaas = prov.getIaas();
-									iaas.deleteVolume(ctxt.getVolumeId());
-								}
-							}
-                    		 
-                    	 }
-                     }
+                     deleteVolumes(ctxt);
                      TopologyBuilder.handleClusterRemoved(ctxt);
                      dataHolder.removeClusterContext(clusterId_);
                      dataHolder.removeMemberContextsOfCluster(clusterId_);
                      persist();
                  }
+
+				private void deleteVolumes(ClusterContext ctxt) {
+					if(ctxt.isVolumeRequired()) {
+                    	 Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
+                    	 if(cartridge != null && cartridge.getIaases() != null && !ctxt.getListOfVolumes().isEmpty()) {
+                    		 for (Volume volume : ctxt.getListOfVolumes()) {
+								if(volume.getId() != null) {
+									String iaasType = volume.getIaasType();
+									Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+									if(iaas != null) {
+										try {
+										// delete the volume
+										iaas.deleteVolume(volume.getId());
+										} catch(Exception ignore) {
+											if(log.isDebugEnabled()) {
+												log.debug(ignore);
+											}
+										}
+									}
+								}
+							}
+                    	 }
+                     }
+				}
             };
         new Thread(r).start();
         
