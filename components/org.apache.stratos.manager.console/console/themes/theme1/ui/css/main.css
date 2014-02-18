@@ -282,6 +282,13 @@ h4{
     padding-top:10px;
     font-size: 12px;
 }
+
+.lb-description{
+    padding-top:10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: green;
+}
 .required{
     font-weight: bold;
 }
