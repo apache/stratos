@@ -22,9 +22,11 @@ package org.apache.stratos.autoscaler.policy;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
@@ -61,6 +63,9 @@ public class PolicyManager {
 
     // Add the policy to information model and persist.
     public boolean deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
+        if(StringUtils.isEmpty(policy.getId())){
+            throw new AutoScalerException("AutoScaling policy id can not be empty");
+        }
         this.addASPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
@@ -71,6 +76,9 @@ public class PolicyManager {
 
     // Add the deployment policy to information model and persist.
     public boolean deployDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
+        if(StringUtils.isEmpty(policy.getId())){
+            throw new AutoScalerException("Deploying policy id can not be empty");
+        }
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Deploying deployment policy: [id] %s", policy.getId()));
