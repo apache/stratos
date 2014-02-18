@@ -4,7 +4,7 @@ var caramel = require('caramel');
 var utils = require('/util/utility.jag');
 var tenants =  utils.consoleAppUtil.getTenants();
 var config_status = require('/data/config_status.json');
-log.info(tenants);
+log.debug(tenants);
 caramel.render({
     tenants:tenants.tenantInfoBean,
     config_status:config_status

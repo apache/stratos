@@ -467,8 +467,8 @@ textarea.jsonEditor{
     margin-top:-10px;
 }
 div.error{
-    background:#fa6f3e;
-    color:#444;
+    background: none repeat scroll 0 0 #FF2222;
+    color: #FFFFFF;
 }
 
 div.success{
@@ -566,4 +566,12 @@ label.error{
 }
 .un-subscribe-container i{
     font-size:20px;
+}
+.terms-of-use-check{
+    padding-bottom:20px;
+}
+.terms-of-use-check label.error{
+    position: absolute;
+    margin-left: 0;
+    margin-top: 20px;
 }
