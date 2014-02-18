@@ -1,15 +1,15 @@
 var render = function (theme, data, meta, require) {
     // Re-create the data structure of the cartridges.
-    var log = new Log();
-    log.info("#########################");
-    log.info(data.cartridgeInfo);
     theme('index', {
         body: [
             {
                 partial: 'cartridge_info',
                 context: {
                     title:'Cartridges',
-                    cartridgeInfo:data.cartridgeInfo
+                    cartridgeInfo:data.cartridgeInfo,
+                    lbclusterinfo:data.lbCluster,
+                    clusterinfo:data.clusterInfo,
+                    host:data.cartridgeInfo.hostName
                 }
             }
         ],

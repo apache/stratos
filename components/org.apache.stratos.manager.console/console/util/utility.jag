@@ -180,6 +180,13 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/cartridge/lb",{}).data;
     };
 
+    this.getClusterInfo = function(clusterId){
+        return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{}).data;
+    };
+
+    this.getClusterInfoWithAlias = function(cartridgeType, alias){
+        return this.sendReceive("GET","/cluster/" + cartridgeType + "/" + alias,{}).data;
+    };
     this.getCartridgeInfo = function(alias){
         return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };
