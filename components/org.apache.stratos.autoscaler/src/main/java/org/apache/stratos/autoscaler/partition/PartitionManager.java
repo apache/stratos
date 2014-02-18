@@ -19,6 +19,7 @@
 
 package org.apache.stratos.autoscaler.partition;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
@@ -72,7 +73,9 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	 * Deploy a new partition to Auto Scaler.
 	 */
     public boolean addNewPartition(Partition partition) throws AutoScalerException, InvalidPartitionException {
-
+        if (StringUtils.isEmpty(partition.getId())){
+            throw new AutoScalerException("Partition id can not be empty");
+        }
         if (this.partitionExist(partition.getId())) {
             throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
         }
