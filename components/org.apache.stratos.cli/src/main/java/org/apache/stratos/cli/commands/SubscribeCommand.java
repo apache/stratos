@@ -75,6 +75,11 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         size.setArgName("volume-size");
         options.addOption(size);
 
+        Option persistance = new Option(CliConstants.PERSISTANCE_MAPPING_OPTION, CliConstants.PERSISTANCE_MAPPING_LONG_OPTION,
+                true, "Persistance-mapping");
+        persistance.setArgName("persistance-mapping");
+        options.addOption(persistance);
+
 		Option connectOption = new Option(CliConstants.CONNECT_OPTION, CliConstants.CONNECT_LONG_OPTION, true,
 				"Data cartridge type");
 		connectOption.setArgName("data cartridge type");
@@ -135,6 +140,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 
             boolean removeOnTermination = false;
 			boolean privateRepo = false;
+            boolean persistanceMapping = false;
 
 			final CommandLineParser parser = new GnuParser();
 			CommandLine commandLine;
@@ -198,6 +204,13 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     }
                     removeOnTermination = true;
                 }
+                if (commandLine.hasOption(CliConstants.PERSISTANCE_MAPPING_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Persistance mapping option is passed");
+
+                    }
+                    persistanceMapping = true;
+                }
 				if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Username option is passed");
@@ -234,6 +247,12 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.BAD_ARGS_CODE;
                 }
+
+                if ( (! persistanceMapping) && ((size != null) || removeOnTermination)) {
+                    System.out.println("You have to enable persistance mapping in cartridge subscription");
+                    context.getStratosApplication().printUsage(getName());
+                    return CliConstants.BAD_ARGS_CODE;
+                }
 				
 				if (StringUtils.isNotBlank(username) && StringUtils.isBlank(password)) {
 					password = context.getApplication().getInput("GIT Repository Password", '*');
@@ -246,7 +265,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 				}
 
                 RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
-                		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy, size, removeOnTermination);
+                		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy, size, removeOnTermination,
+                        persistanceMapping);
 
 				return CliConstants.SUCCESSFUL_CODE;
 

@@ -32,11 +32,12 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.util.Constants;
 
 import java.util.List;
 import java.util.Properties;
@@ -341,6 +342,47 @@ public class TopologyBuilder {
                                             null);
         //calling the actual termination of the instance
         new CloudControllerServiceImpl().terminateInstance(memberId);
+
+    }
+
+     public static void handleMemberMaintenance(InstanceMaintenanceModeEvent instanceMaintenanceModeEvent)
+                            throws InvalidMemberException, InvalidCartridgeTypeException {
+        String memberId = instanceMaintenanceModeEvent.getMemberId();
+        Topology topology = TopologyManager.getTopology();
+        Service service = topology.getService(instanceMaintenanceModeEvent.getServiceName());
+        //update the status of the member
+        if (service == null) {
+            throw new RuntimeException(String.format("Service %s does not exist",
+                                                     instanceMaintenanceModeEvent.getServiceName()));
+        }
+
+        Cluster cluster = service.getCluster(instanceMaintenanceModeEvent.getClusterId());
+        if (cluster == null) {
+            throw new RuntimeException(String.format("Cluster %s does not exist",
+                                                     instanceMaintenanceModeEvent.getClusterId()));
+        }
+        Member member = cluster.getMember(instanceMaintenanceModeEvent.getMemberId());
+        if (member == null) {
+            throw new RuntimeException(String.format("Member %s does not exist",
+                    instanceMaintenanceModeEvent.getMemberId()));
+        }
+        MemberMaintenanceModeEvent memberMaintenanceModeEvent = new MemberMaintenanceModeEvent(
+                                                                instanceMaintenanceModeEvent.getServiceName(),
+                                                                instanceMaintenanceModeEvent.getClusterId(),
+                                                                instanceMaintenanceModeEvent.getNetworkPartitionId(),
+                                                                instanceMaintenanceModeEvent.getPartitionId(),
+                                                                instanceMaintenanceModeEvent.getMemberId());
+        try {
+            TopologyManager.acquireWriteLock();
+            member.setStatus(MemberStatus.Maintenance);
+            log.info("member maintenance mode event adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendMemberMaintenanceModeEvent(memberMaintenanceModeEvent);
 
     }
 

@@ -246,8 +246,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
-                        
-            addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
+
+            if(ctxt.isVolumeRequired()){
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
+            }
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -342,8 +344,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				memberContext.setInstanceId(instanceId);
 				if (!ctxt.getListOfVolumes().isEmpty()) {
             		for (Volume volume : ctxt.getListOfVolumes()) {
-            			
+            			try {
             			iaas.attachVolume(instanceId, volume.getId(), volume.getDevice());
+						} catch (Exception e) {
+					//continue without throwing an exception, since there is an instance already running
+					log.error("Attaching Volume to Instance [ " + instanceId + " ] failed!", e);
+				}
             		}
 				}
 			}
@@ -1077,6 +1083,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 									}
 								}
 							}
+                    		 
                     	 }
                      }
 				}

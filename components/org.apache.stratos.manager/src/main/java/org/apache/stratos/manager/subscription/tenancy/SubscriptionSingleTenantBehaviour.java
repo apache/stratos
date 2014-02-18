@@ -35,6 +35,7 @@ import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.payload.PayloadFactory;
 import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.service.InstanceCleanupNotificationService;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
@@ -117,22 +118,12 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
     }
 
     public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
+        //sending instance cleanup notification for the cluster, so that members in the cluster would aware of the termination
+        // and perform the house keeping task.
 
-        try {
-            CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
+        new InstanceCleanupNotificationService().sendInstanceCleanupNotificationForCluster(clusterId);
 
-        } catch (AxisFault e) {
-            String errorMsg = "Error in terminating cartridge subscription, alias " + alias;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-
-        } catch (Exception e) {
-            String errorMsg = "Error in terminating cartridge subscription, alias " + alias;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Terminated all instances of " + clusterId);
+        log.info("Instance Cleanup Notification sent to Cluster:  " + clusterId);
 
         try {
             CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);

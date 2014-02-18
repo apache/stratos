@@ -1,3 +1,5 @@
+package org.apache.stratos.cartridge.agent.data.publisher;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -7,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,15 +19,11 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology;
+public interface GenericDataPublisher {
 
-import javax.xml.bind.annotation.XmlRootElement;
+    public void initialize ();
 
-/**
- * Represents status of a member during its lifecycle.
- */
-@XmlRootElement
-public enum MemberStatus {
-    Created, Starting, Activated, Suspended, ReadyToShutDown, ShuttingDown, Terminated, Maintenance
+    public void publish (DataContext dataContext);
 
+    public void terminate ();
 }

@@ -23,8 +23,8 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import java.io.Serializable;
 import java.util.Properties;
 
-public class MemberReadyToShutdownEvent extends TopologyEvent implements Serializable {
-    private final String serviceName;
+public class MemberMaintenanceModeEvent extends TopologyEvent implements Serializable {
+     private final String serviceName;
     private final String clusterId;
     private final String networkPartitionId;
     private final String partitionId;
@@ -32,7 +32,7 @@ public class MemberReadyToShutdownEvent extends TopologyEvent implements Seriali
     private MemberStatus status;
     private Properties properties;
 
-    public MemberReadyToShutdownEvent(String serviceName, String clusterId,
+    public MemberMaintenanceModeEvent(String serviceName, String clusterId,
                                       String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;

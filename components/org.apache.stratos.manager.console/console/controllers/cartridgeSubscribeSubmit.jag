@@ -12,9 +12,8 @@
     var repoPassword = request.getParameter('repoPassword');
     var autoscalePolicy = request.getParameter('autoscalePolicy');
     var deploymentPolicy = request.getParameter('deploymentPolicy');
-    var device = request.getParameter('device');
     var size = request.getParameter('size');
-    var removeontermination = request.getParameter('removeontermination');
+    var removeontermination = request.getParameter('removeOnUnsubscription');
     var persistencerequired = request.getParameter('persistencerequired');
 
 
@@ -31,7 +30,6 @@
     jsonRequest.cartridgeInfoBean.autoscalePolicy = autoscalePolicy;
     jsonRequest.cartridgeInfoBean.deploymentPolicy = deploymentPolicy;
     jsonRequest.cartridgeInfoBean.size = size;
-    jsonRequest.cartridgeInfoBean.device = device;
     jsonRequest.cartridgeInfoBean.persistanceRequired = persistencerequired;
     jsonRequest.cartridgeInfoBean.removeOnTermination = removeontermination;
 

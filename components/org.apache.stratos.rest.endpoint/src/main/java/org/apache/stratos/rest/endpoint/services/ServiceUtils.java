@@ -219,16 +219,16 @@ public class ServiceUtils {
         return stratosAdminResponse;
     }
 
-    private static CloudControllerServiceClient getCloudControllerServiceClient () {
+    private static CloudControllerServiceClient getCloudControllerServiceClient () throws RestAPIException {
 
         try {
             return CloudControllerServiceClient.getServiceClient();
 
         } catch (AxisFault axisFault) {
-            String errorMsg = "Error in getting CloudControllerServiceClient instance";
+            String errorMsg = "Error in getting CloudControllerServiceClient instance to connect to the Cloud Controller";
             log.error(errorMsg, axisFault);
+            throw new RestAPIException(errorMsg);
         }
-        return null;
     }
 
     public static Partition[] getAvailablePartitions () throws RestAPIException {
@@ -308,16 +308,16 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionPojo(partition);
     }
 
-    private static AutoscalerServiceClient getAutoscalerServiceClient () {
+    private static AutoscalerServiceClient getAutoscalerServiceClient () throws RestAPIException {
 
         try {
             return AutoscalerServiceClient.getServiceClient();
 
         } catch (AxisFault axisFault) {
-            String errorMsg = "Error in getting AutoscalerServiceClient instance";
+            String errorMsg = "Error in getting AutoscalerServiceClient instance to connect to the Autoscaler";
             log.error(errorMsg, axisFault);
+            throw new RestAPIException(errorMsg);
         }
-        return null;
     }
 
     public static AutoscalePolicy[] getAutoScalePolicies () throws RestAPIException {
@@ -796,12 +796,22 @@ public class ServiceUtils {
         return true;
     }
 
+    static SubscriptionInfo subscribeToCartridge (CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername,
+                                                  String tenantDomain) throws RestAPIException {
 
-    static SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain)
+        try {
+            return subscribe(cartridgeInfoBean, configurationContext, tenantUsername, tenantDomain);
+
+        } catch (Exception e) {
+            throw new RestAPIException(e.getMessage());
+        }
+    }
+
+    private static SubscriptionInfo subscribe (CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain)
                                        throws ADCException, PolicyException, UnregisteredCartridgeException,
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, RepositoryRequiredException,
             AlreadySubscribedException, RepositoryCredentialsRequiredException, InvalidRepositoryException,
-            RepositoryTransportException {
+            RepositoryTransportException, RestAPIException {
         // LB cartridges won't go thru this method.
 
         //TODO: this is a temp fix. proper fix is to move this logic to CartridgeSubscriptionManager

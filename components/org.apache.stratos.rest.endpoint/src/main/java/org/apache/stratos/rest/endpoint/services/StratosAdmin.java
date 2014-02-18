@@ -356,16 +356,12 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) {
-        try {
-            return ServiceUtils.subscribe(cartridgeInfoBean,
-                    getConfigContext(),
-                    getUsername(),
-                    getTenantDomain());
-        } catch (Exception exception) {
-            log.error(exception);
-            return null;
-        }
+    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException {
+
+        return ServiceUtils.subscribeToCartridge(cartridgeInfoBean,
+                getConfigContext(),
+                getUsername(),
+                getTenantDomain());
     }
 
     @GET
