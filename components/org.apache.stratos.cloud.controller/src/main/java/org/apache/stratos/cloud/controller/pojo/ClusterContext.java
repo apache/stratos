@@ -19,6 +19,8 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds runtime data of a Cluster.
@@ -37,11 +39,7 @@ public class ClusterContext implements Serializable{
     private String hostName;
     private boolean isLbCluster;
     private boolean isVolumeRequired;
-    private boolean shouldDeleteVolume;
-    private int volumeSize;
-    private String deviceName;
-    // optional volume id
-    private String volumeId;
+    private List<Volume> listOfVolumes;
     // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
     private long timeoutInMillis;
 
@@ -52,6 +50,11 @@ public class ClusterContext implements Serializable{
         this.payload = payload;
         this.setHostName(hostName);
         this.isLbCluster = isLbCluster;
+        this.setListOfVolumes(new ArrayList<Volume>());
+    }
+    
+    public void addVolume(Volume volume) {
+    	this.getListOfVolumes().add(volume);
     }
     
     public String getClusterId() {
@@ -97,44 +100,20 @@ public class ClusterContext implements Serializable{
 		this.isVolumeRequired = isVolumeRequired;
 	}
 
-	public String getVolumeId() {
-		return volumeId;
-	}
-
-	public void setVolumeId(String volumeId) {
-		this.volumeId = volumeId;
-	}
-
-	public boolean shouldDeleteVolume() {
-		return shouldDeleteVolume;
-	}
-
-	public void setShouldDeleteVolume(boolean shouldDeleteVolume) {
-		this.shouldDeleteVolume = shouldDeleteVolume;
-	}
-
-	public int getVolumeSize() {
-		return volumeSize;
-	}
-
-	public void setVolumeSize(int volumeSize) {
-		this.volumeSize = volumeSize;
-	}
-
-	public String getDeviceName() {
-		return deviceName;
-	}
-
-	public void setDeviceName(String deviceName) {
-		this.deviceName = deviceName;
-	}
-
 	public long getTimeoutInMillis() {
 		return timeoutInMillis;
 	}
 
 	public void setTimeoutInMillis(long timeoutInMillis) {
 		this.timeoutInMillis = timeoutInMillis;
+	}
+
+	public List<Volume> getListOfVolumes() {
+		return listOfVolumes;
+	}
+
+	public void setListOfVolumes(List<Volume> listOfVolumes) {
+		this.listOfVolumes = listOfVolumes;
 	}
 
 }

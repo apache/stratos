@@ -297,6 +297,8 @@
             <xs:complexType name="Volume">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="device" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="iaasType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="mappingPath" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="removeOntermination" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="size" type="xs:int"></xs:element>

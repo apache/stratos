@@ -20,13 +20,15 @@ package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
 
-public class Volume  implements Serializable {
+public class Volume implements Serializable {
     private static final long serialVersionUID = 3455729879991902731L;
 
+    private String id;
     private int size;
 	private String device;
 	private boolean removeOntermination;
     private String mappingPath;
+    private String iaasType;
 
     public String toString () {
         return "Persistence Required: " + ", Size: " + getSize() + ", device: " + getDevice() +
@@ -64,4 +66,45 @@ public class Volume  implements Serializable {
     public void setMappingPath(String mappingPath) {
         this.mappingPath = mappingPath;
     }
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Volume other = (Volume) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	public String getIaasType() {
+		return iaasType;
+	}
+
+	public void setIaasType(String iaasType) {
+		this.iaasType = iaasType;
+	}
 }
