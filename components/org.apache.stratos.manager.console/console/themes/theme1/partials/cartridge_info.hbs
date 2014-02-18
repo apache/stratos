@@ -53,10 +53,17 @@
 
         {{/ifCond}}
         {{#if clusterinfo.member}}
-            <strong>Members in the Cluster:</strong>
+            <strong>Members Private ip(s):</strong>
             <div>
                 {{#each clusterinfo.member}}
-                  {{memberIp}} ,
+                  {{memberIp}}
+                {{/each}}
+             </div>
+
+             <strong>Members Public ip(s):</strong>
+            <div>
+                {{#each clusterinfo.member}}
+                  {{memberPublicIp}}
                 {{/each}}
              </div>
 
@@ -66,14 +73,14 @@
             <strong>LB Private ip:</strong>
             <div>
                 {{#each clusterinfo.member}}
-                          {{memberIp}}
+                          {{memberIp}};
                 {{/each}}
              </div>
 
              <strong>LB Public ip:</strong>
             <div>
                 {{#each clusterinfo.member}}
-                          {{memberPublicIp}}
+                          {{memberPublicIp}};
                 {{/each}}
              </div>
 
