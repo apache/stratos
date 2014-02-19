@@ -16,16 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.listener.topology;
 
-package org.apache.stratos.messaging.domain.topology;
+import org.apache.stratos.messaging.listener.EventListener;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-/**
- * Represents status of a member during its lifecycle.
- */
-@XmlRootElement
-public enum MemberStatus {
-    Created, Starting, Activated, Suspended, ReadyToShutDown, ShuttingDown, Terminated, In_Maintenance
-
+public abstract class MemberMaintenanceListener extends EventListener {
 }
