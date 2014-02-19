@@ -327,7 +327,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
                                             throws RestAPIException {
-        return ServiceUtils.getAvailableSingleTenantCartridgeInfo(cartridgeType, false, getConfigContext());
+        return ServiceUtils.getAvailableCartridgeInfo(cartridgeType, false, getConfigContext());
     }
 
     @GET
@@ -933,6 +933,17 @@ public class StratosAdmin extends AbstractAdmin {
 
         return ServiceUtils.getDeployedServiceInformation(serviceType);
     }
+
+    @GET
+    @Path("/service/active")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public List<Cartridge> getActiveService()throws RestAPIException {
+
+        return ServiceUtils.getActiveDeployedServiceInformation(getConfigContext());
+    }
+
 
     @DELETE
     @Path("/service/definition/{serviceType}")
