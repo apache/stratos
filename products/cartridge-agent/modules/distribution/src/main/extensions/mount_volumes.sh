@@ -30,16 +30,33 @@ echo -e "Starting mounting volumes" | tee -a $log
 source $1
 
 function mount_volume(){
-	echo -e "Formating the device $1 \n"
-	sudo mkfs -t ext4 $1
 
-	echo "Mounting  the device $1 to the mount point $2 \n"
-	if [ -d "$DIRECTORY" ]; then
-		echo "creating the directory $2 since it does not exist."
-		mkdir $2	
+	device=$1;
+	mount_point=$2;
+
+	# check if the volume has a file system
+	output=`sudo file -s $device`;
+	echo $output | tee -a $log
+
+	# this is the pattern of the output of file -s if the volume does not have a file system
+	# refer to http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
+	pattern="$device: data"
+
+	if [[ $output ==  $pattern ]]
+	then
+		echo -e "Volume is not formatted. So formating the device $device \n" | tee -a $log
+		sudo mkfs -t ext4 $device
 	fi
 
-	sudo mount $1 $2
+
+
+	echo "Mounting  the device $device to the mount point $mount_point \n" | tee -a $log
+	if [ ! -d "$DIRECTORY" ]; then
+		echo "creating the directory $mount_point since it does not exist." | tee -a $log
+		mkdir $mount_point
+	fi
+
+	sudo mount $device $mount_point
 }
 
 IFS='|' read -ra ADDR <<< "$PERSISTANCE_MAPPING"

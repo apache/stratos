@@ -325,7 +325,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             member.setStatus(MemberStatus.ReadyToShutDown);
-            log.info("member started event adding status started");
+            log.info("Member started event adding status started");
 
             TopologyManager.updateTopology(topology);
         } finally {
