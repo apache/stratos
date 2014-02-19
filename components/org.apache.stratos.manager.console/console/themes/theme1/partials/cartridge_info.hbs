@@ -72,14 +72,14 @@
         {{#if lbclusterinfo.member}}
             <strong>LB Private ip:</strong>
             <div>
-                {{#each clusterinfo.member}}
+                {{#each lbclusterinfo.member}}
                           {{memberIp}};
                 {{/each}}
              </div>
 
              <strong>LB Public ip:</strong>
             <div>
-                {{#each clusterinfo.member}}
+                {{#each lbclusterinfo.member}}
                           {{memberPublicIp}};
                 {{/each}}
              </div>
