@@ -246,16 +246,18 @@
                                             <pre>
                                             {
                                             "partition":{
-                                                  "id": "P1",
+                                                  "id": "zone-1",
                                                   "provider": "ec2",
                                                   "property": [
                                                       {
                                                         "name": "region",
                                                         "value": "ap-southeast-1"
+                                                      },
+                                                      {
+                                                        "name": "zone",
+                                                        "value": "ap-southeast-1a"
                                                       }
-                                                  ],
-                                                  "partitionMin": "1",
-                                                  "partitionMax": "3"
+                                                  ]
                                                }
                                             }
                                             </pre>
@@ -304,18 +306,36 @@
                                             Example configuration:
                                             <pre>
                                                {"deploymentPolicy": {
-                                                "id": "economyDep",
-                                                "partitionGroup": {
-                                                  "id": "ec2",
-                                                  "partitionAlgo": "one-after-another",
-                                                  "partition": [
+                                                "id": "economyDeployment",
+                                                "partitionGroup": [
                                                     {
-                                                      "id": "P2",
-                                                      "partitionMax": "3",
-                                                      "partitionMin": "1"
+                                                      "id": "ec2-region1",
+                                                      "partitionAlgo": "one-after-another",
+                                                      "partition": [
+                                                        {
+                                                          "id": "zone-1",
+                                                          "partitionMax": "3",
+                                                          "partitionMin": "1"
+                                                        },
+                                                        {
+                                                          "id": "zone-2",
+                                                          "partitionMax": "5",
+                                                          "partitionMin": "1"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "id": "ec2-region2",
+                                                      "partitionAlgo": "round-robin",
+                                                      "partition": [
+                                                        {
+                                                          "id": "region-1",
+                                                          "partitionMax": "6",
+                                                          "partitionMin": "2"
+                                                        }
+                                                      ]
                                                     }
-                                                  ]
-                                                }
+                                                ]
                                               }
                                             }
                                             </pre>
@@ -415,9 +435,9 @@
                                                 { "serviceDefinitionBean": {
                                                       "serviceName": "appserver",
                                                       "cartridgeType": "as",
-                                                      "deploymentPolicyName": "isuruh-ec2",
+                                                      "deploymentPolicyName": "economyDeployment",
                                                       "autoscalingPolicyName": "economyPolicy",
-                                                      "clusterDomain": "as.isuruh.domain",
+                                                      "clusterDomain": "as.stratos.domain",
                                                       "clusterSubDomain": "subdomain",
                                                       "tenantRange": "*"
                                                     }
