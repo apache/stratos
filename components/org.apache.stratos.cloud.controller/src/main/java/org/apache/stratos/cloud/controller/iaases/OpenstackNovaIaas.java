@@ -268,6 +268,7 @@ public class OpenstackNovaIaas extends Iaas {
 		}
 
 		int retries = 0;
+		//TODO make 5 configurable
 		while (retries < 5
 				&& !associateIp(floatingIp, ip, node.getProviderId())) {
 
