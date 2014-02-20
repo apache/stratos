@@ -31,9 +31,10 @@
                     <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistence storage
                 </label>
                 <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
-                    <h2>Persistence Mappings</h2>
                         <div class="form-group">
-                            <label class="required">Size:</label>
+                            <label class="required">Size(GB):</label>
+                        </div>
+                        <div class="form-group">
                             <div class="form-inline">
                                 <input name="size" class="form-control input-xlarge" placeholder="10"/>
                             </div>
@@ -58,7 +59,7 @@
                            data-help="Specify a repository URL of the artifacts."
                            data-help-x-offset="50"
                            data-help-y-offset="10"
-                           placeholder="myphp" />
+                           placeholder="https://github.com/test/mytestphp.git" />
                 </div>
                 <div class="checkbox">
                     <label>
@@ -71,13 +72,13 @@
                 <div class="form-group">
                     <label class="required">Username:</label>
                     <div class="form-inline">
-                        <input name="repoUsername" type="url" class="form-control input-xlarge" placeholder="myphp"/>
+                        <input name="repoUsername"  class="form-control input-xlarge" placeholder="username"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="required">Password:</label>
                     <div class="form-inline">
-                        <input name="repoPassword" type="url" class="form-control input-xlarge" placeholder="myphp"/>
+                        <input name="repoPassword" type="password" class="form-control input-xlarge" placeholder="******"/>
                     </div>
                 </div>
             </div>
