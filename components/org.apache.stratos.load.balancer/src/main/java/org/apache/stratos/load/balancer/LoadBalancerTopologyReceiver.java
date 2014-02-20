@@ -64,7 +64,12 @@ public class LoadBalancerTopologyReceiver implements Runnable {
         }
 
         // Keep the thread live until terminated
-        while (!terminated) ;
+        while (!terminated) {
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+        }
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread terminated");
         }
