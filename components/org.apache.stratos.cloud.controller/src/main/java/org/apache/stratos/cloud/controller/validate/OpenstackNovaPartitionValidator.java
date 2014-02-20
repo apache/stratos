@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.cloud.controller.validate;
 
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
@@ -29,6 +27,8 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Scope;
+
+import java.util.Properties;
 
 
 /**
@@ -69,7 +69,8 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
                     iaas.isValidZone(region, zone);
                     
                     updatedIaasProvider.setProperty(CloudControllerConstants.ZONE_ELEMENT, zone);
-                    updatedIaas.buildTemplate();
+                    updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+                    updatedIaas.setIaasProvider(updatedIaasProvider);
                 } 
                 
                 return updatedIaasProvider;
