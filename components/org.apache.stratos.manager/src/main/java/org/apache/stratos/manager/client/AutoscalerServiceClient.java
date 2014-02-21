@@ -163,6 +163,10 @@ public class AutoscalerServiceClient {
         try {
             autoscalePolicies = stub.getAllAutoScalingPolicy();
 
+        } catch (AxisFault e) {
+            String errorMsg = e.getMessage();
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
         } catch (RemoteException e) {
             String errorMsg = "Error in getting available partitions";
             log.error(errorMsg, e);
