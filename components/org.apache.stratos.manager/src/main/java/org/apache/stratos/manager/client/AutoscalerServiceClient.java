@@ -82,6 +82,10 @@ public class AutoscalerServiceClient {
         try {
             partitions = stub.getAllAvailablePartitions();
 
+        } catch (AxisFault e) {
+            String errorMsg = e.getMessage();
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
         } catch (RemoteException e) {
             String errorMsg = "Error in getting available partitions";
             log.error(errorMsg, e);
@@ -199,6 +203,10 @@ public class AutoscalerServiceClient {
         try {
             deploymentPolicies = stub.getAllDeploymentPolicies();
 
+        } catch (AxisFault e) {
+            String errorMsg = e.getMessage();
+            log.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
         } catch (RemoteException e) {
             String errorMsg = "Error in getting available deployment policies";
             log.error(errorMsg, e);
