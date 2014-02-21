@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.cli.beans;
 
+import java.util.Calendar;
+
 public class TenantInfoBean {
     private String admin;
     private String firstname;
@@ -25,6 +27,9 @@ public class TenantInfoBean {
     private String adminPassword;
     private String tenantDomain;
     private String email;
+    private String createdDate;
+    private boolean active;
+    private int tenantId;
 
     public String getAdmin() {
         return admin;
@@ -74,4 +79,27 @@ public class TenantInfoBean {
         this.email = email;
     }
 
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
 }

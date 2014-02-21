@@ -330,7 +330,7 @@ public class ServiceUtils {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available autoscaling policies";
+                String errorMsg = "Error getting available autoscaling policies. " + "Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
