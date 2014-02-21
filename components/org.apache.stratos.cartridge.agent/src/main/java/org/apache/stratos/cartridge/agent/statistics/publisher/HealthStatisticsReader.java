@@ -23,6 +23,7 @@ import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.lang.management.ManagementFactory;
+import com.sun.management.OperatingSystemMXBean;
 
 /**
  * Health statistics reader.
@@ -31,15 +32,18 @@ public class HealthStatisticsReader {
     private static final int MB = 1024 * 1024;
 
     public static double getMemoryConsumption() {
-        Runtime runtime = Runtime.getRuntime();
-        double totalMemory = (double)(runtime.totalMemory() / MB);
-        double usedMemory = (double)((totalMemory - (runtime.freeMemory() / MB) ));
+    	OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        double totalMemory = (double)(osBean.getTotalPhysicalMemorySize()/ MB);
+        double usedMemory = (double)((totalMemory - (osBean.getFreePhysicalMemorySize() / MB) ));
         double memoryConsumption = (usedMemory / totalMemory) * 100;
         return memoryConsumption;
     }
 
     public static double getLoadAverage() {
-        return (double)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
+    	double loadAvg = (double)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
+    	// assume system cores = available cores to JVM
+    	int cores = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
+        return (loadAvg/cores) * 100;
     }
 
     public static boolean allPortsActive() {
