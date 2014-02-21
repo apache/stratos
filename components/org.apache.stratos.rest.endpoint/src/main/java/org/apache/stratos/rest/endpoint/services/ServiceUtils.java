@@ -367,7 +367,7 @@ public class ServiceUtils {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available deployment policies";
+                String errorMsg = "Error getting available deployment policies " + "Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
