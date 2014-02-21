@@ -1014,17 +1014,18 @@ public class RestCommandLineService {
             RowMapper<TenantInfoBean> tenantInfoMapper = new RowMapper<TenantInfoBean>() {
 
                 public String[] getData(TenantInfoBean tenantInfo) {
-                    String[] data = new String[4];
-                    data[0] = tenantInfo.getFirstname();
-                    data[1] = tenantInfo.getLastname();
-                    data[2] = tenantInfo.getTenantDomain();
-                    data[3] = tenantInfo.getEmail();
+                    String[] data = new String[5];
+                    data[0] = tenantInfo.getTenantDomain();
+                    data[1] = "" + tenantInfo.getTenantId();
+                    data[2] = tenantInfo.getEmail();
+                    data[3] = tenantInfo.isActive() ? "Active" : "De-active";
+                    data[4] = tenantInfo.getCreatedDate();
                     return data;
                 }
             };
 
-            TenantInfoBean[] tenants = new TenantInfoBean[tenantInfoList.getTenantInfoBeans().size()];
-            tenants = tenantInfoList.getTenantInfoBeans().toArray(tenants);
+            TenantInfoBean[] tenants = new TenantInfoBean[tenantInfoList.getTenantInfoBean().size()];
+            tenants = tenantInfoList.getTenantInfoBean().toArray(tenants);
 
             if (tenants.length == 0) {
                 if (logger.isDebugEnabled()) {
@@ -1035,7 +1036,7 @@ public class RestCommandLineService {
             }
 
             System.out.println("Available Tenants:" );
-            CommandLineUtils.printTable(tenants, tenantInfoMapper, "First Name", "Last Name", "Domain", "Email");
+            CommandLineUtils.printTable(tenants, tenantInfoMapper, "Domain", "Tenant ID", "Email", "State", "Created Date");
             System.out.println();
 
         } catch (Exception e) {
@@ -1753,18 +1754,18 @@ public class RestCommandLineService {
 
     // This class convert JSON string to TenantInfoBean object
     private class TenantInfoList {
-        private ArrayList<TenantInfoBean> tenantInfoBeans;
+        private ArrayList<TenantInfoBean> tenantInfoBean;
 
-        public ArrayList<TenantInfoBean> getTenantInfoBeans() {
-            return tenantInfoBeans;
+        public ArrayList<TenantInfoBean> getTenantInfoBean() {
+            return tenantInfoBean;
         }
 
-        public void setTenantInfoBeans(ArrayList<TenantInfoBean> tenantInfoBeans) {
-            this.tenantInfoBeans = tenantInfoBeans;
+        public void setTenantInfoBean(ArrayList<TenantInfoBean> tenantInfoBean) {
+            this.tenantInfoBean = tenantInfoBean;
         }
 
         TenantInfoList() {
-            tenantInfoBeans = new ArrayList<TenantInfoBean>();
+            tenantInfoBean = new ArrayList<TenantInfoBean>();
         }
     }
 
