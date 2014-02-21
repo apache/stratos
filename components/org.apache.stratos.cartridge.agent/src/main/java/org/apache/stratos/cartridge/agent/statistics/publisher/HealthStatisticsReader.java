@@ -19,10 +19,13 @@
 
 package org.apache.stratos.cartridge.agent.statistics.publisher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.lang.management.ManagementFactory;
+
 import com.sun.management.OperatingSystemMXBean;
 
 /**
@@ -30,12 +33,20 @@ import com.sun.management.OperatingSystemMXBean;
  */
 public class HealthStatisticsReader {
     private static final int MB = 1024 * 1024;
+    private static final Log log = LogFactory.getLog(HealthStatisticsReader.class);
 
     public static double getMemoryConsumption() {
     	OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         double totalMemory = (double)(osBean.getTotalPhysicalMemorySize()/ MB);
         double usedMemory = (double)((totalMemory - (osBean.getFreePhysicalMemorySize() / MB) ));
+        
+        if(log.isDebugEnabled()) {
+        	log.debug("Calculating memory consumption: [totalMemory] "+totalMemory+" [usedMemory] "+usedMemory);
+        }
         double memoryConsumption = (usedMemory / totalMemory) * 100;
+        if(log.isDebugEnabled()) {
+        	log.debug("Calculating memory consumption: [percentage] "+memoryConsumption);
+        }
         return memoryConsumption;
     }
 
@@ -43,7 +54,16 @@ public class HealthStatisticsReader {
     	double loadAvg = (double)ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
     	// assume system cores = available cores to JVM
     	int cores = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
-        return (loadAvg/cores) * 100;
+    	
+    	if(log.isDebugEnabled()) {
+        	log.debug("Calculating load average consumption: [loadAverage] "+loadAvg+" [cores] "+cores);
+        }
+    	
+        double loadAvgPercentage = (loadAvg/cores) * 100;
+        if(log.isDebugEnabled()) {
+        	log.debug("Calculating load average consumption: [percentage] "+loadAvgPercentage);
+        }
+		return loadAvgPercentage;
     }
 
     public static boolean allPortsActive() {
