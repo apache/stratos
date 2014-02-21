@@ -105,6 +105,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         //command = new DeleteTenantCommand();
         //commands.put(command.getName(), command);
 
+        //command = new ListAllTenants();
+        //commands.put(command.getName(), command);
+
         command = new DeactivateTenantCommand();
         commands.put(command.getName(), command);
 

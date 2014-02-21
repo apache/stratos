@@ -100,6 +100,11 @@ public class CliConstants {
     public static final String LIST_PARTITION = "list-partitions";
 
     /**
+     * List tenants
+     */
+    public static final String LIST_TENANTS = "list-tenants";
+
+    /**
      * List deployment policies
      */
     public static final String LIST_DEPLOYMENT_POLICIES = "list-deployment-policies";

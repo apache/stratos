@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.Options;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -27,19 +27,19 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PartitionCommand implements Command<StratosCommandContext> {
+public class ListAllTenants implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(PartitionCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(ListAllTenants.class);
 
-    public PartitionCommand(){
+    public ListAllTenants(){
     }
 
     public String getName() {
-        return CliConstants.LIST_PARTITION;
+        return CliConstants.LIST_TENANTS;
     }
 
     public String getDescription() {
-        return "List available partitions";
+        return "List available tenants";
     }
 
     public String getArgumentSyntax() {
@@ -51,7 +51,7 @@ public class PartitionCommand implements Command<StratosCommandContext> {
             logger.debug("Executing {} command...", getName());
         }
         if (args == null || args.length == 0) {
-            RestCommandLineService.getInstance().listPartitions();
+            RestCommandLineService.getInstance().listAllTenants();
             return CliConstants.SUCCESSFUL_CODE;
         } else {
             context.getStratosApplication().printUsage(getName());
