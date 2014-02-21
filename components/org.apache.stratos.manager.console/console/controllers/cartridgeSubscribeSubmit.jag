@@ -16,7 +16,17 @@
     var removeontermination = request.getParameter('removeOnUnsubscription');
     var persistencerequired = request.getParameter('persistencerequired');
 
+    if(persistencerequired == "on"){
+        persistencerequired = true;
+    } else {
+        persistencerequired = false;
+    }
 
+    if(removeontermination == "on"){
+        removeontermination = true;
+    } else {
+        removeontermination = false;
+    }
     // constructing the json request
     jsonRequest.cartridgeInfoBean.cartridgeType = cartridgeType;
     jsonRequest.cartridgeInfoBean.alias = alias;

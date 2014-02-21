@@ -327,7 +327,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
                                             throws RestAPIException {
-        return ServiceUtils.getAvailableCartridgeInfo(cartridgeType, false, getConfigContext());
+        return ServiceUtils.getAvailableCartridgeInfo(cartridgeType, null, getConfigContext());
     }
 
     @GET

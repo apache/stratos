@@ -110,6 +110,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             serviceCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ServiceRemovedEventListener) {
             serviceRemovedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof  MemberMaintenanceListener) {
+            memberMaintenanceModeProcessor.addEventListener(eventListener);
+
         } else {
             throw new RuntimeException("Unknown event listener");
         }

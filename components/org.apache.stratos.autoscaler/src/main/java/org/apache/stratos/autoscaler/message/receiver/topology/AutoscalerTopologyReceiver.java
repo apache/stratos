@@ -19,15 +19,9 @@
 
 package org.apache.stratos.autoscaler.message.receiver.topology;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.MemberStatsContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -41,10 +35,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
@@ -52,6 +43,8 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
+
+import java.util.List;
 
 /**
  * Load balancer topology receiver.
@@ -299,6 +292,43 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 }
 //                partitionContext.incrementCurrentActiveMemberCount(1);
                 partitionContext.movePendingMemberToActiveMembers(memberId);
+
+            }
+            finally{
+                TopologyManager.releaseReadLock();
+            }
+            }
+        });
+
+
+        processorChain.addEventListener(new MemberMaintenanceListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            try {
+                TopologyManager.acquireReadLock();
+
+                MemberMaintenanceModeEvent e = (MemberMaintenanceModeEvent)event;
+                String memberId = e.getMemberId();
+                String partitionId = e.getPartitionId();
+                String networkPartitionId = e.getNetworkPartitionId();
+
+                PartitionContext partitionContext;
+                String clusterId = e.getClusterId();
+                AbstractMonitor monitor;
+
+                if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
+                    monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
+                } else {
+                    monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
+                    partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
+                }
+                partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                if(log.isDebugEnabled()){
+                    log.debug(String.format("Member has been moved as pending termination: [member] %s", memberId));
+                }
+                partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
 
             }
             finally{

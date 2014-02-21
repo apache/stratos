@@ -1,5 +1,6 @@
 var render = function (theme, data, meta, require) {
-
+    session.remove("get-status");
+    session.remove("deploy-status");
     var create_btn_class = 'btn-important';
     var title = 'Tenant Management';
     theme('index', {

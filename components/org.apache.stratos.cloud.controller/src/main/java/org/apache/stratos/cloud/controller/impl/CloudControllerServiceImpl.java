@@ -1035,7 +1035,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                  }
                  Collection<Member> members = TopologyManager.getTopology().
                          getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                 long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+                 //finding the responding members from the existing members in the topology.
+                int sizeOfRespondingMembers = 0;
+                for(Member member : members) {
+                    if(member.getStatus().getCode() >= MemberStatus.Activated.getCode()) {
+                        sizeOfRespondingMembers ++;
+                    }
+                }
+
+                long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * sizeOfRespondingMembers;
                 while(System.currentTimeMillis()< endTime) {
                     CloudControllerUtil.sleep(1000);
 

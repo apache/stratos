@@ -241,7 +241,7 @@ public class ServiceUtils {
                 partitions = autoscalerServiceClient.getAvailablePartitions();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partitions";
+                String errorMsg = "Error getting available partitions. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -330,7 +330,7 @@ public class ServiceUtils {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available autoscaling policies";
+                String errorMsg = "Error getting available autoscaling policies. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -367,7 +367,7 @@ public class ServiceUtils {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available deployment policies";
+                String errorMsg = "Error getting available deployment policies. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }

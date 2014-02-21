@@ -500,8 +500,10 @@ public class CommonUtil {
                 }
             }
         }
-        log.error("Unable to locate the stratos configurations file. " +
-                  "Default Settings will be used.");
+		if (log.isDebugEnabled()) {
+			log.debug("Unable to locate the stratos configurations file. "
+					+ "Default Settings will be used.");
+		}
         return config; // return the default configuratiosn, if the file not found.
     }
     

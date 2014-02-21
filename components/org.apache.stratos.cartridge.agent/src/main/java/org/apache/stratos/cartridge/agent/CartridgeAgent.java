@@ -143,7 +143,12 @@ public class CartridgeAgent implements Runnable {
         LogPublisherManager logPublisherManager = new LogPublisherManager();
         publishLogs(logPublisherManager);
 
-        while (!terminated);
+        while (!terminated) {
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+        }
 
         logPublisherManager.stop();
     }

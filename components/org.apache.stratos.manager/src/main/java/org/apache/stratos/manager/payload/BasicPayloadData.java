@@ -40,6 +40,8 @@ public class BasicPayloadData implements Serializable {
     private String subscriptionAlias;
     private String deployment;
     private String puppetIp;
+    private String puppetHostName;
+    private String puppetEnvironment;
     private String subscriptionKey;
     private String applicationPath;
     private String gitRepositoryUrl;
@@ -83,6 +85,11 @@ public class BasicPayloadData implements Serializable {
         //Payload Data exposed as system variables
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));
+        payloadBuilder.append(",");
+        payloadBuilder.append("PUPPET_HOSTNAME=" + System.getProperty(CartridgeConstants.PUPPET_HOSTNAME));
+        payloadBuilder.append(",");
+        payloadBuilder.append("PUPPET_ENV=" + System.getProperty(CartridgeConstants.PUPPET_ENVIRONMENT));
+
     }
 
     public String getServiceName() {
@@ -192,5 +199,21 @@ public class BasicPayloadData implements Serializable {
 
     public void setMultitenant(String multitenant) {
         this.multitenant = multitenant;
+    }
+
+    public String getPuppetHostName() {
+        return puppetHostName;
+    }
+
+    public void setPuppetHostName(String puppetHostName) {
+        this.puppetHostName = puppetHostName;
+    }
+
+    public String getPuppetEnvironment() {
+        return puppetEnvironment;
+    }
+
+    public void setPuppetEnvironment(String puppetEnvironment) {
+        this.puppetEnvironment = puppetEnvironment;
     }
 }
