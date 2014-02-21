@@ -235,4 +235,9 @@ public class VCloudIaas extends Iaas {
 		
 	}
 
+    @Override
+    public String getIaasDevice(String device) {
+        return device;
+    }
+
 }

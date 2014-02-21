@@ -247,8 +247,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
 
+            Iaas iaas = iaasProvider.getIaas();
             if(ctxt.isVolumeRequired()){
-                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge, iaas).toString());
             }
             
             if (log.isDebugEnabled()) {
@@ -256,8 +257,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             // reloading the payload with memberID
             iaasProvider.setPayload(payload.toString().getBytes());
-
-            Iaas iaas = iaasProvider.getIaas();
             
             if (iaas == null) {
                 if(log.isDebugEnabled()) {
@@ -386,17 +385,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		volume.setIaasType(iaasProvider.getType());
 	}
 
-	private StringBuilder getPersistencePayload(Cartridge cartridge) {
+	private StringBuilder getPersistencePayload(Cartridge cartridge, Iaas iaas) {
 		StringBuilder persistencePayload = new StringBuilder();
 		if(isPersistenceMappingAvailable(cartridge)){
 			for(Volume volume : cartridge.getPersistence().getVolumes()){
 				if(log.isDebugEnabled()){
 					log.debug("Adding persistence mapping " + volume.toString());
 				}
-                if(persistencePayload.toString() != null) {
+                if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
                 }
-				persistencePayload.append(volume.getDevice());
+				persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
 				persistencePayload.append("|");
                 persistencePayload.append(volume.getMappingPath());
 			}
