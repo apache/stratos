@@ -1,0 +1,14 @@
+		<iaasProvider type="openstack" name="openstack specific details">
+			<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+			<provider>openstack-nova</provider>
+      <identity svns:secretAlias="cloud.controller.openstack.identity"><%= @openstack_identity %></identity>
+      <credential svns:secretAlias="cloud.controller.openstack.credential"><%= @openstack_password %></credential>
+      <property name="jclouds.endpoint" value="<%= @openstack_identity_url %>" />
+			<property name="jclouds.so-timeout" value="120000" />
+			<property name="jclouds.connection-timeout" value="120000" />
+      <!--property name="jclouds.openstack-nova.auto-create-floating-ips" value="true"/-->
+			<property name="jclouds.api-version" value="2.0/" />
+			<property name="X" value="x" />
+			<property name="Y" value="y" />
+      <imageId><%= @openstack_image_id %></imageId>
+		</iaasProvider>
