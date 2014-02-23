@@ -1,0 +1,17 @@
+export PATH="/usr/local/rvm/gems/ruby-2.1.0/bin:/usr/local/rvm/gems/ruby-2.1.0@global/bin:/usr/local/rvm/rubies/ruby-2.1.0/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/rvm/bin:/root/bin"
+
+export HOME="/root/"
+source ~/.bashrc
+source /etc/profile.d/rvm.sh
+rvm use 2.1.0
+
+RUBY_HOME=<%= @stratos_app_path %>
+GIT_REPO=<%= @stratos_git_repo %>
+
+mkdir -p $RUBY_HOME
+
+git clone $GIT_REPO $RUBY_HOME
+cd $RUBY_HOME
+bundle install
+#rails server  > /dev/null 2>&1 &
+rails server  > /tmp/ruby.log 2>&1 &

@@ -1,0 +1,3 @@
+org.apache.stratos.cep.extension.GradientFinderWindowProcessor
+org.apache.stratos.cep.extension.SecondDerivativeFinderWindowProcessor
+org.apache.stratos.cep.extension.FaultHandlingWindowProcessor
