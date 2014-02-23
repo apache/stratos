@@ -2,11 +2,15 @@ node 'base' {
 
   #essential variables
   $package_repo         = 'http://10.4.128.7'
+  #following directory is used to store binary packages
   $local_package_dir    = '/mnt/packs'
+  # Stratos message broker IP and port
   $mb_ip                = '10.4.128.12'
   $mb_port              = '5672'
+  # Stratos CEP IP and port
   $cep_ip               = '10.4.128.10'
   $cep_port             = '7611'
+  # Stratos Cartridge Agent’s trust store password
   $truststore_password    = 'wso2carbon'
 
   #following variables required only if you want to install stratos using puppet.
