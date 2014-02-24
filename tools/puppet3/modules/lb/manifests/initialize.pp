@@ -17,10 +17,18 @@
 # Initializing the deployment
 
 define lb::initialize ($repo, $version, $service, $local_dir, $target, $mode, $owner,) {
+
+  file {
+    "/${local_dir}/apache-stratos-${service}-${version}.zip":
+      ensure => present,
+      source => "puppet:///modules/lb/apache-stratos-${service}-${version}.zip";
+  }
+
   exec {
     "creating_target_for_${name}":
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-      command => "mkdir -p ${target}";
+      command => "mkdir -p ${target}",
+      require => File["/${local_dir}/apache-stratos-${service}-${version}.zip"];
 
     "creating_local_package_repo_for_${name}":
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/java/bin/',
@@ -31,7 +39,7 @@ define lb::initialize ($repo, $version, $service, $local_dir, $target, $mode, $o
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       cwd       => $local_dir,
       unless    => "test -f ${local_dir}/apache-stratos-${service}-${version}.zip",
-      command   => "wget -q ${repo}/apache-stratos-${service}-${version}.zip",
+      command   => "puppet:///modules/lb/apache-stratos-${service}-${version}.zip",
       logoutput => 'on_failure',
       creates   => "${local_dir}/apache-stratos-${service}-${version}.zip",
       timeout   => 0,

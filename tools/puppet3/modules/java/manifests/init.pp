@@ -1,7 +1,8 @@
 class java { 
 
-  $java_home  = '/opt/jre1.7.0_45'
-  $package  = 'jre-7u45-linux-x64.tar.gz'
+  $java_home  = "/opt/${java_name}"
+  $package  = $java_distribution
+  $local_dir = $local_package_dir
 
   file {
     "/opt/${package}":
@@ -21,12 +22,13 @@ class java {
       content  => template('java/java_home.sh.erb');
   }
     
-  exec { 'Install java':
+  exec { 
+     'Install java':
       path    => "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
       cwd     => '/opt',
       command => "/bin/tar xzf ${package}",
-      unless  => "/usr/bin/test -d /opt/${java_home}",
-      creates => "/opt/${java_home}/COPYRIGHT",
+      unless  => "/usr/bin/test -d ${java_home}",
+      creates => "${java_home}/COPYRIGHT",
       require => File["/opt/${package}"];
-  } 
+  }
 }

@@ -2,7 +2,7 @@ export PATH='/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/
 
 PASSWD=`facter -p stratos_mysql_password`
 
-/etc/init.d/mysqld start
+/etc/init.d/mysql start
 
 # Set mysql password
 mysqladmin -uroot password "$PASSWD"

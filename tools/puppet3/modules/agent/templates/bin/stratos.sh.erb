@@ -35,7 +35,8 @@ properties="-Dmb.ip=<%= @mb_ip %>
             -Dextensions.dir=${script_path}/../extensions
             -Dcep.stats.publisher.enabled=true
             -Djavax.net.ssl.trustStore=<%= @carbon_home %>/security/client-truststore.jks
-            -Djavax.net.ssl.trustStorePassword=<%= @truststore_password %>"
+            -Djavax.net.ssl.trustStorePassword=<%= @truststore_password %>
+	    -DAPP_PATH=<%= @docroot %>"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

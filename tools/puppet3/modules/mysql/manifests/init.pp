@@ -7,20 +7,20 @@ class mysql{
     $root_password = 'root'
   }
 
-  package { ['mysql-server','phpMyAdmin.noarch','httpd']:
+  package { ['mysql-server','phpmyadmin','apache2']:
     ensure => installed,
   }
 
-  service { 'mysqld':
+  service { 'mysql':
     ensure  => running,
-    pattern => 'mysqld',
+    pattern => 'mysql',
     require => Package['mysql-server'],
   }
 
-  service { 'httpd':
+  service { 'apache2':
     ensure  => running,
-    pattern => 'httpd',
-    require => Package['httpd'],
+    pattern => 'apache2',
+    require => Package['apache2'],
   }
 
 #  exec { 'Set root password':
@@ -44,13 +44,13 @@ class mysql{
 #    }
 #  }
 
-  file { '/etc/httpd/conf.d/phpMyAdmin.conf':
+  file { '/etc/apache2/conf.d/phpmyadmin.conf':
     ensure  => present,
     content => template('mysql/phpMyAdmin.conf.erb'),
-    notify  => Service['httpd'],
+    notify  => Service['apache2'],
     require => [
-      Package['phpMyAdmin.noarch'],
-      Package['httpd'],
+      Package['phpmyadmin'],
+      Package['apache2'],
     ];
   }
 }
