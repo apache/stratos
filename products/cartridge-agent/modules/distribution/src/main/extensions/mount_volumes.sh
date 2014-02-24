@@ -23,34 +23,65 @@
 # --------------------------------------------------------------
 #
 
+
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo -e "Starting mounting volumes" | tee -a $log
+echo -e "Starting mounting volumes" 2>&1 | tee -a $log
 
-# $1 refers the payload params file which is passed from Cartridge Agent code.
-source $1
+# $1  is passed from Cartridge Agent code.
+echo -e "launh param file location $1" | tee -a $log
+source /opt/apache-stratos-cartridge-agent/launch.params
+echo -e "Persistance mappings : $PERSISTENCE_MAPPING" 2>&1 | tee -a $log
 
-function mount_volume(){
-	echo -e "Formating the device $1 \n"
-	sudo mkfs -t ext4 $1
+mount_volume(){
 
-	echo "Mounting  the device $1 to the mount point $2 \n"
-	if [ -d "$DIRECTORY" ]; then
-		echo "creating the directory $2 since it does not exist."
-		mkdir $2	
-	fi
+        device=$1;
+        mount_point=$2;
+        echo "device $device"
+        echo "point  $mount_point"
+        # check if the volume has a file system
+        output=`sudo file -s $device`;
+        echo $output | tee -a $log
 
-	sudo mount $1 $2
+        # this is the pattern of the output of file -s if the volume does not have a file system
+        # refer to http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
+        pattern="$device: data"
+
+        if [[ $output ==  $pattern ]]
+        then
+                echo -e "Volume is not formatted. So formating the device $device \n" | tee -a $log
+                sudo mkfs -t ext4 $device
+        fi
+
+        echo "Mounting  the device $device to the mount point $mount_point \n" | tee -a $log
+        device_mounted=$(mount | grep "$device")
+
+        if [ ! -d "$mount_point" ]
+        then
+              echo "creating the  mount point directory $mount_point since it does not exist." | tee -a $log
+              sudo mkdir $mount_point
+        fi
+
+        #mounting the device if it is not already mounted
+        if [ ! "$device_mounted" = "" ]
+        then
+              echo -e "Device $device is already mounted." | tee -a $log
+        else
+              sudo mount $device $mount_point
+        fi
+
 }
 
-IFS='|' read -ra ADDR <<< "$PERSISTANCE_MAPPING"
-for i in "${!ADDR[@]}"; do
-	# expected PERSISTANCE_MAPPING format is device1|mountPoint1|device2|mountpoint2...
-	# so that even indexes are devices and odd indexes are mount points..
 
-	if (( $i  % 2 == 0 ))
-	then
-	   mount_volume ${ADDR[$i]} ${ADDR[$i + 1]}
-	fi
+#PERSISTENCE_MAPPING="ayyo|alli|eka|deka"
+IFS='|' read -ra ADDR <<< "${PERSISTENCE_MAPPING}"
+echo "${ADDR[@]}" | tee -a $log
+
+for i in "${!ADDR[@]}"; do
+        # expected PERSISTANCE_MAPPING format is device1|mountPoint1|device2|mountpoint2...
+        # so that even indexes are devices and odd indexes are mount points..
+        if (( $i  % 2 == 0 ))
+        then
+           mount_volume ${ADDR[$i]} ${ADDR[$i + 1]}
+        fi
 done
 
-echo $IFS

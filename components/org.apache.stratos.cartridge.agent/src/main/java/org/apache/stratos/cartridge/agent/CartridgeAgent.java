@@ -131,7 +131,7 @@ public class CartridgeAgent implements Runnable {
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         }
 
-
+        ExtensionUtils.executeVolumeMountExtension();
         // TODO: Start this thread only if this node is configured as a commit true node
         // Start periodical file checker task
         // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -143,7 +143,12 @@ public class CartridgeAgent implements Runnable {
         LogPublisherManager logPublisherManager = new LogPublisherManager();
         publishLogs(logPublisherManager);
 
-        while (!terminated);
+        while (!terminated) {
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+        }
 
         logPublisherManager.stop();
     }

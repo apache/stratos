@@ -263,7 +263,7 @@
                      <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.application.authentication.framework.server.feature:${carbon.platform.patch.version.4.2.1}</featureArtifactDef>
 				<!--**************************************************Manager features end*********************************************-->
                                 <featureArtifactDef>
-                                    org.jaggeryjs:org.jaggeryjs.feature:0.9.0.ALPHA4.wso2v1
+                                    org.jaggeryjs:org.jaggeryjs.feature:0.9.0.ALPHA4.wso2v3
                                 </featureArtifactDef>
                                 <featureArtifactDef>caramel:caramel.feature:1.0.0</featureArtifactDef>
                                 <featureArtifactDef>
@@ -467,7 +467,7 @@
 				<!--****************************************Manager features end*********************************************-->
                     <feature>
                         <id>org.jaggeryjs.feature.group</id>
-                        <version>0.9.0.ALPHA4.wso2v1</version>
+                        <version>0.9.0.ALPHA4.wso2v3</version>
                     </feature>
                     <feature>
                         <id>caramel.feature.group</id>

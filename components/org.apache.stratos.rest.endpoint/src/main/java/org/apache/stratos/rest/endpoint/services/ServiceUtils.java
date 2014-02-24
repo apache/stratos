@@ -43,6 +43,7 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
@@ -240,7 +241,7 @@ public class ServiceUtils {
                 partitions = autoscalerServiceClient.getAvailablePartitions();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partitions";
+                String errorMsg = "Error getting available partitions. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -329,7 +330,7 @@ public class ServiceUtils {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available autoscaling policies";
+                String errorMsg = "Error getting available autoscaling policies. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -366,7 +367,7 @@ public class ServiceUtils {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available deployment policies";
+                String errorMsg = "Error getting available deployment policies. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -432,8 +433,14 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionGroupPojos(partitionGroups);
     }
 
-    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
-       List<Cartridge> cartridges = getAvailableCartridges(null, null, configurationContext);
+    static Cartridge getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
+        List<Cartridge> cartridges;
+
+        if(multiTenant != null) {
+            cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        } else {
+            cartridges = getAvailableCartridges(null, null, configurationContext);
+        }
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
                 return cartridge;
@@ -606,6 +613,47 @@ public class ServiceUtils {
         }
 
         return new ServiceDefinitionBean();
+    }
+
+    public static List<Cartridge> getActiveDeployedServiceInformation (ConfigurationContext configurationContext) throws RestAPIException {
+
+        Collection<Service> services = null;
+
+        try {
+            services = serviceDeploymentManager.getServices();
+
+        } catch (ADCException e) {
+            String msg = "Error in getting deployed service cluster definition ";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        List<Cartridge> availableMultitenantCartridges = new ArrayList<Cartridge>();
+        int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
+        //getting the services for the tenantId
+        for(Service service : services) {
+            String tenantRange = service.getTenantRange();
+            if(tenantRange.equals(Constants.TENANT_RANGE_ALL)) {
+                //check whether any active instances found for this service in the Topology
+
+                Cluster cluster = TopologyManager.getTopology().getService(service.getType()).
+                                        getCluster(service.getClusterId());
+                boolean activeMemberFound = false;
+                for(Member member : cluster.getMembers()) {
+                    if(member.isActive()) {
+                        activeMemberFound = true;
+                        break;
+                    }
+                }
+                if(activeMemberFound) {
+                    availableMultitenantCartridges.add(getAvailableCartridgeInfo(null, true, configurationContext));
+                }
+            } else {
+                //TODO have to check for the serivces which has correct tenant range
+            }
+        }
+
+        return availableMultitenantCartridges;
     }
 
 	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws RestAPIException {

@@ -247,8 +247,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
 
+            Iaas iaas = iaasProvider.getIaas();
             if(ctxt.isVolumeRequired()){
-                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge).toString());
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge, iaas).toString());
             }
             
             if (log.isDebugEnabled()) {
@@ -256,8 +257,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             // reloading the payload with memberID
             iaasProvider.setPayload(payload.toString().getBytes());
-
-            Iaas iaas = iaasProvider.getIaas();
             
             if (iaas == null) {
                 if(log.isDebugEnabled()) {
@@ -386,17 +385,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		volume.setIaasType(iaasProvider.getType());
 	}
 
-	private StringBuilder getPersistencePayload(Cartridge cartridge) {
+	private StringBuilder getPersistencePayload(Cartridge cartridge, Iaas iaas) {
 		StringBuilder persistencePayload = new StringBuilder();
 		if(isPersistenceMappingAvailable(cartridge)){
 			for(Volume volume : cartridge.getPersistence().getVolumes()){
 				if(log.isDebugEnabled()){
 					log.debug("Adding persistence mapping " + volume.toString());
 				}
-                if(persistencePayload.toString() != null) {
+                if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
                 }
-				persistencePayload.append(volume.getDevice());
+				persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
 				persistencePayload.append("|");
                 persistencePayload.append(volume.getMappingPath());
 			}
@@ -1025,70 +1024,97 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
 	public void unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
-            Runnable r = new Runnable() {
-                 public void run() {
-                     ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
-                     if(ctxt == null) {
-                    	 String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                    	 log.error(msg);
-                     }
-                     Collection<Member> members = TopologyManager.getTopology().
-                             getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                     long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
-                     
-                     while(members.size() > 0 && System.currentTimeMillis()< endTime) {
-                        //waiting until all the members got removed from the Topology/ timed out
-                        CloudControllerUtil.sleep(1000);
-                     }
-                     
-                     // if there're still alive members
-                     if(members.size() > 0) {
-                    	 //forcefully terminate them
-                    	 for (Member member : members) {
-							
-                    		 try {
-								terminateInstance(member.getMemberId());
-							} catch (Exception e) {
-								// we are not gonna stop the execution due to errors.
-								log.warn("Instance termination failed of member [id] "+member.getMemberId(), e);
-							}
-						}
-                     }
-                     
-                     log.info("Unregistration of service cluster: " + clusterId_);
-                     deleteVolumes(ctxt);
-                     TopologyBuilder.handleClusterRemoved(ctxt);
-                     dataHolder.removeClusterContext(clusterId_);
-                     dataHolder.removeMemberContextsOfCluster(clusterId_);
-                     persist();
+
+        Runnable terminateInTimeout = new Runnable() {
+            @Override
+            public void run() {
+                ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                 if(ctxt == null) {
+                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                     log.error(msg);
+                 }
+                 Collection<Member> members = TopologyManager.getTopology().
+                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                 //finding the responding members from the existing members in the topology.
+                int sizeOfRespondingMembers = 0;
+                for(Member member : members) {
+                    if(member.getStatus().getCode() >= MemberStatus.Activated.getCode()) {
+                        sizeOfRespondingMembers ++;
+                    }
+                }
+
+                long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * sizeOfRespondingMembers;
+                while(System.currentTimeMillis()< endTime) {
+                    CloudControllerUtil.sleep(1000);
+
+                }
+
+                 // if there're still alive members
+                 if(members.size() > 0) {
+                     //forcefully terminate them
+                     for (Member member : members) {
+
+                         try {
+                            terminateInstance(member.getMemberId());
+                        } catch (Exception e) {
+                            // we are not gonna stop the execution due to errors.
+                            log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
+                        }
+                    }
+                 }
+            }
+        };
+        Runnable unregister = new Runnable() {
+             public void run() {
+                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                 if(ctxt == null) {
+                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                     log.error(msg);
+                 }
+                 Collection<Member> members = TopologyManager.getTopology().
+                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                 long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+
+                 while(members.size() > 0) {
+                    //waiting until all the members got removed from the Topology/ timed out
+                    CloudControllerUtil.sleep(1000);
                  }
 
-				private void deleteVolumes(ClusterContext ctxt) {
-					if(ctxt.isVolumeRequired()) {
-                    	 Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
-                    	 if(cartridge != null && cartridge.getIaases() != null && !ctxt.getListOfVolumes().isEmpty()) {
-                    		 for (Volume volume : ctxt.getListOfVolumes()) {
-								if(volume.getId() != null) {
-									String iaasType = volume.getIaasType();
-									Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
-									if(iaas != null) {
-										try {
-										// delete the volume
-										iaas.deleteVolume(volume.getId());
-										} catch(Exception ignore) {
-											if(log.isDebugEnabled()) {
-												log.debug(ignore);
-											}
-										}
-									}
-								}
-							}
-                    		 
-                    	 }
+                 log.info("Unregistration of service cluster: " + clusterId_);
+                 deleteVolumes(ctxt);
+                 TopologyBuilder.handleClusterRemoved(ctxt);
+                 dataHolder.removeClusterContext(clusterId_);
+                 dataHolder.removeMemberContextsOfCluster(clusterId_);
+                 persist();
+             }
+
+            private void deleteVolumes(ClusterContext ctxt) {
+                if(ctxt.isVolumeRequired()) {
+                     Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
+                     if(cartridge != null && cartridge.getIaases() != null && !ctxt.getListOfVolumes().isEmpty()) {
+                         for (Volume volume : ctxt.getListOfVolumes()) {
+                            if(volume.getId() != null) {
+                                String iaasType = volume.getIaasType();
+                                Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+                                if(iaas != null) {
+                                    try {
+                                    // delete the volume
+                                    iaas.deleteVolume(volume.getId());
+                                    } catch(Exception ignore) {
+                                        if(log.isDebugEnabled()) {
+                                            log.debug(ignore);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                      }
-				}
-            };
-        new Thread(r).start();
+                 }
+            }
+        };
+        new Thread(terminateInTimeout).start();
+        new Thread(unregister).start();
         
 	}
 

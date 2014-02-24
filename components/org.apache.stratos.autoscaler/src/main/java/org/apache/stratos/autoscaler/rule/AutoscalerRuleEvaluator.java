@@ -150,6 +150,11 @@ public class AutoscalerRuleEvaluator {
         Properties props = partitionContext.getProperties();
         String value =
                        (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+
+        if (value == null){
+            return null;
+        }
+
         String lbClusterId = null;
 
         NetworkPartitionLbHolder networkPartitionLbHolder = PartitionManager.getInstance().getNetworkPartitionLbHolder(nwpartitionId);

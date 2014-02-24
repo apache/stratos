@@ -155,5 +155,11 @@ public abstract class Iaas {
      * @param volumeId volume id of the volume to be detached.
      */
     public abstract void deleteVolume(String volumeId);
-    
+
+    /*
+    This returns the device of the volume specified by the user. This is depends on IAAS.
+    For an instance /dev/sdf maps to /dev/xvdf in EC2
+     */
+
+    public abstract String getIaasDevice(String device);
 }

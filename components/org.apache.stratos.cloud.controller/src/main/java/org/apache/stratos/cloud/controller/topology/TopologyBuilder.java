@@ -325,7 +325,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             member.setStatus(MemberStatus.ReadyToShutDown);
-            log.info("member started event adding status started");
+            log.info("Member Ready to shut down event adding status started");
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -374,7 +374,7 @@ public class TopologyBuilder {
                                                                 instanceMaintenanceModeEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
-            member.setStatus(MemberStatus.Maintenance);
+            member.setStatus(MemberStatus.In_Maintenance);
             log.info("member maintenance mode event adding status started");
 
             TopologyManager.updateTopology(topology);

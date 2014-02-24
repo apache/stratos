@@ -82,6 +82,7 @@ public class RestCommandLineService {
     private final String listDeployServicesRestEndPoint = "/stratos/admin/service";
     private final String deactivateTenantRestEndPoint = "/stratos/admin/tenant/deactivate";
     private final String activateTenantRestEndPoint = "/stratos/admin/tenant/activate";
+    private final String listAllTenantRestEndPoint = "/stratos/admin/tenant/list";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -979,6 +980,72 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to list all tenants
+    public void listAllTenants() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAllTenantRestEndPoint,
+                    restClientService.getUsername(), restClientService.getPassword());
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            String resultString = getHttpResponseString(response);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return;
+            }
+
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            TenantInfoList tenantInfoList = gson.fromJson(resultString, TenantInfoList.class);
+
+            if (tenantInfoList == null) {
+                System.out.println("Tenant information list is empty");
+                return;
+            }
+
+            RowMapper<TenantInfoBean> tenantInfoMapper = new RowMapper<TenantInfoBean>() {
+
+                public String[] getData(TenantInfoBean tenantInfo) {
+                    String[] data = new String[5];
+                    data[0] = tenantInfo.getTenantDomain();
+                    data[1] = "" + tenantInfo.getTenantId();
+                    data[2] = tenantInfo.getEmail();
+                    data[3] = tenantInfo.isActive() ? "Active" : "De-active";
+                    data[4] = tenantInfo.getCreatedDate();
+                    return data;
+                }
+            };
+
+            TenantInfoBean[] tenants = new TenantInfoBean[tenantInfoList.getTenantInfoBean().size()];
+            tenants = tenantInfoList.getTenantInfoBean().toArray(tenants);
+
+            if (tenants.length == 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No tenants found");
+                }
+                System.out.println("There are no available tenants");
+                return;
+            }
+
+            System.out.println("Available Tenants:" );
+            CommandLineUtils.printTable(tenants, tenantInfoMapper, "Domain", "Tenant ID", "Email", "State", "Created Date");
+            System.out.println();
+
+        } catch (Exception e) {
+            handleException("Exception in listing partitions", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1682,6 +1749,23 @@ public class RestCommandLineService {
 
         PartitionList() {
             partition = new ArrayList<Partition>();
+        }
+    }
+
+    // This class convert JSON string to TenantInfoBean object
+    private class TenantInfoList {
+        private ArrayList<TenantInfoBean> tenantInfoBean;
+
+        public ArrayList<TenantInfoBean> getTenantInfoBean() {
+            return tenantInfoBean;
+        }
+
+        public void setTenantInfoBean(ArrayList<TenantInfoBean> tenantInfoBean) {
+            this.tenantInfoBean = tenantInfoBean;
+        }
+
+        TenantInfoList() {
+            tenantInfoBean = new ArrayList<TenantInfoBean>();
         }
     }
 

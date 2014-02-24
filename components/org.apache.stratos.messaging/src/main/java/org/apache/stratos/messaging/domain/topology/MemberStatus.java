@@ -26,6 +26,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public enum MemberStatus {
-    Created, Starting, Activated, Suspended, ReadyToShutDown, ShuttingDown, Terminated, Maintenance
+    Created(1),
+    Starting(2),
+    Activated(3),
+    In_Maintenance(4),
+    ReadyToShutDown(5),
+    Terminated(6),
+    Suspended(0),
+    ShuttingDown(0);
+
+    private int code;
+
+    private MemberStatus(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
 
 }

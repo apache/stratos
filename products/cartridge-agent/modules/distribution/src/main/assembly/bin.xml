@@ -51,6 +51,7 @@
                 <include>instance-started.sh</include>
                 <include>start-servers.sh</include>
                 <include>clean.sh</include>
+                <include>mount_volumes.sh</include>
             </includes>
         </fileSet>
         <fileSet>
