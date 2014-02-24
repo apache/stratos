@@ -22,6 +22,7 @@ package org.apache.stratos.cartridge.agent.statistics.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
+import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPublisher;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
@@ -54,7 +55,8 @@ public class HealthStatisticsNotifier implements Runnable {
                 }
 
                 if (statsPublisher.isEnabled()) {
-                    if(!CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts())) {
+                    if(!CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts())
+                            && !CartridgeAgentEventPublisher.isMaintenance()) {
                         if(log.isInfoEnabled()) {
                             log.info("Publishing ports not open event");
                         }
