@@ -229,8 +229,7 @@ h2{
     background: transparent url(../img/gray.png) repeat-x left 30px;
 }
 h3{
-    padding: 15px 0 0 0;
-    margin: 0;
+    margin: 15px 0 0 0;
 }
 h3 span{
     color:#999;
@@ -560,6 +559,8 @@ label.error{
     width:100%;
     text-align: right;
     padding-right:30px;
+    z-index: 100;
+    margin-top: -5px;
 }
 .un-subscribe-container a.un-subscribe{
     color:red;
