@@ -30,7 +30,7 @@ class nodejs {
     'Install libraries':
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       cwd     => "${nodejs_home}",
-      command => 'apt-get install nodejs',
+      command => 'apt-get install -y nodejs',
       require => [
         Exec['update-apt'], 
         Package['python-software-properties', 'python', 'g++', 'make'],
