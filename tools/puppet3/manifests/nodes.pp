@@ -2,16 +2,15 @@ node 'base' {
 
   #essential variables
   $package_repo         = 'http://10.4.128.7'
-  #following directory is used to store binary packages
   $local_package_dir    = '/mnt/packs'
-  # Stratos message broker IP and port
-  $mb_ip                = '10.4.128.12'
-  $mb_port              = '5672'
-  # Stratos CEP IP and port
-  $cep_ip               = '10.4.128.10'
-  $cep_port             = '7611'
-  # Stratos Cartridge Agent’s trust store password
-  $truststore_password    = 'wso2carbon'
+  $mb_ip                = '54.251.234.223'
+  $mb_port              = '5677'
+  $cep_ip               = '54.251.234.223'
+  $cep_port             = '7615'
+  $truststore_password  = 'wso2carbon'
+  $java_distribution	= 'jdk-7u7-linux-x64.tar.gz'
+  $java_name		= 'jdk1.7.0_07'
+  $member_type_ip       = 'private'
 
   #following variables required only if you want to install stratos using puppet.
   #not supported in alpha version
@@ -50,9 +49,37 @@ node 'base' {
   #$internal_repo_password = 'admin'
 
 }
+node /nirmal/ inherits base {
+
+require java
+  class {'agent':}
+  class {'nodejs':}
+
+  #install agent before nodejs
+  Class['agent'] ~> Class['nodejs']
+
+
+#class {'agent':
+#    type => 'mysql',
+#  }
+#  class {'mysql':}
+
+
+#require java
+#  class {'agent':}
+#  class {'php':}
+
+  #install agent before php
+#  Class['agent'] ~> Class['php']
+#require java
+#  class {'agent':}
+}
 
 # php cartridge node
 node /php/ inherits base {
+  $docroot = "/var/www"
+  $syslog="/var/log/apache2/error.log"
+  $samlalias="/var/www"
   require java
   class {'agent':}
   class {'php':}
@@ -145,4 +172,5 @@ node 'sc.wso2.com' inherits base {
   require java
   class {'manager': maintenance_mode   => 'norestart',}
 }
+
 
