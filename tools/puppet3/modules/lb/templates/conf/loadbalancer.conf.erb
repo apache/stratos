@@ -80,6 +80,14 @@ loadbalancer {
     network-partition-id: <%= @stratos_network_partition_id %>;
     <% end %>
 
+   # Topology member ip address type
+   # Provide this configuration if topology-event-listener is set to true. If this property is set to 'private'
+   # load balancer will delegate requests to member's private IP address. If it is set to 'public' requests will
+   # be delegated to member's public IP address.
+   topology-member-ip-type: <%= @member_type_ip %>;
+ 
+
+
     # Multi-tenancy
     # If this property is set to true, all incoming request URLs will be scanned using the given tenant-identifier-regex
     # and matching tenant identifier value will be used to delegate the requests to the relevant cluster.

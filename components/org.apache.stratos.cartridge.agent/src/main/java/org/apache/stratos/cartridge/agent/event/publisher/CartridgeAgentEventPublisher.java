@@ -23,7 +23,7 @@ public class CartridgeAgentEventPublisher {
     private static boolean maintenance;
 
     public static void publishInstanceStartedEvent() {
-        if (!started) {
+        if (!isStarted()) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing instance started event");
             }
@@ -36,7 +36,7 @@ public class CartridgeAgentEventPublisher {
 
             EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
-            started = true;
+            setStarted(true);
             if (log.isInfoEnabled()) {
                 log.info("Instance started event published");
             }
@@ -50,7 +50,7 @@ public class CartridgeAgentEventPublisher {
     }
 
     public static void publishInstanceActivatedEvent() {
-        if (!activated) {
+        if (!isActivated()) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing instance activated event");
             }
@@ -74,7 +74,7 @@ public class CartridgeAgentEventPublisher {
             }
             Thread thread = new Thread(new HealthStatisticsNotifier());
             thread.start();
-            activated = true;
+            setActivated(true);
             if (log.isInfoEnabled()) {
                 log.info("Health statistics notifier started");
             }
@@ -86,7 +86,7 @@ public class CartridgeAgentEventPublisher {
     }
 
      public static void publishInstanceReadyToShutdownEvent() {
-        if (!readyToShutdown) {
+        if (!isReadyToShutdown()) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing instance activated event");
             }
@@ -99,7 +99,7 @@ public class CartridgeAgentEventPublisher {
 
             EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
-            readyToShutdown = true;
+            setReadyToShutdown(true);
             if (log.isInfoEnabled()) {
                 log.info("Instance ReadyToShutDown event published");
             }
@@ -111,7 +111,7 @@ public class CartridgeAgentEventPublisher {
     }
 
      public static void publishMaintenanceModeEvent() {
-        if (!maintenance) {
+        if (!isMaintenance()) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing instance maintenance mode event");
             }
@@ -124,7 +124,7 @@ public class CartridgeAgentEventPublisher {
 
             EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
-            maintenance = true;
+            setMaintenance(true);
             if (log.isInfoEnabled()) {
                 log.info("Instance Maintenance mode event published");
             }
@@ -133,6 +133,38 @@ public class CartridgeAgentEventPublisher {
                 log.warn("Instance already in a Maintenance mode....");
             }
         }
+    }
+
+    public static boolean isStarted() {
+        return started;
+    }
+
+    public static void setStarted(boolean started) {
+        CartridgeAgentEventPublisher.started = started;
+    }
+
+    public static boolean isActivated() {
+        return activated;
+    }
+
+    public static void setActivated(boolean activated) {
+        CartridgeAgentEventPublisher.activated = activated;
+    }
+
+    public static boolean isReadyToShutdown() {
+        return readyToShutdown;
+    }
+
+    public static void setReadyToShutdown(boolean readyToShutdown) {
+        CartridgeAgentEventPublisher.readyToShutdown = readyToShutdown;
+    }
+
+    public static boolean isMaintenance() {
+        return maintenance;
+    }
+
+    public static void setMaintenance(boolean maintenance) {
+        CartridgeAgentEventPublisher.maintenance = maintenance;
     }
 }
 

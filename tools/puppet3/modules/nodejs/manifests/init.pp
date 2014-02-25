@@ -1,4 +1,6 @@
-class nodejs( $target = '/mnt' ){
+class nodejs {
+
+  $target = '/mnt'
 
   if $stratos_app_path {
     $nodejs_home = $stratos_app_path
@@ -7,8 +9,14 @@ class nodejs( $target = '/mnt' ){
     $nodejs_home = "${target}/nodejs"
   }
 
-  package { ['npm.noarch','git-all.noarch']:
+  package { ['npm','git-all']:
     ensure => installed,
+  }
+
+
+  file {
+	'${nodejs_home}/': 
+	   ensure => present;
   }
 
   exec {
@@ -18,11 +26,11 @@ class nodejs( $target = '/mnt' ){
     
     'Install libraries':
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-      cwd     => ${nodejs_home},
+      cwd     => $nodejs_home,
       command => 'npm install express',
       require => [
-        Exec['Create nodejs home'],
-        Package['npm.noarch'],
+	File['${nodejs_home}/'],
+        Package['npm'],
       ];
 
     'Start application':

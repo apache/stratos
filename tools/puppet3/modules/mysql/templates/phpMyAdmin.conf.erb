@@ -1,14 +1,14 @@
-# phpMyAdmin - Web based MySQL browser written in php
+# phpmyadmin - Web based MySQL browser written in php
 # 
 # Allows only localhost by default
 #
-# But allowing phpMyAdmin to anyone other than localhost should be considered
+# But allowing phpmyadmin to anyone other than localhost should be considered
 # dangerous unless properly secured by SSL
 
-Alias /phpMyAdmin /usr/share/phpMyAdmin
-Alias /phpmyadmin /usr/share/phpMyAdmin
+Alias /phpmyadmin /usr/share/phpmyadmin
+Alias /phpmyadmin /usr/share/phpmyadmin
 
-<Directory /usr/share/phpMyAdmin/>
+<Directory /usr/share/phpmyadmin/>
    <IfModule mod_authz_core.c>
      # Apache 2.4
      <RequireAny>
@@ -25,7 +25,7 @@ Alias /phpmyadmin /usr/share/phpMyAdmin
    </IfModule>
 </Directory>
 
-<Directory /usr/share/phpMyAdmin/setup/>
+<Directory /usr/share/phpmyadmin/setup/>
    <IfModule mod_authz_core.c>
      # Apache 2.4
      <RequireAny>
@@ -43,31 +43,31 @@ Alias /phpmyadmin /usr/share/phpMyAdmin
 </Directory>
 
 # These directories do not require access over HTTP - taken from the original
-# phpMyAdmin upstream tarball
+# phpmyadmin upstream tarball
 #
-<Directory /usr/share/phpMyAdmin/libraries/>
+<Directory /usr/share/phpmyadmin/libraries/>
     Order Deny,Allow
 #    Deny from All
     Allow from None
 </Directory>
 
-<Directory /usr/share/phpMyAdmin/setup/lib/>
+<Directory /usr/share/phpmyadmin/setup/lib/>
     Order Deny,Allow
 #    Deny from All
     Allow from None
 </Directory>
 
-<Directory /usr/share/phpMyAdmin/setup/frames/>
+<Directory /usr/share/phpmyadmin/setup/frames/>
     Order Deny,Allow
 #    Deny from All
     Allow from None
 </Directory>
 
-# This configuration prevents mod_security at phpMyAdmin directories from
+# This configuration prevents mod_security at phpmyadmin directories from
 # filtering SQL etc.  This may break your mod_security implementation.
 #
 #<IfModule mod_security.c>
-#    <Directory /usr/share/phpMyAdmin/>
+#    <Directory /usr/share/phpmyadmin/>
 #        SecRuleInheritance Off
 #    </Directory>
 #</IfModule>
