@@ -6,13 +6,11 @@ var alias = request.getParameter("alias");
 var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias).cartridge;
 var lbCluster = '{}';
 if(cartridgeInfo.lbClusterId) {
-log.info("&&&&&&&&&&&&&:" + cartridgeInfo.lbClusterId);
   lbCluster = utils.consoleAppUtil.getClusterInfo(cartridgeInfo.lbClusterId).cluster;
   log.debug("***************:" + stringify(lbCluster));
 }
 
 var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridgeType, alias).cluster;
-   //log.debug("~~~~~~~~~~~~~~~~~~~~:" + stringify(clusterInfo));
 
 caramel.render({
     cartridgeInfo:cartridgeInfo,

@@ -336,7 +336,7 @@ consoleAppUtil = new function(){
             "Content-Type": "application/json"
         };
         var response = get(endpoint,{},headers,"json");
-        log.info(stringify(response));
+        log.debug(stringify(response));
         return response;
     };
 

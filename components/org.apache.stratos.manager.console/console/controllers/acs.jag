@@ -1,7 +1,7 @@
 <%
 (function () {
     var log = new Log();
-    log.info("console ACS page....");
+    log.debug("console ACS page....");
     var    configs = require('/config/console.js').config(),
             process = require("process"),
             util = require('/util/utility.jag'),
@@ -17,8 +17,8 @@
                 IDP_ALIAS: configs.ssoConfiguration.identityAlias
             },
             sso_sessions = application.get('sso_sessions');
-    log.info("SAML request :"+ samlRequest);
-    log.info("SAML response : "+ samlResponse);
+    log.debug("SAML request :"+ samlRequest);
+    log.debug("SAML response : "+ samlResponse);
 
     if (!sso_sessions) {
         application.put('sso_sessions', {});
