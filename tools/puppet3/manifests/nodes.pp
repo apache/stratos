@@ -59,8 +59,8 @@ node /php/ inherits base {
   class {'agent':}
   class {'php':}
   
-  #install agent before php
-  Class['agent'] ~> Class['php']
+  #install php before agent
+  Class['php'] ~> Class['agent']
 }
 
 # loadbalancer cartridge node
