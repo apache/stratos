@@ -11,8 +11,6 @@
         session.put("error","Enter your username and password.");
     }
     //authenticate with carbon usr-store
-    log.info("Username : " + username);
-    log.info("Password : "+ password);
     var auth = server.authenticate(username, password);
     if(!auth){
         session.put("error","The username or password you entered is incorrect.")
@@ -27,7 +25,6 @@
         session.put("ROLE_ARRAY",roles);
         //call the authentication rest-endpoint and get the JSESSION_ID
         var result =  utils.consoleAppUtil.getSessionCookie(username,password);
-        log.info(result.data.Success.sessionId);
         //TODO: handle the error scenario
         //save the JSESSION_ID in current console.session.
         var jSessionId = result.data.Success.sessionId;

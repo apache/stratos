@@ -74,6 +74,7 @@ public class CloudControllerUtil {
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
+        cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
 
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
@@ -172,6 +173,7 @@ public class CloudControllerUtil {
 		carInfo.setBaseDir(cartridge.getBaseDir());
 		carInfo.setLbConfig(cartridge.getLbConfig());
 		carInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
+        carInfo.setDefaultDeploymentPolicy(cartridge.getDefaultDeploymentPolicy());
 		carInfo.setPortMappings(cartridge.getPortMappings()
 		                                 .toArray(new PortMapping[cartridge.getPortMappings()
 		                                                                   .size()]));

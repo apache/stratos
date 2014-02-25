@@ -11,6 +11,7 @@ popbox.messageDisplay = function (params) {
     $('#messageModal div.modal-body').html(params.content);
     if(params.buttons != undefined){
         $('#messageModal a.btn-primary').hide();
+        $('#messageModal div.modal-footer').html('');
         for(var i=0;i<params.buttons.length;i++){
             $('#messageModal div.modal-footer').append($('<a class="btn '+params.buttons[i].cssClass+'">'+params.buttons[i].name+'</a>').click(params.buttons[i].cbk));
         }

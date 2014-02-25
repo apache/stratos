@@ -98,7 +98,9 @@ consoleAppUtil = new function(){
     };
 
     this.deployCartridgeDefinition = function(cartridgeDefinition){
+        log.info("inside the cartridge call");
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
+        log.info("end of the call ");
     };
 
     this.deployServiceDefinition = function(serviceDefinition){
@@ -190,6 +192,12 @@ consoleAppUtil = new function(){
     this.getCartridgeInfo = function(alias){
         return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
     };
+    this.validateCaptcha = function(captchaText){
+        return this.sendReceive("POST","/captcha",captchaText).data;
+    };
+    this.getCaptcha = function(){
+        return this.sendReceiveImage("Get","/simpleImg",{});
+    };
     this.getConfigStatus = function(){
         var configStatus = {};
 
@@ -271,6 +279,35 @@ consoleAppUtil = new function(){
         return response;
     };
 
+    // refactor sendRecive and send method. duplicate code...
+    this.sendReceiveImage = function(httpMethod,urlPostFix,data){
+        var config = require('/config/console.js').config();
+        var backendServerURL = config.backendServerConfiguration.url;
+        // getting the access token from the session.
+        var endpoint = backendServerURL + urlPostFix;
+        var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
+        var type = "	image/png"; // response format
+        var response;
+        switch (httpMethod){
+            case  "GET":
+                response = get(endpoint,{},headers);
+                break;
+            case   "POST":
+                response = post(endpoint,stringify(data),headers,type);
+                break;
+            case    "PUT":
+                response = put(endpoint,stringify(data),headers,type);
+                break;
+            case    "DELETE":
+                response = del(endpoint,stringify(data),headers,type);
+                break;
+            default :
+                log.error("Error in the programme flow.");
+        }
+
+        return response;
+    };
+
     this.send = function(httpMethod,urlPostFix,data){
         var config = require('/config/console.js').config();
         var backendServerURL = config.backendServerConfiguration.url;
@@ -279,12 +316,15 @@ consoleAppUtil = new function(){
         var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
         var type = "json"; // response format
         var response;
+        log.info("8888888888888888888888");
+        log.info(data);
         switch (httpMethod){
             case  "GET":
                 response = get(endpoint,{},headers, 'json');
                 break;
             case   "POST":
                 response = post(endpoint,data,headers, 'json');
+                log.info(response);
                 break;
             case    "PUT":
                 response = put(endpoint,data,headers, 'json');
@@ -295,6 +335,7 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
+        log.info("999999999999999");
         if(response.data.stratosAdminResponse) {
             session.put("deploy-status", "succeeded");
         } else if (response.data.Error) {
@@ -336,7 +377,7 @@ consoleAppUtil = new function(){
             "Content-Type": "application/json"
         };
         var response = get(endpoint,{},headers,"json");
-        log.info(stringify(response));
+        log.debug(stringify(response));
         return response;
     };
 
