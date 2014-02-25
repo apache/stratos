@@ -93,7 +93,7 @@ node /nodejs/ inherits base {
   class {'nodejs':}
 
   #install agent before nodejs
-  Class['agent'] ~> Class['nodejs']
+  Class['nodejs'] ~> Class['agent']
 }
 
 # haproxy extension loadbalancer cartridge node
@@ -109,7 +109,7 @@ node /ruby/ inherits base {
   class {'agent':
   }
   class {'ruby':}
-#  Class['agent'] ~> Class['ruby']
+#  Class['ruby'] ~> Class['agent']
 }
 
 #wordpress cartridge node
