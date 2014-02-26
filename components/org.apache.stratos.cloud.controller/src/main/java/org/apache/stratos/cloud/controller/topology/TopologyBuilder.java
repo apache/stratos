@@ -390,7 +390,16 @@ public class TopologyBuilder {
     public static void handleMemberTerminated(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(serviceName);
+        if (service == null) {
+            log.warn(String.format("Service %s does not exist",
+                                                     serviceName));
+        }
         Cluster cluster = service.getCluster(clusterId);
+        if (cluster == null) {
+            log.warn(String.format("Cluster %s does not exist",
+                                                     clusterId));
+        }
+        
         Member member = cluster.getMember(memberId);
 
 		if (member == null) {
