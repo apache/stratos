@@ -4,7 +4,7 @@ var caramel = require('caramel');
 var utils = require('/util/utility.jag');
 var type = request.getParameter('cartridgeType');
 var autoScalePolicies = utils.consoleAppUtil.getAutoScalePolicies();
-var deploymentPolicies = utils.consoleAppUtil.getDeploymentPolicies();
+var deploymentPolicies = utils.consoleAppUtil.getApplicableDeploymentPolicies(type);
 var cartridge = utils.consoleAppUtil.getSingleTenantCartridgeInfo(type);
 caramel.render({
         cartridge:cartridge,
