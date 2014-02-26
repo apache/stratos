@@ -75,9 +75,9 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         size.setArgName("volume-size");
         options.addOption(size);
 
-        Option persistance = new Option(CliConstants.PERSISTANCE_MAPPING_OPTION, CliConstants.PERSISTANCE_MAPPING_LONG_OPTION,
-                true, "Persistance-mapping");
-        persistance.setArgName("persistance-mapping");
+        Option persistance = new Option(CliConstants.PERSISTANCE_VOLUME_OPTION, CliConstants.PERSISTANCE_VOLUME_LONG_OPTION,
+                true, "Persistance-volume");
+        persistance.setArgName("persistance-volume");
         options.addOption(persistance);
 
 		Option connectOption = new Option(CliConstants.CONNECT_OPTION, CliConstants.CONNECT_LONG_OPTION, true,
@@ -204,9 +204,9 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     }
                     removeOnTermination = true;
                 }
-                if (commandLine.hasOption(CliConstants.PERSISTANCE_MAPPING_OPTION)) {
+                if (commandLine.hasOption(CliConstants.PERSISTANCE_VOLUME_OPTION)) {
                     if (logger.isTraceEnabled()) {
-                        logger.trace("Persistance mapping option is passed");
+                        logger.trace("Persistance volume option is passed");
 
                     }
                     persistanceMapping = true;
