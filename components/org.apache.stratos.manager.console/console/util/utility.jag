@@ -156,6 +156,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/policy/deployment",{}).data;
     };
 
+    this.getApplicableDeploymentPolicies = function(cartridgeType){
+               return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment",{}).data;
+           };
+
     this.getPartitions = function(){
         return this.sendReceive("GET","/partition",{}).data;
     };

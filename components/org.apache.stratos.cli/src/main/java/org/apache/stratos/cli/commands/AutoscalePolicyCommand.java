@@ -39,7 +39,7 @@ public class AutoscalePolicyCommand implements Command<StratosCommandContext> {
     }
 
     public String getDescription() {
-        return "List available autoscale policies";
+        return "List available autoscaling policies";
     }
 
     public String getArgumentSyntax() {

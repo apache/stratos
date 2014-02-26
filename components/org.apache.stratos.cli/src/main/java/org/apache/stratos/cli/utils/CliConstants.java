@@ -72,7 +72,7 @@ public class CliConstants {
     /**
      * List the available autoscaling policies
      */
-    public static final String LIST_AUTOSCALE_POLICY = "list-autoscale-policies";
+    public static final String LIST_AUTOSCALE_POLICY = "list-autoscaling-policies";
 
     /**
      * List the available deploy services
@@ -224,8 +224,8 @@ public class CliConstants {
     public static final String VOLUME_SIZE_OPTION = "v";
     public static final String VOLUME_SIZE_LONG_OPTION = "volume-size";
 
-    public static final String PERSISTANCE_MAPPING_OPTION = "pm";
-    public static final String PERSISTANCE_MAPPING_LONG_OPTION = "persistance-mapping";
+    public static final String PERSISTANCE_VOLUME_OPTION = "pv";
+    public static final String PERSISTANCE_VOLUME_LONG_OPTION = "persistance-volume";
 
     public static final String AUTOSCALING_POLICY_OPTION = "ap";
     public static final String AUTOSCALING_POLICY_LONG_OPTION = "autoscaling-policy";

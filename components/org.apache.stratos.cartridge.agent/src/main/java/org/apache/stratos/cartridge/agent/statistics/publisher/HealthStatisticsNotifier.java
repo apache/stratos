@@ -56,7 +56,7 @@ public class HealthStatisticsNotifier implements Runnable {
 
                 if (statsPublisher.isEnabled()) {
                     if(!CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts())
-                            && !CartridgeAgentEventPublisher.isMaintenance()) {
+                            && ( !CartridgeAgentEventPublisher.isMaintenance() || !CartridgeAgentEventPublisher.isReadyToShutdown() ) ) {
                         if(log.isInfoEnabled()) {
                             log.info("Publishing ports not open event");
                         }

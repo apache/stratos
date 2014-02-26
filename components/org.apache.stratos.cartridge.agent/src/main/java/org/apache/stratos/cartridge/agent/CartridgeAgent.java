@@ -131,7 +131,9 @@ public class CartridgeAgent implements Runnable {
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         }
 
-        ExtensionUtils.executeVolumeMountExtension();
+        String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistanceMappings();
+        if(persistanceMappingsPayload != null)
+            ExtensionUtils.executeVolumeMountExtension(persistanceMappingsPayload);
         // TODO: Start this thread only if this node is configured as a commit true node
         // Start periodical file checker task
         // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

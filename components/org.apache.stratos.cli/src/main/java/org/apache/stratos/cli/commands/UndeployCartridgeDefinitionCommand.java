@@ -37,7 +37,7 @@ public class UndeployCartridgeDefinitionCommand implements Command<StratosComman
 
     @Override
     public String getDescription() {
-        return "Undeploy Cartridge Definition";
+        return "Undeploy cartridge definition";
     }
 
     @Override
