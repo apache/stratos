@@ -29,7 +29,8 @@ echo -e "Starting mounting volumes" 2>&1 | tee -a $log
 
 # $1  is passed from Cartridge Agent code.
 echo -e "launh param file location $1" | tee -a $log
-source /opt/apache-stratos-cartridge-agent/launch.params
+#source /opt/apache-stratos-cartridge-agent/launch.params
+PERSISTENCE_MAPPING=$1
 echo -e "Persistance mappings : $PERSISTENCE_MAPPING" 2>&1 | tee -a $log
 
 mount_volume(){
@@ -71,8 +72,6 @@ mount_volume(){
 
 }
 
-
-#PERSISTENCE_MAPPING="ayyo|alli|eka|deka"
 IFS='|' read -ra ADDR <<< "${PERSISTENCE_MAPPING}"
 echo "${ADDR[@]}" | tee -a $log
 

@@ -29,6 +29,7 @@ public class CartridgeAgentConfiguration {
     private final List<Integer> ports;
     private final List<String> logFilePaths;
     private boolean isMultitenant;
+    private String persistanceMappings;
 
     private CartridgeAgentConfiguration() {
         serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
@@ -83,6 +84,10 @@ public class CartridgeAgentConfiguration {
 
     private String readParameterValue(String parameterName) {
         try {
+
+            if(System.getProperty(parameterName) != null){
+                return System.getProperty(parameterName);
+            }
             // read launch params
             File file = new File(System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH));
             if(!file.exists()) {
@@ -167,6 +172,10 @@ public class CartridgeAgentConfiguration {
 
 	public boolean isMultitenant() {
 		return isMultitenant;
-	}  
-    
+	}
+
+    public String getPersistanceMappings() {
+        String persistence_mapping_payload = readParameterValue("PERSISTENCE_MAPPING");
+        return persistence_mapping_payload;
+    }
 }
