@@ -392,10 +392,11 @@ public class TopologyBuilder {
         Cluster cluster = service.getCluster(clusterId);
         Member member = cluster.getMember(memberId);
 
-        if (member == null) {
-            throw new RuntimeException(String.format("Member with nodeID %s does not exist",
-                    memberId));
-        }
+		if (member == null) {
+			log.warn(String.format("Member with nodeID %s does not exist",
+					memberId));
+			return;
+		}
 
         try {
             TopologyManager.acquireWriteLock();
