@@ -29,6 +29,7 @@ import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -79,6 +80,15 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge[] getAvailableSingleTenantCartridges() throws ADCException {
          return MockContext.getInstance().getAvailableSingleTenantCartridges();
+    }
+
+    @GET
+    @Path("/cartridge/available/list")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cartridge[] getAvailableCartridges() throws ADCException {
+         return MockContext.getInstance().getAvailableCartridges();
     }
 
     @GET
@@ -204,7 +214,7 @@ public class StratosTestAdmin {
    @Consumes("application/json")
    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
    @SuperTenantService(true)
-   public boolean deployService(ServiceDefinitionBean serviceDefinitionBean)
+   public StratosAdminResponse deployService(ServiceDefinitionBean serviceDefinitionBean)
            throws RestAPIException {
 
        log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
@@ -227,9 +237,10 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public void deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
+    public StratosAdminResponse deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
-        MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
+        System.out.println("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+        return MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
     }
 
     @DELETE
@@ -269,7 +280,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public boolean deployPartition (Partition partition)
+    public StratosAdminResponse deployPartition (Partition partition)
             throws RestAPIException {
         return MockContext.getInstance().addPartition(partition);
     }
@@ -280,7 +291,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public boolean deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
+    public StratosAdminResponse deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
             throws RestAPIException {
           return MockContext.getInstance().addAutoScalingPolicyDefinition(autoscalePolicy);
 
@@ -292,7 +303,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public boolean deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
+    public StratosAdminResponse deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
            return MockContext.getInstance().addDeploymentPolicyDefinition(deploymentPolicy);
 
