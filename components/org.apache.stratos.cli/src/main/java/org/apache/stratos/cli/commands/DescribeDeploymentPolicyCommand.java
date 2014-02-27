@@ -37,7 +37,7 @@ public class DescribeDeploymentPolicyCommand implements Command<StratosCommandCo
 
     @Override
     public String getDescription() {
-        return "Describing the Deployment Policy";
+        return "Describing the deployment Policy";
     }
 
     @Override

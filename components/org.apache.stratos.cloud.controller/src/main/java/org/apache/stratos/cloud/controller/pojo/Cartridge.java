@@ -48,6 +48,8 @@ public class Cartridge implements Serializable{
     private boolean multiTenant;
     
     private String defaultAutoscalingPolicy;
+
+    private String defaultDeploymentPolicy;
     
     private LoadbalancerConfig lbConfig;
     
@@ -312,5 +314,13 @@ public class Cartridge implements Serializable{
 	 */
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
+    }
+
+    public String getDefaultDeploymentPolicy() {
+        return defaultDeploymentPolicy;
+    }
+
+    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
     }
 }

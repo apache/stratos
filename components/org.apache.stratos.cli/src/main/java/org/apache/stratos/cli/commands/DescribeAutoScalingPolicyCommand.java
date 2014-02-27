@@ -37,7 +37,7 @@ public class DescribeAutoScalingPolicyCommand implements Command<StratosCommandC
 
     @Override
     public String getDescription() {
-        return "Describing the Autoscaling policy";
+        return "Describing the autoscaling policy";
     }
 
     @Override

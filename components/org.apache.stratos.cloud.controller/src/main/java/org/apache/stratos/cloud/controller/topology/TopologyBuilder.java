@@ -54,7 +54,7 @@ public class TopologyBuilder {
         Service service;
         Topology topology = TopologyManager.getTopology();
         if (cartridgeList == null) {
-            throw new RuntimeException(String.format("Cartridge list is empty"));
+        	log.warn(String.format("Cartridge list is empty"));
         }
         try {
 
@@ -97,7 +97,7 @@ public class TopologyBuilder {
                     }
                     TopologyEventPublisher.sendServiceRemovedEvent(cartridgeList);
                 } else {
-                    throw new RuntimeException(String.format("Service %s does not exist..", cartridge.getType()));
+                	log.warn(String.format("Service %s does not exist..", cartridge.getType()));
                 }
             } else {
                 log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
@@ -150,12 +150,12 @@ public class TopologyBuilder {
         Service service = topology.getService(ctxt.getCartridgeType());
         String deploymentPolicy;
         if (service == null) {
-            throw new RuntimeException(String.format("Service %s does not exist",
+        	log.warn(String.format("Service %s does not exist",
                     ctxt.getCartridgeType()));
         }
 
         if (!service.clusterExists(ctxt.getClusterId())) {
-            throw new RuntimeException(String.format("Cluster %s does not exist for service %s",
+        	log.warn(String.format("Cluster %s does not exist for service %s",
                     ctxt.getClusterId(),
                     ctxt.getCartridgeType()));
         }
@@ -179,7 +179,7 @@ public class TopologyBuilder {
         Cluster cluster = service.getCluster(clusterId);
 
         if (cluster.memberExists(memberId)) {
-            throw new RuntimeException(String.format("Member %s already exists", memberId));
+        	log.warn(String.format("Member %s already exists", memberId));
         }
 
         try {
@@ -201,11 +201,11 @@ public class TopologyBuilder {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceStartedEvent.getServiceName());
         if (service == null) {
-            throw new RuntimeException(String.format("Service %s does not exist",
+        	log.warn(String.format("Service %s does not exist",
                     instanceStartedEvent.getServiceName()));
         }
         if (!service.clusterExists(instanceStartedEvent.getClusterId())) {
-            throw new RuntimeException(String.format("Cluster %s does not exist in service %s",
+        	log.warn(String.format("Cluster %s does not exist in service %s",
                     instanceStartedEvent.getClusterId(),
                     instanceStartedEvent.getServiceName()));
         }
@@ -213,7 +213,7 @@ public class TopologyBuilder {
         Member member = service.getCluster(instanceStartedEvent.getClusterId()).
                 getMember(instanceStartedEvent.getMemberId());
         if (member == null) {
-            throw new RuntimeException(String.format("Member %s does not exist",
+        	log.warn(String.format("Member %s does not exist",
                     instanceStartedEvent.getMemberId()));
         }
         try {
@@ -241,19 +241,19 @@ public class TopologyBuilder {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceActivatedEvent.getServiceName());
         if (service == null) {
-            throw new RuntimeException(String.format("Service %s does not exist",
+            log.warn(String.format("Service %s does not exist",
                                                      instanceActivatedEvent.getServiceName()));
         }
         
         Cluster cluster = service.getCluster(instanceActivatedEvent.getClusterId());
         if (cluster == null) {
-            throw new RuntimeException(String.format("Cluster %s does not exist",
+            log.warn(String.format("Cluster %s does not exist",
                                                      instanceActivatedEvent.getClusterId()));
         }
         Member member = cluster.getMember(instanceActivatedEvent.getMemberId());
 
         if (member == null) {
-            throw new RuntimeException(String.format("Member %s does not exist",
+        	log.warn(String.format("Member %s does not exist",
                     instanceActivatedEvent.getMemberId()));
         }
 
@@ -302,18 +302,18 @@ public class TopologyBuilder {
         Service service = topology.getService(instanceReadyToShutdownEvent.getServiceName());
         //update the status of the member
         if (service == null) {
-            throw new RuntimeException(String.format("Service %s does not exist",
+        	log.warn(String.format("Service %s does not exist",
                                                      instanceReadyToShutdownEvent.getServiceName()));
         }
 
         Cluster cluster = service.getCluster(instanceReadyToShutdownEvent.getClusterId());
         if (cluster == null) {
-            throw new RuntimeException(String.format("Cluster %s does not exist",
+            log.warn(String.format("Cluster %s does not exist",
                                                      instanceReadyToShutdownEvent.getClusterId()));
         }
         Member member = cluster.getMember(instanceReadyToShutdownEvent.getMemberId());
         if (member == null) {
-            throw new RuntimeException(String.format("Member %s does not exist",
+            log.warn(String.format("Member %s does not exist",
                     instanceReadyToShutdownEvent.getMemberId()));
         }
         MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
@@ -352,19 +352,20 @@ public class TopologyBuilder {
         Service service = topology.getService(instanceMaintenanceModeEvent.getServiceName());
         //update the status of the member
         if (service == null) {
-            throw new RuntimeException(String.format("Service %s does not exist",
+            log.warn(String.format("Service %s does not exist",
                                                      instanceMaintenanceModeEvent.getServiceName()));
         }
 
         Cluster cluster = service.getCluster(instanceMaintenanceModeEvent.getClusterId());
         if (cluster == null) {
-            throw new RuntimeException(String.format("Cluster %s does not exist",
+            log.warn(String.format("Cluster %s does not exist",
                                                      instanceMaintenanceModeEvent.getClusterId()));
         }
         Member member = cluster.getMember(instanceMaintenanceModeEvent.getMemberId());
         if (member == null) {
-            throw new RuntimeException(String.format("Member %s does not exist",
+            log.warn(String.format("Member %s does not exist",
                     instanceMaintenanceModeEvent.getMemberId()));
+            return;
         }
         MemberMaintenanceModeEvent memberMaintenanceModeEvent = new MemberMaintenanceModeEvent(
                                                                 instanceMaintenanceModeEvent.getServiceName(),
@@ -389,13 +390,23 @@ public class TopologyBuilder {
     public static void handleMemberTerminated(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(serviceName);
+        if (service == null) {
+            log.warn(String.format("Service %s does not exist",
+                                                     serviceName));
+        }
         Cluster cluster = service.getCluster(clusterId);
+        if (cluster == null) {
+            log.warn(String.format("Cluster %s does not exist",
+                                                     clusterId));
+        }
+        
         Member member = cluster.getMember(memberId);
 
-        if (member == null) {
-            throw new RuntimeException(String.format("Member with nodeID %s does not exist",
-                    memberId));
-        }
+		if (member == null) {
+			log.warn(String.format("Member with nodeID %s does not exist",
+					memberId));
+			return;
+		}
 
         try {
             TopologyManager.acquireWriteLock();

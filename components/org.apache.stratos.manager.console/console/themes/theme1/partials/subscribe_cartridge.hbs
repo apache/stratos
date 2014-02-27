@@ -26,25 +26,27 @@
             </div>
 
             {{#if cartridge.persistence.persistanceRequired}}
-                <label class="required">Persistence Storage:</label>
-                <label>
-                    <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistence storage
-                </label>
-                <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
-                        <div class="form-group">
-                            <label class="required">Size(GB):</label>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-inline">
-                                <input name="size" class="form-control input-xlarge" placeholder="10"/>
+                {{#unless cartridge.multiTenant}}
+                    <label class="required">Persistent Storage:</label>
+                    <label>
+                        <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistent storage
+                    </label>
+                    <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
+                            <div class="form-group">
+                                <label class="required">Size(GB):</label>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input name="removeOnUnsubscription" type="checkbox" id="volume_check" />Remove On Unsubscription
-                            </label>
-                        </div>
-                </div>
+                            <div class="form-group">
+                                <div class="form-inline">
+                                    <input name="size" class="form-control input-xlarge" placeholder="10"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input name="removeOnUnsubscription" type="checkbox" id="volume_check" />Remove On Unsubscription
+                                </label>
+                            </div>
+                    </div>
+                {{/unless}}
             {{/if}}
             {{#ifCond cartridge.provider "==" "data"}}
             {{else}}
@@ -86,38 +88,56 @@
 
              {{/ifCond}}
 
-             <div class="form-group">
-                <label class="required">Autoscale Policy:</label>
-                <div class="form-inline">
-                    <select
-                            name="autoscalePolicy"
-                            class="form-control input-xlarge js-help"
-                            data-help="Please choose a applicable autoscaling policy for the subscription."
-                            data-help-x-offset="50"
-                            data-help-y-offset="10"
-                            >
-                        {{#each autoScalePolicies}}
-                        <option>{{id}}</option>
-                        {{/each}}
-                    </select>
+            {{#unless cartridge.multiTenant}}
+                <div class="form-group">
+                    <label class="required">Autoscale Policy:</label>
+                    <div class="form-inline">
+                        <select
+                                name="autoscalePolicy"
+                                class="form-control input-xlarge js-help"
+                                data-help="Please choose a applicable autoscaling policy for the subscription."
+                                data-help-x-offset="50"
+                                data-help-y-offset="10"
+                                >
+
+                            {{#if cartridge.defaultAutoscalingPolicy}}
+                                <option>{{cartridge.defaultAutoscalingPolicy}}</option>
+                            {{else}}
+                               {{#each autoScalePolicies}}
+                                   <option>{{id}}</option>
+                                {{/each}}
+                            {{/if}}
+
+
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="required">Deployment Policy:</label>
-                <div class="form-inline">
-                    <select
-                            name="deploymentPolicy"
-                            class="form-control input-xlarge js-help"
-                            data-help="Please choose a applicable deployment policy for the subscription.."
-                            data-help-x-offset="50"
-                            data-help-y-offset="10"
-                            >
-                        {{#each deploymentPolicies}}
-                            <option>{{id}}</option>
-                        {{/each}}
-                    </select>
+                <div class="form-group">
+                    <label class="required">Deployment Policy:</label>
+                    <div class="form-inline">
+                        <select
+                                name="deploymentPolicy"
+                                class="form-control input-xlarge js-help"
+                                data-help="Please choose a applicable deployment policy for the subscription.."
+                                data-help-x-offset="50"
+                                data-help-y-offset="10"
+                                >
+
+                                 {{#if cartridge.defaultDeploymentPolicy}}
+                                        <option>{{cartridge.defaultDeploymentPolicy}}</option>
+                                {{else}}
+                                  {{#each deploymentPolicies}}
+                                      <option>{{id}}</option>
+                                  {{/each}}
+                                {{/if}}
+
+
+                        </select>
+                    </div>
                 </div>
-            </div>
+
+            {{/unless}}
+
             <button type="submit" class="btn btn-primary">Subscribe to Cartridge</button>
             </form>
         </div>

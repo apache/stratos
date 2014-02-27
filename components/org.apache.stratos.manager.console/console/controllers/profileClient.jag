@@ -38,8 +38,7 @@ function getUserProfile(username, profileName){
                    obj.readOnly = "";
                 }
             }
-
-            log.info(result);
+            log.debug(result);
             return result;
         }
 

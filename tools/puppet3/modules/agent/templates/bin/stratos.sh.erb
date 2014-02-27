@@ -36,10 +36,13 @@ properties="-Dmb.ip=<%= @mb_ip %>
             -Dcep.stats.publisher.enabled=true
             -Djavax.net.ssl.trustStore=<%= @carbon_home %>/security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=<%= @truststore_password %>
+	    -Denable.artifact.update=true
+	    -Dartifact.update.interval=15
 	    -DAPP_PATH=<%= @docroot %>"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
 /opt/java/bin/java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main
+
 

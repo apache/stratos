@@ -35,11 +35,11 @@ public class AlgorithmContextCache {
 
     public static void putCurrentMemberIndex(String serviceName, String clusterId, int currentMemberIndex) {
         String key = prepareKey(serviceName, clusterId);
-        LoadBalancerCache.getInstance().putInteger(Constants.ALGORITHM_CONTEXT_CACHE, key, currentMemberIndex);
+        LoadBalancerCache.putInteger(Constants.ALGORITHM_CONTEXT_CACHE, key, currentMemberIndex);
     }
 
     public static int getCurrentMemberIndex(String serviceName, String clusterId) {
         String key = prepareKey(serviceName, clusterId);
-        return LoadBalancerCache.getInstance().getInteger(Constants.ALGORITHM_CONTEXT_CACHE, key);
+        return LoadBalancerCache.getInteger(Constants.ALGORITHM_CONTEXT_CACHE, key);
     }
 }

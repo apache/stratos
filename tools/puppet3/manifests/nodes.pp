@@ -15,7 +15,7 @@ node 'base' {
   #following variables required only if you want to install stratos using puppet.
   #not supported in alpha version
   # Service subdomains
-  #$domain               = 'wso2.com'
+  #$domain               = 'stratos.com'
   #$as_subdomain         = 'autoscaler'
   #$management_subdomain = 'management'
 
@@ -35,7 +35,7 @@ node 'base' {
   #$as_ip                = '10.4.128.8'
   #$as_port              = '9443'
 
-  #$git_hostname        = 'git.wso2.com'
+  #$git_hostname        = 'git.stratos.com'
   #$git_ip              = '10.4.128.13'
 
   #$mysql_server        = '10.4.128.13'
@@ -49,31 +49,6 @@ node 'base' {
   #$internal_repo_password = 'admin'
 
 }
-node /nirmal/ inherits base {
-
-require java
-  class {'agent':}
-  class {'nodejs':}
-
-  #install agent before nodejs
-  Class['agent'] ~> Class['nodejs']
-
-
-#class {'agent':
-#    type => 'mysql',
-#  }
-#  class {'mysql':}
-
-
-#require java
-#  class {'agent':}
-#  class {'php':}
-
-  #install agent before php
-#  Class['agent'] ~> Class['php']
-#require java
-#  class {'agent':}
-}
 
 # php cartridge node
 node /php/ inherits base {
@@ -84,8 +59,8 @@ node /php/ inherits base {
   class {'agent':}
   class {'php':}
   
-  #install agent before php
-  Class['agent'] ~> Class['php']
+  #install php before agent
+  Class['php'] ~> Class['agent']
 }
 
 # loadbalancer cartridge node
@@ -118,7 +93,7 @@ node /nodejs/ inherits base {
   class {'nodejs':}
 
   #install agent before nodejs
-  Class['agent'] ~> Class['nodejs']
+  Class['nodejs'] ~> Class['agent']
 }
 
 # haproxy extension loadbalancer cartridge node
@@ -134,7 +109,7 @@ node /ruby/ inherits base {
   class {'agent':
   }
   class {'ruby':}
-#  Class['agent'] ~> Class['ruby']
+#  Class['ruby'] ~> Class['agent']
 }
 
 #wordpress cartridge node
