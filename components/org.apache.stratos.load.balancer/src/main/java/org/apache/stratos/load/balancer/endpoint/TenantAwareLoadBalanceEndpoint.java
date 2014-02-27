@@ -28,7 +28,8 @@ import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
-import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
+import org.apache.stratos.load.balancer.statistics.InFlightRequestIncrementCallable;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -51,6 +52,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -559,7 +561,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             if(StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }
-            LoadBalancerStatisticsCollector.getInstance().addAnInFlightRequest(clusterId);
+            FutureTask<Object> task = new FutureTask<Object>(new InFlightRequestIncrementCallable(clusterId));
+            LoadBalancerStatisticsExecutor.getInstance().getService().submit(task);
         }
         catch (Exception e) {
             if(log.isDebugEnabled()) {

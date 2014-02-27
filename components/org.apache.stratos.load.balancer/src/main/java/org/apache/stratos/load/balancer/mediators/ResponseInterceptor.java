@@ -19,17 +19,27 @@
 package org.apache.stratos.load.balancer.mediators;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
+import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
+import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.mediators.AbstractMediator;
 
+import java.util.concurrent.FutureTask;
+
 /**
  * This Synapse mediator counts the responses that are going across LB.
  */
 public class ResponseInterceptor extends AbstractMediator implements ManagedLifecycle {
+
+    @Override
+    public void init(SynapseEnvironment arg) {
+        if (log.isDebugEnabled()) {
+            log.debug("ResponseInterceptor mediator initiated");
+        }
+    }
 
     public boolean mediate(MessageContext messageContext) {
         try {
@@ -38,7 +48,8 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
             }
             String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
             if (StringUtils.isNotBlank(clusterId)) {
-            	LoadBalancerStatisticsCollector.getInstance().removeAnInFlightRequest(clusterId);
+                FutureTask<Object> task = new FutureTask<Object>(new InFlightRequestDecrementCallable(clusterId));
+                LoadBalancerStatisticsExecutor.getInstance().getService().submit(task);
             } else{
             	if (log.isDebugEnabled()) {
                     log.debug("Could not decrement in-flight request count : cluster id not found in message context");
@@ -57,13 +68,6 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
     public void destroy() {
         if (log.isDebugEnabled()) {
             log.debug("Response interceptor mediator destroyed");
-        }
-    }
-
-    @Override
-    public void init(SynapseEnvironment arg0) {
-        if (log.isDebugEnabled()) {
-            log.debug("ResponseInterceptor mediator initiated");
         }
     }
 }

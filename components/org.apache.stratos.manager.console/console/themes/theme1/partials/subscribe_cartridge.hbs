@@ -9,13 +9,14 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-            <form method="post" role="form" action="{{url "/controllers/cartridgeSubscribeSubmit.jag"}}">
+            <form method="post" role="form" action="{{url "/controllers/cartridgeSubscribeSubmit.jag"}}" id="newTenantForm">
             <div class="form-group">
                 <label class="required">Public URL:</label>
                 <div class="form-inline">
                     <input name="cartridgeType" type="hidden" value="{{cartridgeType}}"/>
                     <input name="alias"
                            type="text"
+                           class="required"
                            class="form-control input-xlarge js-help"
                            data-help="Specify a unique alias which can be used to generate the hostname as alias.hostname from cartridge"
                            data-help-x-offset="50"
@@ -25,68 +26,48 @@
                 </div>
             </div>
 
-            {{#if cartridge.persistence.persistanceRequired}}
-                {{#unless cartridge.multiTenant}}
-                    <label class="required">Persistent Storage:</label>
-                    <label>
-                        <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistent storage
-                    </label>
-                    <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
-                            <div class="form-group">
-                                <label class="required">Size(GB):</label>
-                            </div>
-                            <div class="form-group">
-                                <div class="form-inline">
-                                    <input name="size" class="form-control input-xlarge" placeholder="10"/>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input name="removeOnUnsubscription" type="checkbox" id="volume_check" />Remove On Unsubscription
-                                </label>
-                            </div>
-                    </div>
-                {{/unless}}
-            {{/if}}
+
             {{#ifCond cartridge.provider "==" "data"}}
             {{else}}
             {{#ifCond cartridge.provider "==" "application"}}
             {{else}}
                 <div class="form-group">
-                <label class="required">Repo URL:</label>
-                <div class="form-inline">
-                    <input name="repoURL"
-                           type="text"
-                           class="form-control input-xlarge js-help"
-                           data-help="Specify a repository URL of the artifacts."
-                           data-help-x-offset="50"
-                           data-help-y-offset="10"
-                           placeholder="https://github.com/test/mytestphp.git" />
+                    <label class="required">Repo URL:</label>
+                    <div class="form-inline">
+                        <input name="repoURL"
+                               type="text"
+                               class="required"
+                               class="form-control input-xlarge js-help"
+                               data-help="Specify a repository URL of the artifacts."
+                               data-help-x-offset="50"
+                               data-help-y-offset="10"
+                               placeholder="https://github.com/test/mytestphp.git" />
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input name="isPublicRepo" type="checkbox" checked="checked" id="public_check" /> This is a public repository
+                        </label>
+                    </div>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input name="isPublicRepo" type="checkbox" checked="checked" id="public_check" /> This is a public repository
-                    </label>
-                </div>
-            </div>
             <div id="credential_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
                 <h2>Provide Credentials</h2>
                 <div class="form-group">
                     <label class="required">Username:</label>
                     <div class="form-inline">
-                        <input name="repoUsername"  class="form-control input-xlarge" placeholder="username"/>
+                        <input name="repoUsername" class="required"  class="form-control input-xlarge" placeholder="username"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="required">Password:</label>
                     <div class="form-inline">
-                        <input name="repoPassword" type="password" class="form-control input-xlarge" placeholder="******"/>
+                        <input name="repoPassword" class="required" type="password" class="form-control input-xlarge" placeholder="******"/>
                     </div>
                 </div>
             </div>
              {{/ifCond}}
 
              {{/ifCond}}
+
 
             {{#unless cartridge.multiTenant}}
                 <div class="form-group">
@@ -138,12 +119,41 @@
 
             {{/unless}}
 
+            {{#if cartridge.persistence.persistanceRequired}}
+                 {{#unless cartridge.multiTenant}}
+
+                 <div class="form-group">
+                     <label class="required">Persistent Storage:</label>
+                     <label>
+                         <input name="persistencerequired" type="checkbox" id="volume_check"/> Require Persistent Storage
+                     </label>
+                 </div>
+                     <div id="persistence_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
+                             <div class="form-group">
+                                 <label class="required">Size(GB):</label>
+                             </div>
+                             <div class="form-group">
+                                 <div class="form-inline">
+                                     <input name="size" class="form-control input-xlarge" placeholder="10"/>
+                                 </div>
+                             </div>
+                             <div class="form-group">
+                                 <label>
+                                     <input name="removeOnUnsubscription" type="checkbox" id="volume_check" />Remove On Unsubscription
+                                 </label>
+                             </div>
+                     </div>
+                 {{/unless}}
+             {{/if}}
+
+
             <button type="submit" class="btn btn-primary">Subscribe to Cartridge</button>
             </form>
         </div>
     </div>
 </div>
-
+<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
+<script src="{{url "/themes/theme1/ui/js/tenant_management.js"}}"></script>
 <script>
     $(function(){
         $('.js-help')
@@ -190,3 +200,4 @@
     });
 
 </script>
+<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>

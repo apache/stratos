@@ -33,18 +33,18 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     private static final Log log = LogFactory.getLog(LoadBalancerStatisticsCollector.class);
 
     private static volatile LoadBalancerStatisticsCollector instance;
-    // Map<ClusterId, Map<PartitionId, InFlightRequestCount>
-    private Map<String, Vector<Date>> inFlightRequestToDateListMap;
+    // Map<ClusterId, ArrayList<Date>>
+    private Map<String, List<Date>> inFlightRequestToDateListMap;
 
     private LoadBalancerStatisticsCollector() {
-        inFlightRequestToDateListMap = new ConcurrentHashMap<String, Vector<Date>>();
+        inFlightRequestToDateListMap = new ConcurrentHashMap<String, List<Date>>();
     }
 
     public static LoadBalancerStatisticsCollector getInstance() {
         if (instance == null) {
             synchronized (LoadBalancerStatisticsCollector.class) {
                 if (instance == null) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Load balancer in-flight request count collector instance created");
                     }
                     instance = new LoadBalancerStatisticsCollector();
@@ -55,115 +55,84 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     }
 
     public int getInFlightRequestCountOfSlidingWindow(String clusterId) {
-        //Clear the list before returning...
+        synchronized (LoadBalancerStatisticsCollector.class) {
+            // Sliding window in milliseconds
+            int slidingWindow = 10000; // TODO Move this to loadbalancer.conf
 
-        //Sliding window in Milliseconds
-        int slidingWindow = 60000;//TODO get this from a config
-
-
-        if (inFlightRequestToDateListMap.containsKey(clusterId)) {
-            Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
-            Iterator<Date> itr = vector.iterator();
-            while(itr.hasNext()){
-                Date date = itr.next();
+            if (inFlightRequestToDateListMap.containsKey(clusterId)) {
+                List<Date> dateList = inFlightRequestToDateListMap.get(clusterId);
+                List<Date> updatedList = Collections.synchronizedList(new ArrayList<Date>());
                 Date currentDate = new Date();
-                if((currentDate.getTime() - date.getTime()) > slidingWindow){ // we will remove the
-                    itr.remove();
-                } else {
-                    //If the
-                    break;
+                long slidingWindStart = currentDate.getTime() - slidingWindow;
+                int count = 0;
+                for (Date date : dateList) {
+                    if (date.getTime() > slidingWindStart) {
+                        count++;
+                    }
+                    else {
+                        updatedList.add(date);
+                    }
+                }
+                // Remove dates counted
+                inFlightRequestToDateListMap.put(clusterId, updatedList);
+                return count;
+            }
+            return 0;
+        }
+    }
+
+    void incrementInFlightRequestCount(String clusterId) {
+        synchronized (LoadBalancerStatisticsCollector.class) {
+            if (StringUtils.isBlank(clusterId)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cluster id is null, could not increment in-flight request count");
+                }
+                return;
+            }
+            List<Date> dateList;
+            if (inFlightRequestToDateListMap.containsKey(clusterId)) {
+                dateList = inFlightRequestToDateListMap.get(clusterId);
+            } else {
+                dateList = Collections.synchronizedList(new ArrayList<Date>());
+                inFlightRequestToDateListMap.put(clusterId, dateList);
+            }
+            // Add current date to cluster date list
+            dateList.add(new Date());
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("In-flight request count incremented: [cluster] %s [count] %s ", clusterId,
+                        dateList.size()));
+
+            }
+        }
+    }
+
+    void decrementInFlightRequestCount(String clusterId) {
+        synchronized (LoadBalancerStatisticsCollector.class) {
+            if (StringUtils.isBlank(clusterId)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cluster id is null, could not decrement in-flight request count");
+                }
+                return;
+            }
+
+            if (!inFlightRequestToDateListMap.containsKey(clusterId)) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("In-flight request date list not found for cluster: [cluster] %s ", clusterId));
+                }
+            } else {
+                List<Date> dateList = inFlightRequestToDateListMap.get(clusterId);
+                if (!dateList.isEmpty()) {
+                    int index = dateList.size() - 1;
+                    if (index >= 0) {
+                        dateList.remove(index);
+                    }
+                }
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("In-flight request count decremented: [cluster] %s [count] %s ", clusterId,
+                            dateList.size()));
                 }
             }
-            return inFlightRequestToDateListMap.get(clusterId).size();
-        }
-        return 0;
-    }
-
-    public void addAnInFlightRequest(String clusterId) {
-
-        if (StringUtils.isBlank(clusterId)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Cluster id is blank which try to set requests in flight" +
-                        " : [cluster] %s", clusterId));
-            }
-            return;
-        }
-        if (inFlightRequestToDateListMap.containsKey(clusterId)) {
-
-            Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
-            vector.add(new Date());
-            inFlightRequestToDateListMap.put(clusterId, vector);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("In-flight request added to counting list: [cluster] %s [list size] %s ", clusterId,
-                        inFlightRequestToDateListMap.get(clusterId).size()));
-
-            }
-
-        } else {
-
-            Vector<Date> vector = new Vector<Date>();
-            vector.add(new Date());
-            inFlightRequestToDateListMap.put(clusterId, vector);
-            inFlightRequestToDateListMap.get(clusterId).add(new Date());
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("New list is created for storing request in flight count: [cluster] %s ", clusterId));
-                log.debug(String.format("In-flight request added to counting list: [cluster] %s ", clusterId));
-            }
         }
     }
-
-
-    public void removeAnInFlightRequest(String clusterId) {
-        if (StringUtils.isBlank(clusterId)) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster id is blank which try to remove a requests in flight" +
-                        " : [cluster] %s ", clusterId));
-            }
-            return;
-        }
-        if (!inFlightRequestToDateListMap.containsKey(clusterId)) {
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("In-flight list not available for cluster : [cluster] %s ", clusterId));
-            }
-        } else {
-            Vector<Date> vector = inFlightRequestToDateListMap.get(clusterId);
-            if(!vector.isEmpty()){
-                vector.remove(vector.size() - 1);
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("In-flight request removed from counting list: [cluster] %s [list size] %s ", clusterId,
-                                        inFlightRequestToDateListMap.get(clusterId).size()));
-            }
-        }
-    }
-
-//    public void incrementInFlightRequestCount(String clusterId) {
-//        incrementInFlightRequestCount(clusterId, 1);
-//    }
-
-//    private void incrementInFlightRequestCount(String clusterId, int value) {
-//        if (StringUtils.isBlank(clusterId)) {
-//            return;
-//        }
-//
-//        int count = getInFlightRequestCount(clusterId);
-//        addAnInFlightRequest(clusterId, (count + value));
-//    }
-
-//    public void decrementInFlightRequestCount(String clusterId) {
-//        decrementInFlightRequestCount(clusterId, 1);
-//    }
-
-//    private void decrementInFlightRequestCount(String clusterId, int value) {
-//        if (StringUtils.isBlank(clusterId)) {
-//            return;
-//        }
-//
-//        int count = getInFlightRequestCount(clusterId);
-//        int newValue = (count - value) < 0 ? 0 : (count - value);
-//        addAnInFlightRequest(clusterId, newValue);
-//    }
 }
