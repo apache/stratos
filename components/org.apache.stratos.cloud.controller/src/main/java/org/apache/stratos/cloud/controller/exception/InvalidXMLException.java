@@ -21,17 +21,28 @@ package org.apache.stratos.cloud.controller.exception;
 public class InvalidXMLException extends RuntimeException {
     
     private static final long serialVersionUID = -6326227079367867222L;
+	private String message;
 
     public InvalidXMLException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public InvalidXMLException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
     }
     
     public InvalidXMLException(Exception ex) {
         super(ex);
+    }
+    
+    private void setMessage(String msg) {
+    	this.message = msg;
+	}
+
+	public String getMessage() {
+        return this.message;
     }
 
 }

@@ -21,13 +21,24 @@ package org.apache.stratos.cloud.controller.exception;
 public class InvalidCartridgeDefinitionException extends Exception {
     
     private static final long serialVersionUID = -6326227079367867222L;
-
+    private String message;
+    
     public InvalidCartridgeDefinitionException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public InvalidCartridgeDefinitionException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
     }
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 }

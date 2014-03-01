@@ -21,13 +21,24 @@ package org.apache.stratos.cloud.controller.exception;
 public class SerializationException extends RuntimeException {
     
     private static final long serialVersionUID = -3701458642228072331L;
+	private String message;
 
     public SerializationException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public SerializationException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
+    }
+    
+    private void setMessage(String msg) {
+    	this.message = msg;
+	}
+
+	public String getMessage() {
+        return this.message;
     }
 
 }

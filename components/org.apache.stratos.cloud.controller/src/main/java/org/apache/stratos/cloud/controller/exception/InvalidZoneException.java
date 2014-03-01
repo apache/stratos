@@ -27,12 +27,23 @@ package org.apache.stratos.cloud.controller.exception;
 public class InvalidZoneException extends Exception {
 
     private static final long serialVersionUID = 1830765777991647319L;
+	private String message;
 
     public InvalidZoneException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public InvalidZoneException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
+    }
+    
+    private void setMessage(String msg) {
+    	this.message = msg;
+	}
+
+	public String getMessage() {
+        return this.message;
     }
 }

@@ -27,12 +27,23 @@ package org.apache.stratos.cloud.controller.exception;
 public class InvalidHostException extends Exception {
 
     private static final long serialVersionUID = 9125466293508957338L;
-
+    private String message;
+    
     public InvalidHostException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public InvalidHostException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
     }
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }
