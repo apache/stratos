@@ -25,12 +25,16 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.*;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredClusterExceptionException;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -75,38 +79,26 @@ public class CloudControllerServiceClient {
         return serviceClient;
     }
 
-    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig)
-            throws Exception {
+    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig) 
+    		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException, 
+    		CloudControllerServiceInvalidIaasProviderExceptionException, CloudControllerServiceIllegalArgumentExceptionException {
 
-        try {
-            stub.deployCartridgeDefinition(cartridgeConfig);
+		stub.deployCartridgeDefinition(cartridgeConfig);
 
-        } catch (RemoteException e) {
-            String errorMsg = "Error in deploying cartridge definition";
-            log.error(errorMsg, e);
-            throw new Exception(errorMsg, e);
-        }
-    }
+	}
 
-    public void unDeployCartridgeDefinition (String cartridgeType)
-            throws Exception {
+    public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException{
 
-        try {
-            stub.undeployCartridgeDefinition(cartridgeType);
+		stub.undeployCartridgeDefinition(cartridgeType);
 
-        } catch (RemoteException e) {
-            String errorMsg = "Error in deploying cartridge definition";
-            log.error(errorMsg, e);
-            throw new Exception(errorMsg, e);
-        }
-    }
+	}
 
 	public boolean register(String clusterId, String cartridgeType,
 	                        String payload, String tenantRange,
                             String hostName, Properties properties,
-                            String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException,
-                            CloudControllerServiceUnregisteredCartridgeExceptionException, 
-                            CloudControllerServiceIllegalArgumentExceptionException {		
+                            String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException, 
+                            CloudControllerServiceIllegalArgumentExceptionException, 
+                            CloudControllerServiceUnregisteredCartridgeExceptionException {		
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
 	    registrant.setCartridgeType(cartridgeType);
@@ -127,7 +119,7 @@ public class CloudControllerServiceClient {
                                                                  new org.apache.stratos.cloud.controller.pojo.Properties();
         if (properties != null) {
 
-            for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
                 String value = properties.getProperty(key);
 
@@ -142,25 +134,22 @@ public class CloudControllerServiceClient {
         return props;
     }
 
-    public void terminateAllInstances(String clusterId) throws Exception {
+    public void terminateAllInstances(String clusterId) throws RemoteException, 
+    CloudControllerServiceInvalidClusterExceptionException, CloudControllerServiceIllegalArgumentExceptionException {
 		stub.terminateAllInstances(clusterId);
 	}
 
-	public String[] getRegisteredCartridges() throws Exception {
+	public String[] getRegisteredCartridges() throws RemoteException {
 		return stub.getRegisteredCartridges();
 	}
 
-    public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException, Exception {
-		try {
-			return stub.getCartridgeInfo(cartridgeType);
-		} catch (RemoteException e) {
-			throw e;
-		} catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-			throw new UnregisteredCartridgeException("Not a registered cartridge " + cartridgeType, cartridgeType, e);
-		}
+	public CartridgeInfo getCartridgeInfo(String cartridgeType) throws RemoteException, 
+	CloudControllerServiceUnregisteredCartridgeExceptionException {
+		return stub.getCartridgeInfo(cartridgeType);
 	}
 	
-	public void unregisterService(String clusterId) throws Exception {
+	public void unregisterService(String clusterId) throws RemoteException, 
+	CloudControllerServiceUnregisteredClusterExceptionException {
 	    stub.unregisterService(clusterId);
 	}
 
