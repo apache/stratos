@@ -80,7 +80,7 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                 return iaasProvider;
             }
         } catch (Exception ex) {
-            String msg = "Invalid Partition Detected : "+partitionId;
+            String msg = "Invalid Partition Detected : "+partitionId+". Cause: "+ex.getMessage();
             log.error(msg, ex);
             throw new InvalidPartitionException(msg, ex);
         }
