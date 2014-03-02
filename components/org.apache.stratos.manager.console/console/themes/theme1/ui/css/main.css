@@ -229,8 +229,7 @@ h2{
     background: transparent url(../img/gray.png) repeat-x left 30px;
 }
 h3{
-    padding: 15px 0 0 0;
-    margin: 0;
+    margin: 15px 0 0 0;
 }
 h3 span{
     color:#999;
@@ -281,6 +280,13 @@ h4{
 .cartridge-description{
     padding-top:10px;
     font-size: 12px;
+}
+
+.lb-description{
+    padding-top:10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: green;
 }
 .required{
     font-weight: bold;
@@ -460,8 +466,8 @@ textarea.jsonEditor{
     margin-top:-10px;
 }
 div.error{
-    background:#fa6f3e;
-    color:#444;
+    background: none repeat scroll 0 0 #FF2222;
+    color: #FFFFFF;
 }
 
 div.success{
@@ -553,10 +559,20 @@ label.error{
     width:100%;
     text-align: right;
     padding-right:30px;
+    z-index: 100;
+    margin-top: -5px;
 }
 .un-subscribe-container a.un-subscribe{
     color:red;
 }
 .un-subscribe-container i{
     font-size:20px;
+}
+.terms-of-use-check{
+    padding-bottom:20px;
+}
+.terms-of-use-check label.error{
+    position: absolute;
+    margin-left: 0;
+    margin-top: 20px;
 }

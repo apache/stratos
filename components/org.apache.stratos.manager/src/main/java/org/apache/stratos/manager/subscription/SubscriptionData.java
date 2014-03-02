@@ -18,7 +18,6 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
 
 /**
@@ -41,8 +40,7 @@ public class SubscriptionData {
     private String repositoryPassword;
     private String lbClusterId;
     private Property[] properties;
-    private String dataCartridgeAlias;
-    private PersistanceMapping persistanceMapping;
+    private PersistenceContext persistanceCtxt;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -156,15 +154,11 @@ public class SubscriptionData {
         this.properties = properties;
     }
 
-    public void setDataCartridgeAlias(String dataCartridgeAlias) {this.dataCartridgeAlias = dataCartridgeAlias; }
-
-    public String getDataCartridgeAlias() {return dataCartridgeAlias;}
-
-    public PersistanceMapping getPersistanceMapping() {
-        return persistanceMapping;
+    public PersistenceContext getPersistanceContext() {
+        return persistanceCtxt;
     }
 
-    public void setPersistanceMapping(PersistanceMapping persistanceMapping) {
-        this.persistanceMapping = persistanceMapping;
+    public void setPersistanceCtxt(PersistenceContext persistanceCtxt) {
+        this.persistanceCtxt = persistanceCtxt;
     }
 }

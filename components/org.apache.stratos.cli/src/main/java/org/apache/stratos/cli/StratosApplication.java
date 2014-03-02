@@ -105,6 +105,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         //command = new DeleteTenantCommand();
         //commands.put(command.getName(), command);
 
+        command = new ListAllTenants();
+        commands.put(command.getName(), command);
+
         command = new DeactivateTenantCommand();
         commands.put(command.getName(), command);
 
@@ -455,7 +458,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 			if (logger.isDebugEnabled()) {
 				logger.debug("Required configuration found. Validating {}", stratosURL);
 			}
-			UrlValidator urlValidator = new UrlValidator(new String[] { "https" });
+			UrlValidator urlValidator = new UrlValidator(new String[] { "https" },UrlValidator.ALLOW_LOCAL_URLS);
 			if (!urlValidator.isValid(stratosURL)) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Stratos Controller URL {} is not valid", stratosURL);

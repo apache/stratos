@@ -21,7 +21,9 @@
                         <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
                     </div>
                     <div class="col-lg-9">
-                        <div class="un-subscribe-container"><a class="un-subscribe" id="unsubscribeBtn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class="fa fa-times-circle-o"></i></a></div>
+                        {{#unless loadBalancer}}
+                            <div class="un-subscribe-container"><a class="un-subscribe un-subscribe-btn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class="fa fa-times-circle-o"></i></a></div>
+                        {{/unless}}
                         <a href="{{url "/cartridge_info.jag?alias="}}{{cartridgeAlias}}"><h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3></a>
                         <div class="cartridge-description">{{description}}</div>
                         <div class="cartridge-description">{{repoURL}}</div>

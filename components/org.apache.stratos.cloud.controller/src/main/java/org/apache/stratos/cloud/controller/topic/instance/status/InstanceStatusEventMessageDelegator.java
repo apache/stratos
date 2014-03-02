@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
+import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -59,6 +60,11 @@ public class InstanceStatusEventMessageDelegator implements Runnable {
                     String json = message.getText();
                     TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) Util.
                             jsonToObject(json, InstanceReadyToShutdownEvent.class));
+                } else if (InstanceMaintenanceModeEvent.class.getName().equals(type)) {
+                    //retrieve the actual message
+                    String json = message.getText();
+                    TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) Util.
+                            jsonToObject(json, InstanceMaintenanceModeEvent.class));
                 } else {
                     log.warn("Event message received is not InstanceStartedEvent or InstanceActivatedEvent");
                 }

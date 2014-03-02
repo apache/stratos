@@ -5,7 +5,9 @@ $(function(){
         } else{
             $('table input.js_domainCheck').prop('checked',false);
         }
-    })
+    });
+
+    $('#newTenantForm').validate();
 });
 function manage_selected(action){
     var checked = "";

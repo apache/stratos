@@ -21,6 +21,8 @@ package org.apache.stratos.manager.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
@@ -39,5 +41,22 @@ public class FrameworkCartridgeSubscription extends CartridgeSubscription {
     public FrameworkCartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour
             subscriptionTenancyBehaviour) {
         super(cartridgeInfo, subscriptionTenancyBehaviour);
+    }
+
+    public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
+                                        boolean privateRepo)
+
+            throws ADCException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
+            RepositoryTransportException, InvalidRepositoryException {
+
+        log.info("External REPO URL is provided as [" + repoURL + "]");
+
+        Repository repository = new Repository();
+        repository.setUrl(repoURL);
+        repository.setUserName(repoUserName);
+        repository.setPassword(repoUserPassword);
+        repository.setPrivateRepository(privateRepo);
+
+        return repository;
     }
 }

@@ -34,7 +34,6 @@ public class CartridgeInfoBean {
 
     private boolean persistanceRequired;
     private String size;
-    private String device;
     private boolean removeOnTermination;
 
     public String getCartridgeType() {
@@ -131,14 +130,6 @@ public class CartridgeInfoBean {
 
     public void setSize(String size) {
         this.size = size;
-    }
-
-    public String getDevice() {
-        return device;
-    }
-
-    public void setDevice(String device) {
-        this.device = device;
     }
 
     public boolean isRemoveOnTermination() {

@@ -45,7 +45,7 @@ public class ExitCommand implements Command<StratosCommandContext> {
 
 	@Override
 	public String getDescription() {
-		return "Exit from Stratos Client Tool";
+		return "Exit from stratos client tool";
 	}
 
 	@Override

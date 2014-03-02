@@ -1,3 +1,5 @@
+package org.apache.stratos.cartridge.agent.data.publisher;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,22 +19,11 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.bean.cartridge.definition;
+public interface GenericDataPublisher {
 
-import javax.xml.bind.annotation.XmlRootElement;
+    public void initialize ();
 
-@XmlRootElement
-public class PersistanceMappingBean {
+    public void publish (DataContext dataContext);
 
-    public boolean persistanceRequired;
-
-    public int size;
-
-    public String device;
-    
-    public boolean removeOnTermination;
-
-    public String toString () {
-        return " [ Persistance Required : " + persistanceRequired + ", Size: " + size + ", device: " + device + " remove on termination " + removeOnTermination +"] ";
-    }
+    public void terminate ();
 }

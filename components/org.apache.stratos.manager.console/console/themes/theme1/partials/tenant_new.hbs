@@ -8,60 +8,69 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <form method="post" action="{{url "/controllers/newTenantSubmit.jag" }}">
-            <div class="h2-wrapper"><h2>Domain Information</h2></div>
-            <label class="required">Domain:</label>
-            <div class="form-inline"><input name="tenantDomain" id="tenantDomain" type="text" placeholder="example.com"/> <button class="btn btn-default" onclick="checkAvailability()" type="button">Check Availability</button></div>
-            <div id="domainMessage"></div>
-            <label><input type="checkbox"/> Validate the domain now (Optional)</label>
+            <form method="post" action="{{url "/controllers/newTenantSubmit.jag" }}" id="newTenantForm">
+                <div class="h2-wrapper"><h2>Domain Information</h2></div>
+                <label class="required">Domain:</label>
+                <div class="form-inline"><input name="tenantDomain" id="tenantDomain" type="text" class="required" placeholder="example.com"/> <button class="btn btn-default" onclick="checkAvailability()" type="button">Check Availability</button></div>
+                <div id="domainMessage"></div>
+                <label><input type="checkbox"/> Validate the domain now (Optional)</label>
 
-            <div class="h2-wrapper"><h2>Usage Plan Information</h2></div>
-            <label class="required">Select usage plan:</label>
-            <select>
-                <option>Enterprise</option>
-                <option>Demo</option>
-            </select>
-            <a>More Info</a>
+                <div class="h2-wrapper"><h2>Usage Plan Information</h2></div>
+                <label class="required">Select usage plan:</label>
+                <select>
+                    <option>Enterprise</option>
+                    <option>Demo</option>
+                </select>
+                <a>More Info</a>
 
-            <div class="h2-wrapper"><h2>Contact Details</h2></div>
+                <div class="h2-wrapper"><h2>Contact Details</h2></div>
 
-            <div class="col-md-3 padding-remover-left">
-                <label class="required">First Name:</label>
-                <input name="firstName" type="text"/>
-            </div>
-            <div class="col-md-3">
-                <label class="required">Last Name:</label>
-                <input name="lastName" type="text"/>
-            </div>
-            <div class="clearfix"></div>
-            <label class="required">Admin User Name:</label>
-            <input name="adminName" type="text"/>
-            <div class="clearfix"></div>
+                <div class="col-md-3 padding-remover-left">
+                    <label class="required">First Name:</label>
+                    <input class="required" name="firstName" type="text"/>
+                </div>
+                <div class="col-md-3">
+                    <label>Last Name:</label>
+                    <input name="lastName" type="text"/>
+                </div>
+                <div class="clearfix"></div>
+                    <label class="required">Admin User Name:</label>
+                    <input class="required" name="adminName" type="text"/>
+                <div class="clearfix"></div>
 
-            <div class="col-md-3 padding-remover-left">
-                <label  class="required">Admin Password:</label>
-                <input name="adminPassword" type="password"/>
-            </div>
-            <div class="col-md-3">
-                <label class="required">Admin Password (Repeat):</label>
-                <input type="password"/>
-            </div>
+                <div class="col-md-3 padding-remover-left">
+                    <label  class="required">Admin Password:</label>
+                    <input class="required" name="adminPassword" type="password"/>
+                </div>
+                <div class="col-md-3">
+                    <label class="required">Admin Password (Repeat):</label>
+                    <input class="required" type="password"/>
+                </div>
 
-            <div class="clearfix"></div>
-            <label class="required">Email:</label>
-            <input name="email" type="text"/>
+                <div class="clearfix"></div>
+                <label class="required">Email:</label>
+                <input class="required" name="email" type="text"/>
+<!--
+                <label class="required">Are you human?</label>
+                <div style="padding-bottom:10px;"><i class="icons-help icons-small-size"></i> Type the characters you see in the picture below.</div>
+                <div class="clearfix"></div>
+                <input type="text"/>-->
+<!--
 
-            <label class="required">Are you human?</label>
-            <div style="padding-bottom:10px;"><i class="icons-help icons-small-size"></i> Type the characters you see in the picture below.</div>
-            <div class="clearfix"></div>
-            <input type="text"/>
+                <div class="h2-wrapper"><h2>Terms of Use</h2></div>
+                <div class="terms-of-use">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin. Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien.</div>
 
-            <div class="h2-wrapper"><h2>Terms of Use</h2></div>
-            <div class="terms-of-use">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas condimentum eros nec risus pretium, at lobortis nulla vulputate. Duis et cursus justo, vel fermentum neque. Praesent bibendum turpis vel tincidunt sollicitudin. Integer nibh est, pretium nec nunc vitae, auctor pharetra elit. Fusce at ornare sapien.</div>
-            <label><input type="checkbox"/> I agree</label>
+                <label for="terms_of_use" class="checkbox terms-of-use-check">
+                    <input type="checkbox" class="checkbox" id="terms_of_use" name="terms_of_use" required minlength="1">
+                    I agree
+                </label>
+-->
 
-            <button class="btn btn-primary" type="submit">Add new Tenant</button>
+
+                <div class="clearfix"></div>
+                <button class="btn btn-primary" type="submit">Add new Tenant</button>
             </form>
+
         </div>
     </div>
 </div>

@@ -34,50 +34,31 @@ import javax.cache.Caching;
  */
 class LoadBalancerCache {
     private static final Log log = LogFactory.getLog(LoadBalancerCache.class);
-    private static volatile LoadBalancerCache instance;
+    private static final String CACHE_MANAGER_NAME = "LoadBalancerCache";
 
-    private CacheManager cacheManager;
-
-    private LoadBalancerCache() {
-        try {
-            startSuperTenantFlow();
-            cacheManager = (CacheManager) Caching.getCacheManagerFactory().getCacheManager("LoadBalancerCache");
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error(e);
-            }
-            throw new RuntimeException(e);
-        } finally {
-            endSuperTenantFlow();
+    private static CacheManager getCacheManager() {
+        CacheManager cacheManager = (CacheManager) Caching.getCacheManagerFactory().getCacheManager(CACHE_MANAGER_NAME);
+        if(cacheManager == null) {
+            throw new RuntimeException("Could not get cache manager");
         }
+        return cacheManager;
     }
 
-    public static LoadBalancerCache getInstance() {
-        if (instance == null) {
-            synchronized (LoadBalancerCache.class) {
-                if (instance == null) {
-                    instance = new LoadBalancerCache();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private void startSuperTenantFlow() {
+    private static void startSuperTenantFlow() {
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
     }
 
-    private void endSuperTenantFlow() {
+    private static void endSuperTenantFlow() {
         PrivilegedCarbonContext.endTenantFlow();
     }
 
-    void putString(String cacheName, String propertyName, String value) {
+    static void putString(String cacheName, String propertyName, String value) {
         try {
             startSuperTenantFlow();
-            Cache<String, String> cache = cacheManager.getCache(cacheName);
+            Cache<String, String> cache = getCacheManager().getCache(cacheName);
             cache.put(propertyName, value);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Cached property: [cache] %s [property] %s [value] %s", cacheName, propertyName, value));
@@ -87,10 +68,10 @@ class LoadBalancerCache {
         }
     }
 
-    String getString(String cacheName, String propertyName) {
+    static String getString(String cacheName, String propertyName) {
         try {
             startSuperTenantFlow();
-            Cache<String, String> cache = cacheManager.getCache(cacheName);
+            Cache<String, String> cache = getCacheManager().getCache(cacheName);
             String value = cache.get(propertyName);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Read cached property: [cache] %s [property] %s [value] %s", cacheName, propertyName, value));
@@ -101,10 +82,10 @@ class LoadBalancerCache {
         }
     }
 
-    void putInteger(String cacheName, String propertyName, int value) {
+    static void putInteger(String cacheName, String propertyName, int value) {
         try {
             startSuperTenantFlow();
-            Cache<String, Integer> cache = cacheManager.getCache(cacheName);
+            Cache<String, Integer> cache = getCacheManager().getCache(cacheName);
             cache.put(propertyName, value);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Cached property: [cache] %s [property] %s [value] %d", cacheName, propertyName, value));
@@ -114,10 +95,10 @@ class LoadBalancerCache {
         }
     }
 
-    int getInteger(String cacheName, String propertyName) {
+    static int getInteger(String cacheName, String propertyName) {
         try {
             startSuperTenantFlow();
-            Cache<String, Integer> cache = cacheManager.getCache(cacheName);
+            Cache<String, Integer> cache = getCacheManager().getCache(cacheName);
             int value = cache.get(propertyName);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Read cached property: [cache] %s [property] %s [value] %d", cacheName, propertyName, value));

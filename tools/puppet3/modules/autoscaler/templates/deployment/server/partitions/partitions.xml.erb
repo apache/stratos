@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<partitions>
+  <!-- A partition should at least have a provider -->
+  <partition id="P1">
+    <!-- A sample provider level partition -->
+    <property name="provider" value="ec2"/>
+  </partition>
+  <partition id="P2">
+    <!-- A sample region level partition -->
+    <property name="provider" value="openstack"/>
+    <property name="region" value="region-x"/>
+  </partition>
+  <partition id="P3">
+    <!-- A sample zone level partition -->
+    <property name="provider" value="ec2"/>
+    <property name="region" value="region-y"/>
+    <property name="zone" value="zone-1"/>
+  </partition>
+</partitions>

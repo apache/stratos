@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.validate.VCloudPartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -196,19 +197,18 @@ public class VCloudIaas extends Iaas {
     @Override
     public boolean isValidZone(String region, String zone) {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public boolean isValidHost(String zone, String host) {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public PartitionValidator getPartitionValidator() {
-        // TODO Auto-generated method stub
-        return null;
+        return new VCloudPartitionValidator();
     }
 
 	@Override
@@ -234,5 +234,10 @@ public class VCloudIaas extends Iaas {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public String getIaasDevice(String device) {
+        return device;
+    }
 
 }

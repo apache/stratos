@@ -20,6 +20,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -52,7 +53,7 @@ public class MockContext {
     }
 
 
-    public void addCartirdgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean){
+    public StratosAdminResponse addCartirdgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean){
         this.cartridgeDefinitionBeanList.add(cartridgeDefinitionBean);
         Cartridge cartridge = new Cartridge();
         cartridge.setCartridgeType(cartridgeDefinitionBean.type);
@@ -67,6 +68,11 @@ public class MockContext {
         }else{
             availableSingleTenantCartridges.put(cartridge.getCartridgeType(), cartridge);
         }
+        System.out.println(availableMultiTenantCartridges.size());
+        System.out.println(availableSingleTenantCartridges.size());
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed deployment policy definition with type ");
+        return stratosAdminResponse;
     }
 
 
@@ -82,13 +88,13 @@ public class MockContext {
 
 
     public Cartridge[] getAvailableLbCartridges(){
-        Map<Cartridge,String> availableLbCartridges = new HashMap<Cartridge, String>();
+        /*Map<String,Cartridge> availableLbCartridges = new HashMap<String,Cartridge>();
         Iterator it = availableSingleTenantCartridges.entrySet().iterator();
         while(it.hasNext()){
             Map.Entry pairs = (Map.Entry)it.next();
             Cartridge cartridge = (Cartridge)pairs.getValue();
             if(cartridge.getCartridgeType().equals("lb")){
-                availableLbCartridges.put(cartridge,cartridge.getCartridgeType());
+                availableLbCartridges.put(cartridge.getCartridgeType(),cartridge);
             }
             it.remove();
         }
@@ -98,12 +104,41 @@ public class MockContext {
             Map.Entry pairs = (Map.Entry)it.next();
             Cartridge cartridge = (Cartridge)pairs.getValue();
             if(cartridge.getCartridgeType().equals("lb")){
-                availableLbCartridges.put(cartridge,cartridge.getCartridgeType());
+                availableLbCartridges.put(cartridge.getCartridgeType(),cartridge);
             }
             it.remove();
         }
-        return availableLbCartridges.values().toArray(new Cartridge[0]);
+        return availableLbCartridges.values().toArray(new Cartridge[0]);*/
+        return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
     }
+
+    public Cartridge[] getAvailableCartridges(){
+        /*Map<String, Cartridge> availableCartridges = new HashMap<String,Cartridge>();
+        Iterator it = availableSingleTenantCartridges.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry pairs = (Map.Entry)it.next();
+            Cartridge cartridge = (Cartridge)pairs.getValue();
+            if(!cartridge.getCartridgeType().equals("lb")){
+                availableCartridges.put(cartridge.getCartridgeType(),cartridge);
+            }
+            it.remove();
+        }
+
+        it = availableMultiTenantCartridges.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry pairs = (Map.Entry)it.next();
+            Cartridge cartridge = (Cartridge)pairs.getValue();
+            if(!cartridge.getCartridgeType().equals("lb")){
+                availableCartridges.put(cartridge.getCartridgeType(),cartridge);
+            }
+            it.remove();
+        }
+        System.out.println(availableCartridges.size());
+        return availableCartridges.values().toArray(new Cartridge[0]);*/
+
+        return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
+    }
+
 
     public Cartridge[] getSubscribedCartridges(){
         return subscribedCartridges.values().toArray(new Cartridge[0]);
@@ -143,14 +178,20 @@ public class MockContext {
         return subscriptionInfo;
     }
 
-    public void unsubscribe(String alias) {
+    public StratosAdminResponse unsubscribe(String alias) {
         if(subscribedCartridges.containsKey(alias)){
             subscribedCartridges.remove(alias);
         }
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully un-subscribed");
+        return stratosAdminResponse;
     }
 
-    public void addTenant(TenantInfoBean tenantInfoBean){
-          tenantMap.put(tenantInfoBean.getTenantDomain(),tenantInfoBean);
+    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean){
+        tenantMap.put(tenantInfoBean.getTenantDomain(),tenantInfoBean);
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully added new Tenant");
+        return stratosAdminResponse;
     }
 
     public TenantInfoBean getTenant(String tenantDomain){
@@ -165,8 +206,11 @@ public class MockContext {
         return availableSingleTenantCartridges.get(cartridgeType);
     }
 
-    public void deleteTenant(String tenantDomain) {
+    public StratosAdminResponse deleteTenant(String tenantDomain) {
           tenantMap.remove(tenantDomain);
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deleted tenant");
+        return stratosAdminResponse;
     }
 
     public TenantInfoBean[] getTenants() {
@@ -183,23 +227,29 @@ public class MockContext {
         return searchResult.toArray(new TenantInfoBean[0]);
     }
 
-    public void activateTenant(String tenantDomain) throws RestAPIException{
+    public StratosAdminResponse  activateTenant(String tenantDomain) throws RestAPIException{
         if(tenantMap.containsKey(tenantDomain)){
             tenantMap.get(tenantDomain).setActive(true);
         } else{
             throw new RestAPIException("Invalid tenant domain");
         }
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully activated Tenant");
+        return stratosAdminResponse;
     }
 
-    public void deactivateTenant(String tenantDomain) throws RestAPIException{
+    public StratosAdminResponse deactivateTenant(String tenantDomain) throws RestAPIException{
         if(tenantMap.containsKey(tenantDomain)){
             tenantMap.get(tenantDomain).setActive(false);
         } else{
             throw new RestAPIException("Invalid tenant domain");
         }
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deactivated Tenant");
+        return stratosAdminResponse;
     }
 
-    public void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException{
+    public StratosAdminResponse deleteCartridgeDefinition(String cartridgeType) throws RestAPIException{
         if(availableSingleTenantCartridges.containsKey(cartridgeType)){
             availableSingleTenantCartridges.remove(cartridgeType);
         } else if(availableMultiTenantCartridges.containsKey(cartridgeType)){
@@ -207,22 +257,30 @@ public class MockContext {
         } else{
             throw new RestAPIException("invalid cartridge type");
         }
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully delete cartridge definition");
+        return stratosAdminResponse;
     }
 
-    public boolean addPartition(Partition partition) {
+    public StratosAdminResponse addPartition(Partition partition) {
             partitionMap.put(partition.id, partition);
-        return true;
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed partition");
+        return stratosAdminResponse;
     }
 
-    public boolean addAutoScalingPolicyDefinition(AutoscalePolicy autoscalePolicy) {
+    public StratosAdminResponse addAutoScalingPolicyDefinition(AutoscalePolicy autoscalePolicy) {
             autoscalePolicyMap.put(autoscalePolicy.getId(), autoscalePolicy);
-        return true;
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed auto scaling policy definition");
+        return stratosAdminResponse;
     }
 
-    public boolean addDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy) {
+    public StratosAdminResponse addDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy) {
            deploymentPolicyMap.put(deploymentPolicy.id,deploymentPolicy);
-        return true;
-
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed deployment policy definition");
+        return stratosAdminResponse;
     }
 
     public Partition[] getPartitions() {
@@ -257,9 +315,11 @@ public class MockContext {
     public DeploymentPolicy getDeploymentPolicies(String deploymentPolicyId) {
         return deploymentPolicyMap.get(deploymentPolicyId);
     }
-    public boolean deployService(ServiceDefinitionBean serviceDefinitionBean) {
+    public StratosAdminResponse deployService(ServiceDefinitionBean serviceDefinitionBean) {
         serviceDefinitionMap.put(serviceDefinitionBean.getCartridgeType(),serviceDefinitionBean);
-        return true;
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed service");
+        return stratosAdminResponse;
 
     }
     public ServiceDefinitionBean[] getServices() {

@@ -21,7 +21,10 @@ package org.apache.stratos.manager.manager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
@@ -31,6 +34,7 @@ import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.PersistenceContext;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBehaviour;
@@ -86,8 +90,8 @@ public class CartridgeSubscriptionManager {
 
         // check if this subscription requires Persistence Mapping, and its supported by the cartridge definition
         Properties persistenceMappingProperties = null;
-        if (subscriptionData.getPersistanceMapping() != null) {
-            persistenceMappingProperties = getPersistenceMappingProperties(subscriptionData.getPersistanceMapping(), cartridgeInfo);
+        if (subscriptionData.getPersistanceContext() != null) {
+            persistenceMappingProperties = getPersistenceMappingProperties(subscriptionData.getPersistanceContext(), cartridgeInfo);
         }
 
         Properties serviceCartridgeSubscriptionProperties = null;
@@ -188,8 +192,7 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
         // Create repository
-        Repository repository = cartridgeSubscription.manageRepository(null, "",  "", false, lbAlias, lbDataContext.getLbCartridgeInfo(),
-                subscriptionData.getTenantDomain());
+        Repository repository = cartridgeSubscription.manageRepository(null, "",  "", false);
 
         // Create subscriber
         Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
@@ -234,16 +237,16 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
         // Create repository
-        Repository repository = cartridgeSubscription.manageRepository(subscriptionData.getRepositoryURL(),
-                subscriptionData.getRepositoryUsername(),
+        Repository repository = cartridgeSubscription.manageRepository(subscriptionData.getRepositoryURL(), subscriptionData.getRepositoryUsername(),
                 subscriptionData.getRepositoryPassword(),
-                subscriptionData.isPrivateRepository(),
-                subscriptionData.getCartridgeAlias(),
-                cartridgeInfo,
-                subscriptionData.getTenantDomain());
+                subscriptionData.isPrivateRepository());
 
         // Create subscriber
         Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
+
+        //create subscription
+        cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
+                                                subscriptionData.getDeploymentPolicyName(), repository);
 
         // create subscription
         cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
@@ -352,38 +355,18 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    private Properties getPersistenceMappingProperties (PersistanceMapping persistanceMapping, CartridgeInfo cartridgeInfo) throws ADCException {
+    private Properties getPersistenceMappingProperties (PersistenceContext persistenceCtxt, CartridgeInfo cartridgeInfo) throws ADCException {
 
-        if (!persistanceMapping.getPersistanceRequired()) {
-            // Persistence Mapping not required for this subscription
-            return null;
-        }
-
-        if (persistanceMapping.getPersistanceRequired() && !cartridgeInfo.isPeristanceMappingsSpecified()) {
+        if (!cartridgeInfo.isPersistenceSpecified()) {
             // Persistence Mapping not supported in the cartridge definition - error
             String errorMsg = "Persistence Mapping not supported by the cartridge type " + cartridgeInfo.getType();
             log.error(errorMsg);
             throw new ADCException(errorMsg);
         }
 
-        Property persistanceRequiredProperty = new Property();
-        persistanceRequiredProperty.setName(Constants.IS_VOLUME_REQUIRED);
-        persistanceRequiredProperty.setValue(String.valueOf(persistanceMapping.getPersistanceRequired()));
-
-        Property sizeProperty = new Property();
-        sizeProperty.setName(Constants.VOLUME_SIZE);
-        sizeProperty.setValue(Integer.toString(persistanceMapping.getSize()));
-
-        Property deviceProperty = new Property();
-        deviceProperty.setName(Constants.DEVICE_NAME);
-        deviceProperty.setValue(String.valueOf(persistanceMapping.getDevice()));
-
-        Property deleteOnTerminationProperty = new Property();
-        deleteOnTerminationProperty.setName(Constants.SHOULD_DELETE_VOLUME);
-        deleteOnTerminationProperty.setValue(String.valueOf(persistanceMapping.getRemoveOntermination()));
-
         Properties persistenceMappingProperties = new Properties();
-        persistenceMappingProperties.setProperties(new Property[]{persistanceRequiredProperty, sizeProperty, deviceProperty, deleteOnTerminationProperty});
+        persistenceMappingProperties.setProperties(new Property[]{persistenceCtxt.getPersistanceRequiredProperty(), persistenceCtxt.getSizeProperty(),
+                persistenceCtxt.getDeleteOnTerminationProperty()});
 
         return persistenceMappingProperties;
     }

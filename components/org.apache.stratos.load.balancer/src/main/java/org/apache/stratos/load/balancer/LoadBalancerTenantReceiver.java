@@ -189,7 +189,12 @@ public class LoadBalancerTenantReceiver implements Runnable {
         tenantReceiverThread.start();
 
         // Keep the thread live until terminated
-        while (!terminated) ;
+        while (!terminated) {
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+        }
         if (log.isInfoEnabled()) {
             log.info("Load balancer tenant receiver thread terminated");
         }

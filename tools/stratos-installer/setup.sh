@@ -283,6 +283,14 @@ function sm_conf_validate {
         echo "Please provide valid ip for puppet master"
         exit 1
     fi
+    if [[ -z $puppet_hostname ]]; then
+        echo "Please specify the puppet master's hostname"
+        exit 1
+    fi
+    if [[ -z $puppet_environment ]]; then
+        echo "Please specify the relevant puppet environment"
+        exit 1
+    fi
     if [[ -z $cc_hostname || -z $as_hostname ]]; then
 	echo "Please specify valid hostname for AS and/or CC"
 	exit 1
@@ -542,6 +550,12 @@ function sm_setup {
 
     cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
     cat repository/conf/cartridge-config.properties.orig | sed -e "s@PUPPET_IP@$sm_puppet_ip@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@PUPPET_HOSTNAME@$sm_puppet_hostname@g" > repository/conf/cartridge-config.properties
+
+    cp -f repository/conf/cartridge-config.properties repository/conf/cartridge-config.properties.orig
+    cat repository/conf/cartridge-config.properties.orig | sed -e "s@PUPPET_ENV@$sm_puppet_environment@g" > repository/conf/cartridge-config.properties
 
     echo "In repository/conf/datasources/master-datasources.xml" >> $LOG
     cp -f repository/conf/datasources/master-datasources.xml repository/conf/datasources/master-datasources.xml.orig

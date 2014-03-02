@@ -1,9 +1,20 @@
 <%
 var caramel = require('caramel');
 var utils = require('/util/utility.jag');
+ var log = new Log('utility.cartridgeInfo');
 var alias = request.getParameter("alias");
 var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias).cartridge;
+var lbCluster = '{}';
+if(cartridgeInfo.lbClusterId) {
+  lbCluster = utils.consoleAppUtil.getClusterInfo(cartridgeInfo.lbClusterId).cluster;
+  log.debug("***************:" + stringify(lbCluster));
+}
+
+var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridgeType, alias).cluster;
+
 caramel.render({
-    cartridgeInfo:cartridgeInfo
+    cartridgeInfo:cartridgeInfo,
+    lbCluster:lbCluster,
+    clusterInfo:clusterInfo
 });
 %>

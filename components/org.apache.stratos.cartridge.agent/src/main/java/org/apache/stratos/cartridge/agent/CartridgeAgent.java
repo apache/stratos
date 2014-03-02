@@ -131,7 +131,9 @@ public class CartridgeAgent implements Runnable {
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         }
 
-
+        String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistanceMappings();
+        if(persistanceMappingsPayload != null)
+            ExtensionUtils.executeVolumeMountExtension(persistanceMappingsPayload);
         // TODO: Start this thread only if this node is configured as a commit true node
         // Start periodical file checker task
         // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -143,7 +145,12 @@ public class CartridgeAgent implements Runnable {
         LogPublisherManager logPublisherManager = new LogPublisherManager();
         publishLogs(logPublisherManager);
 
-        while (!terminated);
+        while (!terminated) {
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+        }
 
         logPublisherManager.stop();
     }
@@ -249,6 +256,9 @@ public class CartridgeAgent implements Runnable {
         if(log.isInfoEnabled()) {
             log.info("Executing cleaning up the data in the cartridge instance...");
         }
+        //sending event on the maintenance mode
+        CartridgeAgentEventPublisher.publishMaintenanceModeEvent();
+
         //cleaning up the cartridge instance's data
         ExtensionUtils.executeCleanupExtension();
         if(log.isInfoEnabled()) {

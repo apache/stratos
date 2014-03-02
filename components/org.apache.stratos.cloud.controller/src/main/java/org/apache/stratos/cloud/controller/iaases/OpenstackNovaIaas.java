@@ -51,6 +51,8 @@ import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
+import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
+import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneAPI;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
@@ -60,6 +62,7 @@ import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
@@ -140,6 +143,13 @@ public class OpenstackNovaIaas extends Iaas {
 		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
 					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+		}
+		
+		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
+			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
+			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
+			template.getOptions()
+					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
 		}
 		
 		//TODO
@@ -258,6 +268,7 @@ public class OpenstackNovaIaas extends Iaas {
 		}
 
 		int retries = 0;
+		//TODO make 5 configurable
 		while (retries < 5
 				&& !associateIp(floatingIp, ip, node.getProviderId())) {
 
@@ -343,7 +354,26 @@ public class OpenstackNovaIaas extends Iaas {
     public boolean isValidZone(String region, String zone) throws InvalidZoneException {
     	IaasProvider iaasInfo = getIaasProvider();
     	
-        // jclouds doesn't support zone in Openstack-Nova API
+    	// jclouds availability zone = stratos zone
+    	if (region == null || zone == null || iaasInfo == null) {
+            String msg = "Host or Zone or IaaSProvider is null: region: " + region + " - zone: " +
+                    zone + " - IaaSProvider: " + iaasInfo;
+            log.error(msg);
+            throw new InvalidZoneException(msg);
+        }
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        AvailabilityZoneAPI zoneApi = nova.getApi().getAvailabilityZoneApi(region);
+        for (AvailabilityZone z : zoneApi.list()) {
+			
+        	if (zone.equalsIgnoreCase(z.getName())) {
+        		if (log.isDebugEnabled()) {
+        			log.debug("Found a matching availability zone: " + zone);
+        		}
+        		return true;
+        	}
+		}
+        
         String msg = "Invalid zone: " + zone +" in the region: "+region+ " and of the iaas: "+iaasInfo.getType();
         log.error(msg);
         throw new InvalidZoneException(msg);
@@ -388,6 +418,8 @@ public class OpenstackNovaIaas extends Iaas {
 	public String createVolume(int sizeGB) {
 		IaasProvider iaasInfo = getIaasProvider();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
+		
         if (region == null || iaasInfo == null) {
         	log.fatal("Cannot create a new volume in the [region] : "+region
 					+" of Iaas : "+iaasInfo);
@@ -397,15 +429,15 @@ public class OpenstackNovaIaas extends Iaas {
         
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
-        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(region));
+        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
         if (volume == null) {
-			log.fatal("Volume creation was unsuccessful. [region] : " + region
+			log.fatal("Volume creation was unsuccessful. [region] : " + region+" [zone] : " + zone
 					+ " of Iaas : " + iaasInfo);
 			return null;
 		}
 		
 		log.info("Successfully created a new volume [id]: "+volume.getId()
-				+" in [region] : "+region+" of Iaas : "+iaasInfo);
+				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo);
 		return volume.getId();
 	}
 
@@ -490,5 +522,10 @@ public class OpenstackNovaIaas extends Iaas {
     				+ " of Iaas : " + iaasInfo);
         }
 	}
+
+    @Override
+    public String getIaasDevice(String device) {
+        return device;
+    }
 
 }

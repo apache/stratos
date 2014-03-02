@@ -57,8 +57,6 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException,
             UnregisteredCartridgeException {
 
-        //Properties props = new Properties();
-        //props.setProperties(getCartridgeInfo().getProperties());
         getSubscriptionTenancyBehaviour().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
                 getDeploymentPolicyName(), properties);
 
@@ -74,8 +72,7 @@ public class DataCartridgeSubscription extends CartridgeSubscription {
     }
 
     public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
-                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
-                                        String tenantDomain) {
+                                        boolean privateRepo) {
 
         //no repository for data cartridge instances
         return null;

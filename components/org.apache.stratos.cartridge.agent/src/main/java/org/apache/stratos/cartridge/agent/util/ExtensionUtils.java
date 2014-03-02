@@ -22,6 +22,7 @@ package org.apache.stratos.cartridge.agent.util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.common.util.CommandUtils;
 
 import java.io.File;
@@ -109,6 +110,26 @@ public class ExtensionUtils {
         }
         catch (Exception e) {
             log.error("Could not execute artifacts updated extension", e);
+        }
+    }
+
+    /*
+    This will execute the volume mounting script which format and mount the
+    persistance volumes.
+     */
+    public static void executeVolumeMountExtension(String persistanceMappingsPayload) {
+        try {
+            if(log.isDebugEnabled()) {
+                    log.debug("Executing volume mounting extension");
+            }
+            String command = prepareCommand(CartridgeAgentConstants.MOUNT_VOLUMES_SH);
+            //String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
+            // add payload file path as argument so inside the script we can source
+            // it  to get the env variables set by the startup script
+            CommandUtils.executeCommand(command + " " + persistanceMappingsPayload);
+        }
+        catch (Exception e) {
+                log.error("Could not execute volume mounting extension", e);
         }
     }
 }

@@ -58,19 +58,7 @@ public class InstanceStatusListener implements MessageListener {
                 if(log.isInfoEnabled()) {
                     log.info("Cluster id: " + clusterId);
                 }
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                /*CartridgeSubscriptionInfo subscription = PersistenceManager.getSubscriptionFromClusterId(clusterId);
 
-                if (subscription.getRepository() != null) {
-                    InstanceNotificationPublisher publisher = new InstanceNotificationPublisher(subscription.getRepository(), clusterId, String.valueOf(subscription.getTenantId()));
-                    publisher.publish();
-                }
-                else {
-                    //TODO: make this log debug
-                    log.info("No repository found for subscription with alias: " + subscription.getAlias() + ", type: " + subscription.getCartridge() +
-                        ". Not sending the Depsync event");
-                }*/
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 Set<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscriptionForCluster(clusterId);
                 if (cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
                     // No subscriptions, return
@@ -81,10 +69,10 @@ public class InstanceStatusListener implements MessageListener {
                 }
 
                 for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-                    // If only this is a non-multitenant Cartridge Subscription and repository is not null, need to
-                    // send an ArtifactUpdatedEvent event. If this is a multitenant cartridge, sending this event
-                    // will be done in SubscriptionMultiTenantBehaviour#createSubscription method
-                    if (!cartridgeSubscription.getCartridgeInfo().getMultiTenant() && cartridgeSubscription.getRepository() != null) {
+                    // We need to send this event for all types, single tenant and multi tenant.
+                    // In an autoscaling scenario, we need to send this event for all existing subscriptions for the newly spawned instance
+                    // Also in a case of restarting the agent, this event needs to be sent for all subscriptions for the existing instance
+                    if (cartridgeSubscription.getRepository() != null) {
                         InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
                         publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(), clusterId,
                                 String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));

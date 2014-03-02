@@ -385,6 +385,10 @@ public class StratosManagerTopologyReceiver implements Runnable {
         //Keep running till terminate is set from deactivate method of the component
         while (!terminate) {
             //loop while terminate = false
+        	try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
         }
         log.info("Stratos Manager topology receiver thread terminated");
     }

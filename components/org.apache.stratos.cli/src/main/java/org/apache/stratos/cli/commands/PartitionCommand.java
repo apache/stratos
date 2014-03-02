@@ -51,7 +51,6 @@ public class PartitionCommand implements Command<StratosCommandContext> {
             logger.debug("Executing {} command...", getName());
         }
         if (args == null || args.length == 0) {
-            //CommandLineService.getInstance().listAvailableCartridges();
             RestCommandLineService.getInstance().listPartitions();
             return CliConstants.SUCCESSFUL_CODE;
         } else {

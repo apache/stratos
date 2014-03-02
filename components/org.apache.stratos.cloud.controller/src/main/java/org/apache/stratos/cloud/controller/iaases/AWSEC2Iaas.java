@@ -43,6 +43,7 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.domain.Location;
 import org.jclouds.ec2.domain.Attachment;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.KeyPair;
@@ -53,10 +54,9 @@ import org.jclouds.ec2.features.ElasticBlockStoreApi;
 import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 import org.jclouds.ec2.options.DetachVolumeOptions;
+import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class AWSEC2Iaas extends Iaas {
@@ -81,37 +81,59 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	public void buildTemplate() {
-		IaasProvider iaas = getIaasProvider();
-		if (iaas.getComputeService() == null) {
+		IaasProvider iaasInfo = getIaasProvider();
+		if (iaasInfo.getComputeService() == null) {
 			String msg = "Compute service is null for IaaS provider: "
-					+ iaas.getName();
+					+ iaasInfo.getName();
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
 
-		TemplateBuilder templateBuilder = iaas.getComputeService()
+		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
 
 		// set image id specified
-		templateBuilder.imageId(iaas.getImage());
+		templateBuilder.imageId(iaasInfo.getImage());
 
-        if(!(iaas instanceof IaasProvider)) {
-           templateBuilder.locationId(iaas.getType());
+        if(!(iaasInfo instanceof IaasProvider)) {
+           templateBuilder.locationId(iaasInfo.getType());
         }
 
-		if (iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
+        if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+            Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
+            for(Location location : locations) {
+                if(location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
+                        location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+                    templateBuilder.locationId(location.getId());
+                    log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
+                            + " with id: " + location.getId());
+                    break;
+                }
+            }
+        }
+
+		if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
 			// set instance type eg: m1.large
-			templateBuilder.hardwareId(iaas.getProperty(CloudControllerConstants.INSTANCE_TYPE));
+			templateBuilder.hardwareId(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE));
 		}
 
 		// build the Template
 		Template template = templateBuilder.build();
 
+        if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+            if(!template.getLocation().getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+                log.warn("couldn't find assignable ZONE of id :" +
+                        iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) + " in the IaaS. " +
+                        "Hence using the default location as " + template.getLocation().getScope().toString() +
+                        " with the id " + template.getLocation().getId());
+            }
+        }
+
 		// if you wish to auto assign IPs, instance spawning call should be
 		// blocking, but if you
 		// wish to assign IPs manually, it can be non-blocking.
 		// is auto-assign-ip mode or manual-assign-ip mode?
-		boolean blockUntilRunning = Boolean.parseBoolean(iaas
+		boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
 				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
@@ -122,43 +144,50 @@ public class AWSEC2Iaas extends Iaas {
 				.inboundPorts(new int[] {});
 
 		// set EC2 specific options
-		if (iaas.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.subnetId(iaas.getProperty(CloudControllerConstants.SUBNET_ID));
+					.subnetId(iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID));
 		}
 
-		if (iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.placementGroup(iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
+					.placementGroup(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
 		}
 
         // security group names
-		if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
 					.securityGroups(
-							iaas.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 
 		}
 
         // security group ids
-        if (iaas.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
+        if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(AWSEC2TemplateOptions.class)
-                    .securityGroupIds(iaas.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
+                    .securityGroupIds(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
                                         .split(CloudControllerConstants.ENTRY_SEPARATOR));
 
         }
 
 
-		if (iaas.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
+		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
-					.keyPair(iaas.getProperty(CloudControllerConstants.KEY_PAIR));
+					.keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+		}
+		
+		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
+			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
+			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
+			template.getOptions()
+					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
 		}
 
 		// set Template
-		iaas.setTemplate(template);
+		iaasInfo.setTemplate(template);
 	}
 
 	@Override
@@ -435,6 +464,29 @@ public class AWSEC2Iaas extends Iaas {
 		}
 		
 		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+
+        Volume.Status volumeStatus = this.getVolumeStatus(blockStoreApi, region, volumeId);
+
+        if(log.isDebugEnabled()){
+            log.debug("Volume " + volumeId + " is in state " + volumeStatus);
+        }
+
+        while(volumeStatus != Volume.Status.AVAILABLE){
+            try {
+                // TODO Use a proper mechanism to wait till volume becomes available.
+                Thread.sleep(1000);
+                volumeStatus = this.getVolumeStatus(blockStoreApi, region, volumeId);
+                if(log.isDebugEnabled()){
+                    log.debug("Volume " + volumeId + " is still NOT in AVAILABLE. Current State=" + volumeStatus);
+                }
+            } catch (InterruptedException e) {
+                // Ignoring the exception
+            }
+        }
+        if(log.isDebugEnabled()){
+            log.debug("Volume " + volumeId + " became  AVAILABLE");
+        }
+
 		Attachment attachment = blockStoreApi.attachVolumeInRegion(region, volumeId, instanceId, device);
 
 		if (attachment == null) {
@@ -449,6 +501,12 @@ public class AWSEC2Iaas extends Iaas {
 				+ ", [zone] : " + zone + " of Iaas : " + iaasInfo);
 		return attachment.getStatus().value();
 	}
+
+    private Volume.Status getVolumeStatus(ElasticBlockStoreApi blockStoreApi, String region, String volumeId){
+        Set<Volume> volumeDescriptions = blockStoreApi.describeVolumesInRegion(region, volumeId);
+        Iterator<Volume> it = volumeDescriptions.iterator();
+        return it.next().getStatus();
+    }
 
 	@Override
 	public void detachVolume(String instanceId, String volumeId) {
@@ -465,8 +523,21 @@ public class AWSEC2Iaas extends Iaas {
 					+" of Iaas : "+iaasInfo);
 			return;
 		}
-		
+
 		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
+
+        Set<Volume> volumeDescriptions = blockStoreApi.describeVolumesInRegion(region, volumeId);
+        Iterator<Volume> it = volumeDescriptions.iterator();
+
+        while(it.hasNext()){
+            Volume.Status status  = it.next().getStatus();
+
+            if(status == Volume.Status.AVAILABLE){
+                log.warn(String.format("Volume %s is already in AVAILABLE state. Volume seems to be detached somehow", volumeId));
+                return;
+            }
+        }
+
 		blockStoreApi.detachVolumeInRegion(region, volumeId, true, DetachVolumeOptions.Builder.fromInstance(instanceId));
 
 		log.info("Detachment of Volume [id]: "+volumeId+" from instance [id]: "+instanceId
@@ -495,6 +566,21 @@ public class AWSEC2Iaas extends Iaas {
 		log.info("Deletion of Volume [id]: "+volumeId+" was successful. [region] : " + region
 				+ " of Iaas : " + iaasInfo);
 	}
+
+    @Override
+    /*
+        Converts the user defined volume device to Ec2 specific device.
+        For example /dev/sdf is converted to /dev/xvdf
+     */
+    public String getIaasDevice(String device) {
+        String[] split = device.split("/");
+        String x = split[split.length-1];
+        StringBuilder ec2Device = new StringBuilder();
+        ec2Device.append("/" + split[1]);
+        ec2Device.append("/xvd");
+        ec2Device.append(x.charAt(x.length()-1));
+        return  ec2Device.toString();
+    }
 
 
 }

@@ -1,6 +1,8 @@
 var render = function (theme, data, meta, require) {
     // Re-create the data structure of the cartridges.
     var log = new Log();
+    session.remove("get-status");
+    session.remove("deploy-status");
     var cartridges_old = data.cartridges.cartridge;
     var cartridges_new = [
         {

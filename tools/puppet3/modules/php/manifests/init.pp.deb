@@ -1,0 +1,102 @@
+class php ($syslog="", $docroot="/var/www", $samlalias="") {
+  $packages = [
+    'nano',
+    'zip',
+    'build-essential',
+    'mysql-client',
+    'apache2',
+    'php5',
+    'php5-cli',
+    'libapache2-mod-php5',
+    'php5-gd',
+    'php5-mysql',
+    'php-db',
+    'php-pear',
+    'php5-curl',
+    'curl',
+    'wget',
+    'php5-ldap',
+    'php5-adodb',
+    'mailutils',
+    'php5-imap',
+    'php5-sqlite',
+    'php5-xmlrpc',
+    'php5-xsl',
+    'openssl',
+    'ssl-cert',
+    'ldap-utils',
+    'php5-mcrypt',
+    'mcrypt',
+    'ufw',
+    'fail2ban',
+    'git',
+    'libboost-all-dev',
+    'ruby']
+
+#  file { '/etc/apt/apt.conf.d/90forceyes':
+#    ensure => present,
+#    source => 'puppet:///modules/php/90forceyes';
+#  }
+
+#  exec { 'update-apt':
+#    path    => ['/bin', '/usr/bin'],
+#    command => 'apt-get update > /dev/null 2>&1 &',
+#    require => File['/etc/apt/apt.conf.d/90forceyes'],
+#  }
+
+  package { $packages:
+    ensure   => installed,
+  }
+
+  # Apache
+#  file {
+#    '/etc/apache2/apache2.conf':
+#      owner   => 'root',
+#      group   => 'root',
+#      mode    => '0775',
+#      notify  => Service['apache2'],
+#      content => template('php/apache2/apache2.conf.erb'),
+#      require => Package['apache2'];
+
+#    '/etc/apache2/sites-available/default':
+#      owner   => 'root',
+#      group   => 'root',
+#      mode    => '0775',
+#      notify  => Service['apache2'],
+#      content => template('php/apache2/sites-available/default.erb'),
+#      require => Package['apache2'];
+#
+#    '/etc/apache2/sites-available/default-ssl':
+#      owner   => 'root',
+#      group   => 'root',
+#      mode    => '0775',
+#      notify  => Service['apache2'],
+#      content => template('php/apache2/sites-available/default-ssl.erb'),
+#      require => Package['apache2'];
+#  }
+
+  exec {
+    'enable ssl module':
+      path    => ['/bin', '/usr/bin', '/usr/sbin/'],
+      command => 'a2enmod ssl',
+      notify  => Service['apache2'],
+      require => Package['apache2'];
+  }
+
+  service { 'apache2':
+    ensure    => running,
+    name      => 'apache2',
+    hasstatus => true,
+    pattern   => 'apache2',
+    require   => Package['apache2'];
+  }
+
+  # Apache end
+
+  exec { 'clone git repo': 
+    provider => shell,
+    cwd      => '/var/www',
+    command  => "git clone ${stratos_git_repo}",
+    require  => Package['apache2'];
+  }
+}

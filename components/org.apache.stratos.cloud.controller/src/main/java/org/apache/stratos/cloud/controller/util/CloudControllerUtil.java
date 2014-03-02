@@ -69,11 +69,12 @@ public class CloudControllerUtil {
 			cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
 		}
         
-        if(config.getPersistanceMappings() != null && config.getPersistanceMappings().length >0){
-        	cartridge.setPeristanceMappings(Arrays.asList(config.getPersistanceMappings()));
+        if(config.getPersistence() != null){
+        	cartridge.setPersistence(config.getPersistence());
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
+        cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
 
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
@@ -172,6 +173,7 @@ public class CloudControllerUtil {
 		carInfo.setBaseDir(cartridge.getBaseDir());
 		carInfo.setLbConfig(cartridge.getLbConfig());
 		carInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
+        carInfo.setDefaultDeploymentPolicy(cartridge.getDefaultDeploymentPolicy());
 		carInfo.setPortMappings(cartridge.getPortMappings()
 		                                 .toArray(new PortMapping[cartridge.getPortMappings()
 		                                                                   .size()]));
@@ -180,8 +182,7 @@ public class CloudControllerUtil {
                                                                   .size()]));
 		
 		List<Property> propList = new ArrayList<Property>();
-        carInfo.setPeristanceMappings(cartridge.getPeristanceMappings().
-                toArray(new PersistanceMapping[cartridge.getPeristanceMappings().size()]));
+        carInfo.setPersistence(cartridge.getPersistence());
 		
 		for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
 	        @SuppressWarnings("unchecked")

@@ -11,27 +11,85 @@
     <div class="col-lg-12">
         <div style="margin-bottom:20px;">{{cartridgeInfo.description}}</div>
 
-        <strong>activeInstances</strong>
+        <strong>ActiveInstances:</strong>
         <div>{{cartridgeInfo.activeInstances}}</div>
 
-        <strong>cartridgeAlias</strong>
+        <strong>CartridgeAlias:</strong>
         <div>{{cartridgeInfo.cartridgeAlias}}</div>
 
-        <strong>cartridgeType</strong>
+        <strong>CartridgeType:</strong>
         <div>{{cartridgeInfo.cartridgeType}}</div>
 
-
-        <strong>hostName</strong>
+        <strong>HostName:</strong>
         <div>{{cartridgeInfo.hostName}}</div>
 
-        <strong>multiTenant</strong>
-        <div>{{cartridgeInfo.multiTenant}}</div>
+        <strong>Version:</strong>
+        <div>{{cartridgeInfo.version}}</div>
 
-        <strong>provider</strong>
+        <strong>Tenancy Model:</strong>
+         {{#if cartridgeInfo.multiTenant}}
+            <div>true</div>
+
+        {{else}}
+            <div>false</div>
+         {{/if}}
+
+
+        <strong>Provider:</strong>
         <div>{{cartridgeInfo.provider}}</div>
 
-        <strong>repoURL</strong>
-        <div>{{cartridgeInfo.repoURL}}</div>
+        {{#if cartridgeInfo.repoURL }}
+           <strong>RepoURL</strong>
+            <div>{{cartridgeInfo.repoURL}}</div>
+        {{/if}}
+
+        {{#ifCond cartridgeInfo.provider "==" "data"}}
+
+            <strong>UserName</strong>
+            <div>{{cartridgeInfo.dbUserName}}</div>
+
+            <strong>Password</strong>
+            <div>{{cartridgeInfo.password}}</div>
+
+        {{/ifCond}}
+        {{#if clusterinfo.member}}
+            <strong>Members Private ip(s):</strong>
+            <div>
+                {{#each clusterinfo.member}}
+                  {{memberIp}}
+                {{/each}}
+             </div>
+
+             <strong>Members Public ip(s):</strong>
+            <div>
+                {{#each clusterinfo.member}}
+                  {{memberPublicIp}}
+                {{/each}}
+             </div>
+
+        {{/if}}
+
+        {{#if lbclusterinfo.member}}
+            <strong>LB Private ip:</strong>
+            <div>
+                {{#each lbclusterinfo.member}}
+                          {{memberIp}};
+                {{/each}}
+             </div>
+
+             <strong>LB Public ip:</strong>
+            <div>
+                {{#each lbclusterinfo.member}}
+                          {{memberPublicIp}};
+                {{/each}}
+             </div>
+
+        {{/if}}
+
+        <div>
+        </div>
+
+
     </div>
 </div>
 </div>

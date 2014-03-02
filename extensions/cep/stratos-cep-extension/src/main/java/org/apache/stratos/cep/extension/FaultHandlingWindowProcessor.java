@@ -102,7 +102,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
             while (true) {
                 threadBarrier.pass();
                 Iterator it = timeStampMap.entrySet().iterator();
-
+                
                 while ( it.hasNext() ) {
                     Map.Entry pair = (Map.Entry)it.next();
                     long currentTime = System.currentTimeMillis();
@@ -114,6 +114,12 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                         log.debug("Inactive member : " + pair.getKey() + " : " + "for " + TIME_OUT + " seconds");
                         nextProcessor.process(event);
                     }
+                }
+                
+                // to avoid cpu spinning when there're no entries in map
+                try {
+                	Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
                 }
             }
         } catch (Throwable t) {

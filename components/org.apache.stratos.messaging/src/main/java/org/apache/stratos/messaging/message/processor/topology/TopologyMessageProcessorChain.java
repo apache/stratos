@@ -40,6 +40,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
     private MemberActivatedMessageProcessor memberActivatedMessageProcessor;
     private MemberReadyToShutdownMessageProcessor memberReadyToShutdownProcessor;
+    private MemberMaintenanceModeProcessor memberMaintenanceModeProcessor;
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
 
@@ -71,6 +72,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         memberReadyToShutdownProcessor = new MemberReadyToShutdownMessageProcessor();
         add(memberReadyToShutdownProcessor);
+
+        memberMaintenanceModeProcessor = new MemberMaintenanceModeProcessor();
+        add(memberMaintenanceModeProcessor);
 
         memberSuspendedMessageProcessor = new MemberSuspendedMessageProcessor();
         add(memberSuspendedMessageProcessor);
@@ -106,6 +110,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             serviceCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ServiceRemovedEventListener) {
             serviceRemovedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof  MemberMaintenanceListener) {
+            memberMaintenanceModeProcessor.addEventListener(eventListener);
+
         } else {
             throw new RuntimeException("Unknown event listener");
         }

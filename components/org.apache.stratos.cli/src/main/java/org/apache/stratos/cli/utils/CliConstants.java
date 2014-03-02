@@ -72,7 +72,7 @@ public class CliConstants {
     /**
      * List the available autoscaling policies
      */
-    public static final String LIST_AUTOSCALE_POLICY = "list-autoscale-policies";
+    public static final String LIST_AUTOSCALE_POLICY = "list-autoscaling-policies";
 
     /**
      * List the available deploy services
@@ -98,6 +98,11 @@ public class CliConstants {
      * List partitions
      */
     public static final String LIST_PARTITION = "list-partitions";
+
+    /**
+     * List tenants
+     */
+    public static final String LIST_TENANTS = "list-tenants";
 
     /**
      * List deployment policies
@@ -212,6 +217,15 @@ public class CliConstants {
 	
 	public static final String POLICY_OPTION = "o";
 	public static final String POLICY_LONG_OPTION = "policy";
+
+    public static final String REMOVE_ON_TERMINATION_OPTION = "t";
+    public static final String REMOVE_ON_TERMINATION_LONG_OPTION = "remove-on-termination";
+
+    public static final String VOLUME_SIZE_OPTION = "v";
+    public static final String VOLUME_SIZE_LONG_OPTION = "volume-size";
+
+    public static final String PERSISTANCE_VOLUME_OPTION = "pv";
+    public static final String PERSISTANCE_VOLUME_LONG_OPTION = "persistance-volume";
 
     public static final String AUTOSCALING_POLICY_OPTION = "ap";
     public static final String AUTOSCALING_POLICY_LONG_OPTION = "autoscaling-policy";

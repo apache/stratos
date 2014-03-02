@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.PersistanceMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -37,6 +36,7 @@ import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
+import org.apache.stratos.manager.subscription.PersistenceContext;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
@@ -44,6 +44,8 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
@@ -219,16 +221,16 @@ public class ServiceUtils {
         return stratosAdminResponse;
     }
 
-    private static CloudControllerServiceClient getCloudControllerServiceClient () {
+    private static CloudControllerServiceClient getCloudControllerServiceClient () throws RestAPIException {
 
         try {
             return CloudControllerServiceClient.getServiceClient();
 
         } catch (AxisFault axisFault) {
-            String errorMsg = "Error in getting CloudControllerServiceClient instance";
+            String errorMsg = "Error in getting CloudControllerServiceClient instance to connect to the Cloud Controller";
             log.error(errorMsg, axisFault);
+            throw new RestAPIException(errorMsg);
         }
-        return null;
     }
 
     public static Partition[] getAvailablePartitions () throws RestAPIException {
@@ -240,7 +242,7 @@ public class ServiceUtils {
                 partitions = autoscalerServiceClient.getAvailablePartitions();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available partitions";
+                String errorMsg = "Error getting available partitions. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -308,16 +310,16 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionPojo(partition);
     }
 
-    private static AutoscalerServiceClient getAutoscalerServiceClient () {
+    private static AutoscalerServiceClient getAutoscalerServiceClient () throws RestAPIException {
 
         try {
             return AutoscalerServiceClient.getServiceClient();
 
         } catch (AxisFault axisFault) {
-            String errorMsg = "Error in getting AutoscalerServiceClient instance";
+            String errorMsg = "Error in getting AutoscalerServiceClient instance to connect to the Autoscaler";
             log.error(errorMsg, axisFault);
+            throw new RestAPIException(errorMsg);
         }
-        return null;
     }
 
     public static AutoscalePolicy[] getAutoScalePolicies () throws RestAPIException {
@@ -329,7 +331,7 @@ public class ServiceUtils {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available autoscaling policies";
+                String errorMsg = "Error getting available autoscaling policies. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -366,7 +368,7 @@ public class ServiceUtils {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
 
             } catch (Exception e) {
-                String errorMsg = "Error getting available deployment policies";
+                String errorMsg = "Error getting available deployment policies. Backend error is : " + e.getMessage();
                 log.error(errorMsg, e);
                 throw new RestAPIException(errorMsg);
             }
@@ -432,8 +434,14 @@ public class ServiceUtils {
         return PojoConverter.populatePartitionGroupPojos(partitionGroups);
     }
 
-    static Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
-       List<Cartridge> cartridges = getAvailableCartridges(null, null, configurationContext);
+    static Cartridge getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
+        List<Cartridge> cartridges;
+
+        if(multiTenant != null) {
+            cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
+        } else {
+            cartridges = getAvailableCartridges(null, null, configurationContext);
+        }
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
                 return cartridge;
@@ -511,15 +519,7 @@ public class ServiceUtils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
-
-                    if(cartridgeInfo.getPeristanceMappings() != null) {
-                        for(PersistanceMapping persistanceMapping : cartridgeInfo.getPeristanceMappings()) {
-                            cartridge.addPersistanceMapping(persistanceMapping);
-                            cartridge.setPersistance(true);
-                        }
-                    } else {
-                        cartridge.setPersistance(false);
-                    }
+                    cartridge.setPersistence(cartridgeInfo.getPersistence());
 
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
                         for(Property property: cartridgeInfo.getProperties()) {
@@ -614,6 +614,47 @@ public class ServiceUtils {
         }
 
         return new ServiceDefinitionBean();
+    }
+
+    public static List<Cartridge> getActiveDeployedServiceInformation (ConfigurationContext configurationContext) throws RestAPIException {
+
+        Collection<Service> services = null;
+
+        try {
+            services = serviceDeploymentManager.getServices();
+
+        } catch (ADCException e) {
+            String msg = "Error in getting deployed service cluster definition ";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+
+        List<Cartridge> availableMultitenantCartridges = new ArrayList<Cartridge>();
+        int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
+        //getting the services for the tenantId
+        for(Service service : services) {
+            String tenantRange = service.getTenantRange();
+            if(tenantRange.equals(Constants.TENANT_RANGE_ALL)) {
+                //check whether any active instances found for this service in the Topology
+
+                Cluster cluster = TopologyManager.getTopology().getService(service.getType()).
+                                        getCluster(service.getClusterId());
+                boolean activeMemberFound = false;
+                for(Member member : cluster.getMembers()) {
+                    if(member.isActive()) {
+                        activeMemberFound = true;
+                        break;
+                    }
+                }
+                if(activeMemberFound) {
+                    availableMultitenantCartridges.add(getAvailableCartridgeInfo(null, true, configurationContext));
+                }
+            } else {
+                //TODO have to check for the serivces which has correct tenant range
+            }
+        }
+
+        return availableMultitenantCartridges;
     }
 
 	static List<Cartridge> getSubscriptions (String cartridgeSearchString, ConfigurationContext configurationContext) throws RestAPIException {
@@ -804,18 +845,26 @@ public class ServiceUtils {
         return true;
     }
 
+    static SubscriptionInfo subscribeToCartridge (CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername,
+                                                  String tenantDomain) throws RestAPIException {
 
-    static SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain)
+        try {
+            return subscribe(cartridgeInfoBean, configurationContext, tenantUsername, tenantDomain);
+
+        } catch (Exception e) {
+            throw new RestAPIException(e.getMessage());
+        }
+    }
+
+    private static SubscriptionInfo subscribe (CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain)
                                        throws ADCException, PolicyException, UnregisteredCartridgeException,
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, RepositoryRequiredException,
             AlreadySubscribedException, RepositoryCredentialsRequiredException, InvalidRepositoryException,
-            RepositoryTransportException {
-
+            RepositoryTransportException, RestAPIException {
 
         SubscriptionData subscriptionData = new SubscriptionData();
         subscriptionData.setCartridgeType(cartridgeInfoBean.getCartridgeType());
         subscriptionData.setCartridgeAlias(cartridgeInfoBean.getAlias().trim());
-        //subscriptionData.setDataCartridgeAlias(dataCartridgeAlias);
         subscriptionData.setAutoscalingPolicyName(cartridgeInfoBean.getAutoscalePolicy());
         subscriptionData.setDeploymentPolicyName(cartridgeInfoBean.getDeploymentPolicy());
         subscriptionData.setTenantDomain(tenantDomain);
@@ -827,318 +876,18 @@ public class ServiceUtils {
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
 
         if (cartridgeInfoBean.isPersistanceRequired()) {
-            PersistanceMapping persistanceMapping = new PersistanceMapping();
-            persistanceMapping.setPersistanceRequired(cartridgeInfoBean.isPersistanceRequired());
-            persistanceMapping.setDevice(cartridgeInfoBean.getDevice());
-            persistanceMapping.setSize(Integer.parseInt(cartridgeInfoBean.getSize()));
-            persistanceMapping.setRemoveOntermination(cartridgeInfoBean.isRemoveOnTermination());
+            // Add persistence related properties to PersistenceContext
+            PersistenceContext persistenceContext = new PersistenceContext();
+            persistenceContext.setPersistanceRequiredProperty(IS_VOLUME_REQUIRED, String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
+            persistenceContext.setSizeProperty(VOLUME_SIZE, cartridgeInfoBean.getSize());
+            persistenceContext.setDeleteOnTerminationProperty(SHOULD_DELETE_VOLUME, String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
 
-            subscriptionData.setPersistanceMapping(persistanceMapping);
+            // set the PersistenceContext to to SubscriptionData
+            subscriptionData.setPersistanceCtxt(persistenceContext);
         }
 
         //subscribe
         return cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
-
-//        Properties properties = new Properties();
-//        if(cartridgeInfoBean.isPersistanceRequired()){
-//            /*
-//            PersistanceMapping persistanceMapping = new PersistanceMapping();
-//            persistanceMapping.setPersistanceRequired(persistanceMappingBean.persistanceRequired);
-//            persistanceMapping.setSize(persistanceMappingBean.size);
-//            persistanceMapping.setDevice(persistanceMappingBean.device);
-//            persistanceMapping.setRemoveOntermination(persistanceMappingBean.removeOnTermination);
-//            subscriptionData.setPersistanceMapping(persistanceMapping);
-//            */
-//
-//            // Add persistance mapping properties to the subscription.
-//            Property persistanceRequiredProperty = new Property();
-//            persistanceRequiredProperty.setName(IS_VOLUME_REQUIRED);
-//            persistanceRequiredProperty.setValue(String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
-//
-//            Property sizeProperty = new Property();
-//            sizeProperty.setName(VOLUME_SIZE);
-//            sizeProperty.setValue(cartridgeInfoBean.getSize());
-//
-//            Property deviceProperty = new Property();
-//            deviceProperty.setName(DEVICE_NAME);
-//            deviceProperty.setValue(String.valueOf(cartridgeInfoBean.getDevice()));
-//
-//            Property deleteOnTerminationProperty = new Property();
-//            deleteOnTerminationProperty.setName(SHOULD_DELETE_VOLUME);
-//            deleteOnTerminationProperty.setValue(String.valueOf(    cartridgeInfoBean.isRemoveOnTermination()));
-//
-//            properties.setProperties(new Property[]{persistanceRequiredProperty,sizeProperty, deviceProperty, deleteOnTerminationProperty});
-//        }
-//
-//
-//        // If multitenant, return for now. TODO -- fix properly
-//        if(cartridgeInfo != null && cartridgeInfo.getMultiTenant()) {
-//               log.info(" ******* MT cartridge ******* ");
-//
-//            subscriptionData.setPrivateRepository(false);
-//            subscriptionData.setLbClusterId(null);
-//            subscriptionData.setProperties(null);
-//
-//            CartridgeSubscription cartridgeSubscription =
-//                                        cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
-//               log.info(" --- ** -- ");
-//              return cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, properties);
-//
-//        }
-//
-//        List<Property> lbRefProp = new ArrayList<Property>();
-//
-//        // get lb config reference
-//        LoadbalancerConfig lbConfig = cartridgeInfo.getLbConfig();
-//        String lbClusterId = null;
-//
-//        if (lbConfig == null || lbConfig.getProperties() == null) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("This Service does not require a load balancer. " + "[Service Name] " +
-//                          cartridgeType);
-//            }
-//        } else {
-//
-//            Properties lbReferenceProperties = lbConfig.getProperties();
-//
-//            Property property = new Property();
-//            property.setName(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
-//
-//
-//            for (org.apache.stratos.cloud.controller.pojo.Property prop : lbReferenceProperties.getProperties()) {
-//
-//                String name = prop.getName();
-//                String value = prop.getValue();
-//
-//                // TODO make following a chain of responsibility pattern
-//                if (Constants.NO_LOAD_BALANCER.equals(name)) {
-//                    if ("true".equals(value)) {
-//                        if (log.isDebugEnabled()) {
-//                            log.debug("This cartridge does not require a load balancer. " +
-//                                      "[Type] " + cartridgeType);
-//                        }
-//                        property.setValue(name);
-//                        lbRefProp.add(property);
-//                        break;
-//                    }
-//                } else if (Constants.EXISTING_LOAD_BALANCERS.equals(name)) {
-//                    String clusterIdsVal = value;
-//                    if (log.isDebugEnabled()) {
-//                        log.debug("This cartridge refers to existing load balancers. " + "[Type] " +
-//                                  cartridgeType + "[Referenced Cluster Ids] " + clusterIdsVal);
-//                    }
-//
-//                    String[] clusterIds = clusterIdsVal.split(",");
-//
-//                    for (String clusterId : clusterIds) {
-//                        if (autoscalerServiceClient != null) {
-//                            try {
-//                                autoscalerServiceClient.checkLBExistenceAgainstPolicy(clusterId,
-//                                                                                      deploymentPolicy);
-//                            } catch (Exception ex) {
-//                                // we don't need to throw the error here.
-//                                log.error(ex.getMessage(), ex);
-//                            }
-//                        }
-//                    }
-//
-//                    property.setValue(name);
-//                    lbRefProp.add(property);
-//                    break;
-//
-//                } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
-//
-//                    if ("true".equals(value)) {
-//
-//                        CartridgeInfo lbCartridgeInfo = null;
-//                        String lbCartridgeType = lbConfig.getType();
-//                        try {
-//                            // retrieve lb Cartridge info
-//                            if(lbCartridgeType != null) {
-//                                lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
-//                            }
-//                        } catch (Exception e) {
-//                            String msg = "Cannot get cartridge info: " + cartridgeType;
-//                            log.error(msg, e);
-//                            throw new ADCException(msg, e);
-//                        }
-//
-//                        property.setValue(name);
-//                        if (log.isDebugEnabled()) {
-//                            log.debug("This cartridge uses default load balancer. " + "[Type] " +
-//                                      cartridgeType);
-//                        }
-//                        if (autoscalerServiceClient != null) {
-//                            try {
-//                                // get the valid policies for lb cartridge
-//                                DeploymentPolicy[] lbCartridgeDepPolicies =
-//                                                                            autoscalerServiceClient.getDeploymentPolicies(lbCartridgeType);
-//                                // traverse deployment policies of lb cartridge
-//                                for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
-//                                    // check existence of the subscribed policy
-//                                    if (deploymentPolicy.equals(policy.getId())) {
-//
-//                                        if (!autoscalerServiceClient.checkDefaultLBExistenceAgainstPolicy(deploymentPolicy)) {
-//
-//                                            // if lb cluster doesn't exist
-//                                            String lbAlias = "lb" + new Random().nextInt();
-//                                            if(lbCartridgeInfo != null) {
-//                                               lbCartridgeInfo.addProperties(property);
-//                                            lbClusterId = subscribeToLb(lbCartridgeType, cartridgeType,
-//                                                          lbAlias,
-//                                                          lbCartridgeInfo.getDefaultAutoscalingPolicy(),
-//                                                          deploymentPolicy, configurationContext,
-//                                                    tenantUsername, tenantDomain,
-//                                                          lbCartridgeInfo.getProperties());
-//                                            } else {
-//                                                String msg = "Please specify a LB cartridge type for the cartridge: "
-//                                                                + cartridgeType + " as category: " +
-//                                                                Constants.DEFAULT_LOAD_BALANCER;
-//                                                log.error(msg);
-//                                                throw new ADCException(msg);
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                            } catch (Exception ex) {
-//                                // we don't need to throw the error here.
-//                                log.error(ex.getMessage(), ex);
-//                            }
-//                        }
-//
-//                        lbRefProp.add(property);
-//                        break;
-//                    }
-//
-//                } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
-//
-//                    if ("true".equals(value)) {
-//
-//                        CartridgeInfo lbCartridgeInfo = null;
-//                        String lbCartridgeType = lbConfig.getType();
-//                        try {
-//                            // retrieve lb Cartridge info
-//                            if(lbCartridgeType != null) {
-//                                lbCartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(lbCartridgeType);
-//                            }
-//                        } catch (Exception e) {
-//                            String msg = "Cannot get cartridge info: " + cartridgeType;
-//                            log.error(msg, e);
-//                            throw new ADCException(msg, e);
-//                        }
-//
-//                        // add a property for the service type
-//                        Property loadBalancedServiceTypeProperty = new Property();
-//                        loadBalancedServiceTypeProperty.setName(Constants.LOAD_BALANCED_SERVICE_TYPE);
-//
-//                        property.setValue(name);
-//                        // set the load balanced service type
-//                        loadBalancedServiceTypeProperty.setValue(cartridgeType);
-//                        if (log.isDebugEnabled()) {
-//                            log.debug("This cartridge uses a service aware load balancer. " +
-//                                    "[Type] " + cartridgeType);
-//                        }
-//                        if (autoscalerServiceClient != null) {
-//                            try {
-//
-//                                // get the valid policies for lb cartridge
-//                                DeploymentPolicy[] lbCartridgeDepPolicies =
-//                                        autoscalerServiceClient.getDeploymentPolicies(lbCartridgeType);
-//                                // traverse deployment policies of lb cartridge
-//                                for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
-//                                    // check existence of the subscribed policy
-//                                    if (deploymentPolicy.equals(policy.getId())) {
-//
-//                                        if (!autoscalerServiceClient.checkServiceLBExistenceAgainstPolicy(cartridgeType,
-//                                                deploymentPolicy)) {
-//
-//                                            // if lb cluster doesn't exist
-//                                            String lbAlias =
-//                                                    "lb" + cartridgeType +
-//                                                            new Random().nextInt();
-//
-//                                            if(lbCartridgeInfo != null) {
-//                                                lbCartridgeInfo.addProperties(property);
-//                                                lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
-//
-//                                                lbClusterId = subscribeToLb(lbCartridgeType, cartridgeType,
-//                                                    lbAlias,
-//                                                    lbCartridgeInfo.getDefaultAutoscalingPolicy(),
-//                                                    deploymentPolicy,
-//                                                    configurationContext, tenantUsername,
-//                                                    tenantDomain,
-//                                                    lbCartridgeInfo.getProperties());
-//                                            } else {
-//                                                String msg = "Please specify a LB cartridge type for the cartridge: "
-//                                                                + cartridgeType + " as category: " +
-//                                                                Constants.SERVICE_AWARE_LOAD_BALANCER;
-//                                                log.error(msg);
-//                                                throw new ADCException(msg);
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                            } catch (Exception ex) {
-//                                // we don't need to throw the error here.
-//                                log.error(ex.getMessage(), ex);
-//                            }
-//                        }
-//
-//                        lbRefProp.add(property);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//
-//        subscriptionData.setPrivateRepository(cartridgeInfoBean.isPrivateRepo());
-//        subscriptionData.setLbClusterId(lbClusterId);
-//        subscriptionData.setProperties(lbRefProp.toArray(new Property[0]));
-//        CartridgeSubscription cartridgeSubscription =
-//                                                      cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
-//
-//
-//        if (dataCartridgeAlias != null && !dataCartridgeAlias.trim().isEmpty()) {
-//
-//            /*dataCartridgeAlias = dataCartridgeAlias.trim();
-//
-//            CartridgeSubscription connectingCartridgeSubscription = null;
-//            try {
-//                connectingCartridgeSubscription =
-//                                                  cartridgeSubsciptionManager.getCartridgeSubscription(tenantDomain,
-//                                                                                                       dataCartridgeAlias);
-//
-//            } catch (NotSubscribedException e) {
-//                log.error(e.getMessage(), e);
-//            }
-//            if (connectingCartridgeSubscription != null) {
-//                try {
-//                    cartridgeSubsciptionManager.connectCartridges(tenantDomain,
-//                                                                  cartridgeSubscription,
-//                                                                  connectingCartridgeSubscription.getAlias());
-//
-//                } catch (NotSubscribedException e) {
-//                    log.error(e.getMessage(), e);
-//
-//                } catch (AxisFault axisFault) {
-//                    log.error(axisFault.getMessage(), axisFault);
-//                }
-//            } else {
-//                log.error("Failed to connect. No cartridge subscription found for tenant " +
-//                          ApplicationManagementUtil.getTenantId(configurationContext) +
-//                          " with alias " + alias);
-//            }*/
-//        }
-//
-//        for (Property lbRefProperty : lbRefProp) {
-//            properties.addProperties(lbRefProperty);
-//        }
-//
-//        SubscriptionInfo registerCartridgeSubscription = cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, properties);
-//
-//        return registerCartridgeSubscription;
 
     }
 
@@ -1183,56 +932,7 @@ public class ServiceUtils {
                 new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
         arrCluster = clusters.toArray(arrCluster);
         return arrCluster;
-
-
-
     }
-
-    // return the cluster id for the lb. This is a temp fix.
-//    private static String subscribeToLb(String cartridgeType, String loadBalancedCartridgeType, String lbAlias,
-//        String defaultAutoscalingPolicy, String deploymentPolicy,
-//        ConfigurationContext configurationContext, String userName, String tenantDomain, Property[] props) throws ADCException {
-//
-//        CartridgeSubscription cartridgeSubscription;
-//
-//        try {
-//            if(log.isDebugEnabled()) {
-//                log.debug("Subscribing to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
-//            }
-//
-//            SubscriptionData subscriptionData = new SubscriptionData();
-//            subscriptionData.setCartridgeType(cartridgeType);
-//            subscriptionData.setCartridgeAlias(lbAlias.trim());
-//            subscriptionData.setAutoscalingPolicyName(defaultAutoscalingPolicy);
-//            subscriptionData.setDeploymentPolicyName(deploymentPolicy);
-//            subscriptionData.setTenantDomain(tenantDomain);
-//            subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
-//            subscriptionData.setTenantAdminUsername(userName);
-//            subscriptionData.setRepositoryType("git");
-//            //subscriptionData.setProperties(props);
-//            subscriptionData.setPrivateRepository(false);
-//
-//            cartridgeSubscription =
-//                    cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
-//
-//            //set a payload parameter to indicate the load balanced cartridge type
-//            cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);
-//
-//            Properties lbProperties = new Properties();
-//            lbProperties.setProperties(props);
-//            cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, lbProperties);
-//
-//            if(log.isDebugEnabled()) {
-//                log.debug("Successfully subscribed to a load balancer [cartridge] "+cartridgeType+" [alias] "+lbAlias);
-//            }
-//        } catch (Exception e) {
-//            String msg = "Error while subscribing to load balancer cartridge [type] "+cartridgeType;
-//            log.error(msg, e);
-//            throw new ADCException(msg, e);
-//        }
-//
-//        return cartridgeSubscription.getClusterDomain();
-//    }
 
     static StratosAdminResponse unsubscribe(String alias, String tenantDomain) throws RestAPIException {
 

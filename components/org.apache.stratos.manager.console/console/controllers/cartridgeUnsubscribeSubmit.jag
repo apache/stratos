@@ -3,8 +3,6 @@
     var log = new Log("controller.cartridgeSubscribeSubmit");
     var utils = require('/util/utility.jag');
     var alias = request.getParameter('alias');
-    log.info("((((((((((((((((((((((((((((((");
-    log.info(alias);
     var result = utils.consoleAppUtil.unsubscribeCartridge(alias);
     response.sendRedirect(request.getContextPath() + '/index.jag');
 }());
