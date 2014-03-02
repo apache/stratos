@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
 import org.apache.stratos.manager.deploy.service.multitenant.lb.MultiTenantLBService;
@@ -72,10 +73,10 @@ public class ServiceDeploymentManager {
         try {
             cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(type);
 
-        } catch (UnregisteredCartridgeException e) {
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String message = type + " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
             log.error(message);
-            throw e;
+            throw new ADCException(message, e);
 
         } catch (Exception e) {
             String message = "Error getting info for " + type;

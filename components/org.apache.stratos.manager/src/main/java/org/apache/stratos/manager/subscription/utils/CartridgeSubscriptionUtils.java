@@ -284,11 +284,6 @@ public class CartridgeSubscriptionUtils {
                     try {
                         lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
 
-                    } catch (UnregisteredCartridgeException e) {
-                        String message = lbCartridgeType + " is not a valid cartridgeSubscription type";
-                        log.error(message);
-                        throw e;
-
                     } catch (Exception e) {
                         String message = "Error getting info for " + lbCartridgeType;
                         log.error(message, e);
@@ -358,11 +353,6 @@ public class CartridgeSubscriptionUtils {
 
                     try {
                         lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
-
-                    } catch (UnregisteredCartridgeException e) {
-                        String message = lbCartridgeType + " is not a valid cartridgeSubscription type";
-                        log.error(message);
-                        throw e;
 
                     } catch (Exception e) {
                         String message = "Error getting info for " + lbCartridgeType;

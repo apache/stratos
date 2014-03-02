@@ -20,6 +20,7 @@ package org.apache.stratos.cli;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -48,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -260,10 +262,12 @@ public class RestCommandLineService {
             };
 
             if (multiTenetCartridge.size() == 0) {
+            	String message = "Cannot find any deployed multi-tenant Cartridge. "
+            			+ "Please deploy a Cartridge using ["+CliConstants.CARTRIDGE_DEPLOYMENT+"] command.";
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No multi-tenant cartridges available");
+                    logger.debug(message);
                 }
-                System.out.println("There are no multi-tenant cartridges available");
+                System.out.println(message);
             }
             else {
                 Cartridge[] cartridges = new Cartridge[multiTelentCartridgeList.getCartridge().size()];
@@ -275,10 +279,12 @@ public class RestCommandLineService {
             }
 
             if (singleTentCartridge.size() == 0) {
+            	String message = "Cannot find any deployed single-tenant Cartridge. "
+            			+ "Please deploy a Cartridge using ["+CliConstants.CARTRIDGE_DEPLOYMENT+"] command.";
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No single-tenant cartridges available");
+                    logger.debug(message);
                 }
-                System.out.println("There are no single-tenant cartridges available");
+                System.out.println(message);
             }
             else {
                 Cartridge[] cartridges1 = new Cartridge[singleTeneCartridgetList.getCartridge().size()];
@@ -331,7 +337,7 @@ public class RestCommandLineService {
                     return;
                 }
             }
-            System.out.println("No matching cartridge found...");
+            System.out.println("Cannot find a matching Cartridge for [type] "+type);
         } catch (Exception e) {
             handleException("Exception in listing available cartridges", e);
         } finally {
@@ -1028,10 +1034,12 @@ public class RestCommandLineService {
             tenants = tenantInfoList.getTenantInfoBean().toArray(tenants);
 
             if (tenants.length == 0) {
+            	String message = "Cannot find any Tenant. "
+            			+ "Please create a new tenant using ["+CliConstants.ADD_TENANT+"] command.";
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No tenants found");
+                    logger.debug(message);
                 }
-                System.out.println("There are no available tenants");
+                System.out.println(message);
                 return;
             }
 
@@ -1401,10 +1409,12 @@ public class RestCommandLineService {
             partitions = partitionList.getPartition().toArray(partitions);
 
             if (partitions.length == 0) {
+            	String message = "Cannot find any deployed Partition. "
+            			+ "Please deploy a Partition using ["+CliConstants.PARTITION_DEPLOYMENT+"] command.";
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No partitions found");
+                    logger.debug(message);
                 }
-                System.out.println("There are no available partitions");
+                System.out.println(message);
                 return;
             }
 
@@ -1465,14 +1475,16 @@ public class RestCommandLineService {
             policyArry = policyList.getAutoscalePolicy().toArray(policyArry);
 
             if (policyArry.length == 0) {
+            	String message = "Cannot find any deployed auto-scaling policy. "
+            			+ "Please deploy a policy using ["+CliConstants.AUTOSCALING_POLICY_DEPLOYMENT+"] command.";
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No autoscale policies found");
+					logger.debug(message);
                 }
-                System.out.println("There are no autoscale policies");
+                System.out.println(message);
                 return;
             }
 
-            System.out.println("Available Autoscale Policies:");
+            System.out.println("Available Auto-scaling Policies:");
             CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
 
         } catch (Exception e) {
@@ -1527,10 +1539,12 @@ public class RestCommandLineService {
             policyArry = policyList.getDeploymentPolicy().toArray(policyArry);
 
             if (policyArry.length == 0) {
+            	String message = "Cannot find any deployed deployment policy. "
+            			+ "Please deploy a policy using ["+CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT+"] command.";
                 if (logger.isDebugEnabled()) {
-                    logger.debug("No deployment policies found");
+                    logger.debug(message);
                 }
-                System.out.println("There are no deployment policies");
+                System.out.println(message);
                 return;
             }
 
@@ -1627,7 +1641,7 @@ public class RestCommandLineService {
                     return;
                 }
             }
-            System.out.println("No matching partition found...");
+            System.out.println("Cannot find a matching Partition for [id] "+id);
         } catch (Exception e) {
             handleException("Exception in listing deployment polices", e);
         } finally {

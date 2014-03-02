@@ -72,12 +72,12 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 	/*
 	 * Deploy a new partition to Auto Scaler.
 	 */
-    public boolean addNewPartition(Partition partition) throws AutoScalerException, InvalidPartitionException {
+    public boolean addNewPartition(Partition partition) throws InvalidPartitionException {
         if (StringUtils.isEmpty(partition.getId())){
-            throw new AutoScalerException("Partition id can not be empty");
+            throw new InvalidPartitionException("Partition id can not be empty");
         }
         if (this.partitionExist(partition.getId())) {
-            throw new AutoScalerException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
+            throw new InvalidPartitionException(String.format("Partition already exist in partition manager: [id] %s", partition.getId()));
         }
         if (null == partition.getProvider()) {
             throw new InvalidPartitionException("Mandatory field provider has not be set for partition " + partition.getId());
@@ -91,7 +91,7 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
             }
             return true;
         } catch (Exception e) {
-            throw new AutoScalerException(e);
+            throw new InvalidPartitionException(e.getMessage(), e);
         }
     }
 

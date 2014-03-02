@@ -21,13 +21,23 @@ package org.apache.stratos.cloud.controller.exception;
 public class MalformedConfigurationFileException extends RuntimeException {
 
     private static final long serialVersionUID = -1662095377704279326L;
+	private String message;
     
     public MalformedConfigurationFileException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public MalformedConfigurationFileException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
     }
 
+    private void setMessage(String msg) {
+    	this.message = msg;
+	}
+
+	public String getMessage() {
+        return this.message;
+    }
 }

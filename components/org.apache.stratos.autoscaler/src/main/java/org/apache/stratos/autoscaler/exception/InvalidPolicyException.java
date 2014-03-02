@@ -22,19 +22,25 @@ package org.apache.stratos.autoscaler.exception;
 public class InvalidPolicyException extends Exception {
 
 	private static final long serialVersionUID = -4914522749282514366L;
+	private String message;
 	
 	public InvalidPolicyException(String message) {
 		super(message);
+		this.message = message;
 	}
 	
 	public InvalidPolicyException(String message,Throwable e) {
 		super(message,e);
+		this.message = message;
 	}
 	
 	public InvalidPolicyException(Throwable e) {
 		super(e);
 	}
 	
-	
+	@Override
+	public String getMessage() {
+		return message;
+	}
 	
 }

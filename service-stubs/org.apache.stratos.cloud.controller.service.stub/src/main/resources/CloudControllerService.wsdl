@@ -8,25 +8,39 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidCartridgeTypeException">
-                <xs:sequence></xs:sequence>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="UnregisteredClusterException">
-                <xs:sequence></xs:sequence>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidMemberException">
-                <xs:sequence></xs:sequence>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidClusterException">
-                <xs:sequence></xs:sequence>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="UnregisteredCartridgeException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeDefinitionException">
-                <xs:sequence></xs:sequence>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidIaasProviderException">
-                <xs:sequence></xs:sequence>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeDefinitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax28="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax210="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
@@ -139,6 +153,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax23:InvalidIaasProviderException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceIllegalStateException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="IllegalStateException" nillable="true" type="xs:anyType"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="startInstance">
                 <xs:complexType>
                     <xs:sequence>
@@ -197,13 +225,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax23:InvalidCartridgeDefinitionException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax23:InvalidIaasProviderException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -437,6 +458,9 @@
     <wsdl:message name="startInstanceResponse">
         <wsdl:part name="parameters" element="ns:startInstanceResponse"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="CloudControllerServiceIllegalStateException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceIllegalStateException"></wsdl:part>
+    </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="validatePartition">
             <wsdl:input message="ns:validatePartitionRequest" wsaw:Action="urn:validatePartition"></wsdl:input>
@@ -465,6 +489,7 @@
             <wsdl:input message="ns:deployCartridgeDefinitionRequest" wsaw:Action="urn:deployCartridgeDefinition"></wsdl:input>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidCartridgeDefinitionException"></wsdl:fault>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidIaasProviderException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceIllegalArgumentException" name="CloudControllerServiceIllegalArgumentException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceIllegalArgumentException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <wsdl:input message="ns:getCartridgeInfoRequest" wsaw:Action="urn:getCartridgeInfo"></wsdl:input>
@@ -477,6 +502,7 @@
         </wsdl:operation>
         <wsdl:operation name="undeployCartridgeDefinition">
             <wsdl:input message="ns:undeployCartridgeDefinitionRequest" wsaw:Action="urn:undeployCartridgeDefinition"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:undeployCartridgeDefinitionCloudControllerServiceInvalidCartridgeTypeException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
             <wsdl:input message="ns:terminateAllInstancesRequest" wsaw:Action="urn:terminateAllInstances"></wsdl:input>
@@ -492,6 +518,8 @@
             <wsdl:output message="ns:startInstanceResponse" wsaw:Action="urn:startInstanceResponse"></wsdl:output>
             <wsdl:fault message="ns:CloudControllerServiceIllegalArgumentException" name="CloudControllerServiceIllegalArgumentException" wsaw:Action="urn:startInstanceCloudControllerServiceIllegalArgumentException"></wsdl:fault>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startInstanceCloudControllerServiceUnregisteredCartridgeException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstanceCloudControllerServiceInvalidIaasProviderException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceIllegalStateException" name="CloudControllerServiceIllegalStateException" wsaw:Action="urn:startInstanceCloudControllerServiceIllegalStateException"></wsdl:fault>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
@@ -558,6 +586,9 @@
             <wsdl:input>
                 <soap:body use="literal"></soap:body>
             </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap:fault use="literal" name="CloudControllerServiceIllegalArgumentException"></soap:fault>
+            </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"></soap:fault>
             </wsdl:fault>
@@ -591,6 +622,9 @@
             <wsdl:input>
                 <soap:body use="literal"></soap:body>
             </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap:fault>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
             <soap:operation soapAction="urn:terminateAllInstances" style="document"></soap:operation>
@@ -623,6 +657,12 @@
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
                 <soap:fault use="literal" name="CloudControllerServiceIllegalArgumentException"></soap:fault>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceIllegalStateException">
+                <soap:fault use="literal" name="CloudControllerServiceIllegalStateException"></soap:fault>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap:fault>
@@ -693,6 +733,9 @@
             <wsdl:input>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
+                <soap12:fault use="literal" name="CloudControllerServiceIllegalArgumentException"></soap12:fault>
+            </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"></soap12:fault>
             </wsdl:fault>
@@ -726,6 +769,9 @@
             <wsdl:input>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap12:fault>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
             <soap12:operation soapAction="urn:terminateAllInstances" style="document"></soap12:operation>
@@ -758,6 +804,12 @@
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceIllegalArgumentException">
                 <soap12:fault use="literal" name="CloudControllerServiceIllegalArgumentException"></soap12:fault>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceIllegalStateException">
+                <soap12:fault use="literal" name="CloudControllerServiceIllegalStateException"></soap12:fault>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap12:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap12:fault>
@@ -853,22 +905,22 @@
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.100.1.142:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"></soap:address>
+            <soap:address location="http://10.128.181.194:9764/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.100.1.142:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"></soap:address>
+            <soap:address location="https://10.128.181.194:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.100.1.142:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"></soap12:address>
+            <soap12:address location="http://10.128.181.194:9764/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.100.1.142:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"></soap12:address>
+            <soap12:address location="https://10.128.181.194:9444/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.100.1.142:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"></http:address>
+            <http:address location="http://10.128.181.194:9764/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"></http:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.100.1.142:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"></http:address>
+            <http:address location="https://10.128.181.194:9444/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"></http:address>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

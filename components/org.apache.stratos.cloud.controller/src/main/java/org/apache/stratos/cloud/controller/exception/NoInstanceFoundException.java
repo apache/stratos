@@ -27,13 +27,24 @@ public class NoInstanceFoundException extends Exception {
      * For serializing requirement
      */
     private static final long serialVersionUID = -435060299292679892L;
+	private String message;
 
 
     public NoInstanceFoundException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public NoInstanceFoundException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
+    }
+    
+    private void setMessage(String msg) {
+    	this.message = msg;
+	}
+
+	public String getMessage() {
+        return this.message;
     }
 }

@@ -88,14 +88,14 @@ public class CloudControllerClient {
             }
             return result;
         } catch (RemoteException e) {
-            log.error(e.getMessage());
-            throw new PartitionValidationException(e);
+            log.error(e.getMessage(), e);
+            throw new PartitionValidationException(e.getMessage(), e);
         } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
-            log.error(e.getMessage());
-            throw new PartitionValidationException(e);
+            log.error(e.getFaultMessage().getInvalidPartitionException().getMessage(), e);
+            throw new PartitionValidationException(e.getFaultMessage().getInvalidPartitionException().getMessage());
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-            log.error(e.getMessage());
-            throw new PartitionValidationException(e);
+            log.error(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage(), e);
+            throw new PartitionValidationException(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage());
         }
 
     }
@@ -117,14 +117,17 @@ public class CloudControllerClient {
             }
             return result;
         } catch (RemoteException e) {
-            throw new PartitionValidationException(e);
+        	log.error(e.getMessage(), e);
+            throw new PartitionValidationException(e.getMessage(), e);
         } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
-        	throw new PartitionValidationException(e.getMessage(),e);
+        	log.error(e.getFaultMessage().getInvalidPartitionException().getMessage(), e);
+        	throw new PartitionValidationException(e.getFaultMessage().getInvalidPartitionException().getMessage(), e);
 		}
 
     }
 
-    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
+    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, 
+    		String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: [cluster] %s [partition] %s [lb-cluster] %s [network-partition-id] %s",
@@ -146,13 +149,23 @@ public class CloudControllerClient {
             }
             return memberContext;
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-            throw new SpawningException(e);
+        	log.error(e.getMessage(), e);
+            throw new SpawningException(e.getMessage(), e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-            throw new SpawningException(e);
+        	String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
+        	log.error(message, e);
+			throw new SpawningException(message, e);
         } catch (RemoteException e) {
-            throw new SpawningException(String.format("Error occurred in cloud controller while spawning instance: [cluster] %s [partition] %s [lb-cluster] %s [network-partition-id] %s",
-                    clusterId, partition.getId(), lbClusterId, networkPartitionId), e);
-        }
+        	log.error(e.getMessage(), e);
+            throw new SpawningException(e.getMessage(), e);
+        } catch (CloudControllerServiceIllegalStateExceptionException e) {
+        	log.error(e.getMessage(), e);
+            throw new SpawningException(e.getMessage(), e);
+		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+			String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
+        	log.error(message, e);
+			throw new SpawningException(message, e);
+		}
     }
     
     public void terminateAllInstances(String clusterId) throws TerminationException {
@@ -167,16 +180,18 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateAllInstances() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-            String msg = "Error occurred in cloud controller side while terminating instance";
+            String msg = e.getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
 
         } catch (CloudControllerServiceInvalidClusterExceptionException e) {
-            log.error(e.getMessage());
-            throw new TerminationException(e);
+        	String message = e.getFaultMessage().getInvalidClusterException().getMessage();
+            log.error(message, e);
+            throw new TerminationException(message, e);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-            log.error(e.getMessage());
-            throw new TerminationException(e);
+        	String msg = e.getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
         }
     }
 
@@ -192,13 +207,21 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-            throw new TerminationException("Could not terminate instance", e);
+        	String msg = e.getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
         } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-            throw new TerminationException(e);
+        	String msg = e.getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
         } catch (CloudControllerServiceInvalidMemberExceptionException e) {
-            throw new TerminationException(e);
+        	String msg = e.getFaultMessage().getInvalidMemberException().getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
         } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-            throw new TerminationException(e);
+        	String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
         }
     }
 

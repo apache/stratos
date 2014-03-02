@@ -39,10 +39,22 @@ import org.apache.stratos.cloud.controller.pojo.Registrant;
  */
 public interface CloudControllerService {
     
+	/**
+	 * Deploys a Cartridge configuration 
+	 * @param cartridgeConfig cartridge configuration to be deployed
+	 * @throws InvalidCartridgeDefinitionException if the cartridge configuration is not valid.
+	 * @throws InvalidIaasProviderException if the iaas providers configured are not valid.
+	 * @throws IllegalArgumentException  if the provided argument is not valid.
+	 */
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) 
-            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
+            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, IllegalArgumentException;
     
-    public void undeployCartridgeDefinition(String cartridgeType);
+    /**
+     * Undeploys a Cartridge configuration which is already deployed.
+     * @param cartridgeType type of the cartridge to be undeployed.
+     * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
+     */
+    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.
@@ -91,8 +103,11 @@ public interface CloudControllerService {
      *            It contains the region, zone, network and host of a IaaS where
      *            an instance need to be started.
      * @return public IP which is associated with the newly started instance.
+     * @throws IllegalArgumentException if the provided member is not valid.
+     * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
+     * @throws InvalidIaasProviderException if the iaas requested is not valid.
      */
-    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException;
+    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException, InvalidIaasProviderException;
 
     /**
      * Calling this method will spawn more than one instances in the
