@@ -96,6 +96,8 @@ public class CartridgeSubscriptionManager {
 
         Properties serviceCartridgeSubscriptionProperties = null;
         LBDataContext lbDataCtxt = null;
+        CartridgeSubscription lbCartridgeSubscription = null;
+        Properties lbCartridgeSubscriptionProperties = null;
 
         // get lb config reference
         LoadbalancerConfig lbConfig = cartridgeInfo.getLbConfig();
@@ -112,16 +114,11 @@ public class CartridgeSubscriptionManager {
                     subscriptionData.getDeploymentPolicyName(), lbConfig);
 
             // subscribe to LB
-            CartridgeSubscription lbCartridgeSubscription = subscribeToLB (subscriptionData, lbDataCtxt);
+            lbCartridgeSubscription = subscribeToLB (subscriptionData, lbDataCtxt);
 
-            if (lbCartridgeSubscription != null) {
-                // register LB cartridge subscription
-                Properties lbCartridgeSubscriptionProperties =  new Properties();
-                if (lbDataCtxt.getLbProperperties() != null && !lbDataCtxt.getLbProperperties().isEmpty()) {
-                    lbCartridgeSubscriptionProperties.setProperties(lbDataCtxt.getLbProperperties().toArray(new Property[0]));
-                }
-
-                registerCartridgeSubscription(lbCartridgeSubscription, lbCartridgeSubscriptionProperties);
+            lbCartridgeSubscriptionProperties =  new Properties();
+            if (lbDataCtxt.getLbProperperties() != null && !lbDataCtxt.getLbProperperties().isEmpty()) {
+                lbCartridgeSubscriptionProperties.setProperties(lbDataCtxt.getLbProperperties().toArray(new Property[0]));
             }
         }
 
@@ -140,6 +137,11 @@ public class CartridgeSubscriptionManager {
             for (Property persistenceMappingProperty : persistenceMappingProperties.getProperties()) {
                 serviceCartridgeSubscriptionProperties.addProperties(persistenceMappingProperty);
             }
+        }
+
+        if (lbCartridgeSubscription != null) {
+            // register LB cartridge subscription
+            registerCartridgeSubscription(lbCartridgeSubscription, lbCartridgeSubscriptionProperties);
         }
 
         // register service cartridge subscription
@@ -206,10 +208,6 @@ public class CartridgeSubscriptionManager {
                 " subscribed to " + "] Cartridge with Alias " + lbAlias + ", Cartridge Type: " + lbDataContext.getLbCartridgeInfo().getType() +
                 ", Autoscale Policy: " + lbDataContext.getAutoscalePolicy() + ", Deployment Policy: " + lbDataContext.getDeploymentPolicy());
 
-        // Publish tenant subscribed event to message broker
-        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
-                cartridgeSubscription.getCartridgeInfo().getType());
-
         return cartridgeSubscription;
     }
 
@@ -258,11 +256,6 @@ public class CartridgeSubscriptionManager {
                 subscriptionData.getCartridgeType() + ", Repo URL: " + subscriptionData.getRepositoryURL() + ", Autoscale Policy: " +
                 subscriptionData.getAutoscalingPolicyName() + ", Deployment Policy: " + subscriptionData.getDeploymentPolicyName());
 
-
-        // Publish tenant subscribed event to message broker
-        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
-                cartridgeSubscription.getCartridgeInfo().getType());
-
         return cartridgeSubscription;
     }
 
@@ -294,6 +287,11 @@ public class CartridgeSubscriptionManager {
         }
 
         log.info("Successful Subscription: " + cartridgeSubscription.toString());
+
+        // Publish tenant subscribed event to message broker
+        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                cartridgeSubscription.getCartridgeInfo().getType());
+
         return ApplicationManagementUtil.
                 createSubscriptionResponse(cartridgeSubscriptionInfo, cartridgeSubscription.getRepository());
     }

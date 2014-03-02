@@ -1002,6 +1002,7 @@ public class ServiceUtils {
             persistenceContext.setPersistanceRequiredProperty(IS_VOLUME_REQUIRED, String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
             persistenceContext.setSizeProperty(VOLUME_SIZE, cartridgeInfoBean.getSize());
             persistenceContext.setDeleteOnTerminationProperty(SHOULD_DELETE_VOLUME, String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
+            subscriptionData.setPersistanceCtxt(persistenceContext);
         }
 
         //subscribe
