@@ -88,9 +88,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.cloud.controller.exception.*; version=${project.version},
-                            org.apache.stratos.cloud.controller.deployment.policy.*; version=${project.version},
                             org.apache.stratos.cloud.controller.deployment.partition.*; version=${project.version},
                             org.apache.stratos.cloud.controller.pojo.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.impl.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.*; version=${project.version}
                         </Export-Package>
                         <Import-Package>

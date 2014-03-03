@@ -102,7 +102,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
 	}
 
-    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, InvalidIaasProviderException {
+    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
+    InvalidIaasProviderException, IllegalArgumentException {
 
         if (cartridgeConfig == null) {
             String msg = "Invalid Cartridge Definition: Definition is null.";
@@ -122,7 +123,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String msg =
                          "Invalid Cartridge Definition: Cartridge Type: " +
                                  cartridgeConfig.getType()+
-                                 ". Cause: Cannot instantiate a Cartridge Instance with the given Config.";
+                                 ". Cause: Cannot instantiate a Cartridge Instance with the given Config. "+e.getMessage();
             log.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
@@ -164,7 +165,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
 
-    public void undeployCartridgeDefinition(String cartridgeType) {
+    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
 
         Cartridge cartridge = null;
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
@@ -173,11 +174,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
             }
         }
+        String msg = "Cartridge [type] "+cartridgeType+" is not a deployed Cartridge type.";
+        log.error(msg);
+        throw new InvalidCartridgeTypeException(msg);
     }
     
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws IllegalArgumentException,
-        UnregisteredCartridgeException {
+        UnregisteredCartridgeException, InvalidIaasProviderException, IllegalStateException {
 
         if (memberContext == null) {
             String msg = "Instance start-up failed. Member is null.";
@@ -216,7 +220,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                         "Instance start-up failed. No valid Cartridge found. " +
+                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
                                  memberContext.toString();
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
@@ -233,7 +237,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                   		+ "partitions can be found in this Cartridge: "
                   		+cartridge.getPartitionToIaasProvider().keySet().toString()+ memberContext.toString() + ". ";
             log.fatal(msg);
-            throw new CloudControllerException(msg);
+            throw new InvalidIaasProviderException(msg);
         }
         String type = iaasProvider.getType();
         try {
@@ -266,9 +270,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     iaas = CloudControllerUtil.getIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg ="Instance start up failed. "+memberContext.toString()+
-                            "Unable to build Iaas of this IaasProvider [Provider] : " + type;
+                            "Unable to build Iaas of this IaasProvider [Provider] : " + type+". Cause: "+e.getMessage();
                     log.error(msg, e);
-                    throw new CloudControllerException(msg, e);
+                    throw new InvalidIaasProviderException(msg, e);
                 }
                 
             }
@@ -282,11 +286,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String msg =
                              "Failed to start an instance. " +
                                      memberContext.toString() +
-                                     ". Reason : Template is null. You have not specify a matching service " +
-                                     "element in the configuration file of Autoscaler.\n Hence, will try to " +
-                                     "start in another IaaS if available.";
+                                     ". Reason : Jclouds Template is null for iaas provider [type]: "+iaasProvider.getType();
                 log.error(msg);
-                throw new CloudControllerException(msg);
+                throw new InvalidIaasProviderException(msg);
             }
 
             // generate the group id from domain name and sub domain
@@ -327,7 +329,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (nodeId == null) {
                 String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
                 log.fatal(msg);
-                throw new CloudControllerException(msg);
+                throw new IllegalStateException(msg);
             }
                 memberContext.setNodeId(nodeId);
                 if(log.isDebugEnabled()) {
@@ -342,14 +344,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						: nodeId;
 				memberContext.setInstanceId(instanceId);
 				if (!ctxt.getListOfVolumes().isEmpty()) {
-            		for (Volume volume : ctxt.getListOfVolumes()) {
-            			try {
-            			iaas.attachVolume(instanceId, volume.getId(), volume.getDevice());
+					for (Volume volume : ctxt.getListOfVolumes()) {
+						try {
+							iaas.attachVolume(instanceId, volume.getId(),
+									volume.getDevice());
 						} catch (Exception e) {
-					//continue without throwing an exception, since there is an instance already running
-					log.error("Attaching Volume to Instance [ " + instanceId + " ] failed!", e);
-				}
-            		}
+							// continue without throwing an exception, since
+							// there is an instance already running
+							log.error("Attaching Volume to Instance [ "
+									+ instanceId + " ] failed!", e);
+						}
+					}
 				}
 			}
 
@@ -358,9 +363,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             return memberContext;
 
         } catch (Exception e) {
-            String msg = "Failed to start an instance. " + memberContext.toString();
+            String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
             log.error(msg, e);
-            throw new CloudControllerException(msg, e);
+            throw new IllegalStateException(msg, e);
         }
 
     }
@@ -368,17 +373,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private void createVolumeAndSetInClusterContext(Volume volume,
 			IaasProvider iaasProvider) {
 
+		// iaas cannot be null at this state #startInstance method
 		Iaas iaas = iaasProvider.getIaas();
 		
-		if(iaas == null) {
-			try {
-				iaas = CloudControllerUtil.getIaas(iaasProvider);
-			} catch (InvalidIaasProviderException e) {
-				String msg = "Iaas could not be loaded from : "+iaasProvider;
-				log.fatal(msg, e);
-				throw new CloudControllerException(msg, e);
-			}
-		}
 		int sizeGB = volume.getSize();
 		String volumeId = iaas.createVolume(sizeGB);
 		volume.setId(volumeId);
@@ -616,105 +613,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-//    private
-//        void
-//        terminateInstance(MemberContext ctxt) throws InvalidCartridgeTypeException,
-//            InvalidMemberException {
-//        // these will never be null, since we do not add null values for these.
-//        String memberId = ctxt.getMemberId();
-//        String clusterId = ctxt.getClusterId();
-//        String partitionId = ctxt.getPartitionId();
-//        String cartridgeType = ctxt.getCartridgeType();
-//        String nodeId = ctxt.getNodeId();
-//        
-//        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
-//        
-//        log.info("Starting to terminate an instance with member id : " + memberId+
-//                 " in partition id: "+partitionId+" of cluster id: "+clusterId+ " and of cartridge type: "+cartridgeType);
-//        
-//        if(cartridge == null) {
-//            String msg = "Termination of Member Id: "+memberId+" failed. " +
-//                    "Cannot find a matching Cartridge for type: "+cartridgeType;
-//            log.error(msg);
-//            throw new InvalidCartridgeTypeException(msg);
-//        }
-//        
-////        Scope scope = partition.getScope();
-////        String provider = partition.getProperty("provider");
-//
-//		// if no matching node id can be found.
-//        if (nodeId == null) {
-//
-//            String msg = "Termination failed. Cannot find a node id for Member Id: "+memberId;
-//            log.error(msg);
-//            throw new InvalidMemberException(msg);
-//        }
-////		ServiceContext serviceCtxt = dataHolder
-////				.getServiceContextFromDomain(clusterId);
-////
-////		if (serviceCtxt == null) {
-////			String msg = "Not a registered service: domain - " + clusterId;
-////			log.fatal(msg);
-////			throw new CloudControllerException(msg);
-////		}
-////
-////		// load Cartridge, if null
-////		//if (serviceCtxt.getCartridge() == null) {
-////			serviceCtxt.setCartridge(loadCartridge(
-////					serviceCtxt.getCartridgeType(),
-////					dataHolder.getCartridges()));
-////		//}
-////
-////		// if still, Cartridge is null
-////		if (serviceCtxt.getCartridge() == null) {
-////			String msg = "There's no registered Cartridge found. Domain - "
-////					+ clusterId;
-////			log.fatal(msg);
-////			throw new CloudControllerException(msg);
-////		}
-//
-////        for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
-//
-//		IaasProvider iaas = cartridge.getIaasProviderOfPartition(partitionId);
-//		
-////			String msg = "Failed to terminate an instance in "
-////					+ iaas.getType()
-////					+ ". Hence, will try to terminate an instance in another IaaS if possible.";
-////            //TODO adding more locations and retrieve it from the request received
-////                String nodeId = null;
-//
-////                IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
-//
-////                // terminate the last instance first
-////                for (String id : Lists.reverse(ctxt.getNodeIds())) {
-////                    if (id != null) {
-////                        nodeId = id;
-////                        break;
-////                    }
-////                }
-//
-//                
-//
-//                // terminate it!
-//                terminate(iaas, nodeId, ctxt);
-//
-//                // log information
-//                logTermination(nodeId, ctxt);
-//    }
-
-//    @Override
-//    public boolean terminateInstances(String[] memberIds) throws IllegalArgumentException, InvalidMemberException, InvalidCartridgeTypeException {
-//        for (String memberId : memberIds) {
-//            terminateInstance(memberId);
-//        }
-//    }
-
-//    @Override
-//    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated) {
-//        log.info("vvvvvvvvvvdddvvvvvvv");
-//        return false;  //TODO
-//    }
-
 	@Override
 	public void terminateAllInstances(String clusterId) throws IllegalArgumentException, InvalidClusterException {
 
@@ -739,70 +637,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		for (MemberContext memberContext : ctxts) {
             exec.execute(new InstanceTerminator(memberContext));
         }
-		
-
-//		ServiceContext serviceCtxt = dataHolder
-//				.getServiceContextFromDomain(clusterId);
-//
-//		if (serviceCtxt == null) {
-//			String msg = "Not a registered service: domain - " + clusterId;
-//			log.fatal(msg);
-//			throw new CloudControllerException(msg);
-//		}
-//
-//		// load Cartridge, if null
-//		serviceCtxt.setCartridge(loadCartridge(
-//					serviceCtxt.getCartridgeType(),
-//					dataHolder.getCartridges()));
-//		//}
-//
-//		if (serviceCtxt.getCartridge() == null) {
-//			String msg = "There's no registered Cartridge found. Domain - "
-//					+ clusterId;
-//			log.fatal(msg);
-//			throw new CloudControllerException(msg);
-//		}
-
-//        for (IaasProvider iaas : serviceCtxt.getCartridge().getIaases()) {
-//
-//			IaasContext ctxt = serviceCtxt.getIaasContext(iaas.getType());
-//
-//			if (ctxt == null) {
-//				log.error("Iaas Context for " + iaas.getType()
-//						+ " not found. Cannot terminate instances");
-//				continue;
-//			}
-//
-//			ArrayList<String> temp = new ArrayList<String>(ctxt.getNodeIds());
-//			for (String id : temp) {
-//				if (id != null) {
-//					// terminate it!
-//                    //TODO need to enable once partition added to the topology
-//                    /*Collection<Member> members = TopologyManager.getInstance().getTopology().
-//                            getService(serviceCtxt.getCartridgeType()).
-//                            getCluster(serviceCtxt.getClusterId()).getMembers();
-//                    for (Iterator iterator = members.iterator(); iterator.hasNext();) {
-//                         Member member = (Member) iterator.next();
-//                         terminate(iaas, ctxt, member.getIaasNodeId(), member.getPartition());
-//                    }*/
-//
-//					// log information
-//					logTermination(id, ctxt, serviceCtxt);
-//
-//					isAtLeastOneTerminated = true;
-//				}
-//			}
-//		}
-//
-//		if (isAtLeastOneTerminated) {
-//			return true;
-//		}
-//
-//		log.info("Termination of an instance which is belong to domain '"
-//				+ clusterId + "', failed! Reason: No matching "
-//				+ "running instance found in lastly used IaaS.");
-//
-//		return false;
 
 	}
 
@@ -842,9 +676,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             iaas.releaseAddress(ctxt.getAllocatedIpAddress());
 		}
 		
-		// publish data to BAM
-//		CartridgeInstanceDataPublisher.publish();
-
 		log.info("Member is terminated: "+ctxt.toString());
 		return iaasProvider;
 	}
@@ -874,7 +705,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private void logTermination(MemberContext memberContext) {
 
         //updating the topology
-        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getMemberId());
+        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), 
+        		memberContext.getClusterId(), memberContext.getNetworkPartitionId(), 
+        		memberContext.getPartition().getId(), memberContext.getMemberId());
 
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
@@ -1156,7 +989,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 } catch (InvalidIaasProviderException e) {
                     String msg =
                             "Invalid Partition - " + partition.toString() +
-                            ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider;
+                            ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
                     log.error(msg, e);
                     throw new InvalidPartitionException(msg, e);
                 }
@@ -1213,7 +1046,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Invalid Partition - " + partition.toString() +
-                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider;
+                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
                 log.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }

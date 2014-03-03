@@ -245,6 +245,7 @@ public final class CloudControllerConstants {
     public static final String SECURITY_GROUP_IDS = "securityGroupIds";
     public static final String SECURITY_GROUPS = "securityGroups";
     public static final String SUBNET_ID = "subnetId";
+    public static final String TAGS = "tags";
     public static final String AUTO_ASSIGN_IP = "autoAssignIp";
     public static final String INSTANCE_TYPE = "instanceType";
 

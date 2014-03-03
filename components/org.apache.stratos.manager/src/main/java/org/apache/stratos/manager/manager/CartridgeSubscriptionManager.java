@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
@@ -102,12 +103,12 @@ public class CartridgeSubscriptionManager {
 
             }
             */
-        } catch (UnregisteredCartridgeException e) {
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String message =
                              cartridgeType +
                                      " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
             log.error(message);
-            throw e;
+            throw new ADCException(message, e);
 
         } catch (Exception e) {
             String message = "Error getting info for " + cartridgeType;
@@ -252,7 +253,7 @@ public class CartridgeSubscriptionManager {
                     cartridgeSubscription.getCartridgeInfo().getType());
         }
         else {
-            String errorMsg = "No cartridge subscription found with alias " + alias + " for tenant " + tenantDomain;
+            String errorMsg = "No cartridge subscription found with [alias] " + alias + " for [tenant] " + tenantDomain;
             log.error(errorMsg);
             throw new NotSubscribedException(errorMsg, alias);
         }

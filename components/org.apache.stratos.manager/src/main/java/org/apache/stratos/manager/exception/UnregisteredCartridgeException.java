@@ -37,6 +37,12 @@ public class UnregisteredCartridgeException extends Exception {
 		this.message = message;
 		this.cartridgeType = cartridgeType;
 	}
+	
+	public UnregisteredCartridgeException(String message, Throwable cause) {
+		super(message, cause);
+		this.cartridgeType = null;
+		this.message = message;
+	}
 
 	public String getMessage() {
 		return message;
