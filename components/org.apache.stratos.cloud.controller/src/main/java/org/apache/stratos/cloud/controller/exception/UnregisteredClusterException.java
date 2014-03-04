@@ -21,13 +21,23 @@ package org.apache.stratos.cloud.controller.exception;
 public class UnregisteredClusterException extends Exception {
     
     private static final long serialVersionUID = -6326227079367867222L;
+	private String message;
 
     public UnregisteredClusterException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public UnregisteredClusterException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
     }
 
+    private void setMessage(String msg) {
+    	this.message = msg;
+	}
+
+	public String getMessage() {
+        return this.message;
+    }
 }

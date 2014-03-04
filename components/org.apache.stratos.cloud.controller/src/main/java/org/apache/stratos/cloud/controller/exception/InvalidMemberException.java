@@ -27,12 +27,23 @@ package org.apache.stratos.cloud.controller.exception;
 public class InvalidMemberException extends Exception {
 
     private static final long serialVersionUID = -7883324379272628566L;
-
+    private String message;
+    
     public InvalidMemberException(String msg) {
         super(msg);
+        this.setMessage(msg);
     }
     
     public InvalidMemberException(String msg, Exception ex) {
         super(msg, ex);
+        this.setMessage(msg);
     }
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

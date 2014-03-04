@@ -164,7 +164,15 @@ public class AWSEC2Iaas extends Iaas {
 
 		}
 
-        // security group ids
+        // ability to define tags
+        if (iaasInfo.getProperty(CloudControllerConstants.TAGS) != null) {
+            template.getOptions()
+                    .as(AWSEC2TemplateOptions.class)
+                    .tags(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
+                                        .split(CloudControllerConstants.ENTRY_SEPARATOR)));
+
+        }
+        
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(AWSEC2TemplateOptions.class)
