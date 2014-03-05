@@ -895,7 +895,7 @@ public class ServiceUtils {
         subscriptionData.setTenantAdminUsername(tenantUsername);
         subscriptionData.setRepositoryType("git");
         subscriptionData.setRepositoryURL(cartridgeInfoBean.getRepoURL());
-        subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoURL());
+        subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoUsername());
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
 
         Properties properties = new Properties();
