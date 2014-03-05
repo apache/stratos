@@ -18,6 +18,7 @@ package org.jclouds.vcloud.functions;
 
 import static com.google.common.collect.Iterables.transform;
 
+import java.util.Collection;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,6 +30,9 @@ import org.jclouds.vcloud.domain.Org;
 import org.jclouds.vcloud.domain.ReferenceType;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Adrian Cole
@@ -47,7 +51,20 @@ public class CatalogsInOrg implements Function<Org, Iterable<Catalog>> {
 
    @Override
    public Iterable<Catalog> apply(final Org org) {
-      return transform(org.getCatalogs().values(), new Function<ReferenceType, Catalog>() {
+	   
+		Collection<ReferenceType> filtered = Collections2.filter(
+				org.getCatalogs().values(), new Predicate<ReferenceType>() {
+			@Override
+			public boolean apply(ReferenceType type) {
+				if(type == null){
+					return false;
+				}
+				return !ImmutableSet.of("add", "remove").contains(type.getRelationship());
+			}
+		});
+	   
+	   
+	return transform(filtered, new Function<ReferenceType, Catalog>() {
          public Catalog apply(ReferenceType from) {
             return aclient.getCatalogApi().getCatalog(from.getHref());
          }

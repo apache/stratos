@@ -21,7 +21,7 @@ import java.io.Closeable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 
-import org.jclouds.http.filters.BasicAuthentication;
+import org.jclouds.vcloud.http.filters.VCloudBasicAuthentication;
 import org.jclouds.rest.annotations.Endpoint;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.rest.annotations.ResponseParser;
@@ -30,7 +30,7 @@ import org.jclouds.vcloud.domain.VCloudSession;
 import org.jclouds.vcloud.functions.ParseLoginResponseFromHeaders;
 
 @Endpoint(org.jclouds.vcloud.endpoints.VCloudLogin.class)
-@RequestFilters(BasicAuthentication.class)
+@RequestFilters(VCloudBasicAuthentication.class)
 public interface VCloudLoginApi extends Closeable {
 
    /**
@@ -39,6 +39,6 @@ public interface VCloudLoginApi extends Closeable {
     */
    @POST
    @ResponseParser(ParseLoginResponseFromHeaders.class)
-   @Consumes(VCloudMediaType.ORGLIST_XML)
+   @Consumes({VCloudMediaType.SESSION_XML,VCloudMediaType.ORGLIST_XML})
    VCloudSession login();
 }

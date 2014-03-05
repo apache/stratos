@@ -42,7 +42,7 @@ public class OrgListHandler extends ParseSax.HandlerWithResult<Map<String, Refer
    @Override
    public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
       Map<String, String> attributes = SaxUtils.cleanseAttributes(attrs);
-      if (qName.endsWith("Org")) {
+      if (qName.endsWith("Link") || qName.endsWith("Org")) {
          String type = attributes.get("type");
          if (type != null) {
             if (type.indexOf("org+xml") != -1) {

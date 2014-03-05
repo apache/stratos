@@ -24,6 +24,7 @@ import org.jclouds.http.HttpException;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpRequestFilter;
 import org.jclouds.vcloud.VCloudToken;
+import org.jclouds.rest.annotations.ApiVersion;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMultimap;
@@ -37,19 +38,26 @@ import com.google.common.collect.ImmutableMultimap;
 @Singleton
 public class AddVCloudAuthorizationAndCookieToRequest implements HttpRequestFilter {
    private Supplier<String> vcloudTokenProvider;
+   private final String apiVersion;
 
    @Inject
-   public AddVCloudAuthorizationAndCookieToRequest(@VCloudToken Supplier<String> authTokenProvider) {
+   public AddVCloudAuthorizationAndCookieToRequest(@VCloudToken Supplier<String> authTokenProvider, @ApiVersion final String apiVersion) {
       this.vcloudTokenProvider = authTokenProvider;
+      this.apiVersion = apiVersion;
    }
 
    @Override
    public HttpRequest filter(HttpRequest request) throws HttpException {
-      String token = vcloudTokenProvider.get();
-      return request
-               .toBuilder()
-               .replaceHeaders(
-                        ImmutableMultimap.of("x-vcloud-authorization", token, HttpHeaders.COOKIE, "vcloud-token="
-                                 + token)).build();
+        String token = vcloudTokenProvider.get();
+        String acceptType = request.getFirstHeaderOrNull(HttpHeaders.ACCEPT) == null
+                                                                                    ? "application/*+xml"
+                                                                                    : request.getFirstHeaderOrNull(HttpHeaders.ACCEPT);
+        String version = ";version=" + apiVersion;
+        String acceptHeader = acceptType + version;
+        return request.toBuilder()
+                      .replaceHeaders(ImmutableMultimap.of(HttpHeaders.ACCEPT,
+                                                           acceptHeader, "x-vcloud-authorization", token,
+                                                           HttpHeaders.COOKIE, "vcloud-token=" +
+                                                                               token)).build();
    }
 }

@@ -34,9 +34,10 @@ public class Utils {
    public static ReferenceType newReferenceType(Map<String, String> attributes, String defaultType) {
       String uri = attributes.get("href");
       String type = attributes.get("type");
+      String relationship = attributes.get("rel");
       // savvis org has null href
       URI href = (uri != null) ? URI.create(uri) : null;
-      return new ReferenceTypeImpl(attributes.get("name"), type != null ? type : defaultType, href);
+      return new ReferenceTypeImpl(attributes.get("name"), type != null ? type : defaultType, href, relationship);
    }
 
    public static ReferenceType newReferenceType(Map<String, String> attributes) {

@@ -208,5 +208,14 @@ public interface VCloudMediaType {
     * "application/vnd.vmware.vcloud.rasdItem+xml"
     */
    public static final MediaType RASDITEM_XML_TYPE = new MediaType("application", "vnd.vmware.vcloud.rasdItem+xml");
+   /**
+    * "application/vnd.vmware.vcloud.session+xml"
+    */
+   public static final String SESSION_XML = "application/vnd.vmware.vcloud.session+xml";
+
+   /**
+    * "application/vnd.vmware.vcloud.session+xml"
+    */
+   public static final MediaType SESSION_XML_TYPE = new MediaType("application", "vnd.vmware.vcloud.session+xml");
 
 }

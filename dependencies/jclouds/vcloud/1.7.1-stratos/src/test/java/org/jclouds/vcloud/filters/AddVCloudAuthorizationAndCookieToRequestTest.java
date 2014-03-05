@@ -40,14 +40,14 @@ public class AddVCloudAuthorizationAndCookieToRequestTest {
          public String get() {
             return "token";
          }
-      });
+           }, "1.0");
    }
 
    @Test
    public void testApply() {
       HttpRequest request = HttpRequest.builder().method("GET").endpoint("http://localhost").build();
       request = filter.filter(request);
-      assertEquals(request.getHeaders().size(), 2);
+      assertEquals(request.getHeaders().size(), 3);
       assertEquals(request.getFirstHeaderOrNull(HttpHeaders.COOKIE), "vcloud-token=token");
       assertEquals(request.getFirstHeaderOrNull("x-vcloud-authorization"), "token");
    }

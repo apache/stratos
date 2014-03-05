@@ -35,11 +35,20 @@ public class ReferenceTypeImpl implements ReferenceType {
    private final String name;
    private final String type;
    private final URI href;
+   private final String relationship;
 
    public ReferenceTypeImpl(String name, String type, URI href) {
       this.name = name;
       this.type = type;
       this.href = href;
+      this.relationship = null;
+   }
+   
+   public ReferenceTypeImpl(String name, String type, URI href, String relationship) {
+	   this.name = name;
+	   this.type = type;
+	   this.href = href;
+	   this.relationship = relationship;
    }
 
    @Override
@@ -83,6 +92,12 @@ public class ReferenceTypeImpl implements ReferenceType {
    }
 
    protected ToStringHelper string() {
-      return Objects.toStringHelper("").omitNullValues().add("href", href).add("name", name).add("type", type);
+      return Objects.toStringHelper("").omitNullValues().add("href", href).add("name", name).add("type", type).add("relationship", relationship);
    }
+
+   @Override
+   public String getRelationship() {
+	   return relationship;
+   }
+   
 }

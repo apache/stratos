@@ -24,8 +24,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.jclouds.rest.annotations.XMLResponseParser;
+import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.vcloud.xml.SupportedVersionsHandler;
+import org.jclouds.vcloud.http.filters.VCloudSupportedVersions;
 
+@RequestFilters(VCloudSupportedVersions.class)
 public interface VCloudVersionsApi extends Closeable {
 
    @GET

@@ -58,7 +58,7 @@ public class VCloudVersionsApiTest extends BaseAsyncClientTest<VCloudVersionsApi
 
    @Override
    protected void checkFilters(HttpRequest request) {
-      assertEquals(request.getFilters().size(), 0);
+      assertEquals(request.getFilters().size(), 1);
    }
 
    @Override

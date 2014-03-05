@@ -25,7 +25,6 @@ import java.net.URI;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.jclouds.http.HttpRequest;
-import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.location.Provider;
 import org.jclouds.providers.AnonymousProviderMetadata;
 import org.jclouds.providers.ProviderMetadata;
@@ -33,6 +32,7 @@ import org.jclouds.rest.internal.BaseAsyncClientTest;
 import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.jclouds.vcloud.endpoints.VCloudLogin;
 import org.jclouds.vcloud.functions.ParseLoginResponseFromHeaders;
+import org.jclouds.vcloud.http.filters.VCloudBasicAuthentication;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Supplier;
@@ -55,7 +55,7 @@ public class VCloudLoginApiTest extends BaseAsyncClientTest<VCloudLoginApi> {
       GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertEquals(request.getRequestLine(), "POST http://localhost:8080/login HTTP/1.1");
-      assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": application/vnd.vmware.vcloud.orgList+xml\n");
+      assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": application/vnd.vmware.vcloud.orgList+xml\n" + HttpHeaders.ACCEPT + ": application/vnd.vmware.vcloud.session+xml\n");
       assertPayloadEquals(request, null, null, false);
 
       assertResponseParserClassEquals(method, request, ParseLoginResponseFromHeaders.class);
@@ -68,7 +68,7 @@ public class VCloudLoginApiTest extends BaseAsyncClientTest<VCloudLoginApi> {
    @Override
    protected void checkFilters(HttpRequest request) {
       assertEquals(request.getFilters().size(), 1);
-      assertEquals(request.getFilters().get(0).getClass(), BasicAuthentication.class);
+      assertEquals(request.getFilters().get(0).getClass(), VCloudBasicAuthentication.class);
    }
 
    @Override

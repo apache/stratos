@@ -127,7 +127,7 @@ public class VCloudVirtualHardwareSectionHandlerTest extends BaseHandlerTest {
                                           null,
                                           "application/vnd.vmware.vcloud.rasdItem+xml",
                                           URI
-                                                   .create("https://vcenterprise.bluelock.com/api/v1.0/vApp/vm-2087535248/virtualHardwareSection/cpu")))
+                                                   .create("https://vcenterprise.bluelock.com/api/v1.0/vApp/vm-2087535248/virtualHardwareSection/cpu"),"edit"))
                         .build().toString());
 
       assertEquals(
@@ -147,7 +147,7 @@ public class VCloudVirtualHardwareSectionHandlerTest extends BaseHandlerTest {
                                           null,
                                           "application/vnd.vmware.vcloud.rasdItem+xml",
                                           URI
-                                                   .create("https://vcenterprise.bluelock.com/api/v1.0/vApp/vm-2087535248/virtualHardwareSection/memory")))
+                                                   .create("https://vcenterprise.bluelock.com/api/v1.0/vApp/vm-2087535248/virtualHardwareSection/memory"),"edit"))
                         .build().toString());
    }
 }

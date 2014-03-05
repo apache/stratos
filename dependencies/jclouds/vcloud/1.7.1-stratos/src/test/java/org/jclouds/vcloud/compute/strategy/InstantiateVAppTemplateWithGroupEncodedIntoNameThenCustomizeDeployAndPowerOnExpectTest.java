@@ -86,7 +86,7 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
      
       HttpRequest version1_0InstantiateWithNetworkNamedSameAsOrgNetwork = HttpRequest.builder().method("POST")
                                                                            .endpoint(ENDPOINT + "/v1.0/vdc/" + vdcId + "/action/instantiateVAppTemplate")
-                                                                           .addHeader(HttpHeaders.ACCEPT, "application/vnd.vmware.vcloud.vApp+xml")
+                                                                           .addHeader(HttpHeaders.ACCEPT, "application/vnd.vmware.vcloud.vApp+xml;version=1.0")
                                                                            .addHeader("x-vcloud-authorization", sessionToken)
                                                                            .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken)
                                                                            .payload(payloadFromStringWithContentType(instantiateXML, "application/vnd.vmware.vcloud.instantiateVAppTemplateParams+xml")).build();
@@ -143,7 +143,7 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
      
       HttpRequest version1_0InstantiateWithCustomizedNetwork = HttpRequest.builder().method("POST")
                                                                           .endpoint(ENDPOINT + "/v1.0/vdc/" + vdcId + "/action/instantiateVAppTemplate")
-                                                                          .addHeader(HttpHeaders.ACCEPT, "application/vnd.vmware.vcloud.vApp+xml")
+                                                                          .addHeader(HttpHeaders.ACCEPT, "application/vnd.vmware.vcloud.vApp+xml;version=1.0")
                                                                           .addHeader("x-vcloud-authorization", sessionToken)
                                                                           .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken)
                                                                           .payload(payloadFromStringWithContentType(instantiateXML, "application/vnd.vmware.vcloud.instantiateVAppTemplateParams+xml")).build();

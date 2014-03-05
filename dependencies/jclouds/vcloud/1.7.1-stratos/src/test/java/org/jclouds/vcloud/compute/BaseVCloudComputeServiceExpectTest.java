@@ -42,7 +42,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
    protected static final String ENDPOINT = "https://zone.myvcloud.com/api";
 
    protected HttpRequest versionsRequest = HttpRequest.builder().method("GET").endpoint(
-            URI.create(ENDPOINT + "/versions")).build();
+            URI.create(ENDPOINT + "/versions")).addHeader(HttpHeaders.ACCEPT, "*/*").build();
 
    protected HttpResponse versionsResponseFromVCD1_5 = HttpResponse.builder().statusCode(200)
             .message("HTTP/1.1 200 OK").payload(payloadFromResourceWithContentType("/versions-vcd15.xml", "text/xml"))
@@ -50,7 +50,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
 
    // initial auth is using basic
    protected HttpRequest version1_0LoginRequest = HttpRequest.builder().method("POST").endpoint(ENDPOINT + "/v1.0/login")
-            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.ORGLIST_XML)
+            .addHeader(HttpHeaders.ACCEPT, "application/vnd.vmware.vcloud.session+xml;version=1.0")
             .addHeader(HttpHeaders.AUTHORIZATION, "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
 
    protected String sessionToken = "AtatAgvJMrwOc9pDQq4RRCRLazThpnTKJDxSVH9oB2I=";
@@ -66,7 +66,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
    protected String orgId = "c076f90a-397a-49fa-89b8-b294c1599cd0";
    
    protected HttpRequest version1_0GetOrgRequest = HttpRequest.builder().method("GET").endpoint(ENDPOINT + "/v1.0/org/" + orgId)
-            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.ORG_XML)
+            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.ORG_XML+";version=1.0")
             .addHeader("x-vcloud-authorization", sessionToken)
             .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken).build();
    
@@ -78,7 +78,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
    protected String vdcId = "e9cd3387-ac57-4d27-a481-9bee75e0690f";
 
    protected HttpRequest version1_0GetCatalogRequest = HttpRequest.builder().method("GET").endpoint(ENDPOINT + "/v1.0/catalog/" + catalogId)
-            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.CATALOG_XML)
+            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.CATALOG_XML +";version=1.0")
             .addHeader("x-vcloud-authorization", sessionToken)
             .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken).build();
    
@@ -89,7 +89,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
    protected String catalogItemId = "ceb369f7-1d07-4e32-9dbd-ebb5aa6ca55c";
    
    protected HttpRequest version1_0GetCatalogItemRequest = HttpRequest.builder().method("GET").endpoint(ENDPOINT + "/v1.0/catalogItem/" + catalogItemId)
-            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.CATALOGITEM_XML)
+            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.CATALOGITEM_XML +";version=1.0")
             .addHeader("x-vcloud-authorization", sessionToken)
             .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken).build();
    
@@ -101,7 +101,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
    protected String templateId = "vappTemplate-51891b97-c5dd-47dc-a687-aabae354f728";
 
    protected HttpRequest version1_0GetVDCRequest = HttpRequest.builder().method("GET").endpoint(ENDPOINT + "/v1.0/vdc/" + vdcId)
-            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.VDC_XML)
+            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.VDC_XML +";version=1.0")
             .addHeader("x-vcloud-authorization", sessionToken)
             .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken).build();
             
@@ -112,7 +112,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
    protected String networkId = "b466c0c5-8a5c-4335-b703-a2e2e6b5f3e1";
    
    protected HttpRequest version1_0GetVAppTemplateRequest = HttpRequest.builder().method("GET").endpoint(ENDPOINT + "/v1.0/vAppTemplate/" + templateId)
-            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.VAPPTEMPLATE_XML)
+            .addHeader(HttpHeaders.ACCEPT, VCloudMediaType.VAPPTEMPLATE_XML +";version=1.0")
             .addHeader("x-vcloud-authorization", sessionToken)
             .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken).build();
    
@@ -125,7 +125,7 @@ public abstract class BaseVCloudComputeServiceExpectTest extends BaseRestClientE
             .build();   
 
    protected HttpRequest version1_0GetOVFForVAppTemplateRequest = HttpRequest.builder().method("GET").endpoint(ENDPOINT + "/v1.0/vAppTemplate/" + templateId + "/ovf")
-            .addHeader(HttpHeaders.ACCEPT, MediaType.TEXT_XML)
+            .addHeader(HttpHeaders.ACCEPT, MediaType.TEXT_XML +";version=1.0")
             .addHeader("x-vcloud-authorization", sessionToken)
             .addHeader(HttpHeaders.COOKIE, "vcloud-token=" + sessionToken).build();
    

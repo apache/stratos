@@ -47,5 +47,9 @@ public interface ReferenceType extends Comparable<ReferenceType> {
     * @see VCloudMediaType
     */
    String getType();
-
+   
+   /**
+    * @return relationship to the referenced object.
+    */
+   String getRelationship();
 }
