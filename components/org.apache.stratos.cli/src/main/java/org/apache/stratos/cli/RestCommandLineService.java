@@ -253,17 +253,16 @@ public class RestCommandLineService {
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
                 public String[] getData(Cartridge cartridge) {
-                    String[] data = new String[3];
+                    String[] data = new String[2];
                     data[0] = cartridge.getCartridgeType();
                     data[1] = cartridge.getDisplayName();
-                    data[2] = cartridge.getVersion();
                     return data;
                 }
             };
 
             if (multiTenetCartridge.size() == 0) {
             	String message = "Cannot find any deployed multi-tenant Cartridge. "
-            			+ "Please deploy a Cartridge using ["+CliConstants.CARTRIDGE_DEPLOYMENT+"] command.";
+            			+ "Please deploy a Cartridge using [" + CliConstants.CARTRIDGE_DEPLOYMENT + "] command.";
                 if (logger.isDebugEnabled()) {
                     logger.debug(message);
                 }
@@ -274,13 +273,13 @@ public class RestCommandLineService {
                 cartridges = multiTelentCartridgeList.getCartridge().toArray(cartridges);
 
                 System.out.println("Available Multi-Tenant Cartridges:");
-                CommandLineUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Version");
+                CommandLineUtils.printTable(cartridges, cartridgeMapper, "Type", "Name");
                 System.out.println();
             }
 
             if (singleTentCartridge.size() == 0) {
             	String message = "Cannot find any deployed single-tenant Cartridge. "
-            			+ "Please deploy a Cartridge using ["+CliConstants.CARTRIDGE_DEPLOYMENT+"] command.";
+            			+ "Please deploy a Cartridge using [" + CliConstants.CARTRIDGE_DEPLOYMENT + "] command.";
                 if (logger.isDebugEnabled()) {
                     logger.debug(message);
                 }
@@ -291,7 +290,7 @@ public class RestCommandLineService {
                 cartridges1 = singleTeneCartridgetList.getCartridge().toArray(cartridges1   );
 
                 System.out.println("Available Single-Tenant Cartridges:");
-                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name", "Version");
+                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name");
                 System.out.println();
             }
         } catch (Exception e) {
@@ -1035,7 +1034,7 @@ public class RestCommandLineService {
 
             if (tenants.length == 0) {
             	String message = "Cannot find any Tenant. "
-            			+ "Please create a new tenant using ["+CliConstants.ADD_TENANT+"] command.";
+            			+ "Please create a new tenant using [" + CliConstants.ADD_TENANT + "] command.";
                 if (logger.isDebugEnabled()) {
                     logger.debug(message);
                 }
@@ -1410,7 +1409,7 @@ public class RestCommandLineService {
 
             if (partitions.length == 0) {
             	String message = "Cannot find any deployed Partition. "
-            			+ "Please deploy a Partition using ["+CliConstants.PARTITION_DEPLOYMENT+"] command.";
+            			+ "Please deploy a Partition using [" + CliConstants.PARTITION_DEPLOYMENT + "] command.";
                 if (logger.isDebugEnabled()) {
                     logger.debug(message);
                 }
@@ -1476,7 +1475,7 @@ public class RestCommandLineService {
 
             if (policyArry.length == 0) {
             	String message = "Cannot find any deployed auto-scaling policy. "
-            			+ "Please deploy a policy using ["+CliConstants.AUTOSCALING_POLICY_DEPLOYMENT+"] command.";
+            			+ "Please deploy a policy using [" + CliConstants.AUTOSCALING_POLICY_DEPLOYMENT + "] command.";
                 if (logger.isDebugEnabled()) {
 					logger.debug(message);
                 }
@@ -1540,7 +1539,7 @@ public class RestCommandLineService {
 
             if (policyArry.length == 0) {
             	String message = "Cannot find any deployed deployment policy. "
-            			+ "Please deploy a policy using ["+CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT+"] command.";
+            			+ "Please deploy a policy using [" + CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT + "] command.";
                 if (logger.isDebugEnabled()) {
                     logger.debug(message);
                 }
