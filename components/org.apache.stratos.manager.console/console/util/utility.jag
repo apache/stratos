@@ -320,15 +320,12 @@ consoleAppUtil = new function(){
         var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
         var type = "json"; // response format
         var response;
-        log.info("8888888888888888888888");
-        log.info(data);
         switch (httpMethod){
             case  "GET":
                 response = get(endpoint,{},headers, 'json');
                 break;
             case   "POST":
                 response = post(endpoint,data,headers, 'json');
-                log.info(response);
                 break;
             case    "PUT":
                 response = put(endpoint,data,headers, 'json');
@@ -339,7 +336,6 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("999999999999999");
         if(response.data.stratosAdminResponse) {
             session.put("deploy-status", "succeeded");
         } else if (response.data.Error) {
