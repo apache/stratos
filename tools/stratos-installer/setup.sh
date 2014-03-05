@@ -653,7 +653,7 @@ su - $host_user -c "source $setup_dir/conf/setup.conf;$setup_dir/start-servers.s
 echo "Servers started. Please look at $LOG file for server startup details"
 if [[ $sm == "true" ]]; then
     echo "**************************************************************"
-    echo "Management Console : https://$stratos_domain:$sm_https_port/"
+    echo "Management Console : https://$stratos_domain:$sm_https_port/console"
     echo "**************************************************************"
 fi
 
