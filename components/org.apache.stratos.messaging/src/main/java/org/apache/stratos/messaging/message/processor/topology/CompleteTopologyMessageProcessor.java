@@ -31,6 +31,9 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilte
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CompleteTopologyMessageProcessor extends MessageProcessor {
 
     private static final Log log = LogFactory.getLog(CompleteTopologyMessageProcessor.class);
@@ -74,12 +77,16 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             // Apply cluster filter
             if (TopologyClusterFilter.getInstance().isActive()) {
                 for (Service service : topology.getServices()) {
+                    List<Cluster> clustersToRemove = new ArrayList<Cluster>();
                     for (Cluster cluster : service.getClusters()) {
                         if (TopologyClusterFilter.getInstance().clusterIdExcluded(cluster.getClusterId())) {
-                            service.removeCluster(cluster.getClusterId());
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));
-                            }
+                            clustersToRemove.add(cluster);
+                        }
+                    }
+                    for(Cluster cluster : clustersToRemove) {
+                        service.removeCluster(cluster);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));
                         }
                     }
                 }
@@ -89,12 +96,16 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             if (TopologyMemberFilter.getInstance().isActive()) {
                 for (Service service : topology.getServices()) {
                     for (Cluster cluster : service.getClusters()) {
+                        List<Member> membersToRemove = new ArrayList<Member>();
                         for(Member member : cluster.getMembers()) {
                             if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Member is excluded: [member] %s [lb-cluster-id] %s", member.getMemberId(), member.getLbClusterId()));
-                                }
-                                cluster.removeMember(member);
+                                membersToRemove.add(member);
+                            }
+                        }
+                        for(Member member : membersToRemove) {
+                            cluster.removeMember(member);
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format("Member is excluded: [member] %s [lb-cluster-id] %s", member.getMemberId(), member.getLbClusterId()));
                             }
                         }
                     }
