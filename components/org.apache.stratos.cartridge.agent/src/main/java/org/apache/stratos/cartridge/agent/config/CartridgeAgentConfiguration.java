@@ -106,7 +106,9 @@ public class CartridgeAgentConfiguration {
             }
             scanner.close();
         } catch (Exception e) {
-            throw new RuntimeException("Could not read launch parameter file", e);
+        	String message = "Could not read launch parameter file";
+        	log.error(message, e);
+			throw new RuntimeException(message, e);
         }
         return null;
     }
