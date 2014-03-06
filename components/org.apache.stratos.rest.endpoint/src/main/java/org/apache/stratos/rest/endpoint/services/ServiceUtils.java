@@ -367,6 +367,11 @@ public class ServiceUtils {
         if (autoscalerServiceClient != null) {
             try {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
+                if(autoscalePolicies == null || autoscalePolicies.length == 0) {
+                    String errorMsg = "Cannot find any auto-scaling policy.";
+                    log.error(errorMsg);
+                    throw new RestAPIException(errorMsg);
+                }
 
             } catch (RemoteException e) {
                 String errorMsg = "Error while getting available autoscaling policies. Cause : " + e.getMessage();
@@ -374,13 +379,6 @@ public class ServiceUtils {
                 throw new RestAPIException(errorMsg, e);
             }
         }
-        
-        if(autoscalePolicies.length == 0) {
-        	String errorMsg = "Cannot find any auto-scaling policy.";
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
-
         return PojoConverter.populateAutoscalePojos(autoscalePolicies);
     }
 
@@ -417,7 +415,11 @@ public class ServiceUtils {
         if (autoscalerServiceClient != null) {
             try {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
-
+                if(deploymentPolicies == null || deploymentPolicies.length == 0) {
+                    String errorMsg = "Cannot find any deployment policy.";
+                    log.error(errorMsg);
+                    throw new RestAPIException(errorMsg);
+                }
             } catch (RemoteException e) {
                 String errorMsg = "Error getting available deployment policies. Cause : " + e.getMessage();
                 log.error(errorMsg, e);
@@ -425,11 +427,7 @@ public class ServiceUtils {
             }
         }
         
-        if(deploymentPolicies.length == 0) {
-        	String errorMsg = "Cannot find any deployment policy.";
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
+
 
         return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
@@ -535,7 +533,7 @@ public class ServiceUtils {
 			}
 		}
 		
-		if(lbCartridges.isEmpty()) {
+		if(lbCartridges == null || lbCartridges.isEmpty()) {
 			String msg = "Load balancer Cartridges are not available.";
 	        log.error(msg);
 	        throw new RestAPIException(msg) ;
@@ -993,7 +991,7 @@ public class ServiceUtils {
         subscriptionData.setTenantAdminUsername(tenantUsername);
         subscriptionData.setRepositoryType("git");
         subscriptionData.setRepositoryURL(cartridgeInfoBean.getRepoURL());
-        subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoURL());
+        subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoUsername());
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
 
         if (cartridgeInfoBean.isPersistanceRequired()) {

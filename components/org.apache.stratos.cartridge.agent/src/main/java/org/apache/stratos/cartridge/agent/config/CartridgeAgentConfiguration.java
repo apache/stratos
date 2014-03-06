@@ -7,7 +7,9 @@ import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -28,10 +30,12 @@ public class CartridgeAgentConfiguration {
     private final String repoUrl;
     private final List<Integer> ports;
     private final List<String> logFilePaths;
+    private Map<String, String> parameters;
     private boolean isMultitenant;
     private String persistanceMappings;
 
     private CartridgeAgentConfiguration() {
+    	parameters = loadParametersFile();
         serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
         clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
         networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
@@ -81,35 +85,52 @@ public class CartridgeAgentConfiguration {
         }
         return instance;
     }
+    
+    private Map<String, String> loadParametersFile() {
+    	Map<String, String> parameters = new HashMap<String, String>();
+    	try {
 
-    private String readParameterValue(String parameterName) {
-        try {
-
-            if(System.getProperty(parameterName) != null){
-                return System.getProperty(parameterName);
-            }
             // read launch params
             File file = new File(System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH));
             if(!file.exists()) {
-                throw new RuntimeException(String.format("File not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
+                log.warn(String.format("File not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
+                return parameters;
             }
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] params = line.split(",");
                 for (String string : params) {
-                    String[] var = string.split("=");
-                    if(parameterName.equals(var[0])){
-                        return var[1];
-                    }
+					if (string != null) {
+						String[] var = string.split("=");
+						if (var.length > 2) {
+							parameters.put(var[0], var[1]);
+						}
+					}
                 }
             }
             scanner.close();
         } catch (Exception e) {
-            throw new RuntimeException("Could not read launch parameter file", e);
+        	String message = "Could not read launch parameter file, hence trying to read from System properties.";
+        	log.warn(message, e);
         }
-        return null;
+    	
+    	return parameters;
     }
+
+	private String readParameterValue(String parameterName) {
+
+		if (parameters.containsKey(parameterName)) {
+			return parameters.get(parameterName);
+		}
+
+		if (System.getProperty(parameterName) != null) {
+			return System.getProperty(parameterName);
+		}
+
+		String message = "Cannot find the value of required parameter: "+parameterName;
+		throw new RuntimeException(message);
+	}
 
     private List<Integer> readPorts() {
         List<Integer> ports = new ArrayList<Integer>();
