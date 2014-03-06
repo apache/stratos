@@ -80,6 +80,7 @@
     </scm>
 
     <modules>
+        <module>dependencies</module>
         <module>service-stubs</module>
         <module>components</module>
         <module>extensions</module>
@@ -433,5 +434,6 @@
         <carbon.platform.package.export.version>4.2.0</carbon.platform.package.export.version>
         <axis2.osgi.version>1.6.1.wso2v10</axis2.osgi.version>
         <jclouds.version>1.7.1</jclouds.version>
+        <jclouds.vcloud.version>1.7.1-stratos</jclouds.vcloud.version>
     </properties>
 </project>
