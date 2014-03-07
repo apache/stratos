@@ -19,6 +19,8 @@
 
 package org.apache.stratos.manager.subscription.factory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.lb.category.LBDataContext;
@@ -28,6 +30,8 @@ import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehavi
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 public class CartridgeSubscriptionFactory {
+
+    private static Log log = LogFactory.getLog(CartridgeSubscriptionFactory.class);
 
     /**
      * Returns the relevant CartridgeSubscription object for the given criteria
@@ -70,7 +74,7 @@ public class CartridgeSubscriptionFactory {
     public static CartridgeSubscription getLBCartridgeSubscriptionInstance (LBDataContext lbDataContext, LoadBalancerCategory loadBalancerCategory)
             throws ADCException {
 
-        if (!lbDataContext.getLbCartridgeInfo().getProvider().equals("loadbalancer") || !lbDataContext.getLbCartridgeInfo().getProvider().equals("lb")) {
+        if (!lbDataContext.getLbCartridgeInfo().getProvider().equals("loadbalancer") && !lbDataContext.getLbCartridgeInfo().getProvider().equals("lb")) {
             throw new ADCException("LB cartridge provider should be either lb or loadbalancer");
         }
 

@@ -244,6 +244,8 @@ public class CartridgeSubscriptionUtils {
             if (Constants.NO_LOAD_BALANCER.equals(name)) {
 
                 if ("true".equals(value)) {
+                    lbDataCtxt.setLbCategory(Constants.NO_LOAD_BALANCER);
+
                     if (log.isDebugEnabled()) {
                         log.debug("This cartridge does not require a load balancer. " + "[Type] " + serviceType);
                     }
@@ -252,6 +254,8 @@ public class CartridgeSubscriptionUtils {
                     break;
                 }
             } else if (Constants.EXISTING_LOAD_BALANCERS.equals(name)) {
+
+                lbDataCtxt.setLbCategory(Constants.EXISTING_LOAD_BALANCERS);
 
                 String clusterIdsVal = value;
                 if (log.isDebugEnabled()) {
@@ -276,6 +280,8 @@ public class CartridgeSubscriptionUtils {
             } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
 
                 if ("true".equals(value)) {
+
+                    lbDataCtxt.setLbCategory(Constants.DEFAULT_LOAD_BALANCER);
 
                     lbRefProperty.setValue(name);
 
@@ -346,6 +352,8 @@ public class CartridgeSubscriptionUtils {
             } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
 
                 if ("true".equals(value)) {
+
+                    lbDataCtxt.setLbCategory(Constants.SERVICE_AWARE_LOAD_BALANCER);
 
                     lbRefProperty.setValue(name);
 

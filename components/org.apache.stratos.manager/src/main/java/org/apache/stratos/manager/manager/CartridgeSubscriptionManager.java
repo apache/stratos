@@ -109,6 +109,7 @@ public class CartridgeSubscriptionManager {
             }
 
         } else {
+
             // LB ref found, get relevant LB Context data
             lbDataCtxt = CartridgeSubscriptionUtils.getLoadBalancerDataContext(subscriptionData.getTenantId(), subscriptionData.getCartridgeType(),
                     subscriptionData.getDeploymentPolicyName(), lbConfig);
@@ -154,7 +155,7 @@ public class CartridgeSubscriptionManager {
             DuplicateCartridgeAliasException, PolicyException, UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
             RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
 
-        if (lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
+        if (lbDataContext.getLbCategory() == null || lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
             // no load balancer subscription required
             log.info("No LB subscription required for the Subscription with alias: " + subscriptionData.getCartridgeAlias() + ", type: " +
                     subscriptionData.getCartridgeType());
@@ -182,7 +183,6 @@ public class CartridgeSubscriptionManager {
         if(lbDataContext.getLbCartridgeInfo().getMultiTenant()) {
             throw new ADCException("LB Cartridge must be single tenant");
         }
-
         // Set the load balanced service type
         loadBalancerCategory.setLoadBalancedServiceType(subscriptionData.getCartridgeType());
 
@@ -227,8 +227,7 @@ public class CartridgeSubscriptionManager {
         }
 
         // Create the CartridgeSubscription instance
-        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.
-                getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
+        CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
 
         // Generate and set the key
         String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
@@ -245,11 +244,6 @@ public class CartridgeSubscriptionManager {
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
                                                 subscriptionData.getDeploymentPolicyName(), repository);
-
-        // create subscription
-        cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
-                subscriptionData.getDeploymentPolicyName(), repository);
-
 
         log.info("Tenant [" + subscriptionData.getTenantId() + "] with username [" + subscriptionData.getTenantAdminUsername() +
                 " subscribed to " + "] Cartridge with Alias " + subscriptionData.getCartridgeAlias() + ", Cartridge Type: " +
