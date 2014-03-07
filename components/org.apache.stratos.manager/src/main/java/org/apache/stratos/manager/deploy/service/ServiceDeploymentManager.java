@@ -337,7 +337,7 @@ public class ServiceDeploymentManager {
 
     private void deployLBCluster (String loadBalancedService, LBDataContext lbDataCtxt, String tenantRange) throws ADCException, UnregisteredCartridgeException {
 
-        if (lbDataCtxt.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
+        if (lbDataCtxt.getLbCategory() == null || lbDataCtxt.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
             // no load balancer required
             return;
         }
