@@ -1,12 +1,14 @@
 <%
 var log = new Log("console.tenant_management");
 var caramel = require('caramel');
+var error = [];
 var utils = require('/util/utility.jag');
 var tenants =  utils.consoleAppUtil.getTenants();
-var config_status = require('/data/config_status.json');
-log.debug(tenants);
+if(tenants.Error != undefined){
+    error.push(tenants.Error);
+}
 caramel.render({
-    tenants:tenants.tenantInfoBean,
-    config_status:config_status
+    tenants:tenants,
+    error:error
 });
 %>

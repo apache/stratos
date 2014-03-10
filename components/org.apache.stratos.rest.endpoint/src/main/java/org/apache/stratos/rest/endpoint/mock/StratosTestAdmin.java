@@ -36,6 +36,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +52,18 @@ public class StratosTestAdmin {
     @Context
     HttpServletRequest httpServletRequest;
 
-    
+    @POST
+    @Path("/init")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public StratosAdminResponse initialize ()
+            throws RestAPIException {
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully logged in");
+        return stratosAdminResponse;
+    }
+
+
     @GET
     @Path("/cookie")
     @Produces("application/json")
@@ -69,7 +81,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableMultiTenantCartridges() throws ADCException {
+    public Cartridge[] getAvailableMultiTenantCartridges() throws RestAPIException {
           return MockContext.getInstance().getAvailableMultiTenantCartridges();
     }
 
@@ -78,7 +90,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableSingleTenantCartridges() throws ADCException {
+    public Cartridge[] getAvailableSingleTenantCartridges() throws RestAPIException {
          return MockContext.getInstance().getAvailableSingleTenantCartridges();
     }
 
@@ -87,7 +99,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableCartridges() throws ADCException {
+    public Cartridge[] getAvailableCartridges() throws RestAPIException {
          return MockContext.getInstance().getAvailableCartridges();
     }
 
@@ -96,7 +108,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getSubscribedCartridges() throws ADCException {
+    public Cartridge[] getSubscribedCartridges() throws RestAPIException {
          return MockContext.getInstance().getSubscribedCartridges();
     }
 
@@ -105,7 +117,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) {
+    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException{
           return MockContext.getInstance().subscribeToCartridge(cartridgeInfoBean);
     }
 
@@ -115,7 +127,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws ADCException {
+    public Cartridge getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         return MockContext.getInstance().getCartridgeInfo(subscriptionAlias);
     }
 
@@ -124,8 +136,8 @@ public class StratosTestAdmin {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public void unsubscribe(String alias){
-          MockContext.getInstance().unsubscribe(alias);
+    public StratosAdminResponse unsubscribe(String alias) throws RestAPIException{
+          return MockContext.getInstance().unsubscribe(alias);
     }
 
     @POST
@@ -134,9 +146,8 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public String addTenant(TenantInfoBean tenantInfoBean) throws Exception {
-         MockContext.getInstance().addTenant(tenantInfoBean);
-         return "tenant added successfully...";  // why this string return type ??
+    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+         return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
 
@@ -145,8 +156,8 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public void updateTenant(TenantInfoBean tenantInfoBean) throws Exception {
-        MockContext.getInstance().addTenant(tenantInfoBean);
+    public StratosAdminResponse updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+        return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
     @GET
@@ -155,7 +166,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean getTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+    public TenantInfoBean getTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         return MockContext.getInstance().getTenant(tenantDomain);
     }
 
@@ -165,8 +176,8 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public void deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
-         MockContext.getInstance().deleteTenant(tenantDomain);
+    public StratosAdminResponse deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+         return  MockContext.getInstance().deleteTenant(tenantDomain);
     }
 
 
@@ -175,7 +186,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrieveTenants() throws Exception {
+    public TenantInfoBean[] retrieveTenants() throws RestAPIException {
            return MockContext.getInstance().getTenants();
     }
 
@@ -185,7 +196,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws Exception {
+    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain")String domain) throws RestAPIException {
             return MockContext.getInstance().retrievePartialSearchTenants(domain);
     }
 
@@ -195,7 +206,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public void activateTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
+    public void activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
             MockContext.getInstance().activateTenant(tenantDomain);
     }
 
@@ -204,8 +215,8 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public void deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws Exception {
-        MockContext.getInstance().deactivateTenant(tenantDomain);
+    public StratosAdminResponse deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+        return  MockContext.getInstance().deactivateTenant(tenantDomain);
     }
 
    @POST
@@ -239,7 +250,6 @@ public class StratosTestAdmin {
     @SuperTenantService(true)
     public StratosAdminResponse deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
-        System.out.println("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
         return MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
     }
 
@@ -268,7 +278,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableLbCartridges() throws ADCException {
+    public Cartridge[] getAvailableLbCartridges() throws RestAPIException {
         return MockContext.getInstance().getAvailableLbCartridges();
     }
 
@@ -404,6 +414,45 @@ public class StratosTestAdmin {
 
     }
 
+    @GET
+    @Path("/cluster/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getClustersForTenant() throws RestAPIException {
+
+        return MockContext.getInstance().getClusters();
+    }
+
+    @GET
+    @Path("/cluster/{cartridgeType}/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+
+        return MockContext.getInstance().getClusters();
+    }
+
+    @GET
+    @Path("/cluster/{cartridgeType}/{subscriptionAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getCluster(@PathParam("cartridgeType") String cartridgeType,
+                              @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException, RestAPIException {
+
+        return MockContext.getInstance().getClusters();
+    }
+
+    @GET
+    @Path("/cluster/clusterId/{clusterId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Cluster[] getCluster(@PathParam("clusterId") String clusterId) throws RestAPIException {
+        return MockContext.getInstance().getClusters();
+    }
    /* @GET
     @Path("{cartridgeType}/policy/deployment")
     @Produces("application/json")

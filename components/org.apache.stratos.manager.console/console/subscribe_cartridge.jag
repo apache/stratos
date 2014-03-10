@@ -1,14 +1,24 @@
 <%
 var log = new Log("subscribe_cartridge");
+var error = [];
 var caramel = require('caramel');
 var utils = require('/util/utility.jag');
 var type = request.getParameter('cartridgeType');
 var autoScalePolicies = utils.consoleAppUtil.getAutoScalePolicies();
 var deploymentPolicies = utils.consoleAppUtil.getApplicableDeploymentPolicies(type);
 var cartridge = utils.consoleAppUtil.getSingleTenantCartridgeInfo(type);
+
+if(autoScalePolicies.Error != undefined ){
+    error.push(autoScalePolicies.Error);
+}if(deploymentPolicies.Error != undefined ){
+    error.push(deploymentPolicies.Error);
+}if(cartridge.Error != undefined ){
+    error.push(cartridge.Error);
+}
 caramel.render({
         cartridge:cartridge,
         autoScalePolicies:autoScalePolicies,
-        deploymentPolicies:deploymentPolicies
+        deploymentPolicies:deploymentPolicies,
+        error:error
 });
 %>

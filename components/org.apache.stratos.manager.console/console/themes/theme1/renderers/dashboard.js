@@ -3,38 +3,35 @@ var render = function (theme, data, meta, require) {
         theme('index', {
             body: [
                 {
-                    partial: 'cartridge_info',
+                    partial: 'dashboard',
                     context: {
-                        title:'Cartridges',
-                        cartridgeInfo:data.cartridgeInfo.cartridge,
-                        lbclusterinfo:data.lbCluster.cluster,
-                        clusterinfo:data.clusterInfo.cluster,
-                        host:data.cartridgeInfo.cartridge.hostName
+                        title: 'Dashboard',
+                        elbs: stringify(data.elbs),
+                        clusters: stringify(data.clusters)
                     }
                 }
             ],
             header: [
                 {
                     partial: 'header',
-                    context:{
-                        title:'Cartridges',
-                        my_cartridges:true,
-                        button:{
-                            link:'/',
-                            name:'Back To My Cartridges',
-                            class_name:"btn-default",
-                            class_icon: 'icon-arrow-left'
+                    context: {
+                        title: 'My Cartridges',
+                        dashboard: true,
+                        button: {
+                            link: '/cartridges.jag',
+                            name: 'Subscribe to Cartridge',
+                            class_name: 'btn-important'
                         },
-                        has_help:true,
-                        help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
+                        has_help: true,
+                        help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }
             ],
-            title:[
+            title: [
                 {
-                    partial:'title',
-                    context:{
-                        title:"My Cartridges"
+                    partial: 'title',
+                    context: {
+                        title: "My Cartridges"
                     }
                 }
             ]
