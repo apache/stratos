@@ -125,12 +125,12 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
             CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
 
         } catch (AxisFault e) {
-            String errorMsg = "Error in terminating cartridge subscription, cluster id: " + clusterId;
+            String errorMsg = "Error in terminating members of cluster " + clusterId;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
 
         } catch (Exception e) {
-            String errorMsg = "Error in terminating cartridge subscription, cluster id: " + clusterId;
+            String errorMsg = "Error in terminating members of cluster " + clusterId;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }
@@ -146,7 +146,7 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
             throw new ADCException(errorMsg, e);
         }
 
-        log.info("Unregistered service cluster, domain " + clusterId + ", sub domain ");
+        log.info("Unregistered service cluster, domain " + clusterId);
     }
 
 }

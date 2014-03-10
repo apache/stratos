@@ -27,6 +27,7 @@ import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
@@ -74,29 +75,9 @@ public abstract class Service extends CartridgeMgtBehaviour {
         setPayloadData(createPayload(cartridgeInfo, subscriptionKey, null, cluster, null, null, null));
     }
 
-    public void undeploy () throws ADCException {
+    public void undeploy () throws ADCException, NotSubscribedException {
 
-        try {
-            CloudControllerServiceClient.getServiceClient().terminateAllInstances(cluster.getClusterDomain());
-
-        } catch (Exception e) {
-            String errorMsg = "Error in undeploying Service with type " + type;
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("terminated instance with Service Type " + type);
-
-        try {
-            CloudControllerServiceClient.getServiceClient().unregisterService(cluster.getClusterDomain());
-
-        } catch (Exception e) {
-            String errorMsg = "Error in unregistering service cluster with domain " + cluster.getClusterDomain();
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Unregistered service with domain " + cluster.getClusterDomain());
+        remove(cluster.getClusterDomain(), null);
     }
 
     public String getType() {
