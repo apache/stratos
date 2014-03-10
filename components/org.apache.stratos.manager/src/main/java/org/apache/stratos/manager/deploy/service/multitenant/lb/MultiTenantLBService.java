@@ -26,15 +26,19 @@ import org.apache.stratos.cloud.controller.pojo.Properties;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.utils.ApplicationManagementUtil;
-import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
 
 public class MultiTenantLBService extends Service {
 
     private static Log log = LogFactory.getLog(MultiTenantLBService.class);
 
-    public MultiTenantLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo, String tenantRange) {
+    private LoadBalancerCategory loadBalancerCategory;
+
+    public MultiTenantLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
+                                CartridgeInfo cartridgeInfo, String tenantRange, LoadBalancerCategory loadBalancerCategory) {
+
         super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+        this.loadBalancerCategory = loadBalancerCategory;
     }
 
     @Override
@@ -43,8 +47,7 @@ public class MultiTenantLBService extends Service {
         super.deploy(properties);
 
         //register the service
-        ApplicationManagementUtil.registerService(getType(), getClusterId(), CartridgeConstants.DEFAULT_SUBDOMAIN,
-                getPayloadData().getCompletePayloadData(), getTenantRange(), getHostName(), getAutoscalingPolicyName(),
-                getDeploymentPolicyName(), properties);
+        loadBalancerCategory.register(getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(), getDeploymentPolicyName(),
+                properties);
     }
 }

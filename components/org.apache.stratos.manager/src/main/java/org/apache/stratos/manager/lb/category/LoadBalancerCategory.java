@@ -17,10 +17,19 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.subscription.tenancy;
+package org.apache.stratos.manager.lb.category;
 
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 
-public abstract class SubscriptionTenancyBehaviour extends CartridgeMgtBehaviour  {
+public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 
+    private String loadBalancedServiceType;
+
+    public String getLoadBalancedServiceType() {
+        return loadBalancedServiceType;
+    }
+
+    public void setLoadBalancedServiceType(String loadBalancedServiceType) {
+        this.loadBalancedServiceType = loadBalancedServiceType;
+    }
 }

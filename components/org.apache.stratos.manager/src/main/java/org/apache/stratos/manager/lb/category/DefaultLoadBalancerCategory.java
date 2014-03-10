@@ -17,10 +17,8 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.subscription.tenancy;
+package org.apache.stratos.manager.lb.category;
 
-import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
-
-public abstract class SubscriptionTenancyBehaviour extends CartridgeMgtBehaviour  {
+public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
 
 }

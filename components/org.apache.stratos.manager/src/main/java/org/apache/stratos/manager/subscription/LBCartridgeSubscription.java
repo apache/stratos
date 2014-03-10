@@ -19,44 +19,80 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.repository.Repository;
-import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
+import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
+import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.subscriber.Subscriber;
+import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
+import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 
 public class LBCartridgeSubscription extends CartridgeSubscription {
+
+    private LoadBalancerCategory loadBalancerCategory;
 
     /**
      * Constructor
      *
      * @param cartridgeInfo CartridgeInfo instance
      * @param subscriptionTenancyBehaviour SubscriptionTenancyBehaviour instance
+     * @param loadBalancerCategory LoadBalancerCategory instance
      */
     public LBCartridgeSubscription(CartridgeInfo cartridgeInfo, SubscriptionTenancyBehaviour
-            subscriptionTenancyBehaviour) {
+            subscriptionTenancyBehaviour, LoadBalancerCategory loadBalancerCategory) {
+
         super(cartridgeInfo, subscriptionTenancyBehaviour);
+        setLoadBalancerCategory(loadBalancerCategory);
+    }
+
+    public void createSubscription (Subscriber subscriber, String alias, String autoscalingPolicy,
+                                    String deploymentPolicyName, Repository repository)
+            throws ADCException, PolicyException, UnregisteredCartridgeException, InvalidCartridgeAliasException,
+            DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
+            RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
+
+        setSubscriber(subscriber);
+        setAlias(alias);
+        setAutoscalingPolicyName(autoscalingPolicy);
+        setDeploymentPolicyName(deploymentPolicyName);
+        setRepository(repository);
+
+        setPayloadData(getLoadBalancerCategory().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
+                getSubscriptionKey(), getCustomPayloadEntries()));
+    }
+
+    @Override
+    public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
+
+        getLoadBalancerCategory().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
+                getDeploymentPolicyName(), properties);
+
+        return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
+                getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
+                getRepository(), getCluster().getHostName(), getCluster().getClusterDomain(), getCluster().getClusterSubDomain(),
+                getCluster().getMgtClusterDomain(), getCluster().getMgtClusterSubDomain(), null, getSubscriptionStatus(), getSubscriptionKey());
+    }
+
+    @Override
+    public void removeSubscription() throws ADCException, NotSubscribedException {
+
+        getLoadBalancerCategory().remove(getCluster().getClusterDomain(), getAlias());;
     }
 
     public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
-                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
-                                        String tenantDomain) {
+                                        boolean privateRepo) {
 
         //no repository for data cartridge instances
         return null;
     }
 
-    @Override
-    public void removeSubscription() throws ADCException, NotSubscribedException {
-        //TODO
+    public LoadBalancerCategory getLoadBalancerCategory() {
+        return loadBalancerCategory;
     }
 
-    @Override
-    public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
-        //TODO
-        return null;
+    public void setLoadBalancerCategory(LoadBalancerCategory loadBalancerCategory) {
+        this.loadBalancerCategory = loadBalancerCategory;
     }
 }

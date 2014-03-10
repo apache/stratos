@@ -19,46 +19,28 @@
 
 package org.apache.stratos.manager.subscription.factory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.lb.category.LBDataContext;
+import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
 import org.apache.stratos.manager.subscription.*;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 public class CartridgeSubscriptionFactory {
+
+    private static Log log = LogFactory.getLog(CartridgeSubscriptionFactory.class);
 
     /**
      * Returns the relevant CartridgeSubscription object for the given criteria
      *
-     * @param cartridgeInfo CartridgeInfo subscription
+     * @param cartridgeInfo CartridgeInfo instance
+     * @param subscriptionTenancyBehaviour SubscriptionTenancyBehaviour instance
      * @return CartridgeSubscription subscription
      * @throws ADCException if no matching criteria is there to create a CartridgeSubscription object
      */
-    /*public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo)
-            throws ADCException {
-
-        CartridgeSubscription cartridgeSubscription = null;
-        if(cartridgeInfo.getMultiTenant()) {
-            cartridgeSubscription = new MultiTenantCartridgeSubscription(cartridgeInfo);
-
-        } else {
-            if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
-                cartridgeSubscription = new DataCartridgeSubscription(cartridgeInfo);
-            }
-            else {
-                cartridgeSubscription = new SingleTenantCartridgeSubscription(cartridgeInfo);
-            }
-        }
-
-
-
-        if(cartridgeSubscription == null) {
-            throw new ADCException("Unable to create a CartridgeSubscription subscription for "
-                    + cartridgeInfo);
-        }
-
-        return cartridgeSubscription;
-    }*/
 
     public static CartridgeSubscription getCartridgeSubscriptionInstance(CartridgeInfo cartridgeInfo,
                                                                          SubscriptionTenancyBehaviour subscriptionTenancyBehaviour)
@@ -87,5 +69,15 @@ public class CartridgeSubscriptionFactory {
         }
 
         return cartridgeSubscription;
+    }
+
+    public static CartridgeSubscription getLBCartridgeSubscriptionInstance (LBDataContext lbDataContext, LoadBalancerCategory loadBalancerCategory)
+            throws ADCException {
+
+        if (!lbDataContext.getLbCartridgeInfo().getProvider().equals("loadbalancer") && !lbDataContext.getLbCartridgeInfo().getProvider().equals("lb")) {
+            throw new ADCException("LB cartridge provider should be either lb or loadbalancer");
+        }
+
+        return new LBCartridgeSubscription(lbDataContext.getLbCartridgeInfo(), null, loadBalancerCategory);
     }
 }
