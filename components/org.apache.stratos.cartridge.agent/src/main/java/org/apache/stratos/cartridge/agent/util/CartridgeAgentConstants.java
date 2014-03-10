@@ -22,9 +22,12 @@ package org.apache.stratos.cartridge.agent.util;
 import java.io.Serializable;
 
 public class CartridgeAgentConstants implements Serializable{
-
+	
+	private static final long serialVersionUID = -7743412422597491362L;
+	
 	public static final String JNDI_PROPERTIES_DIR = "jndi.properties.dir";
 	public static final String PARAM_FILE_PATH = "param.file.path";
+	public static final String AGENT_FLOW_FILE_PATH = "agent.flow.file.path";
     public static final String EXTENSIONS_DIR = "extensions.dir";
 
     public static final String INSTANCE_STARTED_SH = "instance-started.sh";
@@ -50,4 +53,7 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String MULTITENANT = "MULTITENANT";
     public static final String ENABLE_ARTIFACT_UPDATE = "enable.artifact.update";
     public static final String ARTIFACT_UPDATE_INTERVAL = "artifact.update.interval";
+    
+    public static final String SCRIPT_SEPARATOR = ",";
+
 }

@@ -41,7 +41,6 @@ public class CartridgeAgentEventPublisher {
                 log.info("Instance started event published");
             }
 
-            ExtensionUtils.executeInstanceStartedExtension();
         } else {
             if (log.isWarnEnabled()) {
                 log.warn("Instance already started");
