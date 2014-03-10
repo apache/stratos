@@ -2,11 +2,16 @@ package org.apache.stratos.cartridge.agent.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cartridge.agent.executor.ExtensionExecutor;
+import org.apache.stratos.cartridge.agent.phase.Phase;
+import org.apache.stratos.cartridge.agent.runtime.DataHolder;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +37,6 @@ public class CartridgeAgentConfiguration {
     private final List<String> logFilePaths;
     private Map<String, String> parameters;
     private boolean isMultitenant;
-    private String persistanceMappings;
 
     private CartridgeAgentConfiguration() {
     	parameters = loadParametersFile();
@@ -47,6 +51,9 @@ public class CartridgeAgentConfiguration {
         ports = readPorts();
         logFilePaths = readLogFilePaths();
         isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
+        
+        // load agent's flow configuration and extract Phases and Extensions
+        loadFlowConfig();
 
         if(log.isInfoEnabled()) {
             log.info("Cartridge agent configuration initialized");
@@ -63,9 +70,110 @@ public class CartridgeAgentConfiguration {
             log.debug(String.format("repo-url: %s", repoUrl));
             log.debug(String.format("ports: %s", ports.toString()));
         }
+        
     }
 
-    private boolean readMultitenant(String multitenant) {
+	public static List<Phase> loadFlowConfig() {
+
+		File file = new File(
+				System.getProperty(CartridgeAgentConstants.AGENT_FLOW_FILE_PATH));
+
+		if (!file.exists()) {
+			String msg = "Cannot find the Agent's flow configuration file at: "
+					+ System.getProperty(CartridgeAgentConstants.AGENT_FLOW_FILE_PATH)
+					+ ". Please set the system property: "
+					+ CartridgeAgentConstants.AGENT_FLOW_FILE_PATH;
+			log.error(msg);
+			throw new RuntimeException(msg);
+
+		}
+
+		List<Phase> phases = new ArrayList<Phase>();
+
+		try {
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				if (line.isEmpty()) {
+					continue;
+				}
+				String[] var = line.split("=");
+				String key = var[0];
+				String val = null;
+				if (var.length > 1) {
+					val = var[1];
+				}
+
+				if (key.contains("[")) {
+					// this is a definition of a Phase
+					try {
+						// load the class
+						Constructor<?> c = Class.forName(val).getConstructor(
+								String.class);
+						String id = key.substring(1, key.length() - 1);
+						Phase phase = (Phase) c.newInstance(id);
+
+						phases.add(phase);
+
+					} catch (Exception e) {
+						String msg = "Failed to load the Phase : " + val;
+						log.error(msg, e);
+						throw new RuntimeException(msg, e);
+					}
+				} else {
+					// this is a definition of an Extension
+					try {
+						if (phases.size() > 0) {
+							ExtensionExecutor extension;
+
+							if (val == null) {
+
+								// load the class
+								Constructor<?> c = Class.forName(key)
+										.getConstructor();
+								extension = (ExtensionExecutor) c.newInstance();
+							} else {
+								// split
+								String[] values = val
+										.split(CartridgeAgentConstants.SCRIPT_SEPARATOR);
+								List<String> valuesList = Arrays.asList(values);
+
+								// load the class
+								Constructor<?> c = Class.forName(key)
+										.getConstructor(List.class);
+								extension = (ExtensionExecutor) c
+										.newInstance(valuesList);
+							}
+
+							// add the extracted extension to the
+							// latest phase
+							Phase latestPhase = phases.get(phases.size() - 1);
+							latestPhase.addExtension(extension);
+						}
+
+					} catch (Exception e) {
+						String msg = "Failed to load the Extension : " + key;
+						log.error(msg, e);
+						throw new RuntimeException(msg, e);
+					}
+				}
+			}
+			scanner.close();
+		} catch (Exception e) {
+			String msg = "Error while reading the Agent's flow configuration file at: "
+					+ System.getProperty(CartridgeAgentConstants.AGENT_FLOW_FILE_PATH)
+					+ ". Please provide a valid configuration file.";
+			log.error(msg, e);
+			throw new RuntimeException(msg, e);
+		}
+
+		// sets the phases
+		DataHolder.getInstance().setPhases(phases);
+
+		return phases;
+	}
+
+	private boolean readMultitenant(String multitenant) {
     	String multitenantStringValue = readParameterValue(multitenant);
     	return Boolean.parseBoolean(multitenantStringValue);
 	}
