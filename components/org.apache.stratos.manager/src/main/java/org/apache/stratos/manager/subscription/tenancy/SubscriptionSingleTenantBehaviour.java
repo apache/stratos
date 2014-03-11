@@ -21,10 +21,6 @@ package org.apache.stratos.manager.subscription.tenancy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.service.InstanceCleanupNotificationService;
 
 
 public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehaviour {
@@ -99,7 +95,7 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
                 properties);
     }*/
 
-    public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
+    /*public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
         //sending instance cleanup notification for the cluster, so that members in the cluster would aware of the termination
         // and perform the house keeping task.
 
@@ -117,5 +113,5 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
         }
 
         log.info("Unregistered service cluster, domain " + clusterId);
-    }
+    }*/
 }
