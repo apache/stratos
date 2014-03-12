@@ -19,11 +19,28 @@
 
 package org.apache.stratos.manager.lb.category;
 
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
+import org.apache.stratos.manager.dao.Cluster;
+import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.AlreadySubscribedException;
+import org.apache.stratos.manager.exception.PersistenceManagerException;
+import org.apache.stratos.manager.payload.PayloadData;
+import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
+import org.apache.stratos.manager.subscriber.Subscriber;
+import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 
 public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 
     private String loadBalancedServiceType;
+	private boolean isLoadBalancedServiceMultiTenant;
+	private static Log log = LogFactory.getLog(LoadBalancerCategory.class);
 
     public String getLoadBalancedServiceType() {
         return loadBalancedServiceType;
@@ -32,4 +49,73 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
     public void setLoadBalancedServiceType(String loadBalancedServiceType) {
         this.loadBalancedServiceType = loadBalancedServiceType;
     }
+    
+	public PayloadData create(String alias, Cluster cluster,
+			Subscriber subscriber, Repository repository,
+			CartridgeInfo cartridgeInfo, String subscriptionKey,
+			Map<String, String> customPayloadEntries) throws ADCException,
+			AlreadySubscribedException {
+
+		String clusterId;
+
+		if (isLoadBalancedServiceMultiTenant) {
+			// the load balancer should be already up and running from service
+			// cluster deployment
+
+			// get the cluster domain and host name from deployed Service
+
+			Service deployedLBService;
+			try {
+				deployedLBService = new DataInsertionAndRetrievalManager()
+						.getService(cartridgeInfo.getType());
+
+			} catch (PersistenceManagerException e) {
+				String errorMsg = "Error in checking if Service is available is PersistenceManager";
+				log.error(errorMsg, e);
+				throw new ADCException(errorMsg, e);
+			}
+
+			if (deployedLBService == null) {
+				String errorMsg = "There is no deployed Service for type "
+						+ cartridgeInfo.getType();
+				log.error(errorMsg);
+				throw new ADCException(errorMsg);
+			}
+
+			if(log.isDebugEnabled()){
+				log.debug(" Setting cluster Domain : " + deployedLBService.getClusterId());
+				log.debug(" Setting Host Name : " + deployedLBService.getHostName());
+			}
+			
+			// set the cluster and hostname
+			cluster.setClusterDomain(deployedLBService.getClusterId());
+			cluster.setHostName(deployedLBService.getHostName());
+
+		} else {
+			clusterId = alias + "." + cartridgeInfo.getType() + ".domain";
+
+			// limit the cartridge alias to 30 characters in length
+			if (clusterId.length() > 30) {
+				clusterId = CartridgeSubscriptionUtils.limitLengthOfString(
+						clusterId, 30);
+			}
+			cluster.setClusterDomain(clusterId);
+			// set hostname
+			cluster.setHostName(alias + "." + cluster.getHostName());
+		}
+
+		return createPayload(cartridgeInfo, subscriptionKey, subscriber,
+				cluster, repository, alias, customPayloadEntries);
+	}
+
+	public boolean isLoadBalancedServiceMultiTenant() {
+		return isLoadBalancedServiceMultiTenant;
+	}
+
+	public void setLoadBalancedServiceMultiTenant(
+			boolean isLoadBalancedServiceMultiTenant) {
+		this.isLoadBalancedServiceMultiTenant = isLoadBalancedServiceMultiTenant;
+	}
+	
+	
 }
