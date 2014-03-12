@@ -66,7 +66,7 @@ public class RestCommandLineService {
     // REST endpoints
     private final String initializeEndpoint = "/stratos/admin/init";
     private final String initializeCookieEndpoint = "/stratos/admin/cookie";
-    private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
+    private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/available/list";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
     private final String listSubscribedCartridgeInfoRestEndpoint = "/stratos/admin/cartridge/info/";
     private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
