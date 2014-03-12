@@ -50,11 +50,9 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
         this.loadBalancedServiceType = loadBalancedServiceType;
     }
     
-	public PayloadData create(String alias, Cluster cluster,
-			Subscriber subscriber, Repository repository,
-			CartridgeInfo cartridgeInfo, String subscriptionKey,
-			Map<String, String> customPayloadEntries) throws ADCException,
-			AlreadySubscribedException {
+	public PayloadData create(String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+                              String subscriptionKey, Map<String, String> customPayloadEntries)
+            throws ADCException, AlreadySubscribedException {
 
 		String clusterId;
 
