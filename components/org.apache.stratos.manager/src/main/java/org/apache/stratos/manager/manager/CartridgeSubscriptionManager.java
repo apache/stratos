@@ -115,7 +115,7 @@ public class CartridgeSubscriptionManager {
                     subscriptionData.getDeploymentPolicyName(), lbConfig);
 
             // subscribe to LB
-            lbCartridgeSubscription = subscribeToLB (subscriptionData, lbDataCtxt);
+            lbCartridgeSubscription = subscribeToLB (subscriptionData, lbDataCtxt, cartridgeInfo);
 
             lbCartridgeSubscriptionProperties =  new Properties();
             if (lbDataCtxt.getLbProperperties() != null && !lbDataCtxt.getLbProperperties().isEmpty()) {
@@ -149,12 +149,14 @@ public class CartridgeSubscriptionManager {
         return registerCartridgeSubscription(serviceCartridgeSubscription, serviceCartridgeSubscriptionProperties);
     }
 
-    private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext)
+    private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
+            CartridgeInfo serviceCartridgeInfo)
 
             throws ADCException, InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, PolicyException, UnregisteredCartridgeException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
             RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
 
+        
         if (lbDataContext.getLbCategory() == null || lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
             // no load balancer subscription required
             log.info("No LB subscription required for the Subscription with alias: " + subscriptionData.getCartridgeAlias() + ", type: " +
@@ -185,6 +187,9 @@ public class CartridgeSubscriptionManager {
         }
         // Set the load balanced service type
         loadBalancerCategory.setLoadBalancedServiceType(subscriptionData.getCartridgeType());
+        
+		// Set if the load balanced service is multi tenant or not
+        loadBalancerCategory.setLoadBalancedServiceMultiTenant(serviceCartridgeInfo.getMultiTenant());
 
         // Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getLBCartridgeSubscriptionInstance(lbDataContext, loadBalancerCategory);
@@ -323,8 +328,9 @@ public class CartridgeSubscriptionManager {
             cartridgeSubscription.removeSubscription();
 
             // Remove the information from Topology Model
-            TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
-                    cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
+            // Not needed now. TopologyModel is now changed so that information is taken from subscriptions
+            //TopologyClusterInformationModel.getInstance().removeCluster(cartridgeSubscription.getSubscriber().getTenantId(),
+            //        cartridgeSubscription.getType(), cartridgeSubscription.getAlias());
 
             // remove subscription
             try {

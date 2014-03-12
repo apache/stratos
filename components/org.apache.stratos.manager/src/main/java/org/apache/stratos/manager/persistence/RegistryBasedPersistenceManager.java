@@ -174,7 +174,10 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
                     log.debug("Traversing resource path " + subscriptionResourcePath);
                 }
 
-                cartridgeSubscriptions.addAll(traverseAndGetCartridgeSubscriptions(subscriptionResourcePath));
+                Collection<CartridgeSubscription> cartridgeSubscriptionSet = traverseAndGetCartridgeSubscriptions(subscriptionResourcePath);
+				if (cartridgeSubscriptionSet != null) {
+					cartridgeSubscriptions.addAll(cartridgeSubscriptionSet);
+				}
             }
 
         } else {
