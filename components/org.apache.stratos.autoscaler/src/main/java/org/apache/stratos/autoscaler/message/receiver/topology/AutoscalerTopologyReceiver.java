@@ -223,10 +223,8 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 AbstractMonitor monitor;
 
                 if(AutoscalerContext.getInstance().moniterExist(clusterId)){
-
                     monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
                 } else {
-
                     //This is LB member
                     monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
                 }
@@ -236,19 +234,20 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
                 String memberId = e.getMemberId();
 				partitionContext.removeMemberStatsContext(memberId);
-                
-                if(partitionContext.removePendingMember(memberId)) {
-                	if(log.isDebugEnabled()){
-                        log.debug(String.format("Member is removed from pending list: [member] %s", memberId));
-                    }
-                }
-                
-                if(!partitionContext.removeTerminationPendingMember(memberId)){
 
+                if(partitionContext.removeTerminationPendingMember(memberId)){
                     if(log.isDebugEnabled()){
-                        log.debug(String.format("Member is not available in termination pending list: [member] %s", memberId));
+                        log.debug(String.format("Member is removed from termination pending members list: [member] %s", memberId));
                     }
-                } 
+                } else if(partitionContext.removePendingMember(memberId)) {
+                    if(log.isDebugEnabled()){
+                        log.debug(String.format("Member is removed from pending members list: [member] %s", memberId));
+                    }
+                } else if(partitionContext.removeActiveMemberById(memberId)){
+                    log.warn(String.format("Member is in the wrong list and it is removed from active members list", memberId));
+                } else {
+                    log.warn(String.format("Member is not available in any of the list active, pending and termination pending", memberId));
+                }
                 
                 if(log.isInfoEnabled()){
                     log.info(String.format("Member stat context has been removed successfully: [member] %s", memberId));

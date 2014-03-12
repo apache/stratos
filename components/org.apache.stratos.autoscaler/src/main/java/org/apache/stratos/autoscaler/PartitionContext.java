@@ -170,8 +170,7 @@ public class PartitionContext implements Serializable{
     	if (id == null) {
             return false;
         }
-
-    	for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext();) {
+        for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext();) {
     		MemberContext pendingMember = (MemberContext) iterator.next();
     		if(id.equals(pendingMember.getMemberId())){
     			iterator.remove();
@@ -247,10 +246,10 @@ public class PartitionContext implements Serializable{
 
     public boolean removeTerminationPendingMember(String memberId) {
         boolean terminationPendingMemberAvailable = false;
-        for (MemberContext memberContext: activeMembers){
+        for (MemberContext memberContext: terminationPendingMembers){
             if(memberContext.getMemberId().equals(memberId)){
-                terminationPendingMemberAvailable =true;
-                activeMembers.remove(memberContext);
+                terminationPendingMemberAvailable = true;
+                terminationPendingMembers.remove(memberContext);
                 break;
             }
         }
@@ -357,23 +356,24 @@ public class PartitionContext implements Serializable{
     }
 
     public int getNonTerminatedMemberCount() {
-        return activeMembers.size() + pendingMembers.size();
+        return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
     }
 
-    public void removeActiveMemberById(String memberId) {
-
+    public boolean removeActiveMemberById(String memberId) {
+        boolean removeActiveMember = false;
         synchronized (activeMembers) {
             Iterator<MemberContext> iterator = activeMembers.listIterator();
             while (iterator.hasNext()) {
                 MemberContext memberContext = iterator.next();
-
                 if(memberId.equals(memberContext.getMemberId())){
-
                     iterator.remove();
+                    removeActiveMember = true;
+
                     break;
                 }
             }
         }
+        return removeActiveMember;
     }
 
     public boolean activeMemberExist(String memberId) {
