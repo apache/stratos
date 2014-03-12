@@ -32,13 +32,13 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
-public class ListCommand implements Command<StratosCommandContext> {
+public class ListSubscribedCartridgesCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListSubscribedCartridgesCommand.class);
 	
 	private final Options options;
 
-	public ListCommand() {
+	public ListSubscribedCartridgesCommand() {
 		options = constructOptions();
 	}
 	
