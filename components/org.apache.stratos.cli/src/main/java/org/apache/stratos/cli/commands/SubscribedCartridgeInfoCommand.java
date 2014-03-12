@@ -32,13 +32,13 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListCartridgeInfoCommand implements Command<StratosCommandContext>{
+public class SubscribedCartridgeInfoCommand implements Command<StratosCommandContext>{
 	
-	private static final Logger logger = LoggerFactory.getLogger(ListCartridgeInfoCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(SubscribedCartridgeInfoCommand.class);
 	
 	private final Options options;
 	
-	public ListCartridgeInfoCommand() {
+	public SubscribedCartridgeInfoCommand() {
 		options = constructOptions();
 	}
 	

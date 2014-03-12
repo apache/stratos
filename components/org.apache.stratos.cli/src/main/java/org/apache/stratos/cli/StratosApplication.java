@@ -96,7 +96,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		command = new UnsubscribeCommand();
 		commands.put(command.getName(), command);
 		
-		command = new CartridgesCommand();
+		command = new ListCartridgesCommand();
 		commands.put(command.getName(), command);
 
         command = new AddTenantCommand();
@@ -165,7 +165,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeAutoScalingPolicyCommand();
         commands.put(command.getName(), command);
         
-        command = new ListCartridgeInfoCommand();
+        command = new SubscribedCartridgeInfoCommand();
         commands.put(command.getName(), command);
 		
 		//command = new AddDomainMappingCommand();
