@@ -45,7 +45,7 @@ public class Cartridge implements Comparable<Cartridge> {
     private String dbHost;
     private String publicIp;
     private String lbClusterId;
-    private boolean isLoadBalancer;
+    private boolean loadBalancer;
 
     private String[] accessURLs;
     private PortMapping[] portMappings;
@@ -238,10 +238,10 @@ public class Cartridge implements Comparable<Cartridge> {
     }
 
     public boolean isLoadBalancer() {
-        return isLoadBalancer;
+        return loadBalancer;
     }
 
     public void setLoadBalancer(boolean isLoadBalancer) {
-        this.isLoadBalancer = isLoadBalancer;
+        this.loadBalancer = isLoadBalancer;
     }
 }
