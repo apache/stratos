@@ -27,7 +27,7 @@ import java.util.*;
 
 public class RepoUrlToCartridgeSubscriptions {
 
-    private static final Log log = LogFactory.getLog(ClusterIdToSubscription.class);
+    private static final Log log = LogFactory.getLog(RepoUrlToCartridgeSubscriptions.class);
 
     // Map: Repository URL -> Set<CartridgeSubscription>
     private Map<String, Set<CartridgeSubscription>> repoUrlToCartridgeSubscriptions;

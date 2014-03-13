@@ -301,7 +301,6 @@ public class StratosAdmin extends AbstractAdmin {
         return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
     }
 
-
     @GET
     @Path("/cartridge/list/subscribed")
     @Produces("application/json")
@@ -351,7 +350,6 @@ public class StratosAdmin extends AbstractAdmin {
                               @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         return ServiceUtils.getActiveInstances(cartridgeType, subscriptionAlias, getConfigContext());
     }
-
 
     @POST
     @Path("/cartridge/subscribe")
@@ -518,7 +516,6 @@ public class StratosAdmin extends AbstractAdmin {
         stratosAdminResponse.setMessage("Successfully added new tenant with domain " + tenantInfoBean.getTenantDomain());
         return stratosAdminResponse;
     }
-
 
     @PUT
     @Path("/tenant")
@@ -756,7 +753,6 @@ public class StratosAdmin extends AbstractAdmin {
         return stratosAdminResponse;
     }
 
-
     @GET
     @Path("/tenant/list")
     @Produces("application/json")
@@ -791,7 +787,6 @@ public class StratosAdmin extends AbstractAdmin {
         }
         return tenantList.toArray(new TenantInfoBean[tenantList.size()]);
     }
-
 
     @POST
     @Path("tenant/activate/{tenantDomain}")
@@ -896,7 +891,6 @@ public class StratosAdmin extends AbstractAdmin {
         return stratosAdminResponse;
     }
 
-
     @POST
     @Path("/service/definition")
     @Produces("application/json")
@@ -946,7 +940,6 @@ public class StratosAdmin extends AbstractAdmin {
         return ServiceUtils.getActiveDeployedServiceInformation(getConfigContext());
     }
 
-
     @DELETE
     @Path("/service/definition/{serviceType}")
     @Produces("application/json")
@@ -959,6 +952,15 @@ public class StratosAdmin extends AbstractAdmin {
         return ServiceUtils.undeployService(serviceType);
     }
 
+    @POST
+    @Path("/reponotification")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public void getRepoNotification(Payload payload) throws RestAPIException {
+
+        ServiceUtils.getGitRepositoryNotification(payload);
+    }
 
     private List<TenantInfoBean> getAllTenants() throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
@@ -997,16 +999,5 @@ public class StratosAdmin extends AbstractAdmin {
             tenantList.add(bean);
         }
         return tenantList;
-    }
-
-    // Repo notification
-    @POST
-    @Path("/reponotification")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public void getRepoNotification(Payload payload) throws RestAPIException {
-
-        ServiceUtils.getGitRepositoryNotification(payload);
     }
 }
