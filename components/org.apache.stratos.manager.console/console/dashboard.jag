@@ -1,0 +1,13 @@
+<%
+var log = new Log("console.index");
+var error = [];
+var caramel = require('caramel');
+var utils = require('/util/utility.jag');
+var elbs = require('/data/elbs.json');
+var clusters = require('/data/clusters.json');
+caramel.render({
+    elbs:elbs,
+    clusters:clusters,
+    error:error
+});
+%>

@@ -29,8 +29,12 @@
         <jaxrs:serviceBeans>
             <ref bean="stratosRestEndpointTestBean"/>
         </jaxrs:serviceBeans>
+
+        <jaxrs:providers>
+            <ref bean="exceptionHandler"/>
+        </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="stratosRestEndpointTestBean" class="org.apache.stratos.rest.endpoint.mock.StratosTestAdmin"/>
-
+    <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
 </beans>
