@@ -134,7 +134,7 @@ public class CartridgeSubscriptionManager {
         serviceCartridgeSubscriptionProperties = new Properties();
 
         // lb related properties
-        if (lbDataCtxt.getLoadBalancedServiceProperties() != null && !lbDataCtxt.getLoadBalancedServiceProperties().isEmpty()) {
+        if ((lbDataCtxt != null && lbDataCtxt.getLoadBalancedServiceProperties() != null) && !lbDataCtxt.getLoadBalancedServiceProperties().isEmpty()) {
             serviceCartridgeSubscriptionProperties.setProperties(lbDataCtxt.getLoadBalancedServiceProperties().toArray(new Property[0]));
         }
 
