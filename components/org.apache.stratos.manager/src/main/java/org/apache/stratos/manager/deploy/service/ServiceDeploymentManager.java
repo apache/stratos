@@ -29,10 +29,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregister
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
 import org.apache.stratos.manager.deploy.service.multitenant.lb.MultiTenantLBService;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.PersistenceManagerException;
-import org.apache.stratos.manager.exception.ServiceAlreadyDeployedException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
+import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
@@ -452,7 +449,14 @@ public class ServiceDeploymentManager {
         }
 
         // if service is found, undeploy
-        service.undeploy();
+        try {
+            service.undeploy();
+
+        } catch (NotSubscribedException e) {
+            String errorMsg = "Undeploying Service Cluster failed for " + type;
+            log.error(errorMsg, e);
+            throw new ADCException(errorMsg, e);
+        }
 
         try {
             dataInsertionAndRetrievalManager.removeService(type);

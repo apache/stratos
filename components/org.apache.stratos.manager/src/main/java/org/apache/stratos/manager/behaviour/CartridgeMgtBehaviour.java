@@ -34,6 +34,7 @@ import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.payload.PayloadFactory;
 import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.service.InstanceCleanupNotificationService;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
@@ -121,16 +122,16 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
 
     public void remove(String clusterId, String alias) throws ADCException, NotSubscribedException {
 
-        try {
+        /*try {
             CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
 
         } catch (AxisFault e) {
-            String errorMsg = "Error in terminating cartridge subscription, cluster id: " + clusterId;
+            String errorMsg = "Error in terminating members of cluster " + clusterId;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
 
         } catch (Exception e) {
-            String errorMsg = "Error in terminating cartridge subscription, cluster id: " + clusterId;
+            String errorMsg = "Error in terminating members of cluster " + clusterId;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }
@@ -146,7 +147,25 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
             throw new ADCException(errorMsg, e);
         }
 
-        log.info("Unregistered service cluster, domain " + clusterId + ", sub domain ");
+        log.info("Unregistered service cluster, domain " + clusterId);*/
+
+        //sending instance cleanup notification for the cluster, so that members in the cluster would aware of the termination
+        // and perform the house keeping task.
+
+        new InstanceCleanupNotificationService().sendInstanceCleanupNotificationForCluster(clusterId);
+
+        log.info("Instance Cleanup Notification sent to Cluster:  " + clusterId);
+
+        try {
+            CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);
+
+        } catch (Exception e) {
+            String errorMsg = "Error in unregistering service cluster with domain " + clusterId;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Unregistered service cluster, domain " + clusterId);
     }
 
 }

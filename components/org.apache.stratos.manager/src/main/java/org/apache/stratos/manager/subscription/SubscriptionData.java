@@ -38,7 +38,6 @@ public class SubscriptionData {
     private boolean isPrivateRepository;
     private String repositoryUsername;
     private String repositoryPassword;
-    private String lbClusterId;
     private Property[] properties;
     private PersistenceContext persistanceCtxt;
 
@@ -136,14 +135,6 @@ public class SubscriptionData {
 
     public void setRepositoryPassword(String repositoryPassword) {
         this.repositoryPassword = repositoryPassword;
-    }
-
-    public String getLbClusterId() {
-        return lbClusterId;
-    }
-
-    public void setLbClusterId(String lbClusterId) {
-        this.lbClusterId = lbClusterId;
     }
 
     public Property[] getProperties() {

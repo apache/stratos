@@ -31,6 +31,10 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+                <property name="dropRootElement" value="true"/>
+                <property name="supportUnwrapped" value="true"/>
+            </bean>>
             <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
             <ref bean="basicAuthenticationFilter"/>

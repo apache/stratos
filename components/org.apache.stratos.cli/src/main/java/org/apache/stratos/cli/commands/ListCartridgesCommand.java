@@ -27,11 +27,11 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
-public class CartridgesCommand implements Command<StratosCommandContext> {
+public class ListCartridgesCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(CartridgesCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListCartridgesCommand.class);
 
-	public CartridgesCommand() {
+	public ListCartridgesCommand() {
 	}
 
 	public String getName() {

@@ -1,0 +1,20 @@
+[
+    {
+        "id":"elb1"
+        ,"name":"Elb1"
+        ,"up_time":"25hrs"
+        ,"down_time":""
+        ,"cpu":"20"
+        ,"policy":"Round Robin"
+        ,"state":"down"
+    }
+    ,{
+        "id":"elb2"
+        ,"name":"Elb2"
+        ,"up_time":"25hrs"
+        ,"down_time":""
+        ,"cpu":"20"
+        ,"policy":"Round Robin"
+        ,"state":"up"
+    }
+]

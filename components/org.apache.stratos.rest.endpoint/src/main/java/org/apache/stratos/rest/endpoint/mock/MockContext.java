@@ -27,6 +27,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import java.util.*;
@@ -42,6 +43,7 @@ public class MockContext {
     private Map<String,AutoscalePolicy> autoscalePolicyMap = new HashMap<String, AutoscalePolicy>();
     private Map<String,DeploymentPolicy> deploymentPolicyMap = new HashMap<String, DeploymentPolicy>();
     private Map<String,ServiceDefinitionBean> serviceDefinitionMap = new HashMap<String, ServiceDefinitionBean>();
+    private Map<String,Cluster> clusterMap = new HashMap<String, Cluster>();
 
     private Set<Cartridge> temp = new HashSet<Cartridge>();
 
@@ -77,17 +79,17 @@ public class MockContext {
 
 
 
-    public Cartridge[] getAvailableMultiTenantCartridges(){
+    public Cartridge[] getAvailableMultiTenantCartridges() throws RestAPIException{
        return availableMultiTenantCartridges.values().toArray(new Cartridge[0]);
     }
 
 
-    public Cartridge[] getAvailableSingleTenantCartridges(){
+    public Cartridge[] getAvailableSingleTenantCartridges() throws RestAPIException{
         return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
     }
 
 
-    public Cartridge[] getAvailableLbCartridges(){
+    public Cartridge[] getAvailableLbCartridges() throws RestAPIException{
         /*Map<String,Cartridge> availableLbCartridges = new HashMap<String,Cartridge>();
         Iterator it = availableSingleTenantCartridges.entrySet().iterator();
         while(it.hasNext()){
@@ -112,7 +114,7 @@ public class MockContext {
         return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
     }
 
-    public Cartridge[] getAvailableCartridges(){
+    public Cartridge[] getAvailableCartridges() throws RestAPIException{
         /*Map<String, Cartridge> availableCartridges = new HashMap<String,Cartridge>();
         Iterator it = availableSingleTenantCartridges.entrySet().iterator();
         while(it.hasNext()){
@@ -135,16 +137,15 @@ public class MockContext {
         }
         System.out.println(availableCartridges.size());
         return availableCartridges.values().toArray(new Cartridge[0]);*/
-
         return availableSingleTenantCartridges.values().toArray(new Cartridge[0]);
     }
 
 
-    public Cartridge[] getSubscribedCartridges(){
+    public Cartridge[] getSubscribedCartridges() throws RestAPIException{
         return subscribedCartridges.values().toArray(new Cartridge[0]);
     }
 
-    public SubscriptionInfo subscribeToCartridge(CartridgeInfoBean cartridgeInfoBean){
+    public SubscriptionInfo subscribeToCartridge(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException{
          String cartridgeType = cartridgeInfoBean.getCartridgeType();
          String alias = cartridgeInfoBean.getAlias();
          Cartridge subscribedCartridge;
@@ -155,7 +156,8 @@ public class MockContext {
          }else if(availableMultiTenantCartridges.containsKey(cartridgeType)){
              subscribedCartridge = availableMultiTenantCartridges.get(cartridgeType);
          }else {
-             throw new RuntimeException("Wrong programme sequence"); // TODO; handle properly
+             String msg = "Wrong programme sequence";
+             throw new RestAPIException(msg);
          }
         //Proper way is copy construrctor
         Cartridge copy = new Cartridge();
@@ -178,31 +180,46 @@ public class MockContext {
         return subscriptionInfo;
     }
 
-    public StratosAdminResponse unsubscribe(String alias) {
+    public StratosAdminResponse unsubscribe(String alias) throws RestAPIException{
         if(subscribedCartridges.containsKey(alias)){
             subscribedCartridges.remove(alias);
+        }else{
+            throw new RestAPIException("Unable to un-subscribe");
         }
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully un-subscribed");
         return stratosAdminResponse;
     }
 
-    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean){
-        tenantMap.put(tenantInfoBean.getTenantDomain(),tenantInfoBean);
+    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException{
+        try{
+            tenantMap.put(tenantInfoBean.getTenantDomain(),tenantInfoBean);
+        }catch (Exception e){
+            throw new RestAPIException(e.getMessage());
+        }
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully added new Tenant");
         return stratosAdminResponse;
     }
 
-    public TenantInfoBean getTenant(String tenantDomain){
-          return tenantMap.get(tenantDomain);
+    public TenantInfoBean getTenant(String tenantDomain) throws RestAPIException{
+        if(!tenantMap.containsKey(tenantDomain)){
+            throw new RestAPIException("Information for tenant: " + tenantDomain + " is not available");
+        }
+        return tenantMap.get(tenantDomain);
     }
 
-    public Cartridge getCartridgeInfo(String alias){
-          return subscribedCartridges.get(alias);
+    public Cartridge getCartridgeInfo(String alias) throws RestAPIException{
+        if(!subscribedCartridges.containsKey(alias)){
+            throw new RestAPIException("Cartridge information is not available.");
+        }
+        return subscribedCartridges.get(alias);
     }
 
-    public Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType){
+    public Cartridge getAvailableSingleTenantCartridgeInfo(String cartridgeType) throws RestAPIException{
+        if(!availableSingleTenantCartridges.containsKey(cartridgeType)){
+            throw new RestAPIException("Cartridge is not available.");
+        }
         return availableSingleTenantCartridges.get(cartridgeType);
     }
 
@@ -213,11 +230,11 @@ public class MockContext {
         return stratosAdminResponse;
     }
 
-    public TenantInfoBean[] getTenants() {
+    public TenantInfoBean[] getTenants() throws RestAPIException{
         return tenantMap.values().toArray(new TenantInfoBean[0]);
     }
 
-    public TenantInfoBean[] retrievePartialSearchTenants(String searchDomain) {
+    public TenantInfoBean[] retrievePartialSearchTenants(String searchDomain) throws RestAPIException{
         List<TenantInfoBean> searchResult = new LinkedList<TenantInfoBean>();
         for(String tenantDomain : tenantMap.keySet()){
             if(tenantDomain.contains(searchDomain)){
@@ -283,36 +300,51 @@ public class MockContext {
         return stratosAdminResponse;
     }
 
-    public Partition[] getPartitions() {
+    public Partition[] getPartitions() throws RestAPIException{
         return partitionMap.values().toArray(new Partition[0]);
     }
 
-    public Partition getPartition(String partitionId) {
+    public Partition getPartition(String partitionId) throws RestAPIException{
+        if(!partitionMap.containsKey(partitionId)){
+            throw new RestAPIException("There is no partition with the id: " + partitionId);
+        }
         return  partitionMap.get(partitionId);
     }
 
 
-    public Partition[] getPartitionsOfPolicy(String deploymentPolicyId) {
+    public Partition[] getPartitionsOfPolicy(String deploymentPolicyId) throws RestAPIException{
+        if(!deploymentPolicyMap.containsKey(deploymentPolicyId)){
+            throw new RestAPIException("There is no deployment policy with id: " + deploymentPolicyId);
+        }
         return deploymentPolicyMap.get(deploymentPolicyId).partition.toArray(new Partition[0]);
     }
 
-    public PartitionGroup[] getPartitionGroups(String deploymentPolicyId) {
+    public PartitionGroup[] getPartitionGroups(String deploymentPolicyId)  throws RestAPIException{
+        if(!deploymentPolicyMap.containsKey(deploymentPolicyId)){
+            throw new RestAPIException("There is no policy with id: " + deploymentPolicyId);
+        }
         return deploymentPolicyMap.get(deploymentPolicyId).partitionGroup.toArray(new PartitionGroup[0]);
     }
 
-    public AutoscalePolicy[] getAutoscalePolicies() {
+    public AutoscalePolicy[] getAutoscalePolicies()  throws RestAPIException{
          return autoscalePolicyMap.values().toArray(new AutoscalePolicy[0]);
     }
 
-    public AutoscalePolicy getAutoscalePolicies(String autoscalePolicyId) {
+    public AutoscalePolicy getAutoscalePolicies(String autoscalePolicyId) throws  RestAPIException{
+        if(!autoscalePolicyMap.containsKey(autoscalePolicyId)){
+            throw new RestAPIException("There is no auto scale policy with id: " + autoscalePolicyId);
+        }
         return autoscalePolicyMap.get(autoscalePolicyId);
     }
 
-    public DeploymentPolicy[] getDeploymentPolicies() {
+    public DeploymentPolicy[] getDeploymentPolicies() throws RestAPIException{
         return deploymentPolicyMap.values().toArray(new DeploymentPolicy[0]);
     }
 
-    public DeploymentPolicy getDeploymentPolicies(String deploymentPolicyId) {
+    public DeploymentPolicy getDeploymentPolicies(String deploymentPolicyId) throws RestAPIException{
+        if(!deploymentPolicyMap.containsKey(deploymentPolicyId)){
+            throw new RestAPIException("There is no deployment policy with id: " + deploymentPolicyId);
+        }
         return deploymentPolicyMap.get(deploymentPolicyId);
     }
     public StratosAdminResponse deployService(ServiceDefinitionBean serviceDefinitionBean) {
@@ -322,20 +354,29 @@ public class MockContext {
         return stratosAdminResponse;
 
     }
-    public ServiceDefinitionBean[] getServices() {
+    public ServiceDefinitionBean[] getServices() throws RestAPIException{
         return serviceDefinitionMap.values().toArray(new ServiceDefinitionBean[0]);
     }
 
-    public Partition[] getPartitions(String deploymentPolicyId, String partitionGroupId) {
+    public Partition[] getPartitions(String deploymentPolicyId, String partitionGroupId) throws RestAPIException{
+        if(!deploymentPolicyMap.containsKey(deploymentPolicyId)){
+            throw new RestAPIException("There is no deployment policy with id: " + deploymentPolicyId);
+        }
+        Partition[] partitions = null;
          DeploymentPolicy deploymentPolicy = deploymentPolicyMap.get(deploymentPolicyId);
          for(PartitionGroup partitionGroup : deploymentPolicy.partitionGroup){
              if(partitionGroup.id.equals(partitionGroupId)){
-                return partitionGroup.partition.toArray(new Partition[0]);
+                 partitions =  partitionGroup.partition.toArray(new Partition[0]);
              }
          }
-         return new Partition[0];
+        if(partitions == null){
+            throw new RestAPIException("Partition not found");
+        }
+        return partitions;
     }
-
+    public Cluster[] getClusters() throws RestAPIException{
+        return clusterMap.values().toArray(new Cluster[0]);
+    }
     /*public DeploymentPolicy[] getValidDeploymentPolicies(String cartridgeType) {
         for(DeploymentPolicy deploymentPolicy : deploymentPolicyMap.values()){
             deploymentPolicy.
