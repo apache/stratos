@@ -56,7 +56,8 @@ public class DataInsertionAndRetrievalManager {
                 log.error(errorMsg, e);
                 // remove from the in memory model since persisting failed
                 LookupDataHolder.getInstance().removeSubscription(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getType(),
-                        cartridgeSubscription.getAlias(), cartridgeSubscription.getClusterDomain());
+                        cartridgeSubscription.getAlias(), cartridgeSubscription.getClusterDomain(),
+                        cartridgeSubscription.getRepository() != null ? cartridgeSubscription.getRepository().getUrl() : null);
 
                 throw e;
             }
@@ -95,7 +96,8 @@ public class DataInsertionAndRetrievalManager {
             }
 
             // remove from cache
-            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId);
+            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId,
+                    cartridgeSubscription.getRepository() != null ? cartridgeSubscription.getRepository().getUrl() : null);
 
         } finally {
             LookupDataHolder.getInstance().releaseWriteLock();
@@ -195,7 +197,8 @@ public class DataInsertionAndRetrievalManager {
 
         try {
             // remove from cache
-            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId);
+            LookupDataHolder.getInstance().removeSubscription(tenantId, cartridgeType, subscriptionAlias, clusterId,
+                    cartridgeSubscription.getRepository() != null ? cartridgeSubscription.getRepository().getUrl() : null);
 
         } finally {
             LookupDataHolder.getInstance().releaseWriteLock();
@@ -268,6 +271,20 @@ public class DataInsertionAndRetrievalManager {
 
         try {
             return LookupDataHolder.getInstance().getSubscription(clusterId);
+
+        } finally {
+            // release read lock
+            LookupDataHolder.getInstance().releaseReadLock();
+        }
+    }
+
+    public Set<CartridgeSubscription> getCartridgeSubscriptionForRepository (String repoUrl) {
+
+        // acquire read lock
+        LookupDataHolder.getInstance().acquireReadLock();
+
+        try {
+            return LookupDataHolder.getInstance().getSubscriptionsForRepoUrl(repoUrl);
 
         } finally {
             // release read lock
