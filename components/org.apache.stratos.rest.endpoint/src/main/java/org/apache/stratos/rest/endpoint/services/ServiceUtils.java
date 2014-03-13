@@ -505,13 +505,7 @@ public class ServiceUtils {
     }
 
     static Cartridge getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
-        List<Cartridge> cartridges;
-
-        if(multiTenant != null) {
-            cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
-        } else {
-            cartridges = getAvailableCartridges(null, null, configurationContext);
-        }
+        List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);
         for(Cartridge cartridge : cartridges) {
             if(cartridge.getCartridgeType().equals(cartridgeType)) {
                 return cartridge;
