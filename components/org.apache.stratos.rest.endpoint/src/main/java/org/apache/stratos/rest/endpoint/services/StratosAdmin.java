@@ -38,6 +38,8 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.core.TenantPersistor;
@@ -995,5 +997,16 @@ public class StratosAdmin extends AbstractAdmin {
             tenantList.add(bean);
         }
         return tenantList;
+    }
+
+    // Repo notification
+    @POST
+    @Path("/reponotification")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public void getRepoNotification(Payload payload) throws RestAPIException {
+
+        ServiceUtils.getGitRepositoryNotification(payload);
     }
 }

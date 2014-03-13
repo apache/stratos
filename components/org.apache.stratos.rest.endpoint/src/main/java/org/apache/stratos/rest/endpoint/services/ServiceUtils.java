@@ -40,6 +40,7 @@ import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
+import org.apache.stratos.manager.reponotification.RepoNotificationServiceClient;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
 import org.apache.stratos.manager.subscription.PersistenceContext;
@@ -59,6 +60,8 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
@@ -1158,5 +1161,30 @@ public class ServiceUtils {
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully undeployed service cluster definition for service type " + serviceType);
         return stratosAdminResponse;
+    }
+
+    static void getGitRepositoryNotification(Payload payload) throws RestAPIException {
+        try {
+
+            RepoNotificationServiceClient repoNotificationServiceClient = getRepoNotificationServiceClient();
+            repoNotificationServiceClient.getPayload(payload.getRepository().getUrl());
+
+        } catch (Exception e) {
+            String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+    }
+
+    private static RepoNotificationServiceClient getRepoNotificationServiceClient () throws RestAPIException {
+
+        try {
+            return RepoNotificationServiceClient.getServiceClient();
+
+        } catch (AxisFault axisFault) {
+            String errorMsg = "Error while getting Reponotification service client. Cause : " + axisFault.getMessage();
+            log.error(errorMsg, axisFault);
+            throw new RestAPIException(errorMsg, axisFault);
+        }
     }
 }
