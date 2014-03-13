@@ -66,7 +66,7 @@ public class RestCommandLineService {
     // REST endpoints
     private final String initializeEndpoint = "/stratos/admin/init";
     private final String initializeCookieEndpoint = "/stratos/admin/cookie";
-    private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/list";
+    private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/available/list";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
     private final String listSubscribedCartridgeInfoRestEndpoint = "/stratos/admin/cartridge/info/";
     private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
@@ -253,9 +253,13 @@ public class RestCommandLineService {
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
                 public String[] getData(Cartridge cartridge) {
-                    String[] data = new String[2];
+                    String[] data = new String[5];
                     data[0] = cartridge.getCartridgeType();
                     data[1] = cartridge.getDisplayName();
+                    data[2] = cartridge.getDescription();
+                    data[3] = cartridge.getVersion();
+                    data[4] = String.valueOf(cartridge.isMultiTenant());
+
                     return data;
                 }
             };
@@ -273,7 +277,7 @@ public class RestCommandLineService {
                 cartridges = multiTelentCartridgeList.getCartridge().toArray(cartridges);
 
                 System.out.println("Available Multi-Tenant Cartridges:");
-                CommandLineUtils.printTable(cartridges, cartridgeMapper, "Type", "Name");
+                CommandLineUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Description", "Version", "Multitenanted");
                 System.out.println();
             }
 
@@ -290,7 +294,7 @@ public class RestCommandLineService {
                 cartridges1 = singleTeneCartridgetList.getCartridge().toArray(cartridges1   );
 
                 System.out.println("Available Single-Tenant Cartridges:");
-                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name");
+                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name", "Description", "Version", "Multitenanted");
                 System.out.println();
             }
         } catch (Exception e) {

@@ -786,6 +786,10 @@ public class ServiceUtils {
 					}
                     cartridge.setActiveInstances(activeMemberCount);
 					cartridge.setStatus(cartridgeStatus);
+
+                    // Ignoring the LB cartridges since they are not shown to the user.
+                    if(cartridge.isLoadBalancer())
+                        continue;
                     cartridges.add(cartridge);
                 }
             } else {
@@ -861,8 +865,7 @@ public class ServiceUtils {
 		return noOfActiveInstances;
     }
     
-	private static Cartridge getCartridgeFromSubscription(
-			CartridgeSubscription subscription) throws RestAPIException {
+	private static Cartridge getCartridgeFromSubscription(CartridgeSubscription subscription) throws RestAPIException {
 
 		if (subscription == null) {
 			return null;
@@ -904,6 +907,14 @@ public class ServiceUtils {
 			cartridge.setStatus(subscription.getSubscriptionStatus());
 			cartridge.setPortMappings(subscription.getCartridgeInfo()
 					.getPortMappings());
+
+            if(subscription.getCartridgeInfo().getLbConfig() != null && subscription.getCartridgeInfo().getProperties() != null) {
+                for(Property property: subscription.getCartridgeInfo().getProperties()) {
+                    if(property.getName().equals("load.balancer")) {
+                        cartridge.setLoadBalancer(true);
+                    }
+                }
+            }
 			
 			return cartridge;
 			

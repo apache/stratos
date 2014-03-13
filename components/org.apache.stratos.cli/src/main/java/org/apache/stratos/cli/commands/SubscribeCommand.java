@@ -35,7 +35,7 @@ import org.apache.stratos.cli.utils.CliConstants;
 
 public class SubscribeCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListSubscribedCartridgesCommand.class);
 
 	private final Options options;
 
