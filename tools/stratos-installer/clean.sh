@@ -49,23 +49,24 @@ do
         ;;
     *)
         help
-        exit 1
+        #exit 1
         ;;
   esac
 done
 
 function helpclean {
     echo ""
+    echo "Enter DB credentials if you need to clear Stratos DB"
     echo "usage:"
     echo "clean.sh -u <mysql username> -p <mysql password>"
     echo ""
 }
 
 function clean_validate {
-    if [[ ( -z $mysql_user || -z $mysql_pass ) ]]; then
-        helpclean
-        exit 1
-    fi
+#    if [[ ( -z $mysql_user || -z $mysql_pass ) ]]; then
+ #       helpclean
+  #      exit 1
+   # fi
     if [ -z $stratos_path ]; then
         echo "stratos_path is not set"
         exit 1
@@ -77,22 +78,26 @@ function clean_validate {
 }
 
 clean_validate
-
-read -p "Please confirm that you want to remove stratos databases, servers and logs [y/n] " answer
-if [[ $answer != y ]] ; then
-    exit 1
+if [[ ( -n $mysql_user && -n $mysql_pass ) ]]; then
+	read -p "Please confirm that you want to remove stratos databases, servers and logs [y/n] " answer
+	if [[ $answer != y ]] ; then
+    		exit 1
+	fi
 fi
-
 echo 'Stopping all java processes'
 killall java
 echo 'Waiting for applications to exit'
 sleep 15
 
-echo 'Removing stratos_foundation database'
-mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS stratos_foundation;"
+if [[ ( -n $mysql_user && -n $mysql_pass ) ]]; then
 
-echo 'Removing userstore database'
-mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS userstore;"
+	echo 'Removing stratos_foundation database'
+	mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS stratos_foundation;"
+
+	echo 'Removing userstore database'
+	mysql -u $mysql_user -p$mysql_pass -e "DROP DATABASE IF EXISTS userstore;"
+
+fi
 
 if [[ -d $stratos_path/scripts ]]; then
    echo 'Removing scripts'
@@ -126,4 +131,3 @@ fi
 
 echo 'Removing logs'
 rm -rf $log_path/*
-
