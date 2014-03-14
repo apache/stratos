@@ -742,7 +742,6 @@ public class RestCommandLineService {
         Gson gson = gsonBuilder.create();
 
         String jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
-        String completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
 
         SubscriptionInfo subcriptionConnectInfo = null;
         if (StringUtils.isNotBlank(dataCartridgeType) && StringUtils.isNotBlank(dataCartridgeAlias)) {
@@ -750,7 +749,7 @@ public class RestCommandLineService {
                     dataCartridgeAlias);
             try {
                 HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + subscribCartridgeRestEndpoint,
-                        completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
+                        jsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
                 String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -803,10 +802,9 @@ public class RestCommandLineService {
             cartridgeInfoBean.setPersistanceRequired(persistanceMapping);
 
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
-            completeJsonSubscribeString = "{\"cartridgeInfoBean\":" + jsonSubscribeString + "}";
 
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + subscribCartridgeRestEndpoint,
-                    completeJsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
+                    jsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -878,10 +876,9 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
-            String completeJsonString = "{\"tenantInfoBean\":" + jsonString + "}";
 
             HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + addTenantEndPoint,
-                    completeJsonString, restClientService.getUsername(), restClientService.getPassword());
+                    jsonString, restClientService.getUsername(), restClientService.getPassword());
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
