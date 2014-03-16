@@ -23,19 +23,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.payload.BasicPayloadData;
 import org.apache.stratos.manager.payload.PayloadData;
-import org.apache.stratos.manager.payload.PayloadFactory;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
-import org.apache.stratos.manager.utils.CartridgeConstants;
 
-import java.io.Serializable;
-
-public abstract class Service implements Serializable {
+public abstract class Service extends CartridgeMgtBehaviour {
 
     private static Log log = LogFactory.getLog(Service.class);
 
@@ -43,12 +40,11 @@ public abstract class Service implements Serializable {
     private String autoscalingPolicyName;
     private String deploymentPolicyName;
     private String tenantRange;
-    private String clusterId;
-    private String hostName;
     private int tenantId;
     private String subscriptionKey;
     private CartridgeInfo cartridgeInfo;
     private PayloadData payloadData;
+    private Cluster cluster;
 
     public Service (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
     		String tenantRange) {
@@ -60,6 +56,7 @@ public abstract class Service implements Serializable {
         this.cartridgeInfo = cartridgeInfo;
         this.tenantRange = tenantRange;
         this.subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+        this.setCluster(new Cluster());
     }
 
     public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {
@@ -74,55 +71,13 @@ public abstract class Service implements Serializable {
         //host name is the hostname defined in cartridge definition
         setHostName(cartridgeInfo.getHostName());
 
-        //Create payload
-        BasicPayloadData basicPayloadData = CartridgeSubscriptionUtils.createBasicPayload(this);
-        //populate
-        basicPayloadData.populatePayload();
-        PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
-                cartridgeInfo.getType(), basicPayloadData);
-
-        // get the payload parameters defined in the cartridge definition file for this cartridge type
-        if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
-
-            for (Property property : cartridgeInfo.getProperties()) {
-                // check if a property is related to the payload. Currently this is done by checking if the
-                // property name starts with 'payload_parameter.' suffix. If so the payload param name will
-                // be taken as the substring from the index of '.' to the end of the property name.
-                if (property.getName()
-                        .startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
-                    String payloadParamName = property.getName();
-                    payloadData.add(payloadParamName.substring(payloadParamName.indexOf(".") + 1), property.getValue());
-                }
-            }
-        }
-
-        //set PayloadData instance
-        setPayloadData(payloadData);
+        // create and set PayloadData instance
+        setPayloadData(createPayload(cartridgeInfo, subscriptionKey, null, cluster, null, null, null));
     }
 
-    public void undeploy () throws ADCException {
+    public void undeploy () throws ADCException, NotSubscribedException {
 
-        try {
-            CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
-
-        } catch (Exception e) {
-            String errorMsg = "Error in undeploying Service with type " + type;
-            log.error(errorMsg, e);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("terminated instance with Service Type " + type);
-
-        try {
-            CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);
-
-        } catch (Exception e) {
-            String errorMsg = "Error in unregistering service cluster with domain " + clusterId;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Unregistered service with domain " + clusterId);
+        remove(cluster.getClusterDomain(), null);
     }
 
     public String getType() {
@@ -158,19 +113,19 @@ public abstract class Service implements Serializable {
     }
 
     public String getClusterId() {
-        return clusterId;
+        return cluster.getClusterDomain();
     }
 
     public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
+        this.cluster.setClusterDomain(clusterId);
     }
 
     public String getHostName() {
-        return hostName;
+        return cluster.getHostName();
     }
 
     public void setHostName(String hostName) {
-        this.hostName = hostName;
+        this.cluster.setHostName(hostName);
     }
 
     public int getTenantId() {
@@ -203,5 +158,13 @@ public abstract class Service implements Serializable {
 
     public void setPayloadData(PayloadData payloadData) {
         this.payloadData = payloadData;
+    }
+
+    public Cluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
     }
 }

@@ -178,9 +178,6 @@ public abstract class CartridgeSubscription implements Serializable {
      * @param repoUserName Repository Username
      * @param repoUserPassword Repository password
      * @param privateRepo public/private repository
-     * @param cartridgeAlias Alias of the cartridge subscription
-     * @param cartridgeInfo CartridgeInfo subscription
-     * @param tenantDomain Domain of the tenant
      *
      * @return Repository populated with relevant information or null of not repository is relevant to this cartridge
      * subscription
@@ -190,38 +187,9 @@ public abstract class CartridgeSubscription implements Serializable {
      * @throws RepositoryTransportException
      * @throws InvalidRepositoryException
      */
-    public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
-                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
-                                        String tenantDomain)
-
-            throws ADCException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
-            RepositoryTransportException, InvalidRepositoryException {
-
-        /*if (!new Boolean(System.getProperty(CartridgeConstants.FEATURE_INTERNAL_REPO_ENABLED))) {
-            if (log.isDebugEnabled()) {
-                log.debug("Internal repo feature is not enabled.");
-            }
-        }*/
-
-        //TODO: throw if repo is not given for this cartridge type
-        Repository repository = null;
-        if (repoURL != null && repoURL.trim().length() > 0) {
-        	repository = new Repository();
-            log.info("External REPO URL is provided as [" + repoURL +
-                    "]. Therefore not creating a new repo.");
-            //repository.setRepoName(repoURL.substring(0, repoURL.length()-4)); // remove .git part
-            repository.setUrl(repoURL);
-            repository.setUserName(repoUserName);
-            repository.setPassword(repoUserPassword);
-            repository.setPrivateRepository(privateRepo);
-        }
-
-        // Validate Remote Repository.
-        //ApplicationManagementUtil.validateRepository(repoURL, repoUserName, repoUserPassword, privateRepo,
-        //        new Boolean(System.getProperty(CartridgeConstants.FEATURE_EXTERNAL_REPO_VAIDATION_ENABLED)));
-
-        return repository;
-    }
+    public abstract  Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
+                                        boolean privateRepo) throws ADCException, RepositoryRequiredException, RepositoryCredentialsRequiredException,
+                                                                    RepositoryTransportException, InvalidRepositoryException;
 
     /**
      * Cleans up the subscription information after unsubscribing

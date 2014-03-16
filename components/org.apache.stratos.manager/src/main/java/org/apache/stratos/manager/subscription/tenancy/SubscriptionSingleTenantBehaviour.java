@@ -19,37 +19,15 @@
 
 package org.apache.stratos.manager.subscription.tenancy;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.dao.Cluster;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.AlreadySubscribedException;
-import org.apache.stratos.manager.exception.NotSubscribedException;
-import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.payload.BasicPayloadData;
-import org.apache.stratos.manager.payload.PayloadData;
-import org.apache.stratos.manager.payload.PayloadFactory;
-import org.apache.stratos.manager.repository.Repository;
-import org.apache.stratos.manager.service.InstanceCleanupNotificationService;
-import org.apache.stratos.manager.subscriber.Subscriber;
-import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
-import org.apache.stratos.manager.utils.ApplicationManagementUtil;
-import org.apache.stratos.manager.utils.CartridgeConstants;
-
-import java.util.Map;
-import java.util.Set;
 
 
 public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehaviour {
 
     private static Log log = LogFactory.getLog(SubscriptionSingleTenantBehaviour.class);
 
-    public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
+    /*public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
                         String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException {
 
         //set the cluster and hostname
@@ -99,9 +77,9 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
         }
 
         return payloadData;
-    }
+    } */
 
-    public void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
+    /*public void register (CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName,
                           String deploymentPolicyName, Properties properties) throws ADCException, UnregisteredCartridgeException {
 
         log.info("Payload: " + payloadData.getCompletePayloadData().toString());
@@ -115,9 +93,9 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
                 autoscalePolicyName,
                 deploymentPolicyName,
                 properties);
-    }
+    }*/
 
-    public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
+    /*public void remove (String clusterId, String alias) throws ADCException, NotSubscribedException {
         //sending instance cleanup notification for the cluster, so that members in the cluster would aware of the termination
         // and perform the house keeping task.
 
@@ -135,5 +113,5 @@ public class SubscriptionSingleTenantBehaviour extends SubscriptionTenancyBehavi
         }
 
         log.info("Unregistered service cluster, domain " + clusterId);
-    }
+    }*/
 }

@@ -518,14 +518,18 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             synCtx.getEnvelope().build();
         }
 
-        if (isSessionAffinityBasedLB() && newSession) {
-            prepareEndPointSequence(synCtx, endpoint);
-            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER, currentMember);
+        if (isSessionAffinityBasedLB()) {
+            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_DEFAULT_SESSION_TIMEOUT, getSessionTimeout());
             synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_DISPATCHER, dispatcher);
-            // we should also indicate that this is the first message in the session. so that
-            // onFault(...) method can resend only the failed attempts for the first message.
-            synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_FIRST_MESSAGE_IN_SESSION,
-                    Boolean.TRUE);
+
+            if (newSession) {
+                prepareEndPointSequence(synCtx, endpoint);
+                synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_CURRENT_MEMBER, currentMember);
+                // we should also indicate that this is the first message in the session. so that
+                // onFault(...) method can resend only the failed attempts for the first message.
+                synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_FIRST_MESSAGE_IN_SESSION,
+                        Boolean.TRUE);
+            }
         }
 
         Map<String, String> memberHosts;

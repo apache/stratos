@@ -1,9 +1,15 @@
 <%
 var log = new Log("console.index");
+var error=[];
 var caramel = require('caramel');
 var utils = require('/util/utility.jag');
 var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
+if(subscribedCartridges.Error != undefined){
+    error.push(subscribedCartridges.Error);
+}
+
 caramel.render({
-    mycartridges:subscribedCartridges
+    mycartridges:subscribedCartridges,
+    error:error
 });
 %>

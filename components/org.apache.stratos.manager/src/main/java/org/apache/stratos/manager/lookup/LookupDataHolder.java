@@ -35,6 +35,7 @@ public class LookupDataHolder implements Serializable {
 
     private ClusterIdToSubscription clusterIdToSubscription;
     private TenantIdToSubscriptionContext tenantIdToSubscriptionContext;
+    private RepoUrlToCartridgeSubscriptions repoUrlToCartridgeSubscriptions;
     private static volatile  LookupDataHolder lookupDataHolder;
 
     //locks
@@ -45,6 +46,7 @@ public class LookupDataHolder implements Serializable {
     private LookupDataHolder () {
         clusterIdToSubscription = new ClusterIdToSubscription();
         tenantIdToSubscriptionContext = new TenantIdToSubscriptionContext();
+        repoUrlToCartridgeSubscriptions = new RepoUrlToCartridgeSubscriptions();
     }
 
     public static LookupDataHolder getInstance () {
@@ -63,6 +65,8 @@ public class LookupDataHolder implements Serializable {
 
         // add or update
         clusterIdToSubscription.addSubscription(cartridgeSubscription);
+
+        repoUrlToCartridgeSubscriptions.addSubscription(cartridgeSubscription);
 
         // check if an existing SubscriptionContext is available
         SubscriptionContext existingSubscriptionCtx = tenantIdToSubscriptionContext.getSubscriptionContext(cartridgeSubscription.getSubscriber().getTenantId());
@@ -84,10 +88,11 @@ public class LookupDataHolder implements Serializable {
 
     }
 
-    public void removeSubscription (int tenantId, String type, String subscriptionAlias, String clusterId) {
+    public void removeSubscription (int tenantId, String type, String subscriptionAlias, String clusterId, String repoUrl) {
 
         tenantIdToSubscriptionContext.removeSubscriptionContext(tenantId, type, subscriptionAlias);
         clusterIdToSubscription.removeSubscription(clusterId, subscriptionAlias);
+        repoUrlToCartridgeSubscriptions.removeSubscription(repoUrl, subscriptionAlias);
     }
 
     public Collection<CartridgeSubscription> getSubscriptions (String cartridgeType) {
@@ -174,6 +179,12 @@ public class LookupDataHolder implements Serializable {
     public Set<CartridgeSubscription> getSubscription (String clusterId) {
 
         return clusterIdToSubscription.getSubscription(clusterId);
+
+    }
+
+    public Set<CartridgeSubscription> getSubscriptionsForRepoUrl (String repoUrl) {
+
+        return repoUrlToCartridgeSubscriptions.getSubscriptions(repoUrl);
 
     }
 

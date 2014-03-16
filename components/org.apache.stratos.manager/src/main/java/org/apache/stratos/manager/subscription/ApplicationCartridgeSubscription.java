@@ -41,8 +41,7 @@ public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 
 
     public Repository manageRepository (String repoURL, String repoUserName, String repoUserPassword,
-                                        boolean privateRepo, String cartridgeAlias, CartridgeInfo cartridgeInfo,
-                                        String tenantDomain) {
+                                        boolean privateRepo) {
 
         //no repository for application cartridge instances
         return null;

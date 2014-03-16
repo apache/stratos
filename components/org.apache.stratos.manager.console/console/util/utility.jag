@@ -98,9 +98,7 @@ consoleAppUtil = new function(){
     };
 
     this.deployCartridgeDefinition = function(cartridgeDefinition){
-        log.info("inside the cartridge call");
         return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
-        log.info("end of the call ");
     };
 
     this.deployServiceDefinition = function(serviceDefinition){
@@ -157,8 +155,8 @@ consoleAppUtil = new function(){
     };
 
     this.getApplicableDeploymentPolicies = function(cartridgeType){
-               return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment",{}).data;
-           };
+        return this.sendReceive("GET","/policy/deployment/"+ cartridgeType ,{}).data;
+   };
 
     this.getPartitions = function(){
         return this.sendReceive("GET","/partition",{}).data;
@@ -204,29 +202,40 @@ consoleAppUtil = new function(){
     };
     this.getConfigStatus = function(){
         var configStatus = {};
-
+        var error;
         var par_res = this.sendReceive("GET","/partition",{}).data;
         var get_status = session.get("get-status");
-
-        if(get_status == "succeeded") {
-            if(par_res.partition.length == 0){
-                configStatus.first_use = true;
-            }else{
-            var car_res = this.sendReceive("GET","/cartridge/available/list",{}).data;
-            var get_status = session.get("get-status");
-
+        if(par_res.Error != undefined){
+            error = par_res.Error;
+            configStatus.first_use = true;
+        }else{
             if(get_status == "succeeded") {
-                if(car_res.cartridge.length == 0){
+                if(par_res.partition.length == 0){
+                    configStatus.first_use = true;
+                }else{
+                    var car_res = this.sendReceive("GET","/cartridge/available/list",{}).data;
+                    if(car_res.Error != undefined){
+                        error=car_res.Error;
                         configStatus.first_use = false;
                         configStatus.not_complete = true;
                     }else{
+                        get_status = session.get("get-status");
+                        if(get_status == "succeeded") {
+                            if(car_res.cartridge.length == 0){
+                                configStatus.first_use = false;
+                                configStatus.not_complete = true;
+                            }else{
 
-                        configStatus.not_complete = false;
-                        configStatus.first_use = false;
+                                configStatus.not_complete = false;
+                                configStatus.first_use = false;
+                            }
+                        }
                     }
                 }
             }
         }
+
+
         return configStatus;
     };
 
@@ -320,15 +329,12 @@ consoleAppUtil = new function(){
         var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
         var type = "json"; // response format
         var response;
-        log.info("8888888888888888888888");
-        log.info(data);
         switch (httpMethod){
             case  "GET":
                 response = get(endpoint,{},headers, 'json');
                 break;
             case   "POST":
                 response = post(endpoint,data,headers, 'json');
-                log.info(response);
                 break;
             case    "PUT":
                 response = put(endpoint,data,headers, 'json');
@@ -339,7 +345,6 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        log.info("999999999999999");
         if(response.data.stratosAdminResponse) {
             session.put("deploy-status", "succeeded");
         } else if (response.data.Error) {

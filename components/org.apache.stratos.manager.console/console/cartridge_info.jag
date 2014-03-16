@@ -1,20 +1,31 @@
 <%
 var caramel = require('caramel');
+var error = [];
 var utils = require('/util/utility.jag');
  var log = new Log('utility.cartridgeInfo');
 var alias = request.getParameter("alias");
-var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias).cartridge;
-var lbCluster = '{}';
-if(cartridgeInfo.lbClusterId) {
-  lbCluster = utils.consoleAppUtil.getClusterInfo(cartridgeInfo.lbClusterId).cluster;
-  log.debug("***************:" + stringify(lbCluster));
+var lbCluster = {};
+var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias);
+if(cartridgeInfo.Error != undefined){
+    error.push(cartridgeInfo.Error);
+}else{
+    if(cartridgeInfo.cartridge.lbClusterId) {
+        lbCluster = utils.consoleAppUtil.getClusterInfo(cartridgeInfo.cartridge.lbClusterId);
+        if(lbCluster.Error != undefined){
+            error.push(lbCluster.Error);
+        }
+    }
+    var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridge.cartridgeType, alias);
+    if(clusterInfo.Error != undefined){
+        error.push(clusterInfo.Error);
+    }
 }
 
-var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridgeType, alias).cluster;
 
 caramel.render({
     cartridgeInfo:cartridgeInfo,
     lbCluster:lbCluster,
-    clusterInfo:clusterInfo
+    clusterInfo:clusterInfo,
+    error:error
 });
 %>
