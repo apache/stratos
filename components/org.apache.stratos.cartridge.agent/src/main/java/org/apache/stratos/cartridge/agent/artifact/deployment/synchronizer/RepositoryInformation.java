@@ -20,6 +20,7 @@
 package org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer;
 
 /**
+ * @author wso2
  *
  */
 public class RepositoryInformation {
