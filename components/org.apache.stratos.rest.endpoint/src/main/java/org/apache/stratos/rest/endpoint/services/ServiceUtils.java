@@ -40,7 +40,7 @@ import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.repository.RepoNotificationServiceClient;
+import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
 import org.apache.stratos.manager.subscription.PersistenceContext;
@@ -1170,8 +1170,8 @@ public class ServiceUtils {
     static void getGitRepositoryNotification(Payload payload) throws RestAPIException {
         try {
 
-            RepoNotificationServiceClient repoNotificationServiceClient = getRepoNotificationServiceClient();
-            repoNotificationServiceClient.updateRepository(payload.getRepository().getUrl());
+            RepositoryNotification repoNotification = new RepositoryNotification();
+            repoNotification.updateRepository(payload.getRepository().getUrl());
 
         } catch (Exception e) {
             String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
@@ -1180,15 +1180,4 @@ public class ServiceUtils {
         }
     }
 
-    private static RepoNotificationServiceClient getRepoNotificationServiceClient () throws RestAPIException {
-
-        try {
-            return RepoNotificationServiceClient.getServiceClient();
-
-        } catch (AxisFault axisFault) {
-            String errorMsg = "Error while getting Reponotification service client. Cause : " + axisFault.getMessage();
-            log.error(errorMsg, axisFault);
-            throw new RestAPIException(errorMsg, axisFault);
-        }
-    }
 }

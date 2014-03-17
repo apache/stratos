@@ -18,7 +18,6 @@
 
 package org.apache.stratos.manager.repository;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,21 +27,9 @@ import org.apache.stratos.manager.subscription.CartridgeSubscription;
 
 import java.util.Set;
 
-public class RepoNotificationServiceClient {
+public class RepositoryNotification {
 
-    private static final Log log = LogFactory.getLog(RepoNotificationServiceClient.class);
-    private static volatile RepoNotificationServiceClient serviceClient;
-
-    public static RepoNotificationServiceClient getServiceClient() throws AxisFault {
-        if (serviceClient == null) {
-            synchronized (RepoNotificationServiceClient.class) {
-                if (serviceClient == null) {
-                    serviceClient = new RepoNotificationServiceClient();
-                }
-            }
-        }
-        return serviceClient;
-    }
+    private static final Log log = LogFactory.getLog(RepositoryNotification.class);
 
     public void updateRepository(String url) {
 
