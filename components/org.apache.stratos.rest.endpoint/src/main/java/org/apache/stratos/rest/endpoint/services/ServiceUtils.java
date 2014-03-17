@@ -529,11 +529,11 @@ public class ServiceUtils {
 			}
 		}
 		
-		if(lbCartridges == null || lbCartridges.isEmpty()) {
+		/*if(lbCartridges == null || lbCartridges.isEmpty()) {
 			String msg = "Load balancer Cartridges are not available.";
 	        log.error(msg);
 	        throw new RestAPIException(msg) ;
-		}
+		}*/
 		return lbCartridges;
 	}
 
@@ -730,11 +730,11 @@ public class ServiceUtils {
             }
         }
         
-		if (availableMultitenantCartridges.isEmpty()) {
+		/*if (availableMultitenantCartridges.isEmpty()) {
 			String msg = "Cannot find any active deployed service for tenant [id] "+tenantId;
 			log.error(msg);
 			throw new RestAPIException(msg);
-		}
+		}*/
 
         return availableMultitenantCartridges;
     }
@@ -802,11 +802,11 @@ public class ServiceUtils {
             log.debug("Returning subscribed cartridges " + cartridges.size());
         }
         
-        if(cartridges.isEmpty()) {
+        /*if(cartridges.isEmpty()) {
         	String msg = "Cannot find any subscribed Cartridge, matching the given string: "+cartridgeSearchString;
             log.error(msg);
             throw new RestAPIException(msg);
-        }
+        }*/
 
         return cartridges;
     }

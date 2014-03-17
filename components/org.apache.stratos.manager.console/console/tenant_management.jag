@@ -7,6 +7,8 @@ var tenants =  utils.consoleAppUtil.getTenants();
 if(tenants.Error != undefined){
     error.push(tenants.Error);
 }
+log.info('*****************');
+log.info(tenants);
 caramel.render({
     tenants:tenants,
     error:error

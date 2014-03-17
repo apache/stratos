@@ -1,0 +1,15 @@
+<%
+(function(){
+    var log = new Log("controller.partitionDefinitionSubmit");
+    var utils = require('/util/utility.jag');
+    var action = request.getParameter("action");
+    if(action != null && action == "get_elbs"){
+        var elbs = require('/data/elbs.json');
+        print(elbs);
+    }
+    if(action != null && action == "get_topology"){
+        var clusters = require('/data/dashboard.json');
+        print(clusters);
+    }
+})();
+%>
