@@ -31,7 +31,6 @@ properties="-Dmb.ip=MB-IP
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
-            -Dagent.flow.file.path=${script_path}/../conf/agent-flow.conf
             -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch-params
             -Dextensions.dir=${script_path}/../extensions
             -Dcep.stats.publisher.enabled=true
