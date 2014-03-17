@@ -155,7 +155,7 @@ consoleAppUtil = new function(){
     };
 
     this.getApplicableDeploymentPolicies = function(cartridgeType){
-        return this.sendReceive("GET","/policy/deployment/"+ cartridgeType ,{}).data;
+     return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment/",{}).data;
    };
 
     this.getPartitions = function(){
