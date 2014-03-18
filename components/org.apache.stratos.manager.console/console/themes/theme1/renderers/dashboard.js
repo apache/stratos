@@ -1,5 +1,6 @@
 var render = function (theme, data, meta, require) {
     if(data.error.length == 0 ){
+        var log = new Log();
         theme('index', {
             body: [
                 {
@@ -23,7 +24,7 @@ var render = function (theme, data, meta, require) {
                             class_name: 'btn-important'
                         },
                         has_help: true,
-                        help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
+                        help: 'Dashboard visually represents the network topology. You can click and view details of each node from the user interface.'
                     }
                 }
             ],

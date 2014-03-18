@@ -576,3 +576,36 @@ label.error{
     margin-left: 0;
     margin-top: 20px;
 }
+.dashboard-wrapper-a{
+    background: #111;
+}
+.dashboard-wrapper-a h1{
+    color:#fff;
+    margin-bottom: 5px;
+}
+.dashboard-wrapper-a p{
+    color: #aeaeae;
+}
+.dashboard-wrapper-b{
+    background: transparent url(../img/panel-back.png) repeat left top;
+    border-radius: 5px 5px 5px 5px;
+    padding: 10px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 450px;
+    border: solid 1px #444;
+    color:#fff;
+}
+.dashboard-wrapper-b-content{
+    border: solid 1px #ccc;
+    background: #fff;
+}
+.close-btn{
+    color: #FFFFFF;
+    font-size: 20px;
+    position: absolute;
+    right: 6px;
+    top: 0;
+    z-index: 100;
+}

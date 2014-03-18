@@ -7,7 +7,6 @@ var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
 if(subscribedCartridges.Error != undefined){
     error.push(subscribedCartridges.Error);
 }
-
 caramel.render({
     mycartridges:subscribedCartridges,
     error:error
