@@ -3,7 +3,7 @@
     var log = new Log("controller.newTenantSubmit");
     var utils = require('/util/utility.jag');
     var jsonRequest = {};
-    jsonRequest.tenantInfoBean = {};
+    jsonRequest = {};
 
     //get user input
     var adminName = request.getParameter("adminName");
@@ -14,12 +14,12 @@
     var tenantDomain= request.getParameter("tenantDomain");
 
     //create json request
-    jsonRequest.tenantInfoBean.admin = adminName;
-    jsonRequest.tenantInfoBean.firstname = firstName;
-    jsonRequest.tenantInfoBean.lastname = lastName;
-    jsonRequest.tenantInfoBean.adminPassword = adminPassword;
-    jsonRequest.tenantInfoBean.email = email;
-    jsonRequest.tenantInfoBean.tenantDomain = tenantDomain;
+    jsonRequest.admin = adminName;
+    jsonRequest.firstname = firstName;
+    jsonRequest.lastname = lastName;
+    jsonRequest.adminPassword = adminPassword;
+    jsonRequest.email = email;
+    jsonRequest.tenantDomain = tenantDomain;
 
 
     utils.consoleAppUtil.addTenant(jsonRequest);
