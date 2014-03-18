@@ -103,7 +103,7 @@ public class CartridgeAgentConfiguration {
                 for (String string : params) {
 					if (string != null) {
 						String[] var = string.split("=");
-						if (var.length > 2) {
+						if (var.length >= 2) {
 							parameters.put(var[0], var[1]);
 						}
 					}
