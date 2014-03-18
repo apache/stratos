@@ -24,8 +24,7 @@ package org.apache.stratos.manager.service;
 */
 
 
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 
 /**
  *

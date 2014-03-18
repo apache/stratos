@@ -24,8 +24,7 @@ import java.io.File;
 
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.partition.deployers.PartitionReader;
-import org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyReader;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.*;
 import org.junit.Before;
 import org.junit.Test;
 

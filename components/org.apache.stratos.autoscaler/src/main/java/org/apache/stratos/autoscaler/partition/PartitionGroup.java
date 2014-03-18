@@ -21,7 +21,8 @@ package org.apache.stratos.autoscaler.partition;
 
 import java.io.Serializable;
 
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 
 /**
  * The model class for PartitionGroup definition.
@@ -59,6 +60,7 @@ public class PartitionGroup implements Serializable{
     
     public void setPartitions(Partition[] partitions) {
         this.partitions = partitions;
+        partitions[0].setProperties(new Properties());
     }
 
     /**

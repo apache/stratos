@@ -244,7 +244,6 @@
                                 <bundleDef>com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}</bundleDef>
                                 <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.shindig.wso2:shindig:1.1.0.wso2v6</bundleDef>
                                 <bundleDef>org.99soft.guice.wso2:rocoto:6.1.wso2v1</bundleDef>
                                 <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:1.45.wso2v1</bundleDef>
                                 <bundleDef>net.schmizz:sshj:0.8.0</bundleDef>
@@ -262,14 +261,11 @@
                                 <!--bundleDef>org.jaggeryjs:0.9.0.ALPHA2-wso2v2</bundleDef-->
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
-				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ntask.core:${wso2carbon.version}</importFeatureDef> 
                             </importFeatures>
                         </configuration>
                     </execution>

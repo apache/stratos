@@ -19,8 +19,8 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.lb.category.LoadBalancerCategory;

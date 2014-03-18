@@ -24,7 +24,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -33,7 +33,6 @@ import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExcep
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceNonExistingLBExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.rmi.RemoteException;
 
@@ -77,39 +76,39 @@ public class AutoscalerServiceClient {
         return serviceClient;
     }
 
-    public org.apache.stratos.cloud.controller.deployment.partition.Partition[] getAvailablePartitions () throws RemoteException {
+    public Partition[] getAvailablePartitions () throws RemoteException {
 
-		org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
+		Partition[] partitions;
 		partitions = stub.getAllAvailablePartitions();
 
 		return partitions;
 	}
 
-	public org.apache.stratos.cloud.controller.deployment.partition.Partition getPartition(
+	public Partition getPartition(
 			String partitionId) throws RemoteException {
 
-		org.apache.stratos.cloud.controller.deployment.partition.Partition partition;
+		Partition partition;
 		partition = stub.getPartition(partitionId);
 
 		return partition;
 	}
 
-	public org.apache.stratos.cloud.controller.deployment.partition.Partition[] getPartitionsOfGroup(
+	public Partition[] getPartitionsOfGroup(
 			String deploymentPolicyId, String partitionGroupId)
 			throws RemoteException {
 
-		org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
+		Partition[] partitions;
 		partitions = stub.getPartitionsOfGroup(deploymentPolicyId,
 				partitionGroupId);
 
 		return partitions;
 	}
     
-    public org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+    public Partition[]
     		getPartitionsOfDeploymentPolicy(
 			String deploymentPolicyId) throws RemoteException {
 
-		org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions;
+		Partition[] partitions;
 		partitions = stub.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
 
 		return partitions;
@@ -197,7 +196,7 @@ public class AutoscalerServiceClient {
 
     }
 
-    public boolean deployPartition (Partition partition) throws RemoteException, 
+    public boolean deployPartition (Partition partition) throws RemoteException,
     	AutoScalerServiceInvalidPartitionExceptionException {
 
             return stub.addPartition(partition);

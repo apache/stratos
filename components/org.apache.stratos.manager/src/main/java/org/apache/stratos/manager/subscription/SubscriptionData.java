@@ -18,7 +18,7 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 /**
  * This holds the data that are gathered at the time of subscription. This is usefull when passing subscription details to the method calls.

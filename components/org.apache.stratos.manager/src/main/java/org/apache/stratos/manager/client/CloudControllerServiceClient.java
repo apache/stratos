@@ -24,7 +24,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
@@ -113,10 +113,9 @@ public class CloudControllerServiceClient {
 	}
 
     @SuppressWarnings("unused")
-    private org.apache.stratos.cloud.controller.pojo.Properties
+    private Properties
         extractProperties(java.util.Properties properties) {
-        org.apache.stratos.cloud.controller.pojo.Properties props =
-                                                                 new org.apache.stratos.cloud.controller.pojo.Properties();
+        Properties props = new Properties();
         if (properties != null) {
 
             for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {

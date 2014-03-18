@@ -85,7 +85,7 @@
         <module>components</module>
         <module>extensions</module>
         <module>features</module>
-        <module>products</module>
+        <!--module>products</module-->
     </modules>
 
     <repositories>
