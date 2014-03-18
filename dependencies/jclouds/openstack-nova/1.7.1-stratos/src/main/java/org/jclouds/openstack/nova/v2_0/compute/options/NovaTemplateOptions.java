@@ -70,6 +70,7 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
             eTo.securityGroupNames(getSecurityGroupNames().get());
          eTo.generateKeyPair(shouldGenerateKeyPair());
          eTo.keyPairName(getKeyPairName());
+	 eTo.availabilityZone(getAvailabilityZone());
          if (getUserData() != null) {
              eTo.userData(getUserData());
          }
@@ -89,6 +90,7 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
    protected byte[] userData;
    protected String diskConfig;
    protected boolean configDrive;
+   protected String availabilityZone;
    protected Set<Network> novaNetworks;
 
    @Override
@@ -105,12 +107,13 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
             && Arrays.equals(this.userData, that.userData)
             && equal(this.diskConfig, that.diskConfig)
             && equal(this.configDrive, that.configDrive)
+            && equal(this.availabilityZone, that.availabilityZone)
             && equal(this.novaNetworks, that.novaNetworks);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(super.hashCode(), autoAssignFloatingIp, securityGroupNames, generateKeyPair, keyPairName, userData, diskConfig, configDrive, novaNetworks);
+      return Objects.hashCode(super.hashCode(), autoAssignFloatingIp, securityGroupNames, generateKeyPair, keyPairName, userData, diskConfig, configDrive,availabilityZone, novaNetworks);
    }
 
    @Override
@@ -126,6 +129,7 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
       toString.add("userData", userData);
       toString.add("diskConfig", diskConfig);
       toString.add("configDrive", configDrive);
+      toString.add("availabilityZone", availabilityZone);
       toString.add("novaNetworks", novaNetworks);
       return toString;
    }
@@ -155,6 +159,15 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
       this.keyPairName = keyPairName;
       return this;
    }
+
+   /**
+    * set availability zone
+    */
+   public NovaTemplateOptions availabilityZone(String zone) {
+      this.availabilityZone = zone;
+      return this;
+   }
+
 
    /**
     *
@@ -193,6 +206,15 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
    public String getKeyPairName() {
       return keyPairName;
    }
+
+   /**
+    * Specifies the availability zone used to run instances with
+    * @return the availability zone to be used
+    */
+   public String getAvailabilityZone() {
+      return availabilityZone;
+   }
+
    
    /**
     * <h3>Note</h3>
@@ -262,6 +284,13 @@ public class NovaTemplateOptions extends TemplateOptions implements Cloneable {
        */
       public static NovaTemplateOptions keyPairName(String keyPairName) {
          return new NovaTemplateOptions().keyPairName(keyPairName);
+      }
+
+      /**
+       * @see NovaTemplateOptions#getAvailabilityZone()
+       */
+      public static NovaTemplateOptions availabilityZone(String zone) {
+         return new NovaTemplateOptions().availabilityZone(zone);
       }
       
       /**
