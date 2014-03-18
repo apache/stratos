@@ -36,12 +36,16 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.domain.Location;
+import org.jclouds.domain.LocationBuilder;
+import org.jclouds.domain.LocationScope;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
@@ -104,7 +108,7 @@ public class OpenstackNovaIaas extends Iaas {
         if(!(iaasInfo instanceof IaasProvider)) {
            templateBuilder.locationId(iaasInfo.getType());
         }
-
+        
         // to avoid creation of template objects in each and every time, we
         // create all at once!
 
@@ -150,6 +154,11 @@ public class OpenstackNovaIaas extends Iaas {
 			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
 			template.getOptions()
 					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
+		}
+		
+		if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+			template.getOptions().as(NovaTemplateOptions.class)
+					.availabilityZone(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
 		}
 		
 		//TODO
