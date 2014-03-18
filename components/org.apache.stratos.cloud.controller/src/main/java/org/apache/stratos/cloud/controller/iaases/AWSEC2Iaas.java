@@ -54,7 +54,6 @@ import org.jclouds.ec2.features.ElasticBlockStoreApi;
 import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 import org.jclouds.ec2.options.DetachVolumeOptions;
-import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 
 import java.util.*;
 
@@ -191,7 +190,7 @@ public class AWSEC2Iaas extends Iaas {
 			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
 			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
 			template.getOptions()
-					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
+					.as(AWSEC2TemplateOptions.class).networks(Arrays.asList(networksArray));
 		}
 
 		// set Template
