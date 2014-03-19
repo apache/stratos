@@ -8,12 +8,6 @@
 {{#each cartridges}}
 <div class="container">
     <div class="row">
-        <div class="col-lg-12">
-            <div class="h2-wrapper"><h2>{{kind}}</h2></div>
-        </div>
-    </div>
-    <div class="row">
-        {{#each cartridges}}
         <div class="col-md-6">
             <div class="box-container">
                 <div class="row">
@@ -41,7 +35,21 @@
                 </div>
             </div>
         </div>
-        {{/each}}
+    </div>
+</div>
+{{else}}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-empty-page">
+                <strong>There are no Cartridges available for you.</strong>
+                {{#isAllowed "configure"}}
+                    Go to <a href="{{url "/configure_stratos.jag"}}">Configure Stratos</a> page to start.
+                {{else}}
+                    Please contact your system administrator.
+                {{/isAllowed}}
+            </div>
+        </div>
     </div>
 </div>
 {{/each}}

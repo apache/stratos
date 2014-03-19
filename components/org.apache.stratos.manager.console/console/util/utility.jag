@@ -345,17 +345,16 @@ consoleAppUtil = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-        if(response.data.stratosAdminResponse) {
-            session.put("deploy-status", "succeeded");
-        } else if (response.data.Error) {
+
+        if (response.data.Error) {
             session.put("deploy-status", response.data.Error.errorMessage);
         } else {
-            session.put("deploy-status", "Error occurred while deploying...");
+            session.put("deploy-status", "succeeded");
         }
         log.debug("sent is: " + stringify(response));
 
-            return response;
-        };
+        return response;
+    };
 
 
 

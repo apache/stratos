@@ -4,8 +4,8 @@ var render = function (theme, data, meta, require) {
         var log = new Log();
         session.remove("get-status");
         session.remove("deploy-status");
-        var cartridges_old = data.cartridges.cartridge;
-        var cartridges_new = [
+        var cartridges_new = data.cartridges.cartridge;
+        /*var cartridges_new = [
             {
                 kind: "Framework",
                 cartridges: []}
@@ -34,13 +34,13 @@ var render = function (theme, data, meta, require) {
                     cartridgesToPush.push(cartridges_old[i]);
                 }
             }
-        }
+        }*/
         theme('index', {
             body: [
                 {
                     partial: 'cartridges',
                     context: {
-                        title:'Cartridges',
+                        title:'Subscribe to Cartridge',
                         cartridges:cartridges_new
                     }
                 }
@@ -55,7 +55,7 @@ var render = function (theme, data, meta, require) {
                             link:'/',
                             name:'Back To My Cartridges',
                             class_name:"btn-default",
-                            class_icon: 'icon-arrow-left'
+                            class_icon: 'fa fa-arrow-left'
                         },
                         has_help:true,
                         help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'

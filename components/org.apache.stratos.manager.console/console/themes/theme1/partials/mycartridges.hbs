@@ -8,12 +8,6 @@
 {{#each mycartridges}}
 <div class="container">
     <div class="row">
-        <div class="col-lg-12">
-            <div class="h2-wrapper"><h2>{{kind}}</h2></div>
-        </div>
-    </div>
-    <div class="row">
-        {{#each cartridges}}
         <div class="col-md-6">
             <div class="box-container">
                 <div class="row">
@@ -31,7 +25,16 @@
                 </div>
             </div>
         </div>
-        {{/each}}
+    </div>
+</div>
+{{else}}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-empty-page">
+                <strong>You haven't subscribed to any Cartridges yet.</strong> Go to <a href="{{url "/cartridges.jag"}}">Subscribe to Cartridge</a> page to start.
+            </div>
+        </div>
     </div>
 </div>
 {{/each}}
