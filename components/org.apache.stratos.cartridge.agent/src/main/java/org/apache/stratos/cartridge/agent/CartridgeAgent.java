@@ -41,31 +41,58 @@ public class CartridgeAgent implements Runnable {
             log.info("Cartridge agent started");
         }
 
-        String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
-        if(StringUtils.isBlank(jndiPropertiesDir)) {
-            if(log.isErrorEnabled()){
-                log.error(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
-            }
-            return;
-        }
-
-        String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
-        if(StringUtils.isBlank(payloadPath)) {
-            if(log.isErrorEnabled()){
-                log.error(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
-            }
-            return;
-        }
-
-        String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
-        if(StringUtils.isBlank(extensionsDir)) {
-            if(log.isWarnEnabled()){
-                log.warn(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
-            }
-        }
+        validateRequiredSystemProperties();
 
         // Start instance notifier listener thread
-        if(log.isDebugEnabled()) {
+        subscribeToTopicsAndRegisterListeners();
+
+        // Publish instance started event
+        CartridgeAgentEventPublisher.publishInstanceStartedEvent();
+
+        // Execute start servers extension
+        ExtensionUtils.executeStartServersExtension();
+
+        // Wait for all ports to be active
+        CartridgeAgentUtils.waitUntilPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
+
+        // Check repo url
+        String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
+        if ("null".equals(repoUrl) || StringUtils.isBlank(repoUrl)) {
+            if(log.isInfoEnabled()) {
+                log.info("No artifact repository found");
+            }
+
+            // Publish instance activated event
+            CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
+        }
+
+        String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistenceMappings();
+        if(persistanceMappingsPayload != null) {
+            ExtensionUtils.executeVolumeMountExtension(persistanceMappingsPayload);
+        }
+        // TODO: Start this thread only if this node is configured as a commit true node
+        // Start periodical file checker task
+        // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        // scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0, 10, TimeUnit.SECONDS);
+
+        // Keep the thread live until terminated
+
+        // start log publishing
+        LogPublisherManager logPublisherManager = new LogPublisherManager();
+        publishLogs(logPublisherManager);
+
+        while (!terminated) {
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+        }
+
+        logPublisherManager.stop();
+    }
+
+	protected void subscribeToTopicsAndRegisterListeners() {
+		if(log.isDebugEnabled()) {
             log.debug("Starting instance notifier event message receiver thread");
         }
         InstanceNotifierMessageProcessorChain processorChain = new InstanceNotifierMessageProcessorChain();
@@ -110,50 +137,32 @@ public class CartridgeAgent implements Runnable {
             } catch (InterruptedException e) {
             }
         }
+	}
 
-        // Publish instance started event
-        CartridgeAgentEventPublisher.publishInstanceStartedEvent();
-
-        // Execute start servers extension
-        ExtensionUtils.executeStartServersExtension();
-
-        // Wait for all ports to be active
-        CartridgeAgentUtils.waitUntilPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
-
-        // Check repo url
-        String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
-        if ("null".equals(repoUrl) || StringUtils.isBlank(repoUrl)) {
-            if(log.isInfoEnabled()) {
-                log.info("No artifact repository found");
+	protected void validateRequiredSystemProperties() {
+		String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
+        if(StringUtils.isBlank(jndiPropertiesDir)) {
+            if(log.isErrorEnabled()){
+                log.error(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
             }
-
-            // Publish instance activated event
-            CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
+            return;
         }
 
-        String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistanceMappings();
-        if(persistanceMappingsPayload != null)
-            ExtensionUtils.executeVolumeMountExtension(persistanceMappingsPayload);
-        // TODO: Start this thread only if this node is configured as a commit true node
-        // Start periodical file checker task
-        // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        // scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0, 10, TimeUnit.SECONDS);
-
-        // Keep the thread live until terminated
-
-        // start log publishing
-        LogPublisherManager logPublisherManager = new LogPublisherManager();
-        publishLogs(logPublisherManager);
-
-        while (!terminated) {
-        	try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ignore) {
-			}
+        String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
+        if(StringUtils.isBlank(payloadPath)) {
+            if(log.isErrorEnabled()){
+                log.error(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
+            }
+            return;
         }
 
-        logPublisherManager.stop();
-    }
+        String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
+        if(StringUtils.isBlank(extensionsDir)) {
+            if(log.isWarnEnabled()){
+                log.warn(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
+            }
+        }
+	}
 
     private static void publishLogs (LogPublisherManager logPublisherManager) {
 

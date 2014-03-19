@@ -49,3 +49,7 @@ properties="-Dmb.ip=MB-IP
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
 java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main
+
+# If you want to add your custom Cartridge Agent implementation, Please provide an implementation of 
+# org.apache.stratos.cartridge.agent.CartridgeAgent as an argument to the Main class
+#java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main org.apache.stratos.cartridge.agent.CartridgeAgentABC

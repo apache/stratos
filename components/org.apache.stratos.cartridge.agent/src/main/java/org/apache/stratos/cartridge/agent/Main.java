@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cartridge.agent;
 
+import java.lang.reflect.Constructor;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
@@ -31,7 +33,7 @@ import org.apache.stratos.cartridge.agent.config.configurator.JndiConfigurator;
 public class Main {
 
     private static final Log log = LogFactory.getLog(Main.class);
-    private static CartridgeAgent cartridgeAgent;
+    private static CartridgeAgent cartridgeAgent = null;
 
     public static void main(String[] args) {
         try {
@@ -47,7 +49,28 @@ public class Main {
             // Initialize cartridge agent configuration
             CartridgeAgentConfiguration.getInstance();
 
-            cartridgeAgent = new CartridgeAgent();
+            if (args.length >= 1) {
+            	String className = args[0];
+				try {
+					Constructor<?> c = Class.forName(className)
+							.getConstructor();
+					cartridgeAgent = (CartridgeAgent) c.newInstance();
+					log.info("Loaded Cartridge Agent using [class] "+className);
+				} catch (Exception e) {
+					String msg = String.format("Cannot load Cartridge Agent from [class name] %s, "
+							+ "hence using the default agent.", className);
+					log.warn(msg, e);
+				}
+            }
+            
+            if (cartridgeAgent == null) {
+            	// load default agent
+            	cartridgeAgent = new CartridgeAgent();
+            	if (log.isDebugEnabled()) {
+            		log.debug("Loading default Cartridge Agent.");
+            	}
+            }
+            // start agent
             Thread thread = new Thread(cartridgeAgent);
             thread.start();
         } catch (Exception e) {
