@@ -27,7 +27,7 @@
 set -e
 
 SLEEP=60
-export LOG=$log_path/stratos-openstack.log
+export LOG=$log_path/stratos-vcloud.log
 
 source "./conf/setup.conf"
 
@@ -37,22 +37,22 @@ fi
 
 pushd $cc_path
 
-echo "Set OpenStack provider specific info in repository/conf/cloud-controller.xml" >> $LOG
+echo "Set vCloud provider specific info in repository/conf/cloud-controller.xml" >> $LOG
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_IDENTITY@$openstack_identity@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_IDENTITY@$vcloud_identity@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_CREDENTIAL@$openstack_credential@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_CREDENTIAL@$vcloud_credential@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_ENDPOINT@$openstack_jclouds_endpoint@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_ENDPOINT@$vcloud_jclouds_endpoint@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_END@@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_START@!--@g" > repository/conf/cloud-controller.xml
@@ -61,9 +61,9 @@ cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@EC2_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_START@!--@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_START@!--@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
 
 popd
