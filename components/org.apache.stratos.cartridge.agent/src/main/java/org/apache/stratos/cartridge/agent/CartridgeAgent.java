@@ -66,7 +66,7 @@ public class CartridgeAgent implements Runnable {
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         }
 
-        String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistanceMappings();
+        String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistenceMappings();
         if(persistanceMappingsPayload != null) {
             ExtensionUtils.executeVolumeMountExtension(persistanceMappingsPayload);
         }
