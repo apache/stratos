@@ -43,10 +43,10 @@ cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_START@@g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_IDENTITY@$vcloud_identity@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s/VCLOUD_IDENTITY/$vcloud_identity/g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
-cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_CREDENTIAL@$vcloud_credential@g" > repository/conf/cloud-controller.xml
+cat repository/conf/cloud-controller.xml.orig | sed -e "s/VCLOUD_CREDENTIAL/$vcloud_credential/g" > repository/conf/cloud-controller.xml
 
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_ENDPOINT@$vcloud_jclouds_endpoint@g" > repository/conf/cloud-controller.xml
