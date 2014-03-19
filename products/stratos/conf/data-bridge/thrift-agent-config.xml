@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright 2005-2011 WSO2, Inc. (http://wso2.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+
+
+<thriftAgentConfiguration xmlns="http://wso2.org/carbon/databridge/agent/thrift">
+
+    <bufferedEventsSize>20000</bufferedEventsSize>
+
+    <poolSize>50</poolSize>
+    <maxPoolSize>50</maxPoolSize>
+
+    <maxTransportPoolSize>250</maxTransportPoolSize>
+    <maxIdleConnections>250</maxIdleConnections>
+    <evictionTimePeriod>5500</evictionTimePeriod>
+    <minIdleTimeInPool>5000</minIdleTimeInPool>
+
+    <secureMaxTransportPoolSize>250</secureMaxTransportPoolSize>
+    <secureMaxIdleConnections>250</secureMaxIdleConnections>
+    <secureEvictionTimePeriod>5500</secureEvictionTimePeriod>
+    <secureMinIdleTimeInPool>5000</secureMinIdleTimeInPool>
+
+    <maxMessageBundleSize>100</maxMessageBundleSize>
+    <asyncDataPublisherBufferedEventSize>10000</asyncDataPublisherBufferedEventSize>
+    <loadBalancingReconnectionInterval>30</loadBalancingReconnectionInterval>
+    <!--<trustStore>
+        .../wso2cep-1.0.0/repository/resources/security/client-truststore.jks
+    </trustStore>
+    <trustStorePassword>wso2carbon</trustStorePassword>-->
+
+</thriftAgentConfiguration>
