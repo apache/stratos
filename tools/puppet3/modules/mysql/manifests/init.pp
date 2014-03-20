@@ -53,4 +53,30 @@ class mysql{
       Package['apache2'],
     ];
   }
+
+  file { '/etc/mysql/my.cnf':
+    ensure  => present,
+    content => template('mysql/my.cnf.erb'),
+    notify  => Service['apache2'],
+    require => [
+      Package['phpmyadmin'],
+      Package['apache2'],
+    ];
+  }
+
+  file { '/etc/apache2/sites-enabled/000-default':
+    content => template('mysql/000-default.erb'),
+    notify  => Service['apache2'],
+    require => [
+      Package['phpmyadmin'],
+      Package['apache2'],
+    ];
+  }
+
+  exec { 'Restart MySQL' :
+    path    => "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    command => "/etc/init.d/mysql restart",
+    require => File['/etc/apache2/sites-enabled/000-default'];
+  }
+
 }
