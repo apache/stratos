@@ -261,6 +261,7 @@
                                 <!--bundleDef>org.jaggeryjs:0.9.0.ALPHA2-wso2v2</bundleDef-->
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
