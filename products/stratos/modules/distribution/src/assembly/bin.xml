@@ -437,6 +437,35 @@
                 <include>org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</include>
             </includes>
         </fileSet>
+
+    <!-- autoscaler -->
+    <fileSet>
+	  <directory>src/main/autoscale-policies</directory>
+	  <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/autoscale-policies</outputDirectory>
+	  <directoryMode>0755</directoryMode>
+           <includes>
+              <include>*.xml</include>
+           </includes>
+	</fileSet>
+
+	<fileSet>
+	  <directory>src/main/deployment-policies</directory>
+	  <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/deployment-policies</outputDirectory>
+	  <directoryMode>0755</directoryMode>
+           <includes>
+              <include>*.xml</include>
+           </includes>
+	</fileSet>
+
+	<fileSet>
+	  <directory>src/main/partitions</directory>
+	  <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/partitions</outputDirectory>
+	  <directoryMode>0755</directoryMode>
+           <includes>
+              <include>*.xml</include>
+           </includes>
+	</fileSet>
+    <!-- autoscaler -->
 	<fileSet>
             <directory>../../conf/temp-artifacts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
@@ -478,6 +507,38 @@
     </dependencySets>
 
     <files>
+		<!-- cloud-controller -->
+		<file>
+            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/cloud-controller.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+        </file>
+		<!-- cloud-controller -->
+		<!-- autoscaler -->
+        <file>
+            <source>src/main/conf/autoscaler.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+		<file>
+            <source>src/main/conf/mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/scaling.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/terminateall.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+		<!-- autoscaler -->
         <file>
             <source>INSTALL.txt</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
