@@ -1,12 +1,14 @@
 var render = function (theme, data, meta, require) {
       // Re-create the data structure of the cartridges.
     if(data.error.length == 0 ){
-        var cartridges_old = data.mycartridges.cartridge;
-        if(cartridges_old == null) {
-            cartridges_old = {};
-        }
+        var cartridges_new = data.mycartridges.cartridge;
         session.remove("get-status");
         session.remove("deploy-status");
+
+        /*if(cartridges_old == null) {
+            cartridges_old = {};
+        }
+
         var cartridges_new = [
             {
                 kind: "Framework",
@@ -36,7 +38,7 @@ var render = function (theme, data, meta, require) {
                     cartridgesToPush.push(cartridges_old[i]);
                 }
             }
-        }
+        }*/
 
         theme('index', {
             body: [

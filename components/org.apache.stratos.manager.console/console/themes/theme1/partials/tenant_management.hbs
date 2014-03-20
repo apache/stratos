@@ -1,55 +1,11 @@
-<div class="container content-starter">
+<div class="container content-starter responsive-gap-maker">
     <div class="row">
         <div class="col-lg-12">
             <h1>{{title}}</h1>
         </div>
     </div>
 </div>
-<div class="container" style="display: none;" id="addItemSection">
-        <div class="row">
-              <div class="col-md-12">
-                  <h2>Deploy New Partition</h2>
-                  <form role="form">
-                        <label for="policy" class="required">Partition Configuration</label>
-
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-6 padding-remover-left">
-                                    <textarea class="form-control" rows="11" id="policy"></textarea>
-                                    <button type="button" class="btn btn-primary" id="deployPolicy">Deploy Partition</button>
-                                    <a>Cancel</a>
-                                </div>
-                                <div class="col-md-6">
-                                    <i class="icons-help"></i>
-                                    Example configuration:
-                                    <pre>
-                                    {
-                                    "partition":{
-                                          "id": "P1",
-                                          "provider": "ec2",
-                                          "property": [
-                                              {
-                                                "name": "region",
-                                                "value": "ap-southeast-1"
-                                              }
-                                          ],
-                                          "partitionMin": "1",
-                                          "partitionMax": "3"
-                                       }
-                                    }
-                                    </pre>
-                                </div>
-                            </div>
-
-                    </div>
-
-
-                  </form>
-
-              </div>
-        </div>
-    </div>
-
+{{#if tenants}}
 <div class="container">
 
     <div class="row">
@@ -88,6 +44,18 @@
         </div>
     </div>
 </div>
+{{else}}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-empty-page">
+                <strong>There are no tenants created yet.</strong>{{#isAllowed "tenant-mgt"}} Go to <a href="{{url "/tenant_new.jag"}}">Add New Tenant</a> page to start. {{/isAllowed}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
 <form action="{{url "/controllers/manageTenants.jag"}}" id="manageTenantsForm">
 <input type="hidden" value="" id="foo" name="foo" />
 <input type="hidden" value="" id="state" name="state" />

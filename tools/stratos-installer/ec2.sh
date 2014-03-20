@@ -69,5 +69,11 @@ cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_STA
 cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
 cat repository/conf/cloud-controller.xml.orig | sed -e "s@OPENSTACK_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
 
+cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_START@!--@g" > repository/conf/cloud-controller.xml
+
+cp -f repository/conf/cloud-controller.xml repository/conf/cloud-controller.xml.orig
+cat repository/conf/cloud-controller.xml.orig | sed -e "s@VCLOUD_PROVIDER_END@--@g" > repository/conf/cloud-controller.xml
+
 popd
 

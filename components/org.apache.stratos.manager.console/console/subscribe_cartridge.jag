@@ -15,6 +15,8 @@ if(autoScalePolicies.Error != undefined ){
 }if(cartridge.Error != undefined ){
     error.push(cartridge.Error);
 }
+
+
 caramel.render({
         cartridge:cartridge,
         autoScalePolicies:autoScalePolicies,
