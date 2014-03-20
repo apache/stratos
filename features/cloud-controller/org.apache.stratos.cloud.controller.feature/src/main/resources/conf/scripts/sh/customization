@@ -1,2 +1,3 @@
 #!/bin/sh
-echo "PAYLOAD" > /tmp/payload
+mkdir -p /tmp/payload
+echo "PAYLOAD" > /tmp/payload/launch-params
