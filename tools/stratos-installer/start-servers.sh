@@ -38,9 +38,9 @@ function help {
     echo "Give one or more of the servers to start on this machine. The available servers are"
     echo "mb, cc, as, sm, cep, all. 'all' means you need to start all servers."
     echo "usage:"
-    echo "setup.sh -p\"<product list>\""
+    echo "start-servers.sh -p\"<product list>\""
     echo "eg."
-    echo "setup.sh -p\"cc sm\""
+    echo "start-servers.sh -p\"cc sm\""
     echo ""
 }
 
