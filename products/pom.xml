@@ -41,6 +41,7 @@
         <module>stratos-cli</module>
         <module>stratos-manager</module>
         <module>cartridge-agent</module>
+        <module>stratos</module>
     </modules>
 </project>
 
