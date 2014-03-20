@@ -269,7 +269,7 @@ function sm_conf_validate {
 	exit 1
     fi
     if [[ ! -f $mysql_connector_jar ]]; then
-        echo "Please copy the mysql connector jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
+        echo "Please copy the mysql connector jar to the stratos release pack folder and update the JAR name in conf/setup.conf file"
         exit 1
     fi
     if [[ -z $cc_port_offset || -z $as_port_offset ]]; then
@@ -340,22 +340,26 @@ echo ""
 
 if [[ $mb = "true" ]]; then
     if [[ ! -d $mb_path ]]; then
-        unzip $mb_pack_path -d $stratos_path
+        echo "Extracting Message Broker"
+        unzip -q $mb_pack_path -d $stratos_path
     fi
 fi
 if [[ $cep = "true" ]]; then
     if [[ ! -d $cep_path ]]; then
-        unzip $cep_pack_path -d $stratos_path
+        echo "Extracting Complex Event Processor"
+        unzip -q $cep_pack_path -d $stratos_path
     fi
 fi
 if [[ $cc = "true" ]]; then
     if [[ ! -d $cc_path ]]; then
-        unzip $cc_pack_path -d $stratos_path
+        echo "Extracting Cloud Controller"
+        unzip -q $cc_pack_path -d $stratos_path
     fi
 fi
 if [[ $as = "true" ]]; then
     if [[ ! -d $as_path ]]; then
-        unzip $as_pack_path -d $stratos_path
+        echo "Extracting Autoscaler"
+        unzip -q $as_pack_path -d $stratos_path
     fi
 fi
 if [[ $sm = "true" ]]; then
@@ -363,7 +367,8 @@ if [[ $sm = "true" ]]; then
         cp -rf ./resources $stratos_path
     fi
     if [[ ! -d $sm_path ]]; then
-        unzip $sm_pack_path -d $stratos_path
+        echo "Extracting Stratos Manager"
+        unzip -q $sm_pack_path -d $stratos_path
     fi
 fi
 
