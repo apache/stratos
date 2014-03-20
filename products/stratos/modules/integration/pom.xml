@@ -29,7 +29,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>integration</artifactId>
+    <artifactId>stratos-integration</artifactId>
     <name>Apache Stratos - Manager Integration Tests</name>
     <packaging>jar</packaging>
 

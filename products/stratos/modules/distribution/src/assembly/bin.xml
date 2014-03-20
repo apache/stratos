@@ -113,6 +113,7 @@
             <excludes>
                 <exclude>**/daemon.sh</exclude>
 		<exclude>**/log4j.properties</exclude>
+		<exclude>**/repository/conf/log4j.properties</exclude>
 		<exclude>**/wso2server.sh</exclude>
 		<exclude>**/wso2server.bat</exclude>
             </excludes>
@@ -154,8 +155,7 @@
                 <exclude>email-update.xml</exclude>
 		<exclude>tenant-reg-agent.xml</exclude>
                 <exclude>features-dashboard.xml</exclude>
-                <exclude>data-bridge-config.xml</exclude>
-                <exclude>thrift-agent-config.xml</exclude>
+                <exclude>**/data-bridge/**</exclude>
             </excludes>
         </fileSet>
         <fileSet>
