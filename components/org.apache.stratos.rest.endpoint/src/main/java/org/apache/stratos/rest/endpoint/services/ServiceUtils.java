@@ -369,11 +369,6 @@ public class ServiceUtils {
         if (autoscalerServiceClient != null) {
             try {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
-                if(autoscalePolicies == null || autoscalePolicies.length == 0) {
-                    String errorMsg = "Cannot find any auto-scaling policy.";
-                    log.error(errorMsg);
-                    throw new RestAPIException(errorMsg);
-                }
 
             } catch (RemoteException e) {
                 String errorMsg = "Error while getting available autoscaling policies. Cause : " + e.getMessage();
@@ -400,12 +395,6 @@ public class ServiceUtils {
             }
         }
 
-        if(autoscalePolicy == null) {
-        	String errorMsg = "Cannot find a matching auto-scaling policy for [id] "+autoscalePolicyId;
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
-        
         return PojoConverter.populateAutoscalePojo(autoscalePolicy);
     }
 
@@ -417,11 +406,6 @@ public class ServiceUtils {
         if (autoscalerServiceClient != null) {
             try {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
-                if(deploymentPolicies == null || deploymentPolicies.length == 0) {
-                    String errorMsg = "Cannot find any deployment policy.";
-                    log.error(errorMsg);
-                    throw new RestAPIException(errorMsg);
-                }
             } catch (RemoteException e) {
                 String errorMsg = "Error getting available deployment policies. Cause : " + e.getMessage();
                 log.error(errorMsg, e);
