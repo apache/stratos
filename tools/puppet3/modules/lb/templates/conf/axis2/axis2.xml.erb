@@ -214,12 +214,12 @@
     <!-- ================================================= -->
     <!--Default trasnport will be passthrough if you need to change please add it here -->
    <transportReceiver name="http" class="org.apache.synapse.transport.passthru.PassThroughHttpListener">
-      <parameter name="port">8280</parameter>
+      <parameter name="port"><%= @lb_httpPort %></parameter>
       <parameter name="non-blocking"> true</parameter>
       <parameter name="httpGetProcessor" locked="false">org.wso2.carbon.transport.nhttp.api.PassThroughNHttpGetProcessor</parameter>
    </transportReceiver>
    <transportReceiver name="https" class="org.apache.synapse.transport.passthru.PassThroughHttpSSLListener">
-        <parameter name="port" locked="false">8243</parameter>
+        <parameter name="port" locked="false"><%= @lb_httpsPort %></parameter>
         <parameter name="non-blocking" locked="false">true</parameter>
         <parameter name="httpGetProcessor" locked="false">org.wso2.carbon.transport.nhttp.api.PassThroughNHttpGetProcessor</parameter>
         <!--parameter name="bind-address" locked="false">hostname or IP address</parameter-->

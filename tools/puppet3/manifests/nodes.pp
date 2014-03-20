@@ -3,58 +3,25 @@ node 'base' {
   #essential variables
   $package_repo         = 'http://10.4.128.7'
   $local_package_dir    = '/mnt/packs'
-  $mb_ip                = '54.251.234.223'
+  $mb_ip                = '54.255.43.95'
   $mb_port              = '5677'
-  $cep_ip               = '54.251.234.223'
+  $cep_ip               = '54.255.43.95'
   $cep_port             = '7615'
   $truststore_password  = 'wso2carbon'
   $java_distribution	= 'jdk-7u7-linux-x64.tar.gz'
   $java_name		= 'jdk1.7.0_07'
   $member_type_ip       = 'private'
-
-  #following variables required only if you want to install stratos using puppet.
-  #not supported in alpha version
-  # Service subdomains
-  #$domain               = 'stratos.com'
-  #$as_subdomain         = 'autoscaler'
-  #$management_subdomain = 'management'
-
-  #$admin_username       = 'admin'
-  #$admin_password       = 'admin123'
-
-  #$puppet_ip            = '10.4.128.7'
-  
-
-
-  #$cc_ip                = '10.4.128.9'
-  #$cc_port              = '9443'
-
-  #$sc_ip                = '10.4.128.13'
-  #$sc_port              = '9443'
-
-  #$as_ip                = '10.4.128.8'
-  #$as_port              = '9443'
-
-  #$git_hostname        = 'git.stratos.com'
-  #$git_ip              = '10.4.128.13'
-
-  #$mysql_server        = '10.4.128.13'
-  #$mysql_user          = 'root'
-  #$mysql_password      = 'root'
-
-  #$bam_ip              = '10.4.128.15'
-  #$bam_port            = '7611'
-  
-  #$internal_repo_user     = 'admin'
-  #$internal_repo_password = 'admin'
+  $lb_httpPort          = '80'
+  $lb_httpsPort         = '443'
+  $tomcat_version       = '7.0.52'
 
 }
 
 # php cartridge node
 node /php/ inherits base {
-  $docroot = "/var/www"
+  $docroot = "/var/www/"
   $syslog="/var/log/apache2/error.log"
-  $samlalias="/var/www"
+  $samlalias="/var/www/"
   require java
   class {'agent':}
   class {'php':}
@@ -72,9 +39,15 @@ node /lb/ inherits base {
 
 # tomcat cartridge node
 node /tomcat/ inherits base {
+  $docroot = "/mnt/apache-tomcat-7.0.52/webapps/"
+  $samlalias="/mnt/apache-tomcat-7.0.52/webapps/"
+
   require java
   class {'agent':}
   class {'tomcat':}
+
+  #install tomcat befor agent
+  Class['tomcat'] ~> Class['agent']
 }
 
 # mysql cartridge node
