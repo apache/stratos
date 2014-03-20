@@ -1,27 +1,26 @@
 #!/bin/bash
  
 # Puppet Installer.
+# --------------------------------------------------------------
 #
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
 #
-# Thilina Piyasundara
-# 2014-02-12
-# last updated on : 2014-02-12
+# 	http://www.apache.org/licenses/LICENSE-2.0
 #
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
 #
-# Copyright [2014] [Thilina Piyasundara]
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+# --------------------------------------------------------------
 
 # Exit on fail
 set -e
@@ -55,8 +54,7 @@ trap bashtrap INT
 
 function print_usage(){
 	${ECHO} -e "Puppet Installer v1 2014-02-12"
-	${ECHO} -e "This script will install PuppetLab puppet v3."
-	${ECHO} -e "Thilina Piyasundara. <mail@thilina.org>"    
+	${ECHO} -e "This script will install PuppetLab puppet v3."   
 	${ECHO} -e ""
 	${ECHO} -e "Usage: "
 	${ECHO} -e "	puppetinstall [-m|--master or -n|--node <node hostname>] -d <domain> -s <puppet master server ip> "
@@ -85,7 +83,6 @@ function print_usage(){
 	${ECHO} -e "    	Agent hostname will be node001.example.com and will point"
 	${ECHO} -e "    	to the puppet master on 192.168.122.1 server."
 	${ECHO} -e ""
-	${ECHO} -e "Report bugs/issues on https://github.com/thilinapiy/puppetinstall/issues"
 }
 
 function print_message(){
@@ -165,7 +162,6 @@ function get_confirmation(){
 	${ECHO} -e "Please check your input and confirm by pressing [Enter] to continue.	"
 	${ECHO} -e "Or press [Ctrl] + [c] to stop the installationan exit.              	"
 	${ECHO} -e ""
-	${ECHO} -e "Report bugs/issues on https://github.com/thilinapiy/puppetinstall/issues"
 	${ECHO} -e "========================================================================"
 
 	#read input

@@ -29,8 +29,10 @@ WGET=`which wget`
 MKDIR=`which mkdir`
 GREP=`which grep`
 SED=`which sed`
+CP=`which cp`
+MV=`which mv`
 
-
+HOSTSFILE=/etc/hosts
 DATE=`date +%d%m%y%S`
 RANDOMNUMBER="`${TR} -c -d 0-9 < /dev/urandom | ${HEAD} -c 4`${DATE}"
 
@@ -54,6 +56,7 @@ function valid_ip()
 read -p "This script will install and configure puppet agent, do you want to continue [y/N]" answer
 if [[ $answer = y ]] ; then
 
+	${CP} -f ${HOSTSFILE} /etc/hosts.tmp
 	${MKDIR} -p /tmp/payload
 	${WGET} http://169.254.169.254/latest/user-data -O /tmp/payload/launch-params
 
@@ -87,8 +90,9 @@ if [[ $answer = y ]] ; then
 	/root/bin/puppetinstall/puppetinstall "${ARGS[@]}"
         ${RM} /mnt/apache-stratos-cartridge-agent-4.0.0-SNAPSHOT/wso2carbon.lck
 	${GREP} -q '/root/bin/init.sh > /tmp/puppet_log' /etc/rc.local || ${SED} -i 's/exit 0$/\/root\/bin\/init.sh \> \/tmp\/puppet_log\nexit 0/' /etc/rc.local
-	${RM} -rf /tmp/puppet*
+	${RM} -rf /tmp/*
 	${RM} -rf /var/lib/puppet/ssl/*
+	${MV} -f /etc/hosts.tmp ${HOSTSFILE}
 
 fi
 
