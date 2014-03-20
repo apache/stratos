@@ -453,16 +453,17 @@ public class StratosTestAdmin {
     public Cluster[] getCluster(@PathParam("clusterId") String clusterId) throws RestAPIException {
         return MockContext.getInstance().getClusters();
     }
-   /* @GET
+
+    @GET
     @Path("{cartridgeType}/policy/deployment")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public DeploymentPolicy[] getValidDeploymentPolicies (@PathParam("cartridgeType") String cartridgeType)
             throws RestAPIException {
-           return   MockContext.getInstance().getValidDeploymentPolicies(cartridgeType);
 
-    }*/
+        return MockContext.getInstance().getDeploymentPoliciesForCartridgeType(cartridgeType);
+    }
 
 
 

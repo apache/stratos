@@ -240,36 +240,35 @@
                                         </div>
                                     </div>
                                     {{#ifCond step "==" 1}}
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 config-responsive-fixer">
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
                                             {
-                                            "partition":{
-                                                  "id": "zone-1",
-                                                  "provider": "ec2",
-                                                  "property": [
-                                                      {
-                                                        "name": "region",
-                                                        "value": "ap-southeast-1"
-                                                      },
-                                                      {
-                                                        "name": "zone",
-                                                        "value": "ap-southeast-1a"
-                                                      }
-                                                  ]
-                                               }
-                                            }
+                                              "id": "zone-1",
+                                              "provider": "ec2",
+                                              "property": [
+                                                  {
+                                                    "name": "region",
+                                                    "value": "ap-southeast-1"
+                                                  },
+                                                  {
+                                                    "name": "zone",
+                                                    "value": "ap-southeast-1a"
+                                                  }
+                                              ]
+                                           }
+
                                             </pre>
                                         </div>
                                     {{/ifCond}}
 
                                     {{#ifCond step "==" 2}}
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 config-responsive-fixer">
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
-                                            {"autoscalePolicy": {
+                                            {
                                                 "id": "economyPolicy",
                                                 "loadThresholds": {
                                                   "requestsInFlight": {
@@ -295,17 +294,17 @@
                                                   }
                                                 }
                                               }
-                                            }
+
                                             </pre>
                                         </div>
                                     {{/ifCond}}
 
                                     {{#ifCond step "==" 3}}
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 config-responsive-fixer">
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
-                                               {"deploymentPolicy": {
+                                               {
                                                 "id": "economyDeployment",
                                                 "partitionGroup": [
                                                     {
@@ -337,17 +336,17 @@
                                                     }
                                                 ]
                                               }
-                                            }
+
                                             </pre>
                                         </div>
                                     {{/ifCond}}
 
                                     {{#ifCond step "==" 4}}
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 config-responsive-fixer">
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
-                                                {"cartridgeDefinitionBean":{
+                                                {
                                                     "type": "lb",
                                                     "provider": "apache",
                                                     "displayName": "Lb",
@@ -385,18 +384,17 @@
                                                         }
                                                       ]
                                                     }
-                                                }
+
                                             </pre>
                                         </div>
                                     {{/ifCond}}
 
                                     {{#ifCond step "==" 5}}
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 config-responsive-fixer">
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
-                                                { "cartridgeDefinitionBean":
-                                                    {
+                                                {
                                                     "type": "php",
                                                     "provider": "apache",
                                                     "host": "stratos.com",
@@ -427,18 +425,18 @@
                                                             }
                                                         ]
                                                     }
-                                                }
+
                                             </pre>
                                         </div>
                                     {{/ifCond}}
 
 
                                     {{#ifCond step "==" 6}}
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 config-responsive-fixer">
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
-                                                { "serviceDefinitionBean": {
+                                                {
                                                       "serviceName": "appserver",
                                                       "cartridgeType": "as",
                                                       "deploymentPolicyName": "economyDeployment",
@@ -447,7 +445,7 @@
                                                       "clusterSubDomain": "subdomain",
                                                       "tenantRange": "*"
                                                     }
-                                                 }
+
                                             </pre>
                                         </div>
                                     {{/ifCond}}

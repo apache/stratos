@@ -9,24 +9,34 @@
 <div class="container">
 <div class="row">
     <div class="col-lg-12">
+
         <div style="margin-bottom:20px;">{{cartridgeInfo.description}}</div>
 
-        <strong>ActiveInstances:</strong>
+        <div class="data-title">Access URLs:</div>
+        <div>
+            <a target="_blank" href="http://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}">http://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}</a>
+        </div>
+        <div>
+            <a target="_blank" href="https://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}">https://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}</a>
+        </div>
+
+
+        <div class="data-title">ActiveInstances:</div>
         <div>{{cartridgeInfo.activeInstances}}</div>
 
-        <strong>CartridgeAlias:</strong>
+        <div class="data-title">CartridgeAlias:</div>
         <div>{{cartridgeInfo.cartridgeAlias}}</div>
 
-        <strong>CartridgeType:</strong>
+        <div class="data-title">CartridgeType:</div>
         <div>{{cartridgeInfo.cartridgeType}}</div>
 
-        <strong>HostName:</strong>
+        <div class="data-title">HostName:</div>
         <div>{{cartridgeInfo.hostName}}</div>
 
-        <strong>Version:</strong>
+        <div class="data-title">Version:</div>
         <div>{{cartridgeInfo.version}}</div>
 
-        <strong>Tenancy Model:</strong>
+        <div class="data-title">Tenancy Model:</div>
          {{#if cartridgeInfo.multiTenant}}
             <div>true</div>
 
@@ -35,32 +45,32 @@
          {{/if}}
 
 
-        <strong>Provider:</strong>
+        <div class="data-title">Provider:</div>
         <div>{{cartridgeInfo.provider}}</div>
 
         {{#if cartridgeInfo.repoURL }}
-           <strong>RepoURL</strong>
+           <div class="data-title">RepoURL</div>
             <div>{{cartridgeInfo.repoURL}}</div>
         {{/if}}
 
         {{#ifCond cartridgeInfo.provider "==" "data"}}
 
-            <strong>UserName</strong>
+            <div class="data-title">UserName</div>
             <div>{{cartridgeInfo.dbUserName}}</div>
 
-            <strong>Password</strong>
+            <div class="data-title">Password</div>
             <div>{{cartridgeInfo.password}}</div>
 
         {{/ifCond}}
         {{#if clusterinfo.member}}
-            <strong>Members Private ip(s):</strong>
+            <div class="data-title">Members Private ip(s):</div>
             <div>
                 {{#each clusterinfo.member}}
                   {{memberIp}}
                 {{/each}}
              </div>
 
-             <strong>Members Public ip(s):</strong>
+             <div class="data-title">Members Public ip(s):</div>
             <div>
                 {{#each clusterinfo.member}}
                   {{memberPublicIp}}
@@ -70,14 +80,14 @@
         {{/if}}
 
         {{#if lbclusterinfo.member}}
-            <strong>LB Private ip:</strong>
+            <div class="data-title">LB Private ip:</div>
             <div>
                 {{#each lbclusterinfo.member}}
                           {{memberIp}};
                 {{/each}}
              </div>
 
-             <strong>LB Public ip:</strong>
+             <div class="data-title">LB Public ip:</div>
             <div>
                 {{#each lbclusterinfo.member}}
                           {{memberPublicIp}};

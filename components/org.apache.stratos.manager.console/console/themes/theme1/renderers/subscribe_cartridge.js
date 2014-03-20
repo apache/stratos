@@ -1,5 +1,9 @@
 var render = function (theme, data, meta, require) {
     if(data.error.length == 0 ){
+        var cartridge = data.cartridge.cartridge;
+        if(cartridge == undefined){
+            cartridge = data.cartridge;
+        }
         theme('index', {
             body: [
                 {
@@ -7,7 +11,7 @@ var render = function (theme, data, meta, require) {
                     context: {
                         autoScalePolicies:data.autoScalePolicies.autoscalePolicy,
                         deploymentPolicies:data.deploymentPolicies.deploymentPolicy,
-                        cartridge:data.cartridge.cartridge,
+                        cartridge:cartridge,
                         cartridgeType:meta.request.getParameter('cartridgeType')
                     }
                 }
@@ -33,8 +37,8 @@ var render = function (theme, data, meta, require) {
                 {
                     partial:'title',
                     context:{
-                        title:"Subscribe Cartridge -" + data.cartridge.cartridge.cartridgeType + " " + data.cartridge.cartridge.version + " Cartridge",
-                        cartridge:data.cartridge.cartridge
+                        title:"Subscribe Cartridge -" + cartridge.cartridgeType + " " + cartridge.version + " Cartridge",
+                        cartridge:cartridge
                     }
                 }
             ]
