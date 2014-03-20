@@ -507,6 +507,12 @@
     </dependencySets>
 
     <files>
+		<file>
+            <source>src/main/conf/log4j.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>600</fileMode>
+        </file>
 		<!-- cloud-controller -->
 		<file>
             <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/cloud-controller.xml</source>
