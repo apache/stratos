@@ -6,7 +6,6 @@ var utils = require('/util/utility.jag');
 var alias = request.getParameter("alias");
 var lbCluster = {};
 var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias);
-log.info(cartridgeInfo);
 
 if(cartridgeInfo.Error != undefined){
     error.push(cartridgeInfo.Error);
