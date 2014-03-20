@@ -23,3 +23,4 @@ org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../featur
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.cloud.controller_${feature.version}/conf/etc/services.xsd,target:${installFolder}/../../conf/etc/services.xsd,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/cartridges);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/services);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.cloud.controller_${feature.version}/conf/scripts,target:${installFolder}/../../conf/scripts,overwrite:true);\

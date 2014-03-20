@@ -18,7 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import org.apache.commons.io.IOUtils;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -33,17 +36,17 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.vcloud.compute.options.VCloudTemplateOptions;
 import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import org.wso2.carbon.utils.CarbonUtils;
 
 public class VCloudIaas extends Iaas {
 
 
 	private static final Log log = LogFactory.getLog(VCloudIaas.class);
+	
+	private static final String SHELL_TYPE = "shellType";
+	private static final String SCRIPTS_PATH = "scripts";
+	private static final String CUSTOMIZATION_SCRIPT = "customization";
+	private static final String PAYLOAD = "PAYLOAD";
 	
 	public VCloudIaas(IaasProvider iaasProvider) {
 		super(iaasProvider);
@@ -105,67 +108,78 @@ public class VCloudIaas extends Iaas {
 
 	@Override
 	public void setDynamicPayload() {
-
+		// in vCloud case we need to run a script
 		IaasProvider iaasInfo = getIaasProvider();
-		
-		// in VCloud case we need to run a script
-		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
 
-			Template template = iaasInfo.getTemplate();
-			String script = "";
-			String launchParams = "", key = "";
-
-			// open the zip file stream
-			ZipInputStream stream = new ZipInputStream(
-					new ByteArrayInputStream(iaasInfo.getPayload()));
-
-			try {
-
-				// now iterate through each item in the stream. The get next
-				// entry call will return a ZipEntry for each file in the
-				// stream
-				ZipEntry entry;
-				while ((entry = stream.getNextEntry()) != null) {
-					StringWriter writer = new StringWriter();
-					IOUtils.copy(stream, writer);
-
-					if (entry.getName().contains("launch-params")) {
-						launchParams = writer.toString();
-					} else if (entry.getName().contains("id_rsa")) {
-						key = writer.toString();
-					}
-
-				}
-			} catch (IOException e) {
-				log.error(e.getMessage(), e);
-			} finally {
-				// we must always close the zip file.
-				try {
-					stream.close();
-				} catch (IOException e) {
-
-					log.error("failed to close the ZIP stream", e);
-				}
+		if (iaasInfo.getTemplate() == null || iaasInfo.getPayload() == null) {
+			if (log.isDebugEnabled()) {
+				log.debug("Payload for vCloud not found");
 			}
-
-			script = "mkdir /var/lib/cloud && mkdir /var/lib/cloud/instance && mkdir /var/lib/cloud/instance/payload && "
-					+ "echo \""
-					+ launchParams
-					+ "\" > /var/lib/cloud/instance/payload/launch-params && "
-					+ "echo \""
-					+ key
-					+ "\" > /var/lib/cloud/instance/payload/id_rsa && "
-					+ "cd /opt/ && "
-					+ "chmod 755 wso2-openstack-init.sh && "
-					+ "./wso2-openstack-init.sh";
-
-			template.getOptions()
-					.overrideLoginUser(iaasInfo.getProperty("loginUser"))
-					.overrideLoginPassword(
-							iaasInfo.getProperty("loginPassword"))
-					.runScript(script);
+			return;
 		}
 
+		String shellType = iaasInfo.getProperty(SHELL_TYPE);
+
+		if (shellType == null || shellType.isEmpty()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Shell Type for vCloud Customization script not found from properties");
+			}
+			return;
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Shell Type '%s' will be used for vCloud Customization script", shellType));
+		}
+
+		// Payload is a String value
+		String payload = new String(iaasInfo.getPayload());
+
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Payload '%s' will be used for vCloud Customization script", shellType));
+		}
+
+		Template template = iaasInfo.getTemplate();
+
+		File scriptPath = new File(CarbonUtils.getCarbonConfigDirPath(), SCRIPTS_PATH);
+
+		File customizationScriptFile = new File(new File(scriptPath, shellType), CUSTOMIZATION_SCRIPT);
+
+		if (!customizationScriptFile.exists()) {
+			if (log.isWarnEnabled()) {
+				log.warn(String.format("The vCloud Customization script '%s' does not exist",
+						customizationScriptFile.getAbsolutePath()));
+			}
+			return;
+		}
+
+		String customizationScript = null;
+
+		try {
+			customizationScript = FileUtils.readFileToString(customizationScriptFile);
+		} catch (IOException e) {
+			if (log.isErrorEnabled()) {
+				log.error(
+						String.format("Error reading the vCloud Customization script '%s'",
+								customizationScriptFile.getAbsolutePath()), e);
+			}
+		}
+
+		if (customizationScript == null || customizationScript.isEmpty()) {
+			if (log.isDebugEnabled()) {
+				log.debug("No content vCloud Customization script not found from properties");
+			}
+			return;
+		}
+
+		// Set payload
+		customizationScript = customizationScript.replaceAll(PAYLOAD, payload);
+
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("The vCloud Customization script\n%s", customizationScript));
+		}
+
+		// Run the script
+		template.getOptions().runScript(customizationScript);
 	}
 
 	@Override
