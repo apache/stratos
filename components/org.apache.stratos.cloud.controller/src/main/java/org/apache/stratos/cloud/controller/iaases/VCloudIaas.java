@@ -135,7 +135,7 @@ public class VCloudIaas extends Iaas {
 		String payload = new String(iaasInfo.getPayload());
 
 		if (log.isDebugEnabled()) {
-			log.debug(String.format("Payload '%s' will be used for vCloud Customization script", shellType));
+			log.debug(String.format("Payload '%s' will be used for vCloud Customization script", payload));
 		}
 
 		Template template = iaasInfo.getTemplate();
