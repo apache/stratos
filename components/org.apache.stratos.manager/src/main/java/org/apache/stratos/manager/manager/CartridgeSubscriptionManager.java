@@ -45,6 +45,7 @@ import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
 import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.CarbonContext;
 
@@ -243,10 +244,18 @@ public class CartridgeSubscriptionManager {
         // Generate and set the key
         String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
+        
+        String encryptedRepoPassword;
+        String repositoryPassword = subscriptionData.getRepositoryPassword();
+        if(repositoryPassword != null && !repositoryPassword.isEmpty()) {
+        	encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
+        } else {
+        	encryptedRepoPassword = repositoryPassword;
+        }
 
         // Create repository
         Repository repository = cartridgeSubscription.manageRepository(subscriptionData.getRepositoryURL(), subscriptionData.getRepositoryUsername(),
-                subscriptionData.getRepositoryPassword(),
+                encryptedRepoPassword,
                 subscriptionData.isPrivateRepository());
 
         // Create subscriber
