@@ -24,6 +24,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -48,13 +49,8 @@ public class SubscribedCartridgeInfoCommand implements Command<StratosCommandCon
 	 * @return Options expected from command-line.
 	 */
 	private Options constructOptions() {
+
 		final Options options = new Options();
-		
-        Option alias = new Option(CliConstants.ALIAS_OPTION, CliConstants.ALIAS_LONG_OPTION,
-                true, "subscription alias");
-        alias.setArgName("alias");
-        options.addOption(alias);
-		
 		return options;
 	}
 	
@@ -80,45 +76,23 @@ public class SubscribedCartridgeInfoCommand implements Command<StratosCommandCon
 	}
 
 	@Override
-	public int execute(StratosCommandContext context, String[] args)
-			throws CommandException {
+	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
 		
 		if (args != null && args.length > 0) {
-			String alias = null;
+			String alias = args[0];
 
-			final CommandLineParser parser = new GnuParser();
-			CommandLine commandLine;
-			try {
-				commandLine = parser.parse(options, args);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Executing {} command...", getName());
-				}
-                if (commandLine.hasOption(CliConstants.ALIAS_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Cartridge alias option is passed");
-                    }
-                    alias = commandLine.getOptionValue(CliConstants.ALIAS_OPTION);
-                }
-
-                if (alias == null) {
-                    System.out.println("alias is required...");
-                    context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
-                }
+            if(StringUtils.isBlank(alias)){
+                System.out.println("Please specify a non blank alias.");
+                return CliConstants.BAD_ARGS_CODE;
+            }
+            else{
                 RestCommandLineService.getInstance().listSubscribedCartridgeInfo(alias);
-
-				return CliConstants.SUCCESSFUL_CODE;
-			} catch (ParseException e) {
-				if (logger.isErrorEnabled()) {
-					logger.error("Error parsing arguments", e);
-				}
-				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE;
-			}
-		} else {
+                return CliConstants.SUCCESSFUL_CODE;
+            }
+		}else {
 			context.getStratosApplication().printUsage(getName());
 			return CliConstants.BAD_ARGS_CODE;
 		}
