@@ -40,6 +40,7 @@ public class SubscriptionData {
     private String repositoryPassword;
     private Property[] properties;
     private PersistenceContext persistanceCtxt;
+    private boolean isCommitsEnabled;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -152,4 +153,13 @@ public class SubscriptionData {
     public void setPersistanceCtxt(PersistenceContext persistanceCtxt) {
         this.persistanceCtxt = persistanceCtxt;
     }
+
+	public boolean isCommitsEnabled() {
+		return isCommitsEnabled;
+	}
+
+	public void setCommitsEnabled(boolean isCommitsEnabled) {
+		this.isCommitsEnabled = isCommitsEnabled;
+	}
+    
 }

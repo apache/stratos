@@ -254,6 +254,9 @@ public class CliConstants {
 	public static final String TRACE_OPTION = "trace";
 	
 	public static final String DEBUG_OPTION = "debug";
+	
+	public static final String ENABLE_COMMITS_OPTION = "cm";
+	public static final String ENABLE_COMMITS_LONG_OPTION = "enable-commits";
 
     // Add tenant options
     public static final String FIRST_NAME_OPTION = "f";

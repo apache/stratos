@@ -182,6 +182,15 @@ function general_conf_validate {
     fi
 }
 
+function andes_jar_validate {
+    if [[ ($cep = "true" || $cc = "true" || $as = "true" || $sm = "true") ]]; then
+        if [[ ! -f $andes_client_jar ]]; then
+            echo "Please copy the andes client jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
+            exit 1
+        fi
+    fi
+}
+
 function mb_conf_validate {
     if [[ -z $mb_path ]]; then
 	helpsetup MB
@@ -200,10 +209,6 @@ function cep_conf_validate {
     fi
     if [[ ! -f $cep_extension_jar ]]; then
         echo "Please copy the cep extension jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
-        exit 1
-    fi
-    if [[ ! -f $andes_client_jar ]]; then
-        echo "Please copy the andes client jar into the same folder as this command(stratos release pack folder) and update conf/setup.conf file"
         exit 1
     fi
 }
@@ -306,6 +311,7 @@ function sm_conf_validate {
 
 
 general_conf_validate
+andes_jar_validate
 if [[ $mb = "true" ]]; then
     mb_conf_validate
 fi
@@ -456,6 +462,7 @@ function cc_setup {
     cp -f ./config/cc/repository/conf/cloud-controller.xml $cc_path/repository/conf/
     cp -f ./config/cc/repository/conf/carbon.xml $cc_path/repository/conf/
     cp -f ./config/cc/repository/conf/jndi.properties $cc_path/repository/conf/
+    cp -f $andes_client_jar $cc_path/repository/components/dropins/
 
     echo "In repository/conf/cloud-controller.xml"
     if [[ $ec2_provider_enabled = true ]]; then
@@ -499,6 +506,7 @@ function as_setup {
     cp -f ./config/as/repository/conf/carbon.xml $as_path/repository/conf/
     cp -f ./config/as/repository/conf/jndi.properties $as_path/repository/conf/
     cp -f ./config/as/repository/conf/autoscaler.xml $as_path/repository/conf/
+    cp -f $andes_client_jar $as_path/repository/components/dropins/
 
     pushd $as_path
 
@@ -545,6 +553,7 @@ function sm_setup {
     cp -f ./config/sm/repository/conf/cartridge-config.properties $sm_path/repository/conf/
     cp -f ./config/sm/repository/conf/datasources/master-datasources.xml $sm_path/repository/conf/datasources/
     cp -f $mysql_connector_jar $sm_path/repository/components/lib/
+    cp -f $andes_client_jar $sm_path/repository/components/dropins/
 
     pushd $sm_path
 

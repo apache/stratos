@@ -50,4 +50,5 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String MULTITENANT = "MULTITENANT";
     public static final String ENABLE_ARTIFACT_UPDATE = "enable.artifact.update";
     public static final String ARTIFACT_UPDATE_INTERVAL = "artifact.update.interval";
+    public static final String COMMIT_ENABLED = "COMMIT_ENABLED";
 }

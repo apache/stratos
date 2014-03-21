@@ -298,6 +298,7 @@ do
     -Dorg.terracotta.quartz.skipUpdateCheck=true \
     -Djava.security.egd=file:/dev/./urandom \
     -Dfile.encoding=UTF8 \
+    -Ddisable.cassandra.server.startup=true \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
