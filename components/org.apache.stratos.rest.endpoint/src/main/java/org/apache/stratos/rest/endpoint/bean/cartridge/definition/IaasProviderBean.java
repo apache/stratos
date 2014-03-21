@@ -42,11 +42,14 @@ public class IaasProviderBean {
     public String credential;
 
     public List<PropertyBean> property;
+    
+    public List<NetworkInterfaceBean> networkInterfaces;
 
     public String toString () {
         return " [ Type: " + type + ", Name: " + name + ", Class Name: " + className + ", Image Id: " + imageId +
                 ", Max Instance Limit: " + maxInstanceLimit + ", Provider: " + provider + ", Identity: " + identity +
-                ", Credentials: " + credential + ", Properties: " + getIaasProperties() + " ] ";
+                ", Credentials: " + credential + ", Properties: " + getIaasProperties() + ", Network Interfaces: " +
+                getNetworkInterfaces() + " ] ";
     }
 
     private String getIaasProperties () {
@@ -58,5 +61,19 @@ public class IaasProviderBean {
             }
         }
         return iaasPropertyBuilder.toString();
+    }
+    
+    private String getNetworkInterfaces() {
+        StringBuilder sb = new StringBuilder();
+        if (networkInterfaces != null) {
+            sb.append('[');
+            String delimeter = "";
+            for (NetworkInterfaceBean nib:networkInterfaces) {
+                sb.append(delimeter).append(nib);
+                delimeter = ", ";
+            }
+            sb.append(']');
+        }
+        return sb.toString();
     }
 }

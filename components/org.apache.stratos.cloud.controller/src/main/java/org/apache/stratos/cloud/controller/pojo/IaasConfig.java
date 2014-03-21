@@ -44,6 +44,8 @@ public class IaasConfig implements Serializable {
 
     private Properties properties;
     
+    private NetworkInterfaces networkInterfaces;
+    
     private byte[] payload;
 
     public String getClassName() {
@@ -150,4 +152,19 @@ public class IaasConfig implements Serializable {
         }
         return iaasPropertyBuilder.toString();
     }
+
+    /**
+     * @return the networkInterfaces
+     */
+    public NetworkInterfaces getNetworkInterfaces() {
+        return networkInterfaces;
+    }
+
+    /**
+     * @param networkInterfaces the networkInterfaces to set
+     */
+    public void setNetworkInterfaces(NetworkInterfaces networkInterfaces) {
+        this.networkInterfaces = networkInterfaces;
+    }
+
 }

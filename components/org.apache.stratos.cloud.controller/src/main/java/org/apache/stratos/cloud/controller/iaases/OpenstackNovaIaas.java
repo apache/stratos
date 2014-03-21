@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.NetworkInterface;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
@@ -53,6 +54,7 @@ import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
+import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
@@ -66,8 +68,8 @@ import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class OpenstackNovaIaas extends Iaas {
@@ -149,12 +151,14 @@ public class OpenstackNovaIaas extends Iaas {
 					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
 		
-		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
-			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
-			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
-			template.getOptions()
-					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
-		}
+        if (iaasInfo.getNetworkInterfaces() != null) {
+            Set<Network> novaNetworksSet = new LinkedHashSet<Network>(iaasInfo.getNetworkInterfaces().length);
+            for (NetworkInterface ni:iaasInfo.getNetworkInterfaces()) {
+                novaNetworksSet.add(Network.builder().networkUuid(ni.getNetworkUuid()).fixedIp(ni.getFixedIp())
+                        .portUuid(ni.getPortUuid()).build());
+            }
+            template.getOptions().as(NovaTemplateOptions.class).novaNetworks(novaNetworksSet);
+        }
 		
 		if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)

@@ -135,6 +135,11 @@ public class PojoConverter {
                 //set the Properties instance to IaasConfig instance
                 iaasConfig.setProperties(getProperties(iaasProviderBeansArray[i].property));
             }
+
+            if(iaasProviderBeansArray[i].networkInterfaces != null && !iaasProviderBeansArray[i].networkInterfaces.isEmpty()) {
+                iaasConfig.setNetworkInterfaces(PojoConverter.getNetworkInterfaces(iaasProviderBeansArray[i].networkInterfaces));
+            }
+
             iaasConfigsArray[i] = iaasConfig;
         }
         return iaasConfigsArray;
@@ -176,6 +181,23 @@ public class PojoConverter {
         Properties properties = new Properties();
         properties.setProperties(propertyArray);
         return properties;
+    }
+
+    private static NetworkInterfaces getNetworkInterfaces(List<NetworkInterfaceBean> networkInterfaceBeans) {
+        NetworkInterface[] networkInterfacesArray = new NetworkInterface[networkInterfaceBeans.size()];
+
+        int i = 0;
+        for (NetworkInterfaceBean nib:networkInterfaceBeans) {
+            NetworkInterface networkInterface = new NetworkInterface();
+            networkInterface.setNetworkUuid(nib.networkUuid);
+            networkInterface.setFixedIp(nib.fixedIp);
+            networkInterface.setPortUuid(nib.portUuid);
+            networkInterfacesArray[i++] = networkInterface;
+        }
+
+        NetworkInterfaces networkInterfaces = new NetworkInterfaces();
+        networkInterfaces.setNetworkInterfaces(networkInterfacesArray);
+        return networkInterfaces;
     }
 
     public static org.apache.stratos.cloud.controller.stub.deployment.partition.Partition convertToCCPartitionPojo

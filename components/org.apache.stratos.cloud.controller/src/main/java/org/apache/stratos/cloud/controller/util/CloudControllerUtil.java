@@ -151,6 +151,11 @@ public class CloudControllerUtil {
                         }
                     }
                     
+                    NetworkInterfaces networkInterfaces = iaasConfig.getNetworkInterfaces();
+                    if (networkInterfaces != null && networkInterfaces.getNetworkInterfaces() != null) {
+                        iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
+                    }
+
                     cartridge.addIaasProvider(iaasProvider);
                 }
             }
