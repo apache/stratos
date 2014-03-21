@@ -29,9 +29,9 @@ import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 import java.rmi.RemoteException;
 
@@ -126,7 +126,7 @@ public class CloudControllerClient {
 
     }
 
-    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, 
+    public MemberContext spawnAnInstance(Partition partition,
     		String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
         try {
             if(log.isInfoEnabled()) {

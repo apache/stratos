@@ -24,6 +24,14 @@ var render = function (theme, data, meta, require) {
                             ]
                 }
             }
+        ],
+        title: [
+            {
+                partial: 'title',
+                context: {
+                    title: "Apache Stratos Login"
+                }
+            }
         ]
     });
 };

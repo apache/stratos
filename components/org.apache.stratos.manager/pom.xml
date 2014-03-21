@@ -144,6 +144,7 @@
 						<Import-Package>
 							org.apache.axis2.*; version="1.6.1-wso2v10",
 							org.apache.axiom.*; version="${axiom.osgi.version.range}",
+							org.apache.stratos.autoscaler.stub; version="${project.version}",
 							org.apache.neethi.*;
 							version="2.0.4.wso2v4",
 							javax.xml.stream.*; version="1.0.1",

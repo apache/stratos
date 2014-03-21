@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.deploy.service.Service;

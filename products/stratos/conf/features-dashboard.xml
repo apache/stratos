@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<data>
+	<service name="Cloud Services" link="" key="manager">
+		<story title="Metering">
+			<story-content>Metering measures levels of resource utilization, such
+				as network bandwidth usage and
+				data storage volume, consumed by the
+				cloud services subscribers, aka
+				tenants.
+				Resource utilization's
+				(bandwidth and storage usage) are measured on the fly
+				and the
+				measured data is stored for summarizing and analyzing.
+			</story-content>
+			<story-links>
+				<link url="/carbon/tenant-usage/tenant_usage.jsp">Go to Metering....</link>
+				<link url="/carbon/tenant-usage/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Account Management">
+			<story-content>Account management allows a tenant to update and
+				validate contact information,
+				update the usage plan, validate the
+				account and even de-activate the
+				account.
+            </story-content>
+			<story-links>
+				<link url="/carbon/account-mgt/account_mgt.jsp">Manage Account...</link>
+				<link url="/carbon/account-mgt/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+		<story title="Users and Roles">
+			<story-content>You can add users and define your own roles for a
+				tenant. The permission model is
+				role based. So a tenant admin can
+				define what actions a role can perform
+				by
+				configuring permissions for
+				that role.</story-content>
+			<story-links>
+				<link url="/carbon/userstore/index.jsp">Manage users/roles...</link>
+				<link url="/carbon/userstore/docs/userguide.html">Read more (docs)...</link>
+			</story-links>
+		</story>
+	</service>
+	<service name="Stratos Controller" link="" key="sc">
+		<story title="Multi-Tenant Cartridges">
+			<story-content>Stratos Cartridges, hosting WSO2 multi-tenant middleware 
+				services delivers multi-tenancy within each Cartridge instance 
+				where teams may define multiple tenants per Cartridge.
+			</story-content>
+			<story-links>
+				<link url="/carbon/cartridge-mgt/available_cartridges.jsp?item=available_multitenant_cartridges">Available Multi-Tenant Cartridges</link>
+			</story-links>
+		</story>
+		<story title="Single-Tenant Cartridges">
+			<story-content>Stratos Cartridges provide process-level isolation and 
+				instance-level dedicated tenancy with single-tenant containers and frameworks.
+			</story-content>
+			<story-links>
+				<link url="/carbon/cartridge-mgt/available_cartridges.jsp?item=available_singletenant_cartridges">Available Single-Tenant Cartridges</link>
+			</story-links>
+		</story>
+		<story title="Subscribed Cartridges">
+			<story-content>The tenant user can see all details of the Subscribed Cartridges such as
+				the status and the number of running instances at the moment.
+			</story-content>
+			<story-links>
+				<link url="/carbon/cartridge-mgt/subscribed_cartridges.jsp">Subscribed Cartridges</link>
+			</story-links>
+		</story>
+	</service>
+</data>
+

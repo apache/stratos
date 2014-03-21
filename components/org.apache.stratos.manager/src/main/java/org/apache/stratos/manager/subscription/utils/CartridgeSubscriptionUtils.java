@@ -24,10 +24,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
@@ -134,8 +131,8 @@ public class CartridgeSubscriptionUtils {
 
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
-        org.apache.stratos.cloud.controller.pojo.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
-        for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : portMappings) {
+        PortMapping[] portMappings = cartridgeInfo.getPortMappings();
+        for (PortMapping portMapping : portMappings) {
             String port = portMapping.getPort();
             portMapBuilder.append(port).append("|");
         }
@@ -235,7 +232,7 @@ public class CartridgeSubscriptionUtils {
         Property lbRefProperty = new Property();
         lbRefProperty.setName(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
 
-        for (org.apache.stratos.cloud.controller.pojo.Property prop : lbReferenceProperties.getProperties()) {
+        for (Property prop : lbReferenceProperties.getProperties()) {
 
             String name = prop.getName();
             String value = prop.getValue();

@@ -162,6 +162,10 @@
                 <include>**/**.png</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/scripts</directory>
+            <outputDirectory>apache-stratos-cc-${pom.version}/repository/conf/scripts</outputDirectory>
+        </fileSet>
 
         <!-- Kernel Patches-->
         <fileSet>

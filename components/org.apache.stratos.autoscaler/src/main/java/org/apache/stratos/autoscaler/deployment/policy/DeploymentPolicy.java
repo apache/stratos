@@ -20,7 +20,7 @@
 package org.apache.stratos.autoscaler.deployment.policy;
 
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.io.Serializable;
 import java.util.ArrayList;

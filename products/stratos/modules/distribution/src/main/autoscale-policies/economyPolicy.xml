@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<autoscalePolicy id="economyPolicy">
+	<loadThresholds>
+		<requestsInFlight>
+			<average value="400" />
+			<gradient value="1" />
+			<secondDerivative value="0.2" />
+			<scaleDownMarginOfGradient  value="1.0" />
+			<scaleDownMarginOfSecondDerivative value="0.2" />
+		</requestsInFlight>
+		<!-- Normalized memory consumption of a cluster as a percentage -->
+		<memoryConsumption>
+			<average value="80" />
+			<gradient value="1" />
+			<secondDerivative value="0.2" />
+			<scaleDownMarginOfGradient value="1.0" />
+			<scaleDownMarginOfSecondDerivative value="0.2" />
+		</memoryConsumption>
+		<!-- Normalized load average of a cluster as a percentage -->
+		<loadAverage>
+			<average value="80" />
+			<gradient value="1" />
+			<secondDerivative value="0.2" />
+			<scaleDownMarginOfGradient value="1.0" />
+			<scaleDownMarginOfSecondDerivative value="0.2" />
+		</loadAverage>
+	</loadThresholds>
+</autoscalePolicy>

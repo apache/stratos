@@ -23,9 +23,9 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
@@ -176,7 +176,7 @@ public class ServiceUtils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.cloud.controller.deployment.partition.Partition partition =
+            org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition =
                     PojoConverter.convertToCCPartitionPojo(partitionBean);
 
 			try {
@@ -273,7 +273,7 @@ public class ServiceUtils {
 
     public static Partition[] getAvailablePartitions () throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
+        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -292,7 +292,7 @@ public class ServiceUtils {
     public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId) 
                 throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
+        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -313,7 +313,7 @@ public class ServiceUtils {
     public static Partition[]
         getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions = null;
+        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -333,7 +333,7 @@ public class ServiceUtils {
 
     public static Partition getPartition (String partitionId) throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition partition = null;
+        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -369,11 +369,6 @@ public class ServiceUtils {
         if (autoscalerServiceClient != null) {
             try {
                 autoscalePolicies = autoscalerServiceClient.getAutoScalePolicies();
-                if(autoscalePolicies == null || autoscalePolicies.length == 0) {
-                    String errorMsg = "Cannot find any auto-scaling policy.";
-                    log.error(errorMsg);
-                    throw new RestAPIException(errorMsg);
-                }
 
             } catch (RemoteException e) {
                 String errorMsg = "Error while getting available autoscaling policies. Cause : " + e.getMessage();
@@ -400,12 +395,6 @@ public class ServiceUtils {
             }
         }
 
-        if(autoscalePolicy == null) {
-        	String errorMsg = "Cannot find a matching auto-scaling policy for [id] "+autoscalePolicyId;
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
-        
         return PojoConverter.populateAutoscalePojo(autoscalePolicy);
     }
 
@@ -417,11 +406,6 @@ public class ServiceUtils {
         if (autoscalerServiceClient != null) {
             try {
                 deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
-                if(deploymentPolicies == null || deploymentPolicies.length == 0) {
-                    String errorMsg = "Cannot find any deployment policy.";
-                    log.error(errorMsg);
-                    throw new RestAPIException(errorMsg);
-                }
             } catch (RemoteException e) {
                 String errorMsg = "Error getting available deployment policies. Cause : " + e.getMessage();
                 log.error(errorMsg, e);

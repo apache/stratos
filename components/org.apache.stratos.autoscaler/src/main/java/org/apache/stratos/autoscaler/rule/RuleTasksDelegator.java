@@ -11,7 +11,7 @@ import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.cloud.controller.InstanceNotificationClient;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 /**
  * This will have utility methods that need to be executed from rule file...
