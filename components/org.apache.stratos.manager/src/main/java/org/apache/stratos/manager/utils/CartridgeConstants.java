@@ -66,6 +66,8 @@ public class CartridgeConstants {
     public static final String CC_CONNECTION_TIMEOUT = "cc.connection.timeout";
     public static final String AUTOSCALER_SOCKET_TIMEOUT = "autoscaler.socket.timeout";
     public static final String AUTOSCALER_CONNECTION_TIMEOUT = "autoscaler.connection.timeout";
+    
+    public static final String COMMIT_ENABLED = "COMMIT_ENABLED";
 
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";

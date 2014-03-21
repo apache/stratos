@@ -27,6 +27,11 @@ class tomcat(
       require => File["${target}/packs"];
   }
 
+  file { '/mnt/tomcat':
+    content => template('tomcat/tomcat.erb'),
+    require => File["${target}/packs"];
+  }
+
   exec {
     'Extract tomcat package':
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',

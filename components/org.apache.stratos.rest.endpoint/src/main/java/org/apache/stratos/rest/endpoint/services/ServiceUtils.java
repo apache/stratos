@@ -984,6 +984,7 @@ public class ServiceUtils {
         subscriptionData.setRepositoryURL(cartridgeInfoBean.getRepoURL());
         subscriptionData.setRepositoryUsername(cartridgeInfoBean.getRepoUsername());
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
+        subscriptionData.setCommitsEnabled(cartridgeInfoBean.isCommitsEnabled());
 
         if (cartridgeInfoBean.isPersistanceRequired()) {
             // Add persistence related properties to PersistenceContext

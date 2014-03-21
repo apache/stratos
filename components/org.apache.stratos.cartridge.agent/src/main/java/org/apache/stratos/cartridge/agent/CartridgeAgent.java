@@ -25,6 +25,9 @@ import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceN
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageReceiver;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cartridge agent runnable.
@@ -64,16 +67,22 @@ public class CartridgeAgent implements Runnable {
 
             // Publish instance activated event
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
+        } else {
+            //Start periodical file checker task
+    		if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
+    			log.info(" Commits enabled. Starting File listener ");
+    			ScheduledExecutorService scheduler = Executors
+    					.newScheduledThreadPool(1);
+    			scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0,
+    					10, TimeUnit.SECONDS);
+    		}
         }
 
         String persistanceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistenceMappings();
         if(persistanceMappingsPayload != null) {
             ExtensionUtils.executeVolumeMountExtension(persistanceMappingsPayload);
         }
-        // TODO: Start this thread only if this node is configured as a commit true node
-        // Start periodical file checker task
-        // ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        // scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0, 10, TimeUnit.SECONDS);
+       
 
         // Keep the thread live until terminated
 

@@ -39,8 +39,8 @@ node /lb/ inherits base {
 
 # tomcat cartridge node
 node /tomcat/ inherits base {
-  $docroot = "/mnt/apache-tomcat-7.0.52/webapps/"
-  $samlalias="/mnt/apache-tomcat-7.0.52/webapps/"
+  $docroot = "/mnt/apache-tomcat-${tomcat_version}/webapps/"
+  $samlalias="/mnt/apache-tomcat-${tomcat_version}/webapps/"
 
   require java
   class {'agent':}

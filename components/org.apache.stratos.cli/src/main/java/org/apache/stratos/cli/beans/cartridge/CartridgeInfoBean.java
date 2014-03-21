@@ -37,6 +37,7 @@ public class CartridgeInfoBean {
     boolean privateRepo;
     private boolean removeOnTermination;
     private boolean persistanceRequired;
+    private boolean commitsEnabled;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -149,4 +150,14 @@ public class CartridgeInfoBean {
     public void setPersistanceRequired(boolean persistanceRequired) {
         this.persistanceRequired = persistanceRequired;
     }
+
+	public boolean isCommitsEnabled() {
+		return commitsEnabled;
+	}
+
+	public void setCommitsEnabled(boolean commitsEnabled) {
+		this.commitsEnabled = commitsEnabled;
+	}
+    
+    
 }

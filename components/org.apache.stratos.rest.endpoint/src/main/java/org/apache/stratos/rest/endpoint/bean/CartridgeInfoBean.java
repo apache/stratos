@@ -31,6 +31,7 @@ public class CartridgeInfoBean {
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
+    boolean commitsEnabled;
 
     private boolean persistanceRequired;
     private String size;
@@ -139,4 +140,13 @@ public class CartridgeInfoBean {
     public void setRemoveOnTermination(boolean removeOnTermination) {
         this.removeOnTermination = removeOnTermination;
     }
+
+	public boolean isCommitsEnabled() {
+		return commitsEnabled;
+	}
+
+	public void setCommitsEnabled(boolean commitsEnabled) {
+		this.commitsEnabled = commitsEnabled;
+	}
+    
 }
