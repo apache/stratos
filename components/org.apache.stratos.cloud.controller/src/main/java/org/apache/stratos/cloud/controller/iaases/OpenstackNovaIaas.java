@@ -236,8 +236,7 @@ public class OpenstackNovaIaas extends Iaas {
 
 							@Override
 							public boolean apply(FloatingIP arg0) {
-								// FIXME is this the correct filter?
-								return arg0.getFixedIp() == null;
+								return arg0.getInstanceId() == null;
 							}
 
 						}));

@@ -23,11 +23,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.util.Constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Algorithm context cache manages algorithm context values in a clustered environment.
  */
 public class AlgorithmContextCache {
     private static final Log log = LogFactory.getLog(AlgorithmContextCache.class);
+
+    // TODO Current member index should be stored in a context property. This map may grow since entris are not deleted when clusters are removed.
+    private static Map<String, Integer> clusterServiceToMemberIndex = new HashMap<String, Integer>();
 
     private static String prepareKey(String serviceName, String clusterId) {
         return String.format("%s-%s", serviceName, clusterId);
@@ -35,11 +41,13 @@ public class AlgorithmContextCache {
 
     public static void putCurrentMemberIndex(String serviceName, String clusterId, int currentMemberIndex) {
         String key = prepareKey(serviceName, clusterId);
+        clusterServiceToMemberIndex.put(key, currentMemberIndex);
         LoadBalancerCache.putInteger(Constants.ALGORITHM_CONTEXT_CACHE, key, currentMemberIndex);
     }
 
     public static int getCurrentMemberIndex(String serviceName, String clusterId) {
         String key = prepareKey(serviceName, clusterId);
-        return LoadBalancerCache.getInteger(Constants.ALGORITHM_CONTEXT_CACHE, key);
+        //return LoadBalancerCache.getInteger(Constants.ALGORITHM_CONTEXT_CACHE, key);
+        return clusterServiceToMemberIndex.get(key);
     }
 }

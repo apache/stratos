@@ -57,8 +57,8 @@ public class HealthStatisticsNotifier implements Runnable {
                 if (statsPublisher.isEnabled()) {
 
                     double memoryConsumption = HealthStatisticsReader.getMemoryConsumption();
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Publishing memory consumption: %f", memoryConsumption));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Publishing memory consumption: %f", memoryConsumption));
                     }
                     statsPublisher.publish(
                             CartridgeAgentConfiguration.getInstance().getClusterId(),
@@ -70,8 +70,8 @@ public class HealthStatisticsNotifier implements Runnable {
                     );
 
                     double loadAverage = HealthStatisticsReader.getLoadAverage();
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Publishing load average: %f", loadAverage));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Publishing load average: %f", loadAverage));
                     }
                     statsPublisher.publish(
                             CartridgeAgentConfiguration.getInstance().getClusterId(),
