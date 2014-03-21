@@ -55,20 +55,6 @@ public class HealthStatisticsNotifier implements Runnable {
                 }
 
                 if (statsPublisher.isEnabled()) {
-                    if(!CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts())
-                            && ( !CartridgeAgentEventPublisher.isMaintenance() || !CartridgeAgentEventPublisher.isReadyToShutdown() ) ) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Publishing ports not open event");
-                        }
-                        statsPublisher.publish(
-                                CartridgeAgentConfiguration.getInstance().getClusterId(),
-                                CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-                                CartridgeAgentConfiguration.getInstance().getMemberId(),
-                                CartridgeAgentConfiguration.getInstance().getPartitionId(),
-                                CartridgeAgentConstants.PORTS_NOT_OPEN,
-                                1
-                                );
-                    }
 
                     double memoryConsumption = HealthStatisticsReader.getMemoryConsumption();
                     if(log.isInfoEnabled()) {
