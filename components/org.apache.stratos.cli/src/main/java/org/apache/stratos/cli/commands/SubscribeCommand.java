@@ -108,6 +108,12 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 		passwordOption.setArgName("password");
 		passwordOption.setOptionalArg(true);
 		options.addOption(passwordOption);
+		
+		Option upstreamCommitsEnabledOption = new Option(CliConstants.ENABLE_COMMITS_OPTION, CliConstants.ENABLE_COMMITS_LONG_OPTION, true,
+		"Enable Git commit upstream");
+		upstreamCommitsEnabledOption.setArgName("enable-commits");
+		upstreamCommitsEnabledOption.setOptionalArg(true);
+		options.addOption(upstreamCommitsEnabledOption);
 
         return options;
 	}
@@ -141,6 +147,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
             boolean removeOnTermination = false;
 			boolean privateRepo = false;
             boolean persistanceMapping = false;
+            boolean commitsEnabled = false;
 
 			final CommandLineParser parser = new GnuParser();
 			CommandLine commandLine;
@@ -235,6 +242,12 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					}
 					dataCartridgeAlias = commandLine.getOptionValue(CliConstants.DATA_ALIAS_OPTION);
 				}
+				if (commandLine.hasOption(CliConstants.ENABLE_COMMITS_OPTION)) {
+					if (logger.isTraceEnabled()) {
+						logger.trace("Upstream git commits are enabled");
+					}
+					commitsEnabled = true;
+				}
 
                 if (depPolicy == null) {
                     System.out.println("Deployment policy is required.");
@@ -266,7 +279,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 
                 RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
                 		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy, size, removeOnTermination,
-                        persistanceMapping);
+                        persistanceMapping, commitsEnabled);
 
 				return CliConstants.SUCCESSFUL_CODE;
 

@@ -34,6 +34,7 @@ public class CartridgeAgentConfiguration {
     private Map<String, String> parameters;
     private boolean isMultitenant;
     private String persistenceMappings;
+    private final boolean isCommitsEnabled;
 
     private CartridgeAgentConfiguration() {
     	parameters = loadParametersFile();
@@ -51,6 +52,7 @@ public class CartridgeAgentConfiguration {
             logFilePaths = readLogFilePaths();
             isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
             persistenceMappings = readPersisenceMapping();
+            isCommitsEnabled = readCommitsEnabled(CartridgeAgentConstants.COMMIT_ENABLED);
 
         } catch (ParameterNotFoundException e) {
             throw new RuntimeException(e);
@@ -73,7 +75,18 @@ public class CartridgeAgentConfiguration {
         }
     }
 
-    private boolean readMultitenant(String multitenant) throws ParameterNotFoundException {
+    private boolean readCommitsEnabled(String commitEnabled) {
+    	boolean isCommitEnabled = false;
+    	try {
+    		isCommitEnabled = Boolean.parseBoolean(readParameterValue(commitEnabled));
+		} catch (ParameterNotFoundException e) {
+			// Missing commits enabled flag is not an exception
+			log.error(" Commits enabled payload parameter is not found");
+		}
+		return isCommitEnabled;
+	}
+
+	private boolean readMultitenant(String multitenant) throws ParameterNotFoundException {
     	String multitenantStringValue = readParameterValue(multitenant);
     	return Boolean.parseBoolean(multitenantStringValue);
 	}
@@ -229,5 +242,11 @@ public class CartridgeAgentConfiguration {
     public String getPersistenceMappings() {
         return persistenceMappings;
     }
+
+	public boolean isCommitsEnabled() {
+		return isCommitsEnabled;
+	}
+
+	
 
 }
