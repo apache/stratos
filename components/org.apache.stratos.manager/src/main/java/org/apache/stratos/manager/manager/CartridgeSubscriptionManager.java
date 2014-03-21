@@ -48,6 +48,7 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
 import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.CarbonContext;
+import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
 
 import java.util.Collection;
 import java.util.Random;
@@ -216,6 +217,18 @@ public class CartridgeSubscriptionManager {
                 lbDataContext.getDeploymentPolicy(), repository);
 
 
+                // publishing to bam
+             	CartridgeSubscriptionDataPublisher.publish(subscriptionData.getTenantId(),
+             				subscriptionData.getTenantAdminUsername(), lbAlias,
+             				lbDataContext.getLbCartridgeInfo().getType(),
+             				subscriptionData.getRepositoryURL(),
+             				serviceCartridgeInfo.getMultiTenant(),
+             				lbDataContext.getDeploymentPolicy(),
+             				lbDataContext.getAutoscalePolicy(),
+             				cartridgeSubscription.getCluster().getClusterDomain(), 
+             				cartridgeSubscription.getHostName(),
+             				cartridgeSubscription.getMappedDomain(), "Subscribed");
+        
         log.info("Tenant [" + subscriptionData.getTenantId() + "] with username [" + subscriptionData.getTenantAdminUsername() +
                 " subscribed to " + "] Cartridge with Alias " + lbAlias + ", Cartridge Type: " + lbDataContext.getLbCartridgeInfo().getType() +
                 ", Autoscale Policy: " + lbDataContext.getAutoscalePolicy() + ", Deployment Policy: " + lbDataContext.getDeploymentPolicy());
