@@ -94,14 +94,7 @@ if [[ $mb = "true" ]]; then
     echo ${mb_path}
 
     echo "Starting ActiveMQ server ..." >> $LOG
-    bits=$(uname -m)
-    if [[ $bits =~ 64 ]]; then
-	${mb_path}/bin/linux-x86-64/activemq start
-    elif [[ $bits =~ 32 ]]; then
-	${mb_path}/bin/linux-x86-32/activemq start
-    else
-	${mb_path}/bin/activemq start
-    fi
+    ${mb_path}/bin/activemq start
     
     echo "ActiveMQ server started" >> $LOG
     sleep $SLEEP
