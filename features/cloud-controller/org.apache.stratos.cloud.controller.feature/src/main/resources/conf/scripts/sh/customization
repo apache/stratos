@@ -1,3 +1,4 @@
 #!/bin/sh
 mkdir -p /tmp/payload
 echo "PAYLOAD" > /tmp/payload/launch-params
+/root/bin/init-vcloud.sh > /tmp/puppet_log

@@ -52,6 +52,11 @@ public class CartridgeAgentUtils {
     }
 
     public static String decryptPassword(String repoUserPassword) {
+    	
+    	if(repoUserPassword == null) {
+    		return repoUserPassword;
+    	}
+    	
         String decryptPassword = "";
         String secret = CartridgeAgentConfiguration.getInstance().getCartridgeKey();
         SecretKey key;
@@ -66,8 +71,12 @@ public class CartridgeAgentUtils {
             byte[] decrypted = cipher.doFinal(encrypted);
             decryptPassword = new String(decrypted);
         } catch (Exception e) {
+        	log.error("Exception has occurred. " + e.getMessage());
             e.printStackTrace();
         }
+		if (log.isDebugEnabled()) {
+			log.debug("Decrypted PWD : [" + decryptPassword + "] ");
+		}
         return decryptPassword;
     }
 
@@ -111,12 +120,12 @@ public class CartridgeAgentUtils {
                 SocketAddress httpSockaddr = new InetSocketAddress(ipAddress, port);
                 socket = new Socket();
                 socket.connect(httpSockaddr, 5000);
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Port %s is active", port));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Port %s is active", port));
                 }
             } catch (Exception e) {
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Port %s is not active", port));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Port %s is not active", port));
                 }
                 return false;
             } finally {

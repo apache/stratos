@@ -171,7 +171,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
             if (dataHolder.getCartridges().remove(cartridge)) {
                 persist();
-                log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+                if(log.isInfoEnabled()) {
+                    log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+                }
+                return;
             }
         }
         String msg = "Cartridge [type] "+cartridgeType+" is not a deployed Cartridge type.";

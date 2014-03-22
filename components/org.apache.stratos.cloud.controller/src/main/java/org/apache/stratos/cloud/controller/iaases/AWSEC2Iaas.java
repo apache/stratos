@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.NetworkInterface;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.AWSEC2PartitionValidator;
@@ -185,13 +186,14 @@ public class AWSEC2Iaas extends Iaas {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
 					.keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
-		
-		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
-			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
-			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
-			template.getOptions()
-					.as(AWSEC2TemplateOptions.class).networks(Arrays.asList(networksArray));
-		}
+
+        if (iaasInfo.getNetworkInterfaces() != null) {
+            List<String> networks = new ArrayList<String>(iaasInfo.getNetworkInterfaces().length);
+            for (NetworkInterface ni:iaasInfo.getNetworkInterfaces()) {
+                networks.add(ni.getNetworkUuid());
+            }
+            template.getOptions().as(AWSEC2TemplateOptions.class).networks(networks);
+        }
 
 		// set Template
 		iaasInfo.setTemplate(template);

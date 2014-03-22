@@ -55,24 +55,10 @@ public class HealthStatisticsNotifier implements Runnable {
                 }
 
                 if (statsPublisher.isEnabled()) {
-                    if(!CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts())
-                            && ( !CartridgeAgentEventPublisher.isMaintenance() || !CartridgeAgentEventPublisher.isReadyToShutdown() ) ) {
-                        if(log.isInfoEnabled()) {
-                            log.info("Publishing ports not open event");
-                        }
-                        statsPublisher.publish(
-                                CartridgeAgentConfiguration.getInstance().getClusterId(),
-                                CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-                                CartridgeAgentConfiguration.getInstance().getMemberId(),
-                                CartridgeAgentConfiguration.getInstance().getPartitionId(),
-                                CartridgeAgentConstants.PORTS_NOT_OPEN,
-                                1
-                                );
-                    }
 
                     double memoryConsumption = HealthStatisticsReader.getMemoryConsumption();
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Publishing memory consumption: %f", memoryConsumption));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Publishing memory consumption: %f", memoryConsumption));
                     }
                     statsPublisher.publish(
                             CartridgeAgentConfiguration.getInstance().getClusterId(),
@@ -84,8 +70,8 @@ public class HealthStatisticsNotifier implements Runnable {
                     );
 
                     double loadAverage = HealthStatisticsReader.getLoadAverage();
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Publishing load average: %f", loadAverage));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Publishing load average: %f", loadAverage));
                     }
                     statsPublisher.publish(
                             CartridgeAgentConfiguration.getInstance().getClusterId(),
