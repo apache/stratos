@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     This adaptor is used by default to send WSO2 events to the CEP server.
+     DO NOT DELETE this file since this file is needed when event builder/event formatter 
+     configurations are created using default values.
+-->     
+<inputEventAdaptor name="DefaultWSO2EventInputAdaptor"
+  statistics="disable" trace="disable" type="wso2event" xmlns="http://wso2.org/carbon/eventadaptormanager"/>
+
