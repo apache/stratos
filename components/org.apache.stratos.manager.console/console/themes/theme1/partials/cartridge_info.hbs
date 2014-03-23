@@ -13,9 +13,9 @@
         <div style="margin-bottom:20px;">{{cartridgeInfo.description}}</div>
 
         <div class="data-title">Access URLs:</div>
-        {{#each cartridgeInfo.portMapping}}
+        {{#each cartridgeInfo.portMappings}}
         <div>
-            <a target="_blank" href="{{protocol}}://{{../cartridgeInfo.hostName}}:{{proxyport}}">{{protocol}}://{{../cartridgeInfo.hostName}}:{{proxyport}}</a>
+            <a target="_blank" href="{{protocol}}://{{../cartridgeInfo.hostName}}:{{proxyPort}}">{{protocol}}://{{../cartridgeInfo.hostName}}:{{proxyPort}}</a>
         </div>
         {{/each}}
 
