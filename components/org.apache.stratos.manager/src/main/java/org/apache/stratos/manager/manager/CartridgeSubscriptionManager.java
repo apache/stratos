@@ -269,7 +269,7 @@ public class CartridgeSubscriptionManager {
         if(repositoryPassword != null && !repositoryPassword.isEmpty()) {
         	encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
         } else {
-        	encryptedRepoPassword = repositoryPassword;
+        	encryptedRepoPassword = "";
         }
 
         // Create repository

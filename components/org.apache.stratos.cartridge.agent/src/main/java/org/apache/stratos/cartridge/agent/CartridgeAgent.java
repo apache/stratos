@@ -227,7 +227,11 @@ public class CartridgeAgent implements Runnable {
             }
             RepositoryInformation repoInformation = new RepositoryInformation();
             repoInformation.setRepoUsername(repoUsername);
-            repoInformation.setRepoPassword(repoPassword);
+            if(repoPassword == null) {
+            	repoInformation.setRepoPassword("");
+            }else {
+            	repoInformation.setRepoPassword(repoPassword);
+            }            
             repoInformation.setRepoUrl(repoURL);
             repoInformation.setRepoPath(localRepoPath);
             repoInformation.setTenantId(tenantId);
