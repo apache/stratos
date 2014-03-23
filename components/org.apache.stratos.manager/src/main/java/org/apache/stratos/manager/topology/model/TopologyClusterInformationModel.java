@@ -83,7 +83,9 @@ public class TopologyClusterInformationModel {
     }
     
     public Set<Cluster> getClusters (int tenantId, String cartridgeType) {
-
+    	if(log.isDebugEnabled()) {
+        	log.info(" Getting cluster for tenant id [" + tenantId + "] ");	
+    	}
     	Collection<CartridgeSubscription> subscriptions = null;
 
         if(cartridgeType != null) {
@@ -93,11 +95,18 @@ public class TopologyClusterInformationModel {
     	}
 
         Set<Cluster> clusterSet = new HashSet<Cluster>();
-    	
 		if (subscriptions != null) {
 			for (CartridgeSubscription cartridgeSubscription : subscriptions) {
+				
+				// TODO  -- check this. Sometimes getting clusterId some non-meaningful value
 				String clusterId = cartridgeSubscription.getClusterDomain();
-				clusterSet.add(clusterIdToClusterMap.get(clusterId));
+				if(log.isDebugEnabled()) {
+					log.info("Finding cluster with id ["+clusterId+"] ");
+				}
+				Cluster foundCluster = clusterIdToClusterMap.get(clusterId);
+				if (foundCluster != null) {
+					clusterSet.add(foundCluster);
+				}
 			}
 		}
     	return clusterSet;

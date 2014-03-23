@@ -202,4 +202,14 @@ public class AutoscalerServiceClient {
             return stub.addPartition(partition);
 
     }
+    
+    public String getDefaultLBClusterId (String deploymentPolicy) throws RemoteException {
+    	return stub.getDefaultLBClusterId(deploymentPolicy);
+    }
+    
+    
+    public String getServiceLBClusterId (String serviceType, String deploymentPolicy) throws RemoteException {
+    	return stub.getServiceLBClusterId(serviceType, deploymentPolicy);
+    }
+    
 }

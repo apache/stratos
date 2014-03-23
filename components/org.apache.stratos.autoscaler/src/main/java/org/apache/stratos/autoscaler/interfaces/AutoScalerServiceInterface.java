@@ -63,4 +63,8 @@ public interface AutoScalerServiceInterface {
      * false if a LB couldn't find even in one network partition.
      */
 	public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId);
+
+    public String getDefaultLBClusterId (String deploymentPolicyName);
+
+    public String getServiceLBClusterId (String serviceType, String deploymentPolicyName);
 }
