@@ -9,15 +9,14 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-            <form method="post" role="form" action="{{url "/controllers/cartridgeSubscribeSubmit.jag"}}" id="newTenantForm">
+            <form method="post" role="form" action="{{url "/controllers/cartridgeSubscribeSubmit.jag"}}" id="subscribeCartridgeForm">
             <div class="form-group">
                 <label class="required">Public URL:</label>
                 <div class="form-inline">
                     <input name="cartridgeType" type="hidden" value="{{cartridgeType}}"/>
                     <input name="alias"
                            type="text"
-                           class="required"
-                           class="form-control input-xlarge js-help"
+                           class="required form-control input-xlarge js-help"
                            data-help="Specify a unique alias which can be used to generate the hostname as alias.hostname from cartridge"
                            data-help-x-offset="50"
                            data-help-y-offset="10"
@@ -36,8 +35,7 @@
                     <div class="form-inline">
                         <input name="repoURL"
                                type="text"
-                               class="required"
-                               class="form-control input-xlarge js-help"
+                               class="required form-control input-xlarge js-help"
                                data-help="Specify a repository URL of the artifacts."
                                data-help-x-offset="50"
                                data-help-y-offset="10"
@@ -54,13 +52,13 @@
                 <div class="form-group">
                     <label class="required">Username:</label>
                     <div class="form-inline">
-                        <input name="repoUsername" class="required"  class="form-control input-xlarge" placeholder="username"/>
+                        <input name="repoUsername" class="required form-control input-xlarge" placeholder="username"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="required">Password:</label>
                     <div class="form-inline">
-                        <input name="repoPassword" class="required" type="password" class="form-control input-xlarge" placeholder="******"/>
+                        <input name="repoPassword" type="password" class="required form-control input-xlarge" placeholder="******"/>
                     </div>
                 </div>
             </div>
@@ -146,14 +144,18 @@
                  {{/unless}}
              {{/if}}
 
+            <div class="form-group">
+                    <label class="required">New Checkbox:</label>
+                    <label>
+                        <input name="new_checkbox" type="checkbox" id="new_checkbox"/> Require Persistent Storage
+                    </label>
+            </div>
 
             <button type="submit" class="btn btn-primary">Subscribe to Cartridge</button>
             </form>
         </div>
     </div>
 </div>
-<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>
-<script src="{{url "/themes/theme1/ui/js/tenant_management.js"}}"></script>
 <script>
     $(function(){
         $('.js-help')
@@ -190,14 +192,7 @@
         $volume_check.click(function(){
             $('#persistence_container').toggle($volume_check.checked);
         });
-    });
-
-     $('#alias').keyup(function(){
-        if($(this).val() != ""){
-             $('#domainMessage').show().html('Domain is not available').addClass('noDomain').removeClass('hasDomain');
-        }
-
+        $( "#subscribeCartridgeForm" ).validate();
     });
 
 </script>
-<script src="{{url "/themes/theme1/ui/js/utils.js"}}"></script>

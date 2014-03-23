@@ -13,13 +13,11 @@
         <div style="margin-bottom:20px;">{{cartridgeInfo.description}}</div>
 
         <div class="data-title">Access URLs:</div>
+        {{#each cartridgeInfo.portMapping}}
         <div>
-            <a target="_blank" href="http://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}">http://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}</a>
+            <a target="_blank" href="{{protocol}}://{{../cartridgeInfo.hostName}}:{{proxyport}}">{{protocol}}://{{../cartridgeInfo.hostName}}:{{proxyport}}</a>
         </div>
-        <div>
-            <a target="_blank" href="https://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}">https://{{cartridgeInfo.cartridgeAlias}}.{{cartridgeInfo.hostName}}</a>
-        </div>
-
+        {{/each}}
 
         <div class="data-title">ActiveInstances:</div>
         <div>{{cartridgeInfo.activeInstances}}</div>

@@ -7,7 +7,15 @@ $(function(){
         }
     });
 
-    $('#newTenantForm').validate();
+    $( "#newTenantForm" ).validate({
+        rules: {
+            adminPassword: "required",
+                adminPassword_again: {
+                    equalTo: "#adminPassword"
+                }
+        }
+    });
+
 });
 function manage_selected(action){
     var checked = "";
