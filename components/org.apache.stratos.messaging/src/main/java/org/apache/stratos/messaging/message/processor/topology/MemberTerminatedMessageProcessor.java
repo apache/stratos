@@ -125,6 +125,8 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
 
             // Apply changes to the topology
             member.setStatus(MemberStatus.Terminated);
+            //removing the member from the cluster
+            cluster.removeMember(member);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Member terminated: [service] %s [cluster] %s [member] %s",
