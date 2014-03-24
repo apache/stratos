@@ -35,6 +35,7 @@ public class CartridgeAgentConfiguration {
     private boolean isMultitenant;
     private String persistenceMappings;
     private final boolean isCommitsEnabled;
+    private final String listenAddress;
 
     private CartridgeAgentConfiguration() {
     	parameters = loadParametersFile();
@@ -53,6 +54,7 @@ public class CartridgeAgentConfiguration {
             isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
             persistenceMappings = readPersisenceMapping();
             isCommitsEnabled = readCommitsEnabled(CartridgeAgentConstants.COMMIT_ENABLED);
+            listenAddress = System.getProperty(CartridgeAgentConstants.LISTEN_ADDRESS);
 
         } catch (ParameterNotFoundException e) {
             throw new RuntimeException(e);
@@ -247,6 +249,8 @@ public class CartridgeAgentConfiguration {
 		return isCommitsEnabled;
 	}
 
-	
 
+    public String getListenAddress() {
+        return listenAddress;
+    }
 }

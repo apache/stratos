@@ -56,7 +56,8 @@ public class CartridgeAgent implements Runnable {
         ExtensionUtils.executeStartServersExtension();
 
         // Wait for all ports to be active
-        CartridgeAgentUtils.waitUntilPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
+        CartridgeAgentUtils.waitUntilPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
+                CartridgeAgentConfiguration.getInstance().getPorts());
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
