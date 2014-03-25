@@ -33,19 +33,23 @@ import org.apache.http.params.HttpParams;
 
 public class RestClient implements GenericRestClient{
 
-    private String url;
+    private String baseURL;
     private String username;
     private String password;
 
     private final int TIME_OUT_PARAM = 6000000;
 
-    RestClient(String url, String username, String password) {
-        this.setUrl(url);
-        this.setUsername(username);
-        this.setPassword(password);
+    public RestClient(String baseURL, String username, String password) {
+        this.baseURL = baseURL;
+        this.username = username;
+        this.password = password;
     }
 
-    /**
+    public String getBaseURL() {
+		return baseURL;
+	}
+
+	/**
      * Handle http post request. Return String
      *
      * @param  httpClient
@@ -62,8 +66,7 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString, String username,
-                               String password) throws Exception{
+    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString) throws Exception{
         try {
             HttpPost postRequest = new HttpPost(resourcePath);
 
@@ -110,7 +113,7 @@ public class RestClient implements GenericRestClient{
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String username, String password) throws Exception{
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath) throws Exception{
         try {
             HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
@@ -138,7 +141,7 @@ public class RestClient implements GenericRestClient{
         }
     }
 
-    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String username, String password) {
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath) {
         try {
             HttpDelete httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
@@ -167,30 +170,7 @@ public class RestClient implements GenericRestClient{
     }
 
     public void doPut() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // Not implemented
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

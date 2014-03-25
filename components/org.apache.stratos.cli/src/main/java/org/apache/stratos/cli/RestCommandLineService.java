@@ -70,10 +70,9 @@ public class RestCommandLineService {
 
 	private static final Logger logger = LoggerFactory.getLogger(RestCommandLineService.class);
 
-    private RestClient restClientService;
+    private RestClient restClient;
 
     // REST endpoints
-    private final String initializeEndpoint = "/stratos/admin/init";
     private final String initializeCookieEndpoint = "/stratos/admin/cookie";
     private final String listAvailableCartridgesRestEndpoint = "/stratos/admin/cartridge/available/list";
     private final String listSubscribedCartridgesRestEndpoint = "/stratos/admin/cartridge/list/subscribed";
@@ -139,6 +138,10 @@ public class RestCommandLineService {
         // Initialized client
         try {
             initializeRestClient(serverURL, username, password);
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug("Initialized REST Client for user {}", username);
+            }
         } catch (AxisFault e) {
             System.out.println("Error connecting to the back-end");
             throw new CommandException(e);
@@ -147,8 +150,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             if (validateLogin) {
-                HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + initializeCookieEndpoint,
-                        restClientService.getUsername(), restClientService.getPassword());
+                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + initializeCookieEndpoint);
 
                 if (response != null) {
                     String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -160,11 +162,6 @@ public class RestCommandLineService {
                         return false;
                     }
                 }
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Tenant Domain {}", restClientService.getUsername());
-                }
-
                 return true;
             } else {
                 // Just return true as we don't need to validate
@@ -209,15 +206,14 @@ public class RestCommandLineService {
         //option.setManageSession(true);
         //option.setProperty(org.apache.axis2.transport.http.HTTPConstants.AUTHENTICATE, authenticator);
         //option.setTimeOutInMilliSeconds(300000);
-        this.restClientService = restClient;
+        this.restClient = restClient;
     }
 
     // List currently available multi tenant and single tenant cartridges
     public void listAvailableCartridges() throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + listAvailableCartridgesRestEndpoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -317,8 +313,7 @@ public class RestCommandLineService {
     public void describeAvailableCartridges(String type) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAvailableCartridgesRestEndpoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + listAvailableCartridgesRestEndpoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -361,8 +356,7 @@ public class RestCommandLineService {
     public void listSubscribedCartridges(final boolean full) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listSubscribedCartridgesRestEndpoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + listSubscribedCartridgesRestEndpoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -455,8 +449,8 @@ public class RestCommandLineService {
     public void listSubscribedCartridgeInfo(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listSubscribedCartridgeInfoRestEndpoint
-            		+alias, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listSubscribedCartridgeInfoRestEndpoint + alias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -538,8 +532,8 @@ public class RestCommandLineService {
 
             // Invoke  cluster/{clusterId}
             for (String clusterId : lbClusterIdSet) {
-                HttpResponse responseCluster = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
-                        +"clusterId/"+ clusterId, restClientService.getUsername(), restClientService.getPassword());
+				HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL()
+						+ listClusterRestEndpoint + "clusterId/" + clusterId);
 
                 String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
                 String resultStringCluster = getHttpResponseString(responseCluster);
@@ -619,8 +613,8 @@ public class RestCommandLineService {
             
             // Invoke  cluster/{clusterId}
             for (Member m : members) {
-            	HttpResponse responseCluster = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
-                        +"clusterId/"+ m.getLbClusterId(), restClientService.getUsername(), restClientService.getPassword());
+            	HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL() + listClusterRestEndpoint
+                        +"clusterId/"+ m.getLbClusterId());
 
                 String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
                 String resultStringCluster = getHttpResponseString(responseCluster);
@@ -646,9 +640,8 @@ public class RestCommandLineService {
 
 	private Member[] getMembers(String cartridgeType, String alias, DefaultHttpClient httpClient) throws Exception{
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listClusterRestEndpoint
-                    + cartridgeType + "/" + alias,
-                    restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listClusterRestEndpoint + cartridgeType + "/" + alias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             
@@ -752,12 +745,6 @@ public class RestCommandLineService {
 
         String jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
 
-        SubscriptionInfo subcriptionConnectInfo = null;
-
-        if (httpClient == null) {
-            httpClient = new DefaultHttpClient();
-        }
-
         try {
             cartridgeInfoBean.setCartridgeType(cartridgeType);
             cartridgeInfoBean.setAlias(alias);
@@ -774,8 +761,8 @@ public class RestCommandLineService {
             
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
 
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + subscribCartridgeRestEndpoint,
-                    jsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + subscribCartridgeRestEndpoint,
+                    jsonSubscribeString);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -811,12 +798,6 @@ public class RestCommandLineService {
                 }
             }
 
-            if (subcriptionConnectInfo != null) {
-                hostnames += ", " + subcriptionConnectInfo.getHostname();
-                hostnamesLabel = "host names";
-
-            }
-
             if (externalRepoURL != null) {
                 String takeTimeMsg = "(this might take few minutes... depending on repo size)\n";
                 System.out.println(takeTimeMsg);
@@ -848,8 +829,8 @@ public class RestCommandLineService {
 
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
 
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + addTenantEndPoint,
-                    jsonString, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ addTenantEndPoint, jsonString);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -874,8 +855,8 @@ public class RestCommandLineService {
     public void deleteTenant(String tenantDomain) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doDelete(httpClient, restClientService.getUrl()
-                    + addTenantEndPoint + "/" + tenantDomain, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
+					+ addTenantEndPoint + "/" + tenantDomain);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -903,8 +884,8 @@ public class RestCommandLineService {
     public void deactivateTenant(String tenantDomain) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl()
-                    + deactivateTenantRestEndPoint + "/" + tenantDomain, "", restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ deactivateTenantRestEndPoint + "/" + tenantDomain, "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -932,8 +913,8 @@ public class RestCommandLineService {
     public void activateTenant(String tenantDomain) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl()
-                    + activateTenantRestEndPoint + "/" + tenantDomain, "", restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ activateTenantRestEndPoint + "/" + tenantDomain, "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -961,8 +942,8 @@ public class RestCommandLineService {
     public void listAllTenants() throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAllTenantRestEndPoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listAllTenantRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -1029,8 +1010,7 @@ public class RestCommandLineService {
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + unsubscribeTenantEndPoint, alias,
-                    restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + unsubscribeTenantEndPoint, alias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1058,8 +1038,8 @@ public class RestCommandLineService {
     public void deployCartridgeDefinition (String cartridgeDefinition) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + cartridgeDeploymentEndPoint,
-                    cartridgeDefinition, restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + cartridgeDeploymentEndPoint,
+                    cartridgeDefinition);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1087,8 +1067,8 @@ public class RestCommandLineService {
     public void undeployCartrigdeDefinition (String id) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doDelete(httpClient, restClientService.getUrl()
-                    + cartridgeDeploymentEndPoint + "/" + id, restClientService.getUsername(), restClientService.getPassword());
+            HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
+                    + cartridgeDeploymentEndPoint + "/" + id);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1116,8 +1096,8 @@ public class RestCommandLineService {
     public void deployPartition (String partitionDefinition) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + partitionDeploymentEndPoint,
-                    partitionDefinition, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ partitionDeploymentEndPoint, partitionDefinition);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -1145,8 +1125,8 @@ public class RestCommandLineService {
     public void deployAutoscalingPolicy (String autoScalingPolicy) throws CommandException{
         DefaultHttpClient httpClient= new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + autoscalingPolicyDeploymentEndPoint,
-                    autoScalingPolicy, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ autoscalingPolicyDeploymentEndPoint, autoScalingPolicy);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1174,8 +1154,8 @@ public class RestCommandLineService {
     public void deployService (String deployService) throws CommandException{
         DefaultHttpClient httpClient= new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deployServiceEndPoint,
-                    deployService, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ deployServiceEndPoint, deployService);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1203,8 +1183,8 @@ public class RestCommandLineService {
     public void undeployService(String id) throws  CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doDelete(httpClient, restClientService.getUrl()
-                    + deployServiceEndPoint + "/" + id, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
+					+ deployServiceEndPoint + "/" + id);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1232,8 +1212,8 @@ public class RestCommandLineService {
     public void listDeployServices() throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listDeployServicesRestEndPoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listDeployServicesRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1310,8 +1290,8 @@ public class RestCommandLineService {
     public void deployDeploymentPolicy (String deploymentPolicy) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + deploymentPolicyDeploymentEndPoint,
-                    deploymentPolicy, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+					+ deploymentPolicyDeploymentEndPoint, deploymentPolicy);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1339,8 +1319,8 @@ public class RestCommandLineService {
     public void listPartitions() throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listParitionRestEndPoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listParitionRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = getHttpResponseString(response);
@@ -1404,8 +1384,8 @@ public class RestCommandLineService {
     public void listAutoscalePolicies() throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listAutoscalePolicyRestEndPoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listAutoscalePolicyRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1469,8 +1449,8 @@ public class RestCommandLineService {
     public void listDeploymentPolicies() throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl() + listDeploymentPolicyRestEndPoint,
-                    restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listDeploymentPolicyRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1534,8 +1514,8 @@ public class RestCommandLineService {
     public void describeDeploymentPolicies(String id) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
-                    + listDeploymentPolicyRestEndPoint, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listDeploymentPolicyRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1582,8 +1562,8 @@ public class RestCommandLineService {
     public void describePartition(String id) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
-                    + listParitionRestEndPoint, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listParitionRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1624,8 +1604,8 @@ public class RestCommandLineService {
     public void describeAutoScalingPolicy(String id) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClientService.doGet(httpClient, restClientService.getUrl()
-                    + listAutoscalePolicyRestEndPoint, restClientService.getUsername(), restClientService.getPassword());
+			HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+					+ listAutoscalePolicyRestEndPoint);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1785,7 +1765,7 @@ public class RestCommandLineService {
     }
 
     // This method gives the HTTP response string
-    private String getHttpResponseString (HttpResponse response) {
+	private String getHttpResponseString (HttpResponse response) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
 
