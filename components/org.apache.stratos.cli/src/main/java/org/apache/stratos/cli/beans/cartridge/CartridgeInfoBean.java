@@ -27,9 +27,6 @@ public class CartridgeInfoBean {
     String repoURL;
     String repoUsername;
     String repoPassword;
-    String dataCartridgeType;
-    String dataCartridgeAlias;
-
     private String autoscalePolicy;
     private String deploymentPolicy;
     private String size;
@@ -93,22 +90,6 @@ public class CartridgeInfoBean {
 
     public void setRepoPassword(String repoPassword) {
         this.repoPassword = repoPassword;
-    }
-
-    public String getDataCartridgeType() {
-        return dataCartridgeType;
-    }
-
-    public void setDataCartridgeType(String dataCartridgeType) {
-        this.dataCartridgeType = dataCartridgeType;
-    }
-
-    public String getDataCartridgeAlias() {
-        return dataCartridgeAlias;
-    }
-
-    public void setDataCartridgeAlias(String dataCartridgeAlias) {
-        this.dataCartridgeAlias = dataCartridgeAlias;
     }
 
     public String getAutoscalePolicy() {

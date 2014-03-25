@@ -728,7 +728,7 @@ public class RestCommandLineService {
 
 	// This method does the cartridge subscription
     public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
-                          String password, String dataCartridgeType, String dataCartridgeAlias, String asPolicy,
+                          String password,String asPolicy,
                           String depPolicy, String size, boolean remoOnTermination, boolean persistanceMapping,
                           boolean enableCommits)
             throws CommandException {
@@ -743,8 +743,6 @@ public class RestCommandLineService {
         cartridgeInfoBean.setRepoPassword(null);
         cartridgeInfoBean.setAutoscalePolicy(null);
         cartridgeInfoBean.setDeploymentPolicy(null);
-        cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
-        cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
         cartridgeInfoBean.setSize(size);
         cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
         cartridgeInfoBean.setPersistanceRequired(persistanceMapping);
@@ -756,43 +754,6 @@ public class RestCommandLineService {
         String jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
 
         SubscriptionInfo subcriptionConnectInfo = null;
-        if (StringUtils.isNotBlank(dataCartridgeType) && StringUtils.isNotBlank(dataCartridgeAlias)) {
-            System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
-                    dataCartridgeAlias);
-            try {
-                HttpResponse response = restClientService.doPost(httpClient, restClientService.getUrl() + subscribCartridgeRestEndpoint,
-                        jsonSubscribeString, restClientService.getUsername(), restClientService.getPassword());
-
-                String responseCode = "" + response.getStatusLine().getStatusCode();
-
-                if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
-                    String resultString = getHttpResponseString(response);
-                    ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                    System.out.println(exception);
-                    return;
-                }
-
-                String subscription = getHttpResponseString(response);
-
-                if (subscription == null) {
-                    System.out.println("Error in response");
-                    return;
-                }
-
-                String subscriptionJSON =  subscription.substring(20, subscription.length() -1);
-                subcriptionConnectInfo = gson.fromJson(subscriptionJSON, SubscriptionInfo.class);
-
-                System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n",
-                        dataCartridgeType, dataCartridgeAlias);
-                System.out.format("%nSubscribing to %s cartridge and connecting with %s data cartridge.%n", alias,
-                        dataCartridgeAlias);
-            } catch (Exception e) {
-                handleException("Exception in subscribing to data cartridge", e);
-            }
-            finally {
-                httpClient.getConnectionManager().shutdown();
-            }
-        }
 
         if (httpClient == null) {
             httpClient = new DefaultHttpClient();
@@ -805,8 +766,6 @@ public class RestCommandLineService {
             cartridgeInfoBean.setPrivateRepo(privateRepo);
             cartridgeInfoBean.setRepoUsername(username);
             cartridgeInfoBean.setRepoPassword(password);
-            cartridgeInfoBean.setDataCartridgeType(dataCartridgeType);
-            cartridgeInfoBean.setDataCartridgeAlias(dataCartridgeAlias);
             cartridgeInfoBean.setAutoscalePolicy(asPolicy);
             cartridgeInfoBean.setDeploymentPolicy(depPolicy);
             cartridgeInfoBean.setSize(size);

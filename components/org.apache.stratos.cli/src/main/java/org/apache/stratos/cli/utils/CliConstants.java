@@ -233,9 +233,6 @@ public class CliConstants {
     public static final String DEPLOYMENT_POLICY_OPTION = "dp";
     public static final String DEPLOYMENT_POLICY_LONG_OPTION = "deployment-policy";
 	
-	public static final String CONNECT_OPTION = "c";
-	public static final String CONNECT_LONG_OPTION = "connect";
-	
 	public static final String DATA_ALIAS_OPTION = "d";
 	public static final String DATA_ALIAS_LONG_OPTION = "data-alias";
 
