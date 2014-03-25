@@ -38,8 +38,9 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.PolicyDefinition;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
@@ -56,9 +57,8 @@ import org.apache.stratos.manager.stub.ApplicationManagementServiceRepositoryReq
 import org.apache.stratos.manager.stub.ApplicationManagementServiceRepositoryTransportExceptionException;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceStub;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cli.exception.CommandException;
-import org.apache.stratos.cli.utils.CommandLineUtils;
-import org.apache.stratos.cli.utils.RowMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
