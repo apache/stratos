@@ -35,11 +35,11 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 
 	protected ConsoleReader reader;
 	protected FileHistory history;
-    protected String userName;
+    protected String username;
 
 	public CommandLineApplication(String[] args) {
         if (args != null && args.length > 1) {
-            userName = args[1];
+            username = args[1];
         }
         reader = createConsoleReader();
     }
@@ -54,7 +54,7 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 		try {
 			consoleReader = new ConsoleReader();
 			consoleReader.setPrompt(getPrompt());
-			history = new FileHistory(getHistoryFile(userName));
+			history = new FileHistory(getHistoryFile(username));
 			consoleReader.setHistory(history);
 		} catch (IOException e) {
 			throw new IllegalStateException("Cannot create jline console reader", e);
@@ -87,7 +87,7 @@ public abstract class CommandLineApplication<T extends CommandContext> {
 	 * 
 	 * @return File for storing history
 	 */
-	protected abstract File getHistoryFile(String userName);
+	protected abstract File getHistoryFile(String username);
 
 	public final void start(String[] args) {
 		Thread shutdownHookThread = new Thread("CLI Shutdown Hook") {

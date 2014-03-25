@@ -30,33 +30,33 @@ public interface GenericRestClient {
      *              This should be REST endpoint
      * @param jsonParamString
      *              The json string which should be executed from the post request
-     * @param userName
+     * @param username
      *              User name for basic auth
-     * @param passWord
+     * @param password
      *              Password for basic auth
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
     public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString,
-                               String userName, String passWord) throws Exception;
+                               String username, String password) throws Exception;
 
     /**
      * Handle http get request. Return String
      *
      * @param resourcePath
      *              This should be REST endpoint
-     * @param userName
+     * @param username
      *              User name for basic auth
-     * @param passWord
+     * @param password
      *              Password for basic auth
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) throws Exception;
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String username, String password) throws Exception;
 
-    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord);
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String username, String password);
 
     public void doPut();
 }

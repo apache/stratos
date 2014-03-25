@@ -227,9 +227,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 	}
 
 	@Override
-	protected File getHistoryFile(String userName) {
+	protected File getHistoryFile(String username) {
 		File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
-		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR + "_" + userName);
+		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR + "_" + username);
 		return historyFile;
 	}
 
@@ -401,7 +401,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         // This is to create the history file.
         // This section execute only when user didn't enter the username as command line arguments
-        if (userName == null) {
+        if (username == null) {
             reader = null;
             reader = createConsoleReaderWhithoutArgs(usernameInput);
         }
