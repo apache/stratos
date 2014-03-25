@@ -38,6 +38,21 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getServiceLBClusterId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceLBClusterIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getPartitionsOfGroup">
                 <xs:complexType>
                     <xs:sequence>
@@ -106,6 +121,20 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDefaultLBClusterId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDefaultLBClusterIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -380,6 +409,12 @@
     <wsdl:message name="getPartitionsOfDeploymentPolicyResponse">
         <wsdl:part name="parameters" element="ns:getPartitionsOfDeploymentPolicyResponse"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="getDefaultLBClusterIdRequest">
+        <wsdl:part name="parameters" element="ns:getDefaultLBClusterId"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getDefaultLBClusterIdResponse">
+        <wsdl:part name="parameters" element="ns:getDefaultLBClusterIdResponse"></wsdl:part>
+    </wsdl:message>
     <wsdl:message name="getPartitionsOfGroupRequest">
         <wsdl:part name="parameters" element="ns:getPartitionsOfGroup"></wsdl:part>
     </wsdl:message>
@@ -470,6 +505,12 @@
     <wsdl:message name="addDeploymentPolicyResponse">
         <wsdl:part name="parameters" element="ns:addDeploymentPolicyResponse"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="getServiceLBClusterIdRequest">
+        <wsdl:part name="parameters" element="ns:getServiceLBClusterId"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getServiceLBClusterIdResponse">
+        <wsdl:part name="parameters" element="ns:getServiceLBClusterIdResponse"></wsdl:part>
+    </wsdl:message>
     <wsdl:message name="getPartitionGroupsRequest">
         <wsdl:part name="parameters" element="ns:getPartitionGroups"></wsdl:part>
     </wsdl:message>
@@ -486,6 +527,10 @@
         <wsdl:operation name="getPartitionsOfDeploymentPolicy">
             <wsdl:input message="ns:getPartitionsOfDeploymentPolicyRequest" wsaw:Action="urn:getPartitionsOfDeploymentPolicy"></wsdl:input>
             <wsdl:output message="ns:getPartitionsOfDeploymentPolicyResponse" wsaw:Action="urn:getPartitionsOfDeploymentPolicyResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDefaultLBClusterId">
+            <wsdl:input message="ns:getDefaultLBClusterIdRequest" wsaw:Action="urn:getDefaultLBClusterId"></wsdl:input>
+            <wsdl:output message="ns:getDefaultLBClusterIdResponse" wsaw:Action="urn:getDefaultLBClusterIdResponse"></wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
             <wsdl:input message="ns:getPartitionsOfGroupRequest" wsaw:Action="urn:getPartitionsOfGroup"></wsdl:input>
@@ -546,6 +591,10 @@
             <wsdl:output message="ns:addDeploymentPolicyResponse" wsaw:Action="urn:addDeploymentPolicyResponse"></wsdl:output>
             <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addDeploymentPolicyAutoScalerServiceInvalidPolicyException"></wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getServiceLBClusterId">
+            <wsdl:input message="ns:getServiceLBClusterIdRequest" wsaw:Action="urn:getServiceLBClusterId"></wsdl:input>
+            <wsdl:output message="ns:getServiceLBClusterIdResponse" wsaw:Action="urn:getServiceLBClusterIdResponse"></wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
             <wsdl:input message="ns:getPartitionGroupsRequest" wsaw:Action="urn:getPartitionGroups"></wsdl:input>
             <wsdl:output message="ns:getPartitionGroupsResponse" wsaw:Action="urn:getPartitionGroupsResponse"></wsdl:output>
@@ -566,8 +615,8 @@
                 <soap:body use="literal"></soap:body>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAllAutoScalingPolicy">
-            <soap:operation soapAction="urn:getAllAutoScalingPolicy" style="document"></soap:operation>
+        <wsdl:operation name="getDefaultLBClusterId">
+            <soap:operation soapAction="urn:getDefaultLBClusterId" style="document"></soap:operation>
             <wsdl:input>
                 <soap:body use="literal"></soap:body>
             </wsdl:input>
@@ -577,6 +626,15 @@
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
             <soap:operation soapAction="urn:getPartitionsOfGroup" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllAutoScalingPolicy">
+            <soap:operation soapAction="urn:getAllAutoScalingPolicy" style="document"></soap:operation>
             <wsdl:input>
                 <soap:body use="literal"></soap:body>
             </wsdl:input>
@@ -701,6 +759,15 @@
                 <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getServiceLBClusterId">
+            <soap:operation soapAction="urn:getServiceLBClusterId" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
             <soap:operation soapAction="urn:getPartitionGroups" style="document"></soap:operation>
             <wsdl:input>
@@ -731,8 +798,8 @@
                 <soap12:body use="literal"></soap12:body>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAllAutoScalingPolicy">
-            <soap12:operation soapAction="urn:getAllAutoScalingPolicy" style="document"></soap12:operation>
+        <wsdl:operation name="getDefaultLBClusterId">
+            <soap12:operation soapAction="urn:getDefaultLBClusterId" style="document"></soap12:operation>
             <wsdl:input>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:input>
@@ -742,6 +809,15 @@
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
             <soap12:operation soapAction="urn:getPartitionsOfGroup" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllAutoScalingPolicy">
+            <soap12:operation soapAction="urn:getAllAutoScalingPolicy" style="document"></soap12:operation>
             <wsdl:input>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:input>
@@ -866,6 +942,15 @@
                 <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getServiceLBClusterId">
+            <soap12:operation soapAction="urn:getServiceLBClusterId" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
             <soap12:operation soapAction="urn:getPartitionGroups" style="document"></soap12:operation>
             <wsdl:input>
@@ -896,8 +981,8 @@
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAllAutoScalingPolicy">
-            <http:operation location="getAllAutoScalingPolicy"></http:operation>
+        <wsdl:operation name="getDefaultLBClusterId">
+            <http:operation location="getDefaultLBClusterId"></http:operation>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
@@ -907,6 +992,15 @@
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
             <http:operation location="getPartitionsOfGroup"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllAutoScalingPolicy">
+            <http:operation location="getAllAutoScalingPolicy"></http:operation>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
@@ -1015,6 +1109,15 @@
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
             <http:operation location="addDeploymentPolicy"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceLBClusterId">
+            <http:operation location="getServiceLBClusterId"></http:operation>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>

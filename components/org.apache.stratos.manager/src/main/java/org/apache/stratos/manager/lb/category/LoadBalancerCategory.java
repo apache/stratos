@@ -40,6 +40,7 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 
     private String loadBalancedServiceType;
 	private boolean isLoadBalancedServiceMultiTenant;
+    private String deploymentPolicyName;
 	private static Log log = LogFactory.getLog(LoadBalancerCategory.class);
 
     public String getLoadBalancedServiceType() {
@@ -114,6 +115,13 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 			boolean isLoadBalancedServiceMultiTenant) {
 		this.isLoadBalancedServiceMultiTenant = isLoadBalancedServiceMultiTenant;
 	}
-	
-	
+
+
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
+    }
+
+    public void setDeploymentPolicyName(String deploymentPolicyName) {
+        this.deploymentPolicyName = deploymentPolicyName;
+    }
 }

@@ -180,6 +180,29 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
         return true;
 	    
     }
+
+    public String getDefaultLBClusterId (String deploymentPolicyName) {
+    	if(log.isDebugEnabled()) {
+    		log.debug("Default LB Cluster Id for Deployment Policy ["+deploymentPolicyName+"] ");
+    	}
+        for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getPartitionGroups()) {
+
+            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
+
+            if (nwPartitionLbHolder.isDefaultLBExist()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Default LB does not exist in [network partition] " +
+                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+                            deploymentPolicyName);
+
+                }
+                return nwPartitionLbHolder.getDefaultLbClusterId();
+            }
+
+        }
+
+        return null;
+    }
 	
 	public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
 
@@ -201,6 +224,27 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
         
         return true;
         
+    }
+
+    public String getServiceLBClusterId (String serviceType, String deploymentPolicyName) {
+
+        for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getPartitionGroups()) {
+
+            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
+
+            if (nwPartitionLbHolder.isServiceLBExist(serviceType)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Service LB [service name] "+serviceType+" does not exist in [network partition] " +
+                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+                            deploymentPolicyName);
+
+                }
+                return nwPartitionLbHolder.getLBClusterIdOfService(serviceType);
+            }
+
+        }
+
+        return null;
     }
 	
 	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {

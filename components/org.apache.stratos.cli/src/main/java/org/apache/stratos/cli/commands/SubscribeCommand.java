@@ -80,16 +80,6 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         persistance.setArgName("persistance-volume");
         options.addOption(persistance);
 
-		Option connectOption = new Option(CliConstants.CONNECT_OPTION, CliConstants.CONNECT_LONG_OPTION, true,
-				"Data cartridge type");
-		connectOption.setArgName("data cartridge type");
-		options.addOption(connectOption);
-
-		Option aliasOption = new Option(CliConstants.DATA_ALIAS_OPTION, CliConstants.DATA_ALIAS_LONG_OPTION, true,
-				"Data cartridge alias");
-		aliasOption.setArgName("alias");
-		options.addOption(aliasOption);
-
 		Option urlOption = new Option(CliConstants.REPO_URL_OPTION, CliConstants.REPO_URL_LONG_OPTION, true,
 				"GIT repository URL");
 		urlOption.setArgName("url");
@@ -141,7 +131,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 			String policy = null;
             String asPolicy = null;
             String depPolicy = null;
-			String repoURL = null, dataCartridgeType = null, dataCartridgeAlias = null, username = "", password = "";
+			String repoURL = null, username = "", password = "";
             String size = null;
 
             boolean removeOnTermination = false;
@@ -230,18 +220,6 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					}
 					password = commandLine.getOptionValue(CliConstants.PASSWORD_OPTION);
 				}
-				if (commandLine.hasOption(CliConstants.CONNECT_OPTION)) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("Connect option is passed");
-					}
-					dataCartridgeType = commandLine.getOptionValue(CliConstants.CONNECT_OPTION);
-				}
-				if (commandLine.hasOption(CliConstants.DATA_ALIAS_OPTION)) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("Data alias option is passed");
-					}
-					dataCartridgeAlias = commandLine.getOptionValue(CliConstants.DATA_ALIAS_OPTION);
-				}
 				if (commandLine.hasOption(CliConstants.ENABLE_COMMITS_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Upstream git commits are enabled");
@@ -271,14 +249,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					password = context.getApplication().getInput("GIT Repository Password", '*');
 				}
 
-				if (StringUtils.isNotBlank(dataCartridgeType) && !StringUtils.isNotBlank(dataCartridgeAlias)) {
-					System.out.println("Data cartridge alias is required.");
-					context.getStratosApplication().printUsage(getName());
-					return CliConstants.BAD_ARGS_CODE;
-				}
-
                 RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
-                		password, dataCartridgeType, dataCartridgeAlias, asPolicy, depPolicy, size, removeOnTermination,
+                		password, asPolicy, depPolicy, size, removeOnTermination,
                         persistanceMapping, commitsEnabled);
 
 				return CliConstants.SUCCESSFUL_CODE;

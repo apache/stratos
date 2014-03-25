@@ -19,14 +19,13 @@
 
 package org.apache.stratos.cartridge.agent.statistics.publisher;
 
+import com.sun.management.OperatingSystemMXBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.lang.management.ManagementFactory;
-
-import com.sun.management.OperatingSystemMXBean;
 
 /**
  * Health statistics reader.
@@ -67,6 +66,7 @@ public class HealthStatisticsReader {
     }
 
     public static boolean allPortsActive() {
-        return CartridgeAgentUtils.checkPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
+        return CartridgeAgentUtils.checkPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
+                                                    CartridgeAgentConfiguration.getInstance().getPorts());
     }
 }

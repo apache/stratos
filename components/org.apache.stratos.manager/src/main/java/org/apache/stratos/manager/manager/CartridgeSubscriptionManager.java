@@ -150,6 +150,9 @@ public class CartridgeSubscriptionManager {
 
         if (lbCartridgeSubscription != null) {
             // register LB cartridge subscription
+        	if(log.isDebugEnabled()) {
+        		log.debug(" Registering LB Cartridge subscription ");
+        	}
             registerCartridgeSubscription(lbCartridgeSubscription, lbCartridgeSubscriptionProperties);
         }
 
@@ -198,6 +201,9 @@ public class CartridgeSubscriptionManager {
         
 		// Set if the load balanced service is multi tenant or not
         loadBalancerCategory.setLoadBalancedServiceMultiTenant(serviceCartridgeInfo.getMultiTenant());
+
+        // set the relevant deployment policy
+        loadBalancerCategory.setDeploymentPolicyName(lbDataContext.getDeploymentPolicy());
 
         // Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getLBCartridgeSubscriptionInstance(lbDataContext, loadBalancerCategory);
@@ -263,7 +269,7 @@ public class CartridgeSubscriptionManager {
         if(repositoryPassword != null && !repositoryPassword.isEmpty()) {
         	encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
         } else {
-        	encryptedRepoPassword = repositoryPassword;
+        	encryptedRepoPassword = "";
         }
 
         // Create repository

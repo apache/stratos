@@ -56,7 +56,8 @@ public class CartridgeAgent implements Runnable {
         ExtensionUtils.executeStartServersExtension();
 
         // Wait for all ports to be active
-        CartridgeAgentUtils.waitUntilPortsActive("localhost", CartridgeAgentConfiguration.getInstance().getPorts());
+        CartridgeAgentUtils.waitUntilPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
+                CartridgeAgentConfiguration.getInstance().getPorts());
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
@@ -227,7 +228,11 @@ public class CartridgeAgent implements Runnable {
             }
             RepositoryInformation repoInformation = new RepositoryInformation();
             repoInformation.setRepoUsername(repoUsername);
-            repoInformation.setRepoPassword(repoPassword);
+            if(repoPassword == null) {
+            	repoInformation.setRepoPassword("");
+            }else {
+            	repoInformation.setRepoPassword(repoPassword);
+            }            
             repoInformation.setRepoUrl(repoURL);
             repoInformation.setRepoPath(localRepoPath);
             repoInformation.setTenantId(tenantId);

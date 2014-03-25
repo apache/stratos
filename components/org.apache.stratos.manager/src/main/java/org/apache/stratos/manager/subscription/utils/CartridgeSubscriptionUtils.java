@@ -317,13 +317,18 @@ public class CartridgeSubscriptionUtils {
                             if (deploymentPolicyName.equals(policy.getId())) {
 
                                 if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
+                                	if(log.isDebugEnabled()){
+                                		log.debug(" Default LB doesn't exist for deployment policy ["+deploymentPolicyName+"] ");
+                                	}
 
                                     Properties lbProperties = new Properties();
 
                                     // if LB cartridge definition has properties as well, combine
                                     if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
+                                    	if(log.isDebugEnabled()){
+                                    		log.debug(" Combining LB properties ");
+                                    	}
                                         lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty}));
-
                                     } else {
                                         lbProperties.setProperties(new Property[]{lbRefProperty});
                                     }

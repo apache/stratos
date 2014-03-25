@@ -26,6 +26,7 @@ lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Dmb.ip=MB-IP
             -Dmb.port=MB-PORT
+            -Dlisten.address=localhost
             -Dthrift.receiver.ip=CEP-IP
             -Dthrift.receiver.port=CEP-PORT
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
