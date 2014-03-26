@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.message.receiver.topology;
 
+import javax.jms.MessageListener;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
@@ -31,23 +33,37 @@ import org.apache.stratos.messaging.util.Constants;
 public class TopologyReceiver implements Runnable {
     private static final Log log = LogFactory.getLog(TopologyReceiver.class);
     private TopologyEventMessageDelegator messageDelegator;
+    private MessageListener messageListener;
     private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
     public TopologyReceiver() {
         this.messageDelegator = new TopologyEventMessageDelegator();
+        this.messageListener = new TopologyEventMessageListener();
     }
 
     public TopologyReceiver(TopologyEventMessageDelegator messageDelegator) {
         this.messageDelegator = messageDelegator;
+        this.messageListener = new TopologyEventMessageListener();
     }
+    
+    public TopologyReceiver(MessageListener listener) {
+        this.messageDelegator = new TopologyEventMessageDelegator();
+        this.messageListener = listener;
+    }
+    
+    public TopologyReceiver(TopologyEventMessageDelegator messageDelegator, MessageListener listener) {
+        this.messageDelegator = messageDelegator;
+        this.messageListener = listener;
+    }
+    
 
     @Override
     public void run() {
         try {
             // Start topic subscriber thread
             topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topicSubscriber.setMessageListener(new TopologyEventMessageListener());
+            topicSubscriber.setMessageListener(messageListener);
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {
