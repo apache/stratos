@@ -71,6 +71,16 @@ public abstract class Iaas {
     public abstract String associateAddress(NodeMetadata node);
     
     /**
+     * This will obtain a predefined IP address and associate that IP with this node, if ip is already in use allocate ip from pool 
+     * (through associateAddress())
+     * @param node Node to be associated with an IP.
+     * @ip preallocated floating Ip
+     * @return associated public IP.
+     */
+
+    abstract public String associatePredefinedAddress(NodeMetadata node, String ip);
+    
+    /**
      * This will deallocate/release the given IP address back to pool.
      * @param iaasInfo corresponding {@link IaasProvider}
      * @param ip public IP address to be released.

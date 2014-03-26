@@ -50,14 +50,14 @@ public class HealthStatReceiver implements Runnable {
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Health stst event message receiver thread started");
+                log.debug("Health stats event message receiver thread started");
             }
 
             // Start health stat event message delegator thread
             Thread receiverThread = new Thread(messageDelegator);
             receiverThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Health stst event message delegator thread started");
+                log.debug("Health stats event message delegator thread started");
             }
 
             // Keep the thread live until terminated

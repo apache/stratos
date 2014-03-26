@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.messaging.message.receiver.topology;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 import javax.jms.TextMessage;
 
 import org.apache.commons.logging.Log;
@@ -35,14 +37,22 @@ public class TopologyEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
     private MessageProcessorChain processorChain;
+    private LinkedBlockingQueue<TextMessage> messageQueue;
     private boolean terminated;
 
     public TopologyEventMessageDelegator() {
         this.processorChain = new TopologyMessageProcessorChain();
+        this.messageQueue = TopologyEventMessageQueue.getInstance();
     }
 
     public TopologyEventMessageDelegator(MessageProcessorChain processorChain) {
         this.processorChain = processorChain;
+        this.messageQueue = TopologyEventMessageQueue.getInstance();
+    }
+    
+    public TopologyEventMessageDelegator(MessageProcessorChain processorChain, LinkedBlockingQueue<TextMessage> queue) {
+        this.processorChain = processorChain;
+        this.messageQueue = queue;
     }
 
     @Override
@@ -54,7 +64,7 @@ public class TopologyEventMessageDelegator implements Runnable {
 
             while (!terminated) {
                 try {
-                    TextMessage message = TopologyEventMessageQueue.getInstance().take();
+                    TextMessage message = messageQueue.take();
 
                     // Retrieve the header
                     String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);

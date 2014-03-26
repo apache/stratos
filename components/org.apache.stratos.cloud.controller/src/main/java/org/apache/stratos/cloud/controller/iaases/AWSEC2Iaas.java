@@ -309,6 +309,11 @@ public class AWSEC2Iaas extends Iaas {
 		return ip;
 
 	}
+	
+	@Override
+	public String associatePredefinedAddress(NodeMetadata node, String ip) {
+    	return "";
+    }
 
 	/**
 	 * @param addressApi

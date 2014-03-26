@@ -198,6 +198,11 @@ public class VCloudIaas extends Iaas {
 	}
 
 	@Override
+	public String associatePredefinedAddress(NodeMetadata node, String ip) {
+    	return "";
+    }
+
+	@Override
 	public void releaseAddress(String ip) {
 		// TODO
 	}
