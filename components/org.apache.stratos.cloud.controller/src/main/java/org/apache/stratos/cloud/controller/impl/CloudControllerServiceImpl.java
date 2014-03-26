@@ -146,9 +146,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
         if(dataHolder.getCartridge(cartridgeType) != null) {
-            if (dataHolder.getCartridges().remove(cartridge)) {
-                log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
-            }
+        	Cartridge cartridgeToBeRemoved = dataHolder.getCartridge(cartridgeType);
+        	// undeploy
+            try {
+				undeployCartridgeDefinition(cartridgeToBeRemoved.getType());
+			} catch (InvalidCartridgeTypeException e) {
+				//ignore
+			}
+            populateNewCartridge(cartridge, cartridgeToBeRemoved);
         }
         
         dataHolder.addCartridge(cartridge);
@@ -165,7 +170,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
 
-    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
+    private void populateNewCartridge(Cartridge cartridge,
+			Cartridge cartridgeToBeRemoved) {
+    	
+    	List<IaasProvider> newIaasProviders = cartridge.getIaases();
+    	Map<String, IaasProvider> oldPartitionToIaasMap = cartridgeToBeRemoved.getPartitionToIaasProvider();
+    	
+    	for (String partitionId : oldPartitionToIaasMap.keySet()) {
+			IaasProvider oldIaasProvider = oldPartitionToIaasMap.get(partitionId);
+			if (newIaasProviders.contains(oldIaasProvider)) {
+				if (log.isDebugEnabled()) {
+					log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
+							+ "[partition id] : "+partitionId+" [cartridge type] "+cartridge.getType() );
+				}
+				cartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
+			}
+		}
+		
+	}
+
+	public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
 
         Cartridge cartridge = null;
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
