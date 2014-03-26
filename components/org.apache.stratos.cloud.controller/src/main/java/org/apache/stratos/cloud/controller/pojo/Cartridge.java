@@ -59,6 +59,8 @@ public class Cartridge implements Serializable{
     
     private List<AppType> appTypeMappings = new ArrayList<AppType>();
     
+    private String serviceGroup;
+    
     /**
      * Property map of this Cartridge.
      */
@@ -323,4 +325,14 @@ public class Cartridge implements Serializable{
     public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
         this.defaultDeploymentPolicy = defaultDeploymentPolicy;
     }
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
+    
+    
 }

@@ -63,6 +63,8 @@ public class Cartridge implements Comparable<Cartridge> {
     private boolean isPersistance;
 
     private Persistence persistence;
+    
+    private String serviceGroup;
 
 	public String getDisplayName() {
 		return displayName;
@@ -283,4 +285,12 @@ public class Cartridge implements Comparable<Cartridge> {
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
 }

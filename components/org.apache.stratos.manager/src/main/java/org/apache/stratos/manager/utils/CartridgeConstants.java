@@ -59,6 +59,8 @@ public class CartridgeConstants {
     public static final String DATA_CARTRIDGE_PROVIDER = "data";
 	public static final String INTERNAL_GIT_USERNAME = "internal.repo.username";
 	public static final String INTERNAL_GIT_PASSWORD = "internal.repo.password";
+	public static final String INTERNAL_GIT_URL = "internal.git.url"; // "https://localhost:8443/"
+	public static final String INTERNAL_GIT_DIR_STRUCTURE = "internal.git.dir"; // directory structure
 
     public static final String CUSTOM_PAYLOAD_PARAM_NAME_PREFIX = "payload_parameter.";
     
@@ -89,6 +91,7 @@ public class CartridgeConstants {
 	public static final String HOST_NAME_COL = "hostname";
 	public static final String MAPPED_DOMAIN_COL = "mappedDomain";
 	public static final String ACTION_COL = "action";
+	public static final String INTERNAL_REPO_BASED_CARTRIDGE_PROVIDER = "internal";
 
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";
