@@ -43,6 +43,7 @@ import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
+import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
 public class CartridgeSubscriptionUtils {
@@ -149,19 +150,44 @@ public class CartridgeSubscriptionUtils {
         return key;
     }
 
+    static class TenantSubscribedEventPublisher implements Runnable {
+    	
+    	int tenantId;
+    	String serviceName;
+
+    	public TenantSubscribedEventPublisher(int tenantId, String service) {
+    		this.tenantId = tenantId;
+    		this.serviceName = service;
+		}
+		@Override
+		public void run() {
+			try {
+				if(log.isInfoEnabled()) {
+					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+				}
+				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
+				EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+				eventPublisher.publish(subscribedEvent);
+			} catch (Exception e) {
+				if (log.isErrorEnabled()) {
+					log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+				}
+			}
+			
+		}
+    	
+    }
     public static void publishTenantSubscribedEvent(int tenantId, String serviceName) {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
-            }
-            TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
-            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
-            eventPublisher.publish(subscribedEvent);
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
-            }
-        }
+    	
+    	
+    	Executor exec = new Executor() {
+			@Override
+			public void execute(Runnable command) {
+				command.run();
+			}
+		};
+		
+		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName));
     }
 
     public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
