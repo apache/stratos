@@ -297,6 +297,100 @@ public class OpenstackNovaIaas extends Iaas {
 
 		return ip;
 	}
+	
+	@Override
+	public synchronized String associatePredefinedAddress (NodeMetadata node, String ip) {
+		if(log.isDebugEnabled()) {
+			log.debug("OpenstackNovaIaas:associatePredefinedAddress:ip:" + ip);
+		}
+		
+		IaasProvider iaasInfo = getIaasProvider();
+		
+		ComputeServiceContext context = iaasInfo.getComputeService()
+				.getContext();
+
+		@SuppressWarnings("deprecation")
+        NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+
+		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
+				region).get();
+
+		if(log.isDebugEnabled()) {
+			log.debug("OpenstackNovaIaas:associatePredefinedAddress:floatingip:" + floatingIp);
+		}
+		
+		// get the list of all unassigned IP.
+		ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
+				.filter(floatingIp.list(),
+						new Predicate<FloatingIP>() {
+
+							@Override
+							public boolean apply(FloatingIP arg0) {
+								// FIXME is this the correct filter?
+								return arg0.getFixedIp() == null;
+							}
+
+						}));
+		
+		boolean isAvailable = false;
+		for (FloatingIP fip : unassignedIps) {
+			if(log.isDebugEnabled()) {
+				log.debug("penstackNovaIaas:associatePredefinedAddress:iterating over available floatingip:" + fip);
+			}
+			if (ip.equals(fip.getIp())) {
+				if(log.isDebugEnabled()) {
+					log.debug("OpenstackNovaIaas:associatePredefinedAddress:floating ip in use:" + fip + " /ip:" + ip);
+				}
+				isAvailable = true;
+				break;
+			}
+		}
+		
+		if (isAvailable) {
+			// assign ip
+			if(log.isDebugEnabled()) {
+				log.debug("OpenstackNovaIaas:associatePredefinedAddress:assign floating ip:" + ip);
+			}
+			// exercise same code as in associateAddress()
+			// wait till the fixed IP address gets assigned - this is needed before
+			// we associate a public IP
+
+			while (node.getPrivateAddresses() == null) {
+				CloudControllerUtil.sleep(1000);
+			}
+
+			int retries = 0;
+			while (retries < 5
+					&& !associateIp(floatingIp, ip, node.getProviderId())) {
+
+				// wait for 5s
+				CloudControllerUtil.sleep(5000);
+				retries++;
+			}
+
+			NodeMetadataBuilder.fromNodeMetadata(node)
+					.publicAddresses(ImmutableSet.of(ip)).build();
+
+			log.info("OpenstackNovaIaas:associatePredefinedAddress:Successfully associated an IP address " + ip
+					+ " for node with id: " + node.getId());
+		} else {
+			// unable to allocate predefined ip,
+			log.info("OpenstackNovaIaas:associatePredefinedAddress:Unable to allocate predefined ip:" 
+					+ " for node with id: " + node.getId());
+			return "";
+		}
+
+		
+		NodeMetadataBuilder.fromNodeMetadata(node)
+				.publicAddresses(ImmutableSet.of(ip)).build();
+
+		log.info("OpenstackNovaIaas:associatePredefinedAddress::Successfully associated an IP address " + ip
+				+ " for node with id: " + node.getId());
+
+		return ip;
+		
+	}	
 
 	@Override
 	public synchronized void releaseAddress(String ip) {

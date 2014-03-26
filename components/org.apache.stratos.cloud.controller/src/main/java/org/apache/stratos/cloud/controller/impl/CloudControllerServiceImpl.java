@@ -48,6 +48,8 @@ import java.util.*;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.net.InetAddresses;
+
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
  * terminating already started instances, providing pending instance count etc.
@@ -208,7 +210,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws IllegalArgumentException,
-        UnregisteredCartridgeException, InvalidIaasProviderException, IllegalStateException {
+        UnregisteredCartridgeException, InvalidIaasProviderException {
+    	
+    	if(log.isDebugEnabled()) {
+    		log.debug("CloudControllerServiceImpl:startInstance");
+    	}
 
         if (memberContext == null) {
             String msg = "Instance start-up failed. Member is null.";
@@ -219,7 +225,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String clusterId = memberContext.getClusterId();
         Partition partition = memberContext.getPartition();
 
-		log.debug("Received an instance spawn request : " + memberContext.toString());
+        if(log.isDebugEnabled()) {
+        	log.debug("Received an instance spawn request : " + memberContext.toString());
+        }
 
         ComputeService computeService = null;
         Template template = null;
@@ -571,23 +579,64 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 String autoAssignIpProp =
                                           iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
-
-                    // reset ip
-                    String ip = "";
+                
+                String pre_defined_ip =
+                        iaasProvider.getProperty(CloudControllerConstants.FLOATING_IP_PROPERTY);
+                    
+	                // reset ip
+	                String ip = "";
+                    
                     // default behavior is autoIpAssign=false
                     if (autoAssignIpProp == null ||
                         (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
-
-                        Iaas iaas = iaasProvider.getIaas();
-                        // allocate an IP address - manual IP assigning mode
-                        ip = iaas.associateAddress(node);
-                        
-						if (ip != null) {
-							memberContext.setAllocatedIpAddress(ip);
-							log.info("Allocated an ip address: "
-									+ memberContext.toString());
-						}
-                    }
+                    	
+                    	// check if floating ip is well defined in cartridge definition
+                    	if (pre_defined_ip != null) {
+                    		if (isValidIpAddress(pre_defined_ip)) {
+                    			if(log.isDebugEnabled()) {
+                    				log.debug("CloudControllerServiceImpl:IpAllocator:pre_defined_ip: invoking associatePredefinedAddress" + pre_defined_ip);
+                    			}
+	    	                	Iaas iaas = iaasProvider.getIaas();
+	    	                	ip = iaas.associatePredefinedAddress(node, pre_defined_ip);
+	    	       
+	    	                	if (ip == null || "".equals(ip) || !pre_defined_ip.equals(ip)) {
+	    	                		// throw exception and stop instance creation
+	       	                		String msg = "Error occurred while allocating predefined floating ip address: " + pre_defined_ip + 
+	       	                					 " / allocated ip:" + ip + 
+	       	                				     " - terminating node:"  + memberContext.toString();
+	    	                        log.error(msg);
+	    	                		// terminate instance
+	    	                        terminate(iaasProvider, 
+	    	                    			node.getId(), memberContext);
+	    	                        throw new CloudControllerException(msg);
+	    	                	}
+                    		} else {
+                    			String msg = "Invalid floating ip address configured: " + pre_defined_ip +  
+  	                				     " - terminating node:"  + memberContext.toString();
+                    			log.error(msg);
+                    			// terminate instance
+                    			terminate(iaasProvider, 
+	                    			node.getId(), memberContext);
+                    			throw new CloudControllerException(msg);
+                    		}
+	    	                	
+                        } else {
+                        	if(log.isDebugEnabled()) {
+                        		log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, " + pre_defined_ip
+                        			+ ", selecting available one from pool");
+                        	}
+                        	Iaas iaas = iaasProvider.getIaas();
+                            // allocate an IP address - manual IP assigning mode
+                            ip = iaas.associateAddress(node);
+                            
+    						if (ip != null) {
+    							memberContext.setAllocatedIpAddress(ip);
+    							log.info("Allocated an ip address: "
+    									+ memberContext.toString());
+    						}
+                        }                        
+                    } 
+                    
 
                     // public ip
                     if (node.getPublicAddresses() != null &&
@@ -638,6 +687,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 
         }
+    }
+    
+    private boolean isValidIpAddress (String ip) {
+    	boolean isValid = InetAddresses.isInetAddress(ip);
+    	return isValid;
     }
 
 	@Override
