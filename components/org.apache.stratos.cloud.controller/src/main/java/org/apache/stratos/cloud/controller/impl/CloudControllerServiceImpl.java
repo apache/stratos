@@ -1064,5 +1064,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return true;
     }
 
+    public ClusterContext getClusterContext (String clusterId) {
+
+        return dataHolder.getClusterContext(clusterId);
+    }
+
 }
 

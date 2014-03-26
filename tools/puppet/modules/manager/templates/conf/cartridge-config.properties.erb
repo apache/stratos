@@ -1,0 +1,73 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+#
+
+# Configuration properties
+#this file is in product
+sc.ip=<%= @sc_ip %>
+autoscaler.service.url=https://<%= @as_ip %>:<%= @as_port %>/services/AutoScalerService/
+cloud.controller.service.url=https://<%= @cc_ip %>:<%= @cc_port %>/services/CloudControllerService/
+autoscaler.time.out=190000
+cartridge.agent.epr=https://<%= @sc_ip %>:<%= @sc_port %>/services/CartridgeAgentService
+git.host.name=<%= @git_hostname %>
+git.host.ip=<%= @git_ip %>
+git.repo.notification.url=https://<%= @sc_ip %>:<%= @sc_port %>/services/RepoNotificationService/
+identity.server.url=https://<%= @sc_ip %>:<%= @sc_port %>/services/RepoNotificationService/
+
+puppet.ip=<%= @puppet_ip %>
+
+<% if @mysql_server %>
+adc.jdbc.url=jdbc:mysql://<%= @mysql_server %>:3306/stratos_foundation
+adc.jdbc.username=<%= @mysql_user %>
+adc.jdbc.password=<%= @mysql_password %>
+adc.jdbc.driver=com.mysql.jdbc.Driver
+<% else %>
+adc.jdbc.url=jdbc:h2:repository/database/WSO2S2_DB
+adc.jdbc.username=wso2carbon
+adc.jdbc.password=wso2carbon
+adc.jdbc.driver=org.h2.Driver
+<% end %>
+
+mb.ip=<%= @mb_ip %>
+mb.port=<%= @mb_port %>
+cep.ip=<%= @cep_ip %>
+cep.port=<%= @cep_port %>
+
+feature.externalrepo.validation.enabled=true
+feature.internalrepo.enabled=false
+feature.multitenant.multiplesubscription.enabled=false
+
+internal.repo.username=<%= @internal_repo_user %>
+internal.repo.password=<%= @internal_repo_password %>
+
+append.script=<%= @carbon_home %>/bin/add_entry_zone_file.sh
+remove.script=<%= @carbon_home %>/remove_entry_zone_file.sh
+bind.file.path=/etc/bind/db.STRATOS_DOMAIN
+elb.ip=<%= @sc_ip %>
+
+bam.ip=<%= @bam_ip %>
+bam.port=<%= @bam_port %>
+
+max.attempts=1000
+
+cartridge.key=KEYPATH
+
+repository.info.epr=https://<%= @sc_ip %>:<%= @sc_port %>/services/RepositoryInformationService
+
