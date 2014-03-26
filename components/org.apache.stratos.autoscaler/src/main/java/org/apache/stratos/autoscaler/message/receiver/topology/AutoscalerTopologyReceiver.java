@@ -57,7 +57,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
     private boolean terminated;
 
     public AutoscalerTopologyReceiver() {
-		this.topologyReceiver = new TopologyReceiver(createMessageDelegator());
+		this.topologyReceiver = new TopologyReceiver(createMessageDelegator(), new TopologyEventMessageListener());
     }
 
     @Override
@@ -87,7 +87,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
     private TopologyEventMessageDelegator createMessageDelegator() {
         TopologyMessageProcessorChain processorChain = createEventProcessorChain();
-        return new TopologyEventMessageDelegator(processorChain);
+        return new TopologyEventMessageDelegator(processorChain, TopologyEventMessageQueue.getInstance());
     }
 
     private TopologyMessageProcessorChain createEventProcessorChain() {
@@ -127,6 +127,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
             try {
+            	log.info("Event received: "+event);
                 ClusterCreatedEvent e = (ClusterCreatedEvent) event;
                 TopologyManager.acquireReadLock();
                 Service service = TopologyManager.getTopology().getService(e.getServiceName());
