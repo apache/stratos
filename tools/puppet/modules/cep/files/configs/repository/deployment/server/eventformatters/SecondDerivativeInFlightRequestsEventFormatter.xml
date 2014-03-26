@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventFormatter name="SecondDerivativeEventFormatter"
+  statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventformatter">
+  <from streamName="second_derivative_in_flight_requests" version="1.0.0"/>
+  <mapping customMapping="enable" type="json">
+    <inline>{"org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent":{"message":{"clusterId":"{{cluster_id}}","networkPartitionId":"{{network_partition_id}}","value":"{{count}}"}}}</inline>
+  </mapping>
+  <to eventAdaptorName="JMSOutputAdaptor" eventAdaptorType="jms">
+    <property name="transport.jms.Destination">summarized-health-stats</property>
+  </to>
+</eventFormatter>

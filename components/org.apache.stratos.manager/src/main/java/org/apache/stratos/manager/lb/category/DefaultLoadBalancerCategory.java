@@ -59,6 +59,7 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
         if (clusterId != null) {
 
             //set the cluster id to Cluster object
+        	cluster.setClusterDomain(clusterId);
             defaultLBExists = true;
             //need to check if we can get the host name as well..
 
