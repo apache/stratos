@@ -27,10 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.*;
 
 /**
  * This API provides a way to communicate with underline
@@ -223,5 +220,13 @@ public interface CloudControllerService {
      * @return String array containing types of registered {@link org.apache.stratos.cloud.controller.pojo.Cartridge}s.
      */
     public String[] getRegisteredCartridges();
+
+    /**
+     * Returns the {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object associated with the given cluster id, or null if not found
+     *
+     * @param clusterId cluster id
+     * @return {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object  associated with the given cluster id, or null
+     */
+    public ClusterContext getClusterContext (String clusterId);
 
 }
