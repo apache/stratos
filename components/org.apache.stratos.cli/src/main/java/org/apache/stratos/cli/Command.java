@@ -18,8 +18,8 @@
  */
 package org.apache.stratos.cli;
 
-import org.apache.stratos.cli.exception.CommandException;
 import org.apache.commons.cli.Options;
+import org.apache.stratos.cli.exception.CommandException;
 
 public interface Command<T extends CommandContext> {
 

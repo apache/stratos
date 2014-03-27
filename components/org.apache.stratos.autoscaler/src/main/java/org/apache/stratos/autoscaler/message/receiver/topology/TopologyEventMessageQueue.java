@@ -27,19 +27,12 @@ import javax.jms.TextMessage;
  * Implements a blocking queue for managing topology event messages.
  */
 public class TopologyEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile TopologyEventMessageQueue instance;
+	
+	private static class InstanceHolder {
+		private static final TopologyEventMessageQueue INSTANCE = new TopologyEventMessageQueue();
+	}
 
-    private TopologyEventMessageQueue(){
-    }
-
-    public static TopologyEventMessageQueue getInstance() {
-        if (instance == null) {
-            synchronized (TopologyEventMessageQueue.class){
-                if (instance == null) {
-                    instance = new TopologyEventMessageQueue();
-                }
-            }
-        }
-        return instance;
-    }
+	public static TopologyEventMessageQueue getInstance() {
+		return InstanceHolder.INSTANCE;
+	}
 }

@@ -64,18 +64,19 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
             if (topology.serviceExists(event.getServiceName())) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Service already created: [service] %s", event.getServiceName()));
-                    return false;
                 }
+            } else {
+            	
+            	// Apply changes to the topology
+            	Service service = new Service(event.getServiceName(), event.getServiceType());
+            	service.addPorts(event.getPorts());
+            	topology.addService(service);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Service created: [service] %s", event.getServiceName()));
+            	}
             }
 
-            // Apply changes to the topology
-            Service service = new Service(event.getServiceName(), event.getServiceType());
-            service.addPorts(event.getPorts());
-            topology.addService(service);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Service created: [service] %s", event.getServiceName()));
-            }
 
             notifyEventListeners(event);
             return true;

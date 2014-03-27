@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.messaging.message.processor.topology;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -98,14 +97,15 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
                     log.warn(String.format("Cluster already exists in service: [service] %s [cluster] %s", event.getServiceName(),
                             event.getClusterId()));
                 }
-                return false;
-            }
+			} else {
 
-            // Apply changes to the topology
-            service.addCluster(cluster);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster created: %s", cluster.toString()));
-            }
+				// Apply changes to the topology
+				service.addCluster(cluster);
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Cluster created: %s",
+							cluster.toString()));
+				}
+			}
 
             // Notify event listeners
             notifyEventListeners(event);

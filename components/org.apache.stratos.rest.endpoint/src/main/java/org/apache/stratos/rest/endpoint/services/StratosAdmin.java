@@ -26,6 +26,7 @@ import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -61,6 +62,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -961,6 +963,15 @@ public class StratosAdmin extends AbstractAdmin {
 
         ServiceUtils.getGitRepositoryNotification(payload);
     }
+    
+	@POST
+	@Path("/sync")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
+	public void synchronizeRepository(String alias) throws RestAPIException {
+		CartridgeSubscription cartridgeSubscription = ServiceUtils.getCartridgeSubscription(alias, getConfigContext());
+		ServiceUtils.sendRepositoryNotification(cartridgeSubscription);
+	}
 
     private List<TenantInfoBean> getAllTenants() throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();

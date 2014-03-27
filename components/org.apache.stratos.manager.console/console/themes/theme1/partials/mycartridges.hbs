@@ -5,39 +5,73 @@
         </div>
     </div>
 </div>
-{{#each mycartridges}}
+
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
-            <div class="box-container">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
-                    </div>
-                    <div class="col-lg-9">
-                        {{#unless loadBalancer}}
-                            <div class="un-subscribe-container"><a class="un-subscribe un-subscribe-btn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class="fa fa-times-circle-o"></i></a></div>
-                        {{/unless}}
-                        <a href="{{url "/cartridge_info.jag?alias="}}{{cartridgeAlias}}"><h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3></a>
-                        <div class="cartridge-description">{{description}}</div>
-                        <div class="cartridge-description">{{repoURL}}</div>
+        {{#each mycartridges}}
+            {{#if serviceGroup}}
+                <div class="col-md-6">
+                    <div class="box-container">
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                {{#unless loadBalancer}}
+                                <div class="un-subscribe-container"><a class="un-subscribe un-subscribe-btn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class="fa fa-times-circle-o"></i></a></div>
+                                {{/unless}}
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-lg-push-2 col-lg-10"><a><h3>{{serviceGroup}}</h3></a></div>
+                                    </div>
+                                </div>
+
+                                <div class="container">
+                                {{#each items}}
+                                    <div class="row">
+                                        <div class="col-lg-2">
+                                            <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <a href="{{url "/cartridge_info.jag?alias="}}{{cartridgeAlias}}"><h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3></a>
+                                            <div class="cartridge-description">{{description}}</div>
+                                            <div class="cartridge-description">{{repoURL}}  <a class="js_syncRepo" data-value="{{cartridgeAlias}}"><i class="fa fa-refresh"></i></a></div>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            {{else}}
+                <div class="col-md-6">
+                    <div class="box-container">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
+                            </div>
+                            <div class="col-lg-9">
+                                {{#unless loadBalancer}}
+                                    <div class="un-subscribe-container"><a class="un-subscribe un-subscribe-btn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class="fa fa-times-circle-o"></i></a></div>
+                                {{/unless}}
+                                <a href="{{url "/cartridge_info.jag?alias="}}{{cartridgeAlias}}"><h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3></a>
+                                <div class="cartridge-description">{{description}}</div>
+                                <div class="cartridge-description">{{repoURL}}  <a class="js_syncRepo" data-value="{{cartridgeAlias}}"><i class="fa fa-refresh"></i></a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+            {{else}}
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-empty-page">
+                        <strong>You haven't subscribed to any Cartridges yet.</strong> Go to <a href="{{url "/cartridges.jag"}}">Subscribe to Cartridge</a> page to start.
+                    </div>
+                </div>
+        {{/each}}
     </div>
 </div>
-{{else}}
-<div class="container">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="alert alert-info alert-empty-page">
-                <strong>You haven't subscribed to any Cartridges yet.</strong> Go to <a href="{{url "/cartridges.jag"}}">Subscribe to Cartridge</a> page to start.
-            </div>
-        </div>
-    </div>
-</div>
-{{/each}}
+
+
 <form method="post" id="cForm" action="{{url "/controllers/cartridgeUnsubscribeSubmit.jag"}}">
         <input type="hidden" name="alias" id="alias" />
 </form>

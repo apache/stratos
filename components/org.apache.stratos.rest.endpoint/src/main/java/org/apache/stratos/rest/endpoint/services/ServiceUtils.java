@@ -954,6 +954,10 @@ public class ServiceUtils {
         }
         return true;
     }
+    
+    public static CartridgeSubscription getCartridgeSubscription(String alias, ConfigurationContext configurationContext) {
+    	return cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.getTenantId(configurationContext), alias);
+    }
 
     static SubscriptionInfo subscribeToCartridge (CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername,
                                                   String tenantDomain) throws RestAPIException {
@@ -1159,6 +1163,17 @@ public class ServiceUtils {
             RepositoryNotification repoNotification = new RepositoryNotification();
             repoNotification.updateRepository(payload.getRepository().getUrl());
 
+        } catch (Exception e) {
+            String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+    }
+    
+    static void sendRepositoryNotification(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
+        try {
+            RepositoryNotification repoNotification = new RepositoryNotification();
+            repoNotification.updateRepository(cartridgeSubscription);
         } catch (Exception e) {
             String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
             log.error(msg, e);

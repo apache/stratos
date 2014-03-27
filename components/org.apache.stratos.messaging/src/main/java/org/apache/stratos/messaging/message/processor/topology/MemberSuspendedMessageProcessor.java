@@ -121,18 +121,19 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	member.setStatus(MemberStatus.Suspended);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member suspended: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
-            // Apply changes to the topology
-            member.setStatus(MemberStatus.Suspended);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member suspended: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
 
             notifyEventListeners(event);
             return true;
