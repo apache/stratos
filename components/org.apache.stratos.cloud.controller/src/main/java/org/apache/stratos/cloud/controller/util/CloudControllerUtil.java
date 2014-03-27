@@ -75,7 +75,7 @@ public class CloudControllerUtil {
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
-
+        cartridge.setServiceGroup(config.getServiceGroup());
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {

@@ -49,7 +49,7 @@ public class PojoConverter {
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
         cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
         cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
-
+        cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
 
         
         //deployment information

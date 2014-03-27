@@ -60,6 +60,8 @@ public class CartridgeConfig implements Serializable {
     private IaasConfig[] iaasConfigs;    
     
     private LoadbalancerConfig lbConfig;
+    
+    private String serviceGroup;
 
 
     public String getType() {
@@ -259,4 +261,14 @@ public class CartridgeConfig implements Serializable {
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
+    
+    
 }

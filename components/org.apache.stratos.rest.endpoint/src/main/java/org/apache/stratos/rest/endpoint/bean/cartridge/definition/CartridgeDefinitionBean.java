@@ -55,6 +55,8 @@ public class CartridgeDefinitionBean {
     public String defaultAutoscalingPolicy;
 
     public String defaultDeploymentPolicy;
+    
+    public String serviceGroup;
 
     public String toString () {
 
