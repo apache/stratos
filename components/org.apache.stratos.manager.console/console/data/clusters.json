@@ -1,301 +1,122 @@
-[{
-        "id":"bps"
-        ,"name":"BPS Cluster"
-        ,"elb":["elb1"]
-        ,"up_time":"25hrs"
-        ,"down_time":""
-        ,"cpu":"20"
-        ,"policy":"Round Robin"
-        ,"state":"down"
-        ,"patches":[
+[
+    {
+        "activeInstances": 0,
+        "cartridgeAlias": "test",
+        "cartridgeType": "php",
+        "description": "PHP Cartridge",
+        "displayName": "PHP",
+        "hostName": "dummy.stratos.com",
+        "loadBalancer": false,
+        "multiTenant": false,
+        "persistance": false,
+        "provider": "apache",
+        "repoURL": "http://dummy.stratos.com/myrepo.git",
+        "version": 7
+    },
+    {
+        "serviceGroup": "foo",
+        "items": [
             {
-                "name":"wso2-0001"
+                "activeInstances": 0,
+                "cartridgeAlias": "test0",
+                "cartridgeType": "php",
+                "description": "PHP Cartridge",
+                "displayName": "PHP",
+                "hostName": "dummy.stratos.com",
+                "loadBalancer": false,
+                "multiTenant": false,
+                "persistance": false,
+                "provider": "apache",
+                "repoURL": "http://dummy.stratos.com/myrepo.git",
+                "version": 7,
+                "serviceGroup": "foo",
+                "done": true
             },
             {
-                "name":"wso2-0002"
-            }
-        ]
-        ,"details":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at turpis at lorem congue laoreet in hendrerit arcu. Pellentesque interdum quis nunc ut dictum. Nullam bibendum risus quis mollis dignissim. Duis congue fringilla sapien in commodo. Curabitur ut mauris ligula. Pellentesque sit amet neque tincidunt, malesuada est at, euismod purus. Praesent id bibendum neque, a ultricies diam. Suspendisse suscipit sem lacus, eget bibendum sapien adipiscing ac. Vestibulum suscipit convallis sagittis. Maecenas lacinia tincidunt viverra. Curabitur ac blandit est. Nunc ac molestie nisl."
-        ,"nodes":[
+                "activeInstances": 0,
+                "cartridgeAlias": "test1",
+                "cartridgeType": "php",
+                "description": "PHP Cartridge",
+                "displayName": "PHP",
+                "hostName": "dummy.stratos.com",
+                "loadBalancer": false,
+                "multiTenant": false,
+                "persistance": false,
+                "provider": "apache",
+                "repoURL": "http://dummy.stratos.com/myrepo.git",
+                "version": 7,
+                "serviceGroup": "foo",
+                "done": true
+            },
             {
-                "id":"n1"
-                ,"name":"N1"
-                ,"up_time":"25hrs"
-                ,"down_time": ""
-                ,"cpu": "20"
-                ,"policy": "Round Robin"
-                ,"state": "crashed"
-                ,"patches": [
-                    {
-                        "name": "wso2-0001"
-                    },
-                    {
-                        "name": "wso2-0002"
-                    }
-                ]
-                ,"details":"Lorem"
-            }
-            ,{
-                "id":"n2"
-                ,"name":"N2"
-                ,"up_time":"25hrs"
-                ,"down_time": ""
-                ,"cpu": "20"
-                ,"policy": "Round Robin"
-                ,"state": "error"
-                ,"patches": [
-                    {
-                        "name": "wso2-0001"
-                    },
-                    {
-                        "name": "wso2-0002"
-                    }
-                ]
-                ,"details":"Lorem"
-            }
-            ,{
-                "id":"n3"
-                ,"name":"N3"
-                ,"up_time":"25hrs"
-                ,"down_time": ""
-                ,"cpu": "20"
-                ,"policy": "Round Robin"
-                ,"state": "up"
-                ,"patches": [
-                    {
-                        "name": "wso2-0001"
-                    },
-                    {
-                        "name": "wso2-0002"
-                    }
-                ]
-                ,"details":"Lorem"
+                "activeInstances": 0,
+                "cartridgeAlias": "test2",
+                "cartridgeType": "php",
+                "description": "PHP Cartridge",
+                "displayName": "PHP",
+                "hostName": "dummy.stratos.com",
+                "loadBalancer": false,
+                "multiTenant": false,
+                "persistance": false,
+                "provider": "apache",
+                "repoURL": "http://dummy.stratos.com/myrepo.git",
+                "version": 7,
+                "serviceGroup": "foo",
+                "done": true
             }
         ]
     },
     {
-        "id":"esb"
-        ,"name":"ESB Cluster"
-        ,"elb":["elb1","elb2"]
-        ,"up_time":"25hrs"
-        ,"down_time":""
-        ,"cpu":"20"
-        ,"policy":"Round Robin"
-        ,"state":"down"
-        ,"patches":[
+        "serviceGroup": "bar",
+        "items": [
             {
-                "name":"wso2-0001"
+                "activeInstances": 0,
+                "cartridgeAlias": "test0",
+                "cartridgeType": "php",
+                "description": "PHP Cartridge",
+                "displayName": "PHP",
+                "hostName": "dummy.stratos.com",
+                "loadBalancer": false,
+                "multiTenant": false,
+                "persistance": false,
+                "provider": "apache",
+                "repoURL": "http://dummy.stratos.com/myrepo.git",
+                "version": 7,
+                "serviceGroup": "bar",
+                "done": true
             },
             {
-                "name":"wso2-0002"
-            }
-        ]
-        ,"details":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at turpis at lorem congue laoreet in hendrerit arcu. Pellentesque interdum quis nunc ut dictum. Nullam bibendum risus quis mollis dignissim. Duis congue fringilla sapien in commodo. Curabitur ut mauris ligula. Pellentesque sit amet neque tincidunt, malesuada est at, euismod purus. Praesent id bibendum neque, a ultricies diam. Suspendisse suscipit sem lacus, eget bibendum sapien adipiscing ac. Vestibulum suscipit convallis sagittis. Maecenas lacinia tincidunt viverra. Curabitur ac blandit est. Nunc ac molestie nisl."
-        ,"nodes":[
+                "activeInstances": 0,
+                "cartridgeAlias": "test1",
+                "cartridgeType": "php",
+                "description": "PHP Cartridge",
+                "displayName": "PHP",
+                "hostName": "dummy.stratos.com",
+                "loadBalancer": false,
+                "multiTenant": false,
+                "persistance": false,
+                "provider": "apache",
+                "repoURL": "http://dummy.stratos.com/myrepo.git",
+                "version": 7,
+                "serviceGroup": "bar",
+                "done": true
+            },
             {
-                "id":"n1"
-                ,"name":"N1"
-                ,"up_time":"25hrs"
-                ,"down_time": ""
-                ,"cpu": "20"
-                ,"policy": "Round Robin"
-                ,"state": "crashed"
-                ,"patches": [
-                    {
-                        "name": "wso2-0001"
-                    },
-                    {
-                        "name": "wso2-0002"
-                    }
-                ]
-                ,"details":"Lorem"
-            }
-            ,{
-                "id":"n2"
-                ,"name":"N2"
-                ,"up_time":"25hrs"
-                ,"down_time": ""
-                ,"cpu": "20"
-                ,"policy": "Round Robin"
-                ,"state": "error"
-                ,"patches": [
-                    {
-                        "name": "wso2-0001"
-                    },
-                    {
-                        "name": "wso2-0002"
-                    }
-                ]
-                ,"details":"Lorem"
-            }
-            ,{
-                "id":"n3"
-                ,"name":"N3"
-                ,"up_time":"25hrs"
-                ,"down_time": ""
-                ,"cpu": "20"
-                ,"policy": "Round Robin"
-                ,"state": "up"
-                ,"patches": [
-                    {
-                        "name": "wso2-0001"
-                    },
-                    {
-                        "name": "wso2-0002"
-                    }
-                ]
-                ,"details":"Lorem"
+                "activeInstances": 0,
+                "cartridgeAlias": "test2",
+                "cartridgeType": "php",
+                "description": "PHP Cartridge",
+                "displayName": "PHP",
+                "hostName": "dummy.stratos.com",
+                "loadBalancer": false,
+                "multiTenant": false,
+                "persistance": false,
+                "provider": "apache",
+                "repoURL": "http://dummy.stratos.com/myrepo.git",
+                "version": 7,
+                "serviceGroup": "bar",
+                "done": true
             }
         ]
     }
-    ,{
-            "id":"bam"
-            ,"name":"BAM Cluster"
-            ,"elb":["elb2"]
-            ,"up_time":"25hrs"
-            ,"down_time":""
-            ,"cpu":"20"
-            ,"policy":"Round Robin"
-            ,"state":"up"
-            ,"patches":[
-                {
-                    "name":"wso2-0001"
-                },
-                {
-                    "name":"wso2-0002"
-                }
-            ]
-            ,"details":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at turpis at lorem congue laoreet in hendrerit arcu. Pellentesque interdum quis nunc ut dictum. Nullam bibendum risus quis mollis dignissim. Duis congue fringilla sapien in commodo. Curabitur ut mauris ligula. Pellentesque sit amet neque tincidunt, malesuada est at, euismod purus. Praesent id bibendum neque, a ultricies diam. Suspendisse suscipit sem lacus, eget bibendum sapien adipiscing ac. Vestibulum suscipit convallis sagittis. Maecenas lacinia tincidunt viverra. Curabitur ac blandit est. Nunc ac molestie nisl."
-            ,"nodes":[
-                {
-                    "id":"n1"
-                    ,"name":"N1"
-                    ,"up_time":"25hrs"
-                    ,"down_time": ""
-                    ,"cpu": "20"
-                    ,"policy": "Round Robin"
-                    ,"state": "crashed"
-                    ,"patches": [
-                        {
-                            "name": "wso2-0001"
-                        },
-                        {
-                            "name": "wso2-0002"
-                        }
-                    ]
-                    ,"details":"Lorem"
-                }
-                ,{
-                    "id":"n2"
-                    ,"name":"N2"
-                    ,"up_time":"25hrs"
-                    ,"down_time": ""
-                    ,"cpu": "20"
-                    ,"policy": "Round Robin"
-                    ,"state": "up"
-                    ,"patches": [
-                        {
-                            "name": "wso2-0001"
-                        },
-                        {
-                            "name": "wso2-0002"
-                        }
-                    ]
-                    ,"details":"Lorem"
-                }
-                ,{
-                    "id":"n3"
-                    ,"name":"N3"
-                    ,"up_time":"25hrs"
-                    ,"down_time": ""
-                    ,"cpu": "20"
-                    ,"policy": "Round Robin"
-                    ,"state": "up"
-                    ,"patches": [
-                        {
-                            "name": "wso2-0001"
-                        },
-                        {
-                            "name": "wso2-0002"
-                        }
-                    ]
-                    ,"details":"Lorem"
-                }
-            ]
-        },
-        {
-            "id":"appfac"
-            ,"name":"App Factory"
-            ,"elb":["elb2"]
-            ,"up_time":"25hrs"
-            ,"down_time":""
-            ,"cpu":"20"
-            ,"policy":"Round Robin"
-            ,"state":"up"
-            ,"patches":[
-                {
-                    "name":"wso2-0001"
-                },
-                {
-                    "name":"wso2-0002"
-                }
-            ]
-            ,"details":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at turpis at lorem congue laoreet in hendrerit arcu. Pellentesque interdum quis nunc ut dictum. Nullam bibendum risus quis mollis dignissim. Duis congue fringilla sapien in commodo. Curabitur ut mauris ligula. Pellentesque sit amet neque tincidunt, malesuada est at, euismod purus. Praesent id bibendum neque, a ultricies diam. Suspendisse suscipit sem lacus, eget bibendum sapien adipiscing ac. Vestibulum suscipit convallis sagittis. Maecenas lacinia tincidunt viverra. Curabitur ac blandit est. Nunc ac molestie nisl."
-            ,"nodes":[
-                {
-                    "id":"n1"
-                    ,"name":"N1"
-                    ,"up_time":"25hrs"
-                    ,"down_time": ""
-                    ,"cpu": "20"
-                    ,"policy": "Round Robin"
-                    ,"state": "crashed"
-                    ,"patches": [
-                        {
-                            "name": "wso2-0001"
-                        },
-                        {
-                            "name": "wso2-0002"
-                        }
-                    ]
-                    ,"details":"Lorem"
-                }
-                ,{
-                    "id":"n2"
-                    ,"name":"N2"
-                    ,"up_time":"25hrs"
-                    ,"down_time": ""
-                    ,"cpu": "20"
-                    ,"policy": "Round Robin"
-                    ,"state": "up"
-                    ,"patches": [
-                        {
-                            "name": "wso2-0001"
-                        },
-                        {
-                            "name": "wso2-0002"
-                        }
-                    ]
-                    ,"details":"Lorem"
-                }
-                ,{
-                    "id":"n3"
-                    ,"name":"N3"
-                    ,"up_time":"25hrs"
-                    ,"down_time": ""
-                    ,"cpu": "20"
-                    ,"policy": "Round Robin"
-                    ,"state": "up"
-                    ,"patches": [
-                        {
-                            "name": "wso2-0001"
-                        },
-                        {
-                            "name": "wso2-0002"
-                        }
-                    ]
-                    ,"details":"Lorem"
-                }
-            ]
-        }
 ]
