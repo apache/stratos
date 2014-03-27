@@ -106,23 +106,24 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	Member member = new Member(event.getServiceName(), event.getClusterId(), event.getNetworkPartitionId(), event.getPartitionId(), event.getMemberId());
+            	member.setStatus(MemberStatus.Created);
+            	member.setMemberPublicIp(event.getMemberPublicIp());
+            	member.setMemberIp(event.getMemberIp());
+            	member.setLbClusterId(event.getLbClusterId());
+            	cluster.addMember(member);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member created: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
-            // Apply changes to the topology
-            Member member = new Member(event.getServiceName(), event.getClusterId(), event.getNetworkPartitionId(), event.getPartitionId(), event.getMemberId());
-            member.setStatus(MemberStatus.Created);
-            member.setMemberPublicIp(event.getMemberPublicIp());
-            member.setMemberIp(event.getMemberIp());
-            member.setLbClusterId(event.getLbClusterId());
-            cluster.addMember(member);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member created: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
 
             // Notify event listeners
             notifyEventListeners(event);

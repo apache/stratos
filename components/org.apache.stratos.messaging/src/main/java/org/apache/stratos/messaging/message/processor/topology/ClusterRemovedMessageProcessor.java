@@ -86,16 +86,17 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
                             event.getServiceName(),
                             event.getClusterId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	service.removeCluster(event.getClusterId());
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Cluster removed from service: [service] %s [cluster] %s",
+            				event.getServiceName(), event.getClusterId()));
+            	}
             }
 
-            // Apply changes to the topology
-            service.removeCluster(event.getClusterId());
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster removed from service: [service] %s [cluster] %s",
-                        event.getServiceName(), event.getClusterId()));
-            }
 
             // Notify event listeners
             notifyEventListeners(event);

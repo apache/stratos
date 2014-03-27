@@ -118,18 +118,19 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	member.setStatus(MemberStatus.ReadyToShutDown);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member updated as Ready to shutdown: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
-            // Apply changes to the topology
-            member.setStatus(MemberStatus.ReadyToShutDown);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member updated as Ready to shutdown: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
 
             // Notify event listeners
             notifyEventListeners(event);
