@@ -64,6 +64,7 @@ import org.apache.stratos.cli.commands.PartitionCommand;
 import org.apache.stratos.cli.commands.PartitionDeploymentCommand;
 import org.apache.stratos.cli.commands.SubscribeCommand;
 import org.apache.stratos.cli.commands.SubscribedCartridgeInfoCommand;
+import org.apache.stratos.cli.commands.SyncCommand;
 import org.apache.stratos.cli.commands.UndeployCartridgeDefinitionCommand;
 import org.apache.stratos.cli.commands.UndeployServiceDefinitionCommand;
 import org.apache.stratos.cli.commands.UnsubscribeCommand;
@@ -206,8 +207,8 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		//command = new RemoveDomainMappingCommand();
 		//commands.put(command.getName(), command);
 		
-		//command = new SyncCommand();
-		//commands.put(command.getName(), command);
+		command = new SyncCommand();
+		commands.put(command.getName(), command);
 		
 		//command = new PoliciesCommand();
 		//commands.put(command.getName(), command);

@@ -82,6 +82,7 @@ public class RestCommandLineService {
     private final String addTenantEndPoint = "/stratos/admin/tenant";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
     private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
+    private final String syncEndPoint = "/stratos/admin/sync";
     private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
     private final String autoscalingPolicyDeploymentEndPoint = "/stratos/admin/policy/autoscale";
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";
@@ -1648,6 +1649,32 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
+    
+	public void sync(String alias) throws CommandException {
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		try {
+			HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + syncEndPoint, alias);
+
+			String responseCode = "" + response.getStatusLine().getStatusCode();
+
+			if (responseCode.equals(CliConstants.RESPONSE_OK)) {
+				System.out.format("Synchronizing repository for alias: %s%n", alias);
+				return;
+			} else {
+				GsonBuilder gsonBuilder = new GsonBuilder();
+				Gson gson = gsonBuilder.create();
+				String resultString = getHttpResponseString(response);
+				ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+				System.out.println(exception);
+				return;
+			}
+
+		} catch (Exception e) {
+			handleException("Exception when synchronizing repository for alias: " + alias, e);
+		} finally {
+			httpClient.getConnectionManager().shutdown();
+		}
+	}
 
     // This class convert JSON string to deploymentpolicylist object
     private class DeploymentPolicyList {
