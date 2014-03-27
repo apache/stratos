@@ -98,14 +98,15 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
                     log.warn(String.format("Cluster already exists in service: [service] %s [cluster] %s", event.getServiceName(),
                             event.getClusterId()));
                 }
-                return false;
-            }
+			} else {
 
-            // Apply changes to the topology
-            service.addCluster(cluster);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster created: %s", cluster.toString()));
-            }
+				// Apply changes to the topology
+				service.addCluster(cluster);
+				if (log.isInfoEnabled()) {
+					log.info(String.format("Cluster created: %s",
+							cluster.toString()));
+				}
+			}
 
             // Notify event listeners
             notifyEventListeners(event);

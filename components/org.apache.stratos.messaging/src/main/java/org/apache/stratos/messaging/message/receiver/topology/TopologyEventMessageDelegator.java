@@ -73,7 +73,7 @@ public class TopologyEventMessageDelegator implements Runnable {
                     String json = message.getText();
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Topology event message received from queue: %s", type));
+                        log.debug(String.format("Topology event message [%s] received from queue: %s", type, messageQueue.getClass()));
                     }
 
                     try {

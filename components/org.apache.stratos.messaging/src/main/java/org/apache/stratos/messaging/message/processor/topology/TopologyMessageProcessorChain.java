@@ -92,6 +92,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             completeTopologyMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterCreatedEventListener) {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
+            log.info("Messaging: added ClusterCreatedEventListener");
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceSpawnedEventListener) {
