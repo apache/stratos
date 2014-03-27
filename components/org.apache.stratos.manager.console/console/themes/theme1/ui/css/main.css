@@ -278,6 +278,15 @@ h4{
     padding-top:10px;
     font-size: 12px;
 }
+.cartridge-description-repo{
+    padding-top:10px;
+    font-size: 12px;
+    padding-left:10px;
+    padding-bottom:10px;
+    background: #fff;
+    color:#444;
+    border-radius: 2px;
+}
 
 .lb-description{
     padding-top:10px;

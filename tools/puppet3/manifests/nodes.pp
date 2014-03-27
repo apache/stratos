@@ -5,6 +5,7 @@ node 'base' {
   $local_package_dir    = '/mnt/packs'
   $mb_ip                = '54.255.43.95'
   $mb_port              = '5677'
+  $mb_type		= 'activemq' #in wso2 mb case, value should be 'wso2mb'
   $cep_ip               = '54.255.43.95'
   $cep_port             = '7615'
   $truststore_password  = 'wso2carbon'

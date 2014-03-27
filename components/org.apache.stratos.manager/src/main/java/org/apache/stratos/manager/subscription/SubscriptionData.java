@@ -41,6 +41,7 @@ public class SubscriptionData {
     private Property[] properties;
     private PersistenceContext persistanceCtxt;
     private boolean isCommitsEnabled;
+    private String serviceGroup;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -160,6 +161,14 @@ public class SubscriptionData {
 
 	public void setCommitsEnabled(boolean isCommitsEnabled) {
 		this.isCommitsEnabled = isCommitsEnabled;
+	}
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
 	}
     
 }

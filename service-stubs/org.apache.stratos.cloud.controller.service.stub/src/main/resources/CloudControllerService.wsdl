@@ -374,6 +374,7 @@
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax26:PortMapping"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax26:Properties"></xs:element>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
