@@ -119,18 +119,19 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	member.setStatus(MemberStatus.In_Maintenance);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member updated as In_Maintenance: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
-            // Apply changes to the topology
-            member.setStatus(MemberStatus.In_Maintenance);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member updated as In_Maintenance: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
 
             // Notify event listeners
             notifyEventListeners(event);

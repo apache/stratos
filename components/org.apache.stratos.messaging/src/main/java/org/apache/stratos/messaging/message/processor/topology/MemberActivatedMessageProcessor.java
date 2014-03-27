@@ -134,19 +134,19 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
-            }
-
-            // Apply changes to the topology
-            member.addPorts(event.getPorts());
-            member.setMemberIp(event.getMemberIp());
-            member.setStatus(MemberStatus.Activated);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member activated: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
+            } else {
+            	
+            	// Apply changes to the topology
+            	member.addPorts(event.getPorts());
+            	member.setMemberIp(event.getMemberIp());
+            	member.setStatus(MemberStatus.Activated);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member activated: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
             // Notify event listeners
