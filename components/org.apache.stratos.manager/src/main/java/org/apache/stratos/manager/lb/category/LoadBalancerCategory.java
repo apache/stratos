@@ -19,8 +19,6 @@
 
 package org.apache.stratos.manager.lb.category;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
@@ -34,7 +32,8 @@ import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
-import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
+
+import java.util.Map;
 
 public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 
@@ -91,16 +90,10 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 			cluster.setHostName(deployedLBService.getHostName());
 
 		} else {
-			clusterId = alias + "." + cartridgeInfo.getType() + ".domain";
-
-			// limit the cartridge alias to 30 characters in length
-			if (clusterId.length() > 30) {
-				clusterId = CartridgeSubscriptionUtils.limitLengthOfString(
-						clusterId, 30);
-			}
-			cluster.setClusterDomain(clusterId);
+            // set cluster domain
+			cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
 			// set hostname
-			cluster.setHostName(alias + "." + cluster.getHostName());
+			cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
 		}
 
 		return createPayload(cartridgeInfo, subscriptionKey, subscriber,

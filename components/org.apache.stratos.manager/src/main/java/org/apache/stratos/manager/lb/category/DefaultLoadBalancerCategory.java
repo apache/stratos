@@ -19,15 +19,13 @@
 
 package org.apache.stratos.manager.lb.category;
 
-import java.rmi.RemoteException;
-import java.util.Map;
-
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
+import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
@@ -35,7 +33,9 @@ import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscriber.Subscriber;
-import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
+
+import java.rmi.RemoteException;
+import java.util.Map;
 
 public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
 
@@ -52,27 +52,40 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
 		try {
 			clusterId = AutoscalerServiceClient.getServiceClient().getDefaultLBClusterId(getDeploymentPolicyName());
 		} catch (Exception e) {			
-			log.error("Error occurred in retrieving default LB cluster id.  " + e.getMessage());
+			log.error("Error occurred in retrieving default LB cluster id" + e.getMessage());
 			throw new ADCException(e);
 		}
 
         if (clusterId != null) {
-
             //set the cluster id to Cluster object
         	cluster.setClusterDomain(clusterId);
+            if (log.isDebugEnabled()) {
+                log.debug("Set existing default LB cluster id " + clusterId + " to the LB Subscription with alias: " + alias);
+            }
             defaultLBExists = true;
-            //need to check if we can get the host name as well..
+
+            //get the hostname for this cluster and set it
+            ClusterContext clusterContext;
+            try {
+                clusterContext = CloudControllerServiceClient.getServiceClient().getClusterContext(clusterId);
+
+            } catch (RemoteException e) {
+                log.error("Error occurred in retrieving Cluster Context for default LB" + e.getMessage());
+                throw new ADCException(e);
+            }
+
+            if (clusterContext != null) {
+                cluster.setHostName(clusterContext.getHostName());
+                if (log.isDebugEnabled()) {
+                    log.debug("Set existing default LB hostname " + clusterContext.getHostName() + " to the LB Subscription with alias: " + alias);
+                }
+            }
 
         } else {
-            clusterId = alias + "." + cartridgeInfo.getType() + ".domain";
-
-            // limit the cartridge alias to 30 characters in length
-            if (clusterId.length() > 30) {
-                clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
-            }
-            cluster.setClusterDomain(clusterId);
+            // set cluster domain
+            cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
             // set hostname
-            cluster.setHostName(alias + "." + cluster.getHostName());
+            cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
         }
 
         return createPayload(cartridgeInfo, subscriptionKey, subscriber,

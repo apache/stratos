@@ -152,4 +152,8 @@ public class CloudControllerServiceClient {
 	    stub.unregisterService(clusterId);
 	}
 
+    public ClusterContext getClusterContext (String clusterId) throws RemoteException {
+
+        return stub.getClusterContext(clusterId);
+    }
 }
