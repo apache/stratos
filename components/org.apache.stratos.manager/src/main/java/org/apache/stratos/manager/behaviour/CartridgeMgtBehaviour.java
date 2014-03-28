@@ -18,7 +18,6 @@ package org.apache.stratos.manager.behaviour;
  * under the License.
  */
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
@@ -53,18 +52,28 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
     public PayloadData create (String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,
                                String subscriptionKey, Map<String, String> customPayloadEntries) throws ADCException, AlreadySubscribedException {
 
+        // set cluster domain
+        cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
+        // set hostname
+        cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
 
-        String clusterId = alias + "." + cartridgeInfo.getType() + ".domain";
+        return createPayload(cartridgeInfo, subscriptionKey, subscriber, cluster, repository, alias, customPayloadEntries);
+    }
 
+    protected String generateClusterId (String alias, String cartridgeType) {
+
+        String clusterId = alias + "." + cartridgeType + ".domain";
         // limit the cartridge alias to 30 characters in length
         if (clusterId.length() > 30) {
             clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
         }
-        cluster.setClusterDomain(clusterId);
-        // set hostname
-        cluster.setHostName(alias + "." + cluster.getHostName());
 
-        return createPayload(cartridgeInfo, subscriptionKey, subscriber, cluster, repository, alias, customPayloadEntries);
+        return clusterId;
+    }
+
+    protected String generateHostName (String alias, String cartridgeDefinitionHostName) {
+
+        return alias + "." + cartridgeDefinitionHostName;
     }
 
     protected PayloadData createPayload (CartridgeInfo cartridgeInfo, String subscriptionKey, Subscriber subscriber, Cluster cluster,
