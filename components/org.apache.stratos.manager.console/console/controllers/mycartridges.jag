@@ -1,0 +1,15 @@
+<%
+(function(){
+    var log = new Log("controller.myCartridges");
+    var utils = require('/util/utility.jag');
+    var action = request.getParameter("action");
+    var alias = request.getParameter("alias");
+    log.info("Action : " + action + "  Alias is: " + alias);
+
+    if(action == "sync"){
+        print(utils.consoleAppUtil.syncRepo(alias));
+    }
+
+
+}());
+%>

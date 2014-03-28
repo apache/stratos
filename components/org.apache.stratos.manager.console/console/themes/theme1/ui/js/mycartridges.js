@@ -9,4 +9,15 @@ $(function () {
             }
         });
     });
+
+    $('.js_syncRepo').click(function(){
+        var alias = $(this).attr('data-value');
+        $.ajax({
+            data:{alias:alias,action:"sync"},
+            url:"/console/controllers/mycartridges.jag",
+            success:function(data){
+                alert($.parseJSON(data).msg)
+            }
+        })
+    })
 });

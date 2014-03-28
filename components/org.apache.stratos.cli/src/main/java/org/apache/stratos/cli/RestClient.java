@@ -18,37 +18,38 @@
  */
 package org.apache.stratos.cli;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.*;
+import java.net.ConnectException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.stratos.cli.utils.CliConstants;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 
 public class RestClient implements GenericRestClient{
 
-    private String url;
+    private String baseURL;
     private String username;
     private String password;
 
     private final int TIME_OUT_PARAM = 6000000;
 
-    RestClient(String url, String username, String password) {
-        this.setUrl(url);
-        this.setUsername(username);
-        this.setPassword(password);
+    public RestClient(String baseURL, String username, String password) {
+        this.baseURL = baseURL;
+        this.username = username;
+        this.password = password;
     }
 
-    /**
+    public String getBaseURL() {
+		return baseURL;
+	}
+
+	/**
      * Handle http post request. Return String
      *
      * @param  httpClient
@@ -57,16 +58,15 @@ public class RestClient implements GenericRestClient{
      *              This should be REST endpoint
      * @param jsonParamString
      *              The json string which should be executed from the post request
-     * @param userName
+     * @param username
      *              User name for basic auth
-     * @param passWord
+     * @param password
      *              Password for basic auth
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString, String userName,
-                               String passWord) throws Exception{
+    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString) throws Exception{
         try {
             HttpPost postRequest = new HttpPost(resourcePath);
 
@@ -74,7 +74,7 @@ public class RestClient implements GenericRestClient{
             input.setContentType("application/json");
             postRequest.setEntity(input);
 
-            String userPass = userName + ":" + passWord;
+            String userPass = username + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             postRequest.addHeader("Authorization", basicAuth);
 
@@ -105,20 +105,20 @@ public class RestClient implements GenericRestClient{
      *              This should be httpClient which used to connect to rest endpoint
      * @param resourcePath
      *              This should be REST endpoint
-     * @param userName
+     * @param username
      *              User name for basic auth
-     * @param passWord
+     * @param password
      *              Password for basic auth
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) throws Exception{
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath) throws Exception{
         try {
             HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 
-            String userPass = userName + ":" + passWord;
+            String userPass = username + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             getRequest.addHeader("Authorization", basicAuth);
 
@@ -141,12 +141,12 @@ public class RestClient implements GenericRestClient{
         }
     }
 
-    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath, String userName, String passWord) {
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath) {
         try {
             HttpDelete httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
 
-            String userPass = userName + ":" + passWord;
+            String userPass = username + ":" + password;
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
             httpDelete.addHeader("Authorization", basicAuth);
 
@@ -170,30 +170,7 @@ public class RestClient implements GenericRestClient{
     }
 
     public void doPut() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // Not implemented
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

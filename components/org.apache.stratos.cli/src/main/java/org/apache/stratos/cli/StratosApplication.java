@@ -18,18 +18,8 @@
  */
 package org.apache.stratos.cli;
 
-import org.apache.commons.cli.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.stratos.cli.commands.*;
-import org.apache.stratos.cli.completer.CommandCompleter;
-import org.apache.stratos.cli.exception.CommandException;
-import org.apache.stratos.cli.utils.CliConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
+import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -38,8 +28,51 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.stratos.cli.commands.ActivateTenantCommand;
+import org.apache.stratos.cli.commands.AddTenantCommand;
+import org.apache.stratos.cli.commands.AutoscalePolicyCommand;
+import org.apache.stratos.cli.commands.AutoscalingPolicyDeploymentCommand;
+import org.apache.stratos.cli.commands.CartridgeDeploymentCommand;
+import org.apache.stratos.cli.commands.DeactivateTenantCommand;
+import org.apache.stratos.cli.commands.DeployServiceDeploymentCommand;
+import org.apache.stratos.cli.commands.DeploymentPolicyCommand;
+import org.apache.stratos.cli.commands.DeploymentPolicyDeploymentCommand;
+import org.apache.stratos.cli.commands.DescribeAutoScalingPolicyCommand;
+import org.apache.stratos.cli.commands.DescribeCartridgeCommand;
+import org.apache.stratos.cli.commands.DescribeDeploymentPolicyCommand;
+import org.apache.stratos.cli.commands.DescribePartitionCommand;
+import org.apache.stratos.cli.commands.ExitCommand;
+import org.apache.stratos.cli.commands.HelpCommand;
+import org.apache.stratos.cli.commands.ListAllTenants;
+import org.apache.stratos.cli.commands.ListCartridgesCommand;
+import org.apache.stratos.cli.commands.ListDeployServiceCommand;
+import org.apache.stratos.cli.commands.ListMemberCommand;
+import org.apache.stratos.cli.commands.ListSubscribedCartridgesCommand;
+import org.apache.stratos.cli.commands.PartitionCommand;
+import org.apache.stratos.cli.commands.PartitionDeploymentCommand;
+import org.apache.stratos.cli.commands.SubscribeCommand;
+import org.apache.stratos.cli.commands.SubscribedCartridgeInfoCommand;
+import org.apache.stratos.cli.commands.SyncCommand;
+import org.apache.stratos.cli.commands.UndeployCartridgeDefinitionCommand;
+import org.apache.stratos.cli.commands.UndeployServiceDefinitionCommand;
+import org.apache.stratos.cli.commands.UnsubscribeCommand;
+import org.apache.stratos.cli.completer.CommandCompleter;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StratosApplication extends CommandLineApplication<StratosCommandContext> {
 
@@ -174,8 +207,8 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		//command = new RemoveDomainMappingCommand();
 		//commands.put(command.getName(), command);
 		
-		//command = new SyncCommand();
-		//commands.put(command.getName(), command);
+		command = new SyncCommand();
+		commands.put(command.getName(), command);
 		
 		//command = new PoliciesCommand();
 		//commands.put(command.getName(), command);
@@ -195,9 +228,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 	}
 
 	@Override
-	protected File getHistoryFile(String userName) {
+	protected File getHistoryFile(String username) {
 		File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
-		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR + "_" + userName);
+		File historyFile = new File(stratosFile, STRATOS_HISTORY_DIR + "_" + username);
 		return historyFile;
 	}
 
@@ -369,7 +402,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         // This is to create the history file.
         // This section execute only when user didn't enter the username as command line arguments
-        if (userName == null) {
+        if (username == null) {
             reader = null;
             reader = createConsoleReaderWhithoutArgs(usernameInput);
         }

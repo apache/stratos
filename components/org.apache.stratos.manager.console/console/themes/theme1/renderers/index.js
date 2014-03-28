@@ -1,9 +1,52 @@
 var render = function (theme, data, meta, require) {
       // Re-create the data structure of the cartridges.
+    var log = new Log();
     if(data.error.length == 0 ){
-        var cartridges_new = data.mycartridges.cartridge;
+        var cartridges= data.mycartridges.cartridge,cartridges_new =[];
         session.remove("get-status");
         session.remove("deploy-status");
+
+       /*
+        Uncomment this to populate some dummy data to preview the UI
+
+        for(var i=0;i<3;i++){
+            var newElm =parse(stringify(cartridges[0]));
+            newElm.serviceGroup = "foo";
+            newElm.cartridgeAlias = newElm.cartridgeAlias + i;
+            cartridges.push(newElm);
+        }
+        for(var i=0;i<3;i++){
+            var newElm =parse(stringify(cartridges[0]));
+            newElm.serviceGroup = "bar";
+            newElm.cartridgeAlias = newElm.cartridgeAlias + i;
+            cartridges.push(newElm);
+        }
+        */
+        for (var i = 0; i < cartridges.length; i++) {
+            if(cartridges[i].serviceGroup != undefined){
+                if(!cartridges[i].done){
+
+                    cartridges[i].done = true;
+                    var newObj = {};
+                    var serviceGroup = cartridges[i].serviceGroup;
+                    newObj.serviceGroup = serviceGroup;
+                    newObj.items = [];
+                    newObj.items.push(parse(stringify(cartridges[i])));
+
+                    for (var j = 0; j < cartridges.length; j++) {
+                        if(cartridges[j].serviceGroup == serviceGroup && !cartridges[j].done){
+                            cartridges[j].done =true;
+                            newObj.items.push(parse(stringify(cartridges[j])));
+                        }
+                    }
+
+                    cartridges_new.push(newObj);
+                }
+            }else {
+                cartridges_new.push(cartridges[i]);
+            }
+        }
+
 
         /*if(cartridges_old == null) {
             cartridges_old = {};

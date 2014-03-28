@@ -19,13 +19,13 @@
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SyncCommand implements Command<StratosCommandContext> {
 
@@ -60,7 +60,7 @@ public class SyncCommand implements Command<StratosCommandContext> {
 				logger.debug("Synchronizing repository for alias {}", alias);
 			}
 
-			CommandLineService.getInstance().sync(alias);
+			RestCommandLineService.getInstance().sync(alias);
 			return CliConstants.SUCCESSFUL_CODE;
 		} else {
 			context.getStratosApplication().printUsage(getName());

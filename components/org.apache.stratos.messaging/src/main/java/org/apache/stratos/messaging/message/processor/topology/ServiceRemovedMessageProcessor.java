@@ -67,15 +67,16 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
                     log.warn(String.format("Service does not exist: [service] %s",
                             event.getServiceName()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	topology.removeService(service);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Service removed: [service] %s", event.getServiceName()));
+            	}
             }
 
-            // Apply changes to the topology
-            topology.removeService(service);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Service removed: [service] %s", event.getServiceName()));
-            }
 
             // Notify event listeners
             notifyEventListeners(event);

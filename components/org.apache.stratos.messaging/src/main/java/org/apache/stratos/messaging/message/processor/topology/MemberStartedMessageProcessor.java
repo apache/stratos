@@ -121,18 +121,19 @@ public class MemberStartedMessageProcessor extends MessageProcessor {
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	member.setStatus(MemberStatus.Starting);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member started: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
-            // Apply changes to the topology
-            member.setStatus(MemberStatus.Starting);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member started: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
 
             // Notify event listeners
             notifyEventListeners(event);
