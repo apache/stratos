@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+  #  Licensed to the Apache Software Foundation (ASF) under one
+  #  or more contributor license agreements.  See the NOTICE file
+  #  distributed with this work for additional information
+  #  regarding copyright ownership.  The ASF licenses this file
+  #  to you under the Apache License, Version 2.0 (the
+  #  "License"); you may not use this file except in compliance
+  #  with the License.  You may obtain a copy of the License at
+  #  
+  #  http://www.apache.org/licenses/LICENSE-2.0
+  #  
+  #  Unless required by applicable law or agreed to in writing,
+  #  software distributed under the License is distributed on an
+  #  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  #  KIND, either express or implied.  See the License for the
+  #  specific language governing permissions and limitations
+  #  under the License.
+  --> 
+<cloudController xmlns:svns="http://org.wso2.securevault/configuration">
+
+	<svns:secureVault
+		provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
+
+    	<dataPublisher enable="false">
+		<!-- BAM Server Info - default values are 'admin' and 'admin' 
+			 Optional element. -->
+		<bamServer>
+            		<!-- BAM server URL should be specified in carbon.xml -->
+			<adminUserName>admin</adminUserName>
+			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
+		</bamServer>
+		<!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
+			 Optional element. -->
+		<cron>1 * * * * ? *</cron>
+		<!-- Cassandra cluster related info -->
+		<!--cassandraInfo>
+			<connectionUrl>localhost:9160</connectionUrl>
+			<userName>admin</userName>
+			<password svns:secretAlias="cloud.controller.cassandra.server.password">admin</password>
+		</cassandraInfo-->
+	</dataPublisher>
+
+    	<topologySync enable="true">
+		<!-- MB server info -->
+		<property name="amqpConnectionUrl" value="amqp://admin:admin@clientID/carbon?brokerlist='tcp://MB_HOSTNAME:MB_LISTEN_PORT'" />
+		<property name="cron" value="1 * * * * ? *" />
+	</topologySync>	
+
+        <!-- Specify the properties that are common to an IaaS here. This element 
+                is not necessary [0..1]. But you can use this section to avoid specifying 
+                same property over and over again. -->
+	<iaasProviders>
+        	<EC2_PROVIDER_STARTiaasProvider type="ec2" name="ec2 specific details">
+                	<className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
+                        <provider>aws-ec2</provider>
+                        <identity svns:secretAlias="elastic.scaler.openstack.identity">EC2_IDENTITY</identity>
+                        <credential svns:secretAlias="elastic.scaler.openstack.credential">EC2_CREDENTIAL</credential>
+                        <property name="jclouds.ec2.ami-query" value="owner-id=EC2_OWNER_ID;state=available;image-type=machine"/>
+                        <property name="availabilityZone" value="EC2_AVAILABILITY_ZONE"/>
+                        <property name="securityGroups" value="EC2_SECURITY_GROUPS"/>
+                        <property name="instanceType" value="EC2_INSTANCE_TYPE"/>
+                        <property name="autoAssignIp" value="true" />
+                        <property name="keyPair" value="EC2_KEYPAIR"/>
+                </iaasProviderEC2_PROVIDER_END>
+                <OPENSTACK_PROVIDER_STARTiaasProvider type="openstack" name="openstack specific details">
+            		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+                        <provider>openstack-nova</provider>
+                        <identity svns:secretAlias="cloud.controller.openstack.identity">OPENSTACK_IDENTITY</identity>
+                        <credential svns:secretAlias="cloud.controller.openstack.credential">OPENSTACK_CREDENTIAL</credential>
+                        <property name="jclouds.endpoint" value="OPENSTACK_ENDPOINT" />
+            		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
+                        <property name="jclouds.api-version" value="2.0/" />
+                        <property name="X" value="x" />
+                        <property name="Y" value="y" />
+        	</iaasProviderOPENSTACK_PROVIDER_END>
+        </iaasProviders>
+</cloudController>
