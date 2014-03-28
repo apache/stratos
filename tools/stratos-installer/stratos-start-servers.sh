@@ -29,18 +29,22 @@ product_list=$1
 export LOG=$log_path/stratos.log
 SLEEP=40
 
+profile="default"
+
 if [[ -f ./conf/stratos-setup.conf ]]; then
     source "./conf/stratos-setup.conf"
+    echo "source it"
 fi
+
 
 function help {
     echo ""
     echo "Give one or more of the servers to start on this machine. The available servers are"
-    echo "mb, cc, as, sm, cep, all. 'all' means you need to start all servers."
+    echo "cc, as, sm, default. 'default' means you need to start all servers."
     echo "usage:"
-    echo "stratos-start-servers.sh -p\"<product list>\""
+    echo "stratos-start-servers.sh -p\"<profile>\""
     echo "eg."
-    echo "stratos-start-servers.sh -p\"cc sm\""
+    echo "stratos-start-servers.sh -p\"cc\""
     echo ""
 }
 
@@ -48,65 +52,45 @@ while getopts p: opts
 do
   case $opts in
     p)
-        product_list=${OPTARG}
-        echo $product_list
+        profile_list=${OPTARG}
         ;;
-    *)
+    \?)
         help
         exit 1
         ;;
   esac
 done
-arr=$(echo $product_list | tr ";" "\n")
+
+
+arr=$(echo $profile_list | tr " " "\n")
 
 for x in $arr
 do
-    if [[ $x = "mb" ]]; then
-        mb="true"
-    fi
-    if [[ $x = "cep" ]]; then
-        cep="true"
-    fi
     if [[ $x = "cc" ]]; then
-        cc="true"
-    fi
-    if [[ $x = "as" ]]; then
-        as="true"
-    fi
-    if [[ $x = "sm" ]]; then
-        sm="true"
-    fi
-    if [[ $x = "all" ]]; then
-	mb="true"
-        cc="true"
-        as="true"
-        sm="true"
-        cep="true"
+        profile="cc"
+    elif [[ $x = "as" ]]; then
+        profile="as"
+    elif [[ $x = "sm" ]]; then
+        profile="sm"
+    else
+        echo "Inavlid profile : 'default' profile will be selected."
+        profile="default"
     fi
 done
-product_list=`echo $product_list | sed 's/^ *//g' | sed 's/ *$//g'`
-if [[ -z $product_list || $product_list = "" ]]; then
-    help
-    exit 1
-fi
 
-if [[ $mb = "true" ]]; then
-    echo ${mb_path}
-
+if [[ $profile = "default" ]]; then
     echo "Starting ActiveMQ server ..." >> $LOG
-    ${mb_path}/bin/activemq start
-    
+    $activemq_path/bin/activemq start
     echo "ActiveMQ server started" >> $LOG
     sleep $SLEEP
     sleep $SLEEP
 fi
 
-echo ${stratos_dist_path}
-
-    echo "Starting Stratos server ..." >> $LOG
-    ${stratos_dist_path}/bin/stratos.sh start
-    echo "Stratos server started" >> $LOG
-    sleep $SLEEP
-    sleep $SLEEP
+echo "Starting Stratos server ..." >> $LOG
+echo "$stratos_extract_path/bin/stratos.sh -Dprofile=$profile start"
+$stratos_extract_path/bin/stratos.sh -Dprofile=$profile start
+echo "Stratos server started" >> $LOG
+sleep $SLEEP
+sleep $SLEEP
 
 
