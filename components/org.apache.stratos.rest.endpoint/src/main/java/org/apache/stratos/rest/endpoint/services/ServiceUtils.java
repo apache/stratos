@@ -1170,7 +1170,7 @@ public class ServiceUtils {
         }
     }
     
-    static void sendRepositoryNotification(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
+    static StratosAdminResponse synchronizeRepository(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
         try {
             RepositoryNotification repoNotification = new RepositoryNotification();
             repoNotification.updateRepository(cartridgeSubscription);
@@ -1179,6 +1179,10 @@ public class ServiceUtils {
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
+        
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully sent the repository synchronization request for " + cartridgeSubscription.getAlias());
+        return stratosAdminResponse;
     }
 
 }

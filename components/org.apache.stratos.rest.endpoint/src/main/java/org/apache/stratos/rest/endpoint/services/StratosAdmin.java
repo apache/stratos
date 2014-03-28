@@ -968,9 +968,9 @@ public class StratosAdmin extends AbstractAdmin {
 	@Path("/sync")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
-	public void synchronizeRepository(String alias) throws RestAPIException {
+	public StratosAdminResponse synchronizeRepository(String alias) throws RestAPIException {
 		CartridgeSubscription cartridgeSubscription = ServiceUtils.getCartridgeSubscription(alias, getConfigContext());
-		ServiceUtils.sendRepositoryNotification(cartridgeSubscription);
+		return ServiceUtils.synchronizeRepository(cartridgeSubscription);
 	}
 
     private List<TenantInfoBean> getAllTenants() throws RestAPIException {

@@ -147,9 +147,7 @@ consoleAppUtil = new function(){
     };
 
     this.syncRepo= function(alias){
-        return {msg:"synced"};
-        //Uncomment the line bellow and do u'r service call
-        //return this.sendReceive("POST","/syncurl",alias).data;
+        return this.sendReceive("POST","/sync",alias).data;
     };
 
     this.getAutoScalePolicies = function(){
