@@ -100,20 +100,28 @@ public class AutoscalerTopologyReceiver implements Runnable {
             try {
                 TopologyManager.acquireReadLock();
                 for(Service service : TopologyManager.getTopology().getServices()) {
-                    for(Cluster cluster : service.getClusters()) {
-                        Thread th;
-                        if(cluster.isLbCluster()){
-                            th = new Thread(new LBClusterMonitorAdder(cluster));
-                        }else{
-                            th = new Thread(new ClusterMonitorAdder(cluster));
-                        }
-
-                        th.start();
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Cluster monitor thread has been started successfully: [cluster] %s "
-                                    , cluster.getClusterId()));
-                        }
-                    }
+						for (Cluster cluster : service.getClusters()) {
+							Thread th = null;
+							if (cluster.isLbCluster()
+									&& !AutoscalerContext.getInstance()
+											.lbMonitorExist(
+													cluster.getClusterId())) {
+								th = new Thread(new LBClusterMonitorAdder(
+										cluster));
+							} else if (!AutoscalerContext.getInstance()
+									.monitorExist(cluster.getClusterId())) {
+								th = new Thread(
+										new ClusterMonitorAdder(cluster));
+							}
+							if (th != null) {
+								th.start();
+								if (log.isDebugEnabled()) {
+									log.debug(String
+											.format("Cluster monitor thread has been started successfully: [cluster] %s ",
+													cluster.getClusterId()));
+								}
+							}
+						}
                 }
             }
             finally {
@@ -223,7 +231,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 String partitionId = e.getPartitionId();
                 AbstractMonitor monitor;
 
-                if(AutoscalerContext.getInstance().moniterExist(clusterId)){
+                if(AutoscalerContext.getInstance().monitorExist(clusterId)){
                     monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
                 } else {
                     //This is LB member
@@ -279,7 +287,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 String clusterId = e.getClusterId();
                 AbstractMonitor monitor;
 
-                if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
+                if(AutoscalerContext.getInstance().monitorExist(clusterId)) {
                     monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
                     partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
                 } else {
@@ -317,7 +325,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 String clusterId = e.getClusterId();
                 AbstractMonitor monitor;
 
-                if(AutoscalerContext.getInstance().moniterExist(clusterId)) {
+                if(AutoscalerContext.getInstance().monitorExist(clusterId)) {
                     monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
                     partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
                 } else {

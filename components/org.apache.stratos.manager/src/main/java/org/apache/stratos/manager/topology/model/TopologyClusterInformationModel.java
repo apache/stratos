@@ -40,6 +40,7 @@ public class TopologyClusterInformationModel {
     private static TopologyClusterInformationModel topologyClusterInformationModel;
     private Map<String, Cluster> clusterIdToClusterMap;
     private DataInsertionAndRetrievalManager dataInsertionNRetrievalMgr;
+    private boolean initialized;
 
     //locks
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -167,6 +168,14 @@ public class TopologyClusterInformationModel {
     	}
     	clusterIdToClusterMap.remove(clusterId);
     }
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
 
 //    private class CartridgeTypeContext {
 //

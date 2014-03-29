@@ -46,11 +46,11 @@ public class AutoscalerContext {
         return monitors.get(clusterId);
     }
     
-    public boolean moniterExist(String clusterId) {
+    public boolean monitorExist(String clusterId) {
         return monitors.containsKey(clusterId);
     }
     
-    public boolean lbMoniterExist(String clusterId) {
+    public boolean lbMonitorExist(String clusterId) {
         return lbMonitors.containsKey(clusterId);
     }
     
@@ -59,7 +59,7 @@ public class AutoscalerContext {
     }
 
     public ClusterMonitor removeMonitor(String clusterId) {
-    	if(!moniterExist(clusterId)) {
+    	if(!monitorExist(clusterId)) {
     		log.fatal("Cluster monitor not found for cluster id: "+clusterId);
     		return null;
     	}
@@ -67,7 +67,7 @@ public class AutoscalerContext {
         return monitors.remove(clusterId);
     }
     public LbClusterMonitor removeLbMonitor(String clusterId) {
-    	if(!lbMoniterExist(clusterId)) {
+    	if(!lbMonitorExist(clusterId)) {
     		log.fatal("LB monitor not found for cluster id: "+clusterId);
     		return null;
     	}
