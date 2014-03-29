@@ -69,12 +69,14 @@ define agent::initialize ($repo, $version, $service, $local_dir, $target, $owner
 
   }
 
-  file { '${target}/apache-stratos-${service}-${version}/lib':
-    path         => '${target}/apache-stratos-${service}-${version}/lib',
+  file { "/${target}/apache-stratos-${service}-${version}/lib":
+    path         => "/${target}/apache-stratos-${service}-${version}/lib",
     ensure       => directory,
     require      => Exec["setting_permission_for_${name}"],
-    source       => ['puppet:///modules/agent/${mb_type}'],
+    source       => ["puppet:///modules/agent/${mb_type}"],
     sourceselect => all,
     recurse      => true,
   }
+
+
 }
