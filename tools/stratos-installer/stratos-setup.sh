@@ -33,11 +33,12 @@ profile_list="default;cc;as;sm"
 profile="default"
 config_mb="true"
 activemq_client_libs=(activemq-broker-5.8.0.jar  activemq-client-5.8.0.jar  geronimo-j2ee-management_1.1_spec-1.0.1.jar  geronimo-jms_1.1_spec-1.1.1.jar  hawtbuf-1.2.jar)
+auto_start_servers="false"
 
 function help {
     echo ""
     echo "Usage:"
-    echo "setup.sh -p \"<profile>\""
+    echo "setup.sh -p \"<profile>\" [-s]"
     echo "product list : [default, cc, as, sm]"
     echo "Example:"
     echo "sudo ./setup.sh -p \"default\""
@@ -45,6 +46,7 @@ function help {
     echo ""
     echo "-p: <profile> Apache Stratos products to be installed on this node. Provide one name of a profile."
     echo "    The available profiles are cc, as, sm or default. 'default' means you need to setup all servers in this machine. Default is 'default' profile"
+    echo "-s: Start servers after installation."
     echo ""
 }
 
@@ -53,6 +55,9 @@ do
   case $opts in
     p)
         profile_list=${OPTARG}
+        ;;
+    s)
+        auto_start_servers="true"
         ;;
     \?)
         help
@@ -612,9 +617,11 @@ chown $host_user:$host_user $stratos_path -R
 
 echo "Apache Stratos setup has successfully completed"
 
-read -p "Do you want to start the servers [y/n]? " answer
-if [[ $answer != y ]] ; then
-   exit 1
+if [[ $auto_start_servers != "true" ]]; then
+    read -p "Do you want to start the servers [y/n]? " answer
+    if [[ $answer != y ]] ; then
+        exit 1
+    fi
 fi
 
 echo "Starting the servers" >> $LOG
