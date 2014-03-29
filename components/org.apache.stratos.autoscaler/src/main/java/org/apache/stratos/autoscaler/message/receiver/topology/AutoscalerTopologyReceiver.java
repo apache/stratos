@@ -367,19 +367,35 @@ public class AutoscalerTopologyReceiver implements Runnable {
         }
 
         public void run() {
-            LbClusterMonitor monitor;
-            try {
-                monitor = AutoscalerUtil.getLBClusterMonitor(cluster);
-
-            } catch (PolicyValidationException e) {
-                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                log.error(msg, e);
-                throw new RuntimeException(msg, e);
-
-            } catch(PartitionValidationException e){
-                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                log.error(msg, e);
-                throw new RuntimeException(msg, e);
+            LbClusterMonitor monitor = null;
+            int retries = 5;
+            boolean success = false;
+            do {
+            	try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+				}
+            	try {
+            		monitor = AutoscalerUtil.getLBClusterMonitor(cluster);
+            		success = true;
+            		
+            	} catch (PolicyValidationException e) {
+            		String msg = "LB Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+            		log.debug(msg, e);
+            		retries--;
+            		
+            	} catch(PartitionValidationException e){
+            		String msg = "LB Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+            		log.debug(msg, e);
+            		retries--;
+            	}
+            } while (!success && retries <= 0);
+            
+            if (monitor == null) {
+            	String msg = "LB Cluster monitor creation failed, even after retrying for 5 times, "
+            			+ "for cluster: "+cluster.getClusterId();
+            	log.error(msg);
+            	throw new RuntimeException(msg);
             }
 
             Thread th = new Thread(monitor);
@@ -400,19 +416,36 @@ public class AutoscalerTopologyReceiver implements Runnable {
         }
 
         public void run() {
-            ClusterMonitor monitor;
-            try {
-                monitor = AutoscalerUtil.getClusterMonitor(cluster);
-
-            } catch (PolicyValidationException e) {
-                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                log.error(msg, e);
-                throw new RuntimeException(msg, e);
-
-            } catch(PartitionValidationException e){
-                String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
-                log.error(msg, e);
-                throw new RuntimeException(msg, e);
+            ClusterMonitor monitor = null;
+            int retries = 5;
+            boolean success = false;
+            do {
+            	try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+				}
+            	
+            	try {
+            		monitor = AutoscalerUtil.getClusterMonitor(cluster);
+            		success = true;
+            		
+            	} catch (PolicyValidationException e) {
+            		String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+            		log.debug(msg, e);
+            		retries--;
+            		
+            	} catch(PartitionValidationException e){
+            		String msg = "Cluster monitor creation failed for cluster: "+cluster.getClusterId();
+            		log.debug(msg, e);
+            		retries--;
+            	}
+            } while (!success && retries != 0);
+            
+            if (monitor == null) {
+            	String msg = "Cluster monitor creation failed, even after retrying for 5 times, "
+            			+ "for cluster: "+cluster.getClusterId();
+            	log.error(msg);
+            	throw new RuntimeException(msg);
             }
 
             Thread th = new Thread(monitor);
