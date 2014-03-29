@@ -66,5 +66,15 @@ define agent::initialize ($repo, $version, $service, $local_dir, $target, $owner
       logoutput => 'on_failure',
       timeout   => 0,
       require   => Exec["extracting_stratos${service}-${version}.zip_for_${name}"];
+
+  }
+
+  file { '${target}/apache-stratos-${service}-${version}/lib':
+    path         => '${target}/apache-stratos-${service}-${version}/lib',
+    ensure       => directory,
+    require      => Exec["setting_permission_for_${name}"],
+    source       => ['puppet:///modules/agent/${mb_type}'],
+    sourceselect => all,
+    recurse      => true,
   }
 }
