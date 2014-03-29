@@ -15,6 +15,13 @@ node 'base' {
   $lb_httpPort          = '80'
   $lb_httpsPort         = '443'
   $tomcat_version       = '7.0.52'
+  $enable_log_publisher = 'false'
+  $bam_ip		= '127.0.0.1'
+  $bam_port		= '7611'
+  $bam_secure_port	= '7615'
+  $bam_username		= 'admin'
+  $bam_password		= 'admin'
+
 
 }
 
