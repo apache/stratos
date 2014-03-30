@@ -549,13 +549,14 @@ function cep_setup() {
 
     cp -f $cep_extension_jar $stratos_extract_path/repository/components/lib/
     cep_xml_path=$stratos_extract_path/repository/deployment/server
+    cep_conf_path=$stratos_extract_path/repository/conf
 
     test -d "$cep_xml_path/eventbuilders" || mkdir -p "$cep_xml_path/eventbuilders" && cp -f $cep_artifacts_path/eventbuilders/*.xml $cep_xml_path/eventbuilders/
     test -d "$cep_xml_path/inputeventadaptors" || mkdir -p "$cep_xml_path/inputeventadaptors" && cp -f $cep_artifacts_path/inputeventadaptors/*.xml $cep_xml_path/inputeventadaptors/
     test -d "$cep_xml_path/outputeventadaptors" || mkdir -p "$cep_xml_path/outputeventadaptors" && cp -f $cep_artifacts_path/outputeventadaptors/*.xml $cep_xml_path/outputeventadaptors/
     test -d "$cep_xml_path/executionplans" || mkdir -p "$cep_xml_path/executionplans" && cp -f $cep_artifacts_path/executionplans/*.xml $cep_xml_path/executionplans/
     test -d "$cep_xml_path/eventformatters" || mkdir -p "$cep_xml_path/eventformatters" && cp -f $cep_artifacts_path/eventformatters/*.xml $cep_xml_path/eventformatters/
-    test -d "$cep_xml_path/streamdefinitions" || mkdir -p "$cep_xml_path/streamdefinitions" && cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_xml_path/streamdefinitions/
+    cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_conf_path/
 
     pushd $stratos_extract_path
 
