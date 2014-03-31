@@ -78,7 +78,7 @@ public class RegistryManager {
      *
      * @param dataObj object to be persisted.
      */
-    public void persist(FasterLookUpDataHolder dataObj) throws RegistryException {
+    public synchronized void persist(FasterLookUpDataHolder dataObj) throws RegistryException {
         try {
         	
         	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -104,7 +104,7 @@ public class RegistryManager {
         }
     }
 
-    public void persistTopology(Topology topology) throws RegistryException {
+    public synchronized void persistTopology(Topology topology) throws RegistryException {
         try {
         	
         	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -131,7 +131,7 @@ public class RegistryManager {
     }
 
 
-    public Object retrieve() {
+    public synchronized Object retrieve() {
 
         try {
         	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -153,7 +153,7 @@ public class RegistryManager {
 
     }
 
-    public Object retrieveTopology() {
+    public synchronized Object retrieveTopology() {
 
         try {
 			PrivilegedCarbonContext ctx = PrivilegedCarbonContext
