@@ -170,6 +170,10 @@ consoleAppUtil = new function(){
         return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{}).data;
     };
 
+    this.getServiceInfo = function(cartridgeType){
+        return this.sendReceive("GET","/service/" + cartridgeType,{}).data;
+    };
+
     this.getPolicyAutoScale = function(){
         return this.sendReceive("GET","/policy/autoscale",{}).data;
     };
