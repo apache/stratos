@@ -63,6 +63,8 @@ var render = function (theme, data, meta, require) {
         title = 'Cartridge Deployment';
     }else if( config_status.step == 6 ){
         title = 'Multi-Tenant Service Deployment';
+    }else{
+        title = 'Configure Stratos Wizard Finished';
     }
     for(var i=0;i<step_data.length;i++){
         step_data[i].json_string = stringify(step_data[i]);
