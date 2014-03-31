@@ -77,6 +77,8 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
             eTo.iamInstanceProfileName(getIAMInstanceProfileName());
          if (isMonitoringEnabled())
             eTo.enableMonitoring();
+         if (isPublicIpAddressAssociated())
+            eTo.associatePublicIpAddress();
          if (!shouldAutomaticallyCreatePlacementGroup())
             eTo.noPlacementGroup();
          if (getPlacementGroup() != null)
@@ -91,6 +93,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
    }
 
    private boolean monitoringEnabled;
+   private boolean publicIpAddressAssociated;
    private String placementGroup = null;
    private boolean noPlacementGroup;
    private String subnetId;
@@ -108,6 +111,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
          return false;
       AWSEC2TemplateOptions that = AWSEC2TemplateOptions.class.cast(o);
       return super.equals(that) && equal(this.monitoringEnabled, that.monitoringEnabled)
+               && equal(this.publicIpAddressAssociated, that.publicIpAddressAssociated)
                && equal(this.placementGroup, that.placementGroup)
                && equal(this.noPlacementGroup, that.noPlacementGroup) && equal(this.subnetId, that.subnetId)
                && equal(this.spotPrice, that.spotPrice) && equal(this.spotOptions, that.spotOptions)
@@ -117,7 +121,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(super.hashCode(), monitoringEnabled, placementGroup, noPlacementGroup, subnetId,
+      return Objects.hashCode(super.hashCode(), monitoringEnabled, publicIpAddressAssociated, placementGroup, noPlacementGroup, subnetId,
                spotPrice, spotOptions, groupIds, iamInstanceProfileArn, iamInstanceProfileName);
    }
 
@@ -126,6 +130,8 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
       ToStringHelper toString = super.string();
       if (monitoringEnabled)
          toString.add("monitoringEnabled", monitoringEnabled);
+      if (publicIpAddressAssociated)
+         toString.add("publicIpAddressAssociated", publicIpAddressAssociated);
       toString.add("placementGroup", placementGroup);
       if (noPlacementGroup)
          toString.add("noPlacementGroup", noPlacementGroup);
@@ -151,6 +157,15 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
       this.monitoringEnabled = true;
       return this;
    }
+
+    /**
+     * Associate a public Ip Address
+     *
+     */
+    public AWSEC2TemplateOptions associatePublicIpAddress() {
+       this.publicIpAddressAssociated = true;
+       return this;
+    }
 
    /**
     * Specifies the keypair used to run instances with
@@ -182,7 +197,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
    /**
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileArn(String)
     */
-   @SinceApiVersion("2012-06-01")
+   @SinceApiVersion("2014-02-01")
    public AWSEC2TemplateOptions iamInstanceProfileArn(String arn) {
       this.iamInstanceProfileArn = checkNotNull(emptyToNull(arn), "arn must be defined");
       return this;
@@ -191,7 +206,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
    /**
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileName(String)
     */
-   @SinceApiVersion("2012-06-01")
+   @SinceApiVersion("2014-02-01")
    public AWSEC2TemplateOptions iamInstanceProfileName(String name) {
       this.iamInstanceProfileName = checkNotNull(emptyToNull(name), "name must be defined");
       return this;
@@ -377,13 +392,22 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
          return options.noPlacementGroup();
       }
 
-      /**
-       * @see AWSEC2TemplateOptions#enableMonitoring
-       */
-      public static AWSEC2TemplateOptions enableMonitoring() {
-         AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
-         return options.enableMonitoring();
-      }
+       /**
+        * @see AWSEC2TemplateOptions#enableMonitoring
+        */
+       public static AWSEC2TemplateOptions enableMonitoring() {
+          AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
+          return options.enableMonitoring();
+       }
+
+
+       /**
+        * @see AWSEC2TemplateOptions#associatePublicIpAddress
+        */
+       public static AWSEC2TemplateOptions associatePublicIpAddress() {
+          AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
+          return options.associatePublicIpAddress();
+       }
 
       // methods that only facilitate returning the correct object type
       /**
@@ -429,7 +453,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
       /**
        * @see AWSEC2TemplateOptions#iamInstanceProfileArn
        */
-      @SinceApiVersion("2012-06-01")
+      @SinceApiVersion("2014-02-01")
       public static AWSEC2TemplateOptions iamInstanceProfileArn(String arn) {
          AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
          return options.iamInstanceProfileArn(arn);
@@ -438,7 +462,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
       /**
        * @see AWSEC2TemplateOptions#iamInstanceProfileName
        */
-      @SinceApiVersion("2012-06-01")
+      @SinceApiVersion("2014-02-01")
       public static AWSEC2TemplateOptions iamInstanceProfileName(String name) {
          AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
          return options.iamInstanceProfileName(name);
@@ -751,6 +775,13 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
    }
 
    /**
+    * @return true (default is false) if we are supposed to associate a public ip address
+    */
+   public boolean isPublicIpAddressAssociated() {
+      return publicIpAddressAssociated;
+   }
+
+   /**
     * @return subnetId to use when running the instance or null.
     */
    public String getSubnetId() {
@@ -776,7 +807,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
     * 
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileArn(String)
     */
-   @SinceApiVersion("2012-06-01")
+   @SinceApiVersion("2014-02-01")
    public String getIAMInstanceProfileArn() {
       return iamInstanceProfileArn;
    }
@@ -786,7 +817,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
     * 
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileName(String)
     */
-   @SinceApiVersion("2012-06-01")
+   @SinceApiVersion("2014-02-01")
    public String getIAMInstanceProfileName() {
       return iamInstanceProfileName;
    }

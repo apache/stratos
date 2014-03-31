@@ -53,10 +53,11 @@
                             org.apache.stratos.cloud.controller.interfaces.*,
                             org.apache.stratos.cloud.controller.publisher.*,
                             org.apache.stratos.cloud.controller.topic.*,
+                            org.apache.stratos.cloud.controller.topology.*,
                             org.apache.stratos.cloud.controller.iaases.*,
                             org.apache.stratos.cloud.controller.pojo.*,
-				            org.apache.stratos.cloud.controller.deployers.*,
-				            org.apache.stratos.cloud.controller.exception.*,
+			    org.apache.stratos.cloud.controller.deployers.*,
+			    org.apache.stratos.cloud.controller.exception.*,
                         </Export-Package>
                         <Private-Package>
                             !org.apache.stratos.cloud.controller.interfaces.*,
@@ -66,6 +67,7 @@
                             !org.apache.stratos.cloud.controller.pojo.*,
                             !org.apache.stratos.cloud.controller.deployers.*,
                             !org.apache.stratos.cloud.controller.exception.*,
+                            !org.apache.stratos.cloud.controller.topology.*,
                             org.apache.stratos.cloud.controller.*,
                         </Private-Package>
                         <Import-Package>

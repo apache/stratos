@@ -49,75 +49,85 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         Topology topology = (Topology) object;
 
         if (CompleteTopologyEvent.class.getName().equals(type)) {
-            // Return if topology has already initialized
-            if (topology.isInitialized()) {
-                return false;
-            }
+        	// Parse complete message and build event
+        	CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
+        	
+            // if topology has not already initialized
+			if (!topology.isInitialized()) {
 
-            // Parse complete message and build event
-            CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
+				// Apply service filter
+				if (TopologyServiceFilter.getInstance().isActive()) {
+					// Add services included in service filter
+					for (Service service : event.getTopology().getServices()) {
+						if (TopologyServiceFilter.getInstance()
+								.serviceNameIncluded(service.getServiceName())) {
+							topology.addService(service);
+						} else {
+							if (log.isDebugEnabled()) {
+								log.debug(String.format(
+										"Service is excluded: [service] %s",
+										service.getServiceName()));
+							}
+						}
+					}
+				} else {
+					// Add all services
+					topology.addServices(event.getTopology().getServices());
+				}
 
-            // Apply service filter
-            if (TopologyServiceFilter.getInstance().isActive()) {
-                // Add services included in service filter
-                for (Service service : event.getTopology().getServices()) {
-                    if (TopologyServiceFilter.getInstance().serviceNameIncluded(service.getServiceName())) {
-                        topology.addService(service);
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Service is excluded: [service] %s", service.getServiceName()));
-                        }
-                    }
-                }
-            } else {
-                // Add all services
-                topology.addServices(event.getTopology().getServices());
-            }
+				// Apply cluster filter
+				if (TopologyClusterFilter.getInstance().isActive()) {
+					for (Service service : topology.getServices()) {
+						List<Cluster> clustersToRemove = new ArrayList<Cluster>();
+						for (Cluster cluster : service.getClusters()) {
+							if (TopologyClusterFilter.getInstance()
+									.clusterIdExcluded(cluster.getClusterId())) {
+								clustersToRemove.add(cluster);
+							}
+						}
+						for (Cluster cluster : clustersToRemove) {
+							service.removeCluster(cluster);
+							if (log.isDebugEnabled()) {
+								log.debug(String.format(
+										"Cluster is excluded: [cluster] %s",
+										cluster.getClusterId()));
+							}
+						}
+					}
+				}
 
-            // Apply cluster filter
-            if (TopologyClusterFilter.getInstance().isActive()) {
-                for (Service service : topology.getServices()) {
-                    List<Cluster> clustersToRemove = new ArrayList<Cluster>();
-                    for (Cluster cluster : service.getClusters()) {
-                        if (TopologyClusterFilter.getInstance().clusterIdExcluded(cluster.getClusterId())) {
-                            clustersToRemove.add(cluster);
-                        }
-                    }
-                    for(Cluster cluster : clustersToRemove) {
-                        service.removeCluster(cluster);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Cluster is excluded: [cluster] %s", cluster.getClusterId()));
-                        }
-                    }
-                }
-            }
+				// Apply member filter
+				if (TopologyMemberFilter.getInstance().isActive()) {
+					for (Service service : topology.getServices()) {
+						for (Cluster cluster : service.getClusters()) {
+							List<Member> membersToRemove = new ArrayList<Member>();
+							for (Member member : cluster.getMembers()) {
+								if (TopologyMemberFilter.getInstance()
+										.lbClusterIdExcluded(
+												member.getLbClusterId())) {
+									membersToRemove.add(member);
+								}
+							}
+							for (Member member : membersToRemove) {
+								cluster.removeMember(member);
+								if (log.isDebugEnabled()) {
+									log.debug(String
+											.format("Member is excluded: [member] %s [lb-cluster-id] %s",
+													member.getMemberId(),
+													member.getLbClusterId()));
+								}
+							}
+						}
+					}
+				}
 
-            // Apply member filter
-            if (TopologyMemberFilter.getInstance().isActive()) {
-                for (Service service : topology.getServices()) {
-                    for (Cluster cluster : service.getClusters()) {
-                        List<Member> membersToRemove = new ArrayList<Member>();
-                        for(Member member : cluster.getMembers()) {
-                            if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
-                                membersToRemove.add(member);
-                            }
-                        }
-                        for(Member member : membersToRemove) {
-                            cluster.removeMember(member);
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Member is excluded: [member] %s [lb-cluster-id] %s", member.getMemberId(), member.getLbClusterId()));
-                            }
-                        }
-                    }
-                }
-            }
+				if (log.isInfoEnabled()) {
+					log.info("Topology initialized");
+				}
 
-            if (log.isInfoEnabled()) {
-                log.info("Topology initialized");
-            }
-
-            // Set topology initialized
-            topology.setInitialized(true);
+				// Set topology initialized
+				topology.setInitialized(true);
+			}
 
             // Notify event listeners
             notifyEventListeners(event);

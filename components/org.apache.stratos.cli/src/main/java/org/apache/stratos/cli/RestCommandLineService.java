@@ -481,7 +481,7 @@ public class RestCommandLineService {
             cartridges[0] = cartridge;
           
                         
-            System.out.println("\nSubscribed Cartridges Info :");
+            System.out.println("\nSubscribed Cartridges Info\n");
             System.out.println("\tType : " + cartridge.getCartridgeType());
             System.out.println("\tName : "	+ cartridge.getDisplayName());
             System.out.println("\tVersion : "	+ cartridge.getVersion());
@@ -495,16 +495,16 @@ public class RestCommandLineService {
 			if (cartridge.getRepoURL() != null) {
 				System.out.println("\tRepo URL : " + cartridge.getRepoURL());
 			}
-			System.out.println("\tLB Private ip	: "	+ lbPrivateIpSet.toString());
+			System.out.println("\tLB Private IP	: "	+ lbPrivateIpSet.toString());
 			if (lbFloatingIpSet != null) {
-				System.out.println("\tLB Floating Ip : " +  lbFloatingIpSet.toString());
+				System.out.println("\tLB Floating IP : " +  lbFloatingIpSet.toString());
 			}
 			if (cartridge.getProvider().equals("data")) {
 				System.out.println("\tDB-username : " +cartridge.getDbUserName());
 				System.out.println("\tDB-password : "	+cartridge.getPassword());
-				System.out.println("\tDB-HostIP (private)  : "	+cartridge.getIp());
+				System.out.println("\tDB-Host IP (private)  : "	+cartridge.getIp());
 				if (cartridge.getPublicIp() != null) {
-					System.out.println("\tDB-HostIP (floating) : "
+					System.out.println("\tDB-Host IP (floating) : "
 							+ cartridge.getPublicIp());
 				}
 			}
@@ -1785,7 +1785,7 @@ public class RestCommandLineService {
 
         for (PortMapping portMapping : portMappings) {
 			String url = portMapping.getProtocol()+"://"+ cartridge.getHostName() + ":" + portMapping.getProxyPort() + "/";
-			urlBuilder.append(url).append(",");
+			urlBuilder.append(url).append(", ");
 		} 
 
         return urlBuilder.toString();

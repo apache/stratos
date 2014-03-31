@@ -34,7 +34,7 @@
 	<url>http://apache.org</url>
 	
 	<properties>
-		<slf4j.version>1.7.5</slf4j.version>
+		<slf4j.version>1.7.6</slf4j.version>
 	</properties>
 
 	<dependencies>
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents.wso2</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.1.0-wso2v1</version>
+			<version>4.3.0.wso2v1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
+			<version>3.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-validator</groupId>
@@ -103,7 +103,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.1.1</version>
+			<version>4.3.3</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -94,7 +94,7 @@ var render = function (theme, data, meta, require) {
                 {
                     partial:'title',
                     context:{
-                        title:"My Cartridges"
+                        title:"Subscribe to Cartridge"
                     }
                 }
             ]
@@ -130,7 +130,7 @@ var render = function (theme, data, meta, require) {
                 {
                     partial: 'title',
                     context: {
-                        title: "My Cartridges"
+                        title: "Subscribe to Cartridge"
                     }
                 }
             ]

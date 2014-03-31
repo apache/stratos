@@ -26,6 +26,7 @@ lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Dmb.ip=<%= @mb_ip %>
             -Dmb.port=<%= @mb_port %>
+            -Dlisten.address=localhost
             -Dthrift.receiver.ip=<%= @cep_ip %>
             -Dthrift.receiver.port=<%= @cep_port %>
             -Djndi.properties.template.file.path=<%= @carbon_home %>/conf/templates/jndi.properties.template
@@ -33,12 +34,17 @@ properties="-Dmb.ip=<%= @mb_ip %>
             -Dlog4j.properties.file.path=<%= @carbon_home %>/conf/log4j.properties
             -Dparam.file.path=<%= @carbon_home %>/payload/launch-params
             -Dextensions.dir=${script_path}/../extensions
-            -Dagent.flow.file.path=${script_path}/../conf/agent-flow.conf
             -Dcep.stats.publisher.enabled=true
             -Djavax.net.ssl.trustStore=<%= @carbon_home %>/security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=<%= @truststore_password %>
 	    -Denable.artifact.update=true
 	    -Dartifact.update.interval=15
+	    -Denable.data.publisher=<%= @enable_log_publisher %>
+            -Dmonitoring.server.ip=<%= @bam_ip %>
+            -Dmonitoring.server.port=<%= @bam_port %>
+            -Dmonitoring.server.secure.port=<%= @bam_secure_port %>
+            -Dmonitoring.server.admin.username=<%= @bam_username %>
+            -Dmonitoring.server.admin.password=<%= @bam_password %>
 	    -DAPP_PATH=<%= @docroot %>"
 
 # Uncomment below line to enable remote debugging

@@ -19,9 +19,16 @@
 
 package org.apache.stratos.cloud.controller.publisher;
 
+import java.util.HashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologySynchronizerTask;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.wso2.carbon.ntask.common.TaskException;
+import org.wso2.carbon.ntask.core.TaskInfo;
+import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
 
 /**
@@ -32,66 +39,44 @@ public class TopologySynchronizerTaskScheduler {
 
     private static final Log log = LogFactory.getLog(TopologySynchronizerTaskScheduler.class);
 
-    private static final String TOPOLOGY_SYNC_TASK_TYPE = "TOPOLOGY_SYNC_TASK_TYPE";
-    private static final String TOPOLOGY_SYNC_TASK_NAME = "TOPOLOGY_SYNC_TASK";
-    private static final String DEFAULT_CRON = "1 * * * * ? *";
+    private static final FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     public static void schedule(TaskService taskService) {
-        // TODO: Replace this with task scheduler
-        Thread thread = new Thread(new TaskRunnable());
-        thread.start();
-    }
+        TaskManager taskManager = null;
+        try {
 
-    private static class TaskRunnable implements Runnable {
-        @Override
-        public void run() {        	
-            while (true) {
-                try {
-                    log.debug("Running topology synchronizer task");
-                    TopologySynchronizerTask task = new TopologySynchronizerTask();
-                    task.execute();
-                    try {
-                        Thread.sleep(60 * 1000);
-                    } catch (InterruptedException e) {
-                    }
-                } catch (Exception e) {
-                    log.error(e);
+            if (!taskService.getRegisteredTaskTypes().contains(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE)) {
+                // Register task type
+                taskService.registerTaskType(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
+
+                // Register task
+                taskManager = taskService.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
+                String cronProp = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.CRON_PROPERTY);
+				String cron = cronProp != null ?  cronProp :CloudControllerConstants.TOPOLOGY_SYNC_CRON ;
+                TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(cron);
+                TaskInfo taskInfo = new TaskInfo(CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME,
+                        TopologySynchronizerTask.class.getName(),
+                        new HashMap<String, String>(), triggerInfo);
+                taskManager.registerTask(taskInfo);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Topology synchronization task scheduled: %s", CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME));
                 }
             }
+
+        } catch (Exception e) {
+            if (taskManager != null) {
+                try {
+                    taskManager.deleteTask(CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME);
+                } catch (TaskException te) {
+                    if (log.isErrorEnabled()) {
+                        log.error(te);
+                    }
+                }
+            }
+            
+            String msg = String.format("Could not schedule topology synchronization task: %s", CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME);
+            log.error(msg, e);
+			throw new RuntimeException(msg, e);
         }
     }
-
-//    public static void schedule(TaskService taskService) {
-//        TaskManager taskManager = null;
-//        try {
-//
-//            if (!taskService.getRegisteredTaskTypes().contains(TOPOLOGY_SYNC_TASK_TYPE)) {
-//                // Register task type
-//                taskService.registerTaskType(TOPOLOGY_SYNC_TASK_TYPE);
-//
-//                // Register task
-//                taskManager = taskService.getTaskManager(TOPOLOGY_SYNC_TASK_TYPE);
-//                TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(DEFAULT_CRON);
-//                TaskInfo taskInfo = new TaskInfo(TOPOLOGY_SYNC_TASK_NAME,
-//                        TopologySynchronizerTask.class.getName(),
-//                        new HashMap<String, String>(), triggerInfo);
-//                taskManager.registerTask(taskInfo);
-//                if(log.isDebugEnabled()) {
-//                    log.debug(String.format("Topology synchronization task scheduled: %s", TOPOLOGY_SYNC_TASK_NAME));
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            if (taskManager != null) {
-//                try {
-//                    taskManager.deleteTask(TOPOLOGY_SYNC_TASK_NAME);
-//                } catch (TaskException te) {
-//                    if (log.isErrorEnabled()) {
-//                        log.error(te);
-//                    }
-//                }
-//            }
-//            throw new RuntimeException(String.format("Could not schedule topology synchronization task: %s", TOPOLOGY_SYNC_TASK_NAME), e);
-//        }
-//    }
 }
