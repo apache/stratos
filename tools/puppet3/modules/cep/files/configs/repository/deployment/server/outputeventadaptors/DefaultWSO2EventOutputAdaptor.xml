@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<outputEventAdaptor name="DefaultWSO2EventOutputAdaptor"
-  statistics="disable" trace="disable" type="wso2event" xmlns="http://wso2.org/carbon/eventadaptormanager">
-  <property name="username">admin</property>
-  <property name="receiverURL">tcp://localhost:7661</property>
-  <property name="password">admin</property>
-  <property name="authenticatorURL">ssl://localhost:7761</property>
-</outputEventAdaptor>
