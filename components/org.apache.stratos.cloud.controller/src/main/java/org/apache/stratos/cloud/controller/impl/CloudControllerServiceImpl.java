@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.impl;
 
+import com.google.common.net.InetAddresses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
@@ -47,8 +48,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import java.util.*;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.net.InetAddresses;
 
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
@@ -838,7 +837,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
 				payload, hostName, props, isLb);
-	    
+
+
 		dataHolder.addClusterContext(ctxt);
 	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
@@ -850,7 +850,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private ClusterContext buildClusterContext(Cartridge cartridge,
 			String clusterId, String payload, String hostName,
 			Properties props, boolean isLb) {
-		
+
+
 		// initialize ClusterContext
 		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
 				hostName, isLb);

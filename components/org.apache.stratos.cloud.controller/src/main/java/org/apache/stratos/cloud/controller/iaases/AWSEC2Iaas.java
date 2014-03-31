@@ -144,6 +144,17 @@ public class AWSEC2Iaas extends Iaas {
 				.inboundPorts(new int[] {});
 
 		// set EC2 specific options
+
+
+        if (iaasInfo.getProperty(CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS) != null) {
+              boolean associatePublicIp =  Boolean.parseBoolean(iaasInfo.getProperty(
+                      CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS));
+            if(associatePublicIp){
+                  template.getOptions().as(AWSEC2TemplateOptions.class)
+                      .associatePublicIpAddress();
+              }
+        }
+
 		if (iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
 					.subnetId(iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID));
@@ -158,9 +169,8 @@ public class AWSEC2Iaas extends Iaas {
 		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
-					.securityGroups(
-							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
-									CloudControllerConstants.ENTRY_SEPARATOR));
+					.securityGroups(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+                            CloudControllerConstants.ENTRY_SEPARATOR));
 
 		}
 
@@ -396,7 +406,7 @@ public class AWSEC2Iaas extends Iaas {
         
         Set<AvailabilityZoneInfo> availabilityZones =
                                                       zoneRegionApi.describeAvailabilityZonesInRegion(region,
-                                                                                                      new DescribeAvailabilityZonesOptions[0]);
+                                                              new DescribeAvailabilityZonesOptions[0]);
         for (AvailabilityZoneInfo zoneInfo : availabilityZones) {
             String configuredZone = zoneInfo.getZone();
             if (zone.equalsIgnoreCase(configuredZone)) {
