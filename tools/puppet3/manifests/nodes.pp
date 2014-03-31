@@ -118,6 +118,12 @@ node /wordpress/ inherits base {
 
 }
 
+# default (base) cartridge node
+node /default/ inherits base {
+  require java
+  class {'agent':}
+}
+
 # stratos components related nodes
 # not supported in alpha version.
 node 'autoscaler.wso2.com' inherits base {

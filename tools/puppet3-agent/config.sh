@@ -53,7 +53,7 @@ function valid_ip()
     return $stat
 }
 
-read -p "This script will install and configure puppet agent, do you want to continue [y/N]" answer
+read -p "This script will install and configure puppet agent, do you want to continue [y/n]" answer
 if [[ $answer = y ]] ; then
 
 	${CP} -f ${HOSTSFILE} /etc/hosts.tmp
@@ -62,8 +62,8 @@ if [[ $answer = y ]] ; then
 
 	read -p "Please provide stratos service-name:" SERVICE_NAME
 	if [[ -z $SERVICE_NAME ]]; then
-	echo "service name cannot be empty!"
-	exit -1
+	echo "service is empty!. Base image will be created."
+        SERVICE_NAME=default
 	fi
 
 	read -p "Please provide puppet master IP:" PUPPET_IP
