@@ -178,12 +178,22 @@ public class CreateKeyPairPlacementAndSecurityGroupsAsNeededAndReturnRunOptions 
    protected void addSecurityGroups(String region, String group, Template template, RunInstancesOptions instanceOptions) {
       AWSEC2TemplateOptions awsTemplateOptions = AWSEC2TemplateOptions.class.cast(template.getOptions());
       AWSRunInstancesOptions awsInstanceOptions = AWSRunInstancesOptions.class.cast(instanceOptions);
-      if (awsTemplateOptions.getGroupIds().size() > 0)
-         awsInstanceOptions.withSecurityGroupIds(awsTemplateOptions.getGroupIds());
+
       String subnetId = awsTemplateOptions.getSubnetId();
+      boolean associatePublicIpAddress = awsTemplateOptions.isPublicIpAddressAssociated();
       if (subnetId != null) {
-         AWSRunInstancesOptions.class.cast(instanceOptions).withSubnetId(subnetId);
+          if(associatePublicIpAddress){
+              AWSRunInstancesOptions.class.cast(instanceOptions).associatePublicIpAddressAndSubnetId(subnetId);
+              if (awsTemplateOptions.getGroupIds().size() > 0)
+                 awsInstanceOptions.withSecurityGroupIdsForNetworkInterface(awsTemplateOptions.getGroupIds());
+          }else{
+              AWSRunInstancesOptions.class.cast(instanceOptions).withSubnetId(subnetId);
+              if (awsTemplateOptions.getGroupIds().size() > 0)
+                 awsInstanceOptions.withSecurityGroupIds(awsTemplateOptions.getGroupIds());
+          }
       } else {
+          if (awsTemplateOptions.getGroupIds().size() > 0)
+             awsInstanceOptions.withSecurityGroupIds(awsTemplateOptions.getGroupIds());
          super.addSecurityGroups(region, group, template, instanceOptions);
       }
    }

@@ -41,11 +41,11 @@ public class PlacementGroupApiExpectTest extends BaseAWSEC2ComputeServiceExpectT
            .addFormParam("Action", "DescribePlacementGroups")
            .addFormParam("Filter.1.Name", "strategy")
            .addFormParam("Filter.1.Value.1", "cluster")
-           .addFormParam("Signature", "SaA7Un1BE3m9jIEKyjXNdQPzFh/QAJSCebvKXiwUEK0%3D")
+           .addFormParam("Signature", "mAMdRgaHRw8LAAF2hzTC79yNHmuOwH7S8D%2BiTDi30nU%3D")
            .addFormParam("SignatureMethod", "HmacSHA256")
            .addFormParam("SignatureVersion", "2")
            .addFormParam("Timestamp", "2012-04-16T15%3A54%3A08.897Z")
-           .addFormParam("Version", "2012-06-01")
+           .addFormParam("Version", "2014-02-01")
            .addFormParam("AWSAccessKeyId", "identity").build();
 
    public void testFilterWhenResponseIs2xx() {
