@@ -46,68 +46,9 @@ function help {
     echo ""
     echo "-p: <profile> Apache Stratos products to be installed on this node. Provide one name of a profile."
     echo "    The available profiles are cc, as, sm or default. 'default' means you need to setup all servers in this machine. Default is 'default' profile"
-    echo "-s: Start servers after installation."
+    echo "-s: Silent mode - Start servers after installation."
     echo ""
 }
-
-while getopts p: opts
-do
-  case $opts in
-    p)
-        profile_list=${OPTARG}
-        ;;
-    s)
-        auto_start_servers="true"
-        ;;
-    \?)
-        help
-        exit 1
-        ;;
-  esac
-done
-
-
-arr=$(echo $profile_list | tr " " "\n")
-
-for x in $arr
-do
-    if [[ $x = "cc" ]]; then
-        profile="cc"
-    elif [[ $x = "as" ]]; then
-        profile="as"
-    elif [[ $x = "sm" ]]; then
-        profile="sm"
-    else
-        echo "Inavlid profile : 'default' profile will be selected."
-    fi
-done
-
-echo "You have selected profile : $profile"
-
-profile_list=`echo $profile_list | sed 's/^ *//g' | sed 's/ *$//g'`
-if [[ -z $profile_list || $profile_list = "" ]]; then
-    help
-    exit 1
-fi
-
-if [[ $host_user == "" ]]; then
-    echo "user provided in conf/stratos-setup.conf is null. Please provide a user"
-    exit 1
-fi
-
-echo "user provided in conf/stratos-setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
-echo "If you want to continue with $host_user just press enter to continue"
-read username
-if [[ $username != "" ]]; then
-    host_user=$username
-fi
-user=`id $host_user`
-if [[ $? = 1 ]]; then
-    echo "User $host_user does not exist. The system will create it."
-    adduser --home /home/$host_user $host_user
-fi
-
-export $host_user
 
 # Check validity of IP
 function valid_ip()
@@ -127,12 +68,8 @@ function valid_ip()
     return $stat
 }
 
-function helpsetup() {
-    echo ""
-    echo "Please set up the $1 related environment variables correctly in conf/stratos-setup.conf"
-    echo ""
-}
-
+# General functions
+# -------------------------------------------------------------------
 function general_conf_validate() {
     if [[ ! -d $setup_path ]]; then
         echo "Please specify the setup_path folder which contains stratos setup"
@@ -165,17 +102,59 @@ function general_conf_validate() {
         exit 1
     fi
 
-    if [[ $profile = "default" ]]; then
-        read -p "Do you want to configure ActiveMQ [y/n]: " answer
-        if [[ $answer = y ]] ; then
-            mb_ip=$host_ip
-        else
-            echo "Provided mb_ip in conf/stratos-setup.conf will be used"
-            config_mb="false"
-        fi
+    if [[ $auto_start_servers != "true" ]]; then
+    	if [[ $profile = "default" ]]; then
+            read -p "Do you want to configure ActiveMQ [y/n]: " answer
+            if [[ $answer = y ]] ; then
+            	mb_ip=$host_ip
+            else
+            	echo "Provided mb_ip in conf/stratos-setup.conf will be used"
+            	config_mb="false"
+            fi
+    	fi
     fi
 }
 
+# Setup General
+function general_setup() {
+
+    cp -f ./config/all/repository/conf/activemq/jndi.properties $stratos_extract_path/repository/conf/
+
+    pushd $stratos_extract_path
+    echo "In repository/conf/carbon.xml"
+    sed -i "s@<Offset>0</Offset>@<Offset>${offset}</Offset>@g" repository/conf/carbon.xml
+
+    echo "In repository/conf/jndi.properties"
+    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/conf/jndi.properties
+    popd
+
+    for activemq_client_lib in "${activemq_client_libs[@]}" 
+    do
+    	cp -f $stratos_packs/$activemq_client_lib $stratos_extract_path/repository/components/lib/
+    done
+}
+
+function activemq_validate() {
+    if [[ ! -f $activemq_pack ]]; then
+        echo "Please copy the activemq zip to the stratos pack folder and update the JAR name in conf/stratos-setup.conf file"
+        exit 1
+    fi
+}
+
+# ActiveMQ jar validation
+function mb_jars_validate() {
+    for activemq_client_lib in "${activemq_client_libs[@]}"
+    do
+	lib_path=$stratos_packs/$activemq_client_lib
+	if [[ ! -f $lib_path ]]; then
+	    echo "Please copy the $activemq_client_lib into the stratos pack folder"
+	    exit 1
+	fi
+    done
+}
+
+# CC related functions
+# -------------------------------------------------------------------
 function cc_related_popup() {
     while read -p "Please provide cloud controller ip:" cc_ip
     do
@@ -208,38 +187,59 @@ function cc_related_popup() {
     done
 }
 
-function sm_related_popup() {
-    while read -p "Please provide Stratos Manager ip:" sm_ip
-    do
-	if !(valid_ip $sm_ip); then
-	    echo "Please provide valid ips for SM"	 
-	else 
-            export sm_ip
-	    break 
-	fi
-    done 
-
-    while read -p "Please provide Stratos Manager hostname:" sm_hostname
-    do
-	if [[ -z $sm_hostname ]]; then
-	    echo "Please specify valid hostname for SM"	 
-	else 
-            export sm_hostname
-	    break 
-	fi
-    done
-
-    while read -p "Please provide Stratos Manager port offset:" sm_port_offset
-    do
-	if [[ -z $sm_port_offset ]]; then
-	    echo "Please specify the port offset of SM"	 
-	else 
-            export sm_port_offset
-	    break 
-	fi
-    done
+function cc_conf_validate() {
+    if [[ $ec2_provider_enabled = "false" && $openstack_provider_enabled = "false" && $vcloud_provider_enabled = "false" ]]; then
+        echo "Please enable at least one of the IaaS providers in conf/stratos-setup.conf file"
+        exit 1
+    fi
+    if [[ $openstack_provider_enabled = "true" ]]; then
+        if [[ ( -z $openstack_identity || -z $openstack_credential || -z $openstack_jclouds_endpoint ) ]]; then
+            echo "Please set openstack configuration information in conf/stratos-setup.conf file"
+            exit 1
+        fi
+    fi
+    if [[ $ec2_provider_enabled = "true" ]]; then
+        if [[ ( -z $ec2_identity || -z $ec2_credential || -z $ec2_keypair_name ) ]]; then
+            echo "Please set ec2 configuration information in conf/stratos-setup.conf file"
+            exit 1
+        fi
+    fi
+    if [[ $vcloud_provider_enabled = "true" ]]; then
+        if [[ ( -z $vcloud_identity || -z $vcloud_credential || -z $vcloud_jclouds_endpoint ) ]]; then
+            echo "Please set vcloud configuration information in conf/stratos-setup.conf file"
+            exit 1
+        fi
+    fi
 }
 
+# Setup cc
+function cc_setup() {
+    echo "Setup CC" >> $LOG
+    echo "Configuring the Cloud Controller"
+
+    cp -f ./config/all/repository/conf/cloud-controller.xml $stratos_extract_path/repository/conf/ 
+
+    export cc_path=$stratos_extract_path
+    echo "In repository/conf/cloud-controller.xml"
+    if [[ $ec2_provider_enabled = true ]]; then
+        ./stratos-ec2.sh
+    fi
+    if [[ $openstack_provider_enabled = true ]]; then
+        ./stratos-openstack.sh
+    fi
+    if [[ $vcloud_provider_enabled = true ]]; then
+        ./stratos-vcloud.sh
+    fi
+
+    pushd $stratos_extract_path
+    
+    popd 
+    echo "End configuring the Cloud Controller"
+}
+
+
+# AS related functions
+# -------------------------------------------------------------------
 function as_related_popup() {
     while read -p "Please provide Auto Scalar ip:" as_ip
     do
@@ -272,50 +272,6 @@ function as_related_popup() {
     done
 }
 
-function mb_jars_validate() {
-    for activemq_client_lib in "${activemq_client_libs[@]}"
-    do
-	lib_path=$stratos_packs/$activemq_client_lib
-	if [[ ! -f $lib_path ]]; then
-	    echo "Please copy the $activemq_client_lib into the stratos pack folder"
-	    exit 1
-	fi
-    done
-}
-
-function activemq_validate() {
-    if [[ ! -f $activemq_pack ]]; then
-        echo "Please copy the activemq zip to the stratos pack folder and update the JAR name in conf/stratos-setup.conf file"
-        exit 1
-    fi
-}
-
-function cc_conf_validate() {
-    if [[ $ec2_provider_enabled = "false" && $openstack_provider_enabled = "false" && $vcloud_provider_enabled = "false" ]]; then
-        echo "Please enable at least one of the IaaS providers in conf/stratos-setup.conf file"
-        exit 1
-    fi
-    if [[ $openstack_provider_enabled = "true" ]]; then
-        if [[ ( -z $openstack_identity || -z $openstack_credential || -z $openstack_jclouds_endpoint ) ]]; then
-            echo "Please set openstack configuration information in conf/stratos-setup.conf file"
-            exit 1
-        fi
-    fi
-    if [[ $ec2_provider_enabled = "true" ]]; then
-        if [[ ( -z $ec2_identity || -z $ec2_credential || -z $ec2_keypair_name ) ]]; then
-            echo "Please set ec2 configuration information in conf/stratos-setup.conf file"
-            exit 1
-        fi
-    fi
-    if [[ $vcloud_provider_enabled = "true" ]]; then
-        if [[ ( -z $vcloud_identity || -z $vcloud_credential || -z $vcloud_jclouds_endpoint ) ]]; then
-            echo "Please set vcloud configuration information in conf/stratos-setup.conf file"
-            exit 1
-        fi
-    fi
-}
-
-
 function as_conf_validate() {
     if [[ !($profile = "default") ]]; then
 	cc_related_popup
@@ -330,6 +286,59 @@ function as_conf_validate() {
     fi
 }
 
+# Setup AS 
+function as_setup() {
+    echo "Setup AS" >> $LOG
+    echo "Configuring the Auto Scalar"
+
+    cp -f ./config/all/repository/conf/autoscaler.xml $stratos_extract_path/repository/conf/
+
+    pushd $stratos_extract_path
+
+    echo "In repository/conf/autoscaler.xml"
+    sed -i "s@CC_HOSTNAME@$cc_hostname@g" repository/conf/autoscaler.xml
+    sed -i "s@CC_LISTEN_PORT@$as_cc_https_port@g" repository/conf/autoscaler.xml
+    sed -i "s@SM_HOSTNAME@$sm_hostname@g" repository/conf/autoscaler.xml
+    sed -i "s@SM_LISTEN_PORT@$as_sm_https_port@g" repository/conf/autoscaler.xml
+
+    popd
+    echo "End configuring the Auto scalar"
+}
+
+
+# SM related functions
+# -------------------------------------------------------------------
+function sm_related_popup() {
+    while read -p "Please provide Stratos Manager ip:" sm_ip
+    do
+	if !(valid_ip $sm_ip); then
+	    echo "Please provide valid ips for SM"	 
+	else 
+            export sm_ip
+	    break 
+	fi
+    done 
+
+    while read -p "Please provide Stratos Manager hostname:" sm_hostname
+    do
+	if [[ -z $sm_hostname ]]; then
+	    echo "Please specify valid hostname for SM"	 
+	else 
+            export sm_hostname
+	    break 
+	fi
+    done
+
+    while read -p "Please provide Stratos Manager port offset:" sm_port_offset
+    do
+	if [[ -z $sm_port_offset ]]; then
+	    echo "Please specify the port offset of SM"	 
+	else 
+            export sm_port_offset
+	    break 
+	fi
+    done
+}
 
 function sm_conf_validate() {
     if [[ -z $puppet_ip ]]; then
@@ -366,7 +375,49 @@ function sm_conf_validate() {
     export sm_https_port=$((9443 + $offset))
 }
 
+# Setup SM
+function sm_setup() {
+    echo "Setup SM" >> $LOG
+    echo "Configuring Stratos Manager"
 
+    cp -f ./config/all/repository/conf/cartridge-config.properties $stratos_extract_path/repository/conf/
+    cp -f ./config/all/repository/conf/datasources/master-datasources.xml $stratos_extract_path/repository/conf/datasources/
+    cp -f $mysql_connector_jar $stratos_extract_path/repository/components/lib/
+
+    pushd $stratos_extract_path
+
+    echo "In repository/conf/cartridge-config.properties"
+    sed -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" repository/conf/cartridge-config.properties
+    sed -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" repository/conf/cartridge-config.properties
+    sed -i "s@PUPPET_IP@$puppet_ip@g" repository/conf/cartridge-config.properties
+    sed -i "s@PUPPET_HOSTNAME@$puppet_hostname@g" repository/conf/cartridge-config.properties
+    sed -i "s@PUPPET_ENV@$puppet_environment@g" repository/conf/cartridge-config.properties
+
+    echo "In repository/conf/datasources/master-datasources.xml"
+    sed -i "s@USERSTORE_DB_HOSTNAME@$userstore_db_hostname@g" repository/conf/datasources/master-datasources.xml
+    sed -i "s@USERSTORE_DB_PORT@$userstore_db_port@g" repository/conf/datasources/master-datasources.xml
+    sed -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" repository/conf/datasources/master-datasources.xml
+    sed -i "s@USERSTORE_DB_USER@$userstore_db_user@g" repository/conf/datasources/master-datasources.xml
+    sed -i "s@USERSTORE_DB_PASS@$userstore_db_pass@g" repository/conf/datasources/master-datasources.xml
+
+    popd
+
+    # Database Configuration
+    # -----------------------------------------------
+    echo "Create and configure MySql Databases" >> $LOG 
+    echo "Creating userstore database"
+
+    pushd $resource_path
+    sed -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" mysql.sql
+
+    popd
+
+    mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/mysql.sql
+    echo "End configuring the SM"
+}
+
+# CEP related functions
+# -------------------------------------------------------------------
 function cep_conf_validate() {
     if [[ ! -d $cep_artifacts_path ]]; then
         echo "Please specify the cep_artifacts_path folder which contains cep artifacts files"
@@ -378,6 +429,103 @@ function cep_conf_validate() {
     fi
 }
 
+# Setup CEP
+function cep_setup() {
+    echo "Setup CEP" >> $LOG
+    echo "Configuring the Complex Event Processor"
+
+    cp -f $cep_extension_jar $stratos_extract_path/repository/components/lib/
+    cep_xml_path=$stratos_extract_path/repository/deployment/server
+    cep_conf_path=$stratos_extract_path/repository/conf
+
+    test -d "$cep_xml_path/eventbuilders" || mkdir -p "$cep_xml_path/eventbuilders" && cp -f $cep_artifacts_path/eventbuilders/*.xml $cep_xml_path/eventbuilders/
+    test -d "$cep_xml_path/inputeventadaptors" || mkdir -p "$cep_xml_path/inputeventadaptors" && cp -f $cep_artifacts_path/inputeventadaptors/*.xml $cep_xml_path/inputeventadaptors/
+    test -d "$cep_xml_path/outputeventadaptors" || mkdir -p "$cep_xml_path/outputeventadaptors" && cp -f $cep_artifacts_path/outputeventadaptors/*.xml $cep_xml_path/outputeventadaptors/
+    test -d "$cep_xml_path/executionplans" || mkdir -p "$cep_xml_path/executionplans" && cp -f $cep_artifacts_path/executionplans/*.xml $cep_xml_path/executionplans/
+    test -d "$cep_xml_path/eventformatters" || mkdir -p "$cep_xml_path/eventformatters" && cp -f $cep_artifacts_path/eventformatters/*.xml $cep_xml_path/eventformatters/
+    cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_conf_path/
+
+    pushd $stratos_extract_path
+
+    echo "In outputeventadaptors"
+    sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+
+    echo "In repository/conf/siddhi/siddhi.extension"
+    test -d "repository/conf/siddhi" || mkdir -p "repository/conf/siddhi" && touch repository/conf/siddhi/siddhi.extension
+    cp -f repository/conf/siddhi/siddhi.extension repository/conf/siddhi/siddhi.extension.orig
+    echo "org.apache.stratos.cep.extension.GradientFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
+    echo "org.apache.stratos.cep.extension.SecondDerivativeFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
+    echo "org.apache.stratos.cep.extension.FaultHandlingWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
+    mv -f repository/conf/siddhi/siddhi.extension.orig repository/conf/siddhi/siddhi.extension
+
+    echo "End configuring the Complex Event Processor"
+    popd
+}
+
+
+# ------------------------------------------------
+# Execution 
+# ------------------------------------------------
+
+while getopts p:s opts
+do
+  case $opts in
+    p)
+        profile_list=${OPTARG}
+        ;;
+    s)
+        auto_start_servers="true"
+        ;;
+    \?)
+        help
+        exit 1
+        ;;
+  esac
+done
+
+arr=$(echo $profile_list | tr " " "\n")
+
+for x in $arr
+do
+    if [[ $x = "default" ]]; then
+        profile="default"
+    elif [[ $x = "cc" ]]; then
+        profile="cc"
+    elif [[ $x = "as" ]]; then
+        profile="as"
+    elif [[ $x = "sm" ]]; then
+        profile="sm"
+    else
+        echo "Inavlid profile : 'default' profile will be selected."
+    fi
+done
+
+echo "You have selected profile : $profile"
+
+profile_list=`echo $profile_list | sed 's/^ *//g' | sed 's/ *$//g'`
+if [[ -z $profile_list || $profile_list = "" ]]; then
+    help
+    exit 1
+fi
+
+if [[ $host_user == "" ]]; then
+    echo "user provided in conf/stratos-setup.conf is null. Please provide a user"
+    exit 1
+fi
+
+echo "user provided in conf/stratos-setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
+echo "If you want to continue with $host_user just press enter to continue"
+read username
+if [[ $username != "" ]]; then
+    host_user=$username
+fi
+user=`id $host_user`
+if [[ $? = 1 ]]; then
+    echo "User $host_user does not exist. The system will create it."
+    adduser --home /home/$host_user $host_user
+fi
+
+export $host_user
 
 # Make sure the user is running as root.
 if [ "$UID" -ne "0" ]; then
@@ -423,158 +571,6 @@ if [[ ($profile = "default" && $config_mb = "true") ]]; then
     echo "Extracting ActiveMQ"
     tar -xzf $activemq_pack -C $stratos_path
 fi
-
-# ------------------------------------------------
-# Setup General
-# ------------------------------------------------
-function general_setup() {
-
-    cp -f ./config/all/repository/conf/activemq/jndi.properties $stratos_extract_path/repository/conf/
-
-    pushd $stratos_extract_path
-    echo "In repository/conf/carbon.xml"
-    sed -i "s@<Offset>0</Offset>@<Offset>${offset}</Offset>@g" repository/conf/carbon.xml
-
-    echo "In repository/conf/jndi.properties"
-    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/conf/jndi.properties
-    popd
-
-    for activemq_client_lib in "${activemq_client_libs[@]}" 
-    do
-    	cp -f $stratos_packs/$activemq_client_lib $stratos_extract_path/repository/components/lib/
-    done
-}
-
-
-# ------------------------------------------------
-# Setup cc
-# ------------------------------------------------
-function cc_setup() {
-    echo "Setup CC" >> $LOG
-    echo "Configuring the Cloud Controller"
-
-    cp -f ./config/all/repository/conf/cloud-controller.xml $stratos_extract_path/repository/conf/ 
-
-    export cc_path=$stratos_extract_path
-    echo "In repository/conf/cloud-controller.xml"
-    if [[ $ec2_provider_enabled = true ]]; then
-        ./stratos-ec2.sh
-    fi
-    if [[ $openstack_provider_enabled = true ]]; then
-        ./stratos-openstack.sh
-    fi
-    if [[ $vcloud_provider_enabled = true ]]; then
-        ./stratos-vcloud.sh
-    fi
-
-    pushd $stratos_extract_path
-    
-    popd 
-    echo "End configuring the Cloud Controller"
-}
-
-
-# ------------------------------------------------
-# Setup AS
-# ------------------------------------------------   
-function as_setup() {
-    echo "Setup AS" >> $LOG
-    echo "Configuring the Auto Scalar"
-
-    cp -f ./config/all/repository/conf/autoscaler.xml $stratos_extract_path/repository/conf/
-
-    pushd $stratos_extract_path
-
-    echo "In repository/conf/autoscaler.xml"
-    sed -i "s@CC_HOSTNAME@$cc_hostname@g" repository/conf/autoscaler.xml
-    sed -i "s@CC_LISTEN_PORT@$as_cc_https_port@g" repository/conf/autoscaler.xml
-    sed -i "s@SM_HOSTNAME@$sm_hostname@g" repository/conf/autoscaler.xml
-    sed -i "s@SM_LISTEN_PORT@$as_sm_https_port@g" repository/conf/autoscaler.xml
-
-    popd
-    echo "End configuring the Auto scalar"
-}
-
-
-# ------------------------------------------------
-# Setup SM
-# ------------------------------------------------
-function sm_setup() {
-    echo "Setup SM" >> $LOG
-    echo "Configuring Stratos Manager"
-
-    cp -f ./config/all/repository/conf/cartridge-config.properties $stratos_extract_path/repository/conf/
-    cp -f ./config/all/repository/conf/datasources/master-datasources.xml $stratos_extract_path/repository/conf/datasources/
-    cp -f $mysql_connector_jar $stratos_extract_path/repository/components/lib/
-
-    pushd $stratos_extract_path
-
-    echo "In repository/conf/cartridge-config.properties"
-    sed -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" repository/conf/cartridge-config.properties
-    sed -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" repository/conf/cartridge-config.properties
-    sed -i "s@PUPPET_IP@$puppet_ip@g" repository/conf/cartridge-config.properties
-    sed -i "s@PUPPET_HOSTNAME@$puppet_hostname@g" repository/conf/cartridge-config.properties
-    sed -i "s@PUPPET_ENV@$puppet_environment@g" repository/conf/cartridge-config.properties
-
-    echo "In repository/conf/datasources/master-datasources.xml"
-    sed -i "s@USERSTORE_DB_HOSTNAME@$userstore_db_hostname@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_PORT@$userstore_db_port@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_USER@$userstore_db_user@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_PASS@$userstore_db_pass@g" repository/conf/datasources/master-datasources.xml
-
-    popd
-
-    # Database Configuration
-    # -----------------------------------------------
-    echo "Create and configure MySql Databases" >> $LOG 
-    echo "Creating userstore database"
-
-    pushd $resource_path
-    sed -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" mysql.sql
-
-    popd
-
-    mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/mysql.sql
-    echo "End configuring the SM"
-}
-
-
-# ------------------------------------------------
-# Setup CEP
-# ------------------------------------------------
-function cep_setup() {
-    echo "Setup CEP" >> $LOG
-    echo "Configuring the Complex Event Processor"
-
-    cp -f $cep_extension_jar $stratos_extract_path/repository/components/lib/
-    cep_xml_path=$stratos_extract_path/repository/deployment/server
-    cep_conf_path=$stratos_extract_path/repository/conf
-
-    test -d "$cep_xml_path/eventbuilders" || mkdir -p "$cep_xml_path/eventbuilders" && cp -f $cep_artifacts_path/eventbuilders/*.xml $cep_xml_path/eventbuilders/
-    test -d "$cep_xml_path/inputeventadaptors" || mkdir -p "$cep_xml_path/inputeventadaptors" && cp -f $cep_artifacts_path/inputeventadaptors/*.xml $cep_xml_path/inputeventadaptors/
-    test -d "$cep_xml_path/outputeventadaptors" || mkdir -p "$cep_xml_path/outputeventadaptors" && cp -f $cep_artifacts_path/outputeventadaptors/*.xml $cep_xml_path/outputeventadaptors/
-    test -d "$cep_xml_path/executionplans" || mkdir -p "$cep_xml_path/executionplans" && cp -f $cep_artifacts_path/executionplans/*.xml $cep_xml_path/executionplans/
-    test -d "$cep_xml_path/eventformatters" || mkdir -p "$cep_xml_path/eventformatters" && cp -f $cep_artifacts_path/eventformatters/*.xml $cep_xml_path/eventformatters/
-    cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_conf_path/
-
-    pushd $stratos_extract_path
-
-    echo "In outputeventadaptors"
-    sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
-
-    echo "In repository/conf/siddhi/siddhi.extension"
-    test -d "repository/conf/siddhi" || mkdir -p "repository/conf/siddhi" && touch repository/conf/siddhi/siddhi.extension
-    cp -f repository/conf/siddhi/siddhi.extension repository/conf/siddhi/siddhi.extension.orig
-    echo "org.apache.stratos.cep.extension.GradientFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
-    echo "org.apache.stratos.cep.extension.SecondDerivativeFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
-    echo "org.apache.stratos.cep.extension.FaultHandlingWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
-    mv -f repository/conf/siddhi/siddhi.extension.orig repository/conf/siddhi/siddhi.extension
-
-    echo "End configuring the Complex Event Processor"
-    popd
-}
-
 
 general_setup
 if [[ $profile = "cc" ]]; then
@@ -641,6 +637,3 @@ if [[ $profile == "default" || $profile == "sm" ]]; then
     echo "Management Console : https://$stratos_domain:$sm_https_port/console"
     echo "**************************************************************"
 fi
-
-
-
