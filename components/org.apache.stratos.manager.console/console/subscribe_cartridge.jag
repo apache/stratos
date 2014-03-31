@@ -6,6 +6,7 @@ var utils = require('/util/utility.jag');
 var type = request.getParameter('cartridgeType');
 var autoScalePolicies = utils.consoleAppUtil.getAutoScalePolicies();
 var deploymentPolicies = utils.consoleAppUtil.getApplicableDeploymentPolicies(type);
+var mtServiceInfo = utils.consoleAppUtil.getServiceInfo(type);
 var cartridge = utils.consoleAppUtil.getSingleTenantCartridgeInfo(type);
 
 if(autoScalePolicies.Error != undefined ){
@@ -14,6 +15,8 @@ if(autoScalePolicies.Error != undefined ){
     error.push(deploymentPolicies.Error);
 }if(cartridge.Error != undefined ){
     error.push(cartridge.Error);
+}if(mtServiceInfo.Error != undefined ){
+    error.push(mtServiceInfo.Error);
 }
 
 
@@ -21,6 +24,7 @@ caramel.render({
         cartridge:cartridge,
         autoScalePolicies:autoScalePolicies,
         deploymentPolicies:deploymentPolicies,
+        mtServiceInfo:mtServiceInfo,
         error:error
 });
 %>

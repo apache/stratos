@@ -32,6 +32,7 @@ var render = function (theme, data, meta, require) {
                     context: {
                         autoScalePolicies:data.autoScalePolicies.autoscalePolicy,
                         deploymentPolicies:data.deploymentPolicies.deploymentPolicy,
+                        mtServiceInfo:data.mtServiceInfo.serviceDefinitionBean,
                         cartridge:cartridge,
                         cartridgeType:meta.request.getParameter('cartridgeType')
                     }

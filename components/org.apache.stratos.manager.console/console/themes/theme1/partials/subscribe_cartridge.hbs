@@ -67,7 +67,10 @@
              {{/ifCond}}
 
 
-            {{#unless cartridge.multiTenant}}
+            {{#if cartridge.multiTenant}}
+                <input type="hidden" value="{{autoscalingPolicyName}}"  name="autoscalePolicy" />
+                <input type="hidden" value="{{deploymentPolicyName}}"  name="deploymentPolicy" />
+            {{else}}
                 <div class="form-group">
                     <label class="required">Autoscale Policy:</label>
                     <div class="form-inline">
@@ -115,7 +118,7 @@
                     </div>
                 </div>
 
-            {{/unless}}
+            {{/if}}
 
             {{#if cartridge.persistence.persistanceRequired}}
                  {{#unless cartridge.multiTenant}}

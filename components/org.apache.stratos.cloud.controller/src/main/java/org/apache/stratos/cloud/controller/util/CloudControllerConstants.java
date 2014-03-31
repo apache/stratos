@@ -250,7 +250,7 @@ public final class CloudControllerConstants {
     public static final String TAGS = "tags";
     public static final String AUTO_ASSIGN_IP = "autoAssignIp";
     public static final String INSTANCE_TYPE = "instanceType";
-
+    public static final String ASSOCIATE_PUBLIC_IP_ADDRESS = "associatePublicIpAddress";
     public static final String LB_CLUSTER_ID_COL = "lbclusterId";
     public static final String NETWORK_INTERFACES = "networkInterfaces";
     public static final String NETWORK_FIXED_IP = "fixedIp";
