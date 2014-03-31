@@ -147,9 +147,7 @@ consoleAppUtil = new function(){
     };
 
     this.syncRepo= function(alias){
-        return {msg:"synced"};
-        //Uncomment the line bellow and do u'r service call
-        //return this.sendReceive("POST","/syncurl",alias).data;
+        return this.sendReceive("POST","/sync",alias).data;
     };
 
     this.getAutoScalePolicies = function(){
@@ -170,6 +168,10 @@ consoleAppUtil = new function(){
 
     this.getSingleTenantCartridgeInfo = function(cartridgeType){
         return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{}).data;
+    };
+
+    this.getServiceInfo = function(cartridgeType){
+        return this.sendReceive("GET","/service/" + cartridgeType,{}).data;
     };
 
     this.getPolicyAutoScale = function(){

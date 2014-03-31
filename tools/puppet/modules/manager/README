@@ -1,3 +1,0 @@
-If Apache Stratos Manager is configured to use mysql database copy the 
-mysql connector jar to manager/files/configs/repository/components/lib
-And Uncommend the datasources xml file in init.pp

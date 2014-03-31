@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.impl;
 
+import com.google.common.net.InetAddresses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
@@ -46,9 +48,9 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.net.InetAddresses;
+import java.util.concurrent.Future;
 
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
@@ -838,7 +840,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
 				payload, hostName, props, isLb);
-	    
+
+
 		dataHolder.addClusterContext(ctxt);
 	    TopologyBuilder.handleClusterCreated(registrant, isLb);
 	    
@@ -850,7 +853,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private ClusterContext buildClusterContext(Cartridge cartridge,
 			String clusterId, String payload, String hostName,
 			Properties props, boolean isLb) {
-		
+
+
 		// initialize ClusterContext
 		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
 				hostName, isLb);
@@ -1032,7 +1036,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
 	}
 
-		
 
     @Override
     public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
@@ -1048,48 +1051,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
+        
+        Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
 
-        for (Partition partition : partitions) {
-            String provider = partition.getProvider();
-            IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
-
-            if (iaasProvider == null) {
-                String msg =
-                             "Invalid Partition - " + partition.toString() +
-                                     ". Cause: Iaas Provider is null for Provider: " + provider;
-                log.error(msg);
-                throw new InvalidPartitionException(msg);
-            }
-
-            Iaas iaas = iaasProvider.getIaas();
-            
-            if (iaas == null) {
-                
-                try {
-                    iaas = CloudControllerUtil.getIaas(iaasProvider);
-                } catch (InvalidIaasProviderException e) {
-                    String msg =
-                            "Invalid Partition - " + partition.toString() +
-                            ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
-                    log.error(msg, e);
-                    throw new InvalidPartitionException(msg, e);
-                }
-                
-            }
-            
-            PartitionValidator validator = iaas.getPartitionValidator();
-            validator.setIaasProvider(iaasProvider);
-            IaasProvider updatedIaasProvider =
-                                               validator.validate(partition.getId(),
-                                                                  CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-            // add to a temporary Map
-            partitionToIaasProviders.put(partition.getId(), updatedIaasProvider);
-            
-            if (log.isDebugEnabled()) {
-            	log.debug("Partition "+partition.toString()+ " is validated successfully "
-            			+ "against the Cartridge: "+cartridgeType);
-            }
-
+		for (Partition partition : partitions) {
+			Callable<IaasProvider> worker = new PartitionValidatorCallable(
+					partition, cartridge);
+			Future<IaasProvider> job = FasterLookUpDataHolder.getInstance()
+					.getExecutor().submit(worker);
+			jobList.put(partition.getId(), job);
+		}
+        
+        // Retrieve the results of the concurrently performed sanity checks.
+        for (String partitionId : jobList.keySet()) {
+        	Future<IaasProvider> job = jobList.get(partitionId);
+            try {
+            	// add to a temporary Map
+            	partitionToIaasProviders.put(partitionId, job.get());
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new InvalidPartitionException(e.getMessage(), e);
+            } 
         }
 
         // if and only if the deployment policy valid

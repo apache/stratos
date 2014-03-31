@@ -35,8 +35,9 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>jclouds/vcloud/1.7.1-stratos</module>
-        <module>jclouds/openstack-nova/1.7.1-stratos</module>
+        <module>jclouds/apis/vcloud/1.7.1-stratos</module>
+        <module>jclouds/apis/openstack-nova/1.7.1-stratos</module>
+        <module>jclouds/provider/aws-ec2/1.7.1-stratos</module>
     </modules>
 </project>
 

@@ -94,7 +94,7 @@ public class CartridgeAgentUtils {
         boolean active = false;
         while (!active) {
             if(log.isInfoEnabled()) {
-                log.info("Waiting for ports to be active");
+                log.info("Waiting for ports to be active: [IP] "+ipAddress+" [Ports] "+ports);
             }
             active = checkPortsActive(ipAddress,  ports);
             long endTime = System.currentTimeMillis();

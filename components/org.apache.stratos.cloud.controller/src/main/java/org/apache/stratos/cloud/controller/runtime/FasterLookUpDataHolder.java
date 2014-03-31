@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -64,6 +66,11 @@ public class FasterLookUpDataHolder implements Serializable{
 	 * Value - {@link ClusterContext}
 	 */
 	private Map<String, ClusterContext> clusterIdToContext = new ConcurrentHashMap<String, ClusterContext>();
+	
+	/**
+     * Thread pool used in this task to execute parallel tasks.
+     */
+    private transient ExecutorService executor = Executors.newFixedThreadPool(20);
 	
 	/**
 	 * List of registered {@link Cartridge}s
@@ -119,7 +126,7 @@ public class FasterLookUpDataHolder implements Serializable{
 	private FasterLookUpDataHolder() {
 
 		cartridges = new ArrayList<Cartridge>();
-
+		
 	}
 
 	public List<Cartridge> getCartridges() {
@@ -358,5 +365,13 @@ public class FasterLookUpDataHolder implements Serializable{
     public void setClusterIdToContext(Map<String, ClusterContext> clusterIdToContext) {
         this.clusterIdToContext = clusterIdToContext;
     }
+
+	public ExecutorService getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(ExecutorService executor) {
+		this.executor = executor;
+	}
 
 }

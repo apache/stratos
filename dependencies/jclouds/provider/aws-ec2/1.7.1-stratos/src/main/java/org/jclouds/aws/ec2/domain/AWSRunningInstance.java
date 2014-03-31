@@ -64,6 +64,7 @@ public class AWSRunningInstance extends RunningInstance {
       private Set<String> productCodes = Sets.newLinkedHashSet();
       private String subnetId;
       private String spotInstanceRequestId;
+      private boolean associatedPublicIpAddress;
       private String vpcId;
       private Hypervisor hypervisor;
       private Map<String, String> securityGroupIdToNames = Maps.newLinkedHashMap();
@@ -105,6 +106,12 @@ public class AWSRunningInstance extends RunningInstance {
 
       public Builder subnetId(String subnetId) {
          this.subnetId = subnetId;
+         return this;
+      }
+
+
+      public Builder associatedPublicIpAddress(boolean associatedPublicIpAddress) {
+         this.associatedPublicIpAddress = associatedPublicIpAddress;
          return this;
       }
 
@@ -150,7 +157,7 @@ public class AWSRunningInstance extends RunningInstance {
                instanceState, rawState, instanceType, ipAddress, kernelId, keyName, launchTime, availabilityZone,
                virtualizationType, platform, privateDnsName, privateIpAddress, ramdiskId, reason, rootDeviceType,
                rootDeviceName, ebsBlockDevices, monitoringState, placementGroup, productCodes, subnetId,
-               spotInstanceRequestId, vpcId, hypervisor, tags, iamInstanceProfile);
+               spotInstanceRequestId, vpcId, hypervisor, tags, iamInstanceProfile, associatedPublicIpAddress);
       }
       
       @Override
@@ -159,7 +166,7 @@ public class AWSRunningInstance extends RunningInstance {
          if (in instanceof AWSRunningInstance) {
             AWSRunningInstance awsIn = AWSRunningInstance.class.cast(in);
             monitoringState(awsIn.monitoringState).placementGroup(awsIn.placementGroup)
-                  .productCodes(awsIn.productCodes).subnetId(awsIn.subnetId)
+                  .productCodes(awsIn.productCodes).subnetId(awsIn.subnetId).associatedPublicIpAddress(awsIn.associatedPublicIpAddress)
                   .spotInstanceRequestId(awsIn.spotInstanceRequestId).vpcId(awsIn.vpcId).hypervisor(awsIn.hypervisor)
                   .securityGroupIdToNames(awsIn.securityGroupIdToNames);
             if (awsIn.getIAMInstanceProfile().isPresent()) {
@@ -183,6 +190,7 @@ public class AWSRunningInstance extends RunningInstance {
    private final Set<String> productCodes;
    @Nullable
    private final String subnetId;
+   private final boolean associatedPublicIpAddress;
    @Nullable
    private final String spotInstanceRequestId;
    @Nullable
@@ -192,17 +200,18 @@ public class AWSRunningInstance extends RunningInstance {
    private final Optional<IAMInstanceProfile> iamInstanceProfile;
 
    protected AWSRunningInstance(String region, Map<String, String> securityGroupIdToNames, String amiLaunchIndex,
-            String dnsName, String imageId, String instanceId, InstanceState instanceState, String rawState,
-            String instanceType, String ipAddress, String kernelId, String keyName, Date launchTime,
-            String availabilityZone, String virtualizationType, String platform, String privateDnsName,
-            String privateIpAddress, String ramdiskId, String reason, RootDeviceType rootDeviceType,
-            String rootDeviceName, Map<String, BlockDevice> ebsBlockDevices, MonitoringState monitoringState,
-            String placementGroup, Iterable<String> productCodes, String subnetId, String spotInstanceRequestId,
-            String vpcId, Hypervisor hypervisor, Map<String, String> tags, Optional<IAMInstanceProfile> iamInstanceProfile) {
+      String dnsName, String imageId, String instanceId, InstanceState instanceState, String rawState,
+      String instanceType, String ipAddress, String kernelId, String keyName, Date launchTime,
+      String availabilityZone, String virtualizationType, String platform, String privateDnsName,
+      String privateIpAddress, String ramdiskId, String reason, RootDeviceType rootDeviceType,
+      String rootDeviceName, Map<String, BlockDevice> ebsBlockDevices, MonitoringState monitoringState,
+      String placementGroup, Iterable<String> productCodes, String subnetId, String spotInstanceRequestId,
+      String vpcId, Hypervisor hypervisor, Map<String, String> tags, Optional<IAMInstanceProfile> iamInstanceProfile, boolean associatedPublicIpAddress) {
       super(region, securityGroupIdToNames.values(), amiLaunchIndex, dnsName, imageId, instanceId, instanceState,
                rawState, instanceType, ipAddress, kernelId, keyName, launchTime, availabilityZone, virtualizationType,
                platform, privateDnsName, privateIpAddress, ramdiskId, reason, rootDeviceType, rootDeviceName,
                ebsBlockDevices, tags);
+      this.associatedPublicIpAddress = associatedPublicIpAddress;
       this.monitoringState = checkNotNull(monitoringState, "monitoringState");
       this.placementGroup = placementGroup;
       this.productCodes = ImmutableSet.copyOf(checkNotNull(productCodes, "productCodes"));
@@ -275,7 +284,7 @@ public class AWSRunningInstance extends RunningInstance {
    /**
     * The IAM Instance Profile (IIP) associated with the instance.
     */
-   @SinceApiVersion("2012-06-01")
+   @SinceApiVersion("2014-02-01")
    public Optional<IAMInstanceProfile> getIAMInstanceProfile() {
       return iamInstanceProfile;
    }

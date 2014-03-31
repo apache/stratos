@@ -16,11 +16,6 @@
  */
 package org.jclouds.aws.ec2.xml;
 
-import static org.jclouds.util.SaxUtils.equalsOrSuffix;
-
-import javax.annotation.Resource;
-import javax.inject.Inject;
-
 import org.jclouds.aws.ec2.domain.LaunchSpecification;
 import org.jclouds.aws.ec2.domain.LaunchSpecification.Builder;
 import org.jclouds.date.DateCodec;
@@ -29,6 +24,11 @@ import org.jclouds.ec2.domain.BlockDeviceMapping;
 import org.jclouds.http.functions.ParseSax.HandlerForGeneratedRequestWithResult;
 import org.jclouds.logging.Logger;
 import org.xml.sax.Attributes;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+
+import static org.jclouds.util.SaxUtils.equalsOrSuffix;
 
 /**
  * 
@@ -124,9 +124,13 @@ public class LaunchSpecificationHandler extends HandlerForGeneratedRequestWithRe
       } else if (qName.equals("ramdiskId")) {
          builder.ramdiskId(currentOrNull());
       } else if (qName.equals("enabled")) {
-         String monitoringEnabled = currentOrNull();
-         if (monitoringEnabled != null)
-            builder.monitoringEnabled(Boolean.valueOf(monitoringEnabled));
+           String monitoringEnabled = currentOrNull();
+           if (monitoringEnabled != null)           {
+              builder.monitoringEnabled(Boolean.valueOf(monitoringEnabled));}
+      }else if (qName.equals("publicIpAddressAssociated")) {
+           String publicIpAddressAssociated = currentOrNull();
+           if (publicIpAddressAssociated != null)
+              builder.publicIpAddressAssociated(Boolean.valueOf(publicIpAddressAssociated));
       }
       currentText = new StringBuilder();
    }
