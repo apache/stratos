@@ -117,3 +117,9 @@ node /wordpress/ inherits base {
   class {'mysql':}
 
 }
+
+# default (base) cartridge node
+node /default/ inherits base {
+  require java
+  class {'agent':}
+}
