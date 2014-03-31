@@ -978,7 +978,7 @@ public class ServiceUtils {
 
         SubscriptionData subscriptionData = new SubscriptionData();
         subscriptionData.setCartridgeType(cartridgeInfoBean.getCartridgeType());
-        subscriptionData.setCartridgeAlias(cartridgeInfoBean.getAlias().trim());
+        subscriptionData.setCartridgeAlias(cartridgeInfoBean.getAlias().trim());        
         subscriptionData.setAutoscalingPolicyName(cartridgeInfoBean.getAutoscalePolicy());
         subscriptionData.setDeploymentPolicyName(cartridgeInfoBean.getDeploymentPolicy());
         subscriptionData.setTenantDomain(tenantDomain);

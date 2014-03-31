@@ -22,7 +22,17 @@ package org.apache.stratos.manager.subscription;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.AlreadySubscribedException;
+import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
+import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
+import org.apache.stratos.manager.exception.InvalidRepositoryException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
+import org.apache.stratos.manager.exception.PolicyException;
+import org.apache.stratos.manager.exception.RepositoryCredentialsRequiredException;
+import org.apache.stratos.manager.exception.RepositoryRequiredException;
+import org.apache.stratos.manager.exception.RepositoryTransportException;
+import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscriber.Subscriber;
@@ -58,16 +68,22 @@ public class LBCartridgeSubscription extends CartridgeSubscription {
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
-
-        setPayloadData(getLoadBalancerCategory().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
-                getSubscriptionKey(), getCustomPayloadEntries()));
+        // If LB subscription is for MT service, payload data should not be set
+        if(!loadBalancerCategory.isLoadBalancedServiceMultiTenant()) {        	
+        	setPayloadData(getLoadBalancerCategory().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
+                    getSubscriptionKey(), getCustomPayloadEntries()));	
+        }        
     }
 
+    
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
-
-        getLoadBalancerCategory().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
-                getDeploymentPolicyName(), properties);
+    	CartridgeInfo cartridgeInfo = getCartridgeInfo();
+    	if(!cartridgeInfo.isMultiTenantSpecified()) {
+    		 getLoadBalancerCategory().register (cartridgeInfo, getCluster(), getPayloadData(), getAutoscalingPolicyName(),
+    	                getDeploymentPolicyName(), properties);
+    	}
+       
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),
