@@ -118,32 +118,8 @@ node /wordpress/ inherits base {
 
 }
 
-# stratos components related nodes
-# not supported in alpha version.
-node 'autoscaler.wso2.com' inherits base {
+# default (base) cartridge node
+node /default/ inherits base {
   require java
-  class {'autoscaler': maintenance_mode => 'norestart',}
+  class {'agent':}
 }
-
-node 'cc.wso2.com' inherits base {
-  require java
-  class {'cc': maintenance_mode   => 'norestart',}
-}
-
-node 'cep.wso2.com' inherits base {
-  require java
-  class {'cep': maintenance_mode   => 'norestart',}
-}
-
-
-node 'mb.wso2.com' inherits base {
-  require java
-  class {'messagebroker': maintenance_mode   => 'norestart',}
-}
-
-node 'sc.wso2.com' inherits base {
-  require java
-  class {'manager': maintenance_mode   => 'norestart',}
-}
-
-
