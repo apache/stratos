@@ -59,7 +59,7 @@ public final class AWSEC2ApiMetadata extends BaseHttpApiMetadata<AWSEC2Api> {
    public static final class Builder extends BaseHttpApiMetadata.Builder<AWSEC2Api, Builder> {
       public Builder() {
          id("aws-ec2")
-         .version("2012-06-01")
+         .version("2014-02-01")
          .name("Amazon-specific EC2 API")
          .identityName("Access Key ID")
          .credentialName("Secret Access Key")
