@@ -248,6 +248,7 @@ public final class CloudControllerConstants {
     public static final String SECURITY_GROUPS = "securityGroups";
     public static final String SUBNET_ID = "subnetId";
     public static final String TAGS = "tags";
+    public static final String TAGS_AS_KEY_VALUE_PAIRS_PREFIX = "tag:";
     public static final String AUTO_ASSIGN_IP = "autoAssignIp";
     public static final String INSTANCE_TYPE = "instanceType";
     public static final String ASSOCIATE_PUBLIC_IP_ADDRESS = "associatePublicIpAddress";
