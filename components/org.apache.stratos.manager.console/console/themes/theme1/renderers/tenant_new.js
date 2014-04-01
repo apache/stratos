@@ -43,7 +43,7 @@ var render = function (theme, data, meta, require) {
                         link: '/tenant_management.jag',
                         name: 'Tenant Management',
                         class_name: create_btn_class,
-                        class_icon: 'fa fa-arrow-left'
+                        class_icon: 'icons-arrow-left'
                     },
                     has_help: true,
                     help: "Tenants you create has permission to view and subscribe to Cartridges. Tenants don't have permission to do Partition deployment, Policy deployment, LB Creation, and MT service deployment.",
