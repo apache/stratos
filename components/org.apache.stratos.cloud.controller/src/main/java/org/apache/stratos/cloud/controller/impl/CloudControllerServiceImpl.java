@@ -18,7 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.impl;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
@@ -42,6 +44,7 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.rest.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -636,7 +639,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     							log.info("Allocated an ip address: "
     									+ memberContext.toString());
     						}
-                        }                        
+                        }       
+                    	
+                    	// build the node with the new ip
+                    	node = NodeMetadataBuilder.fromNodeMetadata(node)
+                				.publicAddresses(ImmutableSet.of(ip)).build();
                     } 
                     
 

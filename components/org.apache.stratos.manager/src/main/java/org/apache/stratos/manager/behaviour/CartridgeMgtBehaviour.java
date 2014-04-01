@@ -115,8 +115,11 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
     }
 
     public void register(CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName, String deploymentPolicyName, Properties properties) throws ADCException, UnregisteredCartridgeException {
-
+    	if(payloadData != null) {
         log.info("Payload: " + payloadData.getCompletePayloadData().toString());
+    	}else {
+    		log.info("Payload is null");
+    	}
 
         ApplicationManagementUtil.registerService(cartridgeInfo.getType(),
                 cluster.getClusterDomain(),

@@ -37,16 +37,12 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.OpenstackNovaPartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
-import org.jclouds.domain.Location;
-import org.jclouds.domain.LocationBuilder;
-import org.jclouds.domain.LocationScope;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
@@ -72,6 +68,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@SuppressWarnings("deprecation")
 public class OpenstackNovaIaas extends Iaas {
 
 	private static final Log log = LogFactory.getLog(OpenstackNovaIaas.class);
@@ -124,12 +121,13 @@ public class OpenstackNovaIaas extends Iaas {
 
 		Template template = templateBuilder.build();
 
-		// if you wish to auto assign IPs, instance spawning call should be
-		// blocking, but if you
-		// wish to assign IPs manually, it can be non-blocking.
-		// is auto-assign-ip mode or manual-assign-ip mode?
-		boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
-				.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
+		// In Openstack the call to IaaS should be blocking, in order to retrieve 
+		// IP addresses.
+		boolean blockUntilRunning = true;
+		if(iaasInfo.getProperty(CloudControllerConstants.BLOCK_UNTIL_RUNNING) != null) {
+			blockUntilRunning = Boolean.parseBoolean(iaasInfo.getProperty(
+					CloudControllerConstants.BLOCK_UNTIL_RUNNING));
+		}
 		template.getOptions().as(TemplateOptions.class)
 				.blockUntilRunning(blockUntilRunning);
 
@@ -265,7 +263,6 @@ public class OpenstackNovaIaas extends Iaas {
 
 		// wait till the fixed IP address gets assigned - this is needed before
 		// we associate a public IP
-
 		while (node.getPrivateAddresses() == null) {
 			CloudControllerUtil.sleep(1000);
 		}
@@ -288,9 +285,6 @@ public class OpenstackNovaIaas extends Iaas {
 			CloudControllerUtil.sleep(5000);
 			retries++;
 		}
-
-		NodeMetadataBuilder.fromNodeMetadata(node)
-				.publicAddresses(ImmutableSet.of(ip)).build();
 
 		log.info("Successfully associated an IP address " + ip
 				+ " for node with id: " + node.getId());
@@ -336,7 +330,7 @@ public class OpenstackNovaIaas extends Iaas {
 		boolean isAvailable = false;
 		for (FloatingIP fip : unassignedIps) {
 			if(log.isDebugEnabled()) {
-				log.debug("penstackNovaIaas:associatePredefinedAddress:iterating over available floatingip:" + fip);
+				log.debug("OpenstackNovaIaas:associatePredefinedAddress:iterating over available floatingip:" + fip);
 			}
 			if (ip.equals(fip.getIp())) {
 				if(log.isDebugEnabled()) {

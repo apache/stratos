@@ -358,6 +358,13 @@ public class ServiceDeploymentManager {
         // Set the load balanced service type
         loadBalancerCategory.setLoadBalancedServiceType(loadBalancedService);
 
+        // Set if the load balanced service is multi tenant or not
+        loadBalancerCategory.setLoadBalancedServiceMultiTenant(true); // TODO --- temp hack
+
+        // set the relevant deployment policy
+        log.info(" ******* Setting Deployment Policy name : ------>  " + lbDataCtxt.getDeploymentPolicy());
+        loadBalancerCategory.setDeploymentPolicyName(lbDataCtxt.getDeploymentPolicy());
+
         Service lbService = new MultiTenantLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                 lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
                 tenantRange, loadBalancerCategory);
