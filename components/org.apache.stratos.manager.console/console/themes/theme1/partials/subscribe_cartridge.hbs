@@ -89,8 +89,8 @@
 
 
             {{#if cartridge.multiTenant}}
-                <input type="hidden" value="{{autoscalingPolicyName}}"  name="autoscalePolicy" />
-                <input type="hidden" value="{{deploymentPolicyName}}"  name="deploymentPolicy" />
+                <input type="hidden" value="{{mtServiceInfo.autoscalingPolicyName}}"  name="autoscalePolicy" />
+                <input type="hidden" value="{{mtServiceInfo.deploymentPolicyName}}"  name="deploymentPolicy" />
             {{else}}
                 <div class="form-group">
                     <label class="required">Autoscale Policy:</label>
