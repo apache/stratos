@@ -104,7 +104,7 @@ var render = function (theme, data, meta, require) {
                             link:'/',
                             name:'Back To My Cartridges',
                             class_name:"btn-default",
-                            class_icon: 'fa fa-arrow-left'
+                            class_icon: 'icons-arrow-left'
                         },
                         has_help:true,
                         help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'

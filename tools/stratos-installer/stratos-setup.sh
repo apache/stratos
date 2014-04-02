@@ -29,7 +29,6 @@ set -e
 source "./conf/stratos-setup.conf"
 export LOG=$log_path/stratos-setup.log
 
-profile_list="default;cc;as;sm"
 profile="default"
 config_mb="true"
 activemq_client_libs=(activemq-broker-5.8.0.jar  activemq-client-5.8.0.jar  geronimo-j2ee-management_1.1_spec-1.0.1.jar  geronimo-jms_1.1_spec-1.1.1.jar  hawtbuf-1.2.jar)
@@ -483,30 +482,30 @@ do
   esac
 done
 
-arr=$(echo $profile_list | tr " " "\n")
-
-for x in $arr
-do
-    if [[ $x = "default" ]]; then
-        profile="default"
-    elif [[ $x = "cc" ]]; then
-        profile="cc"
-    elif [[ $x = "as" ]]; then
-        profile="as"
-    elif [[ $x = "sm" ]]; then
-        profile="sm"
-    else
-        echo "Inavlid profile : 'default' profile will be selected."
-    fi
-done
-
-echo "You have selected profile : $profile"
-
 profile_list=`echo $profile_list | sed 's/^ *//g' | sed 's/ *$//g'`
-if [[ -z $profile_list || $profile_list = "" ]]; then
-    help
-    exit 1
+if [[ !(-z $profile_list || $profile_list = "") ]]; then
+    arr=$(echo $profile_list | tr " " "\n")
+echo $arr
+    for x in $arr
+    do
+    	if [[ $x = "default" ]]; then
+            profile="default"
+    	elif [[ $x = "cc" ]]; then
+            profile="cc"
+        elif [[ $x = "as" ]]; then
+            profile="as"
+        elif [[ $x = "sm" ]]; then
+            profile="sm"
+        else
+            echo "Invalid profile."
+            exit 1
+    	fi
+    done
+    echo "You have selected the profile : $profile"
+else 
+    echo "You have not provided a profile : default profile will be selected."
 fi
+
 
 if [[ $host_user == "" ]]; then
     echo "user provided in conf/stratos-setup.conf is null. Please provide a user"

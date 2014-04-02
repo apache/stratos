@@ -182,7 +182,22 @@ public class AWSEC2Iaas extends Iaas {
                                         .split(CloudControllerConstants.ENTRY_SEPARATOR)));
 
         }
+
+        // ability to define tags with Key-value pairs
+        Map<String, String> keyValuePairTagsMap = new HashMap<String, String>();
+
+        for (String propertyKey : iaasInfo.getProperties().keySet()){
+            if(propertyKey.startsWith(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX)) {
+                keyValuePairTagsMap.put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
+                        iaasInfo.getProperties().get(propertyKey));
+                template.getOptions()
+                    .as(AWSEC2TemplateOptions.class)
+                    .userMetadata(keyValuePairTagsMap);
+            }
+
+        }
         
+
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(AWSEC2TemplateOptions.class)
@@ -196,6 +211,8 @@ public class AWSEC2Iaas extends Iaas {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
 					.keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
+
+
 
         if (iaasInfo.getNetworkInterfaces() != null) {
             List<String> networks = new ArrayList<String>(iaasInfo.getNetworkInterfaces().length);
