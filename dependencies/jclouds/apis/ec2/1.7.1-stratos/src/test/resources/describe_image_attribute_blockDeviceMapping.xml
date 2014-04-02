@@ -1,0 +1,24 @@
+<DescribeInstanceAttributeResponse
+   xmlns="http://ec2.amazonaws.com/doc/2009-11-30/">
+    <instanceId>i-7f629614</instanceId>
+    <blockDeviceMapping>
+        <item>
+            <deviceName>/dev/sda1</deviceName>
+            <ebs>
+                <volumeId>vol-d74b82be</volumeId>
+                <status>attached</status>
+                <attachTime>2010-02-20T18:25:26.000Z</attachTime>
+                <deleteOnTermination>true</deleteOnTermination>
+            </ebs>
+        </item>
+        <item>
+            <deviceName>/dev/sdf</deviceName>
+            <ebs>
+                <volumeId>vol-another</volumeId>
+                <status>detached</status>
+                <attachTime>2010-02-20T19:26:26.000Z</attachTime>
+                <deleteOnTermination>false</deleteOnTermination>
+            </ebs>
+        </item>
+    </blockDeviceMapping>
+</DescribeInstanceAttributeResponse>

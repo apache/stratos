@@ -23,35 +23,31 @@
     <groupId>org.apache.jclouds</groupId>
     <artifactId>jclouds-project</artifactId>
     <version>1.7.1</version>
-    <relativePath>../../project/pom.xml</relativePath>
   </parent>
-  <groupId>org.apache.jclouds.provider</groupId>
-  <artifactId>aws-ec2</artifactId>
+  <groupId>org.apache.jclouds.api</groupId>
+  <artifactId>ec2</artifactId>
   <version>1.7.1-stratos</version>
-  <name>jclouds Amazon EC2 provider</name>
-  <description>EC2 implementation targeted to Amazon Web Services</description>
+  <name>jclouds ec2 api</name>
+  <description>jclouds components to access an implementation of EC2</description>
   <packaging>bundle</packaging>
 
   <properties>
     <jclouds.version>1.7.1</jclouds.version>
-
-    <test.aws-ec2.endpoint>https://ec2.us-east-1.amazonaws.com</test.aws-ec2.endpoint>
-    <test.aws-ec2.api-version>2014-02-01</test.aws-ec2.api-version>
-    <test.aws-ec2.build-version />
-    <test.aws-ec2.identity>${test.aws.identity}</test.aws-ec2.identity>
-    <test.aws-ec2.credential>${test.aws.credential}</test.aws-ec2.credential>
-
-    <test.aws-ec2.template />
+    <test.ec2.endpoint>https://ec2.us-east-1.amazonaws.com</test.ec2.endpoint>
+    <test.ec2.api-version>2010-08-31</test.ec2.api-version>
+    <test.ec2.build-version />
+    <test.ec2.identity>${test.aws.identity}</test.ec2.identity>
+    <test.ec2.credential>${test.aws.credential}</test.ec2.credential>
+    <!-- default template pattern gets a problematic Ubuntu 10.04 AMI -->
+    <test.ec2.template>hardwareId=m1.small,imageId=us-east-1/ami-1ab3ce73</test.ec2.template>
     <!-- Active EBS template as of 9/25/2013 -->
-    <test.aws-ec2.ebs-template>hardwareId=m1.small,imageId=us-east-1/ami-53b1ff3a</test.aws-ec2.ebs-template>
+    <test.ec2.ebs-template>hardwareId=m1.small,imageId=us-east-1/ami-53b1ff3a</test.ec2.ebs-template>
     <!-- Windows_Server-2008-R2 with WinRM enabled (setup instructions at http://www.frontiertown.co.uk/2011/12/overthere-control-windows-from-java/) -->
-    <test.aws-ec2.windows-template>hardwareId=m1.small,imageId=us-east-1/ami-0cb76d65</test.aws-ec2.windows-template>
-    <jclouds.osgi.export>org.jclouds.aws.ec2*;version="${project.version}"</jclouds.osgi.export>
+    <test.ec2.windows-template>hardwareId=m1.small,imageId=us-east-1/ami-0cb76d65</test.ec2.windows-template>
+    <jclouds.osgi.export>org.jclouds.ec2*;version="${project.version}"</jclouds.osgi.export>
     <jclouds.osgi.import>
       org.jclouds.compute.internal;version="${jclouds.version}",
       org.jclouds.rest.internal;version="${jclouds.version}",
-      org.jclouds.aws;version="${jclouds.version}",
-      org.jclouds.aws*;version="${jclouds.version}",
       org.jclouds*;version="${jclouds.version}",
       *
     </jclouds.osgi.import>
@@ -60,21 +56,15 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.jclouds.api</groupId>
-      <artifactId>ec2</artifactId>
+      <artifactId>sts</artifactId>
       <version>${jclouds.version}</version>
+      <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.jclouds.api</groupId>
-      <artifactId>ec2</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jclouds.provider</groupId>
-      <artifactId>aws-cloudwatch</artifactId>
+      <groupId>org.apache.jclouds</groupId>
+      <artifactId>jclouds-compute</artifactId>
       <version>${jclouds.version}</version>
-      <scope>test</scope>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds</groupId>
@@ -103,7 +93,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -111,8 +100,7 @@
         <artifactId>clojure-maven-plugin</artifactId>
       </plugin>
     </plugins>
-  </build> 
-
+  </build>
   <profiles>
     <profile>
       <id>live</id>
@@ -130,15 +118,15 @@
                 </goals>
                 <configuration>
                   <systemPropertyVariables>
-                    <test.aws-ec2.endpoint>${test.aws-ec2.endpoint}</test.aws-ec2.endpoint>
-                    <test.aws-ec2.api-version>${test.aws-ec2.api-version}</test.aws-ec2.api-version>
-                    <test.aws-ec2.build-version>${test.aws-ec2.build-version}</test.aws-ec2.build-version>
-                    <test.aws-ec2.identity>${test.aws-ec2.identity}</test.aws-ec2.identity>
-                    <test.aws-ec2.credential>${test.aws-ec2.credential}</test.aws-ec2.credential>
-                    <test.aws-ec2.template>${test.aws-ec2.template}</test.aws-ec2.template>
-                    <test.aws-ec2.ebs-template>${test.aws-ec2.ebs-template}</test.aws-ec2.ebs-template>
-                    <test.aws-ec2.windows-template>${test.aws-ec2.windows-template}</test.aws-ec2.windows-template>
-                    <test.aws-ec2.windows-owner>${test.aws-ec2.windows-owner}</test.aws-ec2.windows-owner>
+                    <test.ec2.endpoint>${test.ec2.endpoint}</test.ec2.endpoint>
+                    <test.ec2.api-version>${test.ec2.api-version}</test.ec2.api-version>
+                    <test.ec2.build-version>${test.ec2.build-version}</test.ec2.build-version>
+                    <test.ec2.identity>${test.ec2.identity}</test.ec2.identity>
+                    <test.ec2.credential>${test.ec2.credential}</test.ec2.credential>
+                    <test.ec2.template>${test.ec2.template}</test.ec2.template>
+                    <test.ec2.ebs-template>${test.ec2.ebs-template}</test.ec2.ebs-template>
+                    <test.ec2.windows-template>${test.ec2.windows-template}</test.ec2.windows-template>
+                    <test.ec2.windows-owner>${test.ec2.windows-owner}</test.ec2.windows-owner>
                   </systemPropertyVariables>
                 </configuration>
               </execution>
@@ -148,7 +136,6 @@
       </build>
     </profile>
   </profiles>
-
 
 </project>
 
