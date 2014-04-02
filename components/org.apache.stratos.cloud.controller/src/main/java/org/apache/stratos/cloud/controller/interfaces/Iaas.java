@@ -77,8 +77,7 @@ public abstract class Iaas {
      * @ip preallocated floating Ip
      * @return associated public IP.
      */
-
-    abstract public String associatePredefinedAddress(NodeMetadata node, String ip);
+    public abstract String associatePredefinedAddress(NodeMetadata node, String ip);
     
     /**
      * This will deallocate/release the given IP address back to pool.
@@ -166,10 +165,9 @@ public abstract class Iaas {
      */
     public abstract void deleteVolume(String volumeId);
 
-    /*
-    This returns the device of the volume specified by the user. This is depends on IAAS.
-    For an instance /dev/sdf maps to /dev/xvdf in EC2
+    /**
+     * This returns the device of the volume specified by the user. This is depends on IAAS. 
+     * For an instance /dev/sdf maps to /dev/xvdf in EC2.
      */
-
     public abstract String getIaasDevice(String device);
 }

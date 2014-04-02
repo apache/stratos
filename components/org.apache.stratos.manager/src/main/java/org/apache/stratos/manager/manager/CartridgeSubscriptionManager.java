@@ -169,7 +169,7 @@ public class CartridgeSubscriptionManager {
 
         
         if (lbDataContext.getLbCategory() == null || lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
-            // no load balancer subscription required
+            // no load balancer subscription requiredgenerateSubscriptionKey
             log.info("No LB subscription required for the Subscription with alias: " + subscriptionData.getCartridgeAlias() + ", type: " +
                     subscriptionData.getCartridgeType());
             return null;
@@ -288,7 +288,9 @@ public class CartridgeSubscriptionManager {
                                                 subscriptionData.getDeploymentPolicyName(), repository);
         
         // Add whether the subscription is enabled upstream git commits
+        if(cartridgeSubscription.getPayloadData() != null) {
         cartridgeSubscription.getPayloadData().add(CartridgeConstants.COMMIT_ENABLED, String.valueOf(subscriptionData.isCommitsEnabled()));
+        }
         
 
         log.info("Tenant [" + subscriptionData.getTenantId() + "] with username [" + subscriptionData.getTenantAdminUsername() +

@@ -89,15 +89,18 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 			cluster.setClusterDomain(deployedLBService.getClusterId());
 			cluster.setHostName(deployedLBService.getHostName());
 
+			return null;
 		} else {
             // set cluster domain
 			cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
 			// set hostname
 			cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
+			
+			return createPayload(cartridgeInfo, subscriptionKey, subscriber,
+					cluster, repository, alias, customPayloadEntries);
 		}
 
-		return createPayload(cartridgeInfo, subscriptionKey, subscriber,
-				cluster, repository, alias, customPayloadEntries);
+		
 	}
 
 	public boolean isLoadBalancedServiceMultiTenant() {

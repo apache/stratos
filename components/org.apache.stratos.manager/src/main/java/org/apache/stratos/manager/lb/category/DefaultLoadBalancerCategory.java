@@ -80,22 +80,26 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
                     log.debug("Set existing default LB hostname " + clusterContext.getHostName() + " to the LB Subscription with alias: " + alias);
                 }
             }
+         
+            return null;
 
         } else {
             // set cluster domain
             cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
             // set hostname
             cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
-        }
-
+        
         return createPayload(cartridgeInfo, subscriptionKey, subscriber,
                 cluster, repository, alias, customPayloadEntries);
+        }
     }
 
     public void register(CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName, String deploymentPolicyName, Properties properties) throws ADCException, UnregisteredCartridgeException {
-
+    	log.info("Register service with payload data ["+payloadData+"] ");
         if (!isDefaultLBExists()) {
-            log.info("Payload: " + payloadData.getCompletePayloadData().toString());
+        	if(payloadData != null) {
+        		log.info("Payload: " + payloadData.getCompletePayloadData().toString());
+        	}
             super.register(cartridgeInfo, cluster, payloadData, autoscalePolicyName, deploymentPolicyName, properties);
         }else {
         	log.info(" Default LB exists... Not registering...");

@@ -1,1 +1,0 @@
-curl -X GET -v -u admin:admin http://ec2-54-251-211-89.ap-southeast-1.compute.amazonaws.com:9765/stratos/admin/tenant/list
