@@ -520,7 +520,7 @@ public class CreateKeyPairAndSecurityGroupsAsNeededAndReturnRunOptionsTest {
       int[] ports = {};
       boolean shouldAuthorizeSelf = true;
       boolean groupExisted = true;
-      Set<String> returnVal = ImmutableSet.<String> of(generatedMarkerGroup, "group1", "group2");
+      Set<String> returnVal = ImmutableSet.<String> of("group1", "group2");
 
       // create mocks
       CreateKeyPairAndSecurityGroupsAsNeededAndReturnRunOptions strategy = setupStrategy();
@@ -528,11 +528,11 @@ public class CreateKeyPairAndSecurityGroupsAsNeededAndReturnRunOptionsTest {
 
       // setup expectations
       expect(options.getGroups()).andReturn(groupIds).atLeastOnce();
-      RegionNameAndIngressRules regionNameAndIngressRules = new RegionNameAndIngressRules(region, generatedMarkerGroup,
-            ports, shouldAuthorizeSelf);
-
-      expect(strategy.securityGroupMap.getUnchecked(regionNameAndIngressRules))
-            .andReturn(groupExisted ? "group" : null);
+//      RegionNameAndIngressRules regionNameAndIngressRules = new RegionNameAndIngressRules(region, generatedMarkerGroup,
+//            ports, shouldAuthorizeSelf);
+//
+//      expect(strategy.securityGroupMap.getUnchecked(regionNameAndIngressRules))
+//            .andReturn(groupExisted ? "group" : null);
 
       // replay mocks
       replay(options);

@@ -166,24 +166,25 @@ public class CreateKeyPairAndSecurityGroupsAsNeededAndReturnRunOptions {
    public Set<String> getSecurityGroupsForTagAndOptions(String region, @Nullable String group, TemplateOptions options) {
       Builder<String> groups = ImmutableSet.builder();
 
-      if (group != null) {
-         String markerGroup = namingConvention.create().sharedNameForGroup(group);
+		if (group != null) {
 
-         groups.add(markerGroup);
+			if (userSpecifiedTheirOwnGroups(options)) {
+				groups.addAll(EC2TemplateOptions.class.cast(options)
+						.getGroups());
+			} else {
+				String markerGroup = namingConvention.create()
+						.sharedNameForGroup(group);
 
-         RegionNameAndIngressRules regionNameAndIngressRulesForMarkerGroup;
+				groups.add(markerGroup);
 
-         if (userSpecifiedTheirOwnGroups(options)) {
-            regionNameAndIngressRulesForMarkerGroup = new RegionNameAndIngressRules(region, markerGroup, new int[] {},
-                     false);
-            groups.addAll(EC2TemplateOptions.class.cast(options).getGroups());
-         } else {
-            regionNameAndIngressRulesForMarkerGroup = new RegionNameAndIngressRules(region, markerGroup, options
-                     .getInboundPorts(), true);
-         }
-         // this will create if not yet exists.
-         securityGroupMap.getUnchecked(regionNameAndIngressRulesForMarkerGroup);
-      }
+				RegionNameAndIngressRules regionNameAndIngressRulesForMarkerGroup;
+				regionNameAndIngressRulesForMarkerGroup = new RegionNameAndIngressRules(
+						region, markerGroup, options.getInboundPorts(), true);
+				// this will create if not yet exists.
+				securityGroupMap
+						.getUnchecked(regionNameAndIngressRulesForMarkerGroup);
+			}
+		}
       return groups.build();
    }
 
