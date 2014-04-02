@@ -91,7 +91,7 @@ public class StratosAuthorizingHandler implements RequestHandler {
             return null;
 
         } catch (Exception exception) {
-            log.error("Unexpercted error occured while REST api, authorization process",exception);
+            log.error("Unexpected error occured while REST api, authorization process",exception);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
                     entity(Utils.buildMessage("Unexpected error. Please contact the system admin")).build();
         }

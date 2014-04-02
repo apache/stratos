@@ -130,7 +130,7 @@ public class AutoscalePolicy implements Serializable {
     
 	@Override
 	public String toString() {
-		return "ASPolicy [id=" + id + ", desplayName=" + displayName
+		return "ASPolicy [id=" + id + ", displayName=" + displayName
 				+ ", description=" + description + "]";
 	}
 	
