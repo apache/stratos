@@ -19,6 +19,8 @@
 
 package org.apache.stratos.manager.subscription;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
@@ -42,6 +44,7 @@ import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 public class LBCartridgeSubscription extends CartridgeSubscription {
 
     private LoadBalancerCategory loadBalancerCategory;
+    private static Log log = LogFactory.getLog(LBCartridgeSubscription.class);
 
     /**
      * Constructor
@@ -77,10 +80,12 @@ public class LBCartridgeSubscription extends CartridgeSubscription {
 
     
     @Override
-    public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {
-    	CartridgeInfo cartridgeInfo = getCartridgeInfo();
-    	if(!cartridgeInfo.isMultiTenantSpecified()) {
-    		 getLoadBalancerCategory().register (cartridgeInfo, getCluster(), getPayloadData(), getAutoscalingPolicyName(),
+    public CartridgeSubscriptionInfo registerSubscription(Properties properties) throws ADCException, UnregisteredCartridgeException {    	
+    	if(!loadBalancerCategory.isLoadBalancedServiceMultiTenant()) {
+    		if(log.isDebugEnabled()) {
+    		 log.debug("Loadbalanced service is single tenant.");
+    		}
+    		getLoadBalancerCategory().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
     	                getDeploymentPolicyName(), properties);
     	}
        
