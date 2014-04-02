@@ -477,57 +477,42 @@
     <!-- cep -->
 	<!--creating an empty input event adaptors directory-->
         <fileSet>
-            <directory>.</directory>
+            <directory>../../../../extensions/cep/artifacts/inputeventadaptors</directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/inputeventadaptors
             </outputDirectory>
-            <excludes>
-                <exclude>**/*</exclude>
-            </excludes>
         </fileSet>
 
         <!--creating an empty output event adaptors directory-->
         <fileSet>
-            <directory>.</directory>
+            <directory>../../../../extensions/cep/artifacts/outputeventadaptors</directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/outputeventadaptors
             </outputDirectory>
-            <excludes>
-                <exclude>**/*</exclude>
-            </excludes>
         </fileSet>
 
         <!--creating an empty event builders directory-->
         <fileSet>
-            <directory>.</directory>
+            <directory>../../../../extensions/cep/artifacts/eventbuilders</directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/eventbuilders
             </outputDirectory>
-            <excludes>
-                <exclude>**/*</exclude>
-            </excludes>
         </fileSet>
 
         <!--creating an empty event formatters directory-->
         <fileSet>
-            <directory>.</directory>
+            <directory>../../../../extensions/cep/artifacts/eventformatters</directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/eventformatters
             </outputDirectory>
-            <excludes>
-                <exclude>**/*</exclude>
-            </excludes>
         </fileSet>
 
         <!--creating an empty execution plans directory-->
         <fileSet>
-            <directory>.</directory>
+            <directory>../../../../extensions/cep/artifacts/executionplans</directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/executionplans
             </outputDirectory>
-            <excludes>
-                <exclude>**/*</exclude>
-            </excludes>
         </fileSet>
 
     </fileSets>
@@ -569,6 +554,12 @@
                 <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/lib</outputDirectory>
+            <includes>
+                <include>org.apache.stratos:org.apache.stratos.cep.extension:jar</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
 
     <files>
@@ -579,30 +570,15 @@
             <fileMode>600</fileMode>
         </file>
 	<!-- cep -->
-	<!--Siddhi conf-->
         <file>
             <source>src/main/conf/siddhi/siddhi.extension</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/siddhi/
-            </outputDirectory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/siddhi/</outputDirectory>
             <filtered>true</filtered>
         </file>
-        <!-- default input/output adaptor configurations -->
         <file>
-            <source>src/main/conf/default-adaptors/DefaultWSO2EventInputAdaptor.xml</source>
-            <outputDirectory>
-                ${pom.artifactId}-${pom.version}/repository/deployment/server/inputeventadaptors/
-            </outputDirectory>
+            <source>../../../../extensions/cep/artifacts/streamdefinitions/stream-manager-config.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
-
-        <file>
-            <source>src/main/conf/default-adaptors/DefaultWSO2EventOutputAdaptor.xml</source>
-            <outputDirectory>
-                ${pom.artifactId}-${pom.version}/repository/deployment/server/outputeventadaptors/
-            </outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>644</fileMode>
         </file>
 		<!-- cloud-controller -->
 		<file>
