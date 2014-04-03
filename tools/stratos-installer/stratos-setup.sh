@@ -448,6 +448,8 @@ function cep_setup() {
 
     echo "In outputeventadaptors"
     sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+
 
     echo "In repository/conf/siddhi/siddhi.extension"
     test -d "repository/conf/siddhi" || mkdir -p "repository/conf/siddhi" && touch repository/conf/siddhi/siddhi.extension
