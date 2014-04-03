@@ -140,17 +140,6 @@ function activemq_validate() {
     fi
 }
 
-# ActiveMQ jar validation
-function mb_jars_validate() {
-    for activemq_client_lib in "${activemq_client_libs[@]}"
-    do
-	lib_path=$stratos_packs/$activemq_client_lib
-	if [[ ! -f $lib_path ]]; then
-	    echo "Please copy the $activemq_client_lib into the stratos pack folder"
-	    exit 1
-	fi
-    done
-}
 
 # CC related functions
 # -------------------------------------------------------------------
@@ -415,49 +404,18 @@ function sm_setup() {
     echo "End configuring the SM"
 }
 
-# CEP related functions
-# -------------------------------------------------------------------
-function cep_conf_validate() {
-    if [[ ! -d $cep_artifacts_path ]]; then
-        echo "Please specify the cep_artifacts_path folder which contains cep artifacts files"
-        exit 1
-    fi
-    if [[ ! -f $cep_extension_jar ]]; then
-        echo "Please copy the cep extension jar into the same folder as this command(stratos release pack folder) and update conf/stratos-setup.conf file"
-        exit 1
-    fi
-}
 
 # Setup CEP
 function cep_setup() {
     echo "Setup CEP" >> $LOG
     echo "Configuring the Complex Event Processor"
 
-    cp -f $cep_extension_jar $stratos_extract_path/repository/components/lib/
-    cep_xml_path=$stratos_extract_path/repository/deployment/server
-    cep_conf_path=$stratos_extract_path/repository/conf
-
-    test -d "$cep_xml_path/eventbuilders" || mkdir -p "$cep_xml_path/eventbuilders" && cp -f $cep_artifacts_path/eventbuilders/*.xml $cep_xml_path/eventbuilders/
-    test -d "$cep_xml_path/inputeventadaptors" || mkdir -p "$cep_xml_path/inputeventadaptors" && cp -f $cep_artifacts_path/inputeventadaptors/*.xml $cep_xml_path/inputeventadaptors/
-    test -d "$cep_xml_path/outputeventadaptors" || mkdir -p "$cep_xml_path/outputeventadaptors" && cp -f $cep_artifacts_path/outputeventadaptors/*.xml $cep_xml_path/outputeventadaptors/
-    test -d "$cep_xml_path/executionplans" || mkdir -p "$cep_xml_path/executionplans" && cp -f $cep_artifacts_path/executionplans/*.xml $cep_xml_path/executionplans/
-    test -d "$cep_xml_path/eventformatters" || mkdir -p "$cep_xml_path/eventformatters" && cp -f $cep_artifacts_path/eventformatters/*.xml $cep_xml_path/eventformatters/
-    cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_conf_path/
-
-    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" $cep_xml_path/outputeventadaptors/JMSOutputAdaptor.xml
-
     pushd $stratos_extract_path
 
     echo "In outputeventadaptors"
-    sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
 
-    echo "In repository/conf/siddhi/siddhi.extension"
-    test -d "repository/conf/siddhi" || mkdir -p "repository/conf/siddhi" && touch repository/conf/siddhi/siddhi.extension
-    cp -f repository/conf/siddhi/siddhi.extension repository/conf/siddhi/siddhi.extension.orig
-    echo "org.apache.stratos.cep.extension.GradientFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
-    echo "org.apache.stratos.cep.extension.SecondDerivativeFinderWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
-    echo "org.apache.stratos.cep.extension.FaultHandlingWindowProcessor" >> repository/conf/siddhi/siddhi.extension.orig
-    mv -f repository/conf/siddhi/siddhi.extension.orig repository/conf/siddhi/siddhi.extension
+    sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
 
     echo "End configuring the Complex Event Processor"
     popd
@@ -535,7 +493,6 @@ if [ "$UID" -ne "0" ]; then
 fi
 
 general_conf_validate
-mb_jars_validate
 if [[ $profile = "cc" ]]; then
     cc_conf_validate
 elif [[ $profile = "as" ]]; then
@@ -548,7 +505,6 @@ else
     cc_conf_validate
     as_conf_validate
     sm_conf_validate 
-    cep_conf_validate  
 fi
 
 if [[ ! -d $log_path ]]; then
