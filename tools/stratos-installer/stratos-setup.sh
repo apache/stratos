@@ -444,12 +444,12 @@ function cep_setup() {
     test -d "$cep_xml_path/eventformatters" || mkdir -p "$cep_xml_path/eventformatters" && cp -f $cep_artifacts_path/eventformatters/*.xml $cep_xml_path/eventformatters/
     cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_conf_path/
 
-    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" $cep_xml_path/outputeventadaptors/JMSOutputAdaptor.xml
-
     pushd $stratos_extract_path
 
     echo "In outputeventadaptors"
     sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+
 
     echo "In repository/conf/siddhi/siddhi.extension"
     test -d "repository/conf/siddhi" || mkdir -p "repository/conf/siddhi" && touch repository/conf/siddhi/siddhi.extension
