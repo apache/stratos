@@ -444,6 +444,8 @@ function cep_setup() {
     test -d "$cep_xml_path/eventformatters" || mkdir -p "$cep_xml_path/eventformatters" && cp -f $cep_artifacts_path/eventformatters/*.xml $cep_xml_path/eventformatters/
     cp -f $cep_artifacts_path/streamdefinitions/*.xml $cep_conf_path/
 
+    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" $cep_xml_path/outputeventadaptors/JMSOutputAdaptor.xml
+
     pushd $stratos_extract_path
 
     echo "In outputeventadaptors"
