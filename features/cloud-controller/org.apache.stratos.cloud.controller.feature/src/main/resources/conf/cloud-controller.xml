@@ -42,8 +42,7 @@
 	</dataPublisher>
 
     	<topologySync enable="true">
-		<!-- MB server info -->
-		<cron>1 * * * * ? *</cron>
+		<property name="cron" value="1 * * * * ? *" />
 	</topologySync>	
 
 	<!-- Specify the properties that are common to an IaaS here. This element 
