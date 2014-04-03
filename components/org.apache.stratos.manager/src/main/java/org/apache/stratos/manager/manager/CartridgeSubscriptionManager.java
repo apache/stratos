@@ -46,6 +46,8 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.CarbonContext;
 import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
@@ -90,6 +92,13 @@ public class CartridgeSubscriptionManager {
             throw new ADCException(message, e);
         }
 
+        // For MT subscriptions check whether there are active instances
+        if(cartridgeInfo.getMultiTenant() && !activeInstancesAvailable(subscriptionData)) {
+        	String msg = "No active instances are found for cartridge [" + subscriptionData.getCartridgeType() + "]";
+        	log.error(msg);
+        	throw new ADCException(msg);
+        }
+        
         // check if this subscription requires Persistence Mapping, and its supported by the cartridge definition
         Properties persistenceMappingProperties = null;
         if (subscriptionData.getPersistanceContext() != null) {
@@ -160,7 +169,24 @@ public class CartridgeSubscriptionManager {
         return registerCartridgeSubscription(serviceCartridgeSubscription, serviceCartridgeSubscriptionProperties);
     }
 
-    private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
+    private boolean activeInstancesAvailable(SubscriptionData subscriptionData) {
+      Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(subscriptionData.getCartridgeType());
+      int activeMemberCount = 0;
+      if(cluster != null) {
+          Collection<Member> members = cluster.getMembers();
+          for (Member member : members) {
+  			if(member.isActive()) {
+  				activeMemberCount++;
+  			}
+  		} 
+      }
+      if(log.isDebugEnabled()) {
+    	  log.debug("Active member count for cluster  [" + cluster +"] is : "+ activeMemberCount);
+      }
+	  return activeMemberCount > 0; 	
+	}
+
+	private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
             CartridgeInfo serviceCartridgeInfo)
 
             throws ADCException, InvalidCartridgeAliasException,
