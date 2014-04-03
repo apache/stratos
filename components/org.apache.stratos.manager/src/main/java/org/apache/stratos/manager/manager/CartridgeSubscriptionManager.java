@@ -313,6 +313,20 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
                                                 subscriptionData.getDeploymentPolicyName(), repository);
         
+		// publishing to bam
+		CartridgeSubscriptionDataPublisher.publish(
+				subscriptionData.getTenantId(),
+				subscriptionData.getTenantAdminUsername(),
+				subscriptionData.getCartridgeAlias(),
+				subscriptionData.getCartridgeType(),
+				subscriptionData.getRepositoryURL(),
+				cartridgeInfo.getMultiTenant(),
+				subscriptionData.getAutoscalingPolicyName(),
+				subscriptionData.getDeploymentPolicyName(),
+				cartridgeSubscription.getCluster().getClusterDomain(),
+				cartridgeSubscription.getHostName(),
+				cartridgeSubscription.getMappedDomain(), "Subscribed");
+        
         // Add whether the subscription is enabled upstream git commits
         if(cartridgeSubscription.getPayloadData() != null) {
         cartridgeSubscription.getPayloadData().add(CartridgeConstants.COMMIT_ENABLED, String.valueOf(subscriptionData.isCommitsEnabled()));
@@ -414,6 +428,19 @@ public class CartridgeSubscriptionManager {
             // Publish tenant un-subscribed event to message broker
             CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                     cartridgeSubscription.getCartridgeInfo().getType());
+            
+			// publishing to the unsubscribed event details to bam
+			CartridgeSubscriptionDataPublisher.publish(cartridgeSubscription
+					.getSubscriber().getTenantId(), cartridgeSubscription
+					.getSubscriber().getAdminUserName(), cartridgeSubscription
+					.getAlias(), cartridgeSubscription.getType(),
+					cartridgeSubscription.getRepository().getUrl(),
+					cartridgeSubscription.getCartridgeInfo().getMultiTenant(),
+					cartridgeSubscription.getAutoscalingPolicyName(),
+					cartridgeSubscription.getDeploymentPolicyName(),
+					cartridgeSubscription.getCluster().getClusterDomain(),
+					cartridgeSubscription.getHostName(), cartridgeSubscription
+							.getMappedDomain(), "unsubscribed");
         }
         else {
             String errorMsg = "No cartridge subscription found with [alias] " + alias + " for [tenant] " + tenantDomain;
