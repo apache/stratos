@@ -46,6 +46,8 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.CarbonContext;
 import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
@@ -90,6 +92,13 @@ public class CartridgeSubscriptionManager {
             throw new ADCException(message, e);
         }
 
+        // For MT subscriptions check whether there are active instances
+        if(cartridgeInfo.getMultiTenant() && !activeInstancesAvailable(subscriptionData)) {
+        	String msg = "No active instances are found for cartridge [" + subscriptionData.getCartridgeType() + "]";
+        	log.error(msg);
+        	throw new ADCException(msg);
+        }
+        
         // check if this subscription requires Persistence Mapping, and its supported by the cartridge definition
         Properties persistenceMappingProperties = null;
         if (subscriptionData.getPersistanceContext() != null) {
@@ -160,7 +169,24 @@ public class CartridgeSubscriptionManager {
         return registerCartridgeSubscription(serviceCartridgeSubscription, serviceCartridgeSubscriptionProperties);
     }
 
-    private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
+    private boolean activeInstancesAvailable(SubscriptionData subscriptionData) {
+      Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(subscriptionData.getCartridgeType());
+      int activeMemberCount = 0;
+      if(cluster != null) {
+          Collection<Member> members = cluster.getMembers();
+          for (Member member : members) {
+  			if(member.isActive()) {
+  				activeMemberCount++;
+  			}
+  		} 
+      }
+      if(log.isDebugEnabled()) {
+    	  log.debug("Active member count for cluster  [" + cluster +"] is : "+ activeMemberCount);
+      }
+	  return activeMemberCount > 0; 	
+	}
+
+	private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
             CartridgeInfo serviceCartridgeInfo)
 
             throws ADCException, InvalidCartridgeAliasException,
@@ -287,6 +313,20 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
                                                 subscriptionData.getDeploymentPolicyName(), repository);
         
+		// publishing to bam
+		CartridgeSubscriptionDataPublisher.publish(
+				subscriptionData.getTenantId(),
+				subscriptionData.getTenantAdminUsername(),
+				subscriptionData.getCartridgeAlias(),
+				subscriptionData.getCartridgeType(),
+				subscriptionData.getRepositoryURL(),
+				cartridgeInfo.getMultiTenant(),
+				subscriptionData.getAutoscalingPolicyName(),
+				subscriptionData.getDeploymentPolicyName(),
+				cartridgeSubscription.getCluster().getClusterDomain(),
+				cartridgeSubscription.getHostName(),
+				cartridgeSubscription.getMappedDomain(), "Subscribed");
+        
         // Add whether the subscription is enabled upstream git commits
         if(cartridgeSubscription.getPayloadData() != null) {
         cartridgeSubscription.getPayloadData().add(CartridgeConstants.COMMIT_ENABLED, String.valueOf(subscriptionData.isCommitsEnabled()));
@@ -388,6 +428,19 @@ public class CartridgeSubscriptionManager {
             // Publish tenant un-subscribed event to message broker
             CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
                     cartridgeSubscription.getCartridgeInfo().getType());
+            
+			// publishing to the unsubscribed event details to bam
+			CartridgeSubscriptionDataPublisher.publish(cartridgeSubscription
+					.getSubscriber().getTenantId(), cartridgeSubscription
+					.getSubscriber().getAdminUserName(), cartridgeSubscription
+					.getAlias(), cartridgeSubscription.getType(),
+					cartridgeSubscription.getRepository().getUrl(),
+					cartridgeSubscription.getCartridgeInfo().getMultiTenant(),
+					cartridgeSubscription.getAutoscalingPolicyName(),
+					cartridgeSubscription.getDeploymentPolicyName(),
+					cartridgeSubscription.getCluster().getClusterDomain(),
+					cartridgeSubscription.getHostName(), cartridgeSubscription
+							.getMappedDomain(), "unsubscribed");
         }
         else {
             String errorMsg = "No cartridge subscription found with [alias] " + alias + " for [tenant] " + tenantDomain;

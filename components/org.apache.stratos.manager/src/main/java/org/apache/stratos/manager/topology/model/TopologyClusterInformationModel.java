@@ -28,6 +28,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -80,6 +82,27 @@ public class TopologyClusterInformationModel {
     	if(log.isDebugEnabled()) {
     		log.debug(" Found cluster ["+cluster+"] with id ["+clusterId+"] ");
     	}
+    	return cluster;
+    }
+    
+    public Cluster getCluster (String cartridgeType) {
+
+    	Service service;
+    	Cluster cluster = null;
+		try {
+			service = dataInsertionNRetrievalMgr.getService(cartridgeType);
+		} catch (PersistenceManagerException e) {
+			log.error("Exception occurred when retrieving service [" + cartridgeType +"] ");
+			return null;
+		}
+		
+		if(service != null) {
+			String clusterId = service.getClusterId();
+	    	cluster = clusterIdToClusterMap.get(clusterId);
+	    	if(log.isDebugEnabled()) {
+	    		log.debug(" Found cluster ["+cluster+"] with id ["+clusterId+"] ");
+	    	}
+		}    	
     	return cluster;
     }
     

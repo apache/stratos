@@ -62,6 +62,11 @@
                                data-help-y-offset="10"
                                placeholder="https://github.com/test/mytestphp.git" />
                     </div>
+		    <div class="checkbox">
+                        <label>
+                            <input name="commitsEnabled" type="checkbox" checked="checked" /> Auto Commit
+                        </label>
+                    </div>
                     <div class="checkbox">
                         <label>
                             <input name="isPublicRepo" type="checkbox" checked="checked" id="public_check" /> This is a public repository
@@ -168,12 +173,6 @@
                  {{/unless}}
              {{/if}}
 
-            <div class="form-group">
-                    <label class="required">New Checkbox:</label>
-                    <label>
-                        <input name="new_checkbox" type="checkbox" id="new_checkbox"/> Require Persistent Storage
-                    </label>
-            </div>
 
             <button type="submit" class="btn btn-primary">Subscribe to Cartridge</button>
             </form>
