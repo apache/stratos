@@ -158,9 +158,6 @@ public class CloudControllerClient {
         } catch (RemoteException e) {
         	log.error(e.getMessage(), e);
             throw new SpawningException(e.getMessage(), e);
-        } catch (CloudControllerServiceIllegalStateExceptionException e) {
-        	log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
 		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
 			String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
         	log.error(message, e);
