@@ -36,11 +36,18 @@
     var size = request.getParameter('size');
     var removeontermination = request.getParameter('removeOnUnsubscription');
     var persistencerequired = request.getParameter('persistencerequired');
+    var commitsEnabled = request.getParameter('commitsEnabled');
 
     if(persistencerequired == "on"){
         persistencerequired = true;
     } else {
         persistencerequired = false;
+    }
+
+    if(commitsEnabled == "on"){
+        commitsEnabled = true;
+    } else {
+        commitsEnabled = false;
     }
 
     if(removeontermination == "on"){
@@ -62,6 +69,7 @@
     jsonRequest.deploymentPolicy = deploymentPolicy;
     jsonRequest.size = size;
     jsonRequest.persistanceRequired = persistencerequired;
+    jsonRequest.commitsEnabled = commitsEnabled;
     jsonRequest.removeOnTermination = removeontermination;
 
 
