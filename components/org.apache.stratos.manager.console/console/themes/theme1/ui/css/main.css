@@ -667,3 +667,6 @@ label.error{
 .action-buttons{
     white-space: nowrap;
 }
+pre{
+   margin-top:20px;
+}
