@@ -35,9 +35,6 @@
     <url>http://apache.org</url>
 
     <modules>
-        <!--module>autoscaler</module>
-        <module>cloud-controller</module>
-        <module>stratos-manager</module-->
         <module>cartridge-agent</module>
         <module>stratos-cli</module>
         <module>load-balancer</module>
