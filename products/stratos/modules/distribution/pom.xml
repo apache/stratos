@@ -30,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apache-stratos</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Stratos Manager - Distribution</name>
+    <name>Apache Stratos - Distribution</name>
     <description>Apache Stratos Manager Distribution</description>
 
     <dependencies>
