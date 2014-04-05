@@ -854,6 +854,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    
 	    persist();
 	    
+	    log.info("Successfully registered: "+registrant);
+	    
 		return true;
 	}
 
