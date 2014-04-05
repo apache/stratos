@@ -471,7 +471,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
     					cluster.getClusterId())) {
     		th = new Thread(new LBClusterMonitorAdder(
     				cluster));
-    	} else if (!AutoscalerContext.getInstance()
+    	} else if (!cluster.isLbCluster() && !AutoscalerContext.getInstance()
     			.monitorExist(cluster.getClusterId())) {
     		th = new Thread(
     				new ClusterMonitorAdder(cluster));
