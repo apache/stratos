@@ -101,26 +101,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 TopologyManager.acquireReadLock();
                 for(Service service : TopologyManager.getTopology().getServices()) {
 						for (Cluster cluster : service.getClusters()) {
-							Thread th = null;
-							if (cluster.isLbCluster()
-									&& !AutoscalerContext.getInstance()
-											.lbMonitorExist(
-													cluster.getClusterId())) {
-								th = new Thread(new LBClusterMonitorAdder(
-										cluster));
-							} else if (!AutoscalerContext.getInstance()
-									.monitorExist(cluster.getClusterId())) {
-								th = new Thread(
-										new ClusterMonitorAdder(cluster));
-							}
-							if (th != null) {
-								th.start();
-								if (log.isDebugEnabled()) {
-									log.debug(String
-											.format("Cluster monitor thread has been started successfully: [cluster] %s ",
-													cluster.getClusterId()));
-								}
-							}
+							startClusterMonitor(cluster);
 						}
                 }
             }
@@ -128,6 +109,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 TopologyManager.releaseReadLock();
             }
             }
+
 
         });
 
@@ -140,13 +122,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
                 TopologyManager.acquireReadLock();
                 Service service = TopologyManager.getTopology().getService(e.getServiceName());
                 Cluster cluster = service.getCluster(e.getClusterId());
-                if (cluster.isLbCluster()) {
-                    Thread th = new Thread(new LBClusterMonitorAdder(cluster));
-                    th.start();
-                } else {
-                    Thread th = new Thread(new ClusterMonitorAdder(cluster));
-                    th.start();
-                }
+                startClusterMonitor(cluster);
             } finally {
                 TopologyManager.releaseReadLock();
             }
@@ -485,5 +461,32 @@ public class AutoscalerTopologyReceiver implements Runnable {
     public void terminate() {
         topologyReceiver.terminate();
         terminated = true;
+    }
+    
+    protected synchronized void startClusterMonitor(Cluster cluster) {
+    	Thread th = null;
+    	if (cluster.isLbCluster()
+    			&& !AutoscalerContext.getInstance()
+    			.lbMonitorExist(
+    					cluster.getClusterId())) {
+    		th = new Thread(new LBClusterMonitorAdder(
+    				cluster));
+    	} else if (!AutoscalerContext.getInstance()
+    			.monitorExist(cluster.getClusterId())) {
+    		th = new Thread(
+    				new ClusterMonitorAdder(cluster));
+    	}
+    	if (th != null) {
+    		th.start();
+    		try {
+				th.join();
+			} catch (InterruptedException ignore) {}
+    		
+    		if (log.isDebugEnabled()) {
+    			log.debug(String
+    					.format("Cluster monitor thread has been started successfully: [cluster] %s ",
+    							cluster.getClusterId()));
+    		}
+    	}
     }
 }
