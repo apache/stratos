@@ -110,7 +110,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
-    InvalidIaasProviderException, IllegalArgumentException {
+    InvalidIaasProviderException {
 
         if (cartridgeConfig == null) {
             String msg = "Invalid Cartridge Definition: Definition is null.";
@@ -214,7 +214,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
     
     @Override
-    public MemberContext startInstance(MemberContext memberContext) throws IllegalArgumentException,
+    public MemberContext startInstance(MemberContext memberContext) throws
         UnregisteredCartridgeException, InvalidIaasProviderException {
     	
     	if(log.isDebugEnabled()) {
@@ -339,8 +339,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String group = str.replaceAll("[^a-z0-9-]", "");
             
             if(ctxt.isVolumeRequired()) {
-            	if (!ctxt.getListOfVolumes().isEmpty()) {
-            		for (Volume volume : ctxt.getListOfVolumes()) {
+            	if (ctxt.getVolumes() != null) {
+            		for (Volume volume : ctxt.getVolumes()) {
 						
             			if (volume.getId() == null) {
             				// create a new volume
@@ -383,8 +383,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						.substring(nodeId.indexOf('/') + 1, nodeId.length())
 						: nodeId;
 				memberContext.setInstanceId(instanceId);
-				if (!ctxt.getListOfVolumes().isEmpty()) {
-					for (Volume volume : ctxt.getListOfVolumes()) {
+				if (ctxt.getVolumes() != null) {
+					for (Volume volume : ctxt.getVolumes()) {
 						try {
 							iaas.attachVolume(instanceId, volume.getId(),
 									volume.getDevice());
@@ -473,8 +473,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException, 
-    IllegalArgumentException{
+    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException 
+    {
 
         if(memberId == null) {
             String msg = "Termination failed. Null member id.";
@@ -704,7 +704,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 	@Override
-	public void terminateAllInstances(String clusterId) throws IllegalArgumentException, InvalidClusterException {
+	public void terminateAllInstances(String clusterId) throws InvalidClusterException {
 
 		log.info("Starting to terminate all instances of cluster : "
 				+ clusterId);
@@ -773,8 +773,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
 		String clusterId = ctxt.getClusterId();
 		ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
-		if (clusterCtxt.getListOfVolumes() != null) {
-			for (Volume volume : clusterCtxt.getListOfVolumes()) {
+		if (clusterCtxt.getVolumes() != null) {
+			for (Volume volume : clusterCtxt.getVolumes()) {
 				
 				try {
 					String volumeId = volume.getId();
@@ -818,7 +818,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	@Override
 	public boolean registerService(Registrant registrant)
-			throws UnregisteredCartridgeException, IllegalArgumentException {
+			throws UnregisteredCartridgeException {
 
 	    String cartridgeType = registrant.getCartridgeType();
 	    String clusterId = registrant.getClusterId();
@@ -887,15 +887,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         		for (Volume volume : volumes) {
         			int volumeSize = property != null ? Integer.parseInt(property) : volume.getSize();
         			boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
-        			
-        			Volume v = new Volume();
-        			v.setSize(volumeSize);
-        			v.setRemoveOntermination(shouldDeleteVolume);
-        			v.setDevice(volume.getDevice());
-        			v.setMappingPath(volume.getMappingPath());
-        			ctxt.addVolume(v);
-					
+        			volume.setSize(volumeSize);
+        			volume.setRemoveOntermination(shouldDeleteVolume);
 				}
+        		ctxt.setVolumes(volumes);
         	} else {
         		// if we cannot find necessary data, we would not consider 
         		// this as a volume required instance.
@@ -1000,7 +995,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                  }
                  Collection<Member> members = TopologyManager.getTopology().
                          getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                 long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+                 // TODO why end time is needed?
+                 // long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
 
                  while(members.size() > 0) {
                     //waiting until all the members got removed from the Topology/ timed out
@@ -1018,8 +1014,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             private void deleteVolumes(ClusterContext ctxt) {
                 if(ctxt.isVolumeRequired()) {
                      Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
-                     if(cartridge != null && cartridge.getIaases() != null && !ctxt.getListOfVolumes().isEmpty()) {
-                         for (Volume volume : ctxt.getListOfVolumes()) {
+                     if(cartridge != null && cartridge.getIaases() != null && ctxt.getVolumes() != null) {
+                         for (Volume volume : ctxt.getVolumes()) {
                             if(volume.getId() != null) {
                                 String iaasType = volume.getIaasType();
                                 Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();

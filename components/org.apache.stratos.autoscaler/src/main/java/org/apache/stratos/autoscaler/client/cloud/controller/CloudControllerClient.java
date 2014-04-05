@@ -148,9 +148,6 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call startInstance() returned in %dms", (endTime - startTime)));
             }
             return memberContext;
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-        	log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
         	String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
         	log.error(message, e);
@@ -185,10 +182,6 @@ public class CloudControllerClient {
         	String message = e.getFaultMessage().getInvalidClusterException().getMessage();
             log.error(message, e);
             throw new TerminationException(message, e);
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-        	String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
         }
     }
 
@@ -204,10 +197,6 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-        	String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
         	String msg = e.getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
