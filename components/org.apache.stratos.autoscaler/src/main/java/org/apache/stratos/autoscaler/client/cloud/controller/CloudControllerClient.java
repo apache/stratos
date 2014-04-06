@@ -29,9 +29,9 @@ import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 import java.rmi.RemoteException;
 
@@ -126,7 +126,7 @@ public class CloudControllerClient {
 
     }
 
-    public org.apache.stratos.cloud.controller.pojo.MemberContext spawnAnInstance(Partition partition, 
+    public MemberContext spawnAnInstance(Partition partition,
     		String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
         try {
             if(log.isInfoEnabled()) {
@@ -148,17 +148,11 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call startInstance() returned in %dms", (endTime - startTime)));
             }
             return memberContext;
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-        	log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
         	String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
         	log.error(message, e);
 			throw new SpawningException(message, e);
         } catch (RemoteException e) {
-        	log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
-        } catch (CloudControllerServiceIllegalStateExceptionException e) {
         	log.error(e.getMessage(), e);
             throw new SpawningException(e.getMessage(), e);
 		} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
@@ -188,10 +182,6 @@ public class CloudControllerClient {
         	String message = e.getFaultMessage().getInvalidClusterException().getMessage();
             log.error(message, e);
             throw new TerminationException(message, e);
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-        	String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
         }
     }
 
@@ -207,10 +197,6 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-        	String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
         	String msg = e.getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);

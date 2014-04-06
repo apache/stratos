@@ -59,6 +59,8 @@ public class CartridgeConstants {
     public static final String DATA_CARTRIDGE_PROVIDER = "data";
 	public static final String INTERNAL_GIT_USERNAME = "internal.repo.username";
 	public static final String INTERNAL_GIT_PASSWORD = "internal.repo.password";
+	public static final String INTERNAL_GIT_URL = "internal.git.url"; // "https://localhost:8443/"
+	public static final String INTERNAL_GIT_DIR_STRUCTURE = "internal.git.dir"; // directory structure
 
     public static final String CUSTOM_PAYLOAD_PARAM_NAME_PREFIX = "payload_parameter.";
     
@@ -66,6 +68,30 @@ public class CartridgeConstants {
     public static final String CC_CONNECTION_TIMEOUT = "cc.connection.timeout";
     public static final String AUTOSCALER_SOCKET_TIMEOUT = "autoscaler.socket.timeout";
     public static final String AUTOSCALER_CONNECTION_TIMEOUT = "autoscaler.connection.timeout";
+    
+	public static final String COMMIT_ENABLED = "COMMIT_ENABLED";
+
+	// BAM publisher related values
+	public static final String BAM_PUBLISHER_ENABLED = "bam.publisher.enabled";
+	public static final String BAM_ADMIN_USERNAME = "bam.admin.username";
+	public static final String BAM_ADMIN_PASSWORD = "bam.admin.password";
+	public static final String DATA_PUB_TASK_NAME = "CartridgeSubscriptionDataPublisher";
+	public static final String STRATOS_MANAGER_EVENT_STREAM = "org_apache_stratos_manager";
+
+	// BAM stream definition relate values
+	public static final String TENANT_ID_COL = "tenantID";
+	public static final String ADMIN_USER_COL = "adminUser";
+	public static final String CARTRIDGE_ALIAS_COL = "cartridgeAlias";
+	public static final String CARTRIDGE_TYPE_COL = "cartridgeType";
+	public static final String REPOSITORY_URL_COL = "repositoryUrl";
+	public static final String MULTI_TENANT_BEHAVIOR_COL = "isMultiTenant";
+	public static final String AUTO_SCALE_POLICY_COL = "autoScalePolicy";
+	public static final String DEPLOYMENT_POLICY_COL = "deploymentPolicy";
+	public static final String CLUSTER_ID_COL = "clusterId";
+	public static final String HOST_NAME_COL = "hostname";
+	public static final String MAPPED_DOMAIN_COL = "mappedDomain";
+	public static final String ACTION_COL = "action";
+	public static final String INTERNAL_REPO_BASED_CARTRIDGE_PROVIDER = "internal";
 
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";

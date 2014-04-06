@@ -116,10 +116,14 @@ public class TopicPublisher extends MessagePublisher {
 		if (topicSession != null && topicPublisher != null) {
 			return;
 		}
-		// initialize a TopicConnector
-		connector.init(getName());
-		// get a session
-		topicSession = connector.newSession();
+		
+		if (topicSession == null) {
+			// initialize a TopicConnector
+			connector.init(getName());
+			// get a session
+			topicSession = connector.newSession();
+		}
+		
 		Topic topic = connector.getTopic();
 		if (topic == null) {
 			// if the topic doesn't exist, create it.

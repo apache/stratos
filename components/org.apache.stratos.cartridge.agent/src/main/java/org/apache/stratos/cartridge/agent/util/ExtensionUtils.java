@@ -41,7 +41,7 @@ public class ExtensionUtils {
         return extensionsDir;
     }
 
-    public static String prepareCommand(String scriptFile) {
+    private static String prepareCommand(String scriptFile) {
         String extensionsDir = getExtensionsDir();
         return (extensionsDir.endsWith(File.separator)) ?
                 extensionsDir + scriptFile:

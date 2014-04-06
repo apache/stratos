@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.pojo.NetworkInterface;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.AWSEC2PartitionValidator;
@@ -54,7 +55,6 @@ import org.jclouds.ec2.features.ElasticBlockStoreApi;
 import org.jclouds.ec2.features.ElasticIPAddressApi;
 import org.jclouds.ec2.options.DescribeAvailabilityZonesOptions;
 import org.jclouds.ec2.options.DetachVolumeOptions;
-import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 
 import java.util.*;
 
@@ -144,6 +144,17 @@ public class AWSEC2Iaas extends Iaas {
 				.inboundPorts(new int[] {});
 
 		// set EC2 specific options
+
+
+        if (iaasInfo.getProperty(CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS) != null) {
+              boolean associatePublicIp =  Boolean.parseBoolean(iaasInfo.getProperty(
+                      CloudControllerConstants.ASSOCIATE_PUBLIC_IP_ADDRESS));
+            if(associatePublicIp){
+                  template.getOptions().as(AWSEC2TemplateOptions.class)
+                      .associatePublicIpAddress();
+              }
+        }
+
 		if (iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID) != null) {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
 					.subnetId(iaasInfo.getProperty(CloudControllerConstants.SUBNET_ID));
@@ -158,9 +169,8 @@ public class AWSEC2Iaas extends Iaas {
 		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(AWSEC2TemplateOptions.class)
-					.securityGroups(
-							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
-									CloudControllerConstants.ENTRY_SEPARATOR));
+					.securityGroups(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+                            CloudControllerConstants.ENTRY_SEPARATOR));
 
 		}
 
@@ -172,7 +182,22 @@ public class AWSEC2Iaas extends Iaas {
                                         .split(CloudControllerConstants.ENTRY_SEPARATOR)));
 
         }
+
+        // ability to define tags with Key-value pairs
+        Map<String, String> keyValuePairTagsMap = new HashMap<String, String>();
+
+        for (String propertyKey : iaasInfo.getProperties().keySet()){
+            if(propertyKey.startsWith(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX)) {
+                keyValuePairTagsMap.put(propertyKey.substring(CloudControllerConstants.TAGS_AS_KEY_VALUE_PAIRS_PREFIX.length()),
+                        iaasInfo.getProperties().get(propertyKey));
+                template.getOptions()
+                    .as(AWSEC2TemplateOptions.class)
+                    .userMetadata(keyValuePairTagsMap);
+            }
+
+        }
         
+
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(AWSEC2TemplateOptions.class)
@@ -186,13 +211,16 @@ public class AWSEC2Iaas extends Iaas {
 			template.getOptions().as(AWSEC2TemplateOptions.class)
 					.keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
-		
-		if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES) != null) {
-			String networksStr = iaasInfo.getProperty(CloudControllerConstants.NETWORK_INTERFACES);
-			String[] networksArray = networksStr.split(CloudControllerConstants.ENTRY_SEPARATOR);
-			template.getOptions()
-					.as(NovaTemplateOptions.class).networks(Arrays.asList(networksArray));
-		}
+
+
+
+        if (iaasInfo.getNetworkInterfaces() != null) {
+            List<String> networks = new ArrayList<String>(iaasInfo.getNetworkInterfaces().length);
+            for (NetworkInterface ni:iaasInfo.getNetworkInterfaces()) {
+                networks.add(ni.getNetworkUuid());
+            }
+            template.getOptions().as(AWSEC2TemplateOptions.class).networks(networks);
+        }
 
 		// set Template
 		iaasInfo.setTemplate(template);
@@ -308,6 +336,11 @@ public class AWSEC2Iaas extends Iaas {
 		return ip;
 
 	}
+	
+	@Override
+	public String associatePredefinedAddress(NodeMetadata node, String ip) {
+    	return "";
+    }
 
 	/**
 	 * @param addressApi
@@ -390,7 +423,7 @@ public class AWSEC2Iaas extends Iaas {
         
         Set<AvailabilityZoneInfo> availabilityZones =
                                                       zoneRegionApi.describeAvailabilityZonesInRegion(region,
-                                                                                                      new DescribeAvailabilityZonesOptions[0]);
+                                                              new DescribeAvailabilityZonesOptions[0]);
         for (AvailabilityZoneInfo zoneInfo : availabilityZones) {
             String configuredZone = zoneInfo.getZone();
             if (zone.equalsIgnoreCase(configuredZone)) {

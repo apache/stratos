@@ -19,11 +19,9 @@
 
 package org.apache.stratos.manager.lb.category;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -34,12 +32,14 @@ import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
-import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
+
+import java.util.Map;
 
 public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 
     private String loadBalancedServiceType;
 	private boolean isLoadBalancedServiceMultiTenant;
+    private String deploymentPolicyName;
 	private static Log log = LogFactory.getLog(LoadBalancerCategory.class);
 
     public String getLoadBalancedServiceType() {
@@ -89,21 +89,18 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 			cluster.setClusterDomain(deployedLBService.getClusterId());
 			cluster.setHostName(deployedLBService.getHostName());
 
+			return null;
 		} else {
-			clusterId = alias + "." + cartridgeInfo.getType() + ".domain";
-
-			// limit the cartridge alias to 30 characters in length
-			if (clusterId.length() > 30) {
-				clusterId = CartridgeSubscriptionUtils.limitLengthOfString(
-						clusterId, 30);
-			}
-			cluster.setClusterDomain(clusterId);
+            // set cluster domain
+			cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
 			// set hostname
-			cluster.setHostName(alias + "." + cluster.getHostName());
+			cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
+			
+			return createPayload(cartridgeInfo, subscriptionKey, subscriber,
+					cluster, repository, alias, customPayloadEntries);
 		}
 
-		return createPayload(cartridgeInfo, subscriptionKey, subscriber,
-				cluster, repository, alias, customPayloadEntries);
+		
 	}
 
 	public boolean isLoadBalancedServiceMultiTenant() {
@@ -114,6 +111,13 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 			boolean isLoadBalancedServiceMultiTenant) {
 		this.isLoadBalancedServiceMultiTenant = isLoadBalancedServiceMultiTenant;
 	}
-	
-	
+
+
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
+    }
+
+    public void setDeploymentPolicyName(String deploymentPolicyName) {
+        this.deploymentPolicyName = deploymentPolicyName;
+    }
 }

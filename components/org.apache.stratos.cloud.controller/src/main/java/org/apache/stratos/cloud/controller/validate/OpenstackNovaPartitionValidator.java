@@ -68,7 +68,7 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
                     String zone = properties.getProperty(Scope.zone.toString());
                     iaas.isValidZone(region, zone);
                     
-                    updatedIaasProvider.setProperty(CloudControllerConstants.ZONE_ELEMENT, zone);
+                    updatedIaasProvider.setProperty(CloudControllerConstants.AVAILABILITY_ZONE, zone);
                     updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
                     updatedIaas.setIaasProvider(updatedIaasProvider);
                 } 

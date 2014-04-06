@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -106,9 +106,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -148,9 +148,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -190,9 +190,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -230,9 +230,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -271,9 +271,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -311,9 +311,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -473,9 +473,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -514,9 +514,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -554,9 +554,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractMonitor monitor;
 
-                if(asCtx.moniterExist(clusterId)){
+                if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMoniterExist(clusterId)){
+                }else if(asCtx.lbMonitorExist(clusterId)){
                     monitor = asCtx.getLBMonitor(clusterId);
                 }else{
                     if(log.isDebugEnabled()){
@@ -598,9 +598,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
         AbstractMonitor monitor;
 
-        if(asCtx.moniterExist(clusterId)){
+        if(asCtx.monitorExist(clusterId)){
             monitor = asCtx.getMonitor(clusterId);
-        }else if(asCtx.lbMoniterExist(clusterId)){
+        }else if(asCtx.lbMonitorExist(clusterId)){
             monitor = asCtx.getLBMonitor(clusterId);
         }else{
             if(log.isDebugEnabled()){
@@ -707,9 +707,9 @@ public class AutoscalerHealthStatReceiver implements Runnable {
         	AutoscalerContext asCtx = AutoscalerContext.getInstance();
         	AbstractMonitor monitor;
         	
-        	if(asCtx.moniterExist(clusterId)){
+        	if(asCtx.monitorExist(clusterId)){
         		monitor = asCtx.getMonitor(clusterId);
-        	}else if(asCtx.lbMoniterExist(clusterId)){
+        	}else if(asCtx.lbMonitorExist(clusterId)){
         		monitor = asCtx.getLBMonitor(clusterId);
         	}else{
                 if(log.isDebugEnabled()){

@@ -35,17 +35,14 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Persistence;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.DataCartridge;
 import org.apache.stratos.manager.dao.PortMapping;
-import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.Policy;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
@@ -109,7 +106,7 @@ public class ApplicationManagementUtil {
         List<PortMapping> portMappings = new ArrayList<PortMapping>();
 
         if (cartridgeInfo.getPortMappings() != null) {
-            for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
+            for (org.apache.stratos.cloud.controller.stub.pojo.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
                 PortMapping portMap = new PortMapping();
                 portMap.setPrimaryPort(portMapping.getPort());
                 portMap.setProxyPort(portMapping.getProxyPort());
@@ -258,17 +255,13 @@ public class ApplicationManagementUtil {
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
                     hostName, properties, autoscalingPoliyName, deploymentPolicyName );
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-            String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
-            log.error(msg, e);
-            throw new IllegalArgumentException("Not a registered cartridge " + cartridgeType, e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);
             throw new UnregisteredCartridgeException("Not a registered cartridge " + cartridgeType, cartridgeType, e);
         } catch (RemoteException e) {
         	log.error("Remote Error", e);
-        	throw new ADCException("An error occurred in subscribing process");
+        	throw new ADCException("An error occurred in subscribing process", e);
         }
     }
 

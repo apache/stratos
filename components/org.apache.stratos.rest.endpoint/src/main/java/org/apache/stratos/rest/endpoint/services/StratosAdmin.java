@@ -26,6 +26,7 @@ import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -61,6 +62,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -961,6 +963,22 @@ public class StratosAdmin extends AbstractAdmin {
 
         ServiceUtils.getGitRepositoryNotification(payload);
     }
+    
+	@POST
+	@Path("/cartridge/sync")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
+	public StratosAdminResponse synchronizeRepository(String alias) throws RestAPIException {
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Synchronizing Git repository for alias '%s'", alias));
+		}
+		CartridgeSubscription cartridgeSubscription = ServiceUtils.getCartridgeSubscription(alias, getConfigContext());
+		if (cartridgeSubscription != null && cartridgeSubscription.getRepository() != null && log.isDebugEnabled()) {
+			log.debug(String.format("Found subscription for '%s'. Git repository: %s", alias, cartridgeSubscription
+					.getRepository().getUrl()));
+		}
+		return ServiceUtils.synchronizeRepository(cartridgeSubscription);
+	}
 
     private List<TenantInfoBean> getAllTenants() throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();

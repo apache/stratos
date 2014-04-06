@@ -27,9 +27,6 @@ public class CartridgeInfoBean {
     String repoURL;
     String repoUsername;
     String repoPassword;
-    String dataCartridgeType;
-    String dataCartridgeAlias;
-
     private String autoscalePolicy;
     private String deploymentPolicy;
     private String size;
@@ -37,6 +34,7 @@ public class CartridgeInfoBean {
     boolean privateRepo;
     private boolean removeOnTermination;
     private boolean persistanceRequired;
+    private boolean commitsEnabled;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -94,22 +92,6 @@ public class CartridgeInfoBean {
         this.repoPassword = repoPassword;
     }
 
-    public String getDataCartridgeType() {
-        return dataCartridgeType;
-    }
-
-    public void setDataCartridgeType(String dataCartridgeType) {
-        this.dataCartridgeType = dataCartridgeType;
-    }
-
-    public String getDataCartridgeAlias() {
-        return dataCartridgeAlias;
-    }
-
-    public void setDataCartridgeAlias(String dataCartridgeAlias) {
-        this.dataCartridgeAlias = dataCartridgeAlias;
-    }
-
     public String getAutoscalePolicy() {
         return autoscalePolicy;
     }
@@ -149,4 +131,14 @@ public class CartridgeInfoBean {
     public void setPersistanceRequired(boolean persistanceRequired) {
         this.persistanceRequired = persistanceRequired;
     }
+
+	public boolean isCommitsEnabled() {
+		return commitsEnabled;
+	}
+
+	public void setCommitsEnabled(boolean commitsEnabled) {
+		this.commitsEnabled = commitsEnabled;
+	}
+    
+    
 }

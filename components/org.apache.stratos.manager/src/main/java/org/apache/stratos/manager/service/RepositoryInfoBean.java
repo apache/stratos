@@ -24,8 +24,6 @@ package org.apache.stratos.manager.service;
 */
 
 
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
 
 /**
  *
@@ -38,18 +36,16 @@ public class RepositoryInfoBean {
 	private String userName;
 	private String password;
 	private String[] dirArray;
-	private CartridgeInfo cartridgeInfo;
 	
 	
 	public RepositoryInfoBean(String repoURL, String cartridgeAlias, String tenantDomain,
-                              String userName, String password, String[] dirArray, CartridgeInfo cartridgeInfo) {
+                              String userName, String password, String[] dirArray) {
 	    this.repoURL = repoURL;
 	    this.cartridgeAlias = cartridgeAlias;
 	    this.tenantDomain = tenantDomain;
 	    this.userName = userName;
 	    this.setPassword(password);
 	    this.dirArray = dirArray;
-	    this.cartridgeInfo = cartridgeInfo;
     }
 	public String getRepoURL() {
     	return repoURL;
@@ -80,12 +76,6 @@ public class RepositoryInfoBean {
     }
 	public void setDirArray(String[] dirArray) {
     	this.dirArray = dirArray;
-    }
-	public CartridgeInfo getCartridgeInfo() {
-    	return cartridgeInfo;
-    }
-	public void setCartridgeInfo(CartridgeInfo cartridgeInfo) {
-    	this.cartridgeInfo = cartridgeInfo;
     }
     public String getPassword() {
         return password;

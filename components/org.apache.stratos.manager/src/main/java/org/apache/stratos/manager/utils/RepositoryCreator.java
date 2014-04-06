@@ -67,11 +67,13 @@ public class RepositoryCreator implements Runnable {
 	}
 
     //Creating the internal repo in the same thread as createSubscription()
-    public void createInternalRepository () throws Exception {
+    public Repository createInternalRepository () throws Exception {
 
+    	Repository repo = null;
+    	
         if (repoInfoBean != null) {
             try {
-                createRepository(repoInfoBean.getCartridgeAlias(), repoInfoBean.getTenantDomain(),
+                repo = createRepository(repoInfoBean.getCartridgeAlias(), repoInfoBean.getTenantDomain(),
                         repoInfoBean.getUserName(), repoInfoBean.getPassword());
                 
 				if (repoInfoBean.getDirArray() != null && repoInfoBean.getDirArray().length > 0) {
@@ -86,6 +88,7 @@ public class RepositoryCreator implements Runnable {
                 throw new Exception(errorMsg, e);
             }
         }
+        return repo;
     }
 
 	private Repository createRepository(String cartridgeName, String tenantDomain, String userName, String password)
@@ -106,7 +109,7 @@ public class RepositoryCreator implements Runnable {
 
 			boolean isSuccess =
 			                    RpcUtils.createRepository(model,
-			                                              "https://localhost:8443/",
+			                                              System.getProperty(CartridgeConstants.INTERNAL_GIT_URL),
 			                                              userName, passwordArr);
 			if (!isSuccess) {
 				throw new Exception("Exception is occurred when creating an internal git repo. ");
@@ -116,7 +119,12 @@ public class RepositoryCreator implements Runnable {
 			          e.getMessage());
 			handleException(e.getMessage(), e);
 		}
-
+		
+		repository.setUrl(System.getProperty(CartridgeConstants.INTERNAL_GIT_URL)+repoName);
+		repository.setUserName(userName);
+		repository.setPassword(password);
+		
+		log.info("Repository is created. : " + repository);
 		return repository;
 
 	}
@@ -147,7 +155,7 @@ public class RepositoryCreator implements Runnable {
 
 		CloneCommand cloneCmd =
 		                        git.cloneRepository()
-		                           .setURI("https://localhost:8443/git/" + tenantDomain + "/" +
+		                           .setURI(System.getProperty(CartridgeConstants.INTERNAL_GIT_URL) + tenantDomain + "/" +
 		                                           cartridgeName + ".git")
 		                           .setDirectory(new File(parentDirName));
 

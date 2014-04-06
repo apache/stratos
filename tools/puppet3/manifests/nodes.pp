@@ -1,60 +1,52 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+# 
+#   http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
 node 'base' {
 
   #essential variables
   $package_repo         = 'http://10.4.128.7'
   $local_package_dir    = '/mnt/packs'
-  $mb_ip                = '54.251.234.223'
-  $mb_port              = '5677'
-  $cep_ip               = '54.251.234.223'
-  $cep_port             = '7615'
+  $mb_ip                = '127.0.0.1'
+  $mb_port              = '61616'
+  $mb_type		= 'activemq' #in wso2 mb case, value should be 'wso2mb'
+  $cep_ip               = '127.0.0.1'
+  $cep_port             = '7611'
   $truststore_password  = 'wso2carbon'
   $java_distribution	= 'jdk-7u7-linux-x64.tar.gz'
   $java_name		= 'jdk1.7.0_07'
   $member_type_ip       = 'private'
+  $lb_httpPort          = '80'
+  $lb_httpsPort         = '443'
+  $tomcat_version       = '7.0.52'
+  $enable_log_publisher = 'false'
+  $bam_ip		= '127.0.0.1'
+  $bam_port		= '7611'
+  $bam_secure_port	= '7711'
+  $bam_username		= 'admin'
+  $bam_password		= 'admin'
 
-  #following variables required only if you want to install stratos using puppet.
-  #not supported in alpha version
-  # Service subdomains
-  #$domain               = 'stratos.com'
-  #$as_subdomain         = 'autoscaler'
-  #$management_subdomain = 'management'
-
-  #$admin_username       = 'admin'
-  #$admin_password       = 'admin123'
-
-  #$puppet_ip            = '10.4.128.7'
-  
-
-
-  #$cc_ip                = '10.4.128.9'
-  #$cc_port              = '9443'
-
-  #$sc_ip                = '10.4.128.13'
-  #$sc_port              = '9443'
-
-  #$as_ip                = '10.4.128.8'
-  #$as_port              = '9443'
-
-  #$git_hostname        = 'git.stratos.com'
-  #$git_ip              = '10.4.128.13'
-
-  #$mysql_server        = '10.4.128.13'
-  #$mysql_user          = 'root'
-  #$mysql_password      = 'root'
-
-  #$bam_ip              = '10.4.128.15'
-  #$bam_port            = '7611'
-  
-  #$internal_repo_user     = 'admin'
-  #$internal_repo_password = 'admin'
 
 }
 
 # php cartridge node
 node /php/ inherits base {
-  $docroot = "/var/www"
+  $docroot = "/var/www/"
   $syslog="/var/log/apache2/error.log"
-  $samlalias="/var/www"
+  $samlalias="/var/www/"
   require java
   class {'agent':}
   class {'php':}
@@ -72,9 +64,15 @@ node /lb/ inherits base {
 
 # tomcat cartridge node
 node /tomcat/ inherits base {
+  $docroot = "/mnt/apache-tomcat-${tomcat_version}/webapps/"
+  $samlalias="/mnt/apache-tomcat-${tomcat_version}/webapps/"
+
   require java
   class {'agent':}
   class {'tomcat':}
+
+  #install tomcat befor agent
+  #Class['tomcat'] ~> Class['agent']
 }
 
 # mysql cartridge node
@@ -120,32 +118,8 @@ node /wordpress/ inherits base {
 
 }
 
-# stratos components related nodes
-# not supported in alpha version.
-node 'autoscaler.wso2.com' inherits base {
+# default (base) cartridge node
+node /default/ inherits base {
   require java
-  class {'autoscaler': maintenance_mode => 'norestart',}
+  class {'agent':}
 }
-
-node 'cc.wso2.com' inherits base {
-  require java
-  class {'cc': maintenance_mode   => 'norestart',}
-}
-
-node 'cep.wso2.com' inherits base {
-  require java
-  class {'cep': maintenance_mode   => 'norestart',}
-}
-
-
-node 'mb.wso2.com' inherits base {
-  require java
-  class {'messagebroker': maintenance_mode   => 'norestart',}
-}
-
-node 'sc.wso2.com' inherits base {
-  require java
-  class {'manager': maintenance_mode   => 'norestart',}
-}
-
-

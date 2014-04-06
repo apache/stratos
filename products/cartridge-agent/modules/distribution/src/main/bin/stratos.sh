@@ -26,12 +26,12 @@ lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Dmb.ip=MB-IP
             -Dmb.port=MB-PORT
+            -Dlisten.address=localhost
             -Dthrift.receiver.ip=CEP-IP
             -Dthrift.receiver.port=CEP-PORT
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
-            -Dagent.flow.file.path=${script_path}/../conf/agent-flow.conf
             -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch-params
             -Dextensions.dir=${script_path}/../extensions
             -Dcep.stats.publisher.enabled=true
@@ -50,3 +50,7 @@ properties="-Dmb.ip=MB-IP
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
 java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main
+
+# If you want to add your custom Cartridge Agent implementation, Please provide an implementation of 
+# org.apache.stratos.cartridge.agent.CartridgeAgent as an argument to the Main class
+#java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main org.apache.stratos.cartridge.agent.CartridgeAgentABC

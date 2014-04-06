@@ -78,17 +78,17 @@
          <dependency>
            <groupId>org.apache.jclouds.api</groupId>
            <artifactId>ec2</artifactId>
-           <version>${jclouds.version}</version>
+           <version>${jclouds.stratos.version}</version>
          </dependency>
          <dependency>
            <groupId>org.apache.jclouds.provider</groupId>
            <artifactId>aws-ec2</artifactId>
-           <version>${jclouds.version}</version>
+           <version>${jclouds.stratos.version}</version>
          </dependency>
          <dependency>
            <groupId>org.apache.jclouds.api</groupId>
            <artifactId>openstack-nova</artifactId>
-           <version>${jclouds.version}</version>
+           <version>${jclouds.stratos.version}</version>
          </dependency>
          
          <dependency>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
             <artifactId>vcloud</artifactId>
-            <version>${jclouds.vcloud.version}</version>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
          <dependency>
            <groupId>com.google.code.gson</groupId>
@@ -231,20 +231,19 @@
                                 <bundleDef>org.apache.jclouds.driver:jclouds-enterprise:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-core:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-compute:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.jclouds.api:ec2:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.jclouds.api:openstack-nova:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.jclouds.api:vcloud:${jclouds.vcloud.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:ec2:${jclouds.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:openstack-nova:${jclouds.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:vcloud:${jclouds.stratos.version}</bundleDef>
                                 <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
                                 <bundleDef>org.apache.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.jclouds.provider:aws-ec2:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.provider:aws-ec2:${jclouds.stratos.version}</bundleDef>
                                 <bundleDef>com.google.guava:guava:15.0</bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
                                 <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
                                 <bundleDef>com.google.guice.assistedinject.wso2:guice-assistedinject:${com.google.guice.assistedinject.wso2.version}</bundleDef>
                                 <bundleDef>com.sun.jersey:jersey-core:${sun.jersey.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-scriptbuilder:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.shindig.wso2:shindig:1.1.0.wso2v6</bundleDef>
                                 <bundleDef>org.99soft.guice.wso2:rocoto:6.1.wso2v1</bundleDef>
                                 <bundleDef>org.bouncycastle.wso2:bcprov-jdk16:1.45.wso2v1</bundleDef>
                                 <bundleDef>net.schmizz:sshj:0.8.0</bundleDef>
@@ -262,14 +261,12 @@
                                 <!--bundleDef>org.jaggeryjs:0.9.0.ALPHA2-wso2v2</bundleDef-->
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
-				<bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}</bundleDef>
                             </bundles>
                             <importBundles>
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ntask.core:${wso2carbon.version}</importFeatureDef> 
                             </importFeatures>
                         </configuration>
                     </execution>

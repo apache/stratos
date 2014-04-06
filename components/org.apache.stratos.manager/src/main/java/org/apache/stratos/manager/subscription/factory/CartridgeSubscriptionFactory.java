@@ -21,7 +21,7 @@ package org.apache.stratos.manager.subscription.factory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.lb.category.LBDataContext;
 import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
@@ -58,6 +58,9 @@ public class CartridgeSubscriptionFactory {
             }
             else if (cartridgeInfo.getProvider().equals("application")) {
                 cartridgeSubscription = new ApplicationCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
+            }
+            else if (cartridgeInfo.getProvider().equals(CartridgeConstants.INTERNAL_REPO_BASED_CARTRIDGE_PROVIDER)) {
+                cartridgeSubscription = new InternalRepoBasedCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
             }
             else {
                 cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);

@@ -31,10 +31,12 @@ public class CartridgeInfoBean {
     String repoPassword;
     String dataCartridgeType;
     String dataCartridgeAlias;
+    boolean commitsEnabled;
 
     private boolean persistanceRequired;
     private String size;
     private boolean removeOnTermination;
+    private String serviceGroup;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -139,4 +141,21 @@ public class CartridgeInfoBean {
     public void setRemoveOnTermination(boolean removeOnTermination) {
         this.removeOnTermination = removeOnTermination;
     }
+
+	public boolean isCommitsEnabled() {
+		return commitsEnabled;
+	}
+
+	public void setCommitsEnabled(boolean commitsEnabled) {
+		this.commitsEnabled = commitsEnabled;
+	}
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
+    
 }

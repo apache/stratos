@@ -59,6 +59,11 @@ public class IaasProvider implements Serializable{
     private Map<String, String> properties = new HashMap<String, String>();
     
     /**
+     * Network Interfaces Configuration
+     */
+    private NetworkInterface[] networkInterfaces;
+    
+    /**
      * Image identifier.
      */
     private String image;
@@ -83,6 +88,7 @@ public class IaasProvider implements Serializable{
     	this.name = anIaasProvider.getName();
     	this.className = anIaasProvider.getClassName();
     	this.properties = new HashMap<String,String>(anIaasProvider.getProperties());
+    	this.networkInterfaces = anIaasProvider.getNetworkInterfaces();
     	this.image = anIaasProvider.getImage();
     	this.provider = anIaasProvider.getProvider();
     	this.identity = anIaasProvider.getIdentity();
@@ -234,6 +240,20 @@ public class IaasProvider implements Serializable{
 
     public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+
+    /**
+     * @return the networkInterfaces
+     */
+    public NetworkInterface[] getNetworkInterfaces() {
+        return networkInterfaces;
+    }
+
+    /**
+     * @param networkInterfaces the networkInterfaces to set
+     */
+    public void setNetworkInterfaces(NetworkInterface[] networkInterfaces) {
+        this.networkInterfaces = networkInterfaces;
     }
 
     @Override

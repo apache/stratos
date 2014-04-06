@@ -140,6 +140,8 @@ public final class CloudControllerConstants {
     public static final String AMQP_INITIAL_CONTEXT_FACTORY_PROPERTY = "amqpInitialContextFactory";
     public static final String AMQP_TOPIC_CONNECTION_FACTORY_PROPERTY = "amqpTopicConnectionFactory";
     public static final String INSTANCE_TOPIC = "instance-status";
+    // pre define a floating ip
+    public static final String FLOATING_IP_PROPERTY = "floatingIp";
     
     
     /**
@@ -246,9 +248,14 @@ public final class CloudControllerConstants {
     public static final String SECURITY_GROUPS = "securityGroups";
     public static final String SUBNET_ID = "subnetId";
     public static final String TAGS = "tags";
+    public static final String TAGS_AS_KEY_VALUE_PAIRS_PREFIX = "tag:";
     public static final String AUTO_ASSIGN_IP = "autoAssignIp";
+    public static final String BLOCK_UNTIL_RUNNING = "blockUntilRunning";
     public static final String INSTANCE_TYPE = "instanceType";
-
+    public static final String ASSOCIATE_PUBLIC_IP_ADDRESS = "associatePublicIpAddress";
     public static final String LB_CLUSTER_ID_COL = "lbclusterId";
-	public static final String NETWORK_INTERFACES = "networkInterfaces";
+    public static final String NETWORK_INTERFACES = "networkInterfaces";
+    public static final String NETWORK_FIXED_IP = "fixedIp";
+    public static final String NETWORK_PORT = "portUuid";
+    public static final String NETWORK_UUID = "networkUuid";
 }

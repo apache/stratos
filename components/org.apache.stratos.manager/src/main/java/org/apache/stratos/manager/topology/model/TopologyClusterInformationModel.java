@@ -28,6 +28,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -40,6 +42,7 @@ public class TopologyClusterInformationModel {
     private static TopologyClusterInformationModel topologyClusterInformationModel;
     private Map<String, Cluster> clusterIdToClusterMap;
     private DataInsertionAndRetrievalManager dataInsertionNRetrievalMgr;
+    private boolean initialized;
 
     //locks
     private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -82,8 +85,31 @@ public class TopologyClusterInformationModel {
     	return cluster;
     }
     
-    public Set<Cluster> getClusters (int tenantId, String cartridgeType) {
+    public Cluster getCluster (String cartridgeType) {
 
+    	Service service;
+    	Cluster cluster = null;
+		try {
+			service = dataInsertionNRetrievalMgr.getService(cartridgeType);
+		} catch (PersistenceManagerException e) {
+			log.error("Exception occurred when retrieving service [" + cartridgeType +"] ");
+			return null;
+		}
+		
+		if(service != null) {
+			String clusterId = service.getClusterId();
+	    	cluster = clusterIdToClusterMap.get(clusterId);
+	    	if(log.isDebugEnabled()) {
+	    		log.debug(" Found cluster ["+cluster+"] with id ["+clusterId+"] ");
+	    	}
+		}    	
+    	return cluster;
+    }
+    
+    public Set<Cluster> getClusters (int tenantId, String cartridgeType) {
+    	if(log.isDebugEnabled()) {
+        	log.info(" Getting cluster for tenant id [" + tenantId + "] ");	
+    	}
     	Collection<CartridgeSubscription> subscriptions = null;
 
         if(cartridgeType != null) {
@@ -93,11 +119,18 @@ public class TopologyClusterInformationModel {
     	}
 
         Set<Cluster> clusterSet = new HashSet<Cluster>();
-    	
 		if (subscriptions != null) {
 			for (CartridgeSubscription cartridgeSubscription : subscriptions) {
+				
+				// TODO  -- check this. Sometimes getting clusterId some non-meaningful value
 				String clusterId = cartridgeSubscription.getClusterDomain();
-				clusterSet.add(clusterIdToClusterMap.get(clusterId));
+				if(log.isDebugEnabled()) {
+					log.info("Finding cluster with id ["+clusterId+"] ");
+				}
+				Cluster foundCluster = clusterIdToClusterMap.get(clusterId);
+				if (foundCluster != null) {
+					clusterSet.add(foundCluster);
+				}
 			}
 		}
     	return clusterSet;
@@ -158,6 +191,14 @@ public class TopologyClusterInformationModel {
     	}
     	clusterIdToClusterMap.remove(clusterId);
     }
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
 
 //    private class CartridgeTypeContext {
 //

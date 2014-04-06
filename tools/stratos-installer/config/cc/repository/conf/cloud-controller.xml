@@ -43,7 +43,6 @@
 
     	<topologySync enable="true">
 		<!-- MB server info -->
-		<property name="amqpConnectionUrl" value="amqp://admin:admin@clientID/carbon?brokerlist='tcp://MB_HOSTNAME:MB_LISTEN_PORT'" />
 		<property name="cron" value="1 * * * * ? *" />
 	</topologySync>	
 
@@ -73,5 +72,17 @@
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
         	</iaasProviderOPENSTACK_PROVIDER_END>
+                <VCLOUD_PROVIDER_STARTiaasProvider type="vcloud" name="VMware vCloud specific details">
+                        <className>org.apache.stratos.cloud.controller.iaases.VCloudIaas</className>
+                        <provider>vcloud</provider>
+                        <identity svns:secretAlias="cloud.controller.vcloud.identity">VCLOUD_IDENTITY</identity>
+                        <credential svns:secretAlias="cloud.controller.vcloud.credential">VCLOUD_CREDENTIAL</credential>
+                        <property name="jclouds.endpoint" value="VCLOUD_ENDPOINT" />
+                        <property name="jclouds.vcloud.version.schema" value="1.5" />
+                        <property name="jclouds.api-version" value="1.5" />
+			<property name="autoAssignIp" value="true" />
+                        <property name="X" value="x" />
+                        <property name="Y" value="y" />
+                </iaasProviderVCLOUD_PROVIDER_END>
         </iaasProviders>
 </cloudController>

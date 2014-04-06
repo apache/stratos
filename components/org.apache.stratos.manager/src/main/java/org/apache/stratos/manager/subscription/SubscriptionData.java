@@ -18,7 +18,7 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 /**
  * This holds the data that are gathered at the time of subscription. This is usefull when passing subscription details to the method calls.
@@ -40,6 +40,8 @@ public class SubscriptionData {
     private String repositoryPassword;
     private Property[] properties;
     private PersistenceContext persistanceCtxt;
+    private boolean isCommitsEnabled;
+    private String serviceGroup;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -152,4 +154,21 @@ public class SubscriptionData {
     public void setPersistanceCtxt(PersistenceContext persistanceCtxt) {
         this.persistanceCtxt = persistanceCtxt;
     }
+
+	public boolean isCommitsEnabled() {
+		return isCommitsEnabled;
+	}
+
+	public void setCommitsEnabled(boolean isCommitsEnabled) {
+		this.isCommitsEnabled = isCommitsEnabled;
+	}
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
+    
 }

@@ -24,10 +24,9 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
@@ -81,7 +80,7 @@ public class CloudControllerServiceClient {
 
     public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig) 
     		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException, 
-    		CloudControllerServiceInvalidIaasProviderExceptionException, CloudControllerServiceIllegalArgumentExceptionException {
+    		CloudControllerServiceInvalidIaasProviderExceptionException {
 
 		stub.deployCartridgeDefinition(cartridgeConfig);
 
@@ -97,7 +96,6 @@ public class CloudControllerServiceClient {
 	                        String payload, String tenantRange,
                             String hostName, Properties properties,
                             String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException, 
-                            CloudControllerServiceIllegalArgumentExceptionException, 
                             CloudControllerServiceUnregisteredCartridgeExceptionException {		
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
@@ -113,10 +111,9 @@ public class CloudControllerServiceClient {
 	}
 
     @SuppressWarnings("unused")
-    private org.apache.stratos.cloud.controller.pojo.Properties
+    private Properties
         extractProperties(java.util.Properties properties) {
-        org.apache.stratos.cloud.controller.pojo.Properties props =
-                                                                 new org.apache.stratos.cloud.controller.pojo.Properties();
+        Properties props = new Properties();
         if (properties != null) {
 
             for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
@@ -135,7 +132,7 @@ public class CloudControllerServiceClient {
     }
 
     public void terminateAllInstances(String clusterId) throws RemoteException, 
-    CloudControllerServiceInvalidClusterExceptionException, CloudControllerServiceIllegalArgumentExceptionException {
+    CloudControllerServiceInvalidClusterExceptionException {
 		stub.terminateAllInstances(clusterId);
 	}
 
@@ -153,4 +150,8 @@ public class CloudControllerServiceClient {
 	    stub.unregisterService(clusterId);
 	}
 
+    public ClusterContext getClusterContext (String clusterId) throws RemoteException {
+
+        return stub.getClusterContext(clusterId);
+    }
 }

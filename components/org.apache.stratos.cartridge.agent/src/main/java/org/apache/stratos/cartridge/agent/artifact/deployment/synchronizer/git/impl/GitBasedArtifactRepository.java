@@ -280,7 +280,7 @@ public class GitBasedArtifactRepository {
 			//log.info("status : " + status.toString());
 			if (status.isClean()) {// no changes, nothing to commit
 				
-					log.info("No changes detected in the local repository for tenant "
+					log.debug("No changes detected in the local repository for tenant "
 							+ tenantId);
 				return false;
 			}
@@ -519,8 +519,8 @@ public class GitBasedArtifactRepository {
      * @return true if success, else false
      */
     private boolean pullArtifacts (RepositoryContext gitRepoCtx) {
-        if(log.isInfoEnabled())  {
-    	    log.info("Pulling artifacts");
+        if(log.isDebugEnabled())  {
+    	    log.debug("Pulling artifacts");
         }
         PullCommand pullCmd = gitRepoCtx.getGit().pull();
 
@@ -612,10 +612,7 @@ public class GitBasedArtifactRepository {
                     log.error("Error saving git configuration file in local repo at " + gitRepoCtx.getGitLocalRepoPath(), e);
                     e.printStackTrace();
 
-                } /*catch (ConfigInvalidException e) {
-                    log.error("Invalid configurations in local repo at " + gitRepoCtx.getGitLocalRepoPath(), e);
-                    e.printStackTrace();
-                }   */
+                }
             }
         }
     }
@@ -677,32 +674,6 @@ public class GitBasedArtifactRepository {
      * username/password is not valid
      */
     private static UsernamePasswordCredentialsProvider createCredentialsProvider (RepositoryContext gitRepoCtx) {
-
-        //RepositoryCredentials repoCredentials = null;
-        // TODO - set repo creds using the received message
-        //repoCredentials = new RepositoryCredentials();
-        
-        /*try {
-            repoCredentials = gitRepoCtx.getRepoInfoServiceClient().
-                    getJsonRepositoryInformation(gitRepoCtx.getTenantId(), cartridgeShortName);
-
-        } catch (Exception e) {
-            log.error("Git json repository information query failed", e);
-            return null;
-        }*/
-
-		/*if (repoCredentials != null) {
-			String userName = repoCredentials.getUserName();
-			String password = repoCredentials.getPassword();
-
-            log.info("Recieved repo url [" + repoCredentials.getUrl() + "] for tenant " + gitRepoCtx.getTenantId() +
-                    ", username " + userName);
-
-			if (userName!= null && password != null) {
-				return new UsernamePasswordCredentialsProvider(userName, password);
-			}
-		}*/
-
         return new UsernamePasswordCredentialsProvider(gitRepoCtx.getRepoUsername(), gitRepoCtx.getRepoPassword());
     }
 
@@ -724,33 +695,6 @@ public class GitBasedArtifactRepository {
         return false;
     }
 
-    /**
-     * Calls a utility method to extract the username from a json string
-     *
-     * @param repoInfoJsonString json format string
-     *
-     * @return username if exists, else an empty String
-     */
-    private String getUserName (String repoInfoJsonString) {
-        return Utilities.getMatch(repoInfoJsonString,
-                GitDeploymentSynchronizerConstants.USERNAME_REGEX, 1);
-    }
-
-    /**
-     * Calls a utility method to extract the password from a json string
-     *
-     * @param repoInfoJsonString json format string
-     *
-     * @return password if exists, else an empty String
-     */
-    private String getPassword (String repoInfoJsonString) {
-         return Utilities.getMatch(repoInfoJsonString,
-                 GitDeploymentSynchronizerConstants.PASSWORD_REGEX, 1);
-    }
-
-  /*  public void initAutoCheckout(boolean b) throws Exception {
-
-    }*/
 
     public void cleanupAutoCheckout() {
 
@@ -758,32 +702,8 @@ public class GitBasedArtifactRepository {
 
     public String getRepositoryType() {
 
-        return /*DeploymentSynchronizerConstants.REPOSITORY_TYPE_GIT;*/null;
-    }
-
-   /* public List<RepositoryConfigParameter> getParameters() {
-
         return null;
-    }*/
-
-    //public boolean update(String rootPath, String filePath, int depth) throws DeploymentSynchronizerException {
-
-    	// TODO - implemetn later
-    	
-        /*RepositoryContext gitRepoCtx = retrieveCachedGitContext(filePath);
-        if(gitRepoCtx == null) {
-            if(log.isDebugEnabled())
-                log.debug("No git repository context information found for deployment synchonizer at " + filePath);
-
-            return false;
-        }
-        if(gitRepoCtx.getTenantId() == GitDeploymentSynchronizerConstants.SUPER_TENANT_ID)
-            return true; //Super Tenant is inactive
-        if(gitRepoCtx.cloneExists())
-            return pullArtifacts(gitRepoCtx);*/
-
-     /*   return false;
-    }*/
+    }
 
 	private class ArtifactSyncTask implements Runnable {
 

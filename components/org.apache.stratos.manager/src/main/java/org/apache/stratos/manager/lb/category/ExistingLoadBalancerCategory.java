@@ -19,8 +19,8 @@
 
 package org.apache.stratos.manager.lb.category;
 
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;

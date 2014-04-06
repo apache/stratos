@@ -68,7 +68,7 @@
      The URL of the index page. This is where the user will be redirected after signing in to the
      carbon server.
      -->
-    <!-- IndexPageURL>/carbon/admin/index.jsp</IndexPageURL-->
+    <IndexPageURL>/console/login</IndexPageURL>
 
     <!--
     For cApp deployment, we have to identify the roles that can be acted by the current server.

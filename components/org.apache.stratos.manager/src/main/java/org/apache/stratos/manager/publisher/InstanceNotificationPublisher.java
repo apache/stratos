@@ -39,7 +39,6 @@ public class InstanceNotificationPublisher {
 
     private void publish(Event event) {
         EventPublisher depsyncEventPublisher = DataHolder.getEventPublisher();
-        log.info("publishing ** ");
         depsyncEventPublisher.publish(event);
     }
 

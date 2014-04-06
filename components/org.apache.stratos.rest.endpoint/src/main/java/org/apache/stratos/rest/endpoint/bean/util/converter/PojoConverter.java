@@ -19,7 +19,7 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
-import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
@@ -49,7 +49,7 @@ public class PojoConverter {
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
         cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
         cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
-
+        cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
 
         
         //deployment information
@@ -71,7 +71,7 @@ public class PojoConverter {
         }
         
         //IaaS
-        if(cartridgeDefinitionBean.iaasProvider != null & !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
+        if(cartridgeDefinitionBean.iaasProvider != null && !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
             cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.iaasProvider));
         }
         //LB
@@ -135,6 +135,11 @@ public class PojoConverter {
                 //set the Properties instance to IaasConfig instance
                 iaasConfig.setProperties(getProperties(iaasProviderBeansArray[i].property));
             }
+
+            if(iaasProviderBeansArray[i].networkInterfaces != null && !iaasProviderBeansArray[i].networkInterfaces.isEmpty()) {
+                iaasConfig.setNetworkInterfaces(PojoConverter.getNetworkInterfaces(iaasProviderBeansArray[i].networkInterfaces));
+            }
+
             iaasConfigsArray[i] = iaasConfig;
         }
         return iaasConfigsArray;
@@ -178,11 +183,28 @@ public class PojoConverter {
         return properties;
     }
 
-    public static org.apache.stratos.cloud.controller.deployment.partition.Partition convertToCCPartitionPojo
+    private static NetworkInterfaces getNetworkInterfaces(List<NetworkInterfaceBean> networkInterfaceBeans) {
+        NetworkInterface[] networkInterfacesArray = new NetworkInterface[networkInterfaceBeans.size()];
+
+        int i = 0;
+        for (NetworkInterfaceBean nib:networkInterfaceBeans) {
+            NetworkInterface networkInterface = new NetworkInterface();
+            networkInterface.setNetworkUuid(nib.networkUuid);
+            networkInterface.setFixedIp(nib.fixedIp);
+            networkInterface.setPortUuid(nib.portUuid);
+            networkInterfacesArray[i++] = networkInterface;
+        }
+
+        NetworkInterfaces networkInterfaces = new NetworkInterfaces();
+        networkInterfaces.setNetworkInterfaces(networkInterfacesArray);
+        return networkInterfaces;
+    }
+
+    public static org.apache.stratos.cloud.controller.stub.deployment.partition.Partition convertToCCPartitionPojo
             (Partition partitionBean) {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition partition = new
-                org.apache.stratos.cloud.controller.deployment.partition.Partition();
+        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition = new
+                org.apache.stratos.cloud.controller.stub.deployment.partition.Partition();
 
         partition.setId(partitionBean.id);
         partition.setProvider(partitionBean.provider);
@@ -332,11 +354,11 @@ public class PojoConverter {
         return cluster1;
     }
 
-    private static org.apache.stratos.cloud.controller.deployment.partition.Partition[] convertToCCPartitionPojos
+    private static org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] convertToCCPartitionPojos
             (List<Partition> partitionList) {
 
-        org.apache.stratos.cloud.controller.deployment.partition.Partition[] partitions =
-                new org.apache.stratos.cloud.controller.deployment.partition.Partition[partitionList.size()];
+        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions =
+                new org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[partitionList.size()];
         for (int i = 0; i < partitionList.size() ; i++) {
             partitions[i] = convertToCCPartitionPojo(partitionList.get(i));
         }
@@ -344,7 +366,7 @@ public class PojoConverter {
         return partitions;
     }
 
-    public static Partition[] populatePartitionPojos (org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+    public static Partition[] populatePartitionPojos (org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[]
                                                              partitions) {
 
         Partition [] partitionBeans;
@@ -370,7 +392,7 @@ public class PojoConverter {
         return partitionBeans;
     }
 
-    public static Partition populatePartitionPojo (org.apache.stratos.cloud.controller.deployment.partition.Partition
+    public static Partition populatePartitionPojo (org.apache.stratos.cloud.controller.stub.deployment.partition.Partition
                                                              partition) {
 
         Partition partitionBeans = new Partition();
@@ -573,7 +595,7 @@ public class PojoConverter {
         return partitionGroupsBeans;
     }
 
-    private static List<Partition> getPartitionList(org.apache.stratos.cloud.controller.deployment.partition.Partition[]
+    private static List<Partition> getPartitionList(org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[]
                                                          partitions) {
 
         List<Partition> partitionList = new ArrayList<Partition>();

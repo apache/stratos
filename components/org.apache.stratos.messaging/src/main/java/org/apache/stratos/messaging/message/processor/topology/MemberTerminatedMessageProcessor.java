@@ -120,18 +120,21 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
                             event.getClusterId(),
                             event.getMemberId()));
                 }
-                return false;
+            } else {
+            	
+            	// Apply changes to the topology
+            	member.setStatus(MemberStatus.Terminated);
+            	//removing the member from the cluster
+            	cluster.removeMember(member);
+            	
+            	if (log.isInfoEnabled()) {
+            		log.info(String.format("Member terminated: [service] %s [cluster] %s [member] %s",
+            				event.getServiceName(),
+            				event.getClusterId(),
+            				event.getMemberId()));
+            	}
             }
 
-            // Apply changes to the topology
-            member.setStatus(MemberStatus.Terminated);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member terminated: [service] %s [cluster] %s [member] %s",
-                        event.getServiceName(),
-                        event.getClusterId(),
-                        event.getMemberId()));
-            }
 
             notifyEventListeners(event);
             return true;

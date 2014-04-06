@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 
 
 public class FrameworkCartridgeSubscription extends CartridgeSubscription {

@@ -24,10 +24,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.LoadbalancerConfig;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
@@ -46,6 +43,7 @@ import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
+import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
 public class CartridgeSubscriptionUtils {
@@ -134,8 +132,8 @@ public class CartridgeSubscriptionUtils {
 
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
-        org.apache.stratos.cloud.controller.pojo.PortMapping[] portMappings = cartridgeInfo.getPortMappings();
-        for (org.apache.stratos.cloud.controller.pojo.PortMapping portMapping : portMappings) {
+        PortMapping[] portMappings = cartridgeInfo.getPortMappings();
+        for (PortMapping portMapping : portMappings) {
             String port = portMapping.getPort();
             portMapBuilder.append(port).append("|");
         }
@@ -152,19 +150,44 @@ public class CartridgeSubscriptionUtils {
         return key;
     }
 
+    static class TenantSubscribedEventPublisher implements Runnable {
+    	
+    	int tenantId;
+    	String serviceName;
+
+    	public TenantSubscribedEventPublisher(int tenantId, String service) {
+    		this.tenantId = tenantId;
+    		this.serviceName = service;
+		}
+		@Override
+		public void run() {
+			try {
+				if(log.isInfoEnabled()) {
+					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+				}
+				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
+				EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+				eventPublisher.publish(subscribedEvent);
+			} catch (Exception e) {
+				if (log.isErrorEnabled()) {
+					log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+				}
+			}
+			
+		}
+    	
+    }
     public static void publishTenantSubscribedEvent(int tenantId, String serviceName) {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
-            }
-            TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
-            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
-            eventPublisher.publish(subscribedEvent);
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
-            }
-        }
+    	
+    	
+    	Executor exec = new Executor() {
+			@Override
+			public void execute(Runnable command) {
+				command.run();
+			}
+		};
+		
+		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName));
     }
 
     public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
@@ -235,7 +258,7 @@ public class CartridgeSubscriptionUtils {
         Property lbRefProperty = new Property();
         lbRefProperty.setName(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
 
-        for (org.apache.stratos.cloud.controller.pojo.Property prop : lbReferenceProperties.getProperties()) {
+        for (Property prop : lbReferenceProperties.getProperties()) {
 
             String name = prop.getName();
             String value = prop.getValue();
@@ -320,13 +343,18 @@ public class CartridgeSubscriptionUtils {
                             if (deploymentPolicyName.equals(policy.getId())) {
 
                                 if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
+                                	if(log.isDebugEnabled()){
+                                		log.debug(" Default LB doesn't exist for deployment policy ["+deploymentPolicyName+"] ");
+                                	}
 
                                     Properties lbProperties = new Properties();
 
                                     // if LB cartridge definition has properties as well, combine
                                     if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
+                                    	if(log.isDebugEnabled()){
+                                    		log.debug(" Combining LB properties ");
+                                    	}
                                         lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty}));
-
                                     } else {
                                         lbProperties.setProperties(new Property[]{lbRefProperty});
                                     }

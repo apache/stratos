@@ -40,10 +40,10 @@
 
         <!-- Updating location value in response header -->
         <filter regex=".+" source="$trp:Location">
-            <property expression="$ctx:SERVICE_PREFIX" group="2" name="LB_SP_HOST_NAME" pattern="(^http.?://\b)(.*):(\d*)(.*)"/>
-            <property expression="$trp:Location" group="1" name="EP_RESPONSE_LOC_PROTOCOL" pattern="(^http.?://\b)(.*):(\d*)(.*)"/>
-            <property expression="$trp:Location" group="2" name="EP_RESPONSE_LOC_HOST_NAME" pattern="(^http.?://\b)(.*):(\d*)(.*)"/>
-            <property expression="$trp:Location" group="4" name="EP_RESPONSE_LOC_PATH" pattern="(^http.?://\b)(.*):(\d*)(.*)"/>
+            <property expression="$ctx:SERVICE_PREFIX" group="2" name="LB_SP_HOST_NAME" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
+            <property expression="$trp:Location" group="1" name="EP_RESPONSE_LOC_PROTOCOL" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
+            <property expression="$trp:Location" group="2" name="EP_RESPONSE_LOC_HOST_NAME" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
+            <property expression="$trp:Location" group="4" name="EP_RESPONSE_LOC_PATH" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
 
             <switch source="fn:lower-case($ctx:EP_RESPONSE_LOC_PROTOCOL)">
                 <case regex="https://">

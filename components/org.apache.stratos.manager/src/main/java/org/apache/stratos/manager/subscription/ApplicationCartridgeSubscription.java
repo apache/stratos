@@ -21,7 +21,7 @@ package org.apache.stratos.manager.subscription;
 
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 
 public class ApplicationCartridgeSubscription extends CartridgeSubscription {
 

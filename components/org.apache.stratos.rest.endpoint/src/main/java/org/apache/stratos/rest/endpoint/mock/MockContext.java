@@ -377,9 +377,8 @@ public class MockContext {
     public Cluster[] getClusters() throws RestAPIException{
         return clusterMap.values().toArray(new Cluster[0]);
     }
-    /*public DeploymentPolicy[] getValidDeploymentPolicies(String cartridgeType) {
-        for(DeploymentPolicy deploymentPolicy : deploymentPolicyMap.values()){
-            deploymentPolicy.
-        }
-    }*/
+    public DeploymentPolicy[] getDeploymentPoliciesForCartridgeType(String cartridgeType) throws RestAPIException{
+        return deploymentPolicyMap.values().toArray(new DeploymentPolicy[0]);
+    }
+
 }

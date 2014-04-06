@@ -1,11 +1,60 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
+
 var render = function (theme, data, meta, require) {
     // Re-create the data structure of the cartridges.
     if(data.error.length == 0 ){
         var log = new Log();
         session.remove("get-status");
         session.remove("deploy-status");
-        var cartridges_old = data.cartridges.cartridge;
-        var cartridges_new = [
+        var cartridges = data.cartridges.cartridge,cartridges_new =[];
+
+
+
+        for (var i = 0; i < cartridges.length; i++) {
+            if(cartridges[i].serviceGroup != undefined){
+                if(!cartridges[i].done){
+
+                    cartridges[i].done = true;
+                    var newObj = {};
+                    var serviceGroup = cartridges[i].serviceGroup;
+                    newObj.serviceGroup = serviceGroup;
+                    newObj.items = [];
+                    newObj.items.push(parse(stringify(cartridges[i])));
+
+                    for (var j = 0; j < cartridges.length; j++) {
+                        if(cartridges[j].serviceGroup == serviceGroup && !cartridges[j].done){
+                            cartridges[j].done =true;
+                            newObj.items.push(parse(stringify(cartridges[j])));
+                        }
+                    }
+
+                    cartridges_new.push(newObj);
+                }
+            }else {
+                cartridges_new.push(cartridges[i]);
+            }
+        }
+
+        /*var cartridges_new = [
             {
                 kind: "Framework",
                 cartridges: []}
@@ -34,13 +83,13 @@ var render = function (theme, data, meta, require) {
                     cartridgesToPush.push(cartridges_old[i]);
                 }
             }
-        }
+        }*/
         theme('index', {
             body: [
                 {
                     partial: 'cartridges',
                     context: {
-                        title:'Cartridges',
+                        title:'Subscribe to Cartridge',
                         cartridges:cartridges_new
                     }
                 }
@@ -55,7 +104,7 @@ var render = function (theme, data, meta, require) {
                             link:'/',
                             name:'Back To My Cartridges',
                             class_name:"btn-default",
-                            class_icon: 'icon-arrow-left'
+                            class_icon: 'icons-arrow-left'
                         },
                         has_help:true,
                         help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
@@ -66,7 +115,7 @@ var render = function (theme, data, meta, require) {
                 {
                     partial:'title',
                     context:{
-                        title:"My Cartridges"
+                        title:"Subscribe to Cartridge"
                     }
                 }
             ]
@@ -102,7 +151,7 @@ var render = function (theme, data, meta, require) {
                 {
                     partial: 'title',
                     context: {
-                        title: "My Cartridges"
+                        title: "Subscribe to Cartridge"
                     }
                 }
             ]

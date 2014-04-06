@@ -27,10 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
-import org.apache.stratos.cloud.controller.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.pojo.Registrant;
+import org.apache.stratos.cloud.controller.pojo.*;
 
 /**
  * This API provides a way to communicate with underline
@@ -47,7 +44,7 @@ public interface CloudControllerService {
 	 * @throws IllegalArgumentException  if the provided argument is not valid.
 	 */
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) 
-            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, IllegalArgumentException;
+            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
     
     /**
      * Undeploys a Cartridge configuration which is already deployed.
@@ -88,8 +85,7 @@ public interface CloudControllerService {
      *             when the cartridge type requested by this service is
      *             not a registered one.
      */
-    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException, 
-    IllegalArgumentException;
+    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException;
 
     /**
      * Calling this method will result in an instance startup, which is belong
@@ -107,7 +103,7 @@ public interface CloudControllerService {
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
      */
-    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException, InvalidIaasProviderException;
+    public MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
 
     /**
      * Calling this method will spawn more than one instances in the
@@ -134,8 +130,7 @@ public interface CloudControllerService {
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException, 
-    IllegalArgumentException;
+    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException;
     
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -183,7 +178,7 @@ public interface CloudControllerService {
      *            cluster ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    public void terminateAllInstances(String clusterId) throws IllegalArgumentException, InvalidClusterException;
+    public void terminateAllInstances(String clusterId) throws InvalidClusterException;
 
     /**
     /**
@@ -223,5 +218,13 @@ public interface CloudControllerService {
      * @return String array containing types of registered {@link org.apache.stratos.cloud.controller.pojo.Cartridge}s.
      */
     public String[] getRegisteredCartridges();
+
+    /**
+     * Returns the {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object associated with the given cluster id, or null if not found
+     *
+     * @param clusterId cluster id
+     * @return {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object  associated with the given cluster id, or null
+     */
+    public ClusterContext getClusterContext (String clusterId);
 
 }

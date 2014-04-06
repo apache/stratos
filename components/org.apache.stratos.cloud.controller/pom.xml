@@ -53,10 +53,11 @@
                             org.apache.stratos.cloud.controller.interfaces.*,
                             org.apache.stratos.cloud.controller.publisher.*,
                             org.apache.stratos.cloud.controller.topic.*,
+                            org.apache.stratos.cloud.controller.topology.*,
                             org.apache.stratos.cloud.controller.iaases.*,
                             org.apache.stratos.cloud.controller.pojo.*,
-				            org.apache.stratos.cloud.controller.deployers.*,
-				            org.apache.stratos.cloud.controller.exception.*,
+			    org.apache.stratos.cloud.controller.deployers.*,
+			    org.apache.stratos.cloud.controller.exception.*,
                         </Export-Package>
                         <Private-Package>
                             !org.apache.stratos.cloud.controller.interfaces.*,
@@ -66,11 +67,13 @@
                             !org.apache.stratos.cloud.controller.pojo.*,
                             !org.apache.stratos.cloud.controller.deployers.*,
                             !org.apache.stratos.cloud.controller.exception.*,
+                            !org.apache.stratos.cloud.controller.topology.*,
                             org.apache.stratos.cloud.controller.*,
                         </Private-Package>
                         <Import-Package>
                         	  !org.apache.commons.logging,
                             org.apache.commons.logging; version=0.0.0,
+                            org.apache.commons.io.*,
                             org.wso2.carbon.utils.*,
                             <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
                             org.jclouds*;version="${jclouds.version}",-->   
@@ -186,17 +189,17 @@
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
 			<artifactId>ec2</artifactId>
-			<version>${jclouds.version}</version>
+			<version>${jclouds.stratos.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jclouds.provider</groupId>
 			<artifactId>aws-ec2</artifactId>
-			<version>${jclouds.version}</version>
+			<version>${jclouds.stratos.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
 			<artifactId>openstack-nova</artifactId>
-			<version>${jclouds.version}</version>
+			<version>${jclouds.stratos.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
@@ -211,7 +214,7 @@
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
 			<artifactId>vcloud</artifactId>
-			<version>${jclouds.vcloud.version}</version>
+			<version>${jclouds.stratos.version}</version>
 		</dependency>
 
          <dependency>

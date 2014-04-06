@@ -1,17 +1,34 @@
 package org.apache.stratos.cartridge.agent.config;
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cartridge.agent.executor.ExtensionExecutor;
-import org.apache.stratos.cartridge.agent.phase.Phase;
-import org.apache.stratos.cartridge.agent.runtime.DataHolder;
+import org.apache.stratos.cartridge.agent.exception.ParameterNotFoundException;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,23 +54,32 @@ public class CartridgeAgentConfiguration {
     private final List<String> logFilePaths;
     private Map<String, String> parameters;
     private boolean isMultitenant;
+    private String persistenceMappings;
+    private final boolean isCommitsEnabled;
+    private final String listenAddress;
 
     private CartridgeAgentConfiguration() {
     	parameters = loadParametersFile();
-        serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
-        clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
-        networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
-        partitionId = readParameterValue(CartridgeAgentConstants.PARTITION_ID);
-        memberId = readParameterValue(CartridgeAgentConstants.MEMBER_ID);
-        cartridgeKey = readParameterValue(CartridgeAgentConstants.CARTRIDGE_KEY);
-        appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
-        repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
-        ports = readPorts();
-        logFilePaths = readLogFilePaths();
-        isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
-        
-        // load agent's flow configuration and extract Phases and Extensions
-        loadFlowConfig();
+
+        try {
+            serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
+            clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
+            networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
+            partitionId = readParameterValue(CartridgeAgentConstants.PARTITION_ID);
+            memberId = readParameterValue(CartridgeAgentConstants.MEMBER_ID);
+            cartridgeKey = readParameterValue(CartridgeAgentConstants.CARTRIDGE_KEY);
+            appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
+            repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
+            ports = readPorts();
+            logFilePaths = readLogFilePaths();
+            isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
+            persistenceMappings = readPersisenceMapping();
+            isCommitsEnabled = readCommitsEnabled(CartridgeAgentConstants.COMMIT_ENABLED);
+            listenAddress = System.getProperty(CartridgeAgentConstants.LISTEN_ADDRESS);
+
+        } catch (ParameterNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         if(log.isInfoEnabled()) {
             log.info("Cartridge agent configuration initialized");
@@ -70,110 +96,20 @@ public class CartridgeAgentConfiguration {
             log.debug(String.format("repo-url: %s", repoUrl));
             log.debug(String.format("ports: %s", ports.toString()));
         }
-        
     }
 
-	public static List<Phase> loadFlowConfig() {
-
-		File file = new File(
-				System.getProperty(CartridgeAgentConstants.AGENT_FLOW_FILE_PATH));
-
-		if (!file.exists()) {
-			String msg = "Cannot find the Agent's flow configuration file at: "
-					+ System.getProperty(CartridgeAgentConstants.AGENT_FLOW_FILE_PATH)
-					+ ". Please set the system property: "
-					+ CartridgeAgentConstants.AGENT_FLOW_FILE_PATH;
-			log.error(msg);
-			throw new RuntimeException(msg);
-
+    private boolean readCommitsEnabled(String commitEnabled) {
+    	boolean isCommitEnabled = false;
+    	try {
+    		isCommitEnabled = Boolean.parseBoolean(readParameterValue(commitEnabled));
+		} catch (ParameterNotFoundException e) {
+			// Missing commits enabled flag is not an exception
+			log.error(" Commits enabled payload parameter is not found");
 		}
-
-		List<Phase> phases = new ArrayList<Phase>();
-
-		try {
-			Scanner scanner = new Scanner(file);
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				if (line.isEmpty()) {
-					continue;
-				}
-				String[] var = line.split("=");
-				String key = var[0];
-				String val = null;
-				if (var.length > 1) {
-					val = var[1];
-				}
-
-				if (key.contains("[")) {
-					// this is a definition of a Phase
-					try {
-						// load the class
-						Constructor<?> c = Class.forName(val).getConstructor(
-								String.class);
-						String id = key.substring(1, key.length() - 1);
-						Phase phase = (Phase) c.newInstance(id);
-
-						phases.add(phase);
-
-					} catch (Exception e) {
-						String msg = "Failed to load the Phase : " + val;
-						log.error(msg, e);
-						throw new RuntimeException(msg, e);
-					}
-				} else {
-					// this is a definition of an Extension
-					try {
-						if (phases.size() > 0) {
-							ExtensionExecutor extension;
-
-							if (val == null) {
-
-								// load the class
-								Constructor<?> c = Class.forName(key)
-										.getConstructor();
-								extension = (ExtensionExecutor) c.newInstance();
-							} else {
-								// split
-								String[] values = val
-										.split(CartridgeAgentConstants.SCRIPT_SEPARATOR);
-								List<String> valuesList = Arrays.asList(values);
-
-								// load the class
-								Constructor<?> c = Class.forName(key)
-										.getConstructor(List.class);
-								extension = (ExtensionExecutor) c
-										.newInstance(valuesList);
-							}
-
-							// add the extracted extension to the
-							// latest phase
-							Phase latestPhase = phases.get(phases.size() - 1);
-							latestPhase.addExtension(extension);
-						}
-
-					} catch (Exception e) {
-						String msg = "Failed to load the Extension : " + key;
-						log.error(msg, e);
-						throw new RuntimeException(msg, e);
-					}
-				}
-			}
-			scanner.close();
-		} catch (Exception e) {
-			String msg = "Error while reading the Agent's flow configuration file at: "
-					+ System.getProperty(CartridgeAgentConstants.AGENT_FLOW_FILE_PATH)
-					+ ". Please provide a valid configuration file.";
-			log.error(msg, e);
-			throw new RuntimeException(msg, e);
-		}
-
-		// sets the phases
-		DataHolder.getInstance().setPhases(phases);
-
-		return phases;
+		return isCommitEnabled;
 	}
 
-	private boolean readMultitenant(String multitenant) {
+	private boolean readMultitenant(String multitenant) throws ParameterNotFoundException {
     	String multitenantStringValue = readParameterValue(multitenant);
     	return Boolean.parseBoolean(multitenantStringValue);
 	}
@@ -193,6 +129,22 @@ public class CartridgeAgentConfiguration {
         }
         return instance;
     }
+
+    private String readPersisenceMapping() {
+        String persistenceMapping = null;
+        try {
+            persistenceMapping = readParameterValue("PERSISTENCE_MAPPING");
+        } catch (ParameterNotFoundException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("Cannot read persistence mapping : " + e.getMessage());
+            }
+        }
+        if (persistenceMapping == null || persistenceMapping.isEmpty()) {
+            return null;
+        }
+        return persistenceMapping;
+    }
+
     
     private Map<String, String> loadParametersFile() {
     	Map<String, String> parameters = new HashMap<String, String>();
@@ -211,7 +163,7 @@ public class CartridgeAgentConfiguration {
                 for (String string : params) {
 					if (string != null) {
 						String[] var = string.split("=");
-						if (var.length > 2) {
+						if (var.length >= 2) {
 							parameters.put(var[0], var[1]);
 						}
 					}
@@ -226,7 +178,7 @@ public class CartridgeAgentConfiguration {
     	return parameters;
     }
 
-	private String readParameterValue(String parameterName) {
+	private String readParameterValue(String parameterName) throws ParameterNotFoundException{
 
 		if (parameters.containsKey(parameterName)) {
 			return parameters.get(parameterName);
@@ -237,10 +189,10 @@ public class CartridgeAgentConfiguration {
 		}
 
 		String message = "Cannot find the value of required parameter: "+parameterName;
-		throw new RuntimeException(message);
+		throw new ParameterNotFoundException(message);
 	}
 
-    private List<Integer> readPorts() {
+    private List<Integer> readPorts() throws ParameterNotFoundException {
         List<Integer> ports = new ArrayList<Integer>();
         String portsStr = readParameterValue(CartridgeAgentConstants.PORTS);
         List<String> portsStrList = CartridgeAgentUtils.splitUsingTokenizer(portsStr, "|");
@@ -252,7 +204,14 @@ public class CartridgeAgentConfiguration {
 
     private List<String> readLogFilePaths () {
 
-        String logFileStr = readParameterValue(CartridgeAgentConstants.LOG_FILE_PATHS);
+        String logFileStr = null;
+        try {
+            logFileStr = readParameterValue(CartridgeAgentConstants.LOG_FILE_PATHS);
+        } catch (ParameterNotFoundException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("Cannot read log file path : " + e.getMessage());
+            }
+        }
         if (logFileStr == null || logFileStr.isEmpty()) {
             return null;
         }
@@ -303,8 +262,16 @@ public class CartridgeAgentConfiguration {
 		return isMultitenant;
 	}
 
-    public String getPersistanceMappings() {
-        String persistence_mapping_payload = readParameterValue("PERSISTENCE_MAPPING");
-        return persistence_mapping_payload;
+    public String getPersistenceMappings() {
+        return persistenceMappings;
+    }
+
+	public boolean isCommitsEnabled() {
+		return isCommitsEnabled;
+	}
+
+
+    public String getListenAddress() {
+        return listenAddress;
     }
 }

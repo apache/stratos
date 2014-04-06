@@ -48,24 +48,29 @@ public class RepositoryNotification {
             }
 
             for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-
-                if (cartridgeSubscription.getRepository() != null) {
-                    InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
-                    publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(), String.valueOf(cartridgeSubscription.getCluster().getId()),
-                            String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("Git pull request from " + cartridgeSubscription.getRepository() + "repository, for the tenant " +
-                                String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
-                    }
-
-                } else {
-                    if(log.isDebugEnabled()) {
-                        log.debug("No repository found for subscription with alias: " + cartridgeSubscription.getAlias() + ", type: " + cartridgeSubscription.getType()+
-                                ". Not sending the Artifact Updated event");
-                    }
-                }
+            	updateRepository(cartridgeSubscription);
             }
         }
     }
+    
+	public void updateRepository(CartridgeSubscription cartridgeSubscription) {
+		if (cartridgeSubscription.getRepository() != null) {
+			InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
+			publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
+					String.valueOf(cartridgeSubscription.getCluster().getId()),
+					String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+
+			if (log.isDebugEnabled()) {
+				log.debug("Git pull request from " + cartridgeSubscription.getRepository()
+						+ "repository, for the tenant "
+						+ String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+			}
+
+		} else {
+			if (log.isDebugEnabled()) {
+				log.debug("No repository found for subscription with alias: " + cartridgeSubscription.getAlias()
+						+ ", type: " + cartridgeSubscription.getType() + ". Not sending the Artifact Updated event");
+			}
+		}
+	}
 }

@@ -19,12 +19,11 @@
 
 package org.apache.stratos.manager.dto;
 
-import org.apache.stratos.cloud.controller.pojo.PortMapping;
-import org.apache.stratos.cloud.controller.pojo.Persistence;
+
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 @XmlRootElement
 public class Cartridge implements Comparable<Cartridge> {
@@ -63,7 +62,9 @@ public class Cartridge implements Comparable<Cartridge> {
 
     private boolean isPersistance;
 
-    private Persistence  persistence;
+    private Persistence persistence;
+    
+    private String serviceGroup;
 
 	public String getDisplayName() {
 		return displayName;
@@ -284,4 +285,12 @@ public class Cartridge implements Comparable<Cartridge> {
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
+
+	public String getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
 }

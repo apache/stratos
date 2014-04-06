@@ -75,7 +75,7 @@ public class CloudControllerUtil {
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
-
+        cartridge.setServiceGroup(config.getServiceGroup());
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
@@ -151,6 +151,11 @@ public class CloudControllerUtil {
                         }
                     }
                     
+                    NetworkInterfaces networkInterfaces = iaasConfig.getNetworkInterfaces();
+                    if (networkInterfaces != null && networkInterfaces.getNetworkInterfaces() != null) {
+                        iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
+                    }
+
                     cartridge.addIaasProvider(iaasProvider);
                 }
             }
