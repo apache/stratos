@@ -472,16 +472,19 @@ if [[ $host_user == "" ]]; then
     exit 1
 fi
 
-echo "user provided in conf/setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
-echo "If you want to continue with $host_user just press enter to continue"
-read username
-if [[ $username != "" ]]; then
-    host_user=$username
-fi
-user=`id $host_user`
-if [[ $? = 1 ]]; then
-    echo "User $host_user does not exist. The system will create it."
-    adduser --home /home/$host_user $host_user
+echo "user provided in conf/setup.conf is $host_user."
+if [[ $auto_start_servers != "true" ]]; then
+    echo "If you want to provide some other user name please specify it at the prompt."
+    echo "If you want to continue with $host_user just press enter to continue"
+    read username
+    if [[ $username != "" ]]; then
+        host_user=$username
+    fi
+    user=`id $host_user`
+    if [[ $? = 1 ]]; then
+        echo "User $host_user does not exist. The system will create it."
+        adduser --home /home/$host_user $host_user
+    fi
 fi
 
 export $host_user
