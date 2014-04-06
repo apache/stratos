@@ -28,8 +28,8 @@ class tomcat(
   tag($service_code)
 
   file { 
-    "${target}/packs":
-      ensure => directory;
+#    "${target}/packs":
+#      ensure => directory;
 
     "${tomcat_home}/conf/server.xml":
       ensure   => present,
