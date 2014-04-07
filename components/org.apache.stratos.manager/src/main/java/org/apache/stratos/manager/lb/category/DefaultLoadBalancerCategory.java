@@ -70,7 +70,7 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
                 clusterContext = CloudControllerServiceClient.getServiceClient().getClusterContext(clusterId);
 
             } catch (RemoteException e) {
-                log.error("Error occurred in retrieving Cluster Context for default LB" + e.getMessage());
+                log.error("Error occurred in retrieving Cluster Context for default LB ", e);
                 throw new ADCException(e);
             }
 

@@ -44,7 +44,7 @@ public interface CloudControllerService {
 	 * @throws IllegalArgumentException  if the provided argument is not valid.
 	 */
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) 
-            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, IllegalArgumentException;
+            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
     
     /**
      * Undeploys a Cartridge configuration which is already deployed.
@@ -85,8 +85,7 @@ public interface CloudControllerService {
      *             when the cartridge type requested by this service is
      *             not a registered one.
      */
-    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException, 
-    IllegalArgumentException;
+    public boolean registerService(Registrant registrant) throws UnregisteredCartridgeException;
 
     /**
      * Calling this method will result in an instance startup, which is belong
@@ -104,7 +103,7 @@ public interface CloudControllerService {
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
      */
-    public MemberContext startInstance(MemberContext member) throws IllegalArgumentException, UnregisteredCartridgeException, InvalidIaasProviderException;
+    public MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
 
     /**
      * Calling this method will spawn more than one instances in the
@@ -131,8 +130,7 @@ public interface CloudControllerService {
      *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
-    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException, 
-    IllegalArgumentException;
+    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException;
     
     /**
      * Calling this method will result in termination of an instance which is belong
@@ -180,7 +178,7 @@ public interface CloudControllerService {
      *            cluster ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    public void terminateAllInstances(String clusterId) throws IllegalArgumentException, InvalidClusterException;
+    public void terminateAllInstances(String clusterId) throws InvalidClusterException;
 
     /**
     /**

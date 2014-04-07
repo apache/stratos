@@ -166,8 +166,8 @@ consoleAppUtil = new function(){
         return this.sendReceive("POST","/tenant",tenantInfoBean).data;
     };
 
-    this.syncRepo= function(alias){
-        return this.sendReceive("POST","/sync",alias).data;
+    this.syncRepo = function(alias){
+        return this.send("POST","/cartridge/sync",alias).data;
     };
 
     this.getAutoScalePolicies = function(){

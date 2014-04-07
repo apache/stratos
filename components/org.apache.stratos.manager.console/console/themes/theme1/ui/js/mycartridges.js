@@ -37,7 +37,7 @@ $(function () {
             data:{alias:alias,action:"sync"},
             url:"/console/controllers/mycartridges.jag",
             success:function(data){
-                alert($.parseJSON(data).msg)
+                //alert($.parseJSON(data).msg)
             }
         })
     })

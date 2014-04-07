@@ -28,7 +28,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
@@ -111,10 +110,6 @@ public class ServiceUtils {
 				String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
 				log.error(message, e);
 				throw new RestAPIException(message, e);
-			} catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-				String msg = e.getMessage();
-				log.error(msg, e);
-				throw new RestAPIException(msg, e);
 			}
                 
             log.info("Successfully deployed Cartridge [type] "+cartridgeDefinitionBean.type);

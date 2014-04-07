@@ -72,7 +72,7 @@ node /tomcat/ inherits base {
   class {'tomcat':}
 
   #install tomcat befor agent
-  Class['tomcat'] ~> Class['agent']
+  #Class['tomcat'] ~> Class['agent']
 }
 
 # mysql cartridge node

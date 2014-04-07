@@ -62,72 +62,58 @@ if [[ $answer = n && `curl -o /dev/null --silent --head --write-out '%{http_code
         elif [[ "$key" == *AVAILABILITY_ZONE* ]] ; then AVAILABILITY_ZONE=$value; 
         elif [[ "$key" == *SECURITY_GROUP* ]] ; then SECURITY_GROUP=$value; 
         elif [[ "$key" == *KEY_PAIR_NAME* ]] ; then KEY_PAIR_NAME=$value; 
+        elif [[ "$key" == *DOMAIN* ]] ; then DOMAIN=$value; 
         fi
     done
 fi
 
-# Get hostname
-wget http://169.254.169.254/latest/meta-data/public-hostname -O /opt/public-hostname
-stratos_hostname=`cat /opt/public-hostname`
-
 # Prompt for the values that are not retrieved via user-data
 if [[ -z $ACCESS_KEY ]]; then
-    echo -n "Access Key of EC2 account (eg: Q0IAJDWGFM842UHQP27L) :"
+    echo -n "Access Key of EC2 account: "
     read ACCESS_KEY
 fi
 if [[ -z $SECRET_KEY ]]; then
-    echo -n "Secret key of EC2 account (eg: DSKidmKS620mMWMBK5DED983HJSELA) :"
+    echo -n "Secret key of EC2 account: "
     read SECRET_KEY
 fi
 if [[ -z $OWNER_ID ]]; then
-    echo -n "Owner id of EC2 account (eg: 927235126122165) :"
+    echo -n "Owner id of EC2 account: "
     read OWNER_ID
 fi
 if [[ -z $AVAILABILITY_ZONE ]]; then
-    echo -n "Availability zone (default value: us-east-1c) :"
+    echo -n "Availability zone: "
     read AVAILABILITY_ZONE
 fi
 if [[ -z $SECURITY_GROUP ]]; then
-    echo -n "Name of the EC2 security group (eg: stratosdemo) :"
+    echo -n "Name of the EC2 security group: "
     read SECURITY_GROUP
 fi
 if [[ -z $KEY_PAIR_NAME ]]; then
-    echo -n "Name of the key pair (eg: EC2SKEY) :"
+    echo -n "Name of the key pair: "
     read KEY_PAIR_NAME
 fi
 if [[ -z $DOMAIN ]]; then
-    echo -n "Domain name for Stratos (default value: stratos.apache.org) :"
+    echo -n "Domain name for Stratos [stratos.apache.org]: "
     read DOMAIN
 fi
 if  [ -z "$DOMAIN" ]; then
     DOMAIN="stratos.apache.org"
 fi
-if  [ -z "$AVAILABILITY_ZONE" ]; then
-    AVAILABILITY_ZONE="us-east-1c"
-    echo "Default Availability Zone $AVAILABILITY_ZONE" >> $LOG
-fi
 
 echo "Updating conf/setup.conf with user data"
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" > conf/setup.conf
+sed -i "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_keypair_name=\"*.*\"@export ec2_keypair_name=\"$KEY_PAIR_NAME\"@g" > conf/setup.conf
+sed -i "s@export ec2_keypair_name=\"*.*\"@export ec2_keypair_name=\"$KEY_PAIR_NAME\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_identity=\"*.*\"@export ec2_identity=\"$ACCESS_KEY\"@g" > conf/setup.conf
+sed -i "s@export ec2_identity=\"*.*\"@export ec2_identity=\"$ACCESS_KEY\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_credential=\"*.*\"@export ec2_credential=\"$SECRET_KEY\"@g" > conf/setup.conf
+sed -i "s@export ec2_credential=\"*.*\"@export ec2_credential=\"$SECRET_KEY\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_owner_id=\"*.*\"@export ec2_owner_id=\"$OWNER_ID\"@g" > conf/setup.conf
+sed -i "s@export ec2_owner_id=\"*.*\"@export ec2_owner_id=\"$OWNER_ID\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_availability_zone=\"*.*\"@export ec2_availability_zone=\"$AVAILABILITY_ZONE\"@g" > conf/setup.conf
+sed -i "s@export ec2_availability_zone=\"*.*\"@export ec2_availability_zone=\"$AVAILABILITY_ZONE\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECURITY_GROUP\"@g" > conf/setup.conf
+sed -i "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECURITY_GROUP\"@g" conf/setup.conf
 
 
 # Updating conf/setup.conf with relevent data
@@ -136,55 +122,24 @@ cat conf/setup.conf.orig | sed -e "s@export ec2_security_groups=\"*.*\"@export e
 ip=`facter ipaddress`
 echo "Setting private ip addresses $ip" >> $LOG
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export mb_ip=\"*.*\"@export mb_ip=\"$ip\"@g" > conf/setup.conf
+sed -i "s@export host_ip=\"*.*\"@export host_ip=\"$ip\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export cep_ip=\"*.*\"@export cep_ip=\"$ip\"@g" > conf/setup.conf
+sed -i "s@export mb_ip=\"*.*\"@export mb_ip=\"$ip\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export cc_ip=\"*.*\"@export cc_ip=\"$ip\"@g" > conf/setup.conf
+sed -i "s@export puppet_ip=\"*.*\"@export puppet_ip=\"$ip\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export as_ip=\"*.*\"@export as_ip=\"$ip\"@g" > conf/setup.conf
+sed -i "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" conf/setup.conf
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export sm_ip=\"*.*\"@export sm_ip=\"$ip\"@g" > conf/setup.conf
+sed -i "s@\s*\$mb_ip\s*=\s*'.*'\s*@  \$mb_ip                = '$ip'@g" /etc/puppet/manifests/nodes.pp
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export puppet_ip=\"*.*\"@export puppet_ip=\"$ip\"@g" > conf/setup.conf
+sed -i "s@\s*\$cep_ip\s*=\s*'.*'\s*@  \$cep_ip               = '$ip'@g" /etc/puppet/manifests/nodes.pp
 
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export host_user=\"*.*\"@export host_user=\"ubuntu\"@g" > conf/setup.conf
-
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" > conf/setup.conf
-
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export userstore_db_pass=\"*.*\"@export userstore_db_pass=\"mysql\"@g" > conf/setup.conf
-
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export ec2_provider_enabled=false@export ec2_provider_enabled=true@g" > conf/setup.conf
-
-cp -f conf/setup.conf conf/setup.conf.orig
-cat conf/setup.conf.orig | sed -e "s@export openstack_provider_enabled=true@export openstack_provider_enabled=false@g" > conf/setup.conf
-
-rm -f conf/setup.conf.orig
-
-hostname puppet.stratos.com
+hostname $puppet_hostname
 service puppetmaster restart
 
-cp -f /etc/puppet/manifests/nodes.pp /etc/puppet/manifests/nodes.pp.orig
-cat /etc/puppet/manifests/nodes.pp.orig | sed -e "s@\s*\$mb_ip\s*=\s*'.*'\s*@  \$mb_ip                = '$ip'@g" > /etc/puppet/manifests/nodes.pp
-
-cp -f /etc/puppet/manifests/nodes.pp /etc/puppet/manifests/nodes.pp.orig
-cat /etc/puppet/manifests/nodes.pp.orig | sed -e "s@\s*\$cep_ip\s*=\s*'.*'\s*@  \$cep_ip               = '$ip'@g" > /etc/puppet/manifests/nodes.pp
-
-rm -r /etc/puppet/manifests/nodes.pp.orig
-
-echo "Setup has successfully completed"
+echo "Setup configuration completed successfully"
 
 #  Server configurations
 # ----------------------------------------------------------------------------
-su -c "source $setup_path/conf/setup.conf;$setup_path/setup.sh -p'all'"
+su -c "$setup_path/setup.sh -s"
 

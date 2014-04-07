@@ -27,7 +27,7 @@
     log.info("Action : " + action + "  Alias is: " + alias);
 
     if(action == "sync"){
-        print(utils.consoleAppUtil.syncRepo(alias));
+        utils.consoleAppUtil.syncRepo(alias);
     }
 
 

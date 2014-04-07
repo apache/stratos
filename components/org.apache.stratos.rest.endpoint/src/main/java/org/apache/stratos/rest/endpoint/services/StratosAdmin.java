@@ -965,11 +965,18 @@ public class StratosAdmin extends AbstractAdmin {
     }
     
 	@POST
-	@Path("/sync")
+	@Path("/cartridge/sync")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
 	public StratosAdminResponse synchronizeRepository(String alias) throws RestAPIException {
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Synchronizing Git repository for alias '%s'", alias));
+		}
 		CartridgeSubscription cartridgeSubscription = ServiceUtils.getCartridgeSubscription(alias, getConfigContext());
+		if (cartridgeSubscription != null && cartridgeSubscription.getRepository() != null && log.isDebugEnabled()) {
+			log.debug(String.format("Found subscription for '%s'. Git repository: %s", alias, cartridgeSubscription
+					.getRepository().getUrl()));
+		}
 		return ServiceUtils.synchronizeRepository(cartridgeSubscription);
 	}
 

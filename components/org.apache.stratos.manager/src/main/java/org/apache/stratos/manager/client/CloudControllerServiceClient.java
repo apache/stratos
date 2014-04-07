@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
@@ -81,7 +80,7 @@ public class CloudControllerServiceClient {
 
     public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig) 
     		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException, 
-    		CloudControllerServiceInvalidIaasProviderExceptionException, CloudControllerServiceIllegalArgumentExceptionException {
+    		CloudControllerServiceInvalidIaasProviderExceptionException {
 
 		stub.deployCartridgeDefinition(cartridgeConfig);
 
@@ -97,7 +96,6 @@ public class CloudControllerServiceClient {
 	                        String payload, String tenantRange,
                             String hostName, Properties properties,
                             String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException, 
-                            CloudControllerServiceIllegalArgumentExceptionException, 
                             CloudControllerServiceUnregisteredCartridgeExceptionException {		
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
@@ -134,7 +132,7 @@ public class CloudControllerServiceClient {
     }
 
     public void terminateAllInstances(String clusterId) throws RemoteException, 
-    CloudControllerServiceInvalidClusterExceptionException, CloudControllerServiceIllegalArgumentExceptionException {
+    CloudControllerServiceInvalidClusterExceptionException {
 		stub.terminateAllInstances(clusterId);
 	}
 

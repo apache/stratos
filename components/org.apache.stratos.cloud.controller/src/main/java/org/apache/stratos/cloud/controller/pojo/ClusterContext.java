@@ -19,8 +19,6 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Holds runtime data of a Cluster.
@@ -39,7 +37,7 @@ public class ClusterContext implements Serializable{
     private String hostName;
     private boolean isLbCluster;
     private boolean isVolumeRequired;
-    private List<Volume> listOfVolumes;
+    private Volume[] volumes;
     // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
     private long timeoutInMillis;
 
@@ -50,11 +48,6 @@ public class ClusterContext implements Serializable{
         this.payload = payload;
         this.setHostName(hostName);
         this.isLbCluster = isLbCluster;
-        this.setListOfVolumes(new ArrayList<Volume>());
-    }
-    
-    public void addVolume(Volume volume) {
-    	this.getListOfVolumes().add(volume);
     }
     
     public String getClusterId() {
@@ -108,12 +101,11 @@ public class ClusterContext implements Serializable{
 		this.timeoutInMillis = timeoutInMillis;
 	}
 
-	public List<Volume> getListOfVolumes() {
-		return listOfVolumes;
+	public Volume[] getVolumes() {
+		return volumes;
 	}
 
-	public void setListOfVolumes(List<Volume> listOfVolumes) {
-		this.listOfVolumes = listOfVolumes;
+	public void setVolumes(Volume[] volumes) {
+		this.volumes = volumes;
 	}
-
 }

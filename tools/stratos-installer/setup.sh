@@ -31,7 +31,6 @@ export LOG=$log_path/stratos-setup.log
 
 profile="default"
 config_mb="true"
-activemq_client_libs=(activemq-broker-5.8.0.jar  activemq-client-5.8.0.jar  geronimo-j2ee-management_1.1_spec-1.0.1.jar  geronimo-jms_1.1_spec-1.1.1.jar  hawtbuf-1.2.jar)
 auto_start_servers="false"
 
 function help {
@@ -127,17 +126,6 @@ function general_setup() {
     sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/conf/jndi.properties
     popd
 
-    for activemq_client_lib in "${activemq_client_libs[@]}" 
-    do
-    	cp -f $stratos_packs/$activemq_client_lib $stratos_extract_path/repository/components/lib/
-    done
-}
-
-function activemq_validate() {
-    if [[ ! -f $activemq_pack ]]; then
-        echo "Please copy the activemq zip to the stratos pack folder and update the JAR name in conf/setup.conf file"
-        exit 1
-    fi
 }
 
 
@@ -472,16 +460,19 @@ if [[ $host_user == "" ]]; then
     exit 1
 fi
 
-echo "user provided in conf/setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
-echo "If you want to continue with $host_user just press enter to continue"
-read username
-if [[ $username != "" ]]; then
-    host_user=$username
-fi
-user=`id $host_user`
-if [[ $? = 1 ]]; then
-    echo "User $host_user does not exist. The system will create it."
-    adduser --home /home/$host_user $host_user
+echo "user provided in conf/setup.conf is $host_user."
+if [[ $auto_start_servers != "true" ]]; then
+    echo "If you want to provide some other user name please specify it at the prompt."
+    echo "If you want to continue with $host_user just press enter to continue"
+    read username
+    if [[ $username != "" ]]; then
+        host_user=$username
+    fi
+    user=`id $host_user`
+    if [[ $? = 1 ]]; then
+        echo "User $host_user does not exist. The system will create it."
+        adduser --home /home/$host_user $host_user
+    fi
 fi
 
 export $host_user
@@ -501,7 +492,6 @@ elif [[ $profile = "sm" ]]; then
     sm_conf_validate
 else
     echo "In default profile CEP will be configured."
-    activemq_validate
     cc_conf_validate
     as_conf_validate
     sm_conf_validate 
