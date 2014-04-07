@@ -101,6 +101,9 @@
         <module>org.apache.stratos.logging.view.ui</module>
         <!-- RESTful admin services -->
         <module>org.apache.stratos.rest.endpoint</module>
+        <!-- Stratos manager styles bundle -->
+        <module>org.apache.stratos.manager.styles</module>
+	
     </modules>
 	    
 	    <build>
