@@ -434,7 +434,7 @@ public class CartridgeSubscriptionManager {
 					.getSubscriber().getTenantId(), cartridgeSubscription
 					.getSubscriber().getAdminUserName(), cartridgeSubscription
 					.getAlias(), cartridgeSubscription.getType(),
-					cartridgeSubscription.getRepository().getUrl(),
+					"",
 					cartridgeSubscription.getCartridgeInfo().getMultiTenant(),
 					cartridgeSubscription.getAutoscalingPolicyName(),
 					cartridgeSubscription.getDeploymentPolicyName(),
