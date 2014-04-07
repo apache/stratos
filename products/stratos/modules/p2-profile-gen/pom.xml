@@ -183,6 +183,7 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.registry.core.feature:${carbon.platform.patch.version.4.2.1}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.registry.resource.properties.feature:${carbon.platform.patch.version.4.2.1}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.common.feature:${project.version}</featureArtifactDef>
+                                <featureArtifactDef>org.apache.stratos:org.apache.stratos.manager.styles.feature:${project.version}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.tenant.activity.server.feature:${project.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.throttle.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.logging.mgt.feature:${project.version}</featureArtifactDef>
@@ -370,6 +371,10 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.common.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.apache.stratos.manager.styles.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
@@ -647,6 +652,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.event.common.feature.group</id>
                                     <version>${carbon.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.apache.stratos.manager.styles.feature.group</id>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.captcha.mgt.server.feature.group</id>
