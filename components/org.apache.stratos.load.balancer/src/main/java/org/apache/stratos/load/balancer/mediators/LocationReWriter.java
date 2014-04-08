@@ -55,7 +55,9 @@ public class LocationReWriter extends AbstractMediator {
                     } else if (HTTPS.equals(inLocationUrl.getProtocol())) {
                         lbPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTPS_PORT));
                     } else {
-                        log.warn(String.format("An unknown protocol found: %s", inLocationUrl.getProtocol()));
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("An unknown protocol found: %s", inLocationUrl.getProtocol()));
+                        }
                     }
 
                     if (lbPort != -1) {
