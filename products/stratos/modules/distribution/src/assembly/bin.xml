@@ -515,6 +515,12 @@
             </outputDirectory>
         </fileSet>
 
+	<!--customization scripts-->
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/scripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/scripts</outputDirectory>
+        </fileSet>
+
     </fileSets>
 
     <dependencySets>
