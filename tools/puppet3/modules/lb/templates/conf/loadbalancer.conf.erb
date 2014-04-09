@@ -50,6 +50,9 @@ loadbalancer {
     # topology_event_listener_enabled is set to true. This functionality could be used for hosting
     # dedicated load balancers for services.
     # topology-service-filter: service-name=service-name1,service-name2;
+    <% if @stratos_lb_category == 'service.aware.load.balancer' %>
+      topology-service-filter: service-name=<%=@stratos_load_balanced_service_type%>;
+    <% end %>
 
     # Topology cluster filter
     # Provide cluster ids in a comma separated list to filter incoming topology events if
