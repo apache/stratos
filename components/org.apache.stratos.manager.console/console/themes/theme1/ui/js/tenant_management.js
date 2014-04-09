@@ -30,10 +30,10 @@ $(function(){
 
     $( "#newTenantForm" ).validate({
         rules: {
-            adminPassword: "required",
-                adminPassword_again: {
-                    equalTo: "#adminPassword"
-                }
+            adminPassword: {required:true,maxlength:30,minlength:5},
+            adminPassword_again: {
+                equalTo: "#adminPassword"
+            }
         }
     });
 
