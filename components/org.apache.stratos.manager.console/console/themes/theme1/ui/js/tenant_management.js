@@ -78,7 +78,10 @@ function manage_one(action,obj){
 
 function checkAvailability() {
     var domain = $('#tenantDomain').val();
-    console.info(domain);
+    if(domain.trim() == ""){
+        $('#domainMessage').show().html('Domain should not be empty.').addClass('noDomain').removeClass('hasDomain');
+        return;
+    }
     $.ajax({
         data:{domain:domain},
         url:"/console/controllers/checkAvailability.jag",
