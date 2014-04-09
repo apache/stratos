@@ -248,6 +248,8 @@ public class CartridgeSubscriptionManager {
         cartridgeSubscription.createSubscription(subscriber, lbAlias, lbDataContext.getAutoscalePolicy(),
                 lbDataContext.getDeploymentPolicy(), repository);
 
+        // add LB category to the payload
+        cartridgeSubscription.getPayloadData().add(CartridgeConstants.LB_CATEGORY, lbDataContext.getLbCategory());
 
                 // publishing to bam
              	CartridgeSubscriptionDataPublisher.publish(subscriptionData.getTenantId(),
@@ -312,7 +314,7 @@ public class CartridgeSubscriptionManager {
         //create subscription
         cartridgeSubscription.createSubscription(subscriber, subscriptionData.getCartridgeAlias(), subscriptionData.getAutoscalingPolicyName(),
                                                 subscriptionData.getDeploymentPolicyName(), repository);
-        
+
 		// publishing to bam
 		CartridgeSubscriptionDataPublisher.publish(
 				subscriptionData.getTenantId(),
