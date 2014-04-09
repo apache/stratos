@@ -32,7 +32,7 @@ properties="-Dmb.ip=MB-IP
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
-            -Dparam.file.path=/opt/apache-stratos-cartridge-agent/payload/launch-params
+            -Dparam.file.path=${script_path}/../payload/launch-params
             -Dextensions.dir=${script_path}/../extensions
             -Dcep.stats.publisher.enabled=true
             -Djavax.net.ssl.trustStore=CERT-TRUSTSTORE
