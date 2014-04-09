@@ -249,7 +249,9 @@ public class CartridgeSubscriptionManager {
                 lbDataContext.getDeploymentPolicy(), repository);
 
         // add LB category to the payload
-        cartridgeSubscription.getPayloadData().add(CartridgeConstants.LB_CATEGORY, lbDataContext.getLbCategory());
+        if (cartridgeSubscription.getPayloadData() != null) {
+            cartridgeSubscription.getPayloadData().add(CartridgeConstants.LB_CATEGORY, lbDataContext.getLbCategory());
+        }
 
                 // publishing to bam
              	CartridgeSubscriptionDataPublisher.publish(subscriptionData.getTenantId(),
@@ -331,7 +333,7 @@ public class CartridgeSubscriptionManager {
         
         // Add whether the subscription is enabled upstream git commits
         if(cartridgeSubscription.getPayloadData() != null) {
-        cartridgeSubscription.getPayloadData().add(CartridgeConstants.COMMIT_ENABLED, String.valueOf(subscriptionData.isCommitsEnabled()));
+            cartridgeSubscription.getPayloadData().add(CartridgeConstants.COMMIT_ENABLED, String.valueOf(subscriptionData.isCommitsEnabled()));
         }
         
 
