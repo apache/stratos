@@ -26,6 +26,7 @@ import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.payload.PayloadData;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscriber.Subscriber;
+import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
         // add payload entry for load balanced service type
         PayloadData serviceLevelLbPayloadData = super.create(alias, cluster, subscriber, repository, cartridgeInfo, subscriptionKey,
                 customPayloadEntries);
-        serviceLevelLbPayloadData.add("LOAD_BALANCED_SERVICE_TYPE", getLoadBalancedServiceType());
+        serviceLevelLbPayloadData.add(CartridgeConstants.LOAD_BALANCED_SERVICE_TYPE, getLoadBalancedServiceType());
         return serviceLevelLbPayloadData;
     }
 }

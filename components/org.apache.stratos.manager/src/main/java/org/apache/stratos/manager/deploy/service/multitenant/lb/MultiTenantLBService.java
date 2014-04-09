@@ -44,8 +44,6 @@ public class MultiTenantLBService extends Service {
     @Override
     public void deploy(Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        super.deploy(properties);
-
         //register the service
         loadBalancerCategory.register(getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(), getDeploymentPolicyName(),
                 properties);
