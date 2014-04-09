@@ -51,7 +51,7 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
         String clusterId = null;
 
         try {
-            clusterId = AutoscalerServiceClient.getServiceClient().getServiceLBClusterId(cartridgeInfo.getType(), getDeploymentPolicyName());
+            clusterId = AutoscalerServiceClient.getServiceClient().getServiceLBClusterId(getLoadBalancedServiceType(), getDeploymentPolicyName());
 
         } catch (Exception e) {
             log.error("Error occurred in retrieving Service LB cluster id" + e.getMessage());
@@ -59,6 +59,7 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
         }
 
         if (clusterId != null) {
+
             //set the cluster id to Cluster object
             cluster.setClusterDomain(clusterId);
             if (log.isDebugEnabled()) {
@@ -86,6 +87,7 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
             return null;
 
         } else {
+
             // set cluster domain
             cluster.setClusterDomain(generateClusterId(alias, cartridgeInfo.getType()));
             // set hostname
@@ -110,7 +112,7 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
 
             super.register(cartridgeInfo, cluster, payloadData, autoscalePolicyName, deploymentPolicyName, properties);
         }else {
-            log.info("Service LB already exists for cartridge type: " + cartridgeInfo.getType() + ", deployment policy: " + getDeploymentPolicyName());
+            log.info("Service LB already exists for cartridge type: " + getLoadBalancedServiceType() + ", deployment policy: " + getDeploymentPolicyName());
         }
     }
 }
