@@ -228,6 +228,9 @@ consoleAppUtil = new function(){
     this.getCaptcha = function(){
         return this.sendReceiveImage("Get","/simpleImg",{});
     };
+    this.undeployCartridge = function(cartridgeType){
+        return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{}).data;
+    };
     this.getConfigStatus = function(){
         var configStatus = {};
         var error;

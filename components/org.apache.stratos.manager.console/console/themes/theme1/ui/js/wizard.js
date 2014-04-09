@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 $(function () {
     var isValidForm = function(){
@@ -77,7 +77,7 @@ $(function () {
         var newStep = parseInt($(this).attr('data-step')) + 1;
         $('#nextStep').val(newStep);
         //if(isValidForm()){
-            $('#jsonForm').submit();
+        $('#jsonForm').submit();
         //}
     });
 
@@ -85,9 +85,9 @@ $(function () {
     $('#wizardBack').click(function () {
         var newStep = parseInt($(this).attr('data-step')) - 1;
         $('#nextStep').val(newStep);
-       // if(isValidForm()){
-            $('#jsonForm').submit();
-       // }
+        // if(isValidForm()){
+        $('#jsonForm').submit();
+        // }
     });
     var thisStep = $('#thisStep').val();
 
@@ -113,4 +113,29 @@ $(function () {
         $('textarea', $(this).parent()).val(jsonStr);
         $(this).html(syntaxHighlight(jsonStr));
     });
+
+    $('.js_undeploy').click(function(){
+        var $btn = $(this);
+        var type = $(this).attr('data-type');
+        if(type == null || type == "" || type == undefined){
+            return;
+        }
+        $.ajax({
+            data:{type:type,action:"undeploy"},
+            url:"/console/controllers/wizardSubmit.jag",
+            success:function(data){
+                data = jQuery.parseJSON(data);
+                if(data.Error != undefined){
+                    $btn.prev().html('<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> ' + data.Error.errorMessage).show();
+                }else{
+                    $btn.closest(".panel-default")
+                        .empty()
+                        .removeClass("panel")
+                        .removeClass("panel-default")
+                        .addClass("alert alert-success alert-dismissable")
+                        .html('<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> Cartridge undeployed successfully');
+                }
+            }
+        })
+    })
 });
