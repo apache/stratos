@@ -754,21 +754,16 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             ccClient.terminate(memberId);
 
-
-            String lbClusterId = AutoscalerRuleEvaluator.getLbClusterId(partitionCtxt, nwPartitionCtxt.getId());
-
-            partitionCtxt.addPendingMember(ccClient.spawnAnInstance(partition, clusterId, lbClusterId, nwPartitionCtxt.getId()));
+            // remove from active member list
             partitionCtxt.removeActiveMemberById(memberId);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Instance spawned for fault member: [member] %s [partition] %s [cluster] %s [lb cluster] %s ",
-                                       memberId, partitionId, clusterId, lbClusterId));
+                log.info(String.format("Faulty member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
+                                       memberId, partitionId, clusterId));
             }
 
 
         } catch (TerminationException e) {
-            log.error(e);
-        } catch (SpawningException e) {
             log.error(e);
         }
     }
