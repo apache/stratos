@@ -37,14 +37,14 @@ function help {
     echo ""
     echo "Usage:"
     echo "setup.sh -p \"<profile>\" [-s]"
-    echo "product list : [default, cc, as, sm]"
+    echo "profile: [default, cc, as, sm]"
     echo "Example:"
     echo "sudo ./setup.sh -p \"default\""
     echo "sudo ./setup.sh -p \"cc\""
     echo ""
-    echo "-p: <profile> Apache Stratos products to be installed on this node. Provide one name of a profile."
-    echo "    The available profiles are cc, as, sm or default. 'default' means you need to setup all servers in this machine. Default is 'default' profile"
-    echo "-s: Silent mode - Start servers after installation."
+    echo "-p: <profile> Apache Stratos product profile to be installed on this node. Provide the name of profile."
+    echo "    The available profiles are cc, as, sm or default. 'default' means you need all features will be available"
+    echo "-s: Silent mode - No prompts and start servers after installation."
     echo ""
 }
 
@@ -501,12 +501,6 @@ if [[ ! -d $log_path ]]; then
     mkdir -p $log_path
 fi
 
-
-echo ""
-echo "For all the questions asked while during executing the script please just press the enter button"
-echo ""
-
-
 # Extract stratos zip file
 if [[ !(-d $stratos_extract_path) ]]; then
     echo "Extracting Apache Stratos"
@@ -547,7 +541,7 @@ if [[ $profile = "sm" || $profile = "as" ]]; then
 fi
 
 if [[ $profile = "sm" ]]; then
-    echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
+    echo "$as_ip $as_hostname	# auto scaler hostname"	>> hosts.tmp
 fi
 
 mv -f ./hosts.tmp /etc/hosts
@@ -559,7 +553,7 @@ mv -f ./hosts.tmp /etc/hosts
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
 chown $host_user:$host_user $stratos_path -R
 
-echo "Apache Stratos setup has successfully completed"
+echo "Apache Stratos configuration completed successfully"
 
 if [[ $auto_start_servers != "true" ]]; then
     read -p "Do you want to start the servers [y/n]? " answer
@@ -578,7 +572,7 @@ chmod -R 777 $log_path
 export setup_dir=$PWD
 su - $host_user -c "source $setup_path/conf/setup.conf;$setup_path/start-servers.sh -p\"$profile\" >> $LOG"
 
-echo "Servers started. Please look at $LOG file for server startup details"
+echo "You can access Stratos after the server is started."
 if [[ $profile == "default" || $profile == "sm" ]]; then
     echo "**************************************************************"
     echo "Management Console : https://$stratos_domain:$sm_https_port/console"
