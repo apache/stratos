@@ -97,7 +97,11 @@
             realmService = server.osgiService('org.wso2.carbon.user.core.service.RealmService');
         user = carbon.server.tenantUser(username);
         realm = realmService.getTenantUserRealm(user.tenantId);
-        return realm.getUserStoreManager().authenticate(user.username, password);
+	if(realm == null){
+		throw new Error("Invalid domain or unactivated tenant login");
+	}else{
+		return realm.getUserStoreManager().authenticate(user.username, password);
+	}
     };
 
     Server.prototype.login = function (username, password) {

@@ -20,6 +20,7 @@
  *
  */
 (function(){
+    pri(k822);
     var log = new Log("controllers.login.jag");
     var dataConfig = require('/config/console.js').config();
     if(!dataConfig.ssoConfiguration.enabled){
