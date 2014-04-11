@@ -805,13 +805,18 @@ public class ServiceUtils {
                 ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
         String cartridgeStatus = "Inactive";
         int activeMemberCount = 0;
-        Collection<Member> members = cluster.getMembers();
-        for (Member member : members) {
-			if(member.isActive()) {
-				cartridgeStatus = "Active";
-				activeMemberCount++;
-			}
-		}        
+
+        // cluster might not be created yet, so need to check
+        if (cluster != null) {
+            Collection<Member> members = cluster.getMembers();
+            for (Member member : members) {
+                if(member.isActive()) {
+                    cartridgeStatus = "Active";
+                    activeMemberCount++;
+                }
+            }
+        }
+
         cartridge.setActiveInstances(activeMemberCount);
 		cartridge.setStatus(cartridgeStatus);
 		return cartridge;
