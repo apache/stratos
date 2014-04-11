@@ -809,10 +809,12 @@ public class ServiceUtils {
         // cluster might not be created yet, so need to check
         if (cluster != null) {
             Collection<Member> members = cluster.getMembers();
-            for (Member member : members) {
-                if(member.isActive()) {
-                    cartridgeStatus = "Active";
-                    activeMemberCount++;
+            if (members != null ) {
+                for (Member member : members) {
+                    if(member.isActive()) {
+                        cartridgeStatus = "Active";
+                        activeMemberCount++;
+                    }
                 }
             }
         }
