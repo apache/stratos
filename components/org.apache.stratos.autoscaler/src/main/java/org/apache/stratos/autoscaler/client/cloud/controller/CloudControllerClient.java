@@ -126,7 +126,7 @@ public class CloudControllerClient {
 
     }
 
-    public MemberContext spawnAnInstance(Partition partition,
+    public synchronized MemberContext spawnAnInstance(Partition partition,
     		String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
         try {
             if(log.isInfoEnabled()) {
@@ -148,9 +148,6 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call startInstance() returned in %dms", (endTime - startTime)));
             }
             return memberContext;
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-        	log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
         	String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
         	log.error(message, e);
@@ -165,7 +162,7 @@ public class CloudControllerClient {
 		}
     }
     
-    public void terminateAllInstances(String clusterId) throws TerminationException {
+    public synchronized void terminateAllInstances(String clusterId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
@@ -185,14 +182,10 @@ public class CloudControllerClient {
         	String message = e.getFaultMessage().getInvalidClusterException().getMessage();
             log.error(message, e);
             throw new TerminationException(message, e);
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-        	String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
         }
     }
 
-    public void terminate(String memberId) throws TerminationException {
+    public synchronized void terminate(String memberId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
@@ -204,10 +197,6 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-        	String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
         	String msg = e.getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);

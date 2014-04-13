@@ -56,10 +56,17 @@ public class TopicSubscriber implements Runnable {
 	}
 
 	private void doSubscribe() throws Exception, JMSException {
-		// initialize a TopicConnector
-		connector.init(topicName);
-		// get a session
-		topicSession = connector.newSession();
+		if (topicSession != null && topicSubscriber != null) {
+			return;
+		}
+		
+		if (topicSession == null) {
+			// initialize a TopicConnector
+			connector.init(topicName);
+			// get a session
+			topicSession = connector.newSession();
+		}
+		
 		Topic topic = connector.getTopic();
 		if (topic == null) {
 			// if topic doesn't exist, create it.

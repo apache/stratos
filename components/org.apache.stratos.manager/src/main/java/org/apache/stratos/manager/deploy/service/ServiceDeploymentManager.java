@@ -34,6 +34,7 @@ import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
+import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Collection;
@@ -323,6 +324,9 @@ public class ServiceDeploymentManager {
             serviceClusterProperties.setProperties(lbDataCtxt.getLoadBalancedServiceProperties().toArray(new Property[0]));
         }
 
+        // create
+        service.create();
+
         //deploy the service
         service.deploy(serviceClusterProperties);
 
@@ -374,6 +378,12 @@ public class ServiceDeploymentManager {
             lbProperties = new Properties();
             lbProperties.setProperties(lbDataCtxt.getLbProperperties().toArray(new Property[0]));
         }
+
+        // create service
+        lbService.create();
+
+        // add LB category to the payload
+        lbService.getPayloadData().add(CartridgeConstants.LB_CATEGORY, lbDataCtxt.getLbCategory());
 
         // delpoy
         lbService.deploy(lbProperties);

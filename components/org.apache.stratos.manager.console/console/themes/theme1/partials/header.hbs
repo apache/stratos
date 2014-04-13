@@ -51,7 +51,7 @@
                              <ul class="dropdown-menu">
                                  <!--li><a><i class="fa fa-file-text-o"></i> View Profile</a></li -->
                                 <li>
-                                    <a href="{{url "/controllers/logout.jag"}}"><i class="icons-sign-out"></i> logout</a>
+                                    <a href="{{url "/controllers/logout.jag"}}"><i class="icons-sign-out" style="font-size:11px;"></i> logout</a>
                                 </li>
                              </ul>
                            </li>
@@ -71,8 +71,8 @@
                         </div>
                         {{#if has_action_buttons}}
                         <div class="col-lg-4 action-buttons">
-                            <button class="btn btn-default" onclick="manage_selected('activate')" type="button">Activate</button>
-                            <button class="btn btn-default" onclick="manage_selected('deactivate')">Deactivate</button>
+                            <button class="btn btn-default" onclick="manage_selected('activate')" type="button" id="activateTenantsBtn">Activate</button>
+                            <button class="btn btn-default" onclick="manage_selected('deactivate')" type="button" id="deactivateTenantsBtn">Deactivate</button>
                             <!--<button class="btn btn-default" onclick="manage_selected('delete')">Delete</button>-->
                         </div>
                         <div class="col-lg-5 help-section">

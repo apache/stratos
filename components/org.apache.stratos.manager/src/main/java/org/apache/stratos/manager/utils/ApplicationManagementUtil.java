@@ -38,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceIllegalArgumentExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
@@ -256,17 +255,13 @@ public class ApplicationManagementUtil {
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
                     hostName, properties, autoscalingPoliyName, deploymentPolicyName );
-        } catch (CloudControllerServiceIllegalArgumentExceptionException e) {
-            String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
-            log.error(msg, e);
-            throw new IllegalArgumentException("Not a registered cartridge " + cartridgeType, e);
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);
             throw new UnregisteredCartridgeException("Not a registered cartridge " + cartridgeType, cartridgeType, e);
         } catch (RemoteException e) {
         	log.error("Remote Error", e);
-        	throw new ADCException("An error occurred in subscribing process");
+        	throw new ADCException("An error occurred in subscribing process", e);
         }
     }
 

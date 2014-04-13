@@ -112,7 +112,6 @@ public abstract class LoadBalancerCategory extends CartridgeMgtBehaviour {
 		this.isLoadBalancedServiceMultiTenant = isLoadBalancedServiceMultiTenant;
 	}
 
-
     public String getDeploymentPolicyName() {
         return deploymentPolicyName;
     }

@@ -166,8 +166,8 @@ consoleAppUtil = new function(){
         return this.sendReceive("POST","/tenant",tenantInfoBean).data;
     };
 
-    this.syncRepo= function(alias){
-        return this.sendReceive("POST","/sync",alias).data;
+    this.syncRepo = function(alias){
+        return this.send("POST","/cartridge/sync",alias).data;
     };
 
     this.getAutoScalePolicies = function(){
@@ -227,6 +227,9 @@ consoleAppUtil = new function(){
     };
     this.getCaptcha = function(){
         return this.sendReceiveImage("Get","/simpleImg",{});
+    };
+    this.undeployCartridge = function(cartridgeType){
+        return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{}).data;
     };
     this.getConfigStatus = function(){
         var configStatus = {};

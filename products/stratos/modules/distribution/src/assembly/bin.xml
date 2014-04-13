@@ -54,6 +54,7 @@
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
 		<exclude>**/repository/conf/axis2/axis2.xml</exclude>
+		<exclude>**/repository/conf/registry.xml</exclude>
 		<exclude>**/repository/conf/log4j.properties</exclude>
 		<exclude>**/repository/conf/data-bridge/**</exclude>
             </excludes>
@@ -147,7 +148,7 @@
                 <exclude>email-new-tenant-registration.xml</exclude>
                 <exclude>email-password-reset.xml</exclude>
                 <exclude>email-payment-received-customer.xml</exclude>
-				<exclude>email-registration-payment-received-customer.xml</exclude>
+		<exclude>email-registration-payment-received-customer.xml</exclude>
                 <exclude>email-payment-received-wso2.xml</exclude>
                 <exclude>email-registration-complete.xml</exclude>
                 <exclude>email-registration-moderation.xml</exclude>
@@ -515,6 +516,12 @@
             </outputDirectory>
         </fileSet>
 
+	<!--customization scripts-->
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/scripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/scripts</outputDirectory>
+        </fileSet>
+
     </fileSets>
 
     <dependencySets>
@@ -686,12 +693,12 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
-        <file>
+        <!--file>
             <source>LICENSE.txt</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
-        </file>
+        </file-->
         <file>
             <source>release-notes.html</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>

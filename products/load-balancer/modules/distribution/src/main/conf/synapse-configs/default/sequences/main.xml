@@ -20,6 +20,7 @@
 <sequence xmlns="http://ws.apache.org/ns/synapse" name="main" onError="fault">
     <description>The main sequence for the message mediation</description>
     <in>
+        <property name="REQUEST_HOST_HEADER" expression="$trp:host" scope="axis2"/>
         <property expression="$axis2:SERVICE_PREFIX" name="SERVICE_PREFIX"/>
         <send>
 	          <endpoint name="tenantAwareLBEndpoint">
@@ -38,22 +39,9 @@
         <class name="org.apache.stratos.load.balancer.mediators.ResponseInterceptor">
         </class>
 
-        <!-- Updating location value in response header -->
-        <filter regex=".+" source="$trp:Location">
-            <property expression="$ctx:SERVICE_PREFIX" group="2" name="LB_SP_HOST_NAME" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
-            <property expression="$trp:Location" group="1" name="EP_RESPONSE_LOC_PROTOCOL" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
-            <property expression="$trp:Location" group="2" name="EP_RESPONSE_LOC_HOST_NAME" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
-            <property expression="$trp:Location" group="4" name="EP_RESPONSE_LOC_PATH" pattern="(^http.?:\/\/\b)(\d*.\d.\d.\d*.\d*)(?::(\d*))?(.*)"/>
-
-            <switch source="fn:lower-case($ctx:EP_RESPONSE_LOC_PROTOCOL)">
-                <case regex="https://">
-                    <property expression="fn:concat($ctx:EP_RESPONSE_LOC_PROTOCOL,$ctx:LB_HOST_NAME,':',$ctx:LB_HTTPS_PORT,$ctx:EP_RESPONSE_LOC_PATH)" name="Location" scope="transport"/>
-                </case>
-                <case regex="http://">
-                    <property expression="fn:concat($ctx:EP_RESPONSE_LOC_PROTOCOL,$ctx:LB_HOST_NAME,':',$ctx:LB_HTTP_PORT,$ctx:EP_RESPONSE_LOC_PATH)" name="Location" scope="transport"/>
-                </case>
-            </switch>
-        </filter>
+        <!-- Add location re-writer mediator -->
+        <class name="org.apache.stratos.load.balancer.mediators.LocationReWriter">
+        </class>
 
         <!-- Send the response to the client -->
         <send/>

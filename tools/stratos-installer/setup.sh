@@ -31,21 +31,20 @@ export LOG=$log_path/stratos-setup.log
 
 profile="default"
 config_mb="true"
-activemq_client_libs=(activemq-broker-5.8.0.jar  activemq-client-5.8.0.jar  geronimo-j2ee-management_1.1_spec-1.0.1.jar  geronimo-jms_1.1_spec-1.1.1.jar  hawtbuf-1.2.jar)
 auto_start_servers="false"
 
 function help {
     echo ""
     echo "Usage:"
     echo "setup.sh -p \"<profile>\" [-s]"
-    echo "product list : [default, cc, as, sm]"
+    echo "profile: [default, cc, as, sm]"
     echo "Example:"
     echo "sudo ./setup.sh -p \"default\""
     echo "sudo ./setup.sh -p \"cc\""
     echo ""
-    echo "-p: <profile> Apache Stratos products to be installed on this node. Provide one name of a profile."
-    echo "    The available profiles are cc, as, sm or default. 'default' means you need to setup all servers in this machine. Default is 'default' profile"
-    echo "-s: Silent mode - Start servers after installation."
+    echo "-p: <profile> Apache Stratos product profile to be installed on this node. Provide the name of profile."
+    echo "    The available profiles are cc, as, sm or default. 'default' means you need all features will be available"
+    echo "-s: Silent mode - No prompts and start servers after installation."
     echo ""
 }
 
@@ -127,17 +126,6 @@ function general_setup() {
     sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/conf/jndi.properties
     popd
 
-    for activemq_client_lib in "${activemq_client_libs[@]}" 
-    do
-    	cp -f $stratos_packs/$activemq_client_lib $stratos_extract_path/repository/components/lib/
-    done
-}
-
-function activemq_validate() {
-    if [[ ! -f $activemq_pack ]]; then
-        echo "Please copy the activemq zip to the stratos pack folder and update the JAR name in conf/setup.conf file"
-        exit 1
-    fi
 }
 
 
@@ -472,16 +460,19 @@ if [[ $host_user == "" ]]; then
     exit 1
 fi
 
-echo "user provided in conf/setup.conf is $host_user. If you want to provide some other user name please specify it at the prompt."
-echo "If you want to continue with $host_user just press enter to continue"
-read username
-if [[ $username != "" ]]; then
-    host_user=$username
-fi
-user=`id $host_user`
-if [[ $? = 1 ]]; then
-    echo "User $host_user does not exist. The system will create it."
-    adduser --home /home/$host_user $host_user
+echo "user provided in conf/setup.conf is $host_user."
+if [[ $auto_start_servers != "true" ]]; then
+    echo "If you want to provide some other user name please specify it at the prompt."
+    echo "If you want to continue with $host_user just press enter to continue"
+    read username
+    if [[ $username != "" ]]; then
+        host_user=$username
+    fi
+    user=`id $host_user`
+    if [[ $? = 1 ]]; then
+        echo "User $host_user does not exist. The system will create it."
+        adduser --home /home/$host_user $host_user
+    fi
 fi
 
 export $host_user
@@ -501,7 +492,6 @@ elif [[ $profile = "sm" ]]; then
     sm_conf_validate
 else
     echo "In default profile CEP will be configured."
-    activemq_validate
     cc_conf_validate
     as_conf_validate
     sm_conf_validate 
@@ -510,12 +500,6 @@ fi
 if [[ ! -d $log_path ]]; then
     mkdir -p $log_path
 fi
-
-
-echo ""
-echo "For all the questions asked while during executing the script please just press the enter button"
-echo ""
-
 
 # Extract stratos zip file
 if [[ !(-d $stratos_extract_path) ]]; then
@@ -557,7 +541,7 @@ if [[ $profile = "sm" || $profile = "as" ]]; then
 fi
 
 if [[ $profile = "sm" ]]; then
-    echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
+    echo "$as_ip $as_hostname	# auto scaler hostname"	>> hosts.tmp
 fi
 
 mv -f ./hosts.tmp /etc/hosts
@@ -569,7 +553,7 @@ mv -f ./hosts.tmp /etc/hosts
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
 chown $host_user:$host_user $stratos_path -R
 
-echo "Apache Stratos setup has successfully completed"
+echo "Apache Stratos configuration completed successfully"
 
 if [[ $auto_start_servers != "true" ]]; then
     read -p "Do you want to start the servers [y/n]? " answer
@@ -588,7 +572,7 @@ chmod -R 777 $log_path
 export setup_dir=$PWD
 su - $host_user -c "source $setup_path/conf/setup.conf;$setup_path/start-servers.sh -p\"$profile\" >> $LOG"
 
-echo "Servers started. Please look at $LOG file for server startup details"
+echo "You can access Stratos after the server is started."
 if [[ $profile == "default" || $profile == "sm" ]]; then
     echo "**************************************************************"
     echo "Management Console : https://$stratos_domain:$sm_https_port/console"

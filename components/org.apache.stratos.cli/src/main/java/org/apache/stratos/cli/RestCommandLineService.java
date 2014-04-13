@@ -82,7 +82,7 @@ public class RestCommandLineService {
     private final String addTenantEndPoint = "/stratos/admin/tenant";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
     private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
-    private final String syncEndPoint = "/stratos/admin/sync";
+    private final String syncEndPoint = "/stratos/admin/cartridge/sync";
     private final String partitionDeploymentEndPoint = "/stratos/admin/policy/deployment/partition";
     private final String autoscalingPolicyDeploymentEndPoint = "/stratos/admin/policy/autoscale";
     private final String deploymentPolicyDeploymentEndPoint = "/stratos/admin/policy/deployment";

@@ -49,6 +49,7 @@
         <module>cartridge-mgt</module>
         <module>logging-mgt</module>
         <module>rest-endpoint/org.apache.stratos.rest.endpoint.feature</module>
+        <module>styles/org.apache.stratos.manager.styles.feature</module>
     </modules>
 
     <distributionManagement>

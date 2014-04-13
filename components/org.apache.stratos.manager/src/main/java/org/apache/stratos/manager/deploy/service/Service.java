@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.NotSubscribedException;
@@ -59,20 +58,30 @@ public abstract class Service extends CartridgeMgtBehaviour {
         this.setCluster(new Cluster());
     }
 
-    public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {
+    public void create () throws ADCException {
 
-        //generate the cluster ID (domain)for the service
-        String clusterId = type + "." + cartridgeInfo.getHostName() + ".domain";
-        // limit the cartridge alias to 30 characters in length
-        if (clusterId.length() > 30) {
-            clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
-        }
-        setClusterId(clusterId);
+        setClusterId(generateClusterId(null, type));
         //host name is the hostname defined in cartridge definition
         setHostName(cartridgeInfo.getHostName());
 
         // create and set PayloadData instance
         setPayloadData(createPayload(cartridgeInfo, subscriptionKey, null, cluster, null, null, null));
+    }
+
+    protected String generateClusterId (String alias, String cartridgeType) {
+
+        String clusterId = cartridgeType + cartridgeInfo.getHostName() + ".domain";
+        // limit the cartridge alias to 30 characters in length
+        if (clusterId.length() > 30) {
+            clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
+        }
+
+        return clusterId;
+    }
+
+    public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {
+
+        register(getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(), getDeploymentPolicyName(), properties);
     }
 
     public void undeploy () throws ADCException, NotSubscribedException {

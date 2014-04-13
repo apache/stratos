@@ -18,6 +18,19 @@
  * under the License.
  *
 */
+var toggleButtonState = function(){
+    var $activateTenantsBtn = $('#activateTenantsBtn');
+    var $deactivateTenantsBtn = $('#deactivateTenantsBtn');
+
+    if($('table input.js_domainCheck:checked').length == 0 ){
+        $activateTenantsBtn.prop("disabled",true);
+        $deactivateTenantsBtn.prop("disabled",true);
+    }else{
+        $activateTenantsBtn.prop("disabled",false);
+        $deactivateTenantsBtn.prop("disabled",false);
+    }
+};
+
 
 $(function(){
     $('#checkAll').click(function(){
@@ -26,16 +39,21 @@ $(function(){
         } else{
             $('table input.js_domainCheck').prop('checked',false);
         }
+        toggleButtonState();
     });
-
+    $('table input.js_domainCheck').click(function(){
+        toggleButtonState();
+    });
     $( "#newTenantForm" ).validate({
         rules: {
-            adminPassword: "required",
-                adminPassword_again: {
-                    equalTo: "#adminPassword"
-                }
+            adminPassword: {required:true,maxlength:30,minlength:5},
+            adminPassword_again: {
+                equalTo: "#adminPassword"
+            }
         }
     });
+
+    toggleButtonState();
 
 });
 function manage_selected(action){
@@ -78,7 +96,10 @@ function manage_one(action,obj){
 
 function checkAvailability() {
     var domain = $('#tenantDomain').val();
-    console.info(domain);
+    if(domain.trim() == ""){
+        $('#domainMessage').show().html('Domain should not be empty.').addClass('noDomain').removeClass('hasDomain');
+        return;
+    }
     $.ajax({
         data:{domain:domain},
         url:"/console/controllers/checkAvailability.jag",
