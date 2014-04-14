@@ -217,17 +217,17 @@ function cc_setup() {
 # AS related functions
 # -------------------------------------------------------------------
 function as_related_popup() {
-    while read -p "Please provide Auto Scalar ip:" as_ip
+    while read -p "Please provide Autoscaler IP:" as_ip
     do
 	if !(valid_ip $as_ip); then
-	    echo "Please provide valid ips for AS"	 
+	    echo "Please provide valid IPs for AS"	 
 	else 
             export as_ip
 	    break 
 	fi
     done 
 
-    while read -p "Please provide Auto Scala hostname:" as_hostname
+    while read -p "Please provide Autoscaler Hostname:" as_hostname
     do
 	if [[ -z $as_hostname ]]; then
 	    echo "Please specify valid hostname for AS"	 
@@ -237,7 +237,7 @@ function as_related_popup() {
 	fi
     done
 
-    while read -p "Please provide Auto Scala port offset:" as_port_offset
+    while read -p "Please provide Autoscaler port offset:" as_port_offset
     do
 	if [[ -z $as_port_offset ]]; then
 	    echo "Please specify the port offset of AS"	 
@@ -265,7 +265,7 @@ function as_conf_validate() {
 # Setup AS 
 function as_setup() {
     echo "Setup AS" >> $LOG
-    echo "Configuring the Auto Scalar"
+    echo "Configuring the Autoscaler"
 
     cp -f ./config/all/repository/conf/autoscaler.xml $stratos_extract_path/repository/conf/
 
@@ -278,7 +278,7 @@ function as_setup() {
     sed -i "s@SM_LISTEN_PORT@$as_sm_https_port@g" repository/conf/autoscaler.xml
 
     popd
-    echo "End configuring the Auto scalar"
+    echo "End configuring the Autoscaler"
 }
 
 
