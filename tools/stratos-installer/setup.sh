@@ -92,7 +92,7 @@ function general_conf_validate() {
         exit 1
     fi
     if [[ ! -f $stratos_pack_zip ]]; then
-        echo "Please copy the startos zip to the stratos pack folder"
+        echo "Please copy the stratos zip to the stratos pack folder"
         exit 1
     fi
     if [[ -z $mb_port ]]; then
