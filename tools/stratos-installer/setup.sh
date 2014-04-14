@@ -31,12 +31,13 @@ export LOG=$log_path/stratos-setup.log
 
 profile="default"
 config_mb="true"
+mb_client_lib_path=""
 auto_start_servers="false"
 
 function help {
     echo ""
     echo "Usage:"
-    echo "setup.sh -p \"<profile>\" [-s]"
+    echo "setup.sh -p \"<profile>\" [-s] [-o <port offset>]"
     echo "profile: [default, cc, as, sm]"
     echo "Example:"
     echo "sudo ./setup.sh -p \"default\""
@@ -45,6 +46,7 @@ function help {
     echo "-p: <profile> Apache Stratos product profile to be installed on this node. Provide the name of profile."
     echo "    The available profiles are cc, as, sm or default. 'default' means you need all features will be available"
     echo "-s: Silent mode - No prompts and start servers after installation."
+    echo "-o: Port offset - Enables you to specify a port offset to the server to be started."
     echo ""
 }
 
@@ -110,13 +112,29 @@ function general_conf_validate() {
             	config_mb="false"
             fi
     	fi
+
+    	copy_mb_client_libs
     fi
+		
+}
+
+# Copy MB client libs
+function copy_mb_client_libs() {
+
+	read -p "Please enter the path to MB Client libs (If you need them to be copied): " answer
+
+	mb_client_lib_path=$answer
 }
 
 # Setup General
 function general_setup() {
 
-    cp -f ./config/all/repository/conf/activemq/jndi.properties $stratos_extract_path/repository/conf/
+    cp -f  $jndi_template_path $stratos_extract_path/repository/conf/
+
+    if [[ -d $mb_client_lib_path ]]; then
+	cp -R $mb_client_lib_path/* $stratos_extract_path/repository/components/lib
+	echo "Successfully copied all the MB client libs."
+    fi
 
     pushd $stratos_extract_path
     echo "In repository/conf/carbon.xml"
@@ -198,13 +216,13 @@ function cc_setup() {
     export cc_path=$stratos_extract_path
     echo "In repository/conf/cloud-controller.xml"
     if [[ $ec2_provider_enabled = true ]]; then
-        ./ec2.sh
+        ./ec2.sh $stratos_extract_path
     fi
     if [[ $openstack_provider_enabled = true ]]; then
-        ./openstack.sh
+        ./openstack.sh $stratos_extract_path
     fi
     if [[ $vcloud_provider_enabled = true ]]; then
-        ./vcloud.sh
+        ./vcloud.sh $stratos_extract_path
     fi
 
     pushd $stratos_extract_path
@@ -414,7 +432,7 @@ function cep_setup() {
 # Execution 
 # ------------------------------------------------
 
-while getopts p:s opts
+while getopts ":p:o:s" opts
 do
   case $opts in
     p)
@@ -423,6 +441,10 @@ do
     s)
         auto_start_servers="true"
         ;;
+    o)
+	offset=${OPTARG}
+	echo "You have set port offset to ${offset}"
+	;;
     \?)
         help
         exit 1
@@ -433,7 +455,7 @@ done
 profile_list=`echo $profile_list | sed 's/^ *//g' | sed 's/ *$//g'`
 if [[ !(-z $profile_list || $profile_list = "") ]]; then
     arr=$(echo $profile_list | tr " " "\n")
-echo $arr
+
     for x in $arr
     do
     	if [[ $x = "default" ]]; then
@@ -453,6 +475,8 @@ echo $arr
 else 
     echo "You have not provided a profile : default profile will be selected."
 fi
+
+stratos_extract_path=$stratos_extract_path"-"$profile
 
 
 if [[ $host_user == "" ]]; then
