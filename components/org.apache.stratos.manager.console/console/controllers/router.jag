@@ -120,13 +120,13 @@
         }
 
 
-        var defaultPath='/default_page.jag';
+        /*var defaultPath='/default_page.jag';
         //Set the default path
         request.getMappedPath = function() {
             return defaultPath; // setting path for caramel framework
         };
         include(defaultPath);
-        return;
+        return; */
     }
 
     response.sendError(404,MSG_404);
