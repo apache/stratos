@@ -31,20 +31,22 @@ export LOG=$log_path/stratos-setup.log
 
 profile="default"
 config_mb="true"
+mb_client_lib_path=""
 auto_start_servers="false"
 
 function help {
     echo ""
     echo "Usage:"
-    echo "setup.sh -p \"<profile>\" [-s]"
-    echo "product list : [default, cc, as, sm]"
+    echo "setup.sh -p \"<profile>\" [-s] [-o <port offset>]"
+    echo "profile: [default, cc, as, sm]"
     echo "Example:"
     echo "sudo ./setup.sh -p \"default\""
     echo "sudo ./setup.sh -p \"cc\""
     echo ""
-    echo "-p: <profile> Apache Stratos products to be installed on this node. Provide one name of a profile."
-    echo "    The available profiles are cc, as, sm or default. 'default' means you need to setup all servers in this machine. Default is 'default' profile"
-    echo "-s: Silent mode - Start servers after installation."
+    echo "-p: <profile> Apache Stratos product profile to be installed on this node. Provide the name of profile."
+    echo "    The available profiles are cc, as, sm or default. 'default' means you need all features will be available"
+    echo "-s: Silent mode - No prompts and start servers after installation."
+    echo "-o: Port offset - Enables you to specify a port offset to the server to be started."
     echo ""
 }
 
@@ -92,7 +94,7 @@ function general_conf_validate() {
         exit 1
     fi
     if [[ ! -f $stratos_pack_zip ]]; then
-        echo "Please copy the startos zip to the stratos pack folder"
+        echo "Please copy the stratos zip to the stratos pack folder"
         exit 1
     fi
     if [[ -z $mb_port ]]; then
@@ -110,13 +112,29 @@ function general_conf_validate() {
             	config_mb="false"
             fi
     	fi
+
+    	copy_mb_client_libs
     fi
+		
+}
+
+# Copy MB client libs
+function copy_mb_client_libs() {
+
+	read -p "Please enter the path to MB Client libs (If you need them to be copied): " answer
+
+	mb_client_lib_path=$answer
 }
 
 # Setup General
 function general_setup() {
 
-    cp -f ./config/all/repository/conf/activemq/jndi.properties $stratos_extract_path/repository/conf/
+    cp -f  $jndi_template_path $stratos_extract_path/repository/conf/
+
+    if [[ -d $mb_client_lib_path ]]; then
+	cp -R $mb_client_lib_path/* $stratos_extract_path/repository/components/lib
+	echo "Successfully copied all the MB client libs."
+    fi
 
     pushd $stratos_extract_path
     echo "In repository/conf/carbon.xml"
@@ -198,13 +216,13 @@ function cc_setup() {
     export cc_path=$stratos_extract_path
     echo "In repository/conf/cloud-controller.xml"
     if [[ $ec2_provider_enabled = true ]]; then
-        ./ec2.sh
+        ./ec2.sh $stratos_extract_path
     fi
     if [[ $openstack_provider_enabled = true ]]; then
-        ./openstack.sh
+        ./openstack.sh $stratos_extract_path
     fi
     if [[ $vcloud_provider_enabled = true ]]; then
-        ./vcloud.sh
+        ./vcloud.sh $stratos_extract_path
     fi
 
     pushd $stratos_extract_path
@@ -217,17 +235,17 @@ function cc_setup() {
 # AS related functions
 # -------------------------------------------------------------------
 function as_related_popup() {
-    while read -p "Please provide Auto Scalar ip:" as_ip
+    while read -p "Please provide Autoscaler IP:" as_ip
     do
 	if !(valid_ip $as_ip); then
-	    echo "Please provide valid ips for AS"	 
+	    echo "Please provide valid IPs for AS"	 
 	else 
             export as_ip
 	    break 
 	fi
     done 
 
-    while read -p "Please provide Auto Scala hostname:" as_hostname
+    while read -p "Please provide Autoscaler Hostname:" as_hostname
     do
 	if [[ -z $as_hostname ]]; then
 	    echo "Please specify valid hostname for AS"	 
@@ -237,7 +255,7 @@ function as_related_popup() {
 	fi
     done
 
-    while read -p "Please provide Auto Scala port offset:" as_port_offset
+    while read -p "Please provide Autoscaler port offset:" as_port_offset
     do
 	if [[ -z $as_port_offset ]]; then
 	    echo "Please specify the port offset of AS"	 
@@ -265,7 +283,7 @@ function as_conf_validate() {
 # Setup AS 
 function as_setup() {
     echo "Setup AS" >> $LOG
-    echo "Configuring the Auto Scalar"
+    echo "Configuring the Autoscaler"
 
     cp -f ./config/all/repository/conf/autoscaler.xml $stratos_extract_path/repository/conf/
 
@@ -278,7 +296,7 @@ function as_setup() {
     sed -i "s@SM_LISTEN_PORT@$as_sm_https_port@g" repository/conf/autoscaler.xml
 
     popd
-    echo "End configuring the Auto scalar"
+    echo "End configuring the Autoscaler"
 }
 
 
@@ -414,7 +432,7 @@ function cep_setup() {
 # Execution 
 # ------------------------------------------------
 
-while getopts p:s opts
+while getopts ":p:o:s" opts
 do
   case $opts in
     p)
@@ -423,6 +441,10 @@ do
     s)
         auto_start_servers="true"
         ;;
+    o)
+	offset=${OPTARG}
+	echo "You have set port offset to ${offset}"
+	;;
     \?)
         help
         exit 1
@@ -433,7 +455,7 @@ done
 profile_list=`echo $profile_list | sed 's/^ *//g' | sed 's/ *$//g'`
 if [[ !(-z $profile_list || $profile_list = "") ]]; then
     arr=$(echo $profile_list | tr " " "\n")
-echo $arr
+
     for x in $arr
     do
     	if [[ $x = "default" ]]; then
@@ -453,6 +475,8 @@ echo $arr
 else 
     echo "You have not provided a profile : default profile will be selected."
 fi
+
+stratos_extract_path=$stratos_extract_path"-"$profile
 
 
 if [[ $host_user == "" ]]; then
@@ -501,12 +525,6 @@ if [[ ! -d $log_path ]]; then
     mkdir -p $log_path
 fi
 
-
-echo ""
-echo "For all the questions asked while during executing the script please just press the enter button"
-echo ""
-
-
 # Extract stratos zip file
 if [[ !(-d $stratos_extract_path) ]]; then
     echo "Extracting Apache Stratos"
@@ -547,7 +565,7 @@ if [[ $profile = "sm" || $profile = "as" ]]; then
 fi
 
 if [[ $profile = "sm" ]]; then
-    echo "$as_ip $as_hostname	# auto scalar hostname"	>> hosts.tmp
+    echo "$as_ip $as_hostname	# auto scaler hostname"	>> hosts.tmp
 fi
 
 mv -f ./hosts.tmp /etc/hosts
@@ -559,7 +577,7 @@ mv -f ./hosts.tmp /etc/hosts
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
 chown $host_user:$host_user $stratos_path -R
 
-echo "Apache Stratos setup has successfully completed"
+echo "Apache Stratos configuration completed successfully"
 
 if [[ $auto_start_servers != "true" ]]; then
     read -p "Do you want to start the servers [y/n]? " answer
@@ -578,7 +596,7 @@ chmod -R 777 $log_path
 export setup_dir=$PWD
 su - $host_user -c "source $setup_path/conf/setup.conf;$setup_path/start-servers.sh -p\"$profile\" >> $LOG"
 
-echo "Servers started. Please look at $LOG file for server startup details"
+echo "You can access Stratos after the server is started."
 if [[ $profile == "default" || $profile == "sm" ]]; then
     echo "**************************************************************"
     echo "Management Console : https://$stratos_domain:$sm_https_port/console"

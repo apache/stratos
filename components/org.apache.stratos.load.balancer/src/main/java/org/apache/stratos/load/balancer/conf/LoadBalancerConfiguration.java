@@ -51,6 +51,7 @@ public class LoadBalancerConfiguration {
     private String defaultAlgorithmName;
     private boolean failOverEnabled;
     private boolean sessionAffinityEnabled;
+    private long endpointTimeout;
     private long sessionTimeout;
     private boolean cepStatsPublisherEnabled;
     private String mbIp;
@@ -78,7 +79,7 @@ public class LoadBalancerConfiguration {
     /**
      * Get load balancer configuration singleton instance.
      *
-     * @return
+     * @return Load balancer configuration
      */
     public static LoadBalancerConfiguration getInstance() {
         if (instance == null) {
@@ -128,6 +129,14 @@ public class LoadBalancerConfiguration {
 
     public void setSessionAffinityEnabled(boolean sessionAffinityEnabled) {
         this.sessionAffinityEnabled = sessionAffinityEnabled;
+    }
+
+    public long getEndpointTimeout() {
+        return endpointTimeout;
+    }
+
+    public void setEndpointTimeout(long endpointTimeout) {
+        this.endpointTimeout = endpointTimeout;
     }
 
     public long getSessionTimeout() {
@@ -311,12 +320,27 @@ public class LoadBalancerConfiguration {
             if (StringUtils.isNotBlank(sessionAffinity)) {
                 configuration.setSessionAffinityEnabled(Boolean.parseBoolean(sessionAffinity));
             }
+
+            String endpointTimeout = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_ENDPOINT_TIMEOUT);
+            if (StringUtils.isNotBlank(endpointTimeout)) {
+                configuration.setEndpointTimeout(Long.parseLong(endpointTimeout));
+            } else {
+                // Endpoint timeout is not found, set default value
+                configuration.setEndpointTimeout(Constants.DEFAULT_ENDPOINT_TIMEOUT);
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Endpoint timeout not found, using default: %d", configuration.getEndpointTimeout()));
+                }
+            }
+
             String sessionTimeout = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_SESSION_TIMEOUT);
             if (StringUtils.isNotBlank(sessionTimeout)) {
                 configuration.setSessionTimeout(Long.parseLong(sessionTimeout));
             } else {
                 // Session timeout is not found, set default value
                 configuration.setSessionTimeout(Constants.DEFAULT_SESSION_TIMEOUT);
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Session timeout not found, using default: %d", configuration.getSessionTimeout()));
+                }
             }
 
             String topologyEventListenerEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER);

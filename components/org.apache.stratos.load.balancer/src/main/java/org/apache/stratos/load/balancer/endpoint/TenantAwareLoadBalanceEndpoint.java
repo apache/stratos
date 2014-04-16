@@ -28,6 +28,7 @@ import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
+import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
 import org.apache.stratos.load.balancer.statistics.InFlightRequestIncrementCallable;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
 import org.apache.stratos.load.balancer.util.Constants;
@@ -397,10 +398,13 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         endpoint.setEnableMBeanStats(false);
         endpoint.setName("DLB:" + member.getHostName() +
                 ":" + member.getPort() + ":" + UUID.randomUUID());
+
         EndpointDefinition definition = new EndpointDefinition();
-        definition.setSuspendMaximumDuration(10000);
+        definition.setTimeoutAction(SynapseConstants.DISCARD_AND_FAULT);
+        definition.setTimeoutDuration(LoadBalancerConfiguration.getInstance().getEndpointTimeout());
         definition.setReplicationDisabled(true);
         definition.setAddress(to.getAddress());
+
         endpoint.setDefinition(definition);
         endpoint.init((SynapseEnvironment)
                 ((Axis2MessageContext) synCtx).getAxis2MessageContext().
@@ -510,13 +514,12 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
         Endpoint endpoint = getEndpoint(to, currentMember, synCtx);
 
-        if (isFailover()) {
-            faultHandler.setTo(to);
-            faultHandler.setCurrentMember(currentMember);
-            faultHandler.setCurrentEp(endpoint);
-            synCtx.pushFaultHandler(faultHandler);
-            synCtx.getEnvelope().build();
-        }
+        // Push fault handler to manage statistics and fail-over logic
+        faultHandler.setTo(to);
+        faultHandler.setCurrentMember(currentMember);
+        faultHandler.setCurrentEp(endpoint);
+        synCtx.pushFaultHandler(faultHandler);
+        synCtx.getEnvelope().build();
 
         if (isSessionAffinityBasedLB()) {
             synCtx.setProperty(SynapseConstants.PROP_SAL_ENDPOINT_DEFAULT_SESSION_TIMEOUT, getSessionTimeout());
@@ -571,6 +574,22 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         catch (Exception e) {
             if(log.isDebugEnabled()) {
                 log.debug("Could not increment in-flight request count", e);
+            }
+        }
+    }
+
+    private void decrementInFlightRequestCount(MessageContext messageContext) {
+        try {
+            String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
+            if(StringUtils.isBlank(clusterId)) {
+                throw new RuntimeException("Cluster id not found in message context");
+            }
+            FutureTask<Object> task = new FutureTask<Object>(new InFlightRequestDecrementCallable(clusterId));
+            LoadBalancerStatisticsExecutor.getInstance().getService().submit(task);
+        }
+        catch (Exception e) {
+            if(log.isDebugEnabled()) {
+                log.debug("Could not decrement in-flight request count", e);
             }
         }
     }
@@ -634,41 +653,57 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
         @Override
         public void onFault(MessageContext synCtx) {
-            // Cleanup endpoint if exists
-            if (currentEp != null) {
-                currentEp.destroy();
-            }
-            if (currentMember == null) {
-                return;
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("A fault detected in message sent to: %s ", (to != null) ? to.getAddress() : "address not found"));
             }
 
-            // Add current member to faulty members
-            faultyMembers.put(currentMember.getHostName(), true);
+            // Decrement in-flight request count
+            decrementInFlightRequestCount(synCtx);
 
-            currentMember = findNextMember(synCtx);
-            if (currentMember == null) {
-                String msg = String.format("No application members available to serve the request %s", synCtx.getTo().getAddress());
-                if (log.isErrorEnabled()) {
-                    log.error(msg);
+            if (isFailover()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Fail-over enabled, trying to send the message to the next available member");
                 }
-                throwSynapseException(synCtx, 404, msg);
-            }
-            if (faultyMembers.containsKey(currentMember.getHostName())) {
-                // This member has been identified as faulty previously. It implies that
-                // this request could not be served by any of the members in the cluster.
-                throwSynapseException(synCtx, 404, String.format("Requested resource could not be found"));
-            }
 
-            synCtx.setTo(to);
-            if (isSessionAffinityBasedLB()) {
-                //We are sending the this message on a new session,
-                // hence we need to remove previous session information
-                Set pros = synCtx.getPropertyKeySet();
-                if (pros != null) {
-                    pros.remove(SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
+                // Cleanup endpoint if exists
+                if (currentEp != null) {
+                    currentEp.destroy();
                 }
+                if (currentMember == null) {
+                    if(log.isErrorEnabled()) {
+                        log.error("Current member is null, could not fail-over");
+                    }
+                    return;
+                }
+
+                // Add current member to faulty members
+                faultyMembers.put(currentMember.getHostName(), true);
+
+                currentMember = findNextMember(synCtx);
+                if (currentMember == null) {
+                    String msg = String.format("No members available to serve the request %s", (to != null) ? to.getAddress() : "address not found");
+                    if (log.isErrorEnabled()) {
+                        log.error(msg);
+                    }
+                    throwSynapseException(synCtx, 404, msg);
+                }
+                if (faultyMembers.containsKey(currentMember.getHostName())) {
+                    // This member has been identified as faulty previously. It implies that
+                    // this request could not be served by any of the members in the cluster.
+                    throwSynapseException(synCtx, 404, String.format("Requested resource could not be found"));
+                }
+
+                synCtx.setTo(to);
+                if (isSessionAffinityBasedLB()) {
+                    //We are sending the this message on a new session,
+                    // hence we need to remove previous session information
+                    Set pros = synCtx.getPropertyKeySet();
+                    if (pros != null) {
+                        pros.remove(SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
+                    }
+                }
+                sendToApplicationMember(synCtx, currentMember, this, true);
             }
-            sendToApplicationMember(synCtx, currentMember, this, true);
         }
     }
 }

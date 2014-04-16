@@ -50,12 +50,14 @@
                 <exclude>**/org.wso2.carbon.roles.mgt.stub_4.1.0-SNAPSHOT.jar</exclude>
                 <exclude>**/log4j.properties</exclude>
                 <exclude>**/repository/components/**</exclude>
+		<exclude>**/lib/endorsed/**</exclude>
                 <exclude>**/dbscripts/mysql.sql</exclude>
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
 		<exclude>**/repository/conf/axis2/axis2.xml</exclude>
+		<exclude>**/repository/conf/registry.xml</exclude>
 		<exclude>**/repository/conf/log4j.properties</exclude>
-		<exclude>**/repository/conf/data-bridge/**</exclude>
+  		<exclude>**/repository/conf/data-bridge/**</exclude>
             </excludes>
         </fileSet>
 	<!-- Copying p2 profile and osgi bundles-->
@@ -70,8 +72,22 @@
 	        <exclude>**/org.wso2.store.sso.common_1.0.0.jar</exclude>
 	        <exclude>**/org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</exclude>
 	        <exclude>**/org.jaggeryjs.hostobjects.xhr_0.9.0.ALPHA4_wso2v1.jar</exclude>
+                <exclude>**/infinispan-core_5.1.2.wso2v1.jar</exclude>
+	        <exclude>**/jboss-logging_3.1.0.wso2v1.jar</exclude>
+		<exclude>**/marshalling_1.3.6.wso2v1.jar</exclude>
+		<exclude>**/jboss-transaction-api_1.1_spec-1.0.0.Final.jar</exclude>
 	    </excludes>
 	</fileSet>
+
+	<!-- Exclude non-Apache2 compliant dependency from lib/endorsed/ directory-->
+        <fileSet>
+            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/lib/endorsed</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/lib/endorsed</outputDirectory>
+            <excludes>
+                <exclude>**/jboss-transaction-api_1.1_spec-1.0.0.Final.jar</exclude>
+            </excludes>
+        </fileSet>
+	
         <fileSet>
         <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/jaggeryapps</directory>
         <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps</outputDirectory>
@@ -147,7 +163,7 @@
                 <exclude>email-new-tenant-registration.xml</exclude>
                 <exclude>email-password-reset.xml</exclude>
                 <exclude>email-payment-received-customer.xml</exclude>
-				<exclude>email-registration-payment-received-customer.xml</exclude>
+		<exclude>email-registration-payment-received-customer.xml</exclude>
                 <exclude>email-payment-received-wso2.xml</exclude>
                 <exclude>email-registration-complete.xml</exclude>
                 <exclude>email-registration-moderation.xml</exclude>
@@ -465,6 +481,7 @@
               <include>*.xml</include>
            </includes>
 	</fileSet>
+
     <!-- autoscaler -->
 	<fileSet>
             <directory>../../conf/temp-artifacts</directory>
@@ -564,6 +581,12 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/lib</outputDirectory>
             <includes>
                 <include>org.apache.stratos:org.apache.stratos.cep.extension:jar</include>
+            </includes>
+        </dependencySet>
+         <dependencySet>
+          <outputDirectory>${pom.artifactId}-${pom.version}/lib/endorsed</outputDirectory>
+            <includes>
+                <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
@@ -692,12 +715,12 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
-        <file>
+        <!--file>
             <source>LICENSE.txt</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
-        </file>
+        </file-->
         <file>
             <source>release-notes.html</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>

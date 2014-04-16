@@ -64,7 +64,7 @@
                     </div>
 		    <div class="checkbox">
                         <label>
-                            <input name="commitsEnabled" type="checkbox" /> Auto Commit
+                            <input id="commitsEnabled" name="commitsEnabled" type="checkbox" /> Auto Commit
                         </label>
                     </div>
                     <div class="checkbox">
@@ -180,6 +180,7 @@
     </div>
 </div>
 <script>
+
     $(function(){
         $('.js-help')
                 .focus(
@@ -200,12 +201,27 @@
                 });
 
         var $public_check = $('#public_check');
-        if(!$public_check.is(':checked')){
-            $('#public_check').prop("checked",true);
-        }
+        var $commitsEnabled = $('#commitsEnabled');
+
+        var toggleCredentials = function(){
+            if($public_check.is(':checked') && !$commitsEnabled.is(":checked") ){
+                $('#credential_container').hide();
+            }else{
+                $('#credential_container').show();
+            }
+        };
+
+        $public_check.prop("checked",true);
+        $commitsEnabled.prop("checked",false);
+
         $public_check.click(function(){
-            $('#credential_container').toggle($public_check.checked);
+            toggleCredentials();
         });
+        $commitsEnabled.click(function(){
+            toggleCredentials();
+        });
+
+
 
         var $volume_check = $('#volume_check');
 

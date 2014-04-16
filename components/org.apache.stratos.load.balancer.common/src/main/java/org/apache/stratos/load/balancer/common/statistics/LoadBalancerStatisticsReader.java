@@ -28,5 +28,5 @@ public interface LoadBalancerStatisticsReader {
      * Get in-flight request count of a sliding window configured e.g. Requests in flight of last minute.
      * @param clusterId
      */
-    int getInFlightRequestCountOfSlidingWindow(String clusterId);
+    int getInFlightRequestCount(String clusterId);
 }

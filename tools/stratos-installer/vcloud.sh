@@ -31,6 +31,8 @@ export LOG=$log_path/stratos-vcloud.log
 
 source "./conf/setup.conf"
 
+stratos_extract_path=$1
+
 if [[ ! -d $log_path ]]; then
     mkdir -p $log_path
 fi

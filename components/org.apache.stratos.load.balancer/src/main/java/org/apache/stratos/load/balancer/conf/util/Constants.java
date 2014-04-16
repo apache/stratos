@@ -35,6 +35,7 @@ public class Constants {
     public static final String CONF_PROPERTY_ALGORITHM = "algorithm";
     public static final String CONF_PROPERTY_FAILOVER = "failover";
     public static final String CONF_PROPERTY_SESSION_AFFINITY = "session-affinity";
+    public static final String CONF_PROPERTY_ENDPOINT_TIMEOUT = "endpoint-timeout";
     public static final String CONF_PROPERTY_SESSION_TIMEOUT = "session-timeout";
     public static final String CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER = "topology-event-listener";
     public static final String CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE = "topology-member-ip-type";
@@ -60,6 +61,7 @@ public class Constants {
     public static final String CONF_PROPERTY_NETWORK_PARTITION_ID = "network-partition-id";
 
     public static final String CONF_DELIMITER_HOSTS = ",";
+    public static final long DEFAULT_ENDPOINT_TIMEOUT = 15000;
     public static final long DEFAULT_SESSION_TIMEOUT = 90000;
     public static final String STATIC_NETWORK_PARTITION = "static-network-partition";
     public static final String STATIC_PARTITION = "static-partition";

@@ -46,7 +46,7 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
     }
 
     @Override
-    public int getInFlightRequestCountOfSlidingWindow(String clusterId) {
+    public int getInFlightRequestCount(String clusterId) {
         String frontendId, backendId, command, output;
         String[] array;
         int totalWeight, weight;
