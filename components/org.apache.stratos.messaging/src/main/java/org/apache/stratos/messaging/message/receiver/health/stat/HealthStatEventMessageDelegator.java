@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.health.stat.HealthStatMessageProcessorChain;
 
@@ -31,18 +32,21 @@ import javax.jms.TextMessage;
  * Implements logic for processing health stat event messages based on a given
  * topology process chain.
  */
-public class HealthStatEventMessageDelegator implements Runnable {
+class HealthStatEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(HealthStatEventMessageDelegator.class);
+
+    private HealthStatEventMessageQueue messageQueue;
     private MessageProcessorChain processorChain;
     private boolean terminated;
 
-    public HealthStatEventMessageDelegator() {
+    public HealthStatEventMessageDelegator(HealthStatEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
         this.processorChain = new HealthStatMessageProcessorChain();
     }
 
-    public HealthStatEventMessageDelegator(MessageProcessorChain processorChain) {
-        this.processorChain = processorChain;
+    public void addEventListener(EventListener eventListener) {
+        processorChain.addEventListener(eventListener);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class HealthStatEventMessageDelegator implements Runnable {
 
             while (!terminated) {
                 try {
-                    TextMessage message = HealthStatEventMessageQueue.getInstance().take();
+                    TextMessage message = messageQueue.take();
 
                     String messageText = message.getText();
                     if (log.isDebugEnabled()) {

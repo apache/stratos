@@ -37,10 +37,8 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
@@ -49,15 +47,16 @@ import java.util.List;
 /**
  * Autoscaler topology receiver.
  */
-public class AutoscalerTopologyReceiver implements Runnable {
+public class AutoscalerTopologyEventReceiver implements Runnable {
 
-    private static final Log log = LogFactory.getLog(AutoscalerTopologyReceiver.class);
+    private static final Log log = LogFactory.getLog(AutoscalerTopologyEventReceiver.class);
 
-    private TopologyReceiver topologyReceiver;
+    private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
 
-    public AutoscalerTopologyReceiver() {
-        this.topologyReceiver = new TopologyReceiver(createMessageDelegator(), new TopologyEventMessageListener());
+    public AutoscalerTopologyEventReceiver() {
+        this.topologyEventReceiver = new TopologyEventReceiver();
+        addEventListeners();
     }
 
     @Override
@@ -67,7 +66,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             Thread.sleep(15000);
         } catch (InterruptedException ignore) {
         }
-        Thread thread = new Thread(topologyReceiver);
+        Thread thread = new Thread(topologyEventReceiver);
         thread.start();
         if (log.isInfoEnabled()) {
             log.info("Autoscaler topology receiver thread started");
@@ -85,15 +84,9 @@ public class AutoscalerTopologyReceiver implements Runnable {
         }
     }
 
-    private TopologyEventMessageDelegator createMessageDelegator() {
-        TopologyMessageProcessorChain processorChain = createEventProcessorChain();
-        return new TopologyEventMessageDelegator(processorChain, TopologyEventMessageQueue.getInstance());
-    }
-
-    private TopologyMessageProcessorChain createEventProcessorChain() {
+    private void addEventListeners() {
         // Listen to topology events that affect clusters
-        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
-        processorChain.addEventListener(new CompleteTopologyEventListener() {
+        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -114,7 +107,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
 
-        processorChain.addEventListener(new ClusterCreatedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -133,7 +126,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
 
-        processorChain.addEventListener(new ClusterRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -192,7 +185,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
 
-        processorChain.addEventListener(new MemberStartedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -200,7 +193,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
 
-        processorChain.addEventListener(new MemberTerminatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -254,7 +247,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
 
         });
 
-        processorChain.addEventListener(new MemberActivatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -293,7 +286,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
         });
 
 
-        processorChain.addEventListener(new MemberMaintenanceListener() {
+        topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -330,7 +323,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
             }
         });
 
-        processorChain.addEventListener(new ServiceRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
 //                try {
@@ -349,7 +342,6 @@ public class AutoscalerTopologyReceiver implements Runnable {
 //                }
             }
         });
-        return processorChain;
     }
 
     private class LBClusterMonitorAdder implements Runnable {
@@ -468,7 +460,7 @@ public class AutoscalerTopologyReceiver implements Runnable {
      * Terminate load balancer topology receiver thread.
      */
     public void terminate() {
-        topologyReceiver.terminate();
+        topologyEventReceiver.terminate();
         terminated = true;
     }
 

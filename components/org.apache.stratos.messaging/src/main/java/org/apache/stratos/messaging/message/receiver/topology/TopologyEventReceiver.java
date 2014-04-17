@@ -19,44 +19,32 @@
 
 package org.apache.stratos.messaging.message.receiver.topology;
 
-import javax.jms.MessageListener;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
  * A thread for receiving topology information from message broker and
  * build topology in topology manager.
  */
-public class TopologyReceiver implements Runnable {
-    private static final Log log = LogFactory.getLog(TopologyReceiver.class);
+public class TopologyEventReceiver implements Runnable {
+    private static final Log log = LogFactory.getLog(TopologyEventReceiver.class);
     private TopologyEventMessageDelegator messageDelegator;
-    private MessageListener messageListener;
+    private TopologyEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
-    public TopologyReceiver() {
-        this.messageDelegator = new TopologyEventMessageDelegator();
-        this.messageListener = new TopologyEventMessageListener();
+    public TopologyEventReceiver() {
+        TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
+        this.messageDelegator = new TopologyEventMessageDelegator(messageQueue);
+        this.messageListener = new TopologyEventMessageListener(messageQueue);
     }
 
-    public TopologyReceiver(TopologyEventMessageDelegator messageDelegator) {
-        this.messageDelegator = messageDelegator;
-        this.messageListener = new TopologyEventMessageListener();
+    public void addEventListener(EventListener eventListener) {
+        messageDelegator.addEventListener(eventListener);
     }
-    
-    public TopologyReceiver(MessageListener listener) {
-        this.messageDelegator = new TopologyEventMessageDelegator();
-        this.messageListener = listener;
-    }
-    
-    public TopologyReceiver(TopologyEventMessageDelegator messageDelegator, MessageListener listener) {
-        this.messageDelegator = messageDelegator;
-        this.messageListener = listener;
-    }
-    
 
     @Override
     public void run() {

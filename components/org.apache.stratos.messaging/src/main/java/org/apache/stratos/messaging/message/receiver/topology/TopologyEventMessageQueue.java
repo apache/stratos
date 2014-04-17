@@ -19,27 +19,11 @@
 
 package org.apache.stratos.messaging.message.receiver.topology;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 import javax.jms.TextMessage;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Implements a blocking queue for managing topology event messages.
  */
-public class TopologyEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile TopologyEventMessageQueue instance;
-
-    private TopologyEventMessageQueue(){
-    }
-
-    public static TopologyEventMessageQueue getInstance() {
-        if (instance == null) {
-            synchronized (TopologyEventMessageQueue.class){
-                if (instance == null) {
-                    instance = new TopologyEventMessageQueue();
-                }
-            }
-        }
-        return instance;
-    }
+class TopologyEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
 }

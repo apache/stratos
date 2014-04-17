@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantEventMessageQueue;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,6 +35,12 @@ public class HealthStatEventMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(HealthStatEventMessageListener.class);
 
+    private HealthStatEventMessageQueue messageQueue;
+
+    public HealthStatEventMessageListener(HealthStatEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
+
     @Override
     public void onMessage(Message message) {
         if (message instanceof TextMessage) {
@@ -45,7 +50,7 @@ public class HealthStatEventMessageListener implements MessageListener {
                     log.debug(String.format("Tenant message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
-                HealthStatEventMessageQueue.getInstance().add(receivedMessage);
+                messageQueue.add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);

@@ -35,29 +35,28 @@ import org.apache.stratos.messaging.listener.topology.ClusterRemovedEventListene
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ServiceRemovedEventListener;
-import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 
 /**
  * Load balancer topology receiver updates load balancer context according to
  * incoming topology events.
  */
-public class LoadBalancerTopologyReceiver implements Runnable {
+public class LoadBalancerTopologyEventReceiver implements Runnable {
 
-    private static final Log log = LogFactory.getLog(LoadBalancerTopologyReceiver.class);
+    private static final Log log = LogFactory.getLog(LoadBalancerTopologyEventReceiver.class);
 
-    private TopologyReceiver topologyReceiver;
+    private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
 
-    public LoadBalancerTopologyReceiver() {
-        this.topologyReceiver = new TopologyReceiver(createMessageDelegator());
+    public LoadBalancerTopologyEventReceiver() {
+        this.topologyEventReceiver = new TopologyEventReceiver();
+        addEventListeners();
     }
 
     @Override
     public void run() {
-        Thread thread = new Thread(topologyReceiver);
+        Thread thread = new Thread(topologyEventReceiver);
         thread.start();
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
@@ -75,15 +74,9 @@ public class LoadBalancerTopologyReceiver implements Runnable {
         }
     }
 
-    private TopologyEventMessageDelegator createMessageDelegator() {
-        TopologyMessageProcessorChain processorChain = createEventProcessorChain();
-        return new TopologyEventMessageDelegator(processorChain);
-    }
-
-    private TopologyMessageProcessorChain createEventProcessorChain() {
+    private void addEventListeners() {
         // Listen to topology events that affect clusters
-        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
-        processorChain.addEventListener(new CompleteTopologyEventListener() {
+        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -115,7 +108,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                 return false;
             }
         });
-        processorChain.addEventListener(new MemberActivatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -154,7 +147,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                 }
             }
         });
-        processorChain.addEventListener(new ClusterRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -178,7 +171,7 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                 }
             }
         });
-        processorChain.addEventListener(new ServiceRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -203,14 +196,13 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                 }
             }
         });
-        return processorChain;
     }
 
     /**
      * Terminate load balancer topology receiver thread.
      */
     public void terminate() {
-        topologyReceiver.terminate();
+        topologyEventReceiver.terminate();
         terminated = true;
     }
 }

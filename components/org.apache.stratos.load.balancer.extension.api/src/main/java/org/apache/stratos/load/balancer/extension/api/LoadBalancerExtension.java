@@ -25,10 +25,8 @@ import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatistics
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventMessageDelegator;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyReceiver;
 
 /**
  * Load balancer extension thread for executing load balancer life-cycle according to the topology updates
@@ -40,7 +38,7 @@ public class LoadBalancerExtension implements Runnable {
     private LoadBalancer loadBalancer;
     private LoadBalancerStatisticsReader statsReader;
     private boolean loadBalancerStarted;
-    private TopologyReceiver topologyReceiver;
+    private TopologyEventReceiver topologyEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
     private boolean terminated;
 
@@ -62,8 +60,9 @@ public class LoadBalancerExtension implements Runnable {
             }
 
             // Start topology receiver thread
-            topologyReceiver = new TopologyReceiver(createMessageDelegator());
-            Thread topologyReceiverThread = new Thread(topologyReceiver);
+            topologyEventReceiver = new TopologyEventReceiver();
+            addEventListeners();
+            Thread topologyReceiverThread = new Thread(topologyEventReceiver);
             topologyReceiverThread.start();
 
             if(statsReader != null) {
@@ -87,9 +86,8 @@ public class LoadBalancerExtension implements Runnable {
         }
     }
 
-    private TopologyEventMessageDelegator createMessageDelegator() {
-        TopologyMessageProcessorChain processorChain = createEventProcessorChain();
-        processorChain.addEventListener(new CompleteTopologyEventListener() {
+    private void addEventListeners() {
+        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
 
             @Override
             protected void onEvent(Event event) {
@@ -108,42 +106,36 @@ public class LoadBalancerExtension implements Runnable {
                 }
             }
         });
-        return new TopologyEventMessageDelegator(processorChain);
-    }
-
-    private TopologyMessageProcessorChain createEventProcessorChain() {
-        TopologyMessageProcessorChain processorChain = new TopologyMessageProcessorChain();
-        processorChain.addEventListener(new MemberActivatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        processorChain.addEventListener(new MemberSuspendedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        processorChain.addEventListener(new MemberTerminatedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        processorChain.addEventListener(new ClusterRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        processorChain.addEventListener(new ServiceRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 reloadConfiguration();
             }
         });
-        return processorChain;
     }
 
     private void reloadConfiguration() {
@@ -159,8 +151,8 @@ public class LoadBalancerExtension implements Runnable {
     }
 
     public void terminate() {
-        if(topologyReceiver != null) {
-            topologyReceiver.terminate();
+        if(topologyEventReceiver != null) {
+            topologyEventReceiver.terminate();
         }
         if(statisticsNotifier != null) {
             statisticsNotifier.terminate();

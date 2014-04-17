@@ -25,36 +25,33 @@ import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
-import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.listener.health.stat.*;
-import org.apache.stratos.messaging.message.processor.health.stat.HealthStatMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.health.stat.HealthStatEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.health.stat.HealthStatReceiver;
+import org.apache.stratos.messaging.message.receiver.health.stat.HealthStatEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 
 /**
  * A thread for processing topology messages and updating the topology data structure.
  */
-public class AutoscalerHealthStatReceiver implements Runnable {
+public class AutoscalerHealthStatEventReceiver implements Runnable {
 
-    private static final Log log = LogFactory.getLog(AutoscalerHealthStatReceiver.class);
+    private static final Log log = LogFactory.getLog(AutoscalerHealthStatEventReceiver.class);
     private boolean terminated = false;
 
-    private HealthStatReceiver healthStatReceiver;
+    private HealthStatEventReceiver healthStatEventReceiver;
 
-    public AutoscalerHealthStatReceiver() {
-		this.healthStatReceiver = new HealthStatReceiver(createMessageDelegator());
+    public AutoscalerHealthStatEventReceiver() {
+		this.healthStatEventReceiver = new HealthStatEventReceiver();
+        addEventListeners();
     }
 
     @Override
@@ -64,10 +61,10 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             Thread.sleep(15000);
         } catch (InterruptedException ignore) {
         }
-        Thread thread = new Thread(healthStatReceiver);
+        Thread thread = new Thread(healthStatEventReceiver);
         thread.start();
         if(log.isInfoEnabled()) {
-            log.info("Autoscaler health stat receiver thread started");
+            log.info("Autoscaler health stat event receiver thread started");
         }
 
         // Keep the thread live until terminated
@@ -78,19 +75,13 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
         }
         if(log.isInfoEnabled()) {
-            log.info("Autoscaler health stat receiver thread terminated");
+            log.info("Autoscaler health stat event receiver thread terminated");
         }
     }
 
-    private HealthStatEventMessageDelegator createMessageDelegator() {
-        HealthStatMessageProcessorChain processorChain = createEventProcessorChain();
-        return new HealthStatEventMessageDelegator(processorChain);
-    }
-
-    private HealthStatMessageProcessorChain createEventProcessorChain() {
+    private void addEventListeners() {
         // Listen to health stat events that affect clusters
-        HealthStatMessageProcessorChain processorChain = new HealthStatMessageProcessorChain();
-        processorChain.addEventListener(new AverageLoadAverageEventListener() {
+        healthStatEventReceiver.addEventListener(new AverageLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 AverageLoadAverageEvent e = (AverageLoadAverageEvent) event;
@@ -131,7 +122,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new AverageMemoryConsumptionEventListener() {
+        healthStatEventReceiver.addEventListener(new AverageMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
 
@@ -173,7 +164,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new AverageRequestsInFlightEventListener() {
+        healthStatEventReceiver.addEventListener(new AverageRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
 
@@ -214,7 +205,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new GradientOfLoadAverageEventListener() {
+        healthStatEventReceiver.addEventListener(new GradientOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 GradientOfLoadAverageEvent e = (GradientOfLoadAverageEvent) event;
@@ -254,7 +245,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new GradientOfMemoryConsumptionEventListener() {
+        healthStatEventReceiver.addEventListener(new GradientOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
 
@@ -295,7 +286,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new GradientOfRequestsInFlightEventListener() {
+        healthStatEventReceiver.addEventListener(new GradientOfRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 GradientOfRequestsInFlightEvent e = (GradientOfRequestsInFlightEvent) event;
@@ -335,7 +326,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberAverageLoadAverageEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberAverageLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 MemberAverageLoadAverageEvent e = (MemberAverageLoadAverageEvent) event;
@@ -354,7 +345,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberAverageMemoryConsumptionEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberAverageMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 MemberAverageMemoryConsumptionEvent e = (MemberAverageMemoryConsumptionEvent) event;
@@ -373,7 +364,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberFaultEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberFaultEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 MemberFaultEvent e = (MemberFaultEvent) event;
@@ -394,7 +385,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberGradientOfLoadAverageEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberGradientOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 MemberGradientOfLoadAverageEvent e = (MemberGradientOfLoadAverageEvent) event;
@@ -413,7 +404,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberGradientOfMemoryConsumptionEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberGradientOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 MemberGradientOfMemoryConsumptionEvent e = (MemberGradientOfMemoryConsumptionEvent) event;
@@ -432,7 +423,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberSecondDerivativeOfLoadAverageEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberSecondDerivativeOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 MemberSecondDerivativeOfLoadAverageEvent e = (MemberSecondDerivativeOfLoadAverageEvent) event;
@@ -450,13 +441,13 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new MemberSecondDerivativeOfMemoryConsumptionEventListener() {
+        healthStatEventReceiver.addEventListener(new MemberSecondDerivativeOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
             }
 
         });
-        processorChain.addEventListener(new SecondDerivativeOfLoadAverageEventListener() {
+        healthStatEventReceiver.addEventListener(new SecondDerivativeOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
 
@@ -497,7 +488,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new SecondDerivativeOfMemoryConsumptionEventListener() {
+        healthStatEventReceiver.addEventListener(new SecondDerivativeOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
 
@@ -539,7 +530,7 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-        processorChain.addEventListener(new SecondDerivativeOfRequestsInFlightEventListener() {
+        healthStatEventReceiver.addEventListener(new SecondDerivativeOfRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
                 SecondDerivativeOfRequestsInFlightEvent e = (SecondDerivativeOfRequestsInFlightEvent) event;
@@ -578,8 +569,6 @@ public class AutoscalerHealthStatReceiver implements Runnable {
             }
 
         });
-
-        return processorChain;
     }
 
 
