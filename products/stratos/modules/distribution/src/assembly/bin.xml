@@ -326,7 +326,6 @@
            <includes>
                 <include>**/multitenancy-packages.xml</include>
                 <include>**/stratos.xml</include>
-                <include>**/eula.xml</include>
                 <include>**/usage-throttling-agent-config.xml</include>
 		<!--include>**/cloud-services-desc.xml</include-->
            </includes>
