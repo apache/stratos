@@ -146,7 +146,14 @@
                                 <exclude>**/templates/*.cfg.template</exclude>
                                 <exclude>**/instrumentation.txt</exclude>
                                 <exclude>**/*json</exclude>
-
+				<exclude>**/.idea/**/*</exclude>
+				<exclude>**/tlds/**/*</exclude>
+				<exclude>**/highlighter/**/*</exclude>
+				<exclude>**/yui/**/*</exclude>
+				<exclude>**/jqueryui/**/*</exclude>
+				<exclude>**/scriptaculous/**/*</exclude>
+				<exclude>**/prototype-1.6.js</exclude>
+				<exclude>**/prototype.js</exclude>
 
                                 <!-- Added following based on jclouds -->
                                 <exclude>**/src/test/resources/**/*.xml</exclude>
