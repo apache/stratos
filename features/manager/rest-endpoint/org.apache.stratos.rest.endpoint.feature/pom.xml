@@ -33,7 +33,6 @@
     <artifactId>org.apache.stratos.rest.endpoint.feature</artifactId>
     <packaging>pom</packaging>
     <name>Apache Stratos - RESTful admin services feature</name>
-    <version>4.0.0-SNAPSHOT</version>
     <description>This feature packs the RESTful API cabability of stratos</description>
 
     <dependencies>
