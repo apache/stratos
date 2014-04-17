@@ -42,8 +42,6 @@
 	</dataPublisher>
 
     	<topologySync enable="true">
-		<!-- MB server info -->
-		<property name="amqpConnectionUrl" value="amqp://admin:admin@clientID/carbon?brokerlist='tcp://MB_HOSTNAME:MB_LISTEN_PORT'" />
 		<property name="cron" value="1 * * * * ? *" />
 	</topologySync>	
 

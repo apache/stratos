@@ -54,6 +54,10 @@ var render = function (theme, data, meta, require) {
         title = 'Multi-Tenant Service Deployment';
     }
 
+    if(data.config_status.first_use){
+        title = "Configure Stratos";
+    }
+
     if(deploy_status == "succeeded") {
         isErrDeply = false;
         isSucceeded = true;
