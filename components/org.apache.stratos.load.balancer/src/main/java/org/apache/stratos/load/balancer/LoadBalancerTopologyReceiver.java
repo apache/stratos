@@ -65,10 +65,10 @@ public class LoadBalancerTopologyReceiver implements Runnable {
 
         // Keep the thread live until terminated
         while (!terminated) {
-        	try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ignore) {
-			}
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
         }
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread terminated");
@@ -99,6 +99,8 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                             }
                         }
                     }
+                } catch (Exception e) {
+                    log.error("Error processing event", e);
                 } finally {
                     TopologyManager.releaseReadLock();
                 }
@@ -145,6 +147,8 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                             log.error(String.format("Service not found in topology: [service] %s", memberActivatedEvent.getServiceName()));
                         }
                     }
+                } catch (Exception e) {
+                    log.error("Error processing event", e);
                 } finally {
                     TopologyManager.releaseReadLock();
                 }
@@ -167,6 +171,8 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                                     clusterRemovedEvent.getServiceName(), clusterRemovedEvent.getClusterId()));
                         }
                     }
+                } catch (Exception e) {
+                    log.error("Error processing event", e);
                 } finally {
                     TopologyManager.releaseReadLock();
                 }
@@ -190,6 +196,8 @@ public class LoadBalancerTopologyReceiver implements Runnable {
                             log.warn(String.format("Service not found in topology: [service] %s", serviceRemovedEvent.getServiceName()));
                         }
                     }
+                } catch (Exception e) {
+                    log.error("Error processing event", e);
                 } finally {
                     TopologyManager.releaseReadLock();
                 }
