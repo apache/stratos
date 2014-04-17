@@ -166,7 +166,6 @@
 					                    <include>conf/identity.xml</include>
 							    <include>conf/tenant-mgt.xml</include> 
 					                    <include>conf/stratos.xml</include> 
-							   <include>conf/eula.xml</include> 
 					                    <include>conf/usage-throttling-agent-config.xml</include> 
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
