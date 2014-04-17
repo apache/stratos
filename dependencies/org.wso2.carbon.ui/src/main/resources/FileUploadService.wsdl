@@ -1,0 +1,141 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://fileupload.services.core.carbon.wso2.org" xmlns:ax28="http://common.core.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://fileupload.services.core.carbon.wso2.org">
+    <wsdl:documentation>FileUploadService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.core.carbon.wso2.org/xsd">
+            <xs:complexType name="UploadedFileItem">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="dataHandler" nillable="true" type="xs:base64Binary" />
+                    <xs:element minOccurs="0" name="fileName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="fileType" nillable="true" type="xs:string" />
+
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax29="http://common.core.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://fileupload.services.core.carbon.wso2.org">
+            <xs:import namespace="http://common.core.carbon.wso2.org/xsd" />
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType" />
+                </xs:sequence>
+
+            </xs:complexType>
+            <xs:element name="Exception">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Exception" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="uploadFiles">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="uploadedFileItems" nillable="true" type="ax28:UploadedFileItem" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="uploadFilesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="uploadFilesRequest">
+        <wsdl:part name="parameters" element="ns:uploadFiles" />
+    </wsdl:message>
+
+    <wsdl:message name="uploadFilesResponse">
+        <wsdl:part name="parameters" element="ns:uploadFilesResponse" />
+    </wsdl:message>
+    <wsdl:message name="Exception">
+        <wsdl:part name="parameters" element="ns:Exception" />
+    </wsdl:message>
+    <wsdl:portType name="FileUploadServicePortType">
+        <wsdl:operation name="uploadFiles">
+            <wsdl:input message="ns:uploadFilesRequest" wsaw:Action="urn:uploadFiles" />
+
+            <wsdl:output message="ns:uploadFilesResponse" wsaw:Action="urn:uploadFilesResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:uploadFilesException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="FileUploadServiceSoap11Binding" type="ns:FileUploadServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="uploadFiles">
+            <soap:operation soapAction="urn:uploadFiles" style="document" />
+            <wsdl:input>
+
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+
+    </wsdl:binding>
+    <wsdl:binding name="FileUploadServiceSoap12Binding" type="ns:FileUploadServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="uploadFiles">
+            <soap12:operation soapAction="urn:uploadFiles" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="FileUploadServiceHttpBinding" type="ns:FileUploadServicePortType">
+        <http:binding verb="POST" />
+
+        <wsdl:operation name="uploadFiles">
+            <http:operation location="uploadFiles" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="uploadFiles" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="uploadFiles" />
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+    <wsdl:service name="FileUploadService">
+        <wsdl:port name="FileUploadServiceHttpsSoap11Endpoint" binding="ns:FileUploadServiceSoap11Binding">
+            <soap:address location="https://10.182.8.115:9443/services/FileUploadService.FileUploadServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="FileUploadServiceHttpsSoap12Endpoint" binding="ns:FileUploadServiceSoap12Binding">
+            <soap12:address location="https://10.182.8.115:9443/services/FileUploadService.FileUploadServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="FileUploadServiceHttpsEndpoint" binding="ns:FileUploadServiceHttpBinding">
+
+            <http:address location="https://10.182.8.115:9443/services/FileUploadService.FileUploadServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

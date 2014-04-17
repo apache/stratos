@@ -76,8 +76,10 @@
 	        <exclude>**/jboss-logging_3.1.0.wso2v1.jar</exclude>
 		<exclude>**/marshalling_1.3.6.wso2v1.jar</exclude>
 		<exclude>**/jboss-transaction-api_1.1_spec-1.0.0.Final.jar</exclude>
+		<exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
 	    </excludes>
 	</fileSet>
+
 
 	<!-- Exclude non-Apache2 compliant dependency from lib/endorsed/ directory-->
         <fileSet>
@@ -412,6 +414,9 @@
         <fileSet>
             <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0004</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+	    <excludes>
+                <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+	    </excludes>
             <includes>
                 <include>**/patch0004/*.*</include>
             </includes>
@@ -537,8 +542,8 @@
             <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/scripts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/scripts</outputDirectory>
         </fileSet>
+     </fileSets>
 
-    </fileSets>
 
     <dependencySets>
         <dependencySet>
@@ -587,6 +592,12 @@
           <outputDirectory>${pom.artifactId}-${pom.version}/lib/endorsed</outputDirectory>
             <includes>
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+          <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/dropins</outputDirectory>
+            <includes>
+                <include>org.apache.stratos:org.wso2.carbon.ui:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
