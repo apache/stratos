@@ -18,41 +18,34 @@
  */
 package org.apache.stratos.messaging.message.receiver.topology;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.jms.TextMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.topology.*;
+import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
+
+import javax.jms.TextMessage;
 
 
 /**
  * Implements logic for processing topology event messages based on a given
  * topology process chain.
  */
-public class TopologyEventMessageDelegator implements Runnable {
+class TopologyEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
     private MessageProcessorChain processorChain;
-    private LinkedBlockingQueue<TextMessage> messageQueue;
+    private TopologyEventMessageQueue messageQueue;
     private boolean terminated;
 
-    public TopologyEventMessageDelegator() {
+    public TopologyEventMessageDelegator(TopologyEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
         this.processorChain = new TopologyMessageProcessorChain();
-        this.messageQueue = TopologyEventMessageQueue.getInstance();
     }
 
-    public TopologyEventMessageDelegator(MessageProcessorChain processorChain) {
-        this.processorChain = processorChain;
-        this.messageQueue = TopologyEventMessageQueue.getInstance();
-    }
-    
-    public TopologyEventMessageDelegator(MessageProcessorChain processorChain, LinkedBlockingQueue<TextMessage> queue) {
-        this.processorChain = processorChain;
-        this.messageQueue = queue;
+    public void addEventListener(EventListener eventListener) {
+        processorChain.addEventListener(eventListener);
     }
 
     @Override

@@ -31,9 +31,15 @@ import javax.jms.TextMessage;
  * Implements functionality for receiving text based event messages from the tenant
  * message broker topic and add them to the event queue.
  */
-public class TenantEventMessageListener implements MessageListener {
+class TenantEventMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(TenantEventMessageListener.class);
+
+    private TenantEventMessageQueue messageQueue;
+
+    public TenantEventMessageListener(TenantEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
 
     @Override
     public void onMessage(Message message) {
@@ -44,7 +50,7 @@ public class TenantEventMessageListener implements MessageListener {
                     log.debug(String.format("Tenant message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
-                TenantEventMessageQueue.getInstance().add(receivedMessage);
+                messageQueue.add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);
