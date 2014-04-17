@@ -47,7 +47,7 @@ import org.drools.runtime.rule.FactHandle;
 import java.util.List;
 
 /**
- * Load balancer topology receiver.
+ * Autoscaler topology receiver.
  */
 public class AutoscalerTopologyReceiver implements Runnable {
 
