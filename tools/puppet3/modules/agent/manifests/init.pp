@@ -16,7 +16,7 @@
 # under the License.
 
 class agent(
-  $version = '4.0.0-SNAPSHOT',
+  $version = '4.0.0-incubating',
   $owner   = 'root',
   $group   = 'root',
   $target  = '/mnt',

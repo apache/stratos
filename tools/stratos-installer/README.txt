@@ -1,8 +1,8 @@
-Apahe Stratos version 4.0.0-SNAPSHOT
+Apahe Stratos version 4.0.0-incubating
 -----------------------------
 
 14th January 2014
-Welcome to the Apache Stratos 4.0.0-SNAPSHOT
+Welcome to the Apache Stratos 4.0.0-incubating
 
 
 Important

@@ -42,12 +42,6 @@
  		<exclude>**/launch.ini</exclude>
                 <exclude>**/carbon.xml</exclude>
                 <exclude>**/README*</exclude>
-		<!--Removing relying party ui bundle to fix STRATOS-1149 -->
-                <exclude>**/org.wso2.carbon.identity.relyingparty.ui_4.1.0-SNAPSHOT.jar</exclude>
-                <exclude>**/org.wso2.carbon.identity.relyingparty.stub_4.1.0-SNAPSHOT.jar</exclude>
-		<!--Removing roles mgt ui to fix STRATOS-2114-->
-                <exclude>**/org.wso2.carbon.roles.mgt.ui_4.1.0-SNAPSHOT.jar</exclude>
-                <exclude>**/org.wso2.carbon.roles.mgt.stub_4.1.0-SNAPSHOT.jar</exclude>
                 <exclude>**/log4j.properties</exclude>
                 <exclude>**/repository/components/**</exclude>
 		<exclude>**/lib/endorsed/**</exclude>

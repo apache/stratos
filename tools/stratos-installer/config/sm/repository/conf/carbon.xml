@@ -40,7 +40,7 @@
     <!--
        Product Version
     -->
-    <Version>4.0.0-SNAPSHOT</Version>
+    <Version>4.0.0-incubating</Version>
 
     <!--
        Host name or IP address of the machine hosting this server
