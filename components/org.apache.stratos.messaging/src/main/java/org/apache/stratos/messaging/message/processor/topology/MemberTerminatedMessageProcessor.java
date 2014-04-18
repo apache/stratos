@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
@@ -93,27 +92,19 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
                 return false;
             }
             Member member = cluster.getMember(event.getMemberId());
-            if (member == null) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
-                            event.getServiceName(),
-                            event.getClusterId(),
-                            event.getMemberId()));
-                }
-                return false;
-            }
-
-            // Apply member filter
-            if(TopologyMemberFilter.getInstance().isActive()) {
-                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
+            if(member != null) {
+                // Apply member filter
+                if(TopologyMemberFilter.getInstance().isActive()) {
+                    if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
+                        }
+                        return false;
                     }
-                    return false;
                 }
             }
 
-            if (member.getStatus() == MemberStatus.Terminated) {
+            if (member == null) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Member already terminated: [service] %s [cluster] %s [member] %s",
                             event.getServiceName(),
@@ -121,10 +112,7 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
                             event.getMemberId()));
                 }
             } else {
-            	
-            	// Apply changes to the topology
-            	member.setStatus(MemberStatus.Terminated);
-            	//removing the member from the cluster
+            	// Remove member from the cluster
             	cluster.removeMember(member);
             	
             	if (log.isInfoEnabled()) {
