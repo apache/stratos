@@ -39,6 +39,7 @@ import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -166,7 +167,7 @@ public class CartridgeSubscriptionUtils {
 					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
 				}
 				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
-				EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+				EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
 				eventPublisher.publish(subscribedEvent);
 			} catch (Exception e) {
 				if (log.isErrorEnabled()) {
@@ -196,7 +197,7 @@ public class CartridgeSubscriptionUtils {
                 log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
             }
             TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName);
-            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+            EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
             eventPublisher.publish(event);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {

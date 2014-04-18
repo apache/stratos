@@ -20,13 +20,14 @@ package org.apache.stratos.manager.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
+import org.apache.stratos.messaging.util.Constants;
 
 /**
  * Creating the relevant instance notification event and publish it to the instances.
@@ -38,7 +39,7 @@ public class InstanceNotificationPublisher {
     }
 
     private void publish(Event event) {
-        EventPublisher depsyncEventPublisher = DataHolder.getEventPublisher();
+        EventPublisher depsyncEventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_NOTIFIER_TOPIC);
         depsyncEventPublisher.publish(event);
     }
 

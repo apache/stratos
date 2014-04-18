@@ -25,6 +25,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
@@ -49,7 +50,7 @@ public class TenantEventPublisher implements TenantMgtListener {
                 }
                 Tenant tenant = new Tenant(tenantInfo.getTenantId(), tenantInfo.getTenantDomain());
                 TenantCreatedEvent event = new TenantCreatedEvent(tenant);
-                EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
                 eventPublisher.publish(event);
             }
             catch (Exception e) {
@@ -64,7 +65,7 @@ public class TenantEventPublisher implements TenantMgtListener {
                     log.info(String.format("Publishing tenant updated event: [tenant-id] %d [tenant-domain] %s", tenantInfo.getTenantId(), tenantInfo.getTenantDomain()));
                 }
                 TenantUpdatedEvent event = new TenantUpdatedEvent(tenantInfo.getTenantId(), tenantInfo.getTenantDomain());
-                EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
                 eventPublisher.publish(event);
             }
             catch (Exception e) {
@@ -79,7 +80,7 @@ public class TenantEventPublisher implements TenantMgtListener {
                     log.info(String.format("Publishing tenant removed event: [tenant-id] %d", tenantId));
                 }
                 TenantRemovedEvent event = new TenantRemovedEvent(tenantId);
-                EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
                 eventPublisher.publish(event);
             }
             catch (Exception e) {

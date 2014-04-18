@@ -25,6 +25,7 @@ import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -81,7 +82,7 @@ public class TenantSynzhronizerTask implements Task {
                 tenants.add(tenant);
             }
             CompleteTenantEvent event = new CompleteTenantEvent(tenants);
-            EventPublisher eventPublisher = new EventPublisher(Constants.TENANT_TOPIC);
+            EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
             eventPublisher.publish(event);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {

@@ -34,7 +34,7 @@ public class EventPublisher extends TopicPublisher {
     /**
      * @param topicName topic name of this publisher instance.
      */
-    public EventPublisher(String topicName) {
+    EventPublisher(String topicName) {
         super(topicName);
     }
 

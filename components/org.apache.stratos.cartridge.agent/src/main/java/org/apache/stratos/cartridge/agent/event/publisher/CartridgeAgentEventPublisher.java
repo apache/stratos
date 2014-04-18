@@ -27,6 +27,7 @@ import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.statistics.publisher.HealthStatisticsNotifier;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
@@ -55,7 +56,7 @@ public class CartridgeAgentEventPublisher {
                     CartridgeAgentConfiguration.getInstance().getPartitionId(),
                     CartridgeAgentConfiguration.getInstance().getMemberId());
 
-            EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
+            EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
             setStarted(true);
             if (log.isInfoEnabled()) {
@@ -82,7 +83,8 @@ public class CartridgeAgentEventPublisher {
                     CartridgeAgentConfiguration.getInstance().getPartitionId(),
                     CartridgeAgentConfiguration.getInstance().getMemberId());
 
-            EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
+            // Event publisher connection will
+            EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
             if (log.isInfoEnabled()) {
                 log.info("Instance activated event published");
@@ -118,7 +120,7 @@ public class CartridgeAgentEventPublisher {
                     CartridgeAgentConfiguration.getInstance().getPartitionId(),
                     CartridgeAgentConfiguration.getInstance().getMemberId());
 
-            EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
+            EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
             setReadyToShutdown(true);
             if (log.isInfoEnabled()) {
@@ -143,7 +145,7 @@ public class CartridgeAgentEventPublisher {
                     CartridgeAgentConfiguration.getInstance().getPartitionId(),
                     CartridgeAgentConfiguration.getInstance().getMemberId());
 
-            EventPublisher eventPublisher = new EventPublisher(Constants.INSTANCE_STATUS_TOPIC);
+            EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
             eventPublisher.publish(event);
             setMaintenance(true);
             if (log.isInfoEnabled()) {

@@ -19,18 +19,18 @@
 
 package org.apache.stratos.messaging.broker.publish;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
-import javax.jms.*;
-
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.publish.MessagePublisher;
 
-import com.google.gson.Gson;
-import org.apache.stratos.messaging.util.Constants;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.jms.TopicSession;
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * Any instance who needs to publish data to a topic, should communicate with
@@ -53,7 +53,7 @@ public class TopicPublisher extends MessagePublisher {
 	 * @param aTopicName
 	 *            topic name of this publisher instance.
 	 */
-	public TopicPublisher(String aTopicName) {
+	TopicPublisher(String aTopicName) {
 		super(aTopicName);
 		connector = new TopicConnector();
 	}
