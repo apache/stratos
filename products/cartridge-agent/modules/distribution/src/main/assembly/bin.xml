@@ -80,9 +80,27 @@
                 <include>NOTICE*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/license</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0600</fileMode>
+        </fileSet>
+	<fileSet>
+            <directory>${project.basedir}/src/main/notice</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0600</fileMode>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>
+            <excludes>
+		<exclude>*:annotations*</exclude>
+		<exclude>*:icu4j*</exclude>
+		<exclude>*:jaxen*</exclude>
+		<exclude>*:jboss-transaction-api*</exclude>
+		<exclude>*:wrapper*</exclude>
+		<exclude>*:xom*</exclude>
+	    </excludes>
             <outputDirectory>/lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <scope>runtime</scope>
