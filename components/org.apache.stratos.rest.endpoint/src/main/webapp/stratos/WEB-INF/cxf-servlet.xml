@@ -21,8 +21,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <jaxrs:server id="stratosAdmin" address="/">
@@ -31,6 +33,8 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <ref bean="genericExceptionHandler"/>
+            <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
             <ref bean="basicAuthenticationFilter"/>
@@ -46,6 +50,8 @@
         <property name="securedObject" ref="stratosRestEndpointBean"/>
     </bean>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
+    <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
+    <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
     <!--The below config enables OAuth based authentication/authorization for REST API-->
     <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
         <property name="password" value="admin"/>
@@ -53,6 +59,7 @@
         <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
     </bean>
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+        <property name="schemaHandler" ref="schemaHolder"/>
         <property name="supportUnwrapped" value="true"/>
         <property name="serializeAsArray" value="true"/>
         <property name="arrayKeys">
@@ -71,5 +78,13 @@
             </list>
         </property>
     </bean>
+
+    <bean id="schemaHolder" class="org.apache.cxf.jaxrs.utils.schemas.SchemaHandler">
+        <property name="schemas" ref="theSchemas"/>
+    </bean>
+
+    <util:list id="theSchemas">
+        <value>classpath:/WEB-INF/schemas/schema.xsd</value>
+    </util:list>
 
 </beans>
