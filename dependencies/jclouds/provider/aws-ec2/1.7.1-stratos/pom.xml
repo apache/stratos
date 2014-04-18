@@ -25,7 +25,7 @@
     <version>1.7.1</version>
     <relativePath>../../project/pom.xml</relativePath>
   </parent>
-  <groupId>org.apache.jclouds.provider</groupId>
+  <groupId>org.apache.stratos</groupId>
   <artifactId>aws-ec2</artifactId>
   <version>1.7.1-stratos</version>
   <name>jclouds Amazon EC2 provider</name>
@@ -59,12 +59,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.jclouds.api</groupId>
+      <groupId>org.apache.stratos</groupId>
       <artifactId>ec2</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.jclouds.api</groupId>
+      <groupId>org.apache.stratos</groupId>
       <artifactId>ec2</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
