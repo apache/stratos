@@ -25,20 +25,5 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Implements a blocking queue for managing tenant event messages.
  */
-public class TenantEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile TenantEventMessageQueue instance;
-
-    private TenantEventMessageQueue(){
-    }
-
-    public static TenantEventMessageQueue getInstance() {
-        if (instance == null) {
-            synchronized (TenantEventMessageQueue.class){
-                if (instance == null) {
-                    instance = new TenantEventMessageQueue();
-                }
-            }
-        }
-        return instance;
-    }
+class TenantEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
 }

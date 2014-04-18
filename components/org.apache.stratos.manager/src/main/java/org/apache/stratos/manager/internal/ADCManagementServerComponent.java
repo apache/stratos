@@ -24,7 +24,7 @@ import org.apache.stratos.manager.listener.InstanceStatusListener;
 import org.apache.stratos.manager.publisher.TenantEventPublisher;
 import org.apache.stratos.manager.publisher.TenantSynchronizerTaskScheduler;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
-import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyReceiver;
+import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyEventReceiver;
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
@@ -60,7 +60,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 public class ADCManagementServerComponent {
 
     private static final Log log = LogFactory.getLog(ADCManagementServerComponent.class);
-    private StratosManagerTopologyReceiver stratosManagerTopologyReceiver;
+    private StratosManagerTopologyEventReceiver stratosManagerTopologyEventReceiver;
 
     protected void activate(ComponentContext componentContext) throws Exception {
 		try {
@@ -102,8 +102,8 @@ public class ADCManagementServerComponent {
             Thread topologyReceiverThread = new Thread(topologyReceiver);
             topologyReceiverThread.start();*/
 
-            stratosManagerTopologyReceiver = new StratosManagerTopologyReceiver();
-            Thread topologyReceiverThread = new Thread(stratosManagerTopologyReceiver);
+            stratosManagerTopologyEventReceiver = new StratosManagerTopologyEventReceiver();
+            Thread topologyReceiverThread = new Thread(stratosManagerTopologyEventReceiver);
             topologyReceiverThread.start();
             log.info("Topology receiver thread started");
 
@@ -174,6 +174,6 @@ public class ADCManagementServerComponent {
     protected void deactivate(ComponentContext context) {
 
         //terminate Stratos Manager Topology Receiver
-        stratosManagerTopologyReceiver.terminate();
+        stratosManagerTopologyEventReceiver.terminate();
     }
 }

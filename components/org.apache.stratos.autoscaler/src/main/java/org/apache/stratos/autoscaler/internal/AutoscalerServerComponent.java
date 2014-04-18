@@ -23,8 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.message.receiver.health.AutoscalerHealthStatReceiver;
-import org.apache.stratos.autoscaler.message.receiver.topology.AutoscalerTopologyReceiver;
+import org.apache.stratos.autoscaler.message.receiver.health.AutoscalerHealthStatEventReceiver;
+import org.apache.stratos.autoscaler.message.receiver.topology.AutoscalerTopologyEventReceiver;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -51,14 +51,14 @@ import java.util.List;
 public class AutoscalerServerComponent {
 
     private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
-    AutoscalerTopologyReceiver asTopologyReceiver;
+    AutoscalerTopologyEventReceiver asTopologyReceiver;
 //    TopicSubscriber healthStatTopicSubscriber;
-    AutoscalerHealthStatReceiver autoscalerHealthStatReceiver;
+    AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
     protected void activate(ComponentContext componentContext) throws Exception {
         try {
             // Start topology receiver
-        	asTopologyReceiver = new AutoscalerTopologyReceiver();
+        	asTopologyReceiver = new AutoscalerTopologyEventReceiver();
             Thread topologyTopicSubscriberThread = new Thread(asTopologyReceiver);
             topologyTopicSubscriberThread.start();
             if (log.isDebugEnabled()) {
@@ -74,8 +74,8 @@ public class AutoscalerServerComponent {
 
 
             // Start health stat receiver
-            autoscalerHealthStatReceiver = new AutoscalerHealthStatReceiver();
-            Thread healthDelegatorThread = new Thread(autoscalerHealthStatReceiver);
+            autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
+            Thread healthDelegatorThread = new Thread(autoscalerHealthStatEventReceiver);
             healthDelegatorThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Health message processor thread started");
@@ -121,7 +121,7 @@ public class AutoscalerServerComponent {
 
     protected void deactivate(ComponentContext context) {
     	asTopologyReceiver.terminate();
-    	autoscalerHealthStatReceiver.terminate();
+    	autoscalerHealthStatEventReceiver.terminate();
     }
     
     protected void setRegistryService(RegistryService registryService) {

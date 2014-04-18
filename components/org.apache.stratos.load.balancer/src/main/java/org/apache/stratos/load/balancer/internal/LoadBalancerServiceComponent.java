@@ -24,8 +24,8 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.EndpointDeployer;
-import org.apache.stratos.load.balancer.LoadBalancerTenantReceiver;
-import org.apache.stratos.load.balancer.LoadBalancerTopologyReceiver;
+import org.apache.stratos.load.balancer.LoadBalancerTenantEventReceiver;
+import org.apache.stratos.load.balancer.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
@@ -101,8 +101,8 @@ public class LoadBalancerServiceComponent {
     private static final Log log = LogFactory.getLog(LoadBalancerServiceComponent.class);
 
     private boolean activated = false;
-    private LoadBalancerTopologyReceiver topologyReceiver;
-    private LoadBalancerTenantReceiver tenantReceiver;
+    private LoadBalancerTopologyEventReceiver topologyReceiver;
+    private LoadBalancerTenantEventReceiver tenantReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
 
     protected void activate(ComponentContext ctxt) {
@@ -127,7 +127,7 @@ public class LoadBalancerServiceComponent {
                 // Configure jndi.properties
                 JndiConfigurator.configure(configuration);
 
-                tenantReceiver = new LoadBalancerTenantReceiver();
+                tenantReceiver = new LoadBalancerTenantEventReceiver();
                 Thread tenantReceiverThread = new Thread(tenantReceiver);
                 tenantReceiverThread.start();
                 if (log.isInfoEnabled()) {
@@ -142,7 +142,7 @@ public class LoadBalancerServiceComponent {
                 }
 
                 // Start topology receiver
-                topologyReceiver = new LoadBalancerTopologyReceiver();
+                topologyReceiver = new LoadBalancerTopologyEventReceiver();
                 Thread topologyReceiverThread = new Thread(topologyReceiver);
                 topologyReceiverThread.start();
                 if (log.isInfoEnabled()) {

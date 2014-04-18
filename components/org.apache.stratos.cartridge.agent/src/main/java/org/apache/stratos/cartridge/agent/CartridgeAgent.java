@@ -41,9 +41,7 @@ import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMembe
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventMessageReceiver;
+import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -126,43 +124,42 @@ public class CartridgeAgent implements Runnable {
 		if(log.isDebugEnabled()) {
             log.debug("Starting instance notifier event message receiver thread");
         }
-        InstanceNotifierMessageProcessorChain processorChain = new InstanceNotifierMessageProcessorChain();
-        processorChain.addEventListener(new ArtifactUpdateEventListener() {
+
+        InstanceNotifierEventReceiver eventReceiver = new InstanceNotifierEventReceiver();
+        eventReceiver.addEventListener(new ArtifactUpdateEventListener() {
             @Override
             protected void onEvent(Event event) {
                 onArtifactUpdateEvent((ArtifactUpdatedEvent) event);
             }
         });
 
-        processorChain.addEventListener(new InstanceCleanupMemberEventListener() {
+        eventReceiver.addEventListener(new InstanceCleanupMemberEventListener() {
             @Override
             protected void onEvent(Event event) {
                 String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
-                InstanceCleanupMemberEvent instanceCleanupMemberEvent = (InstanceCleanupMemberEvent)event;
-                if(memberIdInPayload.equals(instanceCleanupMemberEvent.getMemberId())) {
+                InstanceCleanupMemberEvent instanceCleanupMemberEvent = (InstanceCleanupMemberEvent) event;
+                if (memberIdInPayload.equals(instanceCleanupMemberEvent.getMemberId())) {
                     onInstanceCleanupEvent();
                 }
             }
         });
 
-        processorChain.addEventListener(new InstanceCleanupClusterEventListener() {
+        eventReceiver.addEventListener(new InstanceCleanupClusterEventListener() {
             @Override
             protected void onEvent(Event event) {
                 String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
-                InstanceCleanupClusterEvent instanceCleanupClusterEvent = (InstanceCleanupClusterEvent)event;
-                if(clusterIdInPayload.equals(instanceCleanupClusterEvent.getClusterId())) {
+                InstanceCleanupClusterEvent instanceCleanupClusterEvent = (InstanceCleanupClusterEvent) event;
+                if (clusterIdInPayload.equals(instanceCleanupClusterEvent.getClusterId())) {
                     onInstanceCleanupEvent();
                 }
             }
         });
-        InstanceNotifierEventMessageDelegator messageDelegator = new InstanceNotifierEventMessageDelegator(processorChain);
-        InstanceNotifierEventMessageReceiver messageReceiver = new InstanceNotifierEventMessageReceiver(messageDelegator);
-        Thread messageReceiverThread = new Thread(messageReceiver);
-        messageReceiverThread.start();
+        Thread eventReceiverThread = new Thread(eventReceiver);
+        eventReceiverThread.start();
 
         // Wait until message receiver is subscribed to the topic to
         // send the instance started event
-        while (!messageReceiver.isSubscribed())  {
+        while (!eventReceiver.isSubscribed())  {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
