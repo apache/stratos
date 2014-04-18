@@ -213,8 +213,8 @@ The following components come under Apache Software License 2.0
 ===============================================================================
 
 For abdera_1.0.0.wso2v3.jar,
-activemq-client-5.8.0.jar,
-activemq_client_5.8.0_1.0.0.jar,
+activemq-client-5.9.1.jar,
+activemq_client_5.9.1_1.0.0.jar,
 addressing-1.6.1-wso2v10.mar,
 ajaxtags_1.3.0.beta-rc7-wso2v1.jar,
 andes-client_0.13.0.wso2v8.jar,
