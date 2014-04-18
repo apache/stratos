@@ -17,48 +17,52 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.tenant;
+package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
- * A thread for receiving tenant information from message broker and
- * build tenant information in tenant manager.
+ * A thread for receiving health stat information from message broker
  */
-public class TenantReceiver implements Runnable {
-    private static final Log log = LogFactory.getLog(TenantReceiver.class);
-    private TenantEventMessageDelegator messageDelegator;
+public class HealthStatEventReceiver implements Runnable {
+    private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
+
+    private HealthStatEventMessageDelegator messageDelegator;
+    private HealthStatEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
-    public TenantReceiver() {
-        this.messageDelegator = new TenantEventMessageDelegator();
+    public HealthStatEventReceiver() {
+        HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
+        this.messageDelegator = new HealthStatEventMessageDelegator(messageQueue);
+        this.messageListener = new HealthStatEventMessageListener(messageQueue);
     }
 
-    public TenantReceiver(TenantEventMessageDelegator messageDelegator) {
-        this.messageDelegator = messageDelegator;
+    public void addEventListener(EventListener eventListener) {
+        messageDelegator.addEventListener(eventListener);
     }
 
     @Override
     public void run() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Constants.TENANT_TOPIC);
-            topicSubscriber.setMessageListener(new TenantEventMessageListener());
+            topicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
+            topicSubscriber.setMessageListener(messageListener);
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Tenant event message receiver thread started");
+                log.debug("Health stats event message receiver thread started");
             }
 
-            // Start tenant event message delegator thread
+            // Start health stat event message delegator thread
             Thread receiverThread = new Thread(messageDelegator);
             receiverThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Tenant event message delegator thread started");
+                log.debug("Health stats event message delegator thread started");
             }
 
             // Keep the thread live until terminated
@@ -70,7 +74,7 @@ public class TenantReceiver implements Runnable {
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Tenant receiver failed", e);
+                log.error("Topology receiver failed", e);
             }
         }
     }

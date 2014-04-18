@@ -22,23 +22,27 @@ package org.apache.stratos.messaging.message.receiver.instance.notifier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class InstanceNotifierEventMessageReceiver implements Runnable {
-    private static final Log log = LogFactory.getLog(InstanceNotifierEventMessageReceiver.class);
+public class InstanceNotifierEventReceiver implements Runnable {
+    private static final Log log = LogFactory.getLog(InstanceNotifierEventReceiver.class);
     private InstanceNotifierEventMessageDelegator messageDelegator;
+    private InstanceNotifierEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
-    public InstanceNotifierEventMessageReceiver() {
-        this.messageDelegator = new InstanceNotifierEventMessageDelegator();
+    public InstanceNotifierEventReceiver() {
+        InstanceNotifierEventMessageQueue messageQueue = new InstanceNotifierEventMessageQueue();
+        this.messageDelegator = new InstanceNotifierEventMessageDelegator(messageQueue);
+        this.messageListener = new InstanceNotifierEventMessageListener(messageQueue);
     }
 
-    public InstanceNotifierEventMessageReceiver(InstanceNotifierEventMessageDelegator messageDelegator) {
-        this.messageDelegator = messageDelegator;
+    public void addEventListener(EventListener eventListener) {
+        messageDelegator.addEventListener(eventListener);
     }
 
     @Override
@@ -46,7 +50,7 @@ public class InstanceNotifierEventMessageReceiver implements Runnable {
         try {
             // Start topic subscriber thread
             topicSubscriber = new TopicSubscriber(Constants.INSTANCE_NOTIFIER_TOPIC);
-            topicSubscriber.setMessageListener(new InstanceNotifierEventMessageListener());
+            topicSubscriber.setMessageListener(messageListener);
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {

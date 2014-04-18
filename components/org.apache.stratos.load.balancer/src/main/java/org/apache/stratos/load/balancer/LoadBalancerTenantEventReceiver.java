@@ -33,9 +33,7 @@ import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantUnSubscribedEventListener;
-import org.apache.stratos.messaging.message.processor.tenant.TenantMessageProcessorChain;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantEventMessageDelegator;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantReceiver;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.HashMap;
@@ -45,25 +43,20 @@ import java.util.Map;
  * Load balancer tenant receiver updates load balancer context according to
  * incoming tenant events.
  */
-public class LoadBalancerTenantReceiver implements Runnable {
+public class LoadBalancerTenantEventReceiver implements Runnable {
 
-    private static final Log log = LogFactory.getLog(LoadBalancerTenantReceiver.class);
+    private static final Log log = LogFactory.getLog(LoadBalancerTenantEventReceiver.class);
 
-    private final TenantReceiver tenantReceiver;
+    private final TenantEventReceiver tenantEventReceiver;
     private boolean terminated;
 
-    public LoadBalancerTenantReceiver() {
-        tenantReceiver = new TenantReceiver(createMessageDelegator());
+    public LoadBalancerTenantEventReceiver() {
+        tenantEventReceiver = new TenantEventReceiver();
+        addEventListeners();
     }
 
-    private TenantEventMessageDelegator createMessageDelegator() {
-        TenantMessageProcessorChain processorChain = createEventProcessorChain();
-        return new TenantEventMessageDelegator(processorChain);
-    }
-
-    private TenantMessageProcessorChain createEventProcessorChain() {
-        TenantMessageProcessorChain messageProcessorChain = new TenantMessageProcessorChain();
-        messageProcessorChain.addEventListener(new CompleteTenantEventListener() {
+    private void addEventListeners() {
+        tenantEventReceiver.addEventListener(new CompleteTenantEventListener() {
             @Override
             protected void onEvent(Event event) {
                 CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
@@ -76,7 +69,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
                 }
             }
         });
-        messageProcessorChain.addEventListener(new TenantSubscribedEventListener() {
+        tenantEventReceiver.addEventListener(new TenantSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TenantSubscribedEvent tenantSubscribedEvent = (TenantSubscribedEvent) event;
@@ -89,7 +82,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
                 }
             }
         });
-        messageProcessorChain.addEventListener(new TenantUnSubscribedEventListener() {
+        tenantEventReceiver.addEventListener(new TenantUnSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TenantUnSubscribedEvent tenantUnSubscribedEvent = (TenantUnSubscribedEvent) event;
@@ -102,7 +95,6 @@ public class LoadBalancerTenantReceiver implements Runnable {
                 }
             }
         });
-        return messageProcessorChain;
     }
 
     private boolean isMultiTenantService(String serviceName) {
@@ -185,7 +177,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
 
     @Override
     public void run() {
-        Thread tenantReceiverThread = new Thread(tenantReceiver);
+        Thread tenantReceiverThread = new Thread(tenantEventReceiver);
         tenantReceiverThread.start();
 
         // Keep the thread live until terminated
@@ -204,7 +196,7 @@ public class LoadBalancerTenantReceiver implements Runnable {
      * Terminate load balancer tenant receiver thread.
      */
     public void terminate() {
-        tenantReceiver.terminate();
+        tenantEventReceiver.terminate();
         terminated = true;
     }
 }

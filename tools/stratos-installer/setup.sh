@@ -535,6 +535,8 @@ fi
 if [[ ($profile = "default" && $config_mb = "true") ]]; then
     echo "Extracting ActiveMQ"
     tar -xzf $activemq_pack -C $stratos_path
+    # disable amqp connector to prevent conflicts with openstack
+    sed -r -i -e 's@^(\s*)(<transportConnector name="amqp".*\s*)$@\1<!--\2-->@g' $stratos_path/apache-activemq-5.9.1/conf/activemq.xml
 fi
 
 general_setup

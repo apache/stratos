@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.tenant.TenantMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
@@ -32,18 +33,21 @@ import javax.jms.TextMessage;
  * Implements logic for processing topology event messages based on a given
  * topology process chain.
  */
-public class TenantEventMessageDelegator implements Runnable {
+class TenantEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(TenantEventMessageDelegator.class);
+
+    private TenantEventMessageQueue messageQueue;
     private MessageProcessorChain processorChain;
     private boolean terminated;
 
-    public TenantEventMessageDelegator() {
+    public TenantEventMessageDelegator(TenantEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
         this.processorChain = new TenantMessageProcessorChain();
     }
 
-    public TenantEventMessageDelegator(MessageProcessorChain processorChain) {
-        this.processorChain = processorChain;
+    public void addEventListener(EventListener eventListener) {
+        processorChain.addEventListener(eventListener);
     }
 
     @Override
@@ -55,7 +59,7 @@ public class TenantEventMessageDelegator implements Runnable {
 
             while (!terminated) {
                 try {
-                    TextMessage message = TenantEventMessageQueue.getInstance().take();
+                    TextMessage message = messageQueue.take();
 
                     // Retrieve the header
                     String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
