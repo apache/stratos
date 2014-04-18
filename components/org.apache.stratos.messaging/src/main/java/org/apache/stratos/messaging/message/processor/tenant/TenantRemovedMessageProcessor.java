@@ -58,14 +58,14 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
                 Tenant tenant = TenantManager.getInstance().getTenant(event.getTenantId());
                 if(tenant == null) {
                     if(log.isWarnEnabled()) {
-                        log.warn(String.format("Tenant not found: [tenant-id] %d", event.getTenantId()));
+                        log.warn(String.format("Tenant already removed: [tenant-id] %d", event.getTenantId()));
                     }
-                    return false;
                 }
-                TenantManager.getInstance().removeTenant(event.getTenantId());
-
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant removed: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
+                else {
+                    TenantManager.getInstance().removeTenant(event.getTenantId());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Tenant removed: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
+                    }
                 }
 
                 // Notify event listeners
