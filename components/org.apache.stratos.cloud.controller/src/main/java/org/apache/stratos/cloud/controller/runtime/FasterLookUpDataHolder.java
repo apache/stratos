@@ -22,12 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -88,12 +86,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	private transient DataPublisherConfig dataPubConfig;
 	private boolean enableTopologySync;
 	private transient TopologyConfig topologyConfig;
-	
-	/**
-     * Key - name of the topic
-     * Value - corresponding EventPublisher
-     */
-    private transient Map<String, EventPublisher> topicToPublisherMap = new HashMap<String, EventPublisher>();
 
 	private transient AsyncDataPublisher dataPublisher;
 	private String streamId;
@@ -244,18 +236,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	public void setTopologyConfig(TopologyConfig topologyConfig) {
 		this.topologyConfig = topologyConfig;
 	}
-	
-	public EventPublisher getEventPublisher(String topic){
-    	return topicToPublisherMap.get(topic);
-    }
-	
-	public List<EventPublisher> getAllEventPublishers() {
-		return new ArrayList<EventPublisher>(topicToPublisherMap.values());
-	}
-	
-    public void addEventPublisher(EventPublisher publisher, String topicName) {
-        topicToPublisherMap.put(topicName, publisher);
-    }
 
     public DataPublisherConfig getDataPubConfig() {
         return dataPubConfig;

@@ -23,6 +23,7 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
@@ -162,7 +163,7 @@ public class TopologyEventPublisher {
     }
 
     public static void publishEvent(Event event) {
-        EventPublisher eventPublisher = new EventPublisher(Constants.TOPOLOGY_TOPIC);
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TOPOLOGY_TOPIC);
         eventPublisher.publish(event);
     }
 }

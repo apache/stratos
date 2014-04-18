@@ -20,7 +20,6 @@
 package org.apache.stratos.manager.internal;
 
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -34,8 +33,6 @@ public class DataHolder {
 
 	private static RealmService realmService;
 	private static RegistryService registryService;
-	//private static TopologyManagementService topologyMgtService;
-	private static EventPublisher eventPublisher;
 
 	public static RealmService getRealmService() {
 		return realmService;
@@ -70,13 +67,4 @@ public class DataHolder {
 	public static void setRegistryService(RegistryService registryService) {
 		DataHolder.registryService = registryService;
 	}
-
-	public static EventPublisher getEventPublisher() {
-		return eventPublisher;
-	}
-
-	public static void setEventPublisher(EventPublisher eventPublisher) {
-		DataHolder.eventPublisher = eventPublisher;
-	}	
-	
 }
