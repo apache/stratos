@@ -26,8 +26,8 @@ node 'base' {
   $cep_ip               = '127.0.0.1'
   $cep_port             = '7611'
   $truststore_password  = 'wso2carbon'
-  $java_distribution	= 'jdk-7u7-linux-x64.tar.gz'
-  $java_name		= 'jdk1.7.0_07'
+  $java_distribution	= 'jdk-7u51-linux-x64.tar.gz'
+  $java_name		= 'jdk1.7.0_51'
   $member_type_ip       = 'private'
   $lb_httpPort          = '80'
   $lb_httpsPort         = '443'
@@ -48,7 +48,9 @@ node /php/ inherits base {
   $syslog="/var/log/apache2/error.log"
   $samlalias="/var/www/"
   require java
-  class {'agent':}
+  class {'agent':
+    type => 'php',
+  }
   class {'php':}
   
   #install php before agent
@@ -87,7 +89,9 @@ node /mysql/ inherits base {
 # nodejs cartridge node
 node /nodejs/ inherits base {
   require java
-  class {'agent':}
+  class {'agent':
+    type => 'nodejs',
+  }
   class {'nodejs':}
 
   #install agent before nodejs

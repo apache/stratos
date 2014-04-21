@@ -24,7 +24,7 @@
     <artifactId>jclouds-project</artifactId>
     <version>1.7.1</version>
   </parent>
-  <groupId>org.apache.jclouds.api</groupId>
+  <groupId>org.apache.stratos</groupId>
   <artifactId>openstack-nova</artifactId>
   <version>1.7.1-stratos</version>
   <name>jclouds openstack-nova api</name>

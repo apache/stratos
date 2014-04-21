@@ -25,20 +25,5 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Implements a blocking queue for managing instance notifier event messages.
  */
-public class InstanceNotifierEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile InstanceNotifierEventMessageQueue instance;
-
-    private InstanceNotifierEventMessageQueue(){
-    }
-
-    public static InstanceNotifierEventMessageQueue getInstance() {
-        if (instance == null) {
-            synchronized (InstanceNotifierEventMessageQueue.class){
-                if (instance == null) {
-                    instance = new InstanceNotifierEventMessageQueue();
-                }
-            }
-        }
-        return instance;
-    }
+class InstanceNotifierEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
 }

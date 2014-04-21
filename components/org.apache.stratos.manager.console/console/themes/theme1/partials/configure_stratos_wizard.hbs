@@ -200,45 +200,49 @@
 
 
 
-                                            {{#ifCond step "==" 4}}
-                                               {{#each step_data}}
-                                                  <div class="panel panel-default">
-                                                      <div class="panel-heading">
-                                                          <h4 class="panel-title">
-                                                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{cartridgeType}}">
-                                                                  {{displayName}}
-                                                              </a>
-                                                          </h4>
-                                                      </div>
-                                                      <div id="collapse{{cartridgeType}}" class="panel-collapse collapse">
-                                                          <div class="panel-body">
-                                                              <pre>{{json_string}}</pre>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                               {{/each}}
-                                            {{/ifCond}}
+                                             {{#ifCond step "==" 4}}
+                                             {{#each step_data}}
+                                             <div class="panel panel-default">
+                                                 <div class="panel-heading">
+                                                     <h4 class="panel-title">
+                                                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{cartridgeType}}">
+                                                             {{displayName}}
+                                                         </a>
+                                                     </h4>
+                                                 </div>
+                                                 <div id="collapse{{cartridgeType}}" class="panel-collapse collapse">
+                                                     <div class="panel-body">
+                                                         <div class="alert alert-danger alert-dismissable" style="display: none"></div>
+                                                         <button class="btb btn-danger pull-right js_undeploy" type="button" data-type="{{cartridgeType}}">Undeploy</button>
+                                                         <pre>{{json_string}}</pre>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             {{/each}}
+                                             {{/ifCond}}
 
 
 
-                                            {{#ifCond step "==" 5}}
-                                               {{#each step_data}}
-                                                  <div class="panel panel-default">
-                                                      <div class="panel-heading">
-                                                          <h4 class="panel-title">
-                                                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{cartridgeType}}">
-                                                                  {{displayName}}
-                                                              </a>
-                                                          </h4>
-                                                      </div>
-                                                      <div id="collapse{{cartridgeType}}" class="panel-collapse collapse">
-                                                          <div class="panel-body">
-                                                              <pre>{{json_string}}</pre>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                               {{/each}}
-                                            {{/ifCond}}
+                                             {{#ifCond step "==" 5}}
+                                             {{#each step_data}}
+                                             <div class="panel panel-default">
+                                                 <div class="panel-heading">
+                                                     <h4 class="panel-title">
+                                                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{cartridgeType}}">
+                                                             {{displayName}}
+                                                         </a>
+                                                     </h4>
+                                                 </div>
+                                                 <div id="collapse{{cartridgeType}}" class="panel-collapse collapse">
+                                                     <div class="panel-body">
+                                                         <div class="alert alert-danger alert-dismissable" style="display: none"></div>
+                                                         <button class="btb btn-danger pull-right js_undeploy" type="button" data-type="{{cartridgeType}}">Undeploy</button>
+                                                         <pre>{{json_string}}</pre>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             {{/each}}
+                                             {{/ifCond}}
 
                                             {{#ifCond step "==" 6 }}
                                                {{#each step_data}}

@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.status.monitor.ui.feature</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>

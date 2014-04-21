@@ -246,6 +246,14 @@ public class CloudControllerUtil {
 	private static Iaas loadIaas(IaasProvider iaasProvider)
 			throws InvalidIaasProviderException {
 		try {
+			
+			if(iaasProvider.getClassName() == null) {
+				String msg = "You have not specified a class which represents the iaas of type: ["
+						+ iaasProvider.getType() + "].";
+				log.error(msg);
+				throw new InvalidIaasProviderException(msg);
+			}
+			
 			Constructor<?> c = Class.forName(iaasProvider.getClassName())
 					.getConstructor(IaasProvider.class);
 			Iaas iaas = (Iaas) c.newInstance(iaasProvider);

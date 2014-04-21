@@ -33,11 +33,11 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
     private static final Log log = LogFactory.getLog(LoadBalancerStatisticsCollector.class);
 
     private static volatile LoadBalancerStatisticsCollector instance;
-    // Map<ClusterId, ArrayList<Date>>
-    private Map<String, List<Date>> inFlightRequestToDateListMap;
+    // Map<ClusterId, Integer>
+    private Map<String, Integer> clusterIdRequestCountMap;
 
     private LoadBalancerStatisticsCollector() {
-        inFlightRequestToDateListMap = new ConcurrentHashMap<String, List<Date>>();
+        clusterIdRequestCountMap = new ConcurrentHashMap<String, Integer>();
     }
 
     public static LoadBalancerStatisticsCollector getInstance() {
@@ -54,28 +54,22 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
         return instance;
     }
 
-    public int getInFlightRequestCountOfSlidingWindow(String clusterId) {
+    /**
+     * Clear load balancer statistics collector singleton instance.
+     */
+    public static void clear() {
         synchronized (LoadBalancerStatisticsCollector.class) {
-            // Sliding window in milliseconds
-            int slidingWindow = 10000; // TODO Move this to loadbalancer.conf
+            instance = null;
+        }
+    }
 
-            if (inFlightRequestToDateListMap.containsKey(clusterId)) {
-                List<Date> dateList = inFlightRequestToDateListMap.get(clusterId);
-                List<Date> updatedList = Collections.synchronizedList(new ArrayList<Date>());
-                Date currentDate = new Date();
-                long slidingWindStart = currentDate.getTime() - slidingWindow;
-                int count = 0;
-                for (Date date : dateList) {
-                    if (date.getTime() > slidingWindStart) {
-                        count++;
-                    }
-                    else {
-                        updatedList.add(date);
-                    }
+    public int getInFlightRequestCount(String clusterId) {
+        synchronized (LoadBalancerStatisticsCollector.class) {
+            if (clusterIdRequestCountMap.containsKey(clusterId)) {
+                Integer count = clusterIdRequestCountMap.get(clusterId);
+                if(count != null) {
+                    return count;
                 }
-                // Remove dates counted
-                inFlightRequestToDateListMap.put(clusterId, updatedList);
-                return count;
             }
             return 0;
         }
@@ -89,18 +83,16 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
                 }
                 return;
             }
-            List<Date> dateList;
-            if (inFlightRequestToDateListMap.containsKey(clusterId)) {
-                dateList = inFlightRequestToDateListMap.get(clusterId);
-            } else {
-                dateList = Collections.synchronizedList(new ArrayList<Date>());
-                inFlightRequestToDateListMap.put(clusterId, dateList);
+            Integer count = 0;
+            if (clusterIdRequestCountMap.containsKey(clusterId)) {
+                count = clusterIdRequestCountMap.get(clusterId);
             }
-            // Add current date to cluster date list
-            dateList.add(new Date());
+            count++;
+            clusterIdRequestCountMap.put(clusterId, count);
+
             if (log.isDebugEnabled()) {
                 log.debug(String.format("In-flight request count incremented: [cluster] %s [count] %s ", clusterId,
-                        dateList.size()));
+                        count));
 
             }
         }
@@ -115,22 +107,20 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
                 return;
             }
 
-            if (!inFlightRequestToDateListMap.containsKey(clusterId)) {
+            if (!clusterIdRequestCountMap.containsKey(clusterId)) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("In-flight request date list not found for cluster: [cluster] %s ", clusterId));
+                    log.debug(String.format("In-flight request count not found for cluster, could not decrement in-flight request count: [cluster] %s ", clusterId));
                 }
             } else {
-                List<Date> dateList = inFlightRequestToDateListMap.get(clusterId);
-                if (!dateList.isEmpty()) {
-                    int index = dateList.size() - 1;
-                    if (index >= 0) {
-                        dateList.remove(index);
-                    }
+                Integer count = clusterIdRequestCountMap.get(clusterId);
+                if (count != null) {
+                    count = (count >= 1) ? (count - 1) : 0;
                 }
+                clusterIdRequestCountMap.put(clusterId, count);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("In-flight request count decremented: [cluster] %s [count] %s ", clusterId,
-                            dateList.size()));
+                            count));
                 }
             }
         }

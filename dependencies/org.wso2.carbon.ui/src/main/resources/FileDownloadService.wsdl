@@ -1,0 +1,138 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:ns1="http://org.apache.axis2/xsd"
+                  xmlns:ns="http://filedownload.services.core.carbon.wso2.org"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  targetNamespace="http://filedownload.services.core.carbon.wso2.org">
+    <wsdl:documentation>FileDownloadService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://filedownload.services.core.carbon.wso2.org">
+            <xs:element name="downloadFile">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="downloadFileResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true"
+                                    type="xs:base64Binary"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="downloadFileRequest">
+        <wsdl:part name="parameters" element="ns:downloadFile"/>
+    </wsdl:message>
+    <wsdl:message name="downloadFileResponse">
+        <wsdl:part name="parameters" element="ns:downloadFileResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="FileDownloadServicePortType">
+
+        <wsdl:operation name="downloadFile">
+            <wsdl:input message="ns:downloadFileRequest" wsaw:Action="urn:downloadFile"/>
+            <wsdl:output message="ns:downloadFileResponse" wsaw:Action="urn:downloadFileResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="FileDownloadServiceSoap11Binding" type="ns:FileDownloadServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="downloadFile">
+            <soap:operation soapAction="urn:downloadFile" style="document"/>
+
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="FileDownloadServiceSoap12Binding" type="ns:FileDownloadServicePortType">
+
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="downloadFile">
+            <soap12:operation soapAction="urn:downloadFile" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="FileDownloadServiceHttpBinding" type="ns:FileDownloadServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="downloadFile">
+            <http:operation location="downloadFile"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="downloadFile"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <mime:content type="text/xml" part="downloadFile"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="FileDownloadService">
+        <wsdl:port name="FileDownloadServiceHttpSoap11Endpoint"
+                   binding="ns:FileDownloadServiceSoap11Binding">
+            <soap:address
+                    location="http://10.182.8.115:9763/services/FileDownloadService.FileDownloadServiceHttpSoap11Endpoint/"/>
+        </wsdl:port>
+
+        <wsdl:port name="FileDownloadServiceHttpsSoap11Endpoint"
+                   binding="ns:FileDownloadServiceSoap11Binding">
+            <soap:address
+                    location="https://10.182.8.115:9443/services/FileDownloadService.FileDownloadServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="FileDownloadServiceHttpSoap12Endpoint"
+                   binding="ns:FileDownloadServiceSoap12Binding">
+            <soap12:address
+                    location="http://10.182.8.115:9763/services/FileDownloadService.FileDownloadServiceHttpSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="FileDownloadServiceHttpsSoap12Endpoint"
+                   binding="ns:FileDownloadServiceSoap12Binding">
+            <soap12:address
+                    location="https://10.182.8.115:9443/services/FileDownloadService.FileDownloadServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+
+        <wsdl:port name="FileDownloadServiceHttpEndpoint"
+                   binding="ns:FileDownloadServiceHttpBinding">
+            <http:address
+                    location="http://10.182.8.115:9763/services/FileDownloadService.FileDownloadServiceHttpEndpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="FileDownloadServiceHttpsEndpoint"
+                   binding="ns:FileDownloadServiceHttpBinding">
+            <http:address
+                    location="https://10.182.8.115:9443/services/FileDownloadService.FileDownloadServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

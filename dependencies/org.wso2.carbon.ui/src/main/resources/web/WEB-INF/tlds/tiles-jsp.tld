@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: tiles-jsp.tld 545733 2007-06-09 11:38:36Z apetrelli $
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+-->
+<!DOCTYPE taglib PUBLIC
+    "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+    "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+   <tlib-version>2.0</tlib-version>
+   <jsp-version>1.2</jsp-version>
+   <short-name>tiles</short-name>
+   <uri>http://tiles.apache.org/tags-tiles</uri>
+   <description>
+   <![CDATA[
+   <p>This tag library provides Tiles tags.</p>
+   ]]>
+   </description>
+   <tag>
+      <name>insertTemplate</name>
+      <tag-class>org.apache.tiles.jsp.taglib.InsertTemplateTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Insert a template.</strong></p>
+      <p>Insert a template with the possibility to pass 
+      parameters (called attributes).
+      A template can be seen as a procedure that can take parameters or attributes.
+      <code>&lt;tiles:insertTemplate&gt;</code> allows to define these attributes 
+      and pass them to the inserted jsp page, called template.
+      Attributes are defined using nested tag <code>&lt;tiles:put&gt;</code> or
+      <code>&lt;tiles:putList&gt;</code>.
+      </p>
+      <p>You must specify <li><code>template</code> attribute, for inserting a template</p>
+     
+      <p><strong>Example : </strong></p>
+      <pre>
+        <code>
+          &lt;tiles:insertTemplate template="/basic/myLayout.jsp" flush="true">
+             &lt;tiles:put name="title" value="My first page" />
+             &lt;tiles:put name="header" value="/common/header.jsp" />
+             &lt;tiles:put name="footer" value="/common/footer.jsp" />
+             &lt;tiles:put name="menu" value="/basic/menu.jsp" />
+             &lt;tiles:put name="body" value="/basic/helloBody.jsp" />
+          &lt;/tiles:insert>
+        </code>
+      </pre>
+      ]]>
+      </description>
+      <attribute>
+         <name>template</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>A string representing the URI of a template (for example, a JSP
+         page).
+         </p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>flush</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>True or false. If true, current page out stream is flushed 
+         before insertion.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>ignore</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>If this attribute is set to true, and the attribute specified by the
+         name does not exist, simply return without writing anything. The
+         default value is false, which will cause a runtime exception to be
+         thrown.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>If the user is in the specified role, the tag is taken into account;
+         otherwise, the tag is ignored (skipped).</p>
+         ]]>
+         </description>
+      </attribute>
+
+      <attribute>
+         <name>preparer</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+          <description>
+              The fully qualified class name of the preparer.
+          </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>insertDefinition</name>
+      <tag-class>org.apache.tiles.jsp.taglib.InsertDefinitionTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Insert a definition.</strong></p>
+      <p>Insert a definition with the possibility to override and specify 
+      parameters (called attributes).
+      A definition can be seen as a (partially or totally) filled template that
+      can override or complete attribute values.
+      <code>&lt;tiles:insertDefinition&gt;</code> allows to define these attributes 
+      and pass them to the inserted jsp page, called template.
+      Attributes are defined using nested tag <code>&lt;tiles:put&gt;</code> or
+      <code>&lt;tiles:putList&gt;</code>.
+      </p>
+      <p>You must specify <code>name</code> tag attribute, for inserting a definition from 
+        definitions factory.</p>
+      <p><strong>Example : </strong></p>
+      <pre>
+        <code>
+          &lt;tiles:insertDefinition name=".my.tiles.defininition flush="true">
+             &lt;tiles:put name="title" value="My first page" />
+             &lt;tiles:put name="header" value="/common/header.jsp" />
+             &lt;tiles:put name="footer" value="/common/footer.jsp" />
+             &lt;tiles:put name="menu" value="/basic/menu.jsp" />
+             &lt;tiles:put name="body" value="/basic/helloBody.jsp" />
+          &lt;/tiles:insertDefinition>
+        </code>
+      </pre>
+      ]]>
+      </description>
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Name of the definition to insert.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>flush</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>True or false. If true, current page out stream is flushed 
+         before insertion.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>ignore</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>If this attribute is set to true, and the attribute specified by the
+         name does not exist, simply return without writing anything. The
+         default value is false, which will cause a runtime exception to be
+         thrown.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>If the user is in the specified role, the tag is taken into account;
+         otherwise, the tag is ignored (skipped).</p>
+         ]]>
+         </description>
+      </attribute>
+
+      <attribute>
+         <name>preparer</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+          <description>
+              The fully qualified class name of preparer.
+          </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>insertAttribute</name>
+      <tag-class>org.apache.tiles.jsp.taglib.InsertAttributeTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Inserts the value of an attribute into the page.</strong></p>
+      <p>This tag can be flexibly used to insert the value of an attribute into a page.
+      As in other usages in Tiles, every attribute can be determined to have a "type", 
+      either set explicitly when it was defined, or "computed".  If the type is not explicit, then
+      if the attribute value is a valid definition, it will be inserted as such.  Otherwise,
+      if it begins with a "/" character, it will be treated as a "template".  Finally, if it 
+      has not otherwise been assigned a type, it will be treated as a String and included without 
+      any special handling.</p>
+     
+      <p><strong>Example : </strong></p>
+      <pre>
+        <code>
+          <tiles:insertAttribute name="body">
+        </code>
+      </pre>
+      ]]>
+      </description>
+      <attribute>
+         <name>name</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Name of the attribute to insert. This attribute will be ignored if
+         the <code>value</code> attribute is specified.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>value</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>java.lang.Object</type>
+         <description>
+         <![CDATA[
+         <p>Attribute object to render directly. If it specified, the <code>name</code>
+         attribute will be ignored.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>flush</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>True or false. If true, current page out stream is flushed 
+         before insertion.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>ignore</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>If this attribute is set to true, and the attribute specified by the
+         name does not exist, simply return without writing anything. The
+         default value is false, which will cause a runtime exception to be
+         thrown.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>If the user is in the specified role, the tag is taken into account;
+         otherwise, the tag is ignored (skipped).</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>preparer</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+          <description>
+              The fully qualified name of the preparer.
+          </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>definition</name>
+      <tag-class>org.apache.tiles.jsp.taglib.definition.DefinitionTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+         <![CDATA[
+         <p><strong>Create a definition at runtime.
+         </strong></p>
+         <p>Create a new definition at runtime.
+         Newly created definition will be available across the entire request.
+         </p>]]>
+         </description>
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Specifies the name under which the newly created definition bean 
+         will be saved.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>template</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>A string representing the URI of a template 
+         (a JSP page).</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Role to check before inserting this definition. If role is not 
+         defined for current user, definition is not inserted. Checking is
+         done at insert time, not during definition process.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>extends</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Name of a parent definition that is used to initialize this new 
+         definition. Parent definition is searched in definitions factory.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>preparer</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Specifies the preparer name to use. The specified preparer will
+         be executed before rendering this newly created definition.</p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>putAttribute</name>
+      <tag-class>org.apache.tiles.jsp.taglib.PutAttributeTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Put an attribute in enclosing attribute container tag.</strong></p>
+		<p>
+		Enclosing attribute container tag can be : 
+		<ul>
+		<li>&lt;initContainer&gt;</li> 
+		<li>&lt;definition&gt;</li> 
+		<li>&lt;insertAttribute&gt;</li> 
+		<li>&lt;insertDefinition&gt;</li>
+		<li>&lt;putListAttribute&gt;</li>
+		</ul>
+		(or any other tag which implements the <code>{@link PutAttributeTagParent}</code> interface.
+		Exception is thrown if no appropriate tag can be found.</p>
+		<p>Put tag can have following atributes :
+		<ul>
+		<li>name : Name of the attribute</li>
+		<li>value : value to put as attribute</li>
+		<li>type : value type. Only valid if value is a String and is set by
+		value="something" or by a bean.
+		Possible type are : string (value is used as direct string),
+		template (value is used as a page url to insert),
+		definition (value is used as a definition name to insert)</li>
+		<li>direct : Specify if value is to be used as a direct string or as a
+		page url to insert. This is another way to specify the type. It only apply
+		if value is set as a string, and type is not present.</li>
+		<li>beanName : Name of a bean used for setting value. Only valid if value is not set.
+		If property is specified, value come from bean's property. Otherwise, bean
+		itself is used for value.</li>
+		<li>beanProperty : Name of the property used for retrieving value.</li>
+		<li>beanScope : Scope containing bean. </li>
+		<li>role : Role to check when 'insert' will be called. If enclosing tag is
+		&lt;insert&gt;, role is checked immediately. If enclosing tag is
+		&lt;definition&gt;, role will be checked when this definition will be
+		inserted.</li>
+		</ul></p>
+		<p>Value can also come from tag body. Tag body is taken into account only if
+		value is not set by one of the tag attributes. In this case Attribute type is
+		"string", unless tag body define another type.</p>
+      ]]>
+      </description>
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Name of the attribute.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>value</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>java.lang.Object</type>
+         <description>
+         <![CDATA[
+         <p>Attribute value. Could be a String or an Object.
+         Value can come from a direct assignment (value="aValue") or from a bean.
+         One of 'value' 'content' or 'beanName' must be present.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>type</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Specify content type: string, template or definition.</p>
+         <ul>
+           <li>String : Content is printed directly.</li>
+           <li>template : Content is included from specified URL. Value is used as an URL.</li>
+           <li>definition : Value is the name of a definition defined in factory (xml file). Definition will be searched
+           in the inserted tile, in a <code>&lt;tiles:insert attribute="attributeName"&gt;</code> tag, where 'attributeName'
+           is the name used for this tag.</li>
+         </ul>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>
+         If the user is in the specified role, the tag is taken into account;
+         otherwise, the tag is ignored (skipped).
+         </p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>putListAttribute</name>
+      <tag-class>org.apache.tiles.jsp.taglib.PutListAttributeTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Declare a list that will be pass as attribute to tile.
+      </strong></p>
+      <p>Declare a list that will be pass as attribute to tile.
+      List elements are added using the tag 'add'.
+      This tag can only be used inside 'insert' or 'definition' tag.</p>
+      ]]>
+      </description>
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Name of the list.</p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>addAttribute</name>
+       <!--
+           Intentionally PutTag, it doubles for the AddTag
+           The only difference between the two is that the name
+           is not used in the Add Tag (and it's only valid within
+           the PutList
+        -->
+      <tag-class>org.apache.tiles.jsp.taglib.AddAttributeTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Add an element to the surrounding list.
+      Equivalent to 'put', but for list element.</strong></p>
+          
+      <p>Add an element to the surrounding list.
+      This tag can only be used inside putList tag.
+      Value can come from a direct assignment (value="aValue") or from a bean.
+      One of 'value' or 'beanName' must be present.</p>
+      ]]>
+      </description>
+      <attribute>
+         <name>value</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>java.lang.Object</type>
+         <description>
+         <![CDATA[
+         <p>Attribute value. Can be a String or Object.</p>
+         ]]>
+      </description>
+      </attribute>
+      <attribute>
+         <name>type</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Specify content type: string, template or definition.</p>
+         <ul>
+            <li>String : Content is printed directly.</li>
+            <li>template : Content is included from specified URL. Value is used as an URL.</li>
+            <li>definition : Value denote a definition defined in factory (xml file). Definition will be searched
+            in the inserted tile, in a <code>&lt;insert attribute="attributeName"&gt;</code> tag, where 'attributeName'
+            is the name used for this tag.</li>
+         </ul>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>If the user is in the specified role, the tag is taken into account;
+         otherwise, the tag is ignored (skipped).</p>
+         <p>The role isn't taken into account if <code>&lt;add&gt;</code> 
+         tag is used in a definition.</p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>addListAttribute</name>
+      <tag-class>org.apache.tiles.jsp.taglib.AddListAttributeTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Declare a list that will be pass as attribute to tile.
+      </strong></p>
+      <p>Declare a list that will be pass as attribute to tile.
+      List elements are added using the tag 'add'.
+      This tag can only be used inside 'insert' or 'definition' tag.</p>
+      ]]>
+      </description>
+   </tag>
+   <tag>
+      <name>getAsString</name>
+      <tag-class>org.apache.tiles.jsp.taglib.GetAsStringTag</tag-class>
+      <body-content>empty</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>
+      Render the value of the specified template attribute to the current JspWriter
+      </strong></p>
+          
+      <p>Retrieve the value of the specified template attribute 
+      property, and render it to the current JspWriter as a String.
+      The usual toString() conversions is applied on found value.</p>
+      <p>Throw a JSPException if named value is not found.</p>
+      ]]>
+      </description>
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Attribute name.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>ignore</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>
+         If this attribute is set to true, and the attribute specified by the name
+         does not exist, simply return without writing anything. The default value is false, which will
+         cause a runtime exception to be thrown.
+         </p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>role</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>
+         If the user is in the specified role, the tag is taken into account;
+         otherwise, the tag is ignored (skipped).
+         </p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>useAttribute</name>
+      <tag-class>org.apache.tiles.jsp.taglib.UseAttributeTag</tag-class>
+      <tei-class>org.apache.tiles.jsp.taglib.UseAttributeTag$Tei</tei-class>
+      <body-content>empty</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Use attribute value inside page.</strong></p>
+      <p>Declare a Java variable, and an attribute in the specified scope, 
+      using tile attribute value.</p>
+      <p>Java variable and attribute will have the name specified by 'id',
+      or the original name if not specified.</p>
+      ]]>
+      </description>
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Declared attribute and variable name.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>classname</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Class of the declared variable.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>scope</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Scope of the declared attribute. Default to 'page'.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Tile's attribute name.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>ignore</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>
+         If this attribute is set to true, and the attribute specified by the name
+         does not exist, simply return without error. The default value is false, which will
+         cause a runtime exception to be thrown.
+         </p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+      <name>importAttribute</name>
+      <tag-class>org.apache.tiles.jsp.taglib.ImportAttributeTag</tag-class>
+      <body-content>empty</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Import Tile's attribute in specified context.</strong></p>
+      <p>Import attribute from tile to requested scope.
+      Attribute name and scope are optional. If not specified, all tile
+      attributes are imported in page scope.
+      Once imported, an attribute can be used as any other beans from jsp 
+      contexts.</p>
+      ]]>
+      </description>
+      <attribute>
+         <name>name</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Tile's attribute name. If not specified, all attributes are
+         imported.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>toName</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Name of the destination attribute. If not specified, the name will
+         be the same as specified in <code>name</code> attribute</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>scope</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <description>
+         <![CDATA[
+         <p>Scope into which attribute is imported. Default to page.</p>
+         ]]>
+         </description>
+      </attribute>
+      <attribute>
+         <name>ignore</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <type>boolean</type>
+         <description>
+         <![CDATA[
+         <p>If this attribute is set to true, and the attribute specified by 
+         the name does not exist, simply return without error. The default 
+         value is false, which will cause a runtime exception to be thrown.</p>
+         ]]>
+         </description>
+      </attribute>
+   </tag>
+   <tag>
+       <name>initContainer</name>
+      <tag-class>org.apache.tiles.jsp.taglib.definition.InitContainerTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+      <![CDATA[
+      <p><strong>Initialize the TilesContainer.</strong></p>
+      <p>
+      In order to use the Tiles system, a TilesContainer must be instantiated.
+      This initialization is generally done by the TilesListener (or perhaps the
+      TilesServlet or TilesFilter).
+      </p>
+      <p>
+      If the intialization needs to be dynamic, you can initialize the container using
+      this tag.  Realize however, that this tag MUST be executed prior to invoking
+      any other definitions.  Additionally, the initilization may only be done once,
+      and any subsequent invocations will be ignored.
+      </p>
+      ]]>
+      </description>
+      <attribute>
+         <name>containerFactory</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description> <![CDATA[ <p>Container Factory implementation used to instantiate the container.</p> ]]> </description>
+      </attribute>
+   </tag>
+
+    <tag>
+        <name>destroyContainer</name>
+        <tag-class>org.apache.tiles.jsp.taglib.definition.DestroyContainerTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            <![CDATA[
+            <p><strong>Destroy the TilesContainer.</strong></p>
+            ]]>
+        </description>
+    </tag>
+</taglib>
+

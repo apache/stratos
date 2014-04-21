@@ -18,21 +18,26 @@
  */
 package org.apache.stratos.messaging.message.receiver.topology;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Implements functionality for receiving text based event messages from the topology
  * message broker topic and add them to the event queue.
  */
-public class TopologyEventMessageListener implements MessageListener {
-
+class TopologyEventMessageListener implements MessageListener {
     private static final Log log = LogFactory.getLog(TopologyEventMessageListener.class);
+
+    private TopologyEventMessageQueue messageQueue;
+
+    public TopologyEventMessageListener(TopologyEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
 
     @Override
     public void onMessage(Message message) {
@@ -43,7 +48,7 @@ public class TopologyEventMessageListener implements MessageListener {
                     log.debug(String.format("Topology message received: %s", ((TextMessage) message).getText()));
                 }
                 // Add received message to the queue
-                TopologyEventMessageQueue.getInstance().add(receivedMessage);
+                messageQueue.add(receivedMessage);
 
             } catch (JMSException e) {
                 log.error(e.getMessage(), e);

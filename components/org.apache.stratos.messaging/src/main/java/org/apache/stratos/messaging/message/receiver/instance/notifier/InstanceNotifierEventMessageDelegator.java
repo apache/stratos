@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.receiver.instance.notifier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
@@ -32,18 +33,20 @@ import javax.jms.TextMessage;
  * Implements logic for processing instance notifier event messages based on a given
  * topology process chain.
  */
-public class InstanceNotifierEventMessageDelegator implements Runnable {
+class InstanceNotifierEventMessageDelegator implements Runnable {
 
     private static final Log log = LogFactory.getLog(InstanceNotifierEventMessageDelegator.class);
+    private InstanceNotifierEventMessageQueue messageQueue;
     private MessageProcessorChain processorChain;
     private boolean terminated;
 
-    public InstanceNotifierEventMessageDelegator() {
+    public InstanceNotifierEventMessageDelegator(InstanceNotifierEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
         this.processorChain = new InstanceNotifierMessageProcessorChain();
     }
 
-    public InstanceNotifierEventMessageDelegator(MessageProcessorChain processorChain) {
-        this.processorChain = processorChain;
+    public void addEventListener(EventListener eventListener) {
+        processorChain.addEventListener(eventListener);
     }
 
     @Override
@@ -55,7 +58,7 @@ public class InstanceNotifierEventMessageDelegator implements Runnable {
 
             while (!terminated) {
                 try {
-                    TextMessage message = InstanceNotifierEventMessageQueue.getInstance().take();
+                    TextMessage message = messageQueue.take();
 
                     // Retrieve the header
                     String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);

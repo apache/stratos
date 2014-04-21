@@ -32,19 +32,16 @@ import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusE
 import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
-import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.ConfigurationContextService;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-
-import java.util.List;
 
 /**
  * Registering Cloud Controller Service.
@@ -57,7 +54,7 @@ import java.util.List;
  *                interface=
  *                "org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"   
+ *                unbind="unsetRegistryService"
  * @scr.reference name="config.context.service"
  *                interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic"
@@ -87,7 +84,7 @@ public class CloudControllerDSComponent {
             Thread tdelegator = new Thread(delegator);
             tdelegator.start();
         	
-        	// Register cloud controller service
+        	// Register cloud controller service                                                   E
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
 
@@ -151,11 +148,8 @@ public class CloudControllerDSComponent {
     }
 	
 	protected void deactivate(ComponentContext ctx) {
-
-		List<EventPublisher> publishers = dataHolder.getAllEventPublishers();
-		for (EventPublisher topicPublisher : publishers) {
-			topicPublisher.close();
-		}
+        // Close event publisher connections to message broker
+        EventPublisherPool.close(Constants.TOPOLOGY_TOPIC);
 	}
 	
 }

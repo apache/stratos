@@ -31,7 +31,6 @@
 
     <groupId>org.apache.stratos</groupId>
     <artifactId>org.apache.stratos.load.balancer.extension.api</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
     <name>Apache Stratos - Load Balancer - Extension API</name>
     <description>An extension API for integrating third party load balancers with Apache Stratos.</description>
 

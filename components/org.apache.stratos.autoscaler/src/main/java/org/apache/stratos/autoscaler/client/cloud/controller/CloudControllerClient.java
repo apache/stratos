@@ -126,7 +126,7 @@ public class CloudControllerClient {
 
     }
 
-    public MemberContext spawnAnInstance(Partition partition,
+    public synchronized MemberContext spawnAnInstance(Partition partition,
     		String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
         try {
             if(log.isInfoEnabled()) {
@@ -162,7 +162,7 @@ public class CloudControllerClient {
 		}
     }
     
-    public void terminateAllInstances(String clusterId) throws TerminationException {
+    public synchronized void terminateAllInstances(String clusterId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
@@ -185,7 +185,7 @@ public class CloudControllerClient {
         }
     }
 
-    public void terminate(String memberId) throws TerminationException {
+    public synchronized void terminate(String memberId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));

@@ -19,13 +19,15 @@
 
 package org.apache.stratos.cartridge.agent;
 
-import java.lang.reflect.Constructor;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.config.configurator.JndiConfigurator;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.util.Constants;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Cartridge agent main class.
@@ -37,6 +39,20 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            // Add shutdown hook
+            final Thread mainThread = Thread.currentThread();
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    try {
+                        // Close event publisher connections to message broker
+                        EventPublisherPool.close(Constants.INSTANCE_STATUS_TOPIC);
+                        mainThread.join();
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
+                }
+            });
+
             // Configure log4j properties
             if(log.isDebugEnabled()) {
                 log.debug("Configuring log4j.properties file path");

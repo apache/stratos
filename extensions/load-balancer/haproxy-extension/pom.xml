@@ -30,7 +30,6 @@
     </parent>
 
     <artifactId>apache-stratos-haproxy-extension</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
     <name>Apache Stratos - HAProxy Extension</name>
     <description>Apache Stratos HAProxy Extension for Load Balancing</description>
 
@@ -43,17 +42,17 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.load.balancer.extension.api</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

@@ -60,7 +60,7 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
             //set the cluster id to Cluster object
         	cluster.setClusterDomain(clusterId);
             if (log.isDebugEnabled()) {
-                log.debug("Set existing default LB cluster id " + clusterId + " to the LB Subscription with alias: " + alias);
+                log.debug("Set existing default LB cluster id " + clusterId);
             }
             defaultLBExists = true;
 
@@ -77,7 +77,7 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
             if (clusterContext != null) {
                 cluster.setHostName(clusterContext.getHostName());
                 if (log.isDebugEnabled()) {
-                    log.debug("Set existing default LB hostname " + clusterContext.getHostName() + " to the LB Subscription with alias: " + alias);
+                    log.debug("Set existing default LB hostname " + clusterContext.getHostName());
                 }
             }
          

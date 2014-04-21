@@ -27,7 +27,6 @@
 set -e
 product_list=$1
 export LOG=$log_path/stratos.log
-SLEEP=40
 
 profile="default"
 
@@ -39,8 +38,8 @@ fi
 
 function help {
     echo ""
-    echo "Give one or more of the servers to start on this machine. The available servers are"
-    echo "cc, as, sm, default. 'default' means you need to start all servers."
+    echo "Give the profile to start on this machine. The available profiles are"
+    echo "cc, as, sm, default. 'default' means that a single product with all features will be started."
     echo "usage:"
     echo "start-servers.sh -p\"<profile>\""
     echo "eg."
@@ -73,24 +72,23 @@ do
     elif [[ $x = "sm" ]]; then
         profile="sm"
     else
-        echo "Inavlid profile : 'default' profile will be selected."
+        echo "'default' profile selected."
         profile="default"
     fi
 done
+
+stratos_extract_path=$stratos_extract_path"-"$profile
 
 if [[ $profile = "default" ]]; then
     echo "Starting ActiveMQ server ..." >> $LOG
     $activemq_path/bin/activemq start
     echo "ActiveMQ server started" >> $LOG
-    sleep $SLEEP
-    sleep $SLEEP
+    sleep 10
 fi
 
 echo "Starting Stratos server ..." >> $LOG
 echo "$stratos_extract_path/bin/stratos.sh -Dprofile=$profile start"
 $stratos_extract_path/bin/stratos.sh -Dprofile=$profile start
 echo "Stratos server started" >> $LOG
-sleep $SLEEP
-sleep $SLEEP
 
 

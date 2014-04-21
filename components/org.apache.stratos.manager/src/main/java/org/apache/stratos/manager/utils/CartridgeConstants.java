@@ -93,6 +93,10 @@ public class CartridgeConstants {
 	public static final String ACTION_COL = "action";
 	public static final String INTERNAL_REPO_BASED_CARTRIDGE_PROVIDER = "internal";
 
+    // payload data related information
+    public static final String LOAD_BALANCED_SERVICE_TYPE = "LOAD_BALANCED_SERVICE_TYPE";
+    public static final String LB_CATEGORY = "LB_CATEGORY";
+
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";
 		public static final String HOSTINFO = "hostinfo/";
