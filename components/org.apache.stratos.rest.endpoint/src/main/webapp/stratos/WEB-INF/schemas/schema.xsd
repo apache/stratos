@@ -18,4 +18,38 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    
+    <xs:element name="autoscalePolicy">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deploymentPolicy">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="cartridgeDefinitionBean">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+                <xs:any processContents="lax"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>
