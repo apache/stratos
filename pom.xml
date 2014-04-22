@@ -30,7 +30,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
     <name>Apache Stratos (incubating) Project</name>
     <description>Apache Stratos (Incubating) is an open source polyglot Platform as a Service (PaaS) framework</description>
     <url>http://stratos.incubator.apache.org</url>
@@ -363,6 +363,14 @@
             <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/snapshots/maven2/</url>
         </snapshotRepository>
     </distributionManagement-->
+
+    <distributionManagement>
+       <repository>
+         <id>apache-staging-repository</id>
+         <name>Apache Release Distribution Repository</name>
+         <url>https://repository.apache.org/content/repositories/staging</url>
+       </repository>
+    </distributionManagement>
 
     <pluginRepositories>
         <pluginRepository>
