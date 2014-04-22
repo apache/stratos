@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-products-parent</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos Manager - Parent</name>
+    <name>Apache Stratos - Manager - Parent</name>
     <url>http://apache.org</url>
     <description>Apache Stratos Manager Parent</description>
 

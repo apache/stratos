@@ -23,13 +23,13 @@
 	<parent>
 		<groupId>org.apache.stratos</groupId>
 		<artifactId>stratos-components-parent</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
+		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.apache.stratos.manager</artifactId>
 	<packaging>bundle</packaging>
-	<name>Apache Stratos Manager BE</name>
+	<name>Apache Stratos - Manager BE</name>
 	<description>BE functionalities of SM</description>
 	<url>http://apache.org</url>
 

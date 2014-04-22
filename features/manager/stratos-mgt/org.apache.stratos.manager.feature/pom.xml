@@ -23,13 +23,13 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-mgt-parent-feature</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.manager.feature</artifactId>    
     <packaging>pom</packaging>
-    <name>Apache Stratos  Management Composite Feature</name>
+    <name>Apache Stratos - Management Composite Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Stratos Manager</description>
 
