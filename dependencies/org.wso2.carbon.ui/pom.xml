@@ -15,9 +15,7 @@
  ~ limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
@@ -31,7 +29,7 @@
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - UI</name>
     <description>org.wso2.carbon.ui patch version for apache stratos</description>
-    <version>4.2.0-stratos</version>
+    <version>4.2.0-stratos-SNAPSHOT</version>
     <url>http://wso2.org</url>
 
     <repositories>
@@ -45,18 +43,7 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-    </repositories> 
-   
-    <pluginRepositories>
-        <pluginRepository>
-            <id>wso2-maven2-repository-1</id>
-            <url>http://dist.wso2.org/maven2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>wso2-maven2-repository-2</id>
-            <url>http://dist.wso2.org/snapshots/maven2</url>
-        </pluginRepository>
-    </pluginRepositories>    
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -241,5 +228,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

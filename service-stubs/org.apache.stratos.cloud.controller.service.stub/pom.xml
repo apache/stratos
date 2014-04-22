@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-service-stubs-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -47,10 +47,10 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://impl.controller.cloud.stratos.apache.org=org.apache.stratos.cloud.controller.stub.impl"/>
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://impl.controller.cloud.stratos.apache.org=org.apache.stratos.cloud.controller.stub.impl" />
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
                             </tasks>
                         </configuration>

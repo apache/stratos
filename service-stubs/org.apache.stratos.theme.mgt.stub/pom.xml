@@ -17,13 +17,11 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-service-stubs-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -46,12 +44,10 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ThemeMgtService.wsdl -u -uw -o target/generated-code
-                                    -p org.apache.stratos.theme.mgt.stub
-                                    -ns2p http://services.mgt.theme.stratos.apache.org=org.apache.stratos.theme.mgt.stub.services,http://utils.services.resource.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.services.utils.xsd,http://common.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.common.xsd,http://beans.resource.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.beans.xsd,http://services.resource.registry.carbon.wso2.org=org.apache.stratos.theme.mgt.stub.registry.resource.stub.services"/>
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/ThemeMgtService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.theme.mgt.stub -ns2p http://services.mgt.theme.stratos.apache.org=org.apache.stratos.theme.mgt.stub.services,http://utils.services.resource.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.services.utils.xsd,http://common.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.common.xsd,http://beans.resource.registry.carbon.wso2.org/xsd=org.apache.stratos.theme.mgt.stub.registry.resource.stub.beans.xsd,http://services.resource.registry.carbon.wso2.org=org.apache.stratos.theme.mgt.stub.registry.resource.stub.services" />
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
                             </tasks>
                         </configuration>

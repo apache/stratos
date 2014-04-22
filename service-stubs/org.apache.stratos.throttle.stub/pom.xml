@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-service-stubs-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -47,17 +47,15 @@
                         <configuration>
                             <tasks>
                                 <path id="wsdl2java.classpath">
-			 <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${orbit.version.axiom}/axiom-${orbit.version.axiom}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${orbit.version.axis2}/axis2-client-${orbit.version.axis2}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${orbit.version.axis2}/axis2-${orbit.version.axis2}.jar"/>
+			 <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${orbit.version.axiom}/axiom-${orbit.version.axiom}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${orbit.version.axis2}/axis2-client-${orbit.version.axis2}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${orbit.version.axis2}/axis2-${orbit.version.axis2}.jar" />
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ThrottleAdminService.wsdl -u -uw -o target/generated-code
-                                    -p org.apache.stratos.throttle.stub
-                                    -ns2p http://service.throttle.stratos.apache.org=org.apache.stratos.throttle.stub,http://throttle.stratos.apache.org/xsd=org.apache.stratos.throttle.stub.types"/>
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/ThrottleAdminService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.throttle.stub -ns2p http://service.throttle.stratos.apache.org=org.apache.stratos.throttle.stub,http://throttle.stratos.apache.org/xsd=org.apache.stratos.throttle.stub.types" />
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
                             </tasks>
                         </configuration>

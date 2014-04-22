@@ -27,7 +27,7 @@
   </parent>
   <groupId>org.apache.stratos</groupId>
   <artifactId>aws-ec2</artifactId>
-  <version>1.7.1-stratos</version>
+  <version>1.7.1-stratos-SNAPSHOT</version>
   <name>jclouds Amazon EC2 provider</name>
   <description>EC2 implementation targeted to Amazon Web Services</description>
   <packaging>bundle</packaging>
@@ -148,7 +148,5 @@
       </build>
     </profile>
   </profiles>
-
-
 </project>
 

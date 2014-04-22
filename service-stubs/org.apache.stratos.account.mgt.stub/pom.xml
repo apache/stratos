@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-service-stubs-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -47,31 +47,25 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/AccountMgtService.wsdl -u -uw -o target/generated-code
-                                    -p org.apache.stratos.account.mgt.stub.services
-                                    -ns2p http://services.mgt.account.stratos.apache.org=org.apache.stratos.account.mgt.stub.services,http://util.mgt.account.stratos.apache.org/xsd=org.apache.stratos.account.mgt.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.apache.stratos.account.mgt.stub.exceptions,http://beans.mgt.account.stratos.apache.org/xsd=org.apache.stratos.account.mgt.stub.beans.xsd"/>
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/AccountMgtService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.account.mgt.stub.services -ns2p http://services.mgt.account.stratos.apache.org=org.apache.stratos.account.mgt.stub.services,http://util.mgt.account.stratos.apache.org/xsd=org.apache.stratos.account.mgt.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.apache.stratos.account.mgt.stub.exceptions,http://beans.mgt.account.stratos.apache.org/xsd=org.apache.stratos.account.mgt.stub.beans.xsd" />
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
 
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/EmailValidationService.wsdl -u -uw -o target/generated-code
-                                    -p org.apache.stratos.account.mgt.stub.services
-                                    -ns2p http://services.mgt.account.stratos.apache.org=org.apache.stratos.account.mgt.stub.services,http://util.mgt.account.stratos.apache.org/xsd=org.apache.stratos.account.mgt.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.apache.stratos.account.mgt.stub.exceptions"/>
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/EmailValidationService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.account.mgt.stub.services -ns2p http://services.mgt.account.stratos.apache.org=org.apache.stratos.account.mgt.stub.services,http://util.mgt.account.stratos.apache.org/xsd=org.apache.stratos.account.mgt.stub.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.apache.stratos.account.mgt.stub.exceptions" />
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
 				
 				<java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/BillingDataAccessService.wsdl -u -uw -o target/generated-code
-                                    -p org.apache.stratos.account.mgt.stub.services
-                                    -ns2p http://dataobjects.core.billing.carbon.wso2.org/xsd=org.apache.stratos.account.mgt.stub.services.beans.xsd,http://services.mgt.billing.carbon.wso2.org=org.apache.stratos.account.mgt.stub.services"/>
+                                    <arg line="-uri src/main/resources/BillingDataAccessService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.account.mgt.stub.services -ns2p http://dataobjects.core.billing.carbon.wso2.org/xsd=org.apache.stratos.account.mgt.stub.services.beans.xsd,http://services.mgt.billing.carbon.wso2.org=org.apache.stratos.account.mgt.stub.services" />
 
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
 
                             </tasks>

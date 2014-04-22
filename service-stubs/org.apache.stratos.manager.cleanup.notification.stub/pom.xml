@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-service-stubs-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -46,16 +46,16 @@
                         <configuration>
                             <tasks>
                                 <path id="wsdl2java.classpath">
-				    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar"/>
+				    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar" />
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/InstanceCleanupNotificationService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.manager.cleanup.notification.stub -ns2p http://exception.manager.stratos.apache.org/xsd=org.apache.stratos.manager.exception,http://dto.manager.stratos.apache.org/xsd=org.apache.stratos.manager.dto"/>
-                                    <classpath refid="wsdl2java.classpath"/>
-				    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/InstanceCleanupNotificationService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.manager.cleanup.notification.stub -ns2p http://exception.manager.stratos.apache.org/xsd=org.apache.stratos.manager.exception,http://dto.manager.stratos.apache.org/xsd=org.apache.stratos.manager.dto" />
+                                    <classpath refid="wsdl2java.classpath" />
+				    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
                             </tasks>
                         </configuration>
