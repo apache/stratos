@@ -202,6 +202,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
             if (dataHolder.getCartridges().remove(cartridge)) {
                 persist();
+                
+                // sends the service removed event
+                List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+                cartridgeList.add(cartridge);
+                TopologyBuilder.handleServiceRemoved(cartridgeList);
+                
                 if(log.isInfoEnabled()) {
                     log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
                 }
