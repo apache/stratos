@@ -29,7 +29,7 @@
 #
 
 class lb (
-  $version            = '4.0.0-SNAPSHOT',
+  $version            = '4.0.0-incubating',
   $offset             = 0,
   $tribes_port        = 4000,
   $maintenance_mode   = true,
