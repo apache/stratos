@@ -159,6 +159,7 @@
                                 <exclude>**/services/*LoggingModule</exclude>
                                 <exclude>**/services/*ApiMetadata</exclude>
                                 <exclude>**/services/*ProviderMetadata</exclude>
+				<exclude>**/dhtmlHistory.js</exclude>
                             </excludes>
 			    <excludeSubProjects>false</excludeSubProjects>
                         </configuration>
