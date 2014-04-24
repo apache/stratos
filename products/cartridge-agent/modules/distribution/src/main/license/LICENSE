@@ -252,11 +252,9 @@ httpcore-4.1.0-wso2v1.jar
 javax.cache.wso2-4.2.0.jar
 java-xmlbuilder-0.6.jar
 javax.servlet-3.0.0.v201112011016.jar
-jaxen-1.1.1.jar
 jdbc-pool-7.0.34.wso2v1.jar
 jdom-1.0.jar
 json-2.0.0.wso2v1.jar
-junit-3.8.1.jar
 libthrift-0.7.wso2v1.jar
 log4j-1.2.13.jar
 neethi-2.0.4.wso2v4.jar
@@ -342,6 +340,7 @@ The following components are Licensed under BSD license
 For dom4j-1.6.1.jar, 
 jline-0.9.94.jar, 
 jsch-0.1.49.jar
+jaxen-1.1.1.jar
 
 Copyright (c) 2010 Terence Parr
 All rights reserved.

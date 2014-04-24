@@ -47,16 +47,14 @@
                         <configuration>
                             <tasks>
                                 <path id="wsdl2java.classpath">
-			 <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axis2.wso2.version}/axiom-${axis2.wso2.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar"/>
-                                    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar"/>
+			 <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axis2.wso2.version}/axiom-${axis2.wso2.version}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar" />
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/PackageInfoServce.wsdl -u -uw
-                                    -p org.apache.stratos.common.packages.stub -o target/generated-code
-                                    -ns2p http://packages.common.stratos.apache.org/xsd=org.apache.stratos.common.packages.stub,http://services.common.stratos.apache.org=org.apache.stratos.common.packages.stub"/>
-                                    <classpath refid="wsdl2java.classpath"/>
+                                    <arg line="-uri src/main/resources/PackageInfoServce.wsdl -u -uw -p org.apache.stratos.common.packages.stub -o target/generated-code -ns2p http://packages.common.stratos.apache.org/xsd=org.apache.stratos.common.packages.stub,http://services.common.stratos.apache.org=org.apache.stratos.common.packages.stub" />
+                                    <classpath refid="wsdl2java.classpath" />
                                 </java>
                             </tasks>
                         </configuration>

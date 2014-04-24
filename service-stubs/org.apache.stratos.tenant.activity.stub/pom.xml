@@ -47,12 +47,10 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/TenantActivityService.wsdl -u -uw -o target/generated-code
-                                    -p org.apache.stratos.tenant.activity.stub
-                                    -ns2p http://services.activity.tenant.stratos.apache.org=org.apache.stratos.tenant.activity.stub.services,http://beans.activity.tenant.stratos.apache.org/xsd=org.apache.stratos.tenant.activity.stub.beans.xsd"/>
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <arg line="-uri src/main/resources/TenantActivityService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.tenant.activity.stub -ns2p http://services.activity.tenant.stratos.apache.org=org.apache.stratos.tenant.activity.stub.services,http://beans.activity.tenant.stratos.apache.org/xsd=org.apache.stratos.tenant.activity.stub.beans.xsd" />
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
                             </tasks>
                         </configuration>

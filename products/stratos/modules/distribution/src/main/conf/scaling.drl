@@ -87,7 +87,7 @@ dialect "mvel"
 	    laPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
 
         scaleUp : Boolean() from ((rifReset && (rifPredictedValue > rifAverageLimit * 0.8)) || (mcReset && (mcPredictedValue > mcAverageLimit * 0.8)) || (laReset && (laPredictedValue > laAverageLimit * 0.8)))
-        scaleDown : Boolean() from ((rifReset && (rifPredictedValue < rifAverageLimit * 0.1)) || (mcReset && (mcPredictedValue < mcAverageLimit * 0.1)) || (laReset && (laPredictedValue < laAverageLimit * 0.1)))
+        scaleDown : Boolean() from ((rifReset && (rifPredictedValue < rifAverageLimit * 0.1)) && (mcReset && (mcPredictedValue < mcAverageLimit * 0.1)) && (laReset && (laPredictedValue < laAverageLimit * 0.1)))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))

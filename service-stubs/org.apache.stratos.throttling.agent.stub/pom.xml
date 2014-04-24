@@ -48,9 +48,9 @@
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/MultitenancyThrottlingService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.throttling.agent.stub.services -ns2p http://services.manager.throttling.stratos.apache.org=org.apache.stratos.throttling.agent.stub.services" />
-                                    <classpath refid="maven.dependency.classpath"/>
-                                    <classpath refid="maven.compile.classpath"/>
-                                    <classpath refid="maven.runtime.classpath"/>
+                                    <classpath refid="maven.dependency.classpath" />
+                                    <classpath refid="maven.compile.classpath" />
+                                    <classpath refid="maven.runtime.classpath" />
                                 </java>
                             </tasks>
                         </configuration>

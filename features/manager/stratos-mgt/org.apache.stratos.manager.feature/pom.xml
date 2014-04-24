@@ -18,9 +18,7 @@
        under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -31,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.manager.feature</artifactId>    
     <packaging>pom</packaging>
-    <name>Apache Stratos  Management Composite Feature</name>
+    <name>Apache Stratos - Management Composite Feature</name>
     <url>http://apache.org</url>
     <description>This feature contains the core bundles required for Stratos Manager</description>
 
