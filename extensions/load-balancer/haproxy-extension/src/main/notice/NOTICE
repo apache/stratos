@@ -1,0 +1,395 @@
+Apache Software
+Copyright 2014 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+================================================================================
+Apache Abdera Notice:
+
+Portions of Abdera were orginally developed by
+International Business Machines Corporation and are
+licensed to the Apache Software Foundation under the
+"Software Grant and Corporate Contribution License Agreement",
+informally known as the "Abdera CLA".
+
+This software's test suite contains data files derived from the
+Universal Feed Parser, Copyright (c) 2002-2005, Mark Pilgrim.
+
+This software's extensions module contains a JSON writer for Atom XML
+that utilizes a JSON parser, Copyright (c) 2002, json.org. The code was 
+licensed using Apache License by the author Douglas Crockford and made 
+available at http://json.org/java/apache.zip We have included portions 
+of the code in the extensions module.
+
+===============================================================================
+Apache Ant Notice:
+
+The <sync> task is based on code Copyright (c) 2002, Landmark
+Graphics Corp that has been kindly donated to the Apache Software
+Foundation.
+
+================================================================================
+Apache Axiom Notice:
+
+Portions Copyright 2006 International Business Machines Corp.
+
+================================================================================
+Apache Axis2 Notice:
+
+Portions Copyright 2006 International Business Machines Corp.
+Portions Copyright 2005-2007 WSO2, Inc.
+
+This product also includes schemas and specification developed by:
+- the W3C consortium (http://www.w3c.org)
+
+This product also includes WS-* schemas developed by International
+Business Machines Corporation, Microsoft Corporation, BEA Systems,
+TIBCO Software, SAP AG, Sonic Software, and VeriSign
+
+This product also includes a WSDL developed by salesforce.com
+- Copyright 1999-2006 salesforce.com, inc.
+
+Portions of the included xmlbeans library were originally based on the following:
+- software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+================================================================================
+Apache Commons-Lang Notice:
+
+This product includes software from the Spring Framework,
+under the Apache License 2.0 (see: StringUtils.containsWhitespace())
+
+================================================================================
+Apache Commons-Pool Notice:
+
+The LinkedBlockingDeque implementation is based on an implementation written by
+Doug Lea with assistance from members of JCP JSR-166 Expert Group and released
+to the public domain, as explained at
+http://creativecommons.org/licenses/publicdomain
+
+================================================================================
+Apache Commons-httpclient Notice:
+
+This project contains annotations derived from JCIP-ANNOTATIONS
+Copyright (c) 2005 Brian Goetz and Tim Peierls. See http://www.jcip.net
+
+===============================================================================
+Apache Tomcat Notice:
+
+The Windows Installer is built with the Nullsoft
+Scriptable Install System (NSIS), which is
+open source software.  The original software and
+related information is available at
+http://nsis.sourceforge.net.
+
+Java compilation software for JSP pages is provided by Eclipse,
+which is open source software.  The original software and
+related information is available at
+http://www.eclipse.org.
+
+For the bayeux implementation
+The org.apache.cometd.bayeux API is derivative work originating at the Dojo Foundation
+* Copyright 2007-2008 Guy Molinari
+* Copyright 2007-2008 Filip Hanik
+* Copyright 2007 Dojo Foundation
+* Copyright 2007 Mort Bay Consulting Pty. Ltd.
+
+The original XML Schemas for Java EE Deployment Descriptors:
+ - javaee_5.xsd
+ - javaee_web_services_1_2.xsd
+ - javaee_web_services_client_1_2.xsd
+ - javaee_6.xsd
+ - javaee_web_services_1_3.xsd
+ - javaee_web_services_client_1_3.xsd
+ - jsp_2_2.xsd
+ - web-app_3_0.xsd
+ - web-common_3_0.xsd
+ - web-fragment_3_0.xsd
+ - javaee_7.xsd
+ - javaee_web_services_1_4.xsd
+ - javaee_web_services_client_1_4.xsd
+ - jsp_2_3.xsd
+ - web-app_3_1.xsd
+ - web-common_3_1.xsd
+ - web-fragment_3_1.xsd
+
+may be obtained from:
+http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/index.html
+
+================================================================================
+Apache Geranimo Notice:
+
+Apache Geronimo
+Copyright 2003-2011 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+Portions of the Web Console were orginally developed by International
+Business Machines Corporation and are licensed to the Apache Software
+Foundation under the "Software Grant and Corporate Contribution
+License Agreement", informally known as the "IBM Console CLA".
+
+Portions of the ASN1 codec implementation in
+framework/modules/geronimo-crypto/ were developed by the Bouncy Castle
+project (http://www.bouncycastle.org/).
+
+Copyright (c) 2000-2005
+The Legion Of The Bouncy Castle (http://www.bouncycastle.org)
+
+ORB Portions of this software were developed at IONA Technologies.
+
+Object Management Group (OMG) classes used by the orb.
+The original classes are available from www.org.omg.
+
+The RMI over IIOP implementation were developed at Trifork Technologies.
+
+Copyright 2004-2009 Tranql project committers
+This product includes software developed at
+Tranql (http://tranql.codehaus.org/).
+
+This product includes software developed by the Protocol Buffers
+project (http://code.google.com/apis/protocolbuffers).
+
+This product includes also software developed by :
+  - the W3C consortium (http://www.w3c.org) ,
+  - the SAX project (http://www.saxproject.org)
+
+The <sync> task is based on code Copyright (c) 2002, Landmark
+Graphics Corp that has been kindly donated to the Apache Software
+Foundation.
+
+Portions of this software were originally based on the following:
+  - software copyright (c) 1999, IBM Corporation., http://www.ibm.com.
+  - software copyright (c) 1999, Sun Microsystems., http://www.sun.com.
+  - voluntary contributions made by Paul Eng on behalf of the
+    Apache Software Foundation that were originally developed at iClick, Inc.,
+    software copyright (c) 1999.
+
+
+Portions Copyright 2006 International Business Machines Corp.
+Portions Copyright 2005-2007 WSO2, Inc.
+
+This product also includes schemas and specification developed by:
+- the W3C consortium (http://www.w3c.org)
+
+This product also includes WS-* schemas developed by International
+Business Machines Corporation, Microsoft Corporation, BEA Systems,
+TIBCO Software, SAP AG, Sonic Software, and VeriSign
+
+This product also includes a WSDL developed by salesforce.com
+- Copyright 1999-2006 salesforce.com, inc.
+
+Portions of the included xmlbeans library were originally based on the following:
+- software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+This product also includes schemas and specification developed by:
+      - the W3C consortium (http://www.w3c.org)
+      (http://www.w3.org/XML/1998/namespace)
+
+This product also includes WS-* schemas developed by International
+   Business Machines Corporation, Microsoft Corporation, BEA Systems,
+   TIBCO Software, SAP AG, Sonic Software, and VeriSign
+   (http://schemas.xmlsoap.org/wsdl/2003-02-11.xsd)
+   (http://schemas.xmlsoap.org/ws/2004/08/addressing/)
+   (http://schemas.xmlsoap.org/wsdl/http)
+   (http://schemas.xmlsoap.org/ws/2005/02/rm/wsrm.xsd)
+   (http://www.w3.org/2005/08/addressing/ws-addr.xsd)
+
+Portions of Derby were originally developed by
+International Business Machines Corporation and are
+licensed to the Apache Software Foundation under the
+"Software Grant and Corporate Contribution License Agreement",
+informally known as the "Derby CLA".
+The following copyright notice(s) were affixed to portions of the code
+with which this file is now or was at one time distributed
+and are placed here unaltered.
+
+(C) Copyright 1997,2004 International Business Machines Corporation.  All rights reserved.
+
+(C) Copyright IBM Corp. 2003.
+
+The portion of the functionTests under 'nist' was originally
+developed by the National Institute of Standards and Technology (NIST),
+an agency of the United States Department of Commerce, and adapted by
+International Business Machines Corporation in accordance with the NIST
+Software Acknowledgment and Redistribution document at
+http://www.itl.nist.gov/div897/ctg/sql_form.htm
+
+* OpenJPA includes software written by Miroslav Nachev.
+
+* OpenJPA uses test code written by Charles Tillman.
+
+XMLSec was originally based on software copyright (c) 2001, Institute for
+Data Communications Systems, <http://www.nue.et-inf.uni-siegen.de/>.
+
+The development of XMLSec was partly funded by the European
+Commission in the <WebSig> project in the ISIS Programme.
+
+This product also includes software developed by :
+
+  - IBM Corporation (http://www.ibm.com),
+      WSDL4J was the initial code contribution for the Apache Woden
+      project and some of the WSDL4J design and code has been reused.
+  - The W3C Consortium (http://www.w3c.org),
+      Common W3C XML Schema and DTD files are packaged with Apache Woden.
+
+Portions Copyright 2006 International Business Machines Corp.
+
+Portions of this software were originally based on the following:
+  - software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+Aside from contributions to the Apache XMLBeans project, this
+software also includes:
+
+ - one or more source files from the Apache Xerces-J and Apache Axis
+   products, Copyright (c) 1999-2003 Apache Software Foundation
+
+ - W3C XML Schema documents Copyright 2001-2003 (c) World Wide Web
+   Consortium (Massachusetts Institute of Technology, European Research
+   Consortium for Informatics and Mathematics, Keio University)
+
+ - resolver.jar from Apache Xml Commons project,
+   Copyright (c) 2001-2003 Apache Software Foundation
+
+ - Piccolo XML Parser for Java from http://piccolo.sourceforge.net/,
+   Copyright 2002 Yuval Oren under the terms of the Apache Software License 2.0
+
+ - JSR-173 Streaming API for XML from http://sourceforge.net/projects/xmlpullparser/,
+   Copyright 2005 BEA under the terms of the Apache Software License 2.0
+
+This product includes software developed by the Simple XML Compiler (SXC)
+project (http://sxc.codehaus.org/project-info.html)
+
+This product includes software developed for the JAXB Reference
+Implementation project. (https://jaxb.dev.java.net/).  Apache Geronimo elects
+to include this software in this distribution under the CDDL license.
+
+This product includes software developed for SOAP with Attachments
+API for Java (SAAJ). The software is available from the GlassFish project
+(https://saaj.dev.java.net/).  Apache Geronimo elects to include this
+software in this distribution under the CDDL license.
+
+This product includes software developed for Java API for XML Web Services
+project (JAX-WS) (https://jax-ws.dev.java.net/).  Apache Geronimo elects
+to include this software in this distribution under the CDDL license.
+
+This product includes software developed for the Java Server Pages Tag
+Library project (https://jstl.dev.java.net/).   Apache Geronimo elects
+to include this software in this distribution under the CDDL license.
+
+This product includes schema files developed for the Glassfish Java EE
+reference implementation (http://java.sun.com/xml/ns/j2ee/).
+Apache Geronimo elects to include this software in this distribution
+under the CDDL license.  You can obtain a copy of the License at:
+    https://glassfish.dev.java.net/public/CDDL+GPL.html
+The source code is available at:
+    https://glassfish.dev.java.net/source/browse/glassfish/
+
+The following schemas are included:
+
+----------------------------------
+  application-client_1_4.xsd
+  application_1_4.xsd
+  connector_1_5.xsd
+  datatypes.dtd
+  ejb-jar_2_1.xsd
+  j2ee_1_4.xsd
+  j2ee_jaxrpc_mapping_1_1.xsd
+  j2ee_web_services_1_1.xsd
+  j2ee_web_services_client_1_1.xsd
+  jsp_2_0.xsd
+  web-app_2_4.xsd
+  web-jsptaglibrary_2_0.xsd
+  application-client_5.xsd
+  application_5.xsd
+  ejb-jar_3_0.xsd
+  handler-chain.xsd
+  javaee_5.xsd
+  javaee_web_services_1_2.xsd
+  javaee_web_services_client_1_2.xsd
+  jsp_2_1.xsd
+  persistence_1_0.xsd
+  web-app_2_5.xsd
+  web-facelettaglibrary_2_0.xsd
+  web-facesconfig_2_0.xsd
+  web-partialresponse_2_0.xsd
+  web-jsptaglibrary_2_1.xsd
+  application_6.xsd
+  application-client_6.xsd
+  connector_1_6.xsd
+  ejb-jar_3_1.xsd
+  javaee_6.xsd
+  javaee_web_services_1_3.xsd
+  javaee_web_services_client_1_3.xsd
+  jsp_2_2.xsd
+  persistence_2_0.xsd
+  web-app_3_0.xsd
+  web-common_3_0.xsd
+  web-fragment_3_0.xsd
+--------------------------------
+
+This product includes software developed at
+the OSGi Alliance (http://www.osgi.org/).
+
+ This product includes software developed at
+ OPS4J (http://www.ops4j.org/).
+-------------------------------------------------------------------------------
+
+The product contains the software developed in javassist.org (http://www.javassist.org) 
+which is released under both the Mozilla Public License 
+(http://www.mozilla.org/MPL/MPL-1.1.html) and the GNU Lesser General Public 
+License (http://www.gnu.org/licenses/lgpl-2.1.html).  
+
+The Apache Geronimo project elects to distribute this software under the terms of 
+the Mozilla Public License. 
+
+-------------------------------------------------------------------------------
+
+The product contains the software developed in json.org which released under the following license.
+
+http://www.json.org/license.html
+
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+
+================================================================================
+Apache Httpclient Notice:
+
+This project contains annotations derived from JCIP-ANNOTATIONS
+Copyright (c) 2005 Brian Goetz and Tim Peierls. See http://www.jcip.net
+
+================================================================================
+Apache Httpcore Notice:
+
+This project contains annotations derived from JCIP-ANNOTATIONS
+Copyright (c) 2005 Brian Goetz and Tim Peierls. See http://www.jcip.net
+
+===============================================================================
+Apache POI Notice:
+
+This product contains the DOM4J library (http://www.dom4j.org).
+Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
+
+This product contains parts that were originally based on software from BEA.
+Copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+
+This product contains W3C XML Schema documents. Copyright 2001-2003 (c)
+World Wide Web Consortium (Massachusetts Institute of Technology, European
+Research Consortium for Informatics and Mathematics, Keio University)
+
+This product contains the Piccolo XML Parser for Java
+(http://piccolo.sourceforge.net/). Copyright 2002 Yuval Oren.
+
+This product contains the chunks_parse_cmds.tbl file from the vsdump program.
+Copyright (C) 2006-2007 Valek Filippov (frob@df.ru)
+
+
+

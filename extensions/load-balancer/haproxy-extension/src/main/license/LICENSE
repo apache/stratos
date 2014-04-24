@@ -200,7 +200,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
+===================================================================================
 
 ===================================================================================
 The Apache Stratos distribution includes a number of run time dependencies with 
@@ -212,68 +212,16 @@ is subject to the terms and conditions of the following licenses.
 The following components come under Apache Software License 2.0
 ===============================================================================
 
-For abdera-1.0.0.wso2v3.jar,
-andes-client-0.13.wso2v8.jar,
-ant-1.7.0.jar,
-ant-1.7.0.wso2v1.jar,
-ant-launcher-1.7.0.jar,
-apache-stratos-cartridge-agent-4.0.0-SNAPSHOT.jar,
-axiom-1.2.11.wso2v4.jar,
-axiom-api-1.2.11.jar,
-axiom-impl-1.2.11.jar,
-axis2-1.6.1.wso2v10.jar,
-commons-cli-1.0.jar,
-commons-codec-1.2.jar,
-commons-collections-3.2.0.wso2v1.jar,
-commons-collections-3.2.1.jar,
-commons-dbcp-1.4.0.wso2v1.jar,
-commons-fileupload-1.2.0.wso2v1.jar,
-commons-fileupload-1.2.jar,
-commons-httpclient-3.1.0.wso2v2.jar,
-commons-httpclient-3.1.jar,
-commons-io-2.0.0.wso2v2.jar,
-commons-io-2.0.jar,
-commons-lang-2.6.0.wso2v1.jar,
-commons-lang3-3.1.jar,
-commons-logging-1.1.1.jar,
-commons-pool-1.5.0.wso2v1.jar,
-commons-pool-1.5.jar,
-compass-2.0.1.wso2v2.jar,
-geronimo-activation_1.1_spec-1.0.2.jar
-geronimo-javamail_1.4_spec-1.6.jar
-geronimo-jms_1.1_spec-1.1.0.wso2v1.jar
-geronimo-jms_1.1_spec-1.1.jar
-geronimo-stax-api_1.0_spec-1.0.1.jar
-gson-2.2.4.jar
-hazelcast-3.0.1.jar
-hazelcast-3.0.1.wso2v1.jar
-httpclient-4.1.1-wso2v1.jar
-httpcore-4.1.0-wso2v1.jar
-javax.cache.wso2-4.2.0.jar
-java-xmlbuilder-0.6.jar
-javax.servlet-3.0.0.v201112011016.jar
-jdbc-pool-7.0.34.wso2v1.jar
-jdom-1.0.jar
-json-2.0.0.wso2v1.jar
-libthrift-0.7.wso2v1.jar
-log4j-1.2.13.jar
-neethi-2.0.4.wso2v4.jar
-not-yet-commons-ssl-0.3.9.jar
-opencsv-1.8.wso2v1.jar
-org.apache.log4j-1.2.13.v200706111418.jar
-org.apache.stratos.cartridge.agent-4.0.0-SNAPSHOT.jar
-org.apache.stratos.common-4.0.0-SNAPSHOT.jar
-org.apache.stratos.messaging-4.0.0-SNAPSHOT.jar 
 org.wso2.carbon.base-4.2.0.jar
 org.wso2.carbon.bootstrap-4.2.0.jar
 org.wso2.carbon.core-4.2.0.jar
 org.wso2.carbon.core.common-4.2.0.jar
-org.wso2.carbon.databridge.agent.thrift-4.2.0.jar
-org.wso2.carbon.databridge.commons-4.2.0.jar
-org.wso2.carbon.databridge.commons.thrift-4.2.0.jar
+org.wso2.carbon.databridge.agent.thrift-4.2
+org.wso2.carbon.databridge.commons-4.2.
+org.wso2.carbon.databridge.commons.thrif
 org.wso2.carbon.logging-4.2.0.jar
-org.wso2.carbon.ndatasource.common-4.2.0.jar
-org.wso2.carbon.ndatasource.rdbms-4.2.0.jar
+org.wso2.carbon.ndatasource.common-4.2.
+org.wso2.carbon.ndatasource.rdbms-4.2.0.j
 org.wso2.carbon.queuing-4.2.0.jar
 org.wso2.carbon.registry.api-4.2.0.jar
 org.wso2.carbon.registry.core-4.2.0.jar
@@ -282,9 +230,71 @@ org.wso2.carbon.securevault-4.2.0.jar
 org.wso2.carbon.user.api-4.2.0.jar
 org.wso2.carbon.user.core-4.2.0.jar
 org.wso2.carbon.user.mgt-4.2.0.jar
-org.wso2.carbon.user.mgt.common-4.2.0.jar
+org.wso2.carbon.user.mgt.common-4.2.0.ja
 org.wso2.carbon.utils-4.2.0.jar
 org.wso2.securevault-1.0.0-wso2v2.jar
+abdera-1.0.0.wso2v3.jar
+andes-client-0.13.wso2v8.jar
+annotations-1.3.2.jar
+ant-1.7.0.jar
+ant-launcher-1.7.0.jar
+axiom-1.2.11.wso2v4.jar
+axiom-api-1.2.11.jar
+axiom-impl-1.2.11.jar
+axis2-1.6.1.wso2v10.jar
+commons-cli-1.0.jar
+commons-codec-1.2.jar
+commons-collections-3.2.0.wso2v
+commons-collections-3.2.1.jar
+commons-dbcp-1.4.0.wso2v1.jar
+commons-fileupload-1.2.0.wso2v1
+commons-fileupload-1.2.jar
+commons-httpclient-3.1.0.wso2v2.
+commons-httpclient-3.1.jar
+commons-io-2.0.0.wso2v2.jar
+commons-io-2.0.jar
+commons-lang-2.4.jar
+commons-lang-2.6.0.wso2v1.jar
+commons-lang3-3.1.jar
+commons-logging-1.1.1.jar
+commons-pool-1.5.6.jar
+commons-pool-1.5.6.wso2v1.jar
+compass-2.0.1.wso2v2.jar
+geronimo-activation_1.1_spec-1.0.2.jar
+geronimo-javamail_1.4_spec-1.6.jar
+geronimo-jms_1.1_spec-1.1.jar
+geronimo-stax-api_1.0_spec-1.0.1.jar
+gson-2.2.4.jar
+hazelcast-3.0.1.jar
+hazelcast-3.0.1.wso2v1.jar
+httpclient-4.1.1-wso2v1.jar
+httpclient-4.2.5.jar
+httpcore-4.1.0-wso2v1.jar
+httpcore-4.2.4.jar
+javax.cache.wso2-4.2.0.jar
+java-xmlbuilder-0.6.jar
+javax.servlet-3.0.0.v201112011016.jar
+jdbc-pool-7.0.34.wso2v1.jar
+jdom-1.0.jar
+tomcat-catalina-ha-7.0.34.jar
+tomcat-ha-7.0.34.wso2v1.jar
+tomcat-jdbc-7.0.34.jar
+tomcat-juli-7.0.34.jar
+tomcat-tribes-7.0.34.jar
+tomcat-util-7.0.34.jar
+velocity-1.7.jar
+json-2.0.0.wso2v1.jar
+libthrift-0.7.wso2v1.jar
+libthrift-0.9.1.jar
+log4j-1.2.17.jar
+neethi-2.0.4.wso2v4.jar
+not-yet-commons-ssl-0.3.9.jar
+opencsv-1.8.wso2v1.jar
+org.apache.log4j-1.2.13.v200706111418.jar
+org.apache.stratos.common-4.0.0-SNAPSHOT.jar
+org.apache.stratos.load.balancer.common-4.0.0-incubating.jar
+org.apache.stratos.load.balancer.extension.api-4.0.0-incubating.jar
+org.apache.stratos.messaging-4.0.0-incubating.jar
 poi-3.9.jar
 poi-ooxml-3.9.0.wso2v1.jar
 poi-ooxml-3.9.jar
@@ -297,21 +307,7 @@ stax-api-1.0.1.jar
 tomcat-annotations-api-7.0.34.jar
 tomcat-api-7.0.34.jar
 tomcat-catalina-7.0.34.jar
-tomcat-catalina-ha-7.0.34.jar
-tomcat-ha-7.0.34.wso2v1.jar
-tomcat-jdbc-7.0.34.jar
-tomcat-juli-7.0.34.jar
-tomcat-tribes-7.0.34.jar
-tomcat-util-7.0.34.jar
-wsdl4j-1.6.2.wso2v4.jar
-wstx-asl-3.2.9.jar
-xalan-2.6.0.jar
-xercesImpl-2.6.2.jar
-xml-apis-1.3.02.jar
-xmlbeans-2.3.0.jar
-xmlParserAPIs-2.6.2.jar
-XmlSchema-1.4.7-wso2v2.jar
-XmlSchema-1.4.7.wso2v2.jar
+
 
 ===============================================================================
 The following components come under Public Domain License
@@ -342,6 +338,8 @@ jline-0.9.94.jar,
 jsch-0.1.49.jar
 jaxen-1.1.1.jar
 
+Copyright (c) 2010 Terence Parr
+All rights reserved.
 
 [The BSD License]
 
@@ -367,7 +365,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 
 =============================================================================== 
 The following components are licensed under EPL
@@ -451,25 +448,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
 
 =============================================================================== 
-The following components are licensed under EDL
-=============================================================================== 
-
-For org.eclipse.jgit-2.3.1.wso2v2.jar
-
-Eclipse Distribution License - v 1.0
-
-Copyright (c) 2007, Eclipse Foundation, Inc. and its licensors.
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the Eclipse Foundation, Inc. nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-=============================================================================== 
 The following components are licensed under MIT license
 =============================================================================== 
 
@@ -497,4 +475,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
 
