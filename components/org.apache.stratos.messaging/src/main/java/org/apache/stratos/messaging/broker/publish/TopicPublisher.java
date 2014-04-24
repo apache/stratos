@@ -48,6 +48,7 @@ public class TopicPublisher extends MessagePublisher {
 	private TopicSession topicSession;
 	private TopicConnector connector;
 	private javax.jms.TopicPublisher topicPublisher = null;
+    private boolean initialized;
 
 	/**
 	 * @param aTopicName
@@ -56,6 +57,9 @@ public class TopicPublisher extends MessagePublisher {
 	TopicPublisher(String aTopicName) {
 		super(aTopicName);
 		connector = new TopicConnector();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic publisher connector created: [topic] %s", getName()));
+        }
 	}
 
 	/**
@@ -68,35 +72,86 @@ public class TopicPublisher extends MessagePublisher {
 	}
 	
 	public void publish(Object messageObj, Properties headers) {
-		
-		Gson gson = new Gson();
-		String message = gson.toJson(messageObj);
-		try {
-			doPublish(message, headers);
-			
-		} catch (Exception e) {
-			log.error("Error while publishing to the topic: " + getName(), e);
-			// TODO would it be worth to throw this exception?
-		}
+        synchronized (TopicPublisher.class) {
+            Gson gson = new Gson();
+            String message = gson.toJson(messageObj);
+            boolean published = false;
+            while(!published) {
+
+                try {
+                    doPublish(message, headers);
+                    published = true;
+                } catch (Exception e) {
+                    initialized = false;
+                    if(log.isErrorEnabled()) {
+                        log.error("Error while publishing to the topic: " + getName(), e);
+                    }
+                    if(log.isInfoEnabled()) {
+                        log.info("Will try to re-publish in 60 sec");
+                    }
+                    try {
+                        Thread.sleep(60000);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+            }
+        }
 	}
 
 	public void close() {
-
-		// closes all sessions/connections
-		try {
-			topicPublisher.close();
-			topicSession.close();
-			connector.close();
-		} catch (JMSException ignore) {
-		}
+        synchronized (TopicPublisher.class) {
+            // closes all sessions/connections
+            try {
+                if(topicPublisher != null) {
+                    topicPublisher.close();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Topic publisher closed: [topic] %s", getName()));
+                    }
+                }
+                if(topicSession != null) {
+                    topicSession.close();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Topic publisher session closed: [topic] %s", getName()));
+                    }
+                }
+                if(connector != null) {
+                    connector.close();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Topic publisher connector closed: [topic] %s", getName()));
+                    }
+                }
+            } catch (JMSException ignore) {
+            }
+        }
 	}
 
 	private void doPublish(String message, Properties headers) throws Exception, JMSException {
-		setPublisher();
+        if(!initialized) {
+            // Initialize a topic connection to the message broker
+            connector.init(getName());
+            initialized = true;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Topic publisher connector initialized: [topic] %s", getName()));
+            }
+        }
 
-		TextMessage textMessage = topicSession.createTextMessage(message);
+        try {
+        // Create a new session
+        topicSession = createSession(connector);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic publisher session created: [topic] %s", getName()));
+        }
+        // Create a publisher from session
+        topicPublisher = createPublisher(topicSession);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic publisher created: [topic] %s", getName()));
+        }
+
+        // Create text message
+        TextMessage textMessage = topicSession.createTextMessage(message);
 		
 		if (headers != null) {
+            // Add header properties
 			@SuppressWarnings("rawtypes")
 			Enumeration e = headers.propertyNames();
 
@@ -110,26 +165,34 @@ public class TopicPublisher extends MessagePublisher {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Message published: [topic] %s [header] %s [body] %s", getName(), (headers != null) ? headers.toString() : "null", message));
         }
-	}
+        }
+        finally {
+            if(topicPublisher != null) {
+                topicPublisher.close();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Topic publisher closed: [topic] %s", getName()));
+                }
+            }
+            if(topicSession != null) {
+                topicSession.close();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Topic publisher session closed: [topic] %s", getName()));
+                }
+            }
+        }
+    }
 
-	private void setPublisher() throws Exception, JMSException {
-		if (topicSession != null && topicPublisher != null) {
-			return;
-		}
-		
-		if (topicSession == null) {
-			// initialize a TopicConnector
-			connector.init(getName());
-			// get a session
-			topicSession = connector.newSession();
-		}
-		
-		Topic topic = connector.getTopic();
+    private TopicSession createSession(TopicConnector topicConnector) throws Exception {
+        // Create a new session
+        return topicConnector.newSession();
+    }
+
+	private javax.jms.TopicPublisher createPublisher(TopicSession topicSession) throws Exception, JMSException {
+        Topic topic = connector.getTopic();
 		if (topic == null) {
 			// if the topic doesn't exist, create it.
 			topic = topicSession.createTopic(getName());
 		}
-		topicPublisher = topicSession.createPublisher(topic);
+		return topicSession.createPublisher(topic);
 	}
-
 }
