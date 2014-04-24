@@ -80,6 +80,13 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
+	    <excludes>
+                <exclude>*:icu4j*</exclude>
+                <exclude>*:jaxen*</exclude>
+                <exclude>*:jboss-transaction-api*</exclude>
+                <exclude>*:wrapper*</exclude>
+                <exclude>*:xom*</exclude>
+            </excludes>
             <useProjectArtifact>true</useProjectArtifact>
             <scope>runtime</scope>
         </dependencySet>
