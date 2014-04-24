@@ -33,6 +33,7 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <ref bean="throwableExceptionHandler"/>
             <ref bean="genericExceptionHandler"/>
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
@@ -52,6 +53,7 @@
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
+    <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
     <!--The below config enables OAuth based authentication/authorization for REST API-->
     <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
         <property name="password" value="admin"/>
