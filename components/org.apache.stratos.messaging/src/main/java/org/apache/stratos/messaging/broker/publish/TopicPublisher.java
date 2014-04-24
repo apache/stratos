@@ -67,11 +67,11 @@ public class TopicPublisher extends MessagePublisher {
 	 * lost, this will perform re-subscription periodically, until a connection
 	 * obtained.
 	 */
-	public void publish(Object messageObj) {
-		publish(messageObj, null);
+	public void publish(Object messageObj, boolean retry) {
+		publish(messageObj, null, retry);
 	}
 	
-	public void publish(Object messageObj, Properties headers) {
+	public void publish(Object messageObj, Properties headers, boolean retry) {
         synchronized (TopicPublisher.class) {
             Gson gson = new Gson();
             String message = gson.toJson(messageObj);
@@ -86,6 +86,13 @@ public class TopicPublisher extends MessagePublisher {
                     if(log.isErrorEnabled()) {
                         log.error("Error while publishing to the topic: " + getName(), e);
                     }
+                    if(!retry) {
+                        if(log.isDebugEnabled()) {
+                            log.debug("Retry disabled for topic " + getName());
+                        }
+                        throw new RuntimeException(e);
+                    }
+
                     if(log.isInfoEnabled()) {
                         log.info("Will try to re-publish in 60 sec");
                     }
