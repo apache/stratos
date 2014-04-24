@@ -43,10 +43,14 @@ public class EventPublisher extends TopicPublisher {
      * @param event event to be published
      */
     public void publish(Event event) {
+        publish(event, true);
+    }
+
+    public void publish(Event event, boolean retry) {
         synchronized (EventPublisher.class) {
             Properties headers = new Properties();
             headers.put(Constants.EVENT_CLASS_NAME, event.getClass().getName());
-            super.publish(event, headers);
+            super.publish(event, headers, retry);
         }
     }
 }
