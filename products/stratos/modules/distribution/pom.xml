@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-incubating</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -452,7 +452,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.cep.extension</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0-incubating</version>
         </dependency>
 	<dependency>
 	    <groupId>org.apache.geronimo.specs</groupId>
